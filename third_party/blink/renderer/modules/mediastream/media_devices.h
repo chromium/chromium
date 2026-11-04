@@ -178,6 +178,13 @@ class MODULES_EXPORT MediaDevices final
                             const RegisteredEventListener&) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MediaDevicesFocusTest,
+                           CloseFocusWindowWithExplicitBehavior);
+  FRIEND_TEST_ALL_PREFIXES(MediaDevicesFocusTest,
+                           CloseFocusWindowWithFinalizedExplicitBehavior);
+  FRIEND_TEST_ALL_PREFIXES(MediaDevicesTest, CloseFocusWindowWithoutController);
+  FRIEND_TEST_ALL_PREFIXES(MediaDevicesTest,
+                           CloseFocusWindowWithoutExplicitBehavior);
   FRIEND_TEST_ALL_PREFIXES(MediaDevicesTest, ObserveDeviceChangeEvent);
 
   template <typename IDLResolvedType>

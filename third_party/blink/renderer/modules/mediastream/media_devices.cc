@@ -1616,8 +1616,10 @@ void MediaDevices::CloseFocusWindowOfOpportunity(
     return;
   }
 
-  if (capture_controller) {
-    capture_controller->FinalizeFocusDecision();
+  if (capture_controller && capture_controller->FinalizeFocusDecision()) {
+    // An explicit focus decision has already been dispatched on a separate Mojo
+    // pipe. Avoid racing it with the automatic default focus decision.
+    return;
   }
 
   GetDispatcherHost(window->GetFrame()).CloseFocusWindowOfOpportunity(id);

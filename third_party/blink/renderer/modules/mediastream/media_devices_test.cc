@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_output_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_start_focus_behavior.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
@@ -59,15 +61,22 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_permission_testing_platform.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -86,6 +95,53 @@ namespace {
 
 constexpr char kInvalidSinkId[] = "invalid_sink_id";
 constexpr char kValidSinkId[] = "valid_sink_id";
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+class FocusTestUserMediaClient : public UserMediaClient {
+ public:
+  FocusTestUserMediaClient(LocalFrame* frame, UserMediaProcessor* processor)
+      : UserMediaClient(frame,
+                        processor,
+                        processor,
+                        frame->GetTaskRunner(TaskType::kInternalMedia)) {}
+};
+
+UserMediaProcessor* SetUpFocusClient(
+    V8TestingScope& scope,
+    MockMojoMediaStreamDispatcherHost& dispatcher) {
+  auto* processor = MakeGarbageCollected<UserMediaProcessor>(
+      &scope.GetFrame(), UserMediaProcessor::MediaDevicesDispatcherCallback(),
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMedia));
+  processor->set_media_stream_dispatcher_host_for_testing(
+      dispatcher.CreatePendingRemoteAndBind());
+  Supplement<LocalDOMWindow>::ProvideTo(
+      scope.GetWindow(), MakeGarbageCollected<FocusTestUserMediaClient>(
+                             &scope.GetFrame(), processor));
+  return processor;
+}
+
+MediaStreamTrack* MakeFocusTrack(V8TestingScope& scope) {
+  auto video_source =
+      std::make_unique<testing::NiceMock<MockMediaStreamVideoSource>>();
+  MediaStreamDevice device = video_source->device();
+  device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      media::mojom::DisplayCaptureSurfaceType::BROWSER,
+      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER, nullptr,
+      100);
+  video_source->SetDevice(device);
+  auto video_track = std::make_unique<MediaStreamVideoTrack>(
+      video_source.get(),
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      "source", MediaStreamSource::StreamType::kTypeVideo, "name",
+      /*remote=*/false, std::move(video_source));
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
+      "component", source, std::move(video_track));
+  return MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component, base::DoNothing());
+}
+#endif
 
 String MaxLengthCaptureHandle() {
   String maxHandle = "0123456789abcdef";  // 16 characters.
@@ -328,7 +384,13 @@ class MockMediaDevicesDispatcherHost final
     }
   }
 
-  void CloseFocusWindowOfOpportunity(const String& label) override {}
+  void CloseFocusWindowOfOpportunity(const String& label) override {
+    closed_focus_windows_.push_back(label);
+  }
+
+  const Vector<String>& ClosedFocusWindows() const {
+    return closed_focus_windows_;
+  }
 
   void ProduceSubCaptureTargetId(
       SubCaptureTarget::Type type,
@@ -418,6 +480,7 @@ class MockMediaDevicesDispatcherHost final
  private:
   mojo::Remote<mojom::blink::MediaDevicesListener> listener_;
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
+  Vector<String> closed_focus_windows_;
   mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config_;
   std::map<SubCaptureTarget::Type, std::vector<String>> next_ids_;
   media::OutputDeviceStatus output_device_status_ =
@@ -1476,6 +1539,107 @@ TEST_F(MediaDevicesTest, MetricsGetUserMediaOnly) {
   histogram_tester().ExpectTotalCount(
       "Media.MediaDevices.EnumerateDevices.FirstStateOnContextDestroyed", 0);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(MediaDevicesTest, CloseFocusWindowWithoutExplicitBehavior) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  StrictMock<MockMojoMediaStreamDispatcherHost> stream_dispatcher;
+  auto* processor = SetUpFocusClient(scope, stream_dispatcher);
+
+  auto* controller = CaptureController::Create(scope.GetExecutionContext());
+  controller->SetVideoTrack(MakeFocusTrack(scope), "capture");
+  EXPECT_CALL(stream_dispatcher, FocusCapturedSurface(_, _)).Times(0);
+  media_devices->CloseFocusWindowOfOpportunity("capture", controller);
+  media_devices->dispatcher_host_.FlushForTesting();
+  processor->FlushMediaStreamDispatcherHostForTesting();
+  EXPECT_THAT(dispatcher_host().ClosedFocusWindows(), ElementsAre("capture"));
+
+  controller->setFocusBehavior(
+      V8CaptureStartFocusBehavior(
+          V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface),
+      scope.GetExceptionState());
+  ASSERT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+  processor->FlushMediaStreamDispatcherHostForTesting();
+}
+
+TEST_F(MediaDevicesTest, CloseFocusWindowWithoutController) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  media_devices->CloseFocusWindowOfOpportunity("capture", nullptr);
+  media_devices->dispatcher_host_.FlushForTesting();
+  EXPECT_THAT(dispatcher_host().ClosedFocusWindows(), ElementsAre("capture"));
+}
+
+class MediaDevicesFocusTest
+    : public MediaDevicesTest,
+      public testing::WithParamInterface<V8CaptureStartFocusBehavior::Enum> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AllFocusBehaviors,
+    MediaDevicesFocusTest,
+    testing::Values(
+        V8CaptureStartFocusBehavior::Enum::kFocusCapturingApplication,
+        V8CaptureStartFocusBehavior::Enum::kNoFocusChange,
+        V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface));
+
+TEST_P(MediaDevicesFocusTest, CloseFocusWindowWithExplicitBehavior) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  StrictMock<MockMojoMediaStreamDispatcherHost> stream_dispatcher;
+  auto* processor = SetUpFocusClient(scope, stream_dispatcher);
+
+  auto* controller = CaptureController::Create(scope.GetExecutionContext());
+  controller->setFocusBehavior(V8CaptureStartFocusBehavior(GetParam()),
+                               scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  controller->SetVideoTrack(MakeFocusTrack(scope), "capture");
+
+  EXPECT_CALL(stream_dispatcher,
+              FocusCapturedSurface(
+                  String("capture"),
+                  GetParam() ==
+                      V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface))
+      .Times(1);
+  media_devices->CloseFocusWindowOfOpportunity("capture", controller);
+  processor->FlushMediaStreamDispatcherHostForTesting();
+  media_devices->dispatcher_host_.FlushForTesting();
+  EXPECT_TRUE(dispatcher_host().ClosedFocusWindows().empty());
+}
+
+TEST_P(MediaDevicesFocusTest, CloseFocusWindowWithFinalizedExplicitBehavior) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  StrictMock<MockMojoMediaStreamDispatcherHost> stream_dispatcher;
+  auto* processor = SetUpFocusClient(scope, stream_dispatcher);
+
+  auto* controller = CaptureController::Create(scope.GetExecutionContext());
+  controller->SetVideoTrack(MakeFocusTrack(scope), "capture");
+  EXPECT_CALL(stream_dispatcher,
+              FocusCapturedSurface(
+                  String("capture"),
+                  GetParam() ==
+                      V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface))
+      .Times(1);
+  controller->setFocusBehavior(V8CaptureStartFocusBehavior(GetParam()),
+                               scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  // Ensure the focus behavior has been finalized and cannot be changed.
+  controller->setFocusBehavior(V8CaptureStartFocusBehavior(GetParam()),
+                               scope.GetExceptionState());
+  ASSERT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  media_devices->CloseFocusWindowOfOpportunity("capture", controller);
+  processor->FlushMediaStreamDispatcherHostForTesting();
+  media_devices->dispatcher_host_.FlushForTesting();
+  EXPECT_TRUE(dispatcher_host().ClosedFocusWindows().empty());
+}
+#endif
 
 class ProduceSubCaptureTargetTest
     : public MediaDevicesTest,

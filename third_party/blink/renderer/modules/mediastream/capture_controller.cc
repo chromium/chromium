@@ -409,34 +409,30 @@ ExecutionContext* CaptureController::GetExecutionContext() const {
   return ExecutionContextClient::GetExecutionContext();
 }
 
-void CaptureController::FinalizeFocusDecision() {
+bool CaptureController::FinalizeFocusDecision() {
   DCHECK(IsMainThread());
 
   if (focus_decision_finalized_) {
-    return;
+    return focus_decision_dispatched_;
   }
 
   focus_decision_finalized_ = true;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!video_track_ || !IsCaptureType(video_track_, {SurfaceType::BROWSER,
                                                      SurfaceType::WINDOW})) {
-    return;
+    return focus_decision_dispatched_;
   }
 
   UserMediaClient* client = UserMediaClient::From(DomWindow());
-  if (!client) {
-    return;
+  if (client && focus_behavior_.has_value()) {
+    client->FocusCapturedSurface(
+        String(descriptor_id_),
+        ShouldFocusCapturedSurface(focus_behavior_.value()));
+    focus_decision_dispatched_ = true;
   }
-
-  if (!focus_behavior_) {
-    return;
-  }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  client->FocusCapturedSurface(
-      String(descriptor_id_),
-      ShouldFocusCapturedSurface(focus_behavior_.value()));
 #endif
+  return focus_decision_dispatched_;
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

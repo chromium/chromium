@@ -72,8 +72,10 @@ class MODULES_EXPORT CaptureController final
 
   // Close the window of opportunity to make the focus decision.
   // Further calls to setFocusBehavior() will raise an exception.
+  // Returns whether an explicit focus decision was dispatched, including during
+  // an earlier finalization.
   // https://w3c.github.io/mediacapture-screen-share/#dfn-finalize-focus-decision-algorithm
-  void FinalizeFocusDecision();
+  bool FinalizeFocusDecision();
 
   // MediaStreamSource::Observer
   void SourceChangedState() override {}
@@ -154,6 +156,10 @@ class MODULES_EXPORT CaptureController final
   // Track whether the window of opportunity to call setFocusBehavior() is still
   // open. Once set to true, this never changes.
   bool focus_decision_finalized_ = false;
+
+  // Track whether an explicit focus decision was dispatched to the browser.
+  // Once set to true, this never changes.
+  bool focus_decision_dispatched_ = false;
 
   // The last known zoom level of the captured surface.
   // Set to a concrete value when capture starts.
