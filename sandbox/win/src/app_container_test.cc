@@ -13,9 +13,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
@@ -26,14 +29,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/security_descriptor.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/features.h"
+#include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/process_mitigations_unittest.h"
 #include "sandbox/win/src/sandbox.h"
@@ -138,13 +144,15 @@ void CheckLpacToken(HANDLE process) {
 // isn't a security concern.
 std::wstring GetAppContainerProfileName() {
   std::string sandbox_base_name = std::string("cr.sb.net");
-  // Create a unique app container ID for the test case. This ensures that if
-  // multiple tests are running concurrently they don't mess with each other's
-  // app containers.
-  std::string appcontainer_id(
-      testing::UnitTest::GetInstance()->current_test_info()->test_suite_name());
-  appcontainer_id +=
-      testing::UnitTest::GetInstance()->current_test_info()->name();
+  // Create a unique app container ID for the test case and process. This
+  // ensures that if multiple tests (or repeated runs of the same test across
+  // parallel launcher jobs) are running concurrently they don't mess with each
+  // other's app containers.
+  const auto* const test_info =
+      testing::UnitTest::GetInstance()->current_test_info();
+  std::string appcontainer_id =
+      base::StrCat({test_info->test_suite_name(), test_info->name(),
+                    base::NumberToString(::GetCurrentProcessId())});
   auto sha1 = base::SHA1HashString(appcontainer_id);
   std::string profile_name =
       base::StrCat({sandbox_base_name, base::HexEncode(sha1)});
@@ -526,5 +534,189 @@ TEST(LowBoxTest, ChildProcessMitigationLowBox) {
 
   EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest(cmd.value(), L"false"));
 }
+
+// Component build DLLs statically link user32.dll and gdi32.dll, so delay-load
+// behavior can only be tested in non-component builds.
+#if !defined(COMPONENT_BUILD)
+SBOX_TEST_COMMAND(CheckIsUser32AndGdi32Available) {
+  if (args.size() != 1) {
+    return SBOX_TEST_INVALID_PARAMETER;
+  }
+  const bool expect_available = (args[0] == L"true");
+
+  // Win32k syscalls are enabled in this test so IsUser32AndGdi32Available()
+  // exercises the delay-load path rather than the mitigation policy check.
+  PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
+  if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                    ProcessSystemCallDisablePolicy, &policy,
+                                    sizeof(policy)) ||
+      policy.DisallowWin32kSystemCalls != 0) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+
+  // user32.dll and gdi32.dll are delay-loaded and must not be loaded yet.
+  if (::GetModuleHandleW(L"user32.dll") != nullptr ||
+      ::GetModuleHandleW(L"gdi32.dll") != nullptr) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+
+  // Force-enable pinning so this test exercises the user32.dll/gdi32.dll load
+  // path regardless of channel or trial group.
+  base::win::EnablePinUser32AndGdi32ForTesting();
+
+  if (base::win::IsUser32AndGdi32Available() != expect_available) {
+    return SBOX_TEST_SECOND_ERROR;
+  }
+
+  if (expect_available) {
+    if (::GetModuleHandleW(L"user32.dll") == nullptr ||
+        ::GetModuleHandleW(L"gdi32.dll") == nullptr) {
+      return SBOX_TEST_THIRD_ERROR;
+    }
+  } else {
+    if (::GetModuleHandleW(L"user32.dll") != nullptr ||
+        base::win::PinUser32()) {
+      return SBOX_TEST_FOURTH_ERROR;
+    }
+  }
+
+  // Callers guarded by IsUser32AndGdi32Available() must not crash in the
+  // delay-load failure hook when user32.dll fails DllMain initialization.
+  base::win::EnableHighDPISupport();
+  return SBOX_TEST_SUCCEEDED;
+}
+
+TEST(AppContainerLaunchTest, IsUser32AndGdi32AvailableDefaultDesktop) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  CheckIsUser32AndGdi32AvailableTestRunner runner;
+  ASSERT_EQ(SBOX_ALL_OK, AddNetworkAppContainerPolicy(runner.GetPolicy()));
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"true"));
+
+  AppContainerBase::Delete(GetAppContainerProfileName());
+}
+
+namespace {
+
+class CreateAlternateDesktopDelegate : public base::PlatformThread::Delegate {
+ public:
+  CreateAlternateDesktopDelegate(BrokerServices* broker, HDESK template_desktop)
+      : broker_(broker), template_desktop_(template_desktop) {}
+  CreateAlternateDesktopDelegate(const CreateAlternateDesktopDelegate&) =
+      delete;
+  CreateAlternateDesktopDelegate& operator=(
+      const CreateAlternateDesktopDelegate&) = delete;
+
+  void ThreadMain() override {
+    HDESK orig_desktop = ::GetThreadDesktop(::GetCurrentThreadId());
+    set_desktop_ok_ = ::SetThreadDesktop(template_desktop_);
+    if (set_desktop_ok_) {
+      result_ = broker_->CreateAlternateDesktop(Desktop::kAlternateDesktop);
+      restore_desktop_ok_ = ::SetThreadDesktop(orig_desktop);
+    }
+  }
+
+  BOOL set_desktop_ok() const { return set_desktop_ok_; }
+  BOOL restore_desktop_ok() const { return restore_desktop_ok_; }
+  ResultCode result() const { return result_; }
+
+ private:
+  const raw_ptr<BrokerServices> broker_;
+  const HDESK template_desktop_;
+  BOOL set_desktop_ok_ = FALSE;
+  BOOL restore_desktop_ok_ = FALSE;
+  ResultCode result_ = SBOX_ERROR_GENERIC;
+};
+
+}  // namespace
+
+TEST(AppContainerLaunchTest, IsUser32AndGdi32AvailableNoLpacDesktopAccess) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  BrokerServices* broker = GetBroker();
+  ASSERT_TRUE(broker);
+  broker->DestroyDesktops();
+  base::ScopedClosureRunner destroy_desktops(base::BindOnce(
+      &BrokerServices::DestroyDesktops, base::Unretained(broker)));
+
+  // Create a desktop whose DACL grants access to Everyone and ALL APPLICATION
+  // PACKAGES, but omits ALL RESTRICTED APPLICATION PACKAGES (LPAC).
+  base::win::SecurityDescriptor sd;
+  ASSERT_TRUE(sd.SetDaclEntry(base::win::WellKnownSid::kWorld,
+                              base::win::SecurityAccessMode::kGrant,
+                              GENERIC_ALL, 0));
+  ASSERT_TRUE(sd.SetDaclEntry(base::win::WellKnownSid::kAllApplicationPackages,
+                              base::win::SecurityAccessMode::kGrant,
+                              GENERIC_ALL, 0));
+  SECURITY_DESCRIPTOR security_desc = sd.ToAbsolute();
+  SECURITY_ATTRIBUTES attributes = {sizeof(SECURITY_ATTRIBUTES), &security_desc,
+                                    FALSE};
+  std::wstring template_desktop_name =
+      base::StrCat({L"lpac_no_access_desktop_",
+                    base::NumberToWString(::GetCurrentProcessId())});
+  HDESK template_desktop =
+      ::CreateDesktop(template_desktop_name.c_str(), nullptr, nullptr, 0,
+                      GENERIC_ALL, &attributes);
+  ASSERT_NE(template_desktop, nullptr);
+  base::ScopedClosureRunner close_template_desktop(base::BindOnce(
+      [](HDESK desktop) { ::CloseDesktop(desktop); }, template_desktop));
+
+  // Switch to `template_desktop` on a fresh thread (which cannot have existing
+  // windows or hooks that would cause SetThreadDesktop to fail with ERROR_BUSY)
+  // so CreateAlternateDesktop copies its DACL.
+  CreateAlternateDesktopDelegate create_desktop_delegate(broker,
+                                                         template_desktop);
+  base::PlatformThreadHandle thread_handle;
+  ASSERT_TRUE(base::PlatformThread::Create(0, &create_desktop_delegate,
+                                           &thread_handle));
+  base::PlatformThread::Join(thread_handle);
+  close_template_desktop.RunAndReset();
+  ASSERT_TRUE(create_desktop_delegate.set_desktop_ok());
+  ASSERT_TRUE(create_desktop_delegate.restore_desktop_ok());
+  ASSERT_EQ(SBOX_ALL_OK, create_desktop_delegate.result());
+
+  // Lower the alternate desktop's mandatory label to Low IL so AppContainer
+  // tokens are not blocked by mandatory integrity control.
+  std::wstring alt_desktop_name =
+      broker->GetDesktopName(Desktop::kAlternateDesktop);
+  HDESK alt_desktop =
+      ::OpenDesktop(alt_desktop_name.c_str(), 0, FALSE, WRITE_OWNER);
+  ASSERT_NE(alt_desktop, nullptr);
+  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
+            SetObjectIntegrityLabel(alt_desktop,
+                                    base::win::SecurityObjectType::kDesktop, 0,
+                                    INTEGRITY_LEVEL_LOW));
+  ASSERT_TRUE(::CloseDesktop(alt_desktop));
+
+  base::ScopedClosureRunner delete_profile(base::BindOnce(
+      [](const std::wstring& name) { AppContainerBase::Delete(name); },
+      GetAppContainerProfileName()));
+
+  // A regular AppContainer has ALL APPLICATION PACKAGES and can initialize
+  // user32.dll on this desktop.
+  {
+    CheckIsUser32AndGdi32AvailableTestRunner ac_runner;
+    ASSERT_EQ(SBOX_ALL_OK, AddNetworkAppContainerPolicy(ac_runner.GetPolicy()));
+    ac_runner.GetConfig()->GetAppContainer()->SetEnableLowPrivilegeAppContainer(
+        false);
+    ac_runner.GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
+    EXPECT_EQ(SBOX_TEST_SUCCEEDED, ac_runner.RunTest(L"true"));
+  }
+
+  // An LPAC process lacks ALL RESTRICTED APPLICATION PACKAGES on this desktop,
+  // so user32.dll fails DllMain initialization and IsUser32AndGdi32Available()
+  // must return false without crashing.
+  {
+    CheckIsUser32AndGdi32AvailableTestRunner lpac_runner;
+    ASSERT_EQ(SBOX_ALL_OK,
+              AddNetworkAppContainerPolicy(lpac_runner.GetPolicy()));
+    lpac_runner.GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
+    EXPECT_EQ(SBOX_TEST_SUCCEEDED, lpac_runner.RunTest(L"false"));
+  }
+}
+#endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace sandbox

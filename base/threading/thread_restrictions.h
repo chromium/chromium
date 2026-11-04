@@ -503,6 +503,7 @@ class PlatformSharedMemoryRegion;
 namespace win {
 class OSInfo;
 class ObjectWatcher;
+class ScopedAllowBlockingForUser32AndGdi32;
 class ScopedAllowBlockingForUserAccountControl;
 }  // namespace win
 
@@ -620,6 +621,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class base::android::PmfUtils;
   friend class base::debug::StackTrace;
   friend class base::subtle::PlatformSharedMemoryRegion;
+  friend class base::win::ScopedAllowBlockingForUser32AndGdi32;
   friend class base::win::ScopedAllowBlockingForUserAccountControl;
   friend class blink::DiskDataAllocator;
   friend class chromecast::CrashUtil;

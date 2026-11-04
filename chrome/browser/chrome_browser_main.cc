@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -246,6 +247,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/startup/startup_launch_manager.h"
@@ -980,6 +982,16 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "ParallelPreReadFileMainDllWin",
       synchronous_preread_was_skipped ? "Enabled" : "Control");
+
+  if (const std::string_view pin_user32_and_gdi32_group =
+          base::win::GetPinUser32AndGdi32TrialGroup();
+      !pin_user32_and_gdi32_group.empty()) {
+    // Register which arm of the PinUser32AndGdi32InAvailabilityCheck study this
+    // client was enrolled into; see crbug.com/577860802.
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "PinUser32AndGdi32InAvailabilityCheck", pin_user32_and_gdi32_group,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
 
 #endif
 

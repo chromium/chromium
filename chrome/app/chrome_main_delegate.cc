@@ -866,6 +866,13 @@ ChromeMainDelegate::ChromeMainDelegate(const StartupTimestamps& timestamps) {
   // initialized), so the function below will also be called in renderers.
   // This doesn't matter as it simply sets global variables.
   RecordMainStartupMetrics(timestamps);
+#if BUILDFLAG(IS_WIN)
+  if (IsCanaryDev()) {
+    // Enroll this client into an arm of the
+    // PinUser32AndGdi32InAvailabilityCheck study; see crbug.com/577860802.
+    base::win::InitPinUser32AndGdi32Trial();
+  }
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -15,7 +15,9 @@
 #include <string_view>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/scoped_environment_variable_override.h"
@@ -24,13 +26,17 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/multiprocess_test.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_handle_util.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 
 namespace base {
 namespace win {
@@ -482,6 +488,32 @@ TEST(BaseWinUtilTest, GetAzureADJoinTypeUnknown) {
   EXPECT_EQ(GetAzureADJoinType(), AzureADJoinType::kUnknown);
   EXPECT_TRUE(IsJoinedToAzureAD());
   EXPECT_FALSE(IsDeviceJoinedToAzureAD());
+}
+
+MULTIPROCESS_TEST_MAIN(IsUser32AndGdi32AvailableDisallowedBlockingChild) {
+  EnablePinUser32AndGdi32ForTesting();
+  ScopedDisallowBlocking disallow_blocking;
+  if (!IsUser32AndGdi32Available()) {
+    return 1;
+  }
+  if (::GetModuleHandleW(L"user32.dll") == nullptr ||
+      ::GetModuleHandleW(L"gdi32.dll") == nullptr) {
+    return 2;
+  }
+  return 0;
+}
+
+TEST(BaseWinUtilTest, IsUser32AndGdi32AvailableAllowsBlocking) {
+  LaunchOptions options;
+  options.start_hidden = true;
+  Process child = SpawnMultiProcessTestChild(
+      "IsUser32AndGdi32AvailableDisallowedBlockingChild",
+      GetMultiProcessTestChildBaseCommandLine(), options);
+  ASSERT_TRUE(child.IsValid());
+  int exit_code = -1;
+  ASSERT_TRUE(WaitForMultiprocessTestChildExit(
+      child, TestTimeouts::action_timeout(), &exit_code));
+  EXPECT_EQ(0, exit_code);
 }
 
 }  // namespace win

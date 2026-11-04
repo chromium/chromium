@@ -51,9 +51,11 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -247,8 +249,12 @@ std::optional<DSREG_JOIN_TYPE>& GetAzureADJoinStateStorage() {
 
 NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
   static NativeLibraryLoadError load_error;
-  static const NativeLibrary user32_module =
-      PinSystemLibrary(FILE_PATH_LITERAL("user32.dll"), &load_error);
+  static const NativeLibrary user32_module = [] {
+    // Mitigate the issues caused by loading DLLs on a background thread; see
+    // crbug.com/973868.
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    return PinSystemLibrary(FILE_PATH_LITERAL("user32.dll"), &load_error);
+  }();
   if (!user32_module && error) {
     error->code = load_error.code;
   }
@@ -440,6 +446,14 @@ bool SetProcessPowerThrottlingState(HANDLE process,
   return ::SetProcessInformation(process, ProcessPowerThrottling,
                                  &power_throttling, sizeof(power_throttling));
 }
+
+enum class PinUser32AndGdi32TrialState {
+  kNotInTrial,
+  kControl,
+  kEnabled,
+};
+
+std::optional<PinUser32AndGdi32TrialState> g_pin_user32_and_gdi32_trial_state;
 
 }  // namespace
 
@@ -972,17 +986,76 @@ bool IsDeviceJoinedToAzureAD() {
   return join_type && *join_type == AzureADJoinType::kDevice;
 }
 
+void InitPinUser32AndGdi32Trial() {
+  DCHECK(!g_pin_user32_and_gdi32_trial_state.has_value());
+  RegKey key;
+  std::wstring machine_guid;
+  if (key.Open(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography",
+               KEY_QUERY_VALUE | KEY_WOW64_64KEY) != ERROR_SUCCESS ||
+      key.ReadValue(L"MachineGuid", &machine_guid) != ERROR_SUCCESS ||
+      machine_guid.empty()) {
+    g_pin_user32_and_gdi32_trial_state =
+        PinUser32AndGdi32TrialState::kNotInTrial;
+    return;
+  }
+
+  // Salt with the trial name so the 50/50 split is independent of other
+  // trials that hash MachineGuid (such as ParallelPreReadFileMainDllWin).
+  machine_guid.append(L"PinUser32AndGdi32InAvailabilityCheck");
+  g_pin_user32_and_gdi32_trial_state =
+      (PersistentHash(as_byte_span(machine_guid)) % 2 == 0)
+          ? PinUser32AndGdi32TrialState::kEnabled
+          : PinUser32AndGdi32TrialState::kControl;
+}
+
+std::string_view GetPinUser32AndGdi32TrialGroup() {
+  switch (g_pin_user32_and_gdi32_trial_state.value_or(
+      PinUser32AndGdi32TrialState::kNotInTrial)) {
+    case PinUser32AndGdi32TrialState::kNotInTrial:
+      return std::string_view();
+    case PinUser32AndGdi32TrialState::kControl:
+      return "Control";
+    case PinUser32AndGdi32TrialState::kEnabled:
+      return "Enabled";
+  }
+}
+
+void EnablePinUser32AndGdi32ForTesting() {
+  DCHECK(!g_pin_user32_and_gdi32_trial_state.has_value());
+  g_pin_user32_and_gdi32_trial_state = PinUser32AndGdi32TrialState::kEnabled;
+}
+
+class ScopedAllowBlockingForUser32AndGdi32 : public ScopedAllowBlocking {};
+
 bool IsUser32AndGdi32Available() {
   static const bool is_user32_and_gdi32_available = [] {
-    // If win32k syscalls aren't disabled, then user32 and gdi32 are available.
+    if (!g_pin_user32_and_gdi32_trial_state.has_value()) {
+      g_pin_user32_and_gdi32_trial_state =
+          PinUser32AndGdi32TrialState::kNotInTrial;
+    }
+
+    // USER32 and GDI32 cannot be used if win32k syscalls are disabled.
     PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
     if (::GetProcessMitigationPolicy(::GetCurrentProcess(),
                                      ProcessSystemCallDisablePolicy, &policy,
-                                     sizeof(policy))) {
-      return policy.DisallowWin32kSystemCalls == 0;
+                                     sizeof(policy)) &&
+        policy.DisallowWin32kSystemCalls != 0) {
+      return false;
     }
 
-    return true;
+    if (*g_pin_user32_and_gdi32_trial_state !=
+        PinUser32AndGdi32TrialState::kEnabled) {
+      return true;
+    }
+
+    // Even when win32k syscalls are allowed, loading user32.dll (or gdi32.dll,
+    // which it statically imports) can fail in DllMain -- for example, in an
+    // LPAC process whose inherited window station or desktop DACL lacks
+    // ALL RESTRICTED APPLICATION PACKAGES. Load and pin user32.dll once here
+    // so initialization failure returns false instead of crashing in the
+    // delay-load failure hook.
+    ScopedAllowBlockingForUser32AndGdi32 allow_blocking;
+    return PinUser32();
   }();
   return is_user32_and_gdi32_available;
 }
