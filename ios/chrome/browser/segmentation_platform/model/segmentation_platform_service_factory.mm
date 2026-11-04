@@ -221,6 +221,7 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory(
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
+  DependsOn(commerce::ShoppingServiceFactory::GetInstance());
 }
 
 // static
