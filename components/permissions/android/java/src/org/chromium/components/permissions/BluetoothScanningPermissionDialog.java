@@ -29,11 +29,15 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
@@ -44,15 +48,18 @@ import org.chromium.ui.util.CommonOnLayoutChangeListeners;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
- * A dialog for asking user permission to do Bluetooth scanning. This dialog is shown when a
- * website requests to scan nearby Bluetooth devices (e.g. through a bluetooth.requestLEScan
- * Javascript call).
+ * A dialog for asking user permission to do Bluetooth scanning. This dialog is shown when a website
+ * requests to scan nearby Bluetooth devices (e.g. through a bluetooth.requestLEScan Javascript
+ * call).
  *
- * The dialog is shown by create(), and always runs finishDialog() as it's closing.
+ * <p>The dialog is shown by create(), and always runs finishDialog() as it's closing.
  */
 @JNINamespace("permissions")
 @NullMarked
 public class BluetoothScanningPermissionDialog {
+    @JniType("::permissions::BluetoothScanningPromptAndroid")
+    public interface NativeBluetoothScanningPromptAndroid extends JniTypeToken {}
+
     // How much of the height of the screen should be taken up by the listview.
     private static final float LISTVIEW_HEIGHT_PERCENT = 0.30f;
     // The height of a row of the listview in dp.
@@ -87,7 +94,8 @@ public class BluetoothScanningPermissionDialog {
     private final BluetoothScanningPromptAndroidDelegate mDelegate;
 
     // A pointer back to the native part of the implementation for this dialog.
-    private long mNativeBluetoothScanningPermissionDialogPtr;
+    private @Nullable JniRawPtr<NativeBluetoothScanningPromptAndroid>
+            mNativeBluetoothScanningPermissionDialogPtr;
 
     /**
      * Creates the BluetoothScanningPermissionDialog.
@@ -105,7 +113,8 @@ public class BluetoothScanningPermissionDialog {
             String origin,
             int securityLevel,
             BluetoothScanningPromptAndroidDelegate delegate,
-            long nativeBluetoothScanningPermissionDialogPtr) {
+            JniRawPtr<NativeBluetoothScanningPromptAndroid>
+                    nativeBluetoothScanningPermissionDialogPtr) {
         Activity activity = windowAndroid.getActivity().get();
         assert activity != null;
         mActivity = activity;
@@ -226,12 +235,17 @@ public class BluetoothScanningPermissionDialog {
     }
 
     @CalledByNative
-    private static BluetoothScanningPermissionDialog create(
+    private static @Nullable BluetoothScanningPermissionDialog create(
             WindowAndroid windowAndroid,
             @JniType("std::u16string") String origin,
             int securityLevel,
             BluetoothScanningPromptAndroidDelegate delegate,
-            long nativeBluetoothScanningPermissionDialogPtr) {
+            JniRawPtr<NativeBluetoothScanningPromptAndroid>
+                    nativeBluetoothScanningPermissionDialogPtr) {
+        if (windowAndroid.getActivity().get() == null || windowAndroid.getContext().get() == null) {
+            nativeBluetoothScanningPermissionDialogPtr.release();
+            return null;
+        }
         BluetoothScanningPermissionDialog dialog =
                 new BluetoothScanningPermissionDialog(
                         windowAndroid,
@@ -256,8 +270,16 @@ public class BluetoothScanningPermissionDialog {
 
     @CalledByNative
     private void closeDialog() {
-        mNativeBluetoothScanningPermissionDialogPtr = 0;
+        if (mNativeBluetoothScanningPermissionDialogPtr != null) {
+            mNativeBluetoothScanningPermissionDialogPtr.release();
+            mNativeBluetoothScanningPermissionDialogPtr = null;
+        }
         mDialog.dismiss();
+    }
+
+    @VisibleForTesting
+    public void closeDialogForTesting() {
+        closeDialog();
     }
 
     // Computes the height of the device list, bound to half-multiples of the
@@ -304,9 +326,14 @@ public class BluetoothScanningPermissionDialog {
 
     // Called to report the permission dialog's results back to native code.
     private void finishDialog(int resultCode) {
-        if (mNativeBluetoothScanningPermissionDialogPtr == 0) return;
-        Natives jni = BluetoothScanningPermissionDialogJni.get();
-        jni.onDialogFinished(mNativeBluetoothScanningPermissionDialogPtr, resultCode);
+        if (mNativeBluetoothScanningPermissionDialogPtr != null) {
+            Natives jni = BluetoothScanningPermissionDialogJni.get();
+            jni.onDialogFinished(mNativeBluetoothScanningPermissionDialogPtr, resultCode);
+            if (mNativeBluetoothScanningPermissionDialogPtr != null) {
+                mNativeBluetoothScanningPermissionDialogPtr.release();
+                mNativeBluetoothScanningPermissionDialogPtr = null;
+            }
+        }
     }
 
     /** Returns the dialog associated with this class. For use with tests only. */
@@ -323,7 +350,7 @@ public class BluetoothScanningPermissionDialog {
     @NativeMethods
     public interface Natives {
         void onDialogFinished(
-                long nativeBluetoothScanningPromptAndroid,
+                JniPtr<NativeBluetoothScanningPromptAndroid> self,
                 @JniType("content::BluetoothScanningPrompt::Event") int eventType);
     }
 }

@@ -31,7 +31,7 @@ class BluetoothScanningPromptAndroid : public content::BluetoothScanningPrompt {
           const std::u16string&,
           JniIntWrapper,
           const base::android::JavaRef<jobject>&,
-          int64_t)>;
+          jni_zero::JniRawPtr<BluetoothScanningPromptAndroid>)>;
 
   BluetoothScanningPromptAndroid(
       content::RenderFrameHost* frame,

@@ -12,6 +12,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/base/public/cpp/string_util.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -58,7 +59,7 @@ BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
           .Run(env, window_android,
                url_formatter::FormatUrlForSecurityDisplay(origin.GetURL()),
                delegate_->GetSecurityLevel(web_contents_),
-               delegate_->GetJavaObject(), reinterpret_cast<intptr_t>(this)));
+               delegate_->GetJavaObject(), jni_zero::MakeRaw(this)));
 }
 
 BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(

@@ -12,6 +12,9 @@ import android.widget.ListView;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,7 +61,9 @@ public class BluetoothScanningPermissionDialogTest {
     private class TestBluetoothScanningPermissionDialogJni
             implements BluetoothScanningPermissionDialog.Natives {
         @Override
-        public void onDialogFinished(long nativeBluetoothScanningPromptAndroid, int eventType) {
+        public void onDialogFinished(
+                JniPtr<BluetoothScanningPermissionDialog.NativeBluetoothScanningPromptAndroid> self,
+                int eventType) {
             mFinishedEventType = eventType;
         }
     }
@@ -68,6 +73,16 @@ public class BluetoothScanningPermissionDialogTest {
         BluetoothScanningPermissionDialogJni.setInstanceForTesting(
                 new TestBluetoothScanningPermissionDialogJni());
         mPermissionDialog = createDialog();
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mPermissionDialog != null) {
+                        mPermissionDialog.closeDialogForTesting();
+                    }
+                });
     }
 
     private BluetoothScanningPermissionDialog createDialog() {
@@ -81,7 +96,7 @@ public class BluetoothScanningPermissionDialogTest {
                                     ConnectionSecurityLevel.SECURE,
                                     new ChromeBluetoothScanningPromptAndroidDelegate(
                                             ProfileManager.getLastUsedRegularProfile()),
-                                    /* nativeBluetoothScanningPermissionDialogPtr= */ 42);
+                                    JniRawPtr.createForTesting(42L));
                     return dialog;
                 });
     }
