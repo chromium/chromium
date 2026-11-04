@@ -152,7 +152,7 @@ gfx::Size ExportedCanvasResource::Size() const {
 }
 
 bool ExportedCanvasResource::OriginClean() const {
-  return resource_->OriginClean();
+  return origin_clean_;
 }
 
 scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
@@ -210,7 +210,7 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
       auto image = UnacceleratedStaticBitmapImage::Create(
           sk_image, ImageOrientationEnum::kDefault,
           resource_->GetHdrMetadata());
-      image->SetOriginClean(resource_->OriginClean());
+      image->SetOriginClean(OriginClean());
       return image;
     }
 
@@ -292,7 +292,7 @@ ExportedCanvasResource::PrepareTransferableResource() {
 }
 
 void ExportedCanvasResource::SetOriginClean(bool clean) {
-  resource_->SetOriginClean(clean);
+  origin_clean_ = clean;
 }
 
 }  // namespace blink

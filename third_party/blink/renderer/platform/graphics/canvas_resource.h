@@ -68,10 +68,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   // rendering.
   virtual void WaitSyncToken(const gpu::SyncToken&) = 0;
 
-  bool OriginClean() const { return is_origin_clean_; }
-  void SetOriginClean(bool flag) { is_origin_clean_ = flag; }
-
-
   // Called when the resource is marked lost. Losing a resource does not mean
   // that the backing memory has been destroyed, since the resource itself keeps
   // a ref on that memory.
@@ -104,8 +100,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   // Returns true if the resource is rastered via the GPU.
   virtual bool UsesAcceleratedRaster() const = 0;
-
-  bool is_origin_clean_ = true;
 };
 
 // Resource type for SharedImage
