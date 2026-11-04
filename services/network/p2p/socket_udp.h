@@ -54,7 +54,7 @@ struct P2PPendingPacket {
   uint64_t id;
 };
 
-class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
+class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp final : public P2PSocket {
  public:
   friend class ThrottlingP2PNetworkInterceptor;
 

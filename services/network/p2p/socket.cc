@@ -176,7 +176,11 @@ mojo::PendingReceiver<mojom::P2PSocket> P2PSocket::ReleaseReceiverForTesting() {
 void P2PSocket::OnError() {
   receiver_.reset();
   client_.reset();
-  delegate_->DestroySocket(this);
+  // Without a delegate, the former delegate is being destroyed and destroys
+  // this socket as part of that.
+  if (delegate_) {
+    delegate_->DestroySocket(this);
+  }
 }
 
 }  // namespace network

@@ -373,7 +373,9 @@ bool P2PSocketUdp::HandleReadResult(int result) {
       }
     }
 
-    delegate_->DumpPacket(data, true);
+    if (delegate_) {
+      delegate_->DumpPacket(data, true);
+    }
     net::DscpAndEcn last_tos =
         socket_ == nullptr
             ? net::DscpAndEcn(net::DSCP_DEFAULT, net::ECN_DEFAULT)
@@ -466,7 +468,7 @@ bool P2PSocketUdp::DoSend(P2PPendingPacket packet) {
       packet.packet_options.ect_1 ? net::ECN_ECT1 : net::ECN_NOT_ECT);
 
   bool success = DoSendToSocket(packet, send_time_ms);
-  if (success) {
+  if (success && delegate_) {
     delegate_->DumpPacket(packet.data->first(packet.size), /*incoming=*/false);
   }
   return success;

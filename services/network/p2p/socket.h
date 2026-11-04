@@ -94,6 +94,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
       const P2PHostAndIPEndPoint& remote_address,
       const net::NetworkAnonymizationKey& network_anonymization_key) = 0;
 
+  // Stops all calls to the delegate. The delegate calls this on each of its
+  // sockets before destroying them in its own destructor, because destroying
+  // one socket can synchronously fail other sockets.
+  void ClearDelegate() { delegate_ = nullptr; }
+
   mojo::PendingRemote<mojom::P2PSocketClient> ReleaseClientForTesting();
   mojo::PendingReceiver<mojom::P2PSocket> ReleaseReceiverForTesting();
 
