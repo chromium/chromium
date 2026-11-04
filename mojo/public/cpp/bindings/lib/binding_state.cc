@@ -126,7 +126,7 @@ scoped_refptr<internal::MultiplexRouter> BindingStateBase::RouterForTesting() {
 }
 
 void BindingStateBase::Bind(PendingReceiverState* receiver_state,
-                            scoped_refptr<base::SequencedTaskRunner> runner,
+                            scoped_refptr<base::SequencedTaskRunner>&& runner,
                             const char* interface_name,
                             std::unique_ptr<MessageReceiver> request_validator,
                             bool passes_associated_kinds,

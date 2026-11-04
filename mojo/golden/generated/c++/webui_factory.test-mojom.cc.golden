@@ -17,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
@@ -114,7 +113,7 @@ void PageProxy::OnSomethingHappened(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::Page::kOnSomethingHappened), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::Page_OnSomethingHappened_Params_Data> params(
@@ -262,7 +261,7 @@ void PageHandlerProxy::DoSomething(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::PageHandler::kDoSomething), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::PageHandler_DoSomething_Params_Data> params(
@@ -420,7 +419,7 @@ void WebUiPageHandlerFactoryProxy::CreatePageHandler(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::WebUiPageHandlerFactory::kCreatePageHandler), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data> params(

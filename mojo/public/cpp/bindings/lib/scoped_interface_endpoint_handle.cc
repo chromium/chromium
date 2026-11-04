@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -311,10 +312,10 @@ void ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
   *handle1 = std::move(result1);
 }
 
-ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle()
+NOINLINE ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle()
     : state_(base::MakeRefCounted<State>()) {}
 
-ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle(
+NOINLINE ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle(
     ScopedInterfaceEndpointHandle&& other)
     : state_(base::MakeRefCounted<State>()) {
   state_.swap(other.state_);

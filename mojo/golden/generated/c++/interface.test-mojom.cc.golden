@@ -17,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
@@ -91,7 +90,7 @@ uint32_t IFace::Method_Sym::IPCStableHash() {
 }
 # endif // !BUILDFLAG(IS_FUCHSIA)
 
-class IFace_Method_ForwardToCallback
+class IFace_Method_ForwardToCallback final
     : public mojo::MessageReceiver {
  public:
   IFace_Method_ForwardToCallback(
@@ -137,7 +136,7 @@ void IFaceProxy::Method(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::IFace::kMethod), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::IFace_Method_Params_Data> params(
@@ -155,41 +154,21 @@ void IFaceProxy::Method(
           std::move(callback)));
   ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 }
-class IFace_Method_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
+class IFace_Method_ProxyToResponder {
  public:
   static IFace::MethodCallback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
-    std::unique_ptr<IFace_Method_ProxyToResponder> proxy(
-        new IFace_Method_ProxyToResponder(
-            message, std::move(responder)));
-    return base::BindOnce(&IFace_Method_ProxyToResponder::Run,
-                          std::move(proxy));
-  }
-
-  ~IFace_Method_ProxyToResponder() {
+    return ::mojo::internal::ProxyToResponder::CreateCallback(
+        &Run, message, std::move(responder)
 #if DCHECK_IS_ON()
-    if (responder_) {
-      // If we're being destroyed without being run, we want to ensure the
-      // binding endpoint has been closed. This checks for that asynchronously.
-      // We pass a bound generated callback to handle the response so that any
-      // resulting DCHECK stack will have useful interface type information.
-      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
-      // fizzle if this happens after shutdown and the endpoint is bound to a
-      // BLOCK_SHUTDOWN sequence.
-      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
-      responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
-    }
+        ,
+        &OnIsConnectedComplete
 #endif
+    );
   }
 
  private:
-  IFace_Method_ProxyToResponder(
-      ::mojo::Message& message,
-      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
-      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
-  }
-
 #if DCHECK_IS_ON()
   static void OnIsConnectedComplete(bool connected) {
     DCHECK(!connected)
@@ -199,8 +178,8 @@ class IFace_Method_ProxyToResponder : public ::mojo::internal::ProxyToResponder 
         << "to an open interface pipe.";
   }
 #endif
-
-  void Run(
+  static void Run(
+      ::mojo::internal::ProxyToResponder* proxy,
       const std::string& in_result);
 };
 
@@ -231,8 +210,8 @@ std::move(p_result));
   }
   return true;
 }
-
 void IFace_Method_ProxyToResponder::Run(
+    ::mojo::internal::ProxyToResponder* proxy,
     const std::string& in_result) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   TRACE_EVENT1(
@@ -247,8 +226,8 @@ void IFace_Method_ProxyToResponder::Run(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
-      std::to_underlying(messages::IFace::kMethod), response_flags_, estimated_payload_size);
+  STACK_UNINITIALIZED mojo::Message message(
+      std::to_underlying(messages::IFace::kMethod), proxy->response_flags(), estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::IFace_Method_ResponseParams_Data> params(
           message);
@@ -275,7 +254,7 @@ void IFace_Method_ProxyToResponder::Run(
   message.set_method_name("Method");
 #endif
 
-  SendResponse(message);
+  proxy->SendResponse(message);
 }
 
 // static

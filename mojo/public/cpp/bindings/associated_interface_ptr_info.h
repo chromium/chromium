@@ -13,6 +13,11 @@
 
 namespace mojo {
 
+namespace internal {
+template <typename Interface>
+class AssociatedInterfacePtrState;
+}  // namespace internal
+
 // DEPRECATED: Do not introduce new uses of this type. Instead use the
 // AssociatedPendingRemote type defined in associated_pending_remote.h. Mojom
 // files which pass associated interface endpoints
@@ -54,6 +59,8 @@ class AssociatedInterfacePtrInfo {
   uint32_t version() const { return version_; }
 
  private:
+  friend class internal::AssociatedInterfacePtrState<Interface>;
+
   ScopedInterfaceEndpointHandle handle_;
   uint32_t version_;
 };

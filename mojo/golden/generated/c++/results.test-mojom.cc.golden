@@ -17,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
@@ -317,7 +316,7 @@ base::expected<
   NOTREACHED();
 }
 
-class ResultInterface_Method_ForwardToCallback
+class ResultInterface_Method_ForwardToCallback final
     : public mojo::MessageReceiver {
  public:
   ResultInterface_Method_ForwardToCallback(
@@ -332,7 +331,7 @@ class ResultInterface_Method_ForwardToCallback
  private:
   ResultInterface::MethodCallback callback_;
 };
-class ResultInterface_SyncMethod_HandleSyncResponse
+class ResultInterface_SyncMethod_HandleSyncResponse final
     : public mojo::MessageReceiver {
  public:
   ResultInterface_SyncMethod_HandleSyncResponse(
@@ -354,7 +353,7 @@ class ResultInterface_SyncMethod_HandleSyncResponse
   bool,
   ResultTestErrorPtr>* out_result_;};
 
-class ResultInterface_SyncMethod_ForwardToCallback
+class ResultInterface_SyncMethod_ForwardToCallback final
     : public mojo::MessageReceiver {
  public:
   ResultInterface_SyncMethod_ForwardToCallback(
@@ -400,7 +399,7 @@ void ResultInterfaceProxy::Method(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::ResultInterface::kMethod), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::ResultInterface_Method_Params_Data> params(
@@ -450,7 +449,7 @@ base::expected<
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::ResultInterface::kSyncMethod), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::ResultInterface_SyncMethod_Params_Data> params(
@@ -508,7 +507,7 @@ void ResultInterfaceProxy::SyncMethod(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::ResultInterface::kSyncMethod), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::ResultInterface_SyncMethod_Params_Data> params(
@@ -526,51 +525,21 @@ void ResultInterfaceProxy::SyncMethod(
           std::move(callback)));
   ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 }
-class ResultInterface_Method_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
+class ResultInterface_Method_ProxyToResponder {
  public:
   static ResultInterface::MethodCallback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
-    std::unique_ptr<ResultInterface_Method_ProxyToResponder> proxy(
-        new ResultInterface_Method_ProxyToResponder(
-            message, std::move(responder)));
-    return base::BindOnce(&Transform)
-      .Then(base::BindOnce(&ResultInterface_Method_ProxyToResponder::Run,
-                          std::move(proxy)));
-  }
-
-  static ResultInterface_Method_ResponseParam_ResultPtr Transform(base::expected<
-  bool,
-  ResultTestErrorPtr> in) {
-    return in.has_value() ? ::golden::ResultInterface_Method_ResponseParam_Result::NewSuccess(std::move(in.value())) :
-                            ::golden::ResultInterface_Method_ResponseParam_Result::NewFailure(std::move(in.error()));
-  }
-
-
-
-  ~ResultInterface_Method_ProxyToResponder() {
+    return ::mojo::internal::ProxyToResponder::CreateCallback(
+        &Run, message, std::move(responder)
 #if DCHECK_IS_ON()
-    if (responder_) {
-      // If we're being destroyed without being run, we want to ensure the
-      // binding endpoint has been closed. This checks for that asynchronously.
-      // We pass a bound generated callback to handle the response so that any
-      // resulting DCHECK stack will have useful interface type information.
-      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
-      // fizzle if this happens after shutdown and the endpoint is bound to a
-      // BLOCK_SHUTDOWN sequence.
-      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
-      responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
-    }
+        ,
+        &OnIsConnectedComplete
 #endif
+    );
   }
 
  private:
-  ResultInterface_Method_ProxyToResponder(
-      ::mojo::Message& message,
-      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
-      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
-  }
-
 #if DCHECK_IS_ON()
   static void OnIsConnectedComplete(bool connected) {
     DCHECK(!connected)
@@ -580,9 +549,11 @@ class ResultInterface_Method_ProxyToResponder : public ::mojo::internal::ProxyTo
         << "to an open interface pipe.";
   }
 #endif
-
-  void Run(
-      ResultInterface_Method_ResponseParam_ResultPtr in_result);
+  static void Run(
+      ::mojo::internal::ProxyToResponder* proxy,
+      base::expected<
+  bool,
+  ResultTestErrorPtr> in_expected_result);
 };
 
 bool ResultInterface_Method_ForwardToCallback::Accept(
@@ -615,9 +586,15 @@ bool ResultInterface_Method_ForwardToCallback::Accept(
   }
   return true;
 }
-
 void ResultInterface_Method_ProxyToResponder::Run(
-    ResultInterface_Method_ResponseParam_ResultPtr in_result) {
+    ::mojo::internal::ProxyToResponder* proxy,
+    base::expected<
+  bool,
+  ResultTestErrorPtr> in_expected_result) {
+  auto in_result =
+      in_expected_result.has_value()
+          ? ::golden::ResultInterface_Method_ResponseParam_Result::NewSuccess(std::move(in_expected_result.value()))
+          : ::golden::ResultInterface_Method_ResponseParam_Result::NewFailure(std::move(in_expected_result.error()));
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   TRACE_EVENT1(
     "mojom", "Send reply golden::ResultInterface::Method", "async_response_parameters",
@@ -631,8 +608,8 @@ void ResultInterface_Method_ProxyToResponder::Run(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kMethod), response_flags_, estimated_payload_size);
+  STACK_UNINITIALIZED mojo::Message message(
+      std::to_underlying(messages::ResultInterface::kMethod), proxy->response_flags(), estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::ResultInterface_Method_ResponseParams_Data> params(
           message);
@@ -658,53 +635,23 @@ void ResultInterface_Method_ProxyToResponder::Run(
   message.set_method_name("Method");
 #endif
 
-  SendResponse(message);
+  proxy->SendResponse(message);
 }
-class ResultInterface_SyncMethod_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
+class ResultInterface_SyncMethod_ProxyToResponder {
  public:
   static ResultInterface::SyncMethodCallback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
-    std::unique_ptr<ResultInterface_SyncMethod_ProxyToResponder> proxy(
-        new ResultInterface_SyncMethod_ProxyToResponder(
-            message, std::move(responder)));
-    return base::BindOnce(&Transform)
-      .Then(base::BindOnce(&ResultInterface_SyncMethod_ProxyToResponder::Run,
-                          std::move(proxy)));
-  }
-
-  static ResultInterface_SyncMethod_ResponseParam_ResultPtr Transform(base::expected<
-  bool,
-  ResultTestErrorPtr> in) {
-    return in.has_value() ? ::golden::ResultInterface_SyncMethod_ResponseParam_Result::NewSuccess(std::move(in.value())) :
-                            ::golden::ResultInterface_SyncMethod_ResponseParam_Result::NewFailure(std::move(in.error()));
-  }
-
-
-
-  ~ResultInterface_SyncMethod_ProxyToResponder() {
+    return ::mojo::internal::ProxyToResponder::CreateCallback(
+        &Run, message, std::move(responder)
 #if DCHECK_IS_ON()
-    if (responder_) {
-      // If we're being destroyed without being run, we want to ensure the
-      // binding endpoint has been closed. This checks for that asynchronously.
-      // We pass a bound generated callback to handle the response so that any
-      // resulting DCHECK stack will have useful interface type information.
-      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
-      // fizzle if this happens after shutdown and the endpoint is bound to a
-      // BLOCK_SHUTDOWN sequence.
-      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
-      responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
-    }
+        ,
+        &OnIsConnectedComplete
 #endif
+    );
   }
 
  private:
-  ResultInterface_SyncMethod_ProxyToResponder(
-      ::mojo::Message& message,
-      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
-      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
-  }
-
 #if DCHECK_IS_ON()
   static void OnIsConnectedComplete(bool connected) {
     DCHECK(!connected)
@@ -714,9 +661,11 @@ class ResultInterface_SyncMethod_ProxyToResponder : public ::mojo::internal::Pro
         << "to an open interface pipe.";
   }
 #endif
-
-  void Run(
-      ResultInterface_SyncMethod_ResponseParam_ResultPtr in_result);
+  static void Run(
+      ::mojo::internal::ProxyToResponder* proxy,
+      base::expected<
+  bool,
+  ResultTestErrorPtr> in_expected_result);
 };
 
 bool ResultInterface_SyncMethod_ForwardToCallback::Accept(
@@ -749,9 +698,15 @@ bool ResultInterface_SyncMethod_ForwardToCallback::Accept(
   }
   return true;
 }
-
 void ResultInterface_SyncMethod_ProxyToResponder::Run(
-    ResultInterface_SyncMethod_ResponseParam_ResultPtr in_result) {
+    ::mojo::internal::ProxyToResponder* proxy,
+    base::expected<
+  bool,
+  ResultTestErrorPtr> in_expected_result) {
+  auto in_result =
+      in_expected_result.has_value()
+          ? ::golden::ResultInterface_SyncMethod_ResponseParam_Result::NewSuccess(std::move(in_expected_result.value()))
+          : ::golden::ResultInterface_SyncMethod_ResponseParam_Result::NewFailure(std::move(in_expected_result.error()));
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   TRACE_EVENT1(
     "mojom", "Send reply golden::ResultInterface::SyncMethod", "async_response_parameters",
@@ -765,8 +720,8 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kSyncMethod), response_flags_, estimated_payload_size);
+  STACK_UNINITIALIZED mojo::Message message(
+      std::to_underlying(messages::ResultInterface::kSyncMethod), proxy->response_flags(), estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::ResultInterface_SyncMethod_ResponseParams_Data> params(
           message);
@@ -792,7 +747,7 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
   message.set_method_name("SyncMethod");
 #endif
 
-  SendResponse(message);
+  proxy->SendResponse(message);
 }
 bool ResultInterface_SyncMethod_HandleSyncResponse::Accept(
     mojo::Message* message) {

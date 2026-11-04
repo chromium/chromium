@@ -101,10 +101,10 @@ void AssociatedInterfacePtrStateBase::Swap(
 }
 
 MessageReceiverWithResponder* AssociatedInterfacePtrStateBase::Bind(
-    ScopedInterfaceEndpointHandle handle,
+    ScopedInterfaceEndpointHandle&& handle,
     uint32_t version,
     std::unique_ptr<MessageReceiver> validator,
-    scoped_refptr<base::SequencedTaskRunner> runner,
+    scoped_refptr<base::SequencedTaskRunner>&& runner,
     const char* interface_name,
     MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {

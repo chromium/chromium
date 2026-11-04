@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -259,11 +260,16 @@ class InterfacePtrState : public InterfacePtrStateBase {
       return;
     }
 
+    std::unique_ptr<MessageReceiver> payload_validator;
+    if constexpr (!std::is_same_v<typename Interface::ResponseValidator_,
+                                  PassThroughFilter>) {
+      payload_validator =
+          std::make_unique<typename Interface::ResponseValidator_>();
+    }
     if (MessageReceiverWithResponder* endpoint = InitializeEndpointClient(
             Interface::PassesAssociatedKinds_,
             !SyncMethodTraits<Interface>::GetOrdinals().empty(),
-            Interface::HasUninterruptableMethods_,
-            std::make_unique<typename Interface::ResponseValidator_>(),
+            Interface::HasUninterruptableMethods_, std::move(payload_validator),
             Interface::Name_, Interface::MessageToMethodInfo_,
             Interface::MessageToMethodName_)) {
       proxy_ = std::make_unique<Proxy>(endpoint);

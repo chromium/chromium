@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
 
  protected:
   void Bind(PendingReceiverState* receiver_state,
-            scoped_refptr<base::SequencedTaskRunner> runner,
+            scoped_refptr<base::SequencedTaskRunner>&& runner,
             const char* interface_name,
             std::unique_ptr<MessageReceiver> request_validator,
             bool passes_associated_kinds,
@@ -114,7 +114,7 @@ class BindingState : public BindingStateBase {
   void Bind(PendingReceiverState* receiver_state,
             scoped_refptr<base::SequencedTaskRunner> runner) {
     BindingStateBase::Bind(
-        std::move(receiver_state), runner, Interface::Name_,
+        receiver_state, std::move(runner), Interface::Name_,
         std::make_unique<typename Interface::RequestValidator_>(),
         Interface::PassesAssociatedKinds_,
         SyncMethodTraits<Interface>::GetOrdinals(), &stub_, Interface::Version_,

@@ -108,13 +108,15 @@ base::expected<
     0;
 {%-   endif %}
 
+{#- The Message constructor initializes all fields of the Message object (see
+    the STACK_UNINITIALIZED warning on mojo::Message in message.h). #}
 {%-   if method.unlimited_message_size %}
-  mojo::Message {{message_object_name}}(
+  STACK_UNINITIALIZED mojo::Message {{message_object_name}}(
       {{message_name}}, {{flags_text}},
       MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE,
       estimated_payload_size);
 {%-   else %}
-  mojo::Message {{message_object_name}}(
+  STACK_UNINITIALIZED mojo::Message {{message_object_name}}(
       {{message_name}}, {{flags_text}}, estimated_payload_size);
 {%-   endif %}
   mojo::internal::MessageFragment<

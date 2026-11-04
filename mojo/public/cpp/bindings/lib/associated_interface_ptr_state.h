@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -66,10 +67,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedInterfacePtrStateBase {
  protected:
   void Swap(AssociatedInterfacePtrStateBase* other);
   MessageReceiverWithResponder* Bind(
-      ScopedInterfaceEndpointHandle handle,
+      ScopedInterfaceEndpointHandle&& handle,
       uint32_t version,
       std::unique_ptr<MessageReceiver> validator,
-      scoped_refptr<base::SequencedTaskRunner> runner,
+      scoped_refptr<base::SequencedTaskRunner>&& runner,
       const char* interface_name,
       MessageToMethodInfoCallback method_info_callback,
       MessageToMethodNameCallback method_name_callback);
@@ -109,11 +110,17 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
   void Bind(AssociatedInterfacePtrInfo<Interface> info,
             scoped_refptr<base::SequencedTaskRunner> runner) {
     DCHECK(!proxy_);
-    proxy_ = std::make_unique<Proxy>(AssociatedInterfacePtrStateBase::Bind(
-        info.PassHandle(), info.version(),
-        std::make_unique<typename Interface::ResponseValidator_>(),
-        std::move(runner), Interface::Name_, Interface::MessageToMethodInfo_,
-        Interface::MessageToMethodName_));
+    std::unique_ptr<MessageReceiver> validator;
+    if constexpr (!std::is_same_v<typename Interface::ResponseValidator_,
+                                  PassThroughFilter>) {
+      validator = std::make_unique<typename Interface::ResponseValidator_>();
+    }
+    MessageReceiverWithResponder* endpoint =
+        AssociatedInterfacePtrStateBase::Bind(
+            std::move(info.handle_), info.version(), std::move(validator),
+            std::move(runner), Interface::Name_,
+            Interface::MessageToMethodInfo_, Interface::MessageToMethodName_);
+    proxy_ = std::make_unique<Proxy>(endpoint);
   }
 
   // After this method is called, the object is in an invalid state and

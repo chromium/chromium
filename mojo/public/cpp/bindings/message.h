@@ -42,6 +42,13 @@ using ReportBadMessageCallback =
 // Message owns its data and handles, but a consumer of Message is free to
 // mutate the data and handles. The message's data is comprised of a header
 // followed by payload.
+//
+// WARNING: Generated Mojom bindings declare stack-allocated `Message` objects
+// with `STACK_UNINITIALIZED` to avoid pre-filling `sizeof(Message)` bytes at
+// thousands of call sites before the out-of-line `Message` constructor runs.
+// Any field added to `Message` (or `internal::Buffer`) MUST be initialized by
+// a non-trivial default constructor, a default member initializer, or every
+// `Message` constructor.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
  public:
   static const uint32_t kFlagExpectsResponse = 1 << 0;
@@ -360,6 +367,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
           internal::Buffer payload_buffer,
           bool serialized);
 
+  // WARNING: Generated code constructs stack `Message` instances with
+  // `STACK_UNINITIALIZED`. Every member below MUST be initialized by a
+  // non-trivial default constructor, a default member initializer, or every
+  // `Message` constructor so no field is ever left uninitialized.
   ScopedMessageHandle handle_;
 
   // A Buffer which may be used to allocate blocks of data within the message

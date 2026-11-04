@@ -172,7 +172,7 @@ bool {{class_name}}::{{method.name}}({{interface_macros.declare_sync_method_para
 {%- for method in interface.methods -%}
 {%-   if method.response_parameters != None %}
 {%-     if method.sync %}
-class {{class_name}}_{{method.name}}_HandleSyncResponse
+class {{class_name}}_{{method.name}}_HandleSyncResponse final
     : public mojo::MessageReceiver {
  public:
   {{class_name}}_{{method.name}}_HandleSyncResponse(
@@ -209,7 +209,7 @@ class {{class_name}}_{{method.name}}_HandleSyncResponse
 };
 {%-   endif %}
 
-class {{class_name}}_{{method.name}}_ForwardToCallback
+class {{class_name}}_{{method.name}}_ForwardToCallback final
     : public mojo::MessageReceiver {
  public:
   {{class_name}}_{{method.name}}_ForwardToCallback(
@@ -368,61 +368,21 @@ void {{proxy_name}}::{{method.name}}(
 {%-     set response_params_struct = method.response_param_struct %}
 {%-     set params_description =
             "%s.%s response"|format(interface.name, method.name) %}
-class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
+class {{class_name}}_{{method.name}}_ProxyToResponder {
  public:
-{%-      if method.result_response != None -%}
-{%        set response_type = method.response_parameters[0].kind %}
   static {{class_name}}::{{method.name}}Callback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
-    std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
-        new {{class_name}}_{{method.name}}_ProxyToResponder(
-            message, std::move(responder)));
-    return base::BindOnce(&Transform)
-      .Then(base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
-                          std::move(proxy)));
-  }
-
-  static {{response_type|cpp_wrapper_call_type}} Transform({{interface_macros.result_response_to_expected(method.result_response)}} in) {
-    return in.has_value() ? {{response_type|get_qualified_name_for_kind}}::NewSuccess(std::move(in.value())) :
-                            {{response_type|get_qualified_name_for_kind}}::NewFailure(std::move(in.error()));
-  }
-
-{%      else %}
-  static {{class_name}}::{{method.name}}Callback CreateCallback(
-      ::mojo::Message& message,
-      std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
-    std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
-        new {{class_name}}_{{method.name}}_ProxyToResponder(
-            message, std::move(responder)));
-    return base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
-                          std::move(proxy));
-  }
-{%-      endif %}
-
-  ~{{class_name}}_{{method.name}}_ProxyToResponder() {
+    return ::mojo::internal::ProxyToResponder::CreateCallback(
+        &Run, message, std::move(responder)
 #if DCHECK_IS_ON()
-    if (responder_) {
-      // If we're being destroyed without being run, we want to ensure the
-      // binding endpoint has been closed. This checks for that asynchronously.
-      // We pass a bound generated callback to handle the response so that any
-      // resulting DCHECK stack will have useful interface type information.
-      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
-      // fizzle if this happens after shutdown and the endpoint is bound to a
-      // BLOCK_SHUTDOWN sequence.
-      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
-      responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
-    }
+        ,
+        &OnIsConnectedComplete
 #endif
+    );
   }
 
  private:
-  {{class_name}}_{{method.name}}_ProxyToResponder(
-      ::mojo::Message& message,
-      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
-      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
-  }
-
 #if DCHECK_IS_ON()
   static void OnIsConnectedComplete(bool connected) {
     DCHECK(!connected)
@@ -433,8 +393,17 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
   }
 #endif
 
-  void Run(
-      {{interface_macros.declare_params("in_", method.response_parameters)}});
+{%-      if method.result_response != None %}
+  static void Run(
+      ::mojo::internal::ProxyToResponder* proxy,
+      {{interface_macros.result_response_to_expected(method.result_response)}} in_expected_result);
+{%-      else %}
+  static void Run(
+      ::mojo::internal::ProxyToResponder* proxy
+{%-        if method.response_parameters %},
+      {{interface_macros.declare_params("in_", method.response_parameters)}}
+{%-        endif %});
+{%-      endif %}
 };
 
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
@@ -461,8 +430,22 @@ bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
   return true;
 }
 
+{%-     if method.result_response != None %}
 void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
-    {{interface_macros.declare_params("in_", method.response_parameters)}}) {
+    ::mojo::internal::ProxyToResponder* proxy,
+    {{interface_macros.result_response_to_expected(method.result_response)}} in_expected_result) {
+{%-       set response_type = method.response_parameters[0].kind %}
+  auto in_{{method.response_parameters[0].name}} =
+      in_expected_result.has_value()
+          ? {{response_type|get_qualified_name_for_kind}}::NewSuccess(std::move(in_expected_result.value()))
+          : {{response_type|get_qualified_name_for_kind}}::NewFailure(std::move(in_expected_result.error()));
+{%-     else %}
+void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
+    ::mojo::internal::ProxyToResponder* proxy
+{%-       if method.response_parameters %},
+    {{interface_macros.declare_params("in_", method.response_parameters)}}
+{%-       endif %}) {
+{%-     endif %}
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
 {%-     set event_name = "Send reply %s::%s::%s"
                % (namespace_as_string, class_name, method.name) %}
@@ -474,7 +457,7 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 #endif
 {{interface_macros.build_serialized_message(
     message_name, method, "in_%s", response_params_struct,
-    response_params_description, "response_flags_", "message",
+    response_params_description, "proxy->response_flags()", "message",
     method.send_validation)}}
 
 #if defined(ENABLE_IPC_FUZZER)
@@ -482,7 +465,7 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
   message.set_method_name("{{method.name}}");
 #endif
 
-  SendResponse(message);
+  proxy->SendResponse(message);
 }
 {%-   endif -%}
 

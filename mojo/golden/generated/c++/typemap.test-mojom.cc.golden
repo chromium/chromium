@@ -17,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
@@ -143,7 +142,7 @@ uint32_t IFaceWithTypemap::Echo_Sym::IPCStableHash() {
 }
 # endif // !BUILDFLAG(IS_FUCHSIA)
 
-class IFaceWithTypemap_Echo_ForwardToCallback
+class IFaceWithTypemap_Echo_ForwardToCallback final
     : public mojo::MessageReceiver {
  public:
   IFaceWithTypemap_Echo_ForwardToCallback(
@@ -189,7 +188,7 @@ void IFaceWithTypemapProxy::Echo(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
+  STACK_UNINITIALIZED mojo::Message message(
       std::to_underlying(messages::IFaceWithTypemap::kEcho), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::IFaceWithTypemap_Echo_Params_Data> params(
@@ -221,41 +220,21 @@ void IFaceWithTypemapProxy::Echo(
           std::move(callback)));
   ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 }
-class IFaceWithTypemap_Echo_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
+class IFaceWithTypemap_Echo_ProxyToResponder {
  public:
   static IFaceWithTypemap::EchoCallback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
-    std::unique_ptr<IFaceWithTypemap_Echo_ProxyToResponder> proxy(
-        new IFaceWithTypemap_Echo_ProxyToResponder(
-            message, std::move(responder)));
-    return base::BindOnce(&IFaceWithTypemap_Echo_ProxyToResponder::Run,
-                          std::move(proxy));
-  }
-
-  ~IFaceWithTypemap_Echo_ProxyToResponder() {
+    return ::mojo::internal::ProxyToResponder::CreateCallback(
+        &Run, message, std::move(responder)
 #if DCHECK_IS_ON()
-    if (responder_) {
-      // If we're being destroyed without being run, we want to ensure the
-      // binding endpoint has been closed. This checks for that asynchronously.
-      // We pass a bound generated callback to handle the response so that any
-      // resulting DCHECK stack will have useful interface type information.
-      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
-      // fizzle if this happens after shutdown and the endpoint is bound to a
-      // BLOCK_SHUTDOWN sequence.
-      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
-      responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
-    }
+        ,
+        &OnIsConnectedComplete
 #endif
+    );
   }
 
  private:
-  IFaceWithTypemap_Echo_ProxyToResponder(
-      ::mojo::Message& message,
-      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
-      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
-  }
-
 #if DCHECK_IS_ON()
   static void OnIsConnectedComplete(bool connected) {
     DCHECK(!connected)
@@ -265,8 +244,8 @@ class IFaceWithTypemap_Echo_ProxyToResponder : public ::mojo::internal::ProxyToR
         << "to an open interface pipe.";
   }
 #endif
-
-  void Run(
+  static void Run(
+      ::mojo::internal::ProxyToResponder* proxy,
       TypemappedPtr in_out);
 };
 
@@ -297,8 +276,8 @@ std::move(p_out));
   }
   return true;
 }
-
 void IFaceWithTypemap_Echo_ProxyToResponder::Run(
+    ::mojo::internal::ProxyToResponder* proxy,
     TypemappedPtr in_out) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   TRACE_EVENT1(
@@ -313,8 +292,8 @@ void IFaceWithTypemap_Echo_ProxyToResponder::Run(
 
   const size_t estimated_payload_size =
     0;
-  mojo::Message message(
-      std::to_underlying(messages::IFaceWithTypemap::kEcho), response_flags_, estimated_payload_size);
+  STACK_UNINITIALIZED mojo::Message message(
+      std::to_underlying(messages::IFaceWithTypemap::kEcho), proxy->response_flags(), estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::IFaceWithTypemap_Echo_ResponseParams_Data> params(
           message);
@@ -341,7 +320,7 @@ void IFaceWithTypemap_Echo_ProxyToResponder::Run(
   message.set_method_name("Echo");
 #endif
 
-  SendResponse(message);
+  proxy->SendResponse(message);
 }
 
 // static
