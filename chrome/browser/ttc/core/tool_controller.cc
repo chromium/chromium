@@ -15,6 +15,8 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -135,13 +137,80 @@ std::optional<actor::ScrollPageToolRequest::Direction> ParseScrollDirection(
 
 }  // namespace
 
+ToolController::ToolCallState::ToolCallState(ToolRequest request,
+                                             ToolResponseCallback callback)
+    : request(std::move(request)), callback(std::move(callback)) {}
+
+ToolController::ToolCallState::ToolCallState(ToolCallState&&) = default;
+
+ToolController::ToolCallState& ToolController::ToolCallState::operator=(
+    ToolCallState&&) = default;
+
+ToolController::ToolCallState::~ToolCallState() = default;
+
 ToolController::ToolController(SessionControllerImpl& session_controller)
     : session_controller_(session_controller) {}
 
 ToolController::~ToolController() = default;
 
+// The actor only runs one action at a time per task, so tool calls are run one
+// at a time in the order they're received: if a tool call is already
+// running, `tool_request` is queued until all earlier calls have finished.
 void ToolController::ProcessToolCall(const ToolRequest& tool_request,
                                      ToolResponseCallback callback) {
+  const bool must_wait =
+      in_flight_tool_call_.has_value() || !pending_tool_calls_.empty();
+  if (must_wait) {
+    session_controller_->GetJournal().Log(
+        "TtcToolCallQueued",
+        actor::JournalDetailsBuilder()
+            .Add("name", tool_request.name)
+            .Add("arguments",
+                 base::WriteJson(tool_request.arguments).value_or(""))
+            .Build());
+  }
+
+  pending_tool_calls_.emplace_back(tool_request.Clone(), std::move(callback));
+  if (!must_wait) {
+    RunNextToolCall();
+  }
+}
+
+void ToolController::RunNextToolCall() {
+  CHECK(!in_flight_tool_call_);
+  CHECK(!pending_tool_calls_.empty());
+  in_flight_tool_call_.emplace(std::move(pending_tool_calls_.front()));
+  pending_tool_calls_.pop_front();
+  RunToolCall(in_flight_tool_call_->request,
+              base::BindOnce(&ToolController::OnToolCallDone,
+                             weak_factory_.GetWeakPtr()));
+}
+
+void ToolController::OnToolCallDone(ToolResponse response) {
+  CHECK(in_flight_tool_call_);
+  ToolCallState tool_call = std::move(*in_flight_tool_call_);
+  in_flight_tool_call_.reset();
+
+  // Start the next tool call asynchronously rather than from within the
+  // previous call's completion, which may run synchronously from inside
+  // RunToolCall() (e.g. on invalid arguments). This avoids reentrancy and
+  // unbounded recursion when many queued calls fail synchronously.
+  if (!pending_tool_calls_.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ToolController::RunNextToolCall,
+                                  weak_factory_.GetWeakPtr()));
+  }
+
+  // Replying may end the session and destroy `this`, so do it last.
+  std::move(tool_call.callback).Run(std::move(response));
+}
+
+void ToolController::RunToolCall(const ToolRequest& tool_request,
+                                 ToolResponseCallback callback) {
+  // The task may have been stopped while this call was queued. Replace it
+  // before journaling so that the call is journaled under the task it runs in.
+  session_controller_->EnsureActorTaskCreated();
+
   callback = base::BindOnce(
       &OnToolCallFinished,
       session_controller_->GetJournal().BeginAsyncEvent(
@@ -482,13 +551,6 @@ void ToolController::FindAndHighlight(const base::DictValue& arguments,
 // TODO(b/573253710): Migrate this to be an actor tool once ActorKeyedService
 // returns `ToolResponse`s.
 void ToolController::GetScreenshot(ToolResponseCallback callback) {
-  if (is_capturing_screenshot_) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureThrottled,
-        "A screenshot capture is already in progress"));
-    return;
-  }
-
   content::WebContents* contents =
       session_controller_->GetVoiceFocusedWebContents();
   if (!contents) {
@@ -497,7 +559,6 @@ void ToolController::GetScreenshot(ToolResponseCallback callback) {
     return;
   }
 
-  is_capturing_screenshot_ = true;
   content::Page& page = contents->GetPrimaryPage();
   const GURL& url = page.GetMainDocument().GetLastCommittedURL();
 
@@ -512,7 +573,6 @@ void ToolController::OnGetScreenshotUrlChecked(
     ToolResponseCallback callback,
     bool is_url_supported) {
   if (!is_url_supported) {
-    is_capturing_screenshot_ = false;
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kUrlBlocked,
                             "URL is not supported for screenshot capture"));
@@ -522,14 +582,12 @@ void ToolController::OnGetScreenshotUrlChecked(
   content::WebContents* web_contents =
       session_controller_->GetVoiceFocusedWebContents();
   if (!web_contents) {
-    is_capturing_screenshot_ = false;
     std::move(callback).Run(ToolResponse::Error(
         actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
     return;
   }
 
   if (!page || &*page != &web_contents->GetPrimaryPage()) {
-    is_capturing_screenshot_ = false;
     std::move(callback).Run(ToolResponse::Error(
         actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
         "Focused page changed before screenshot capture"));
@@ -537,7 +595,6 @@ void ToolController::OnGetScreenshotUrlChecked(
   }
 
   if (web_contents->IsCrashed()) {
-    is_capturing_screenshot_ = false;
     std::move(callback).Run(ToolResponse::Error(
         actor::mojom::ActionResultCode::kRendererCrashed, "Renderer crashed"));
     return;
@@ -571,7 +628,6 @@ void ToolController::OnGetScreenshotFetched(
     base::expected<
         std::unique_ptr<page_content_annotations::FetchPageContextResult>,
         page_content_annotations::FetchPageContextErrorDetails> result) {
-  is_capturing_screenshot_ = false;
   screenshot_fetcher_.reset();
 
   if (!result.has_value()) {
@@ -754,7 +810,9 @@ void ToolController::ReloadPage(ToolResponseCallback callback) {
   // ExecutionEngine::KickOffNextAction()), so reload a crashed tab directly.
   content::WebContents* contents =
       session_controller_->GetVoiceFocusedWebContents();
-  if (contents && contents->IsCrashed() && !crashed_tab_reload_callback_) {
+  if (contents && contents->IsCrashed()) {
+    // Tool calls run one at a time, so no other reload can be in progress.
+    CHECK(!crashed_tab_reload_callback_);
     crashed_tab_reload_callback_ = std::move(callback);
     Observe(contents);
     contents->GetController().Reload(content::ReloadType::NORMAL,

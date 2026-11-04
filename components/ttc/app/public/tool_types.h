@@ -56,6 +56,8 @@ struct ToolDefinition {
 
 // Parameters for a tool call.
 struct ToolRequest {
+  ToolRequest Clone() const;
+
   std::string name;
   base::DictValue arguments;
   // The server's identifier for this call. Used to correlate debug records.

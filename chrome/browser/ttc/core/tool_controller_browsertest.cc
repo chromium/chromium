@@ -1115,6 +1115,134 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElement) {
   EXPECT_EQ(true, content::EvalJs(web_contents(), "button_clicked"));
 }
 
+// The actor runs one action at a time, so tool calls received while another is
+// running must be queued rather than rejected.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       ConsecutiveToolCallsAreQueued) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL(
+          "example.com", "/actor/page_with_clickable_element.html")));
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"js(
+    window.click_count = 0;
+    document.getElementById('clickable').addEventListener(
+        'click', () => ++window.click_count);
+  )js"));
+
+  std::optional<int> button_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+  std::string document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  auto make_click_request = [&]() {
+    ToolRequest tool_request;
+    tool_request.name = "click_element";
+    tool_request.arguments.Set("node_id", base::DictValue()
+                                              .Set("document_id", document_id)
+                                              .Set("dom_node_id", *button_id));
+    return tool_request;
+  };
+
+  // Issue all calls before any has finished, including one that fails
+  // validation, and check that they all run and finish in order.
+  std::vector<int> completion_order;
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> second_future;
+  base::test::TestFuture<ToolResponse> third_future;
+  base::test::TestFuture<ToolResponse> fourth_future;
+  auto record = [&](int index, ToolResponseCallback callback) {
+    return base::BindOnce(
+        [](std::vector<int>* order, int index, ToolResponseCallback callback,
+           ToolResponse response) {
+          order->push_back(index);
+          std::move(callback).Run(std::move(response));
+        },
+        &completion_order, index, std::move(callback));
+  };
+
+  ToolRequest unsupported_request;
+  unsupported_request.name = "unsupported_tool";
+
+  session_controller->ProcessToolCall(make_click_request(),
+                                      record(1, first_future.GetCallback()));
+  session_controller->ProcessToolCall(std::move(unsupported_request),
+                                      record(2, second_future.GetCallback()));
+  session_controller->ProcessToolCall(make_click_request(),
+                                      record(3, third_future.GetCallback()));
+  session_controller->ProcessToolCall(make_click_request(),
+                                      record(4, fourth_future.GetCallback()));
+
+  EXPECT_TRUE(first_future.Take().Ok());
+  ToolResponse second_response = second_future.Take();
+  EXPECT_TOOL_ERROR(second_response,
+                    actor::mojom::ActionResultCode::kToolUnknown);
+  EXPECT_TRUE(third_future.Take().Ok());
+  EXPECT_TRUE(fourth_future.Take().Ok());
+  EXPECT_EQ(completion_order, (std::vector<int>{1, 2, 3, 4}));
+  // Every queued click actually ran.
+  EXPECT_EQ(3, content::EvalJs(web_contents(), "window.click_count"));
+}
+
+// A queued tool call runs in a new actor task if the session's task was stopped
+// while the call was waiting.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       QueuedToolCallReplacesStoppedTask) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  auto* actor_service = actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  const std::map<actor::TaskId, const actor::ActorTask*> tasks =
+      actor_service->GetActiveTasks();
+  ASSERT_EQ(tasks.size(), 1u);
+  const actor::TaskId first_task_id = tasks.begin()->first;
+
+  auto make_open_url_request = [](const GURL& url) {
+    ToolRequest tool_request;
+    tool_request.name =
+        std::string(actor::OpenUrlToolRequest::kModelFacingName);
+    tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
+                               url.spec());
+    tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
+    return tool_request;
+  };
+  const GURL first_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  const GURL second_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> second_future;
+  session_controller->ProcessToolCall(make_open_url_request(first_url),
+                                      first_future.GetCallback());
+  session_controller->ProcessToolCall(make_open_url_request(second_url),
+                                      second_future.GetCallback());
+
+  // Stop the task while the first call is running and the second is queued.
+  actor_service->StopTask(first_task_id,
+                          actor::ActorTask::StoppedReason::kStoppedByUser);
+
+  // The task is stopped while the first call is acting, which fails it.
+  ToolResponse first_response = first_future.Take();
+  EXPECT_TOOL_ERROR(first_response,
+                    actor::mojom::ActionResultCode::kTaskWentAway);
+  EXPECT_TRUE(second_future.Take().Ok());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), second_url);
+
+  const std::map<actor::TaskId, const actor::ActorTask*> new_tasks =
+      actor_service->GetActiveTasks();
+  ASSERT_EQ(new_tasks.size(), 1u);
+  EXPECT_NE(new_tasks.begin()->first, first_task_id);
+}
+
 // Runs `ToolController` with the actor's page stability and observation delay
 // timeouts effectively disabled, so that a page which never settles would block
 // tool completion indefinitely unless TTC skips the observation delay.
@@ -1932,39 +2060,6 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
-}
-
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       GetScreenshotThrottledWhenConcurrent) {
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
-
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      embedded_https_test_server().GetURL("example.com", "/title1.html")));
-  content::WaitForCopyableViewInWebContents(web_contents());
-
-  base::test::TestFuture<ToolResponse> first_future;
-  base::test::TestFuture<ToolResponse> second_future;
-
-  ToolRequest first_request;
-  first_request.name = "get_screenshot";
-  session_controller->ProcessToolCall(std::move(first_request),
-                                      first_future.GetCallback());
-
-  ToolRequest second_request;
-  second_request.name = "get_screenshot";
-  session_controller->ProcessToolCall(std::move(second_request),
-                                      second_future.GetCallback());
-
-  ToolResponse second_response = second_future.Take();
-  EXPECT_TOOL_ERROR(
-      second_response,
-      actor::mojom::ActionResultCode::kScreenshotCaptureThrottled);
-
-  ToolResponse first_response = first_future.Take();
-  EXPECT_TRUE(first_response.Ok());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

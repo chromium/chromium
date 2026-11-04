@@ -149,10 +149,6 @@ Profile* SessionControllerImpl::GetProfile() {
 void SessionControllerImpl::ProcessToolCall(
     const ToolRequest& tool_request,
     ToolResponseCallback tool_response_callback) {
-  // TODO(b/552544497): Ideally the task would stop only if the Ttc session
-  // ends but there are currently a few ways for tasks to be stopped
-  // externally.
-  actor_task_holder_.EnsureTaskCreated();
   std::string tool_name = tool_request.name;
   base::DictValue tool_arguments = tool_request.arguments.Clone();
   tool_controller_.ProcessToolCall(
@@ -318,6 +314,13 @@ content::WebContents* SessionControllerImpl::GetVoiceFocusedWebContents() {
 
 actor::TaskId SessionControllerImpl::GetActorTaskId() const {
   return actor_task_holder_.task_id();
+}
+
+void SessionControllerImpl::EnsureActorTaskCreated() {
+  // TODO(b/552544497): Ideally the task would stop only if the Ttc session
+  // ends but there are currently a few ways for tasks to be stopped
+  // externally.
+  actor_task_holder_.EnsureTaskCreated();
 }
 
 void SessionControllerImpl::OnPageContextFetched(

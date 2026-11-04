@@ -25,6 +25,11 @@ ToolDefinition ToolDefinition::Clone() const {
   return copy;
 }
 
+ToolRequest ToolRequest::Clone() const {
+  return ToolRequest{
+      .name = name, .arguments = arguments.Clone(), .call_id = call_id};
+}
+
 ToolResponse::ToolResponse(std::variant<base::DictValue, ToolError> value)
     : value_(std::move(value)) {
   // The factories cannot produce a failure with nothing to report, but this

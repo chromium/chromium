@@ -89,6 +89,10 @@ class SessionControllerImpl : public SessionController,
 
   actor::TaskId GetActorTaskId() const;
 
+  // Replaces the session's actor task if it was stopped outside of the
+  // session. Must be called before acting.
+  void EnsureActorTaskCreated();
+
   // Mutes or unmutes the user's microphone. While muted, no audio is captured
   // or sent to the model. Only a live session can be muted, and it goes live
   // unmuted. Returns whether the state changed: false unless the session is
