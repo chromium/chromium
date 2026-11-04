@@ -252,13 +252,19 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   }
 
   protected onMoveLeftButtonClick_() {
-    this.fire('move-profile', {direction: MoveProfileDirection.LEFT});
-    this.$.actionMenu.close();
+    this.moveProfile_(MoveProfileDirection.LEFT);
   }
 
   protected onMoveRightButtonClick_() {
-    this.fire('move-profile', {direction: MoveProfileDirection.RIGHT});
+    this.moveProfile_(MoveProfileDirection.RIGHT);
+  }
+
+  private moveProfile_(direction: MoveProfileDirection) {
+    this.fire('move-profile', {direction});
     this.$.actionMenu.close();
+    // Closing the action menu restores focus to `#moreActionsButton`, which
+    // would keep the original tile focused and highlighted after the reorder.
+    this.blur();
   }
 }
 

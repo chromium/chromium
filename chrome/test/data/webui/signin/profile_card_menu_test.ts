@@ -133,6 +133,8 @@ suite('ProfileCardMenuTest', function() {
     profileCardMenuElement.profilesCount = 3;
     await microtasksFinished();
 
+    profileCardMenuElement.$.moreActionsButton.focus();
+    assertTrue(profileCardMenuElement.matches(':focus-within'));
     profileCardMenuElement.$.moreActionsButton.click();
     assertTrue(profileCardMenuElement.$.actionMenu.open);
     const menuButtons =
@@ -147,7 +149,10 @@ suite('ProfileCardMenuTest', function() {
         await moveLeftPromise as CustomEvent<{direction: MoveProfileDirection}>;
     assertEquals(moveLeftEvent.detail.direction, MoveProfileDirection.LEFT);
     assertFalse(profileCardMenuElement.$.actionMenu.open);
+    assertFalse(profileCardMenuElement.matches(':focus-within'));
 
+    profileCardMenuElement.$.moreActionsButton.focus();
+    assertTrue(profileCardMenuElement.matches(':focus-within'));
     profileCardMenuElement.$.moreActionsButton.click();
     assertTrue(profileCardMenuElement.$.actionMenu.open);
     const moveRightPromise =
@@ -157,6 +162,7 @@ suite('ProfileCardMenuTest', function() {
         CustomEvent<{direction: MoveProfileDirection}>;
     assertEquals(moveRightEvent.detail.direction, MoveProfileDirection.RIGHT);
     assertFalse(profileCardMenuElement.$.actionMenu.open);
+    assertFalse(profileCardMenuElement.matches(':focus-within'));
   });
 
   // Click on the cancel button in the remove confirmation dialog closes the

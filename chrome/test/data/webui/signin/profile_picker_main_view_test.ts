@@ -1022,12 +1022,14 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     });
   });
 
-  function getMenuMoveButtons(card: ProfileCardElement): {
+  function getMenuButtons(card: ProfileCardElement): {
+    moreActionsButton: HTMLElement,
     moveLeftButton: HTMLButtonElement|null,
     moveRightButton: HTMLButtonElement|null,
   } {
     const menu = card.shadowRoot.querySelector('profile-card-menu')!;
     return {
+      moreActionsButton: menu.$.moreActionsButton,
       moveLeftButton:
           menu.shadowRoot.querySelector<HTMLButtonElement>('#moveLeftButton'),
       moveRightButton:
@@ -1040,7 +1042,7 @@ suite('ProfilePickerProfilesReorderingTest', function() {
 
     const card = mainViewElement.shadowRoot.querySelector<ProfileCardElement>(
         'profile-card')!;
-    const {moveLeftButton, moveRightButton} = getMenuMoveButtons(card);
+    const {moveLeftButton, moveRightButton} = getMenuButtons(card);
     assertFalse(!!moveLeftButton);
     assertFalse(!!moveRightButton);
   });
@@ -1058,16 +1060,20 @@ suite('ProfilePickerProfilesReorderingTest', function() {
 
     // Check available move options on all 3 cards: extremities only have one
     // move direction, while middle cards have both.
-    assertFalse(!!getMenuMoveButtons(cards[0]!).moveLeftButton);
-    assertTrue(!!getMenuMoveButtons(cards[0]!).moveRightButton);
-    assertTrue(!!getMenuMoveButtons(cards[1]!).moveLeftButton);
-    assertTrue(!!getMenuMoveButtons(cards[1]!).moveRightButton);
-    assertTrue(!!getMenuMoveButtons(cards[2]!).moveLeftButton);
-    assertFalse(!!getMenuMoveButtons(cards[2]!).moveRightButton);
+    assertFalse(!!getMenuButtons(cards[0]!).moveLeftButton);
+    assertTrue(!!getMenuButtons(cards[0]!).moveRightButton);
+    assertTrue(!!getMenuButtons(cards[1]!).moveLeftButton);
+    assertTrue(!!getMenuButtons(cards[1]!).moveRightButton);
+    assertTrue(!!getMenuButtons(cards[2]!).moveLeftButton);
+    assertFalse(!!getMenuButtons(cards[2]!).moveRightButton);
 
     // Move first profile right: [profile0, profile1, profile2] ->
     // [profile1, profile0, profile2].
-    getMenuMoveButtons(cards[0]!).moveRightButton!.click();
+    getMenuButtons(cards[0]!).moreActionsButton.focus();
+    assertTrue(cards[0]!.matches(':focus-within'));
+    getMenuButtons(cards[0]!).moreActionsButton.click();
+    getMenuButtons(cards[0]!).moveRightButton!.click();
+    assertFalse(cards[0]!.matches(':focus-within'));
     let args = await browserProxy.whenCalled('updateProfileOrder');
     assertDeepEquals(args, [0, 1, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
     await microtasksFinished();
@@ -1079,7 +1085,11 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     // Move middle profile right: [profile1, profile0, profile2] ->
     // [profile1, profile2, profile0].
     browserProxy.resetResolver('updateProfileOrder');
-    getMenuMoveButtons(cards[1]!).moveRightButton!.click();
+    getMenuButtons(cards[1]!).moreActionsButton.focus();
+    assertTrue(cards[1]!.matches(':focus-within'));
+    getMenuButtons(cards[1]!).moreActionsButton.click();
+    getMenuButtons(cards[1]!).moveRightButton!.click();
+    assertFalse(cards[1]!.matches(':focus-within'));
     args = await browserProxy.whenCalled('updateProfileOrder');
     assertDeepEquals(args, [1, 2, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
     await microtasksFinished();
@@ -1091,7 +1101,11 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     // Move last profile left: [profile1, profile2, profile0] ->
     // [profile1, profile0, profile2].
     browserProxy.resetResolver('updateProfileOrder');
-    getMenuMoveButtons(cards[2]!).moveLeftButton!.click();
+    getMenuButtons(cards[2]!).moreActionsButton.focus();
+    assertTrue(cards[2]!.matches(':focus-within'));
+    getMenuButtons(cards[2]!).moreActionsButton.click();
+    getMenuButtons(cards[2]!).moveLeftButton!.click();
+    assertFalse(cards[2]!.matches(':focus-within'));
     args = await browserProxy.whenCalled('updateProfileOrder');
     assertDeepEquals(args, [2, 1, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
     await microtasksFinished();
