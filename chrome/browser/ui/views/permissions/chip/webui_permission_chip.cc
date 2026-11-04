@@ -55,8 +55,11 @@ toolbar_ui_api::mojom::PermissionPromptStyle GetMojoPromptStyle(
 }
 
 toolbar_ui_api::mojom::PermissionAction GetMojoPermissionAction(
-    permissions::PermissionAction action) {
-  switch (action) {
+    std::optional<permissions::PermissionAction> action) {
+  if (!action.has_value()) {
+    return toolbar_ui_api::mojom::PermissionAction::kUnspecified;
+  }
+  switch (*action) {
     case permissions::PermissionAction::GRANTED:
       return toolbar_ui_api::mojom::PermissionAction::kGranted;
     case permissions::PermissionAction::DENIED:
@@ -70,7 +73,7 @@ toolbar_ui_api::mojom::PermissionAction GetMojoPermissionAction(
     case permissions::PermissionAction::GRANTED_ONCE:
       return toolbar_ui_api::mojom::PermissionAction::kGrantedOnce;
     case permissions::PermissionAction::NUM:
-      return toolbar_ui_api::mojom::PermissionAction::kUnspecified;
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -134,7 +137,7 @@ void WebUIPermissionChip::SetTheme(PermissionChipTheme theme) {
 }
 
 void WebUIPermissionChip::SetUserDecision(
-    permissions::PermissionAction user_decision) {
+    std::optional<permissions::PermissionAction> user_decision) {
   user_decision_ = user_decision;
   UpdateState();
 }

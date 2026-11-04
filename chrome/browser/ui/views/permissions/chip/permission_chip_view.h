@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_CHIP_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_CHIP_VIEW_H_
 
+#include <optional>
+
 #include "base/check_is_test.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
@@ -53,7 +55,7 @@ class PermissionChipView : public views::MdTextButton,
   void UpdateBackgroundColor() override;
 
   bool ShouldShowBlockedIcon() const { return should_show_blocked_icon_; }
-  permissions::PermissionAction GetUserDecision() const {
+  std::optional<permissions::PermissionAction> GetUserDecision() const {
     return user_decision_;
   }
   PermissionPromptStyle GetPermissionPromptStyle() const {
@@ -77,7 +79,8 @@ class PermissionChipView : public views::MdTextButton,
   void SetMessage(std::u16string message) override;
   void SetTooltipText(const std::u16string& tooltip) override;
   void SetTheme(PermissionChipTheme theme) override;
-  void SetUserDecision(permissions::PermissionAction user_decision) override;
+  void SetUserDecision(
+      std::optional<permissions::PermissionAction> user_decision) override;
   void SetBlockedIconShowing(bool should_show_blocked_icon) override;
   void SetPermissionPromptStyle(PermissionPromptStyle prompt_style) override;
   void AnimateCollapse(base::TimeDelta duration) override;
@@ -153,8 +156,7 @@ class PermissionChipView : public views::MdTextButton,
 
   // Denotes the current action / settings the user has selected on the omnibox
   // chip prompt. Ex: "Allow", "Allow Once", "Not allowed".
-  permissions::PermissionAction user_decision_ =
-      permissions::PermissionAction::GRANTED;
+  std::optional<permissions::PermissionAction> user_decision_;
 
   // True when the blocked icon is currently showing in the omnibox chip. This
   // usually happens when the user has disabled / "Not allowed" a permission

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_PROMPT_CHIP_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -73,7 +74,7 @@ class PermissionPromptChipModel {
   // Takes a user decision and updates relevant properties of the model.
   void UpdateWithUserDecision(permissions::PermissionAction permission_action);
 
-  permissions::PermissionAction GetUserDecision() const {
+  std::optional<permissions::PermissionAction> GetUserDecision() const {
     return user_decision_;
   }
 
@@ -112,8 +113,7 @@ class PermissionPromptChipModel {
 
   ContentSettingsType content_settings_type_;
 
-  permissions::PermissionAction user_decision_ =
-      permissions::PermissionAction::NUM;
+  std::optional<permissions::PermissionAction> user_decision_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_PROMPT_CHIP_MODEL_H_

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_WEBUI_PERMISSION_CHIP_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_WEBUI_PERMISSION_CHIP_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -45,7 +46,8 @@ class WebUIPermissionChip : public PermissionChipInterface {
   void SetMessage(std::u16string message) override;
   void SetTooltipText(const std::u16string& tooltip) override;
   void SetTheme(PermissionChipTheme theme) override;
-  void SetUserDecision(permissions::PermissionAction user_decision) override;
+  void SetUserDecision(
+      std::optional<permissions::PermissionAction> user_decision) override;
   void SetBlockedIconShowing(bool should_show_blocked_icon) override;
   void SetPermissionPromptStyle(PermissionPromptStyle prompt_style) override;
   void AnimateCollapse(base::TimeDelta duration) override;
@@ -129,8 +131,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
   std::u16string message_;
   std::u16string tooltip_;
   PermissionChipTheme theme_ = PermissionChipTheme::kNormalVisibility;
-  permissions::PermissionAction user_decision_ =
-      permissions::PermissionAction::GRANTED;
+  std::optional<permissions::PermissionAction> user_decision_;
   bool should_show_blocked_icon_ = false;
   PermissionPromptStyle prompt_style_ = PermissionPromptStyle::kChip;
 

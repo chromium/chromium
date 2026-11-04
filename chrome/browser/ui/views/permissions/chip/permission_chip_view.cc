@@ -189,7 +189,7 @@ void PermissionChipView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void PermissionChipView::SetUserDecision(
-    permissions::PermissionAction user_decision) {
+    std::optional<permissions::PermissionAction> user_decision) {
   user_decision_ = user_decision;
   UpdateIconAndColors();
 }
@@ -262,21 +262,24 @@ SkColor PermissionChipView::GetForegroundColor() const {
   // TODO(dljames): There is potentially a bug here if there exists a case
   // where a quiet chip can be shown on a GRANTED_ONCE permission action.
   // In that case the color should stay kColorOmniboxChipTextDefaultCR23.
-  switch (GetUserDecision()) {
-    case permissions::PermissionAction::GRANTED:
-    case permissions::PermissionAction::GRANTED_ONCE:
-      text_and_icon_color = GetColorProvider()->GetColor(
-          kColorOmniboxChipForegroundNormalVisibility);
-      break;
-    case permissions::PermissionAction::DENIED:
-    case permissions::PermissionAction::DISMISSED:
-    case permissions::PermissionAction::IGNORED:
-    case permissions::PermissionAction::REVOKED:
-      text_and_icon_color = GetColorProvider()->GetColor(
-          kColorOmniboxChipForegroundLowVisibility);
-      break;
-    case permissions::PermissionAction::NUM:
-      break;
+  if (std::optional<permissions::PermissionAction> user_decision =
+          GetUserDecision()) {
+    switch (*user_decision) {
+      case permissions::PermissionAction::GRANTED:
+      case permissions::PermissionAction::GRANTED_ONCE:
+        text_and_icon_color = GetColorProvider()->GetColor(
+            kColorOmniboxChipForegroundNormalVisibility);
+        break;
+      case permissions::PermissionAction::DENIED:
+      case permissions::PermissionAction::DISMISSED:
+      case permissions::PermissionAction::IGNORED:
+      case permissions::PermissionAction::REVOKED:
+        text_and_icon_color = GetColorProvider()->GetColor(
+            kColorOmniboxChipForegroundLowVisibility);
+        break;
+      case permissions::PermissionAction::NUM:
+        break;
+    }
   }
 
   // 4. Then update the color based on if the icon is blocked or not.

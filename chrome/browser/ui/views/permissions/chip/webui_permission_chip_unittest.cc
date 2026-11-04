@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -20,7 +21,9 @@
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -206,6 +209,21 @@ TEST_F(WebUIPermissionChipTest, GetIsRequestForTesting) {
 
   chip.SetTheme(PermissionChipTheme::kOnSystemBlockedActivityIndicator);
   EXPECT_FALSE(chip.GetIsRequestForTesting());
+}
+
+TEST_F(WebUIPermissionChipTest, SetUserDecision) {
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kPermissionRequestChipElementId);
+  EXPECT_EQ(chip.GetState()->user_decision,
+            toolbar_ui_api::mojom::PermissionAction::kUnspecified);
+
+  chip.SetUserDecision(permissions::PermissionAction::GRANTED);
+  EXPECT_EQ(chip.GetState()->user_decision,
+            toolbar_ui_api::mojom::PermissionAction::kGranted);
+
+  chip.SetUserDecision(std::nullopt);
+  EXPECT_EQ(chip.GetState()->user_decision,
+            toolbar_ui_api::mojom::PermissionAction::kUnspecified);
 }
 
 TEST_F(WebUIPermissionChipTest, OnClickedIfCurrentDropsStaleTokens) {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_CHIP_INTERFACE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -60,7 +61,8 @@ class PermissionChipInterface {
   virtual void SetMessage(std::u16string message) = 0;
   virtual void SetTooltipText(const std::u16string& tooltip) = 0;
   virtual void SetTheme(PermissionChipTheme theme) = 0;
-  virtual void SetUserDecision(permissions::PermissionAction user_decision) = 0;
+  virtual void SetUserDecision(
+      std::optional<permissions::PermissionAction> user_decision) = 0;
   virtual void SetBlockedIconShowing(bool should_show_blocked_icon) = 0;
   virtual void SetPermissionPromptStyle(PermissionPromptStyle prompt_style) = 0;
 
