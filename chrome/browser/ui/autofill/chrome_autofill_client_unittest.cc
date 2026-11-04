@@ -39,7 +39,6 @@
 #include "components/autofill/content/browser/autofill_test_util.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
-#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -125,7 +124,6 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #endif  //   BUILDFLAG(IS_ANDROID)
@@ -144,6 +142,7 @@ using ::testing::Field;
 using ::testing::Ge;
 using ::testing::InSequence;
 using ::testing::Le;
+using ::testing::MockFunction;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::Ref;
@@ -589,6 +588,17 @@ TEST_F(ChromeAutofillClientTest,
   }
 }
 
+class MockContentAutofillDriver : public TestContentAutofillDriver {
+ public:
+  using TestContentAutofillDriver::TestContentAutofillDriver;
+  ~MockContentAutofillDriver() override = default;
+
+  MOCK_METHOD(void,
+              TriggerFormExtractionInAllFrames,
+              (bool, base::OnceCallback<void(bool)>),
+              (override));
+};
+
 class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
  public:
   ChromeAutofillClientTestWithMockWindow() {
@@ -596,8 +606,8 @@ class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
         {features::kAutofillActorMode,
          ::features::kLazyKeyedServiceInstantiation},
         {});
-    manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<MockAutofillManager>>();
+    driver_injector_ = std::make_unique<
+        TestAutofillDriverInjector<MockContentAutofillDriver>>();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -638,7 +648,7 @@ class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
   }
 
   void TearDown() override {
-    manager_injector_.reset();
+    driver_injector_.reset();
     ChromeAutofillClientTest::TearDown();
     profile_manager_.reset();
   }
@@ -714,8 +724,8 @@ class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
                             web_contents),
         profile, mocks);
   }
-  std::unique_ptr<TestAutofillManagerInjector<MockAutofillManager>>
-      manager_injector_;
+  std::unique_ptr<TestAutofillDriverInjector<MockContentAutofillDriver>>
+      driver_injector_;
 
  private:
   TabAndWindowMocks main_mocks_;
@@ -772,8 +782,8 @@ TEST_F(ChromeAutofillClientTestWithMockWindow, OpenGeminiInSidebar) {
   client()->OpenGeminiInSidebar(u"test prompt");
 }
 
-// Tests that `OnActorTaskStateChange` calls `ReparseKnownForms` on all drivers
-// when a new task gets assigned.
+// Tests that `OnActorTaskStateChange` calls `TriggerFormExtractionInAllFrames`
+// on all drivers when a new task gets assigned.
 TEST_F(ChromeAutofillClientTestWithMockWindow,
        OnActorTaskStateChange_ReparseForms) {
   actor::ActorKeyedServiceFake* actor_service =
@@ -781,8 +791,8 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
           actor::ActorKeyedService::Get(profile()));
   ASSERT_TRUE(actor_service);
 
-  MockAutofillManager* mock_manager = (*manager_injector_)[web_contents()];
-  ASSERT_TRUE(mock_manager);
+  MockContentAutofillDriver* mock_driver = (*driver_injector_)[web_contents()];
+  ASSERT_TRUE(mock_driver);
 
   actor::TaskId task_id = actor_service->CreateTaskForTesting();
   actor::ActorTask* task = actor_service->GetTask(task_id);
@@ -795,19 +805,24 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
 
   EXPECT_FALSE(client()->IsTabInActorMode());
 
-  // Verify first call (assignment) triggers `ReparseKnownForms` with actor mode
-  // already enabled.
-  EXPECT_CALL(*mock_manager, ReparseKnownForms()).WillOnce([this]() {
-    EXPECT_TRUE(client()->IsTabInActorMode());
-  });
-  actor_service->NotifyTaskStateChanged(*task);
-  testing::Mock::VerifyAndClearExpectations(mock_manager);
-  EXPECT_TRUE(client()->IsTabInActorMode());
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    // First call (assignment) triggers `TriggerFormExtractionInAllFrames()`
+    // with actor mode already enabled.
+    EXPECT_CALL(*mock_driver,
+                TriggerFormExtractionInAllFrames(/*force=*/true, _))
+        .WillOnce([this]() { EXPECT_TRUE(client()->IsTabInActorMode()); });
+    EXPECT_CALL(check, Call);
+    // Second call (no new task) does not trigger
+    // `TriggerFormExtractionInAllFrames()`.
+    EXPECT_CALL(*mock_driver, TriggerFormExtractionInAllFrames).Times(0);
+  }
 
-  // Verify second call (no new task) does NOT trigger ReparseKnownForms
-  EXPECT_CALL(*mock_manager, ReparseKnownForms()).Times(0);
   actor_service->NotifyTaskStateChanged(*task);
-  testing::Mock::VerifyAndClearExpectations(mock_manager);
+  EXPECT_TRUE(client()->IsTabInActorMode());
+  check.Call();
+  actor_service->NotifyTaskStateChanged(*task);
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)

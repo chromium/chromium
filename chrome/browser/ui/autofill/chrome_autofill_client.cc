@@ -1896,7 +1896,8 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   if (!active_task.has_value()) {
     for (AutofillDriver* driver :
          GetAutofillDriverFactory().GetExistingDrivers()) {
-      driver->GetAutofillManager().ReparseKnownForms();
+      driver->GetAutofillManager().TriggerFormExtractionInAllFrames(
+          /*force=*/true, base::DoNothing());
     }
   }
 }

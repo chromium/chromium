@@ -1008,7 +1008,8 @@ void ChromeAutofillClientIOS::OnActorTaskStateChange(bool is_actuating) {
   if (is_actuating) {
     for (AutofillDriver* driver :
          GetAutofillDriverFactory().GetExistingDrivers()) {
-      driver->GetAutofillManager().ReparseKnownForms();
+      driver->GetAutofillManager().TriggerFormExtractionInAllFrames(
+          /*force=*/true, base::DoNothing());
     }
   }
 }

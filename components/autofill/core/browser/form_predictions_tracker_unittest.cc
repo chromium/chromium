@@ -494,17 +494,18 @@ TEST_F(FormPredictionsTrackerTest, Wait_NoActiveActor) {
   EXPECT_TRUE(future.Wait());
 }
 
-// Verifies that calling AutofillManager::ReparseKnownForms() triggers form
-// parsing observer events.
+// Verifies that calling AutofillManager::TriggerFormExtractionInAllFrames()
+// triggers form parsing observer events.
 //
 // Note: In unit tests, `autofill_manager()` is a `TestBrowserAutofillManager`,
 // which overrides `OnFormsSeen()` to block until asynchronous parsing finishes
 // and `OnAfterFormsSeen()` has fired. Therefore, `forms_in_parsing_state_` is
-// empty immediately after `OnFormsSeen()` (and `ReparseKnownForms()`) returns.
-// We use a `MockAutofillManagerObserver` to verify that `ReparseKnownForms()`
-// fires both `OnBeforeFormsSeen()` and `OnAfterFormsSeen()` during its
-// execution.
-TEST_F(FormPredictionsTrackerTest, Wait_ReparseKnownForms) {
+// empty immediately after `OnFormsSeen()` (and
+// `TriggerFormExtractionInAllFrames()`) returns. We use a
+// `MockAutofillManagerObserver` to verify that
+// `TriggerFormExtractionInAllFrames()` fires both `OnBeforeFormsSeen()` and
+// `OnAfterFormsSeen()` during its execution.
+TEST_F(FormPredictionsTrackerTest, Wait_TriggerFormExtractionInAllFrames) {
   FormData form = test::CreateTestAddressFormData();
   autofill_manager().OnFormsSeen({form}, {},
                                  AutofillManagerTestApi::pass_key());
@@ -520,7 +521,8 @@ TEST_F(FormPredictionsTrackerTest, Wait_ReparseKnownForms) {
       observer,
       OnAfterFormsSeen(::testing::_, ::testing::ElementsAre(form.global_id()),
                        ::testing::IsEmpty()));
-  autofill_manager().ReparseKnownForms();
+  autofill_manager().TriggerFormExtractionInAllFrames(/*force=*/true,
+                                                      base::DoNothing());
   autofill_manager().RemoveObserver(&observer);
 }
 

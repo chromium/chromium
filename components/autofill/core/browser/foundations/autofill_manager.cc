@@ -212,7 +212,8 @@ void AutofillManager::OnLanguageDetermined(
 
   NotifyObservers(&Observer::OnBeforeLanguageDetermined);
 
-  // TODO(crbug.com/360322019):  Consider using `ReparseKnownForms()` instead.
+  // TODO(crbug.com/360322019): Consider using
+  // `TriggerFormExtractionInAllFrames()` instead.
   ParseFormsAsync(
       base::ToVector(form_structures_,
                      [](const auto& p) { return p.second->ToFormData(); }),
@@ -633,13 +634,10 @@ bool AutofillManager::CanShowAutofillUi() const {
 }
 
 void AutofillManager::TriggerFormExtractionInAllFrames(
+    bool force,
     base::OnceCallback<void(bool success)> form_extraction_finished_callback) {
   driver_->TriggerFormExtractionInAllFrames(
-      /*force=*/false, std::move(form_extraction_finished_callback));
-}
-
-void AutofillManager::ReparseKnownForms() {
-  driver_->TriggerFormExtractionInAllFrames(/*force=*/true, base::DoNothing());
+      force, std::move(form_extraction_finished_callback));
 }
 
 base::flat_map<FieldGlobalId, AutofillServerPrediction>
@@ -1167,21 +1165,25 @@ void AutofillManager::LogCurrentFieldTypes(
 
 void AutofillManager::SubscribeToMlModelChanges(
     FieldClassificationModelHandler& handler) {
+  auto reparse_forms = base::BindRepeating(
+      [](AutofillManager* self) {
+        self->TriggerFormExtractionInAllFrames(/*force=*/true,
+                                               base::DoNothing());
+      },
+      base::Unretained(this));
   switch (handler.optimization_target()) {
     case optimization_guide::proto::OptimizationTarget::
         OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
       if (!autofill_model_change_subscription_) {
         autofill_model_change_subscription_ =
-            handler.RegisterModelChangeCallback(base::BindRepeating(
-                &AutofillManager::ReparseKnownForms, base::Unretained(this)));
+            handler.RegisterModelChangeCallback(std::move(reparse_forms));
       }
       break;
     case optimization_guide::proto::OptimizationTarget::
         OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
       if (!password_manager_model_change_subscription_) {
         password_manager_model_change_subscription_ =
-            handler.RegisterModelChangeCallback(base::BindRepeating(
-                &AutofillManager::ReparseKnownForms, base::Unretained(this)));
+            handler.RegisterModelChangeCallback(std::move(reparse_forms));
       }
       break;
     default:

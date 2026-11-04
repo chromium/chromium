@@ -129,10 +129,10 @@ void AutofillHandler::Trigger(
   // not be finished yet, so we need to trigger it and to wait for it to finish
   // before continuing. See https://crbug.com/442016685.
   autofill_driver->GetAutofillManager().TriggerFormExtractionInAllFrames(
-      base::BindOnce(&AutofillHandler::ContinueTrigger,
-                     weak_ptr_factory_.GetWeakPtr(), frame_rfh, field_id,
-                     frame_id, std::move(card), std::move(address),
-                     std::move(callback)));
+      /*force=*/false, base::BindOnce(&AutofillHandler::ContinueTrigger,
+                                      weak_ptr_factory_.GetWeakPtr(), frame_rfh,
+                                      field_id, frame_id, std::move(card),
+                                      std::move(address), std::move(callback)));
 }
 
 void AutofillHandler::ContinueTrigger(
@@ -251,6 +251,7 @@ void AutofillHandler::ContinueTrigger(
   // soon as the command returns. Whether form extraction succeeded doesn't
   // matter for that.
   autofill_driver->GetAutofillManager().TriggerFormExtractionInAllFrames(
+      /*force=*/false,
       base::BindOnce([](std::unique_ptr<TriggerCallback> callback,
                         bool) { callback->sendSuccess(); },
                      std::move(callback)));
