@@ -143,8 +143,10 @@ class CueTarget {
   // Evaluates whether this target can show a cue on the current page.
   //
   // Called at page navigation/load for all non-backed-off targets in
-  // parallel via base::BarrierCallback. The controller passes in the
-  // highest UI prominence tier currently allowed by global quotas:
+  // parallel via base::BarrierCallback, or for a single target through
+  // `ContextualCueingController::EvaluateCueForTarget()`. The controller
+  // passes in the highest UI prominence tier currently allowed by global
+  // quotas:
   //
   //   - eligible: true if this target has relevant content for the page at
   //               the requested prominence level.

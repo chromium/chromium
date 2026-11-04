@@ -115,6 +115,13 @@ class ContextualCueingController
   // all registered targets via base::BarrierCallback.
   void EvaluateCues();
 
+  // Like `EvaluateCues()`, but only considers the target registered for
+  // `type`. For a target that can become eligible without a navigation, such
+  // as when the user returns to the tab. Unlike a page load, it doesn't hide a
+  // cue that's already showing first: if an anchored message or contextual cue
+  // is already showing on the tab, the new cue is blocked.
+  void EvaluateCueForTarget(CueTargetType type);
+
   void OnUrlChanged(const GURL& url);
 
   // Hide the cue for this tab if it's showing (both the anchored message and
@@ -165,6 +172,10 @@ class ContextualCueingController
       const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result);
 
+  // Shared implementation of `EvaluateCues()` and `EvaluateCueForTarget()`.
+  // If `only_type` is set, only considers the target registered for it.
+  void EvaluateCuesImpl(std::optional<CueTargetType> only_type);
+
   // Result of a single target's CheckEligibility round-trip, collected by the
   // barrier and forwarded to OnAllEligibilityChecksComplete.
   struct EligibilityResult {
@@ -173,7 +184,7 @@ class ContextualCueingController
     CueTarget::ContentGenerator generator;
   };
 
-  // Called when every registered target has responded to CheckEligibility.
+  // Called when every candidate target has responded to CheckEligibility.
   // Applies UCB scoring to the eligible candidates, selects the winner, and
   // either runs its ContentGenerator or delegates to
   // InitiateModelExecutionRequest().

@@ -312,7 +312,8 @@ chromium-metrics-reviews@google.com.
   <owner>iwells@chromium.org</owner>
   <summary>
     The decision for generating a contextual cue for the page in the V2
-    framework. Recorded once per page load.
+    framework. Recorded once per page load, and each time a cue target asks to
+    be evaluated on its own, such as when the user returns to a tab.
   </summary>
 </histogram>
 

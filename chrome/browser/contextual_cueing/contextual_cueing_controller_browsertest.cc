@@ -3062,6 +3062,102 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
               override_target_ptr->anchored_message_shown_priority.has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       EvaluateCueForTarget_OnlyEvaluatesThatTarget) {
+  base::HistogramTester histogram_tester;
+
+  // Nothing is eligible when the page loads.
+  cue_target()->eligible = false;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // A target that would win any evaluation it's part of.
+  auto override_target = std::make_unique<TestCueTarget>();
+  override_target->overrides_ucb_scoring = true;
+  override_target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  auto* override_target_ptr = override_target.get();
+  contextual_cueing_controller()->RegisterCueTarget(CueTargetType::kIndigo,
+                                                    std::move(override_target));
+  auto test_source_target = std::make_unique<TestCueTarget>();
+  test_source_target->generate_result =
+      MakeCompleteResponse().contextual_cues(0);
+  auto* test_source_target_ptr = test_source_target.get();
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kTestSource, std::move(test_source_target));
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  contextual_cueing_controller()->EvaluateCueForTarget(
+      CueTargetType::kTestSource);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 2);
+  histogram_tester.ExpectBucketCount("ContextualCueing.V2.Decision",
+                                     ContextualCueingDecision::kSuccess, 1);
+  EXPECT_TRUE(
+      test_source_target_ptr->chip_shown ||
+      test_source_target_ptr->anchored_message_shown_priority.has_value());
+  EXPECT_FALSE(
+      override_target_ptr->chip_shown ||
+      override_target_ptr->anchored_message_shown_priority.has_value());
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.CueShown", 1);
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.CueShownLatency", 1);
+  VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_CueShown::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_TRUE(ukm_recorder.GetEntryMetric(
+      entries[0].get(), ukm::builders::ContextualCueing_CueShown::
+                            kProactiveCueLatencyAfterPageLoadName));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       EvaluateCueForTarget_DoesNotReplaceExistingCueChip) {
+  base::HistogramTester histogram_tester;
+
+  cue_target()->eligible = false;
+  auto first_target = std::make_unique<TestCueTarget>();
+  first_target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kContextualSearch, std::move(first_target));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  // Downgrade to chip/icon only so GetActiveAnchoredMessage() is nullopt while
+  // the contextual cue page action remains visible for this page load.
+  contextual_cueing_controller()->HideAnchoredMessage();
+  ASSERT_FALSE(GetPageActionController()->GetActiveAnchoredMessage());
+  page_actions::PageActionObserver cue_observer(kActionAnchoredContextualCue);
+  cue_observer.RegisterAsPageActionObserver(*GetPageActionController());
+  ASSERT_TRUE(cue_observer.GetCurrentPageActionState().showing);
+
+  auto second_target = std::make_unique<TestCueTarget>();
+  second_target->supported_intrusiveness = {CueIntrusiveness::kLoud,
+                                            CueIntrusiveness::kQuiet};
+  second_target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  auto* second_target_ptr = second_target.get();
+  contextual_cueing_controller()->RegisterCueTarget(CueTargetType::kTestSource,
+                                                    std::move(second_target));
+
+  contextual_cueing_controller()->EvaluateCueForTarget(
+      CueTargetType::kTestSource);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 2);
+  histogram_tester.ExpectBucketCount(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kAnchoredMessageAlreadyShowing, 1);
+  EXPECT_FALSE(second_target_ptr->chip_shown ||
+               second_target_ptr->anchored_message_shown_priority.has_value());
+  EXPECT_TRUE(cue_observer.GetCurrentPageActionState().showing);
+}
+
 class ContextualCueingControllerMultiSourceWithAgeRestrictionBrowserTest
     : public ContextualCueingControllerBrowserTestBase {
  public:

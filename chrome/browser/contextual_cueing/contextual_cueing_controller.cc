@@ -484,6 +484,15 @@ void ContextualCueingController::ObserveTabList() {
 }
 
 void ContextualCueingController::EvaluateCues() {
+  EvaluateCuesImpl(/*only_type=*/std::nullopt);
+}
+
+void ContextualCueingController::EvaluateCueForTarget(CueTargetType type) {
+  EvaluateCuesImpl(type);
+}
+
+void ContextualCueingController::EvaluateCuesImpl(
+    std::optional<CueTargetType> only_type) {
   if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
     return;
   }
@@ -536,6 +545,9 @@ void ContextualCueingController::EvaluateCues() {
   // Collect non-backed-off targets that support this intrusiveness level.
   std::vector<CueTargetType> candidates;
   for (const auto& [type, target] : cue_targets_) {
+    if (only_type && type != *only_type) {
+      continue;
+    }
     if (!target->IsEligible()) {
       CUEING_LOG(base::StringPrintf("target %s not eligible", GetName(type)));
       continue;
@@ -702,6 +714,9 @@ void ContextualCueingController::OnContentGenerated(
   }
   CueTarget* target = GetTarget(type);
   if (!target) {
+    return;
+  }
+  if (IsAllowedToShowCue() != ContextualCueingDecision::kUnspecified) {
     return;
   }
   ShowCue(type, intrusiveness, *target, *cue, {});
@@ -1126,10 +1141,11 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
 #if !BUILDFLAG(IS_ANDROID)
   if (page_actions::PageActionController* page_action_controller =
           tab_->GetTabFeatures()->page_action_controller()) {
-    if (page_action_controller->GetActiveAnchoredMessage().has_value()) {
+    if (page_action_controller->GetActiveAnchoredMessage().has_value() ||
+        active_cue_data_.has_value()) {
       CUEING_LOG(
-          "Not attempting to show/generate cue because another anchored "
-          "message is currently showing.");
+          "Not attempting to show/generate cue because another contextual cue "
+          "or anchored message is currently showing.");
       RecordContextualCueingDecision(
           ContextualCueingDecision::kAnchoredMessageAlreadyShowing);
       return ContextualCueingDecision::kAnchoredMessageAlreadyShowing;
