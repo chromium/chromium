@@ -9,7 +9,7 @@
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/download/download_check_result.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/browser/ping_manager/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

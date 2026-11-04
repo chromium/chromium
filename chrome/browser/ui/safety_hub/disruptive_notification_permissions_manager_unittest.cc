@@ -29,7 +29,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_uma_util.h"
-#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safety_check/safety_check.h"
 #include "components/ukm/test_ukm_recorder.h"

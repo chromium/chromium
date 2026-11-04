@@ -15,7 +15,7 @@
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/core/common/utils.h"

@@ -10,7 +10,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "components/security_interstitials/core/ssl_error_options_mask.h"
 #import "components/security_interstitials/core/ssl_error_ui.h"

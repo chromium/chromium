@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/browser/ping_manager/ping_manager.h"
 
 namespace safe_browsing {
 

@@ -22,7 +22,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/user_population.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "components/safe_browsing/core/common/features.h"

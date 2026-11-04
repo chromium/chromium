@@ -28,7 +28,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/permissions/permission_uma_util.h"
-#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #include "components/safety_check/safety_check.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

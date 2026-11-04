@@ -212,7 +212,7 @@ missing_new_fields,components/safe_browsing/content/browser/threat_details_cache
 missing_new_fields,components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.cc
 missing_new_fields,components/safe_browsing/core/browser/db/v4_update_protocol_manager.cc
 missing_new_fields,components/safe_browsing/core/browser/password_protection/password_protection_request.cc
-missing_new_fields,components/safe_browsing/core/browser/ping_manager.cc
+missing_new_fields,components/safe_browsing/core/browser/ping_manager/ping_manager.cc
 missing_new_fields,components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.cc
 missing_new_fields,components/safe_browsing/core/browser/realtime/url_lookup_service.cc
 missing_new_fields,components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.cc

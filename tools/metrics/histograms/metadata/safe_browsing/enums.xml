@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Suspicious content auto-revocation"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/safe_browsing/core/browser/safe_browsing_metrics_collector.h:NotificationRevocationSource) -->
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h:NotificationRevocationSource) -->
 
 <enum name="SafeBrowsingAllowlistAsyncMatch">
   <int value="0" label="ASYNC"/>

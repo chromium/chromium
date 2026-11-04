@@ -8,8 +8,8 @@ source_set("browser") {
     "client_side_detection_host_base.h",
     "credit_card_form_event.cc",
     "credit_card_form_event.h",
-    "ping_manager.cc",
-    "ping_manager.h",
+    "ping_manager/ping_manager.cc",
+    "ping_manager/ping_manager.h",
     "safe_browsing_hats_delegate.cc",
     "safe_browsing_hats_delegate.h",
     "url_checker/database_manager_mechanism.cc",
@@ -159,7 +159,7 @@ source_set("client_side_detection_service_base_unittest") {
 
 source_set("ping_manager_unittest") {
   testonly = true
-  sources = [ "ping_manager_unittest.cc" ]
+  sources = [ "ping_manager/ping_manager_unittest.cc" ]
 
   deps = [
     ":browser",
@@ -359,8 +359,8 @@ source_set("intelligent_scan_delegate_unittest") {
 
 source_set("safe_browsing_metrics_collector") {
   sources = [
-    "safe_browsing_metrics_collector.cc",
-    "safe_browsing_metrics_collector.h",
+    "metrics_collector/safe_browsing_metrics_collector.cc",
+    "metrics_collector/safe_browsing_metrics_collector.h",
   ]
 
   deps = [
@@ -375,7 +375,7 @@ source_set("safe_browsing_metrics_collector") {
 
 source_set("safe_browsing_metrics_collector_unittest") {
   testonly = true
-  sources = [ "safe_browsing_metrics_collector_unittest.cc" ]
+  sources = [ "metrics_collector/safe_browsing_metrics_collector_unittest.cc" ]
   deps = [
     ":safe_browsing_metrics_collector",
     "//base",

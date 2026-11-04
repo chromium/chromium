@@ -32,7 +32,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/browser/ping_manager/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"

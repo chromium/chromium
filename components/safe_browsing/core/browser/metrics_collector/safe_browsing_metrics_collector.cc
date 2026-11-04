@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 
 #include <algorithm>
 
@@ -574,11 +574,10 @@ std::string SafeBrowsingMetricsCollector::GetTimesDisabledSuffix() {
   }
   const auto hours_since_enabled =
       (base::Time::Now() - latest_enabled_event.value().timestamp).InHours();
-  return hours_since_enabled < kEsbShortEnabledUpperBoundHours
-             ? "ShortEnabled"
-             : hours_since_enabled < kEsbLongEnabledLowerBoundHours
-                   ? "MediumEnabled"
-                   : "LongEnabled";
+  return hours_since_enabled < kEsbShortEnabledUpperBoundHours ? "ShortEnabled"
+         : hours_since_enabled < kEsbLongEnabledLowerBoundHours
+             ? "MediumEnabled"
+             : "LongEnabled";
 }
 
 SafeBrowsingMetricsCollector::Event::Event(EventType type, base::Time timestamp)

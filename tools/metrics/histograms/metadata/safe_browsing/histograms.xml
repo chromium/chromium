@@ -714,7 +714,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
-<!-- LINT.ThenChange(//components/safe_browsing/core/browser/ping_manager.cc:ClientSafeBrowsingReportTypeString) -->
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/ping_manager/ping_manager.cc:ClientSafeBrowsingReportTypeString) -->
 
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult{IsAccessTokenIncluded}"

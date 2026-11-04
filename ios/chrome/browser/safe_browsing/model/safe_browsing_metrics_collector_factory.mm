@@ -6,7 +6,7 @@
 
 #import <utility>
 
-#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 
