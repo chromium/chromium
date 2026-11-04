@@ -13,8 +13,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "components/prefs/pref_service.h"
@@ -32,6 +34,48 @@ namespace glic {
 namespace {
 
 constexpr size_t kMinNonFinalTranscriptLength = 100;
+
+bool IsWebContentsCapturingOrInCall(content::WebContents* web_contents) {
+  if (!web_contents || web_contents->IsBeingDestroyed()) {
+    return false;
+  }
+  if (GlicMediaIntegration::HasActivePeerConnection(web_contents)) {
+    return true;
+  }
+  auto* dispatcher = MediaCaptureDevicesDispatcher::GetInstance();
+  if (!dispatcher) {
+    return false;
+  }
+  scoped_refptr<MediaStreamCaptureIndicator> indicator =
+      dispatcher->GetMediaStreamCaptureIndicator();
+  return indicator && indicator->IsCapturingUserMedia(web_contents);
+}
+
+content::WebContents* GetDocumentPipPartner(
+    content::WebContents* web_contents) {
+  if (auto* pip_window_manager = PictureInPictureWindowManager::GetInstance()) {
+    content::WebContents* opener_wc = pip_window_manager->GetWebContents();
+    content::WebContents* child_wc = pip_window_manager->GetChildWebContents();
+    if (opener_wc && child_wc) {
+      if (web_contents == opener_wc) {
+        return child_wc->IsBeingDestroyed() ? nullptr : child_wc;
+      }
+      if (web_contents == child_wc) {
+        return opener_wc->IsBeingDestroyed() ? nullptr : opener_wc;
+      }
+    }
+  }
+
+  if (auto* pip_controller = content::PictureInPictureWindowController::
+          GetOrCreateDocumentPictureInPictureController(web_contents)) {
+    if (content::WebContents* child_wc =
+            pip_controller->GetChildWebContents()) {
+      return child_wc->IsBeingDestroyed() ? nullptr : child_wc;
+    }
+  }
+
+  return nullptr;
+}
 
 }  // namespace
 
@@ -308,56 +352,39 @@ void GlicMediaContext::ClearAllTranscripts() {
   has_notified_transcription_begin_ = false;
 }
 
-void GlicMediaContext::OnPeerConnectionAdded() {
-  num_peer_connections_++;
-}
-
-void GlicMediaContext::OnPeerConnectionRemoved() {
-  if (num_peer_connections_ > 0) {
-    num_peer_connections_--;
-  }
-}
-
-bool GlicMediaContext::IsExcludedFromTranscript() const {
-  // Exclude transcripts if there are active peer connections.
-  if (num_peer_connections_ > 0) {
+// static
+bool GlicMediaContext::IsExcludedFromTranscript(content::RenderFrameHost* rfh) {
+  if (!rfh || !rfh->IsActive()) {
     return true;
   }
 
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents || web_contents->IsBeingDestroyed()) {
     return true;
   }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile->GetPrefs()->GetBoolean(
-          glic::prefs::kGlicMediaUnderstandingEnabled)) {
+  if (!profile || !profile->GetPrefs()->GetBoolean(
+                      glic::prefs::kGlicMediaUnderstandingEnabled)) {
     return true;
   }
 
-  // Check if the main web contents is capturing media.
-  if (MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator()
-          ->IsCapturingUserMedia(web_contents)) {
+  if (IsWebContentsCapturingOrInCall(web_contents)) {
     return true;
   }
 
-  // Check if any document picture-in-picture window is capturing media.
-  auto* pip_controller = content::PictureInPictureWindowController::
-      GetOrCreateDocumentPictureInPictureController(web_contents);
-  if (pip_controller) {
-    if (auto* pip_web_contents = pip_controller->GetChildWebContents()) {
-      if (MediaCaptureDevicesDispatcher::GetInstance()
-              ->GetMediaStreamCaptureIndicator()
-              ->IsCapturingUserMedia(pip_web_contents)) {
-        return true;
-      }
-    }
+  if (content::WebContents* pip_partner = GetDocumentPipPartner(web_contents);
+      pip_partner && IsWebContentsCapturingOrInCall(pip_partner)) {
+    return true;
   }
 
   return false;
+}
+
+bool GlicMediaContext::IsExcludedFromTranscript() const {
+  return IsExcludedFromTranscript(&render_frame_host());
 }
 
 void GlicMediaContext::RemoveOverlappingChunks(

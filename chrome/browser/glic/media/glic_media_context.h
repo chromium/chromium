@@ -33,11 +33,10 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
 
   bool OnResult(const media::SpeechRecognitionResult&);
 
-  void OnPeerConnectionAdded();
-  void OnPeerConnectionRemoved();
   void OnPipPeerConnectionAdded();
   void OnPipPeerConnectionRemoved();
 
+  static bool IsExcludedFromTranscript(content::RenderFrameHost* rfh);
   bool IsExcludedFromTranscript() const;
 
   DOCUMENT_USER_DATA_KEY_DECL();
@@ -151,8 +150,6 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
 
   // Map from media session title to transcript.
   std::map<std::u16string, std::unique_ptr<Transcript>> transcripts_by_title_;
-
-  size_t num_peer_connections_ = 0;
 
   // Set to true once `MediaTranscriptProvider::OnTranscriptionBeginForFrame`
   // has been called for this frame.

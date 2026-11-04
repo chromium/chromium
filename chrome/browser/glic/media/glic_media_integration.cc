@@ -4,7 +4,16 @@
 
 #include "chrome/browser/glic/media/glic_media_integration.h"
 
+#include <algorithm>
+#include <memory>
+#include <utility>
+
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -13,6 +22,8 @@
 #include "chrome/browser/glic/media/media_transcript_provider_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
@@ -26,111 +37,246 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace {
 
 constexpr char kGlicMediaIntegrationKey[] = "GlicMediaIntegration";
+constexpr char kGlicMediaPeerConnectionTrackerKey[] =
+    "GlicMediaPeerConnectionTracker";
+constexpr char kGlicMediaTrackedWebContentsKey[] =
+    "GlicMediaTrackedWebContents";
 
-class GlicMediaPeerConnectionObserver
-    : public content::PeerConnectionTrackerHostObserver {
+void NotifyAvailabilityChanged(Profile* profile) {
+  if (!profile || profile->ShutdownStarted() ||
+      !captions::IsHeadlessCaptionFeatureSupported() ||
+      !profile->GetPrefs()->GetBoolean(prefs::kHeadlessCaptionEnabled)) {
+    return;
+  }
+  if (auto* client_browser_interface =
+          SpeechRecognitionClientBrowserInterfaceFactory::GetForProfileIfExists(
+              profile)) {
+    client_browser_interface->OnLiveCaptionAvailabilityChanged();
+  }
+}
+
+class GlicMediaPeerConnectionTracker {
  public:
-  ~GlicMediaPeerConnectionObserver() override = default;
+  static GlicMediaPeerConnectionTracker& GetInstance() {
+    static base::NoDestructor<GlicMediaPeerConnectionTracker> instance;
+    return *instance;
+  }
 
-  void OnPeerConnectionAdded(
-      content::GlobalRenderFrameHostId render_frame_host_id,
-      int lid,
-      base::ProcessId pid,
-      const std::string& url,
-      const std::string& rtc_configuration) override {
-    auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id);
-    if (!rfh) {
-      return;
-    }
+  GlicMediaPeerConnectionTracker() = default;
+  GlicMediaPeerConnectionTracker(const GlicMediaPeerConnectionTracker&) =
+      delete;
+  GlicMediaPeerConnectionTracker& operator=(
+      const GlicMediaPeerConnectionTracker&) = delete;
 
-    auto* wc = content::WebContents::FromRenderFrameHost(rfh);
-    if (!wc) {
-      return;
-    }
-
-    // Attribute this to all frames in the WebContents.
-    wc->ForEachRenderFrameHost([](content::RenderFrameHost* rfh) {
-      if (auto* context =
-              glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
-        context->OnPeerConnectionAdded();
-      }
-    });
-
-    // Also attribute this to its opener WebContents if this is a document PiP
-    // window.
-    if (auto* pip_window_manager =
-            PictureInPictureWindowManager::GetInstance()) {
-      auto* opener_wc = pip_window_manager->GetWebContents();
-      if (opener_wc) {
-        if (auto* context =
-                glic::GlicMediaContext::GetOrCreateForCurrentDocument(
-                    opener_wc->GetPrimaryMainFrame())) {
-          context->OnPeerConnectionAdded();
-        }
-      }
-    }
-
-    // Notify speech recognition clients so active recognizers in affected
-    // frames are reset when a peer connection starts.
-    if (auto* client_browser_interface =
-            SpeechRecognitionClientBrowserInterfaceFactory::
-                GetForProfileIfExists(
-                    Profile::FromBrowserContext(wc->GetBrowserContext()))) {
-      client_browser_interface->OnLiveCaptionAvailabilityChanged();
+  void AddProfileRegistration() {
+    if (registration_count_++ == 0) {
+      observer_ = std::make_unique<PeerConnectionObserver>(*this);
     }
   }
 
-  void OnPeerConnectionRemoved(
+  void RemoveProfileRegistration() {
+    CHECK_GT(registration_count_, 0u);
+    if (--registration_count_ == 0) {
+      observer_.reset();
+      active_peer_connections_.clear();
+    }
+  }
+
+  bool HasActivePeerConnection(content::WebContents* web_contents) const {
+    if (!web_contents || web_contents->IsBeingDestroyed()) {
+      return false;
+    }
+    return std::ranges::any_of(
+        active_peer_connections_, [web_contents](const auto& entry) {
+          if (entry.second.web_contents.get() != web_contents) {
+            return false;
+          }
+          auto* rfh = content::RenderFrameHost::FromID(entry.first.first);
+          return rfh && rfh->IsActive();
+        });
+  }
+
+  void HandlePeerConnectionAdded(
       content::GlobalRenderFrameHostId render_frame_host_id,
-      int lid) override {
+      int lid) {
     auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id);
-    if (!rfh) {
+    if (!rfh ||
+        rfh->IsInLifecycleState(
+            content::RenderFrameHost::LifecycleState::kPendingDeletion)) {
       return;
     }
 
     auto* wc = content::WebContents::FromRenderFrameHost(rfh);
-    if (!wc) {
+    if (!wc || wc->IsBeingDestroyed()) {
       return;
     }
 
-    // Attribute this to all frames in the WebContents.
-    wc->ForEachRenderFrameHost([](content::RenderFrameHost* rfh) {
-      if (auto* context = glic::GlicMediaContext::GetForCurrentDocument(rfh)) {
-        context->OnPeerConnectionRemoved();
-      }
-    });
+    Profile* profile = Profile::FromBrowserContext(wc->GetBrowserContext());
+    if (!profile) {
+      return;
+    }
 
-    // Also attribute this to its opener WebContents if this is a document PiP
-    // window.
-    if (auto* pip_window_manager =
-            PictureInPictureWindowManager::GetInstance()) {
-      auto* opener_wc = pip_window_manager->GetWebContents();
-      if (opener_wc) {
-        if (auto* context = glic::GlicMediaContext::GetForCurrentDocument(
-                opener_wc->GetPrimaryMainFrame())) {
-          context->OnPeerConnectionRemoved();
+    active_peer_connections_[{render_frame_host_id, lid}] = {
+        wc->GetWeakPtr(), profile->GetWeakPtr()};
+    if (!wc->GetUserData(kGlicMediaTrackedWebContentsKey)) {
+      wc->SetUserData(kGlicMediaTrackedWebContentsKey,
+                      std::make_unique<TrackedWebContentsObserver>(
+                          *this, wc, profile->GetWeakPtr()));
+    }
+
+    if (rfh->IsActive()) {
+      NotifyAvailabilityChanged(profile);
+    }
+  }
+
+  void HandlePeerConnectionRemoved(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int lid) {
+    auto it = active_peer_connections_.find({render_frame_host_id, lid});
+    if (it == active_peer_connections_.end()) {
+      return;
+    }
+
+    base::WeakPtr<Profile> profile = it->second.profile;
+    active_peer_connections_.erase(it);
+    CleanupExpiredEntries();
+
+    auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id);
+    if (profile && (!rfh || rfh->IsActive())) {
+      NotifyAvailabilityChanged(profile.get());
+    }
+  }
+
+ private:
+  using PeerConnectionKey = std::pair<content::GlobalRenderFrameHostId, int>;
+
+  struct TrackedPeerConnection {
+    base::WeakPtr<content::WebContents> web_contents;
+    base::WeakPtr<Profile> profile;
+  };
+
+  class PeerConnectionObserver
+      : public content::PeerConnectionTrackerHostObserver {
+   public:
+    explicit PeerConnectionObserver(GlicMediaPeerConnectionTracker& tracker)
+        : tracker_(tracker) {}
+    ~PeerConnectionObserver() override = default;
+
+    void OnPeerConnectionAdded(
+        content::GlobalRenderFrameHostId render_frame_host_id,
+        int lid,
+        base::ProcessId /*pid*/,
+        const std::string& /*url*/,
+        const std::string& /*rtc_configuration*/) override {
+      tracker_->HandlePeerConnectionAdded(render_frame_host_id, lid);
+    }
+
+    void OnPeerConnectionRemoved(
+        content::GlobalRenderFrameHostId render_frame_host_id,
+        int lid) override {
+      tracker_->HandlePeerConnectionRemoved(render_frame_host_id, lid);
+    }
+
+   private:
+    raw_ref<GlicMediaPeerConnectionTracker> tracker_;
+  };
+
+  class TrackedWebContentsObserver : public base::SupportsUserData::Data,
+                                     public content::WebContentsObserver {
+   public:
+    TrackedWebContentsObserver(GlicMediaPeerConnectionTracker& tracker,
+                               content::WebContents* web_contents,
+                               base::WeakPtr<Profile> profile)
+        : content::WebContentsObserver(web_contents),
+          tracker_(tracker),
+          profile_(std::move(profile)) {}
+
+    ~TrackedWebContentsObserver() override {
+      const size_t erased = tracker_->CleanupExpiredEntries();
+      if (erased > 0 && profile_) {
+        NotifyAvailabilityChanged(profile_.get());
+      }
+    }
+
+    void RenderFrameDeleted(content::RenderFrameHost* rfh) override {
+      const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+      const size_t erased = base::EraseIf(
+          tracker_->active_peer_connections_,
+          [&rfh_id](const auto& entry) { return entry.first.first == rfh_id; });
+      if (erased > 0 && profile_) {
+        NotifyAvailabilityChanged(profile_.get());
+      }
+    }
+
+    void RenderFrameHostStateChanged(
+        content::RenderFrameHost* rfh,
+        content::RenderFrameHost::LifecycleState old_state,
+        content::RenderFrameHost::LifecycleState new_state) override {
+      const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+      if (new_state ==
+          content::RenderFrameHost::LifecycleState::kPendingDeletion) {
+        const size_t erased = base::EraseIf(
+            tracker_->active_peer_connections_, [&rfh_id](const auto& entry) {
+              return entry.first.first == rfh_id;
+            });
+        if (erased > 0 && profile_) {
+          NotifyAvailabilityChanged(profile_.get());
         }
+        return;
+      }
+
+      const bool active_changed =
+          (old_state == content::RenderFrameHost::LifecycleState::kActive) !=
+          (new_state == content::RenderFrameHost::LifecycleState::kActive);
+      if (active_changed && profile_ &&
+          std::ranges::any_of(tracker_->active_peer_connections_,
+                              [&rfh_id](const auto& entry) {
+                                return entry.first.first == rfh_id;
+                              })) {
+        NotifyAvailabilityChanged(profile_.get());
       }
     }
 
-    // Re-evaluate speech recognition availability so affected frames can
-    // resume transcription once all peer connections are removed.
-    if (auto* client_browser_interface =
-            SpeechRecognitionClientBrowserInterfaceFactory::
-                GetForProfileIfExists(
-                    Profile::FromBrowserContext(wc->GetBrowserContext()))) {
-      client_browser_interface->OnLiveCaptionAvailabilityChanged();
-    }
+   private:
+    raw_ref<GlicMediaPeerConnectionTracker> tracker_;
+    base::WeakPtr<Profile> profile_;
+  };
+
+  size_t CleanupExpiredEntries() {
+    return base::EraseIf(active_peer_connections_, [](const auto& entry) {
+      return !entry.second.web_contents;
+    });
+  }
+
+  size_t registration_count_ = 0;
+  std::unique_ptr<PeerConnectionObserver> observer_;
+  base::flat_map<PeerConnectionKey, TrackedPeerConnection>
+      active_peer_connections_;
+};
+
+class GlicMediaPeerConnectionTrackerRegistration
+    : public base::SupportsUserData::Data {
+ public:
+  GlicMediaPeerConnectionTrackerRegistration() {
+    GlicMediaPeerConnectionTracker::GetInstance().AddProfileRegistration();
+  }
+  ~GlicMediaPeerConnectionTrackerRegistration() override {
+    GlicMediaPeerConnectionTracker::GetInstance().RemoveProfileRegistration();
   }
 };
 
-class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
-                                 public base::SupportsUserData::Data {
+class GlicMediaIntegrationImpl
+    : public glic::GlicMediaIntegration,
+      public base::SupportsUserData::Data,
+      public MediaStreamCaptureIndicator::Observer,
+      public PictureInPictureWindowManager::Observer {
  public:
   explicit GlicMediaIntegrationImpl(Profile*);
   ~GlicMediaIntegrationImpl() override = default;
@@ -147,6 +293,16 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   void SetExcludedOrigins(
       const std::vector<url::Origin>& excluded_origins) override;
   bool IsInitializedForTesting() const override;  // IN-TEST
+
+  // MediaStreamCaptureIndicator::Observer:
+  void OnIsCapturingVideoChanged(content::WebContents* web_contents,
+                                 bool is_capturing_video) override;
+  void OnIsCapturingAudioChanged(content::WebContents* web_contents,
+                                 bool is_capturing_audio) override;
+
+  // PictureInPictureWindowManager::Observer:
+  void OnEnterPictureInPicture() override;
+  void OnExitPictureInPicture() override;
 
   // GlicMediaIntegrationImpl:
   void OnContextUpdated(glic::GlicMediaContext* context);
@@ -165,11 +321,20 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   static constexpr size_t max_size_bytes_ = 20000;
   glic::GlicMediaPageCache page_cache_;
 
-  std::unique_ptr<GlicMediaPeerConnectionObserver> rtc_observer_;
+  bool initialized_ = false;
+  base::WeakPtr<Profile> active_document_pip_profile_;
+  scoped_refptr<MediaStreamCaptureIndicator> capture_indicator_;
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      capture_observation_{this};
+  base::ScopedObservation<PictureInPictureWindowManager,
+                          PictureInPictureWindowManager::Observer>
+      pip_observation_{this};
   std::vector<url::Origin> excluded_origins_;
   base::CallbackListSubscription subscription_;
 
  private:
+  bool MatchesProfile(Profile* target_profile) const;
   void OnPrefChanged();
 
   PrefChangeRegistrar pref_change_registrar_;
@@ -202,8 +367,7 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
     // Disallow transcription if the document is excluded (e.g. due to active
     // WebRTC peer connections or media capture) to avoid creating unnecessary
     // SODA instances.
-    auto* context = glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh);
-    return context && !context->IsExcludedFromTranscript();
+    return !glic::GlicMediaContext::IsExcludedFromTranscript(rfh);
   }
 
   bool OnTranscription(content::RenderFrameHost* rfh,
@@ -255,9 +419,27 @@ GlicMediaIntegrationImpl::GlicMediaIntegrationImpl(Profile* profile)
 
 void GlicMediaIntegrationImpl::Initialize() {
   // Initialization should only happen once.
-  CHECK(!rtc_observer_);
+  CHECK(!initialized_);
+  initialized_ = true;
 
-  rtc_observer_ = std::make_unique<GlicMediaPeerConnectionObserver>();
+  if (auto* dispatcher = MediaCaptureDevicesDispatcher::GetInstance()) {
+    capture_indicator_ = dispatcher->GetMediaStreamCaptureIndicator();
+    if (capture_indicator_) {
+      capture_observation_.Observe(capture_indicator_.get());
+    }
+  }
+
+  if (auto* pip_window_manager = PictureInPictureWindowManager::GetInstance()) {
+    pip_observation_.Observe(pip_window_manager);
+    auto* opener_wc = pip_window_manager->GetWebContents();
+    Profile* opener_profile =
+        opener_wc ? Profile::FromBrowserContext(opener_wc->GetBrowserContext())
+                  : nullptr;
+    if (opener_profile && pip_window_manager->GetChildWebContents() &&
+        MatchesProfile(opener_profile)) {
+      active_document_pip_profile_ = opener_profile->GetWeakPtr();
+    }
+  }
 
   // Default to turning off for YT. Set this before enabling the headless
   // caption pref so that any synchronous availability notifications already
@@ -278,6 +460,12 @@ void GlicMediaIntegrationImpl::Initialize() {
   // For now, enable the pref if we get this far.  Do this after getting the
   // Live Caption controller, since it resets the pref to false.
   profile_->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
+}
+
+bool GlicMediaIntegrationImpl::MatchesProfile(Profile* target_profile) const {
+  return target_profile && (target_profile == profile_ ||
+                            (!profile_->IsOffTheRecord() &&
+                             target_profile->GetOriginalProfile() == profile_));
 }
 
 void GlicMediaIntegrationImpl::OnPrefChanged() {
@@ -409,6 +597,58 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
   content_attributes->mutable_text_data()->set_text_content(std::move(result));
 }
 
+void GlicMediaIntegrationImpl::OnIsCapturingVideoChanged(
+    content::WebContents* web_contents,
+    bool /*is_capturing_video*/) {
+  if (!web_contents) {
+    return;
+  }
+  Profile* target_profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (MatchesProfile(target_profile)) {
+    NotifyAvailabilityChanged(target_profile);
+  }
+}
+
+void GlicMediaIntegrationImpl::OnIsCapturingAudioChanged(
+    content::WebContents* web_contents,
+    bool /*is_capturing_audio*/) {
+  if (!web_contents) {
+    return;
+  }
+  Profile* target_profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (MatchesProfile(target_profile)) {
+    NotifyAvailabilityChanged(target_profile);
+  }
+}
+
+void GlicMediaIntegrationImpl::OnEnterPictureInPicture() {
+  active_document_pip_profile_.reset();
+  auto* pip_window_manager = PictureInPictureWindowManager::GetInstance();
+  if (!pip_window_manager) {
+    return;
+  }
+  auto* opener_wc = pip_window_manager->GetWebContents();
+  Profile* opener_profile =
+      opener_wc ? Profile::FromBrowserContext(opener_wc->GetBrowserContext())
+                : nullptr;
+  if (opener_profile && pip_window_manager->GetChildWebContents() &&
+      MatchesProfile(opener_profile)) {
+    active_document_pip_profile_ = opener_profile->GetWeakPtr();
+    NotifyAvailabilityChanged(opener_profile);
+  }
+}
+
+void GlicMediaIntegrationImpl::OnExitPictureInPicture() {
+  if (Profile* pip_profile = active_document_pip_profile_.get()) {
+    active_document_pip_profile_.reset();
+    NotifyAvailabilityChanged(pip_profile);
+  } else {
+    active_document_pip_profile_.reset();
+  }
+}
+
 void GlicMediaIntegrationImpl::OnContextUpdated(
     glic::GlicMediaContext* context) {
   page_cache_.PlaceAtFront(context);
@@ -420,15 +660,12 @@ void GlicMediaIntegrationImpl::OnListenerDestroyed() {
 
 void GlicMediaIntegrationImpl::OnPeerConnectionAddedForTesting(
     content::RenderFrameHost* rfh) {
-  auto id = rfh->GetGlobalId();
-  rtc_observer_->OnPeerConnectionAdded(id, /*lid=*/0, /*pid=*/{}, /*url=*/"",
-                                       /*rtc_configuration=*/"");
+  SimulatePeerConnectionAddedForTesting(rfh);  // IN-TEST
 }
 
 void GlicMediaIntegrationImpl::OnPeerConnectionRemovedForTesting(
     content::RenderFrameHost* rfh) {
-  auto id = rfh->GetGlobalId();
-  rtc_observer_->OnPeerConnectionRemoved(id, /*lid=*/0);
+  SimulatePeerConnectionRemovedForTesting(rfh);  // IN-TEST
 }
 
 void GlicMediaIntegrationImpl::SetExcludedOrigins(
@@ -437,12 +674,61 @@ void GlicMediaIntegrationImpl::SetExcludedOrigins(
 }
 
 bool GlicMediaIntegrationImpl::IsInitializedForTesting() const {
-  return !!rtc_observer_;
+  return initialized_;
 }
 
 }  // namespace
 
 namespace glic {
+
+// static
+void GlicMediaIntegration::EnsurePeerConnectionTrackerInitialized(
+    Profile* profile) {
+  if (!profile || !captions::IsHeadlessCaptionFeatureSupported()) {
+    return;
+  }
+  if (!profile->GetUserData(kGlicMediaPeerConnectionTrackerKey)) {
+    profile->SetUserData(
+        kGlicMediaPeerConnectionTrackerKey,
+        std::make_unique<GlicMediaPeerConnectionTrackerRegistration>());
+  }
+}
+
+// static
+bool GlicMediaIntegration::HasActivePeerConnection(
+    content::WebContents* web_contents) {
+  return GlicMediaPeerConnectionTracker::GetInstance().HasActivePeerConnection(
+      web_contents);
+}
+
+// static
+void GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(
+    content::RenderFrameHost* rfh,
+    int lid) {
+  if (!rfh) {
+    return;
+  }
+  if (auto* browser_context = rfh->GetBrowserContext();
+      browser_context &&
+      !browser_context->GetUserData(kGlicMediaPeerConnectionTrackerKey)) {
+    browser_context->SetUserData(
+        kGlicMediaPeerConnectionTrackerKey,
+        std::make_unique<GlicMediaPeerConnectionTrackerRegistration>());
+  }
+  GlicMediaPeerConnectionTracker::GetInstance().HandlePeerConnectionAdded(
+      rfh->GetGlobalId(), lid);
+}
+
+// static
+void GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(
+    content::RenderFrameHost* rfh,
+    int lid) {
+  if (!rfh) {
+    return;
+  }
+  GlicMediaPeerConnectionTracker::GetInstance().HandlePeerConnectionRemoved(
+      rfh->GetGlobalId(), lid);
+}
 
 // static
 GlicMediaIntegration* GlicMediaIntegration::GetFor(
@@ -476,6 +762,8 @@ GlicMediaIntegration* GlicMediaIntegration::GetFor(Profile* profile) {
   if (!captions::IsHeadlessCaptionFeatureSupported()) {
     return nullptr;
   }
+
+  EnsurePeerConnectionTrackerInitialized(profile);
 
   auto* data = static_cast<GlicMediaIntegrationImpl*>(
       profile->GetUserData(kGlicMediaIntegrationKey));

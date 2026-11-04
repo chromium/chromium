@@ -254,6 +254,10 @@ GlicKeyedService::GlicKeyedService(
     TryPreload(GlicWarmingTrigger::kStartup);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  GlicMediaIntegration::EnsurePeerConnectionTrackerInitialized(profile_);
+#endif
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&GlicKeyedService::InitializeAfterConstruction,
                                 GetWeakPtr()));

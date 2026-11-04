@@ -61,6 +61,8 @@ if (!is_android) {
       "//chrome/browser/accessibility/live_caption",
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/picture_in_picture",
       "//chrome/browser/prefs",
       "//chrome/browser/speech",
       "//chrome/test:test_support",
@@ -72,6 +74,9 @@ if (!is_android) {
       "//components/optimization_guide/content/browser:test_support",
       "//components/soda",
       "//components/ukm:test_support",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
       "//testing/gmock",
       "//testing/gtest",
     ]

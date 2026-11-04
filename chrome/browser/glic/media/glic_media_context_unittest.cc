@@ -10,8 +10,10 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
@@ -107,23 +109,40 @@ class GlicMediaContextTest : public ChromeRenderViewHostTestHarness {
   void SetMetadata(const media_session::MediaMetadata& metadata) {
     metadata_ = metadata;
   }
-  // Helper to simulate audio capture for a given WebContents.
+  // Helper to simulate audio or video capture for a given WebContents.
   // Returns a stream object whose lifetime controls the capture.
-  std::unique_ptr<content::MediaStreamUI> SimulateAudioCapture(
-      content::WebContents* web_contents) {
+  std::unique_ptr<content::MediaStreamUI> SimulateMediaCapture(
+      content::WebContents* web_contents,
+      blink::mojom::MediaStreamType stream_type) {
     scoped_refptr<MediaStreamCaptureIndicator> capture_indicator =
         MediaCaptureDevicesDispatcher::GetInstance()
             ->GetMediaStreamCaptureIndicator();
-    const blink::MediaStreamDevice audio_device(
-        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "id", "name");
-    blink::mojom::StreamDevices devices(audio_device, {});
+    const blink::MediaStreamDevice device(stream_type, "id", "name");
+    blink::mojom::StreamDevices devices;
+    if (stream_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      devices.audio_device = device;
+    } else {
+      devices.video_device = device;
+    }
     std::unique_ptr<content::MediaStreamUI> stream =
         capture_indicator->RegisterMediaStream(web_contents, devices);
     stream->OnStarted(base::DoNothing(),
                       content::MediaStreamUI::SourceCallback(), std::string(),
                       {}, content::MediaStreamUI::StateChangeCallback());
-    EXPECT_TRUE(capture_indicator->IsCapturingAudio(web_contents));
+    EXPECT_TRUE(capture_indicator->IsCapturingUserMedia(web_contents));
     return stream;
+  }
+
+  std::unique_ptr<content::MediaStreamUI> SimulateAudioCapture(
+      content::WebContents* web_contents) {
+    return SimulateMediaCapture(
+        web_contents, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  }
+
+  std::unique_ptr<content::MediaStreamUI> SimulateVideoCapture(
+      content::WebContents* web_contents) {
+    return SimulateMediaCapture(
+        web_contents, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
   }
 
  private:
@@ -228,19 +247,32 @@ TEST_F(GlicMediaContextTest, AudioCaptureInPiPStopsTranscription) {
   pip_controller->Close(false);
 }
 
-TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
-  // Send a transcription and verify that it is ignored once a peer connection
-  // is added to the WebContents.
-  context()->OnPeerConnectionAdded();
+TEST_F(GlicMediaContextTest, VideoCaptureStopsTranscription) {
+  auto stream = SimulateVideoCapture(web_contents());
+
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
   EXPECT_TRUE(context()->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
   EXPECT_EQ(GetTranscriptText(context()), "");
+
+  stream.reset();
+  EXPECT_FALSE(context()->IsExcludedFromTranscript());
+}
+
+TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
+  // Send a transcription and verify that it is ignored once a peer connection
+  // is added to the WebContents.
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(rfh());
+  EXPECT_TRUE(context()->OnResult(
+      media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
+  EXPECT_EQ(GetTranscriptText(context()), "");
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(rfh());
 }
 
 TEST_F(GlicMediaContextTest, PeerConnectionAddedAndRemovedResetsExclusion) {
-  context()->OnPeerConnectionAdded();
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(rfh());
   EXPECT_TRUE(context()->IsExcludedFromTranscript());
-  context()->OnPeerConnectionRemoved();
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(rfh());
   EXPECT_FALSE(context()->IsExcludedFromTranscript());
 }
 
@@ -249,9 +281,9 @@ TEST_F(GlicMediaContextTest, ExclusionRemainsIfUserMediaIsActive) {
   auto stream = SimulateAudioCapture(web_contents());
 
   // Add and remove a peer connection.
-  context()->OnPeerConnectionAdded();
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(rfh());
   EXPECT_TRUE(context()->IsExcludedFromTranscript());
-  context()->OnPeerConnectionRemoved();
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(rfh());
 
   // Exclusion should remain active because of user media.
   EXPECT_TRUE(context()->IsExcludedFromTranscript());
@@ -260,15 +292,68 @@ TEST_F(GlicMediaContextTest, ExclusionRemainsIfUserMediaIsActive) {
 }
 
 TEST_F(GlicMediaContextTest, ExclusionRemainsIfPeerConnectionsAreActive) {
-  context()->OnPeerConnectionAdded();
-  context()->OnPeerConnectionAdded();
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(rfh(), /*lid=*/1);
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(rfh(), /*lid=*/2);
   EXPECT_TRUE(context()->IsExcludedFromTranscript());
 
-  context()->OnPeerConnectionRemoved();
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(rfh(),
+                                                                /*lid=*/1);
   EXPECT_TRUE(context()->IsExcludedFromTranscript());
 
-  context()->OnPeerConnectionRemoved();
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(rfh(),
+                                                                /*lid=*/2);
   EXPECT_FALSE(context()->IsExcludedFromTranscript());
+}
+
+TEST_F(GlicMediaContextTest,
+       DocumentPipBidirectionalExclusionAndUnrelatedTabIsolation) {
+  std::unique_ptr<content::WebContents> pip_web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          web_contents()->GetBrowserContext(), nullptr);
+  std::unique_ptr<content::WebContents> unrelated_web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          web_contents()->GetBrowserContext(), nullptr);
+
+  auto* pip_context = GlicMediaContext::GetOrCreateForCurrentDocument(
+      pip_web_contents->GetPrimaryMainFrame());
+  auto* unrelated_context = GlicMediaContext::GetOrCreateForCurrentDocument(
+      unrelated_web_contents->GetPrimaryMainFrame());
+
+  auto* pip_window_manager = PictureInPictureWindowManager::GetInstance();
+  pip_window_manager->EnterDocumentPictureInPicture(web_contents(),
+                                                    pip_web_contents.get());
+
+  // Opener peer connection excludes both opener and PiP child, but not an
+  // unrelated tab.
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(rfh(), /*lid=*/1);
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
+  EXPECT_TRUE(pip_context->IsExcludedFromTranscript());
+  EXPECT_FALSE(unrelated_context->IsExcludedFromTranscript());
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(rfh(),
+                                                                /*lid=*/1);
+  EXPECT_FALSE(context()->IsExcludedFromTranscript());
+  EXPECT_FALSE(pip_context->IsExcludedFromTranscript());
+
+  // Opener media capture also excludes the PiP child.
+  auto opener_stream = SimulateAudioCapture(web_contents());
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
+  EXPECT_TRUE(pip_context->IsExcludedFromTranscript());
+  EXPECT_FALSE(unrelated_context->IsExcludedFromTranscript());
+  opener_stream.reset();
+
+  // An unrelated tab's peer connection or capture does NOT exclude the PiP
+  // opener or child.
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(
+      unrelated_web_contents->GetPrimaryMainFrame(), /*lid=*/9);
+  auto unrelated_stream = SimulateVideoCapture(unrelated_web_contents.get());
+  EXPECT_TRUE(unrelated_context->IsExcludedFromTranscript());
+  EXPECT_FALSE(context()->IsExcludedFromTranscript());
+  EXPECT_FALSE(pip_context->IsExcludedFromTranscript());
+  unrelated_stream.reset();
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(
+      unrelated_web_contents->GetPrimaryMainFrame(), /*lid=*/9);
+
+  pip_window_manager->ExitPictureInPicture();
 }
 
 TEST_F(GlicMediaContextTest, OnResult_FinalResultWithTiming_EmptyContext) {
@@ -554,9 +639,9 @@ TEST_F(GlicMediaContextTest, HasTranscriptChunks) {
   EXPECT_TRUE(context()->HasTranscriptChunks());
 
   // Exclusion (e.g., peer connection) makes it false even if chunks exist.
-  context()->OnPeerConnectionAdded();
+  GlicMediaIntegration::SimulatePeerConnectionAddedForTesting(rfh());
   EXPECT_FALSE(context()->HasTranscriptChunks());
-  context()->OnPeerConnectionRemoved();
+  GlicMediaIntegration::SimulatePeerConnectionRemovedForTesting(rfh());
   EXPECT_TRUE(context()->HasTranscriptChunks());
 
   // If the media session title changes to something new, it's false for that

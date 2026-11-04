@@ -37,6 +37,23 @@ class GlicMediaIntegration {
   static GlicMediaIntegration* GetFor(content::WebContents*);
   static GlicMediaIntegration* GetFor(Profile*);
 
+  // Ensures active WebRTC peer connections are tracked while `profile` is
+  // alive, even before `GlicMediaIntegration` is lazily initialized.
+  static void EnsurePeerConnectionTrackerInitialized(Profile* profile);
+
+  // Returns true if `web_contents` has an active WebRTC peer connection in any
+  // of its frames.
+  static bool HasActivePeerConnection(content::WebContents* web_contents);
+
+  // Simulates a peer connection being added or removed on `rfh` with local ID
+  // `lid`.
+  static void SimulatePeerConnectionAddedForTesting(
+      content::RenderFrameHost* rfh,
+      int lid = 0);
+  static void SimulatePeerConnectionRemovedForTesting(
+      content::RenderFrameHost* rfh,
+      int lid = 0);
+
   // Use `context_root` to store our context information.  `context_root` will
   // be overwritten.  This selects a frame that has a transcript, if any.
   //
