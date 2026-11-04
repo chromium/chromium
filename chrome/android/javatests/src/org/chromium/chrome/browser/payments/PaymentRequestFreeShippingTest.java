@@ -52,6 +52,7 @@ public class PaymentRequestFreeShippingTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
 
+    private static final int RENDER_TEST_PORT = 41234;
     private static final int RENDER_TEST_REVISION = 3;
     private static final String RENDER_TEST_REVISION_DESCRIPTION =
             "Vectorize expand_more and expand_less icons";
@@ -73,6 +74,8 @@ public class PaymentRequestFreeShippingTest {
     public void setupNightMode(boolean nightModeEnabled) {
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+        // Pin the server port for testPayWithRender so origin strings in goldens don't vary.
+        mCtaTestRule.getEmbeddedTestServerRule().setServerPort(RENDER_TEST_PORT);
     }
 
     @AfterClass

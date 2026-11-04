@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -20,8 +21,8 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.concurrent.TimeoutException;
@@ -30,10 +31,11 @@ import java.util.concurrent.TimeoutException;
  * A payment integration test for a merchant that requires shipping address to calculate shipping.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestShippingAddressChangeTest {
-    public final FreshCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     public final PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule(

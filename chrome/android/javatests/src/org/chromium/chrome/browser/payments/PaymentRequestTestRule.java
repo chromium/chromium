@@ -27,6 +27,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskObserverForTest;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSecti
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.OptionRow;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUi;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUi.PaymentRequestObserverForTest;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -48,6 +50,7 @@ import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.PaymentRequestServiceObserverForTest;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.payments.ui.test_support.FakeClock;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -140,9 +143,6 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ static final String ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =
             "enable-experimental-web-platform-features";
 
-    // We need a consistent port so that strings don't vary for render tests.
-    private static final int TEST_PORT = 41234;
-
     private static final String TEST_PAGE_PATH_PREFIX = "/components/test/data/payments/";
 
     private final PaymentsCallbackHelper<PaymentRequestUi> mShowCalled;
@@ -219,9 +219,6 @@ import java.util.concurrent.atomic.AtomicReference;
         mCompleteHandled = new CallbackHelper();
         mRendererClosedMojoConnection = new CallbackHelper();
         mWebContentsRef = new AtomicReference<>();
-        if (!testFileName.startsWith("data:")) {
-            ctaTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
-        }
         mAutoAdvanceInputProtectorClock = true;
         mClock = new FakeClock();
         mInputProtector = new InputProtector(mClock);
@@ -1374,6 +1371,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
     @Override
     protected void after() {
+        if (mWebContentsRef.get() != null) {
+            try {
+                new AutofillTestHelper().clearAllDataForTesting();
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            UserPrefs.get(mCtaTestRule.getProfile(/* incognito= */ false))
+                                    .clearPref(Pref.CAN_MAKE_PAYMENT_ENABLED));
+        }
         mWebContentsRef.set(null);
         PaymentAppService.getInstance().resetForTest();
         super.after();
