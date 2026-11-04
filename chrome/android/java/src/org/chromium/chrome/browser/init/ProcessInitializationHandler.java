@@ -16,6 +16,8 @@ import android.text.format.DateUtils;
 import androidx.annotation.CallSuper;
 import androidx.annotation.WorkerThread;
 
+import com.google.android.material.color.DynamicColors;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
@@ -455,6 +457,9 @@ public class ProcessInitializationHandler {
                                             .isInNightMode();
                             OsSettingsProviderAndroidBridge.setPreferredColorScheme(isDark);
                         });
+        if (DynamicColors.isDynamicColorAvailable()) {
+            OsSettingsProviderAndroidBridge.registerSystemAccentColorObserver();
+        }
 
         if (DeviceInfo.isAutomotive()) {
             DrivingRestrictionsManager.initialize();

@@ -40,6 +40,15 @@ void OsSettingsProviderAndroid::SetPreferredColorScheme(
   NotifyOnSettingsChanged();
 }
 
+void OsSettingsProviderAndroid::SetAccentColor(
+    std::optional<SkColor> accent_color) {
+  if (accent_color_ == accent_color) {
+    return;
+  }
+  accent_color_ = accent_color;
+  NotifyOnSettingsChanged();
+}
+
 // JNI Methods
 static void JNI_OsSettingsProviderAndroidBridge_SetPreferredColorScheme(
     JNIEnv* env,
@@ -55,6 +64,16 @@ static void JNI_OsSettingsProviderAndroidBridge_SetPreferredColorScheme(
               : NativeTheme::PreferredColorScheme::kLight);
 }
 
+static void JNI_OsSettingsProviderAndroidBridge_SetAccentColor(JNIEnv* env,
+                                                               int32_t color) {
+  auto& provider = OsSettingsProvider::Get();
+  if (!provider.IsAndroidProvider()) {
+    return;
+  }
+  static_cast<OsSettingsProviderAndroid&>(provider).SetAccentColor(
+      static_cast<SkColor>(color));
+}
+
 NativeTheme::PreferredContrast OsSettingsProviderAndroid::PreferredContrast()
     const {
   return high_contrast_enabled_ ? NativeTheme::PreferredContrast::kMore
@@ -67,6 +86,10 @@ bool OsSettingsProviderAndroid::PrefersReducedTransparency() const {
 
 bool OsSettingsProviderAndroid::PrefersInvertedColors() const {
   return display_inversion_enabled_;
+}
+
+std::optional<SkColor> OsSettingsProviderAndroid::AccentColor() const {
+  return accent_color_;
 }
 
 base::TimeDelta OsSettingsProviderAndroid::CaretBlinkInterval() const {

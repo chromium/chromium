@@ -55,5 +55,34 @@ TEST_F(OsSettingsProviderAndroidTest,
   provider.SetPreferredColorScheme(original_scheme);
 }
 
+TEST_F(OsSettingsProviderAndroidTest, AccentColor) {
+  EXPECT_TRUE(OsSettingsProvider::Get().IsAndroidProvider());
+  auto& provider =
+      static_cast<OsSettingsProviderAndroid&>(OsSettingsProvider::Get());
+
+  auto original_accent = provider.AccentColor();
+
+  bool notified = false;
+  auto subscription =
+      provider.RegisterOsSettingsChangedCallback(base::BindRepeating(
+          [](bool* notified, bool force_notify) { *notified = true; },
+          &notified));
+
+  provider.SetAccentColor(SK_ColorBLUE);
+  EXPECT_EQ(provider.AccentColor(), SK_ColorBLUE);
+  EXPECT_TRUE(notified);
+
+  // Redundant transitions must not trigger notifications.
+  notified = false;
+  provider.SetAccentColor(SK_ColorBLUE);
+  EXPECT_FALSE(notified);
+
+  provider.SetAccentColor(std::nullopt);
+  EXPECT_EQ(provider.AccentColor(), std::nullopt);
+  EXPECT_TRUE(notified);
+
+  provider.SetAccentColor(original_accent);
+}
+
 }  // namespace
 }  // namespace ui
