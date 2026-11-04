@@ -33,6 +33,7 @@
 #include "net/ssl/ssl_platform_key_android.h"
 #include "net/ssl/ssl_private_key.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -105,7 +106,7 @@ AwContentsClientBridge::AwContentsClientBridge(JNIEnv* env,
     : java_ref_(env, obj) {
   DCHECK(obj);
   Java_AwContentsClientBridge_setNativeContentsClientBridge(
-      env, obj, reinterpret_cast<intptr_t>(this));
+      env, obj, jni_zero::MakeRaw(this));
 }
 
 AwContentsClientBridge::~AwContentsClientBridge() {
@@ -115,7 +116,8 @@ AwContentsClientBridge::~AwContentsClientBridge() {
   if (obj) {
     // Clear the weak reference from the java peer to the native object since
     // it is possible that java object lifetime can exceed the AwContens.
-    Java_AwContentsClientBridge_setNativeContentsClientBridge(env, obj, 0);
+    Java_AwContentsClientBridge_setNativeContentsClientBridge(env, obj,
+                                                              nullptr);
   }
 
   // Ensure any pending dialogs are cleanly canceled so that the

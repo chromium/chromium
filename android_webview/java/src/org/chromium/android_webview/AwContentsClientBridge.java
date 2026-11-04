@@ -17,7 +17,10 @@ import android.net.http.SslError;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeUnchecked;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper;
@@ -50,12 +53,15 @@ import javax.security.auth.x500.X500Principal;
  */
 @JNINamespace("android_webview")
 public class AwContentsClientBridge {
+    @JniType("::android_webview::AwContentsClientBridge")
+    interface NativeAwContentsClientBridge extends JniTypeToken {}
+
     private static final String TAG = "AwContentsCB";
 
     private AwContentsClient mClient;
     private final AwContents mAwContents;
     // The native peer of this object.
-    private long mNativeContentsClientBridge;
+    private @Nullable JniRawPtr<NativeAwContentsClientBridge> mNativeContentsClientBridge;
 
     private final ClientCertLookupTable mLookupTable;
 
@@ -146,7 +152,7 @@ public class AwContentsClientBridge {
         }
 
         private void provideResponse(PrivateKey privateKey, byte[][] certChain) {
-            if (mNativeContentsClientBridge == 0) return;
+            if (mNativeContentsClientBridge == null) return;
             AwContentsClientBridgeJni.get()
                     .provideClientCertificateResponse(
                             mNativeContentsClientBridge, mId, certChain, privateKey);
@@ -155,8 +161,15 @@ public class AwContentsClientBridge {
 
     // Used by the native peer to set/reset a weak ref to the native peer.
     @CalledByNative
-    private void setNativeContentsClientBridge(long nativeContentsClientBridge) {
+    private void setNativeContentsClientBridge(
+            @Nullable JniRawPtr<NativeAwContentsClientBridge> nativeContentsClientBridge) {
+        if (mNativeContentsClientBridge != null) {
+            mNativeContentsClientBridge.release();
+        }
         mNativeContentsClientBridge = nativeContentsClientBridge;
+        if (nativeContentsClientBridge != null && mAwContents != null) {
+            mAwContents.registerSafePointer(nativeContentsClientBridge);
+        }
     }
 
     // If returns false, the request is immediately canceled, and any call to proceedSslError
@@ -191,7 +204,7 @@ public class AwContentsClientBridge {
     }
 
     private void proceedSslError(boolean proceed, int id) {
-        if (mNativeContentsClientBridge == 0) return;
+        if (mNativeContentsClientBridge == null) return;
         AwContentsClientBridgeJni.get().proceedSslError(mNativeContentsClientBridge, proceed, id);
     }
 
@@ -203,7 +216,7 @@ public class AwContentsClientBridge {
             byte[][] encodedPrincipals,
             final @JniType("std::string") String host,
             final int port) {
-        assert mNativeContentsClientBridge != 0;
+        assert mNativeContentsClientBridge != null;
         ClientCertLookupTable.Cert cert = mLookupTable.getCertData(host, port);
         if (mLookupTable.isDenied(host, port)) {
             AwContentsClientBridgeJni.get()
@@ -539,33 +552,36 @@ public class AwContentsClientBridge {
     }
 
     void confirmJsResult(int id, String prompt) {
-        if (mNativeContentsClientBridge == 0) return;
+        if (mNativeContentsClientBridge == null) return;
         AwContentsClientBridgeJni.get().confirmJsResult(mNativeContentsClientBridge, id, prompt);
     }
 
     void cancelJsResult(int id) {
-        if (mNativeContentsClientBridge == 0) return;
+        if (mNativeContentsClientBridge == null) return;
         AwContentsClientBridgeJni.get().cancelJsResult(mNativeContentsClientBridge, id);
     }
 
     @NativeMethods
     interface Natives {
         void takeSafeBrowsingAction(
-                long nativeAwContentsClientBridge, int action, boolean reporting, int requestId);
+                JniPtr<NativeAwContentsClientBridge> self,
+                int action,
+                boolean reporting,
+                int requestId);
 
-        void proceedSslError(long nativeAwContentsClientBridge, boolean proceed, int id);
+        void proceedSslError(JniPtr<NativeAwContentsClientBridge> self, boolean proceed, int id);
 
         void provideClientCertificateResponse(
-                long nativeAwContentsClientBridge,
+                JniPtr<NativeAwContentsClientBridge> self,
                 int id,
                 byte[][] certChain,
                 PrivateKey androidKey);
 
         void confirmJsResult(
-                long nativeAwContentsClientBridge,
+                JniPtr<NativeAwContentsClientBridge> self,
                 int id,
                 @JniType("std::optional<std::u16string>") @Nullable String prompt);
 
-        void cancelJsResult(long nativeAwContentsClientBridge, int id);
+        void cancelJsResult(JniPtr<NativeAwContentsClientBridge> self, int id);
     }
 }

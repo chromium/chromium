@@ -164,6 +164,7 @@ import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -607,15 +608,18 @@ public class AwContents implements SmartClipProvider {
 
     private static final class AwContentsDestroyConsumer implements Consumer<Boolean> {
         private final JniUniquePtr<NativeAwContents> mNativeAwContents;
+        private final List<JniRawPtr<?>> mSafePointers;
         // Hold onto a reference to the window (via its wrapper), so that it is not destroyed
         // until we are done here.
         private WindowAndroidWrapper mWindowAndroid;
 
         private AwContentsDestroyConsumer(
                 JniUniquePtr<NativeAwContents> nativeAwContents,
-                WindowAndroidWrapper windowAndroid) {
+                WindowAndroidWrapper windowAndroid,
+                List<JniRawPtr<?>> safePointers) {
             mNativeAwContents = nativeAwContents;
             mWindowAndroid = windowAndroid;
+            mSafePointers = safePointers;
             mWindowAndroid.incrementRefFromDestroyRunnable();
         }
 
@@ -629,9 +633,25 @@ public class AwContents implements SmartClipProvider {
         public void accept(Boolean isExplicitCleanup) {
             if (!isExplicitCleanup) {
                 TraceEvent.instant("CleanupReference.garbageCollection.AwContents");
+                // Java peers are already unreachable, so ~AwContents() will see null weak refs.
+                releaseSafePointers();
             }
             mNativeAwContents.destroy();
+            releaseSafePointers();
             mWindowAndroid.decrementRefFromDestroyRunnable();
+        }
+
+        private void releaseSafePointers() {
+            for (JniRawPtr<?> ptr : mSafePointers) {
+                ptr.release();
+            }
+            mSafePointers.clear();
+        }
+    }
+
+    void registerSafePointer(@Nullable JniRawPtr<?> ptr) {
+        if (ptr != null && mSafePointers != null) {
+            mSafePointers.add(ptr);
         }
     }
 
@@ -708,6 +728,7 @@ public class AwContents implements SmartClipProvider {
     // (ie before it is destroyed).
     private CleanupReference mCleanupReference;
     private AwContentsDestroyConsumer mDestroyConsumer;
+    private @Nullable List<JniRawPtr<?>> mSafePointers;
 
     @AnyThread
     public void onWebViewClientUpdated(WebViewClient client) {
@@ -1747,6 +1768,7 @@ public class AwContents implements SmartClipProvider {
         assert mNativeAwContents == null && mCleanupReference == null && mWebContents == null;
 
         mNativeAwContents = newAwContentsPtr;
+        mSafePointers = new ArrayList<>();
         updateNativeAwGLFunctor();
 
         mWebContents = AwContentsJni.get().getWebContents(mNativeAwContents);
@@ -1813,7 +1835,8 @@ public class AwContents implements SmartClipProvider {
 
         // The native side object has been bound to this java instance, so now is the time to
         // bind all the native->java relationships.
-        mDestroyConsumer = new AwContentsDestroyConsumer(mNativeAwContents, mWindowAndroid);
+        mDestroyConsumer =
+                new AwContentsDestroyConsumer(mNativeAwContents, mWindowAndroid, mSafePointers);
         mCleanupReference = new CleanupReference(this, mDestroyConsumer);
         if (textClassifier != null) setTextClassifier(textClassifier);
         if (mOnscreenContentProvider != null) {
@@ -2116,6 +2139,7 @@ public class AwContents implements SmartClipProvider {
             mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
             mNativeAwContents = null;
+            mSafePointers = null;
             mWebContents = null;
             mWebContentsInternals = null;
             mNavigationController = null;
