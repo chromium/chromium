@@ -28,6 +28,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -132,6 +134,8 @@ public class PartialCustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+    // Partial custom tabs don't work in floating window mode.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testPartialCustomTabBottomSheet() throws IOException {
         Intent intent = createBottomSheetIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
