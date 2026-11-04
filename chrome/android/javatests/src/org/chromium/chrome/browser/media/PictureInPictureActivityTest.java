@@ -574,11 +574,12 @@ public class PictureInPictureActivityTest {
     @Test
     @MediumTest
     public void testNotifyNativeWhenTabClose() throws Throwable {
-        mActivityTestRule.skipWindowAndTabStateCleanup();
-
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> mTab.setClosing(/* closing= */ true));
         verify(mNativeMock, times(1)).destroyStartedByJava(NATIVE_OVERLAY);
+        // The tab was only marked as closing, not closed through the TabModel. Unmark it so the
+        // TabModel can close it during teardown.
+        ThreadUtils.runOnUiThreadBlocking(() -> mTab.setClosing(/* closing= */ false));
     }
 
     @Test
