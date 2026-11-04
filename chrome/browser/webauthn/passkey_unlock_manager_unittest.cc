@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -21,6 +22,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/test/browser_task_environment.h"
@@ -65,6 +67,8 @@ using ::testing::WithParamInterface;
 enum EnclaveManagerStatus { kEnclaveReady, kEnclaveNotReady };
 enum PasskeyModelStatus { kPasskeyModelReady, kPasskeyModelNotReady };
 using GpmPinStatus = EnclaveManager::GpmPinAvailability;
+using AccountState =
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
 
 class PasskeyUnlockManagerTest : public testing::Test {
  protected:
@@ -699,7 +703,8 @@ TEST_F(PasskeyUnlockManagerTest, ICloudRecoveryNotCalledWhenFeatureDisabled) {
   ConfigureProfileAndSyncService(kEnclaveNotReady, kPasskeyModelReady,
                                  GpmPinStatus::kGpmPinUnset);
 
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_)).Times(0);
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .Times(0);
 
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   EXPECT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
@@ -711,7 +716,8 @@ TEST_F(PasskeyUnlockManagerTest, ICloudRecoveryNotCalledWithoutPasskeys) {
   PrepareDependencies(/*is_enclave_manager_loaded=*/true, kEnclaveNotReady,
                       kPasskeyModelReady, GpmPinStatus::kGpmPinSetAndUsable);
 
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_)).Times(0);
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .Times(0);
 
   CreatePasskeyUnlockManager();
   test_sync_service()->FireStateChanged();
@@ -729,7 +735,8 @@ TEST_F(PasskeyUnlockManagerTest,
   test_sync_service()->SetFailedDataTypes({syncer::WEBAUTHN_CREDENTIAL});
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
 
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_)).Times(0);
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .Times(0);
 
   CreatePasskeyUnlockManager();
   test_sync_service()->FireStateChanged();
@@ -745,7 +752,8 @@ TEST_F(PasskeyUnlockManagerTest, ICloudRecoveryNotCalledWhenEnclaveReady) {
                       kPasskeyModelReady, GpmPinStatus::kGpmPinSetAndUsable);
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
 
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_)).Times(0);
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .Times(0);
 
   CreatePasskeyUnlockManager();
   test_sync_service()->FireStateChanged();
@@ -761,17 +769,19 @@ TEST_F(PasskeyUnlockManagerTest,
   PrepareDependencies(/*is_enclave_manager_loaded=*/true, kEnclaveNotReady,
                       kPasskeyModelNotReady, GpmPinStatus::kGpmPinSetAndUsable);
 
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_)).Times(0);
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .Times(0);
   CreatePasskeyUnlockManager();
   Mock::VerifyAndClearExpectations(enclave_manager_mock());
 
   EnclaveManagerInterface::Callback recovery_callback;
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_))
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
       .Times(1)
-      .WillOnce(
-          [&recovery_callback](EnclaveManagerInterface::Callback callback) {
-            recovery_callback = std::move(callback);
-          });
+      .WillOnce([&recovery_callback](
+                    std::optional<AccountState>, std::optional<GaiaId>,
+                    EnclaveManagerInterface::Callback callback) {
+        recovery_callback = std::move(callback);
+      });
 
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   passkey_model()->SetReady(true);
@@ -790,11 +800,12 @@ TEST_F(PasskeyUnlockManagerTest, ICloudRecoverySucceedsHidesErrorUi) {
   observation.Observe(passkey_unlock_manager());
 
   EnclaveManagerInterface::Callback recovery_callback;
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_))
-      .WillOnce(
-          [&recovery_callback](EnclaveManagerInterface::Callback callback) {
-            recovery_callback = std::move(callback);
-          });
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .WillOnce([&recovery_callback](
+                    std::optional<AccountState>, std::optional<GaiaId>,
+                    EnclaveManagerInterface::Callback callback) {
+        recovery_callback = std::move(callback);
+      });
 
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_FALSE(recovery_callback.is_null());
@@ -820,11 +831,12 @@ TEST_F(PasskeyUnlockManagerTest,
   observation.Observe(passkey_unlock_manager());
 
   EnclaveManagerInterface::Callback recovery_callback;
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_))
-      .WillOnce(
-          [&recovery_callback](EnclaveManagerInterface::Callback callback) {
-            recovery_callback = std::move(callback);
-          });
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .WillOnce([&recovery_callback](
+                    std::optional<AccountState>, std::optional<GaiaId>,
+                    EnclaveManagerInterface::Callback callback) {
+        recovery_callback = std::move(callback);
+      });
 
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_FALSE(recovery_callback.is_null());
@@ -847,12 +859,13 @@ TEST_F(PasskeyUnlockManagerTest, ICloudRecoveryIsNotRetriggered) {
   observation.Observe(passkey_unlock_manager());
 
   EnclaveManagerInterface::Callback recovery_callback;
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_))
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
       .Times(1)
-      .WillOnce(
-          [&recovery_callback](EnclaveManagerInterface::Callback callback) {
-            recovery_callback = std::move(callback);
-          });
+      .WillOnce([&recovery_callback](
+                    std::optional<AccountState>, std::optional<GaiaId>,
+                    EnclaveManagerInterface::Callback callback) {
+        recovery_callback = std::move(callback);
+      });
 
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_FALSE(recovery_callback.is_null());
@@ -891,7 +904,8 @@ TEST_F(PasskeyUnlockManagerTest,
       true);
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
 
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_)).Times(0);
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .Times(0);
 
   CreatePasskeyUnlockManager();
   test_sync_service()->FireStateChanged();
@@ -917,8 +931,8 @@ TEST_F(PasskeyUnlockManagerTest,
                 kTrustedVaultRecoverabilityDegradedForPasswords);
 
   EnclaveManagerInterface::Callback recovery_callback;
-  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_))
-      .WillOnce(MoveArg<0>(&recovery_callback));
+  EXPECT_CALL(*enclave_manager_mock(), RecoverWithICloudKeychain(_, _, _))
+      .WillOnce(MoveArg<2>(&recovery_callback));
 
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_FALSE(recovery_callback.is_null());

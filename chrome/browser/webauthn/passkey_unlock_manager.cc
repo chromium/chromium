@@ -256,9 +256,12 @@ void PasskeyUnlockManager::MaybeStartICloudRecovery() {
   icloud_recovery_state_ = ICloudRecoveryState::kInProgress;
   // TODO(crbug.com/470327407): Share a single security domain download between
   // the GPM PIN check and iCloud Keychain recovery.
-  enclave_manager()->RecoverWithICloudKeychain(base::IgnoreArgs<bool>(
-      base::BindOnce(&PasskeyUnlockManager::OnICloudRecoveryComplete,
-                     weak_ptr_factory_.GetWeakPtr())));
+  enclave_manager()->RecoverWithICloudKeychain(
+      /*account_state=*/std::nullopt,
+      /*account_state_gaia_id=*/std::nullopt,
+      base::IgnoreArgs<bool>(
+          base::BindOnce(&PasskeyUnlockManager::OnICloudRecoveryComplete,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void PasskeyUnlockManager::OnICloudRecoveryComplete() {

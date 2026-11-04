@@ -199,10 +199,9 @@ chromium-metrics-reviews@google.com.
              in DoNextAction"/>
   <int value="48"
       label="Downloading authentication factors registration state resulted
-             in error in DoDownloadingAccountStateForICloudRecovery"/>
+             in error in StartICloudKeychainRecovery"/>
   <int value="49"
-      label="No iCloud keys in account in
-             DoDownloadingAccountStateForICloudRecovery"/>
+      label="No iCloud keys in account in StartICloudKeychainRecovery"/>
   <int value="50"
       label="No matching local iCloud key in DoRecoveringWithICloudKeychain"/>
   <int value="51" label="Decryption failed in DoRecoveringWithICloudKeychain"/>
@@ -275,6 +274,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager_interface.h:GpmPinAvailability) -->
+
+<!-- LINT.IfChange(ICloudRecoveryAccountStateUsage) -->
+
+<enum name="ICloudRecoveryAccountStateUsage">
+  <int value="0" label="No security domain state was provided"/>
+  <int value="1" label="Provided security domain state was used"/>
+  <int value="2"
+      label="Provided security domain state was discarded because the primary
+             account changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:ICloudRecoveryAccountStateUsage) -->
 
 <!-- LINT.IfChange(ImportedPasskeyStatus) -->
 

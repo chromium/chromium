@@ -536,6 +536,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Enclave.ICloudRecoveryAccountStateUsage"
+    enum="ICloudRecoveryAccountStateUsage" expires_after="2027-08-01">
+  <owner>ammarmk@chromium.org</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <summary>
+    Records whether a caller-supplied security domain state was provided to
+    EnclaveManager::RecoverWithICloudKeychain(), and if so whether it was used
+    by the state machine or discarded because the primary account changed before
+    the recovery step ran (requiring a fresh download). Recorded on macOS when
+    the state machine starts the iCloud Keychain recovery step.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.OpportunisticStoreKeysOutcome"
     enum="EnclaveManagerActionOutcome" expires_after="2027-04-11">
   <owner>ylahodiuk@google.com</owner>

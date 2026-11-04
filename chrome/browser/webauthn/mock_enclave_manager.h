@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_MOCK_ENCLAVE_MANAGER_H_
 #define CHROME_BROWSER_WEBAUTHN_MOCK_ENCLAVE_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockEnclaveManager : public EnclaveManagerInterface {
@@ -31,10 +34,14 @@ class MockEnclaveManager : public EnclaveManagerInterface {
               (EnclaveManagerInterface::GpmPinAvailabilityCallback),
               (override));
 #if BUILDFLAG(IS_MAC)
-  MOCK_METHOD(void,
-              RecoverWithICloudKeychain,
-              (EnclaveManagerInterface::Callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      RecoverWithICloudKeychain,
+      (std::optional<
+           trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>,
+       std::optional<GaiaId>,
+       EnclaveManagerInterface::Callback),
+      (override));
 #endif  // BUILDFLAG(IS_MAC)
   MOCK_METHOD(void,
               LoadAfterDelay,
