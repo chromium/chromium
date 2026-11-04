@@ -43,6 +43,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -53,6 +54,9 @@ class TaskRequestForURLContextTest : public PlatformTest {
     PlatformTest::SetUp();
 
     ClearDefaultBrowserPromoData();
+    // Shared defaults persist across test runs on the simulator.
+    [app_group::GetGroupUserDefaults()
+        removeObjectForKey:AppGroupCommandPreference()];
 
     ResetEnableNewStartupFlowEnabledForTesting();
     scoped_feature_list_.InitAndEnableFeature(kEnableNewStartupFlow);
@@ -70,6 +74,8 @@ class TaskRequestForURLContextTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [app_group::GetGroupUserDefaults()
+        removeObjectForKey:AppGroupCommandPreference()];
     app_state_ = nil;
     mock_startup_information_ = nil;
     browser_.reset();
@@ -99,6 +105,47 @@ class TaskRequestForURLContextTest : public PlatformTest {
   void SetIsFirstRun(BOOL is_first_run) {
     OCMStub([mock_startup_information_ isFirstRun]).andReturn(is_first_run);
   }
+
+  // Writes an App Group command from the share extension, issued at
+  // `command_time`, to the shared defaults.
+  void WriteShareExtensionCommand(NSDate* command_time) {
+    WriteAppGroupCommand(@{
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandAppPreference) :
+          app_group::kOpenCommandSourceShareExtension,
+      base::SysUTF8ToNSString(
+          app_group::kChromeAppGroupCommandCommandPreference) :
+          base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand),
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTimePreference) :
+          command_time,
+    });
+  }
+
+  void WriteAppGroupCommand(NSDictionary* command_dictionary) {
+    [app_group::GetGroupUserDefaults() setObject:command_dictionary
+                                          forKey:AppGroupCommandPreference()];
+  }
+
+  NSString* AppGroupCommandPreference() {
+    return base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandPreference);
+  }
+
+  // Returns a request for `url_string`, with `kTestGaiaID` appended as the
+  // `gaia_id` query item.
+  TaskRequestForURLContext* CreateRequestWithGaiaID(NSString* url_string) {
+    NSString* full_url_string = [NSString
+        stringWithFormat:@"%@%@%s=%@", url_string,
+                         [url_string containsString:@"?"] ? @"&" : @"?",
+                         app_group::kGaiaIDQueryItemName, kTestGaiaID];
+    return [TaskRequestForURLContext
+        taskRequestWithURLContext:CreateMockURLContext(
+                                      [NSURL URLWithString:full_url_string])
+                       sceneState:scene_state_
+                      isColdStart:YES];
+  }
+
+  NSString* const kTestGaiaID = @"test_gaia_id";
+  NSString* const kAppGroupCommandURL =
+      @"googlechrome://x-callback-url/app-group-command";
 
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -328,6 +375,54 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
   histogram_tester.ExpectTotalCount("Startup.ApplicationGroupCommandDelay", 1);
   histogram_tester.ExpectUniqueSample("Startup.ApplicationGroupCommandDelay", 5,
                                       1);
+}
+
+// Tests that a valid share extension App Group command marks the request as
+// coming from the share extension and extracts the `gaia_id`.
+TEST_F(TaskRequestForURLContextTest, TestShareExtensionCommandSetsGaiaID) {
+  WriteShareExtensionCommand([NSDate date]);
+
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
+
+  EXPECT_TRUE(request.isFromShareExtension);
+  EXPECT_NSEQ(kTestGaiaID, request.gaiaID);
+}
+
+// Tests that the share extension origin is kept after the App Group command is
+// no longer in the shared defaults, e.g. when the task is executed later.
+TEST_F(TaskRequestForURLContextTest,
+       TestShareExtensionOriginSurvivesCommandRemoval) {
+  WriteShareExtensionCommand([NSDate date]);
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
+
+  [app_group::GetGroupUserDefaults()
+      removeObjectForKey:AppGroupCommandPreference()];
+
+  EXPECT_TRUE(request.isFromShareExtension);
+}
+
+// Tests that an expired App Group command doesn't allow an account switch.
+TEST_F(TaskRequestForURLContextTest, TestExpiredShareExtensionCommand) {
+  WriteShareExtensionCommand([NSDate
+      dateWithTimeIntervalSinceNow:-2 * app_group::kAppGroupCommandTimeout]);
+
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_NSEQ(nil, request.gaiaID);
+}
+
+// Tests that an App Group command URL without a command in the shared defaults
+// doesn't allow an account switch.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupURLWithoutCommand) {
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_NSEQ(nil, request.gaiaID);
 }
 
 // Tests that standard HTTP/HTTPS, File, and External Action URLs log launch

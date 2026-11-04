@@ -17,6 +17,7 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/x_callback_url.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
@@ -54,7 +55,10 @@ NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
 
 }  // namespace
 
-@implementation TaskRequestForXCallbackURLContext
+@implementation TaskRequestForXCallbackURLContext {
+  // Whether the request is an App Group command from the share extension.
+  BOOL _isFromShareExtension;
+}
 
 - (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
                         sceneState:(SceneState*)sceneState
@@ -63,8 +67,14 @@ NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
                              sceneState:sceneState
                             isColdStart:isColdStart])) {
     _commandTime = ExtractCommandTimeFromSharedDefaults(URLContext);
+    _isFromShareExtension =
+        app_group::IsShareExtensionCommandURL(URLContext.URL);
   }
   return self;
+}
+
+- (BOOL)isFromShareExtension {
+  return _isFromShareExtension;
 }
 
 - (void)recordMetrics {

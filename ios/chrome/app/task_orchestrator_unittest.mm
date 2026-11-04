@@ -6,11 +6,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import <memory>
+
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_init_stage.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -359,93 +363,142 @@ TEST_F(TaskOrchestratorTest, TestGaiaIDForScene) {
   EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state]);
 }
 
+// Test fixture for tasks requiring a profile or account switch, with a signed
+// out profile and a scene whose app state dispatches `ChangeProfileCommands`.
+class TaskOrchestratorProfileSwitchTest : public TaskOrchestratorTest {
+ protected:
+  void SetUp() override {
+    TaskOrchestratorTest::SetUp();
+
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateTestSyncService));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+
+    identity_ = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager())
+        ->AddIdentity(identity_);
+
+    CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
+    change_profile_handler_ = [[FakeChangeProfileCommandsHandler alloc] init];
+    [dispatcher startDispatchingToTarget:change_profile_handler_
+                             forProtocol:@protocol(ChangeProfileCommands)];
+
+    mock_app_state_ = OCMClassMock([AppState class]);
+    OCMStub([mock_app_state_ initStage]).andReturn(AppInitStage::kFinal);
+    OCMStub([mock_app_state_ appCommandDispatcher]).andReturn(dispatcher);
+
+    profile_state_ = [[ProfileState alloc] initWithAppState:mock_app_state_];
+    profile_state_.profile = profile_;
+
+    scene_state_ = CreateFakeSceneState(@"scene_switch");
+    scene_state_.profileState = profile_state_;
+
+    browser_ = std::make_unique<TestBrowser>(profile_, scene_state_);
+    id mock_browser_provider = OCMProtocolMock(@protocol(BrowserProvider));
+    OCMStub([mock_browser_provider browser]).andReturn(browser_.get());
+    id mock_provider_interface =
+        OCMProtocolMock(@protocol(BrowserProviderInterface));
+    OCMStub([mock_provider_interface mainBrowserProvider])
+        .andReturn(mock_browser_provider);
+    partial_scene_state_ = OCMPartialMock(scene_state_);
+    OCMStub([partial_scene_state_ browserProviderInterface])
+        .andReturn(mock_provider_interface);
+  }
+
+  void TearDown() override {
+    [partial_scene_state_ stopMocking];
+    browser_.reset();
+    TaskOrchestratorTest::TearDown();
+  }
+
+  // Returns a task, ready at `TaskExecutionUIReady`, requesting a switch to
+  // `identity_`. `execute_block` is run when the task is executed.
+  TaskRequest* CreateSwitchingTask(ProceduralBlock execute_block) {
+    TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state_.scene
+                                                executeBlock:execute_block];
+    task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+    task.gaiaID = identity_.gaiaId.ToNSString();
+    return task;
+  }
+
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
+  FakeSystemIdentity* identity_;
+  FakeChangeProfileCommandsHandler* change_profile_handler_;
+  // Kept alive for the whole test, as `SceneState` and `ProfileState` don't
+  // retain their profile and app states, and partial mocks stop stubbing once
+  // released.
+  id mock_app_state_;
+  ProfileState* profile_state_;
+  id partial_scene_state_;
+  SceneState* scene_state_;
+  std::unique_ptr<TestBrowser> browser_;
+};
+
 // Tests that a task requiring a profile or account switch triggers
 // ChangeProfileCommands at TaskExecutionProfileLoaded (before
 // TaskExecutionUIReady) and only executes after the continuation completes and
 // TaskExecutionUIReady is reached.
-TEST_F(TaskOrchestratorTest,
+TEST_F(TaskOrchestratorProfileSwitchTest,
        TestProfileSwitchStartedAtProfileLoadedBeforeUIReady) {
-  IOSChromeScopedTestingLocalState scoped_testing_local_state;
-  TestProfileManagerIOS profile_manager;
-
-  TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
-                            AuthenticationServiceFactory::GetDefaultFactory());
-  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
-  TestProfileIOS* profile =
-      profile_manager.AddProfileWithBuilder(std::move(builder));
-
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  FakeSystemIdentityManager::FromSystemIdentityManager(
-      GetApplicationContext()->GetSystemIdentityManager())
-      ->AddIdentity(identity);
-
-  CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
-  FakeChangeProfileCommandsHandler* change_profile_handler =
-      [[FakeChangeProfileCommandsHandler alloc] init];
-  [dispatcher startDispatchingToTarget:change_profile_handler
-                           forProtocol:@protocol(ChangeProfileCommands)];
-
-  id mock_app_state = OCMClassMock([AppState class]);
-  OCMStub([mock_app_state initStage]).andReturn(AppInitStage::kFinal);
-  OCMStub([mock_app_state appCommandDispatcher]).andReturn(dispatcher);
-
-  ProfileState* profile_state =
-      [[ProfileState alloc] initWithAppState:mock_app_state];
-  profile_state.profile = profile;
-
-  SceneState* scene_state = CreateFakeSceneState(@"scene_switch");
-  scene_state.profileState = profile_state;
-
-  id mock_browser_provider = OCMProtocolMock(@protocol(BrowserProvider));
-  TestBrowser browser(profile, scene_state);
-  OCMStub([mock_browser_provider browser]).andReturn(&browser);
-  id mock_provider_interface =
-      OCMProtocolMock(@protocol(BrowserProviderInterface));
-  OCMStub([mock_provider_interface mainBrowserProvider])
-      .andReturn(mock_browser_provider);
-  id partial_scene_state = OCMPartialMock(scene_state);
-  OCMStub([partial_scene_state browserProviderInterface])
-      .andReturn(mock_provider_interface);
-
-  bool task_was_executed = false;
-  bool* task_was_executed_ptr = &task_was_executed;
-  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
-                                              executeBlock:^{
-                                                *task_was_executed_ptr = true;
-                                              }];
-  task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
-  task.gaiaID = identity.gaiaId.ToNSString();
+  base::test::TestFuture<void> future;
+  TaskRequest* task =
+      CreateSwitchingTask(base::CallbackToBlock(future.GetCallback()));
 
   [orchestrator_ addTaskRequest:task];
-  EXPECT_TRUE(scene_state.hasPendingIntent);
-  EXPECT_FALSE(change_profile_handler.changeProfileCalled);
-  EXPECT_FALSE(task_was_executed);
+  EXPECT_TRUE(scene_state_.hasPendingIntent);
+  EXPECT_FALSE(change_profile_handler_.changeProfileCalled);
+  EXPECT_FALSE(future.IsReady());
 
   // Updating to TaskExecutionProfileLoaded should immediately initiate
   // changeProfile: before TaskExecutionUIReady is reached.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
-                      forScene:scene_state];
-  EXPECT_TRUE(change_profile_handler.changeProfileCalled);
+                      forScene:scene_state_];
+  EXPECT_TRUE(change_profile_handler_.changeProfileCalled);
   EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromWidget,
-            change_profile_handler.reason);
-  EXPECT_FALSE(task_was_executed);
-  EXPECT_TRUE(scene_state.hasPendingIntent);
+            change_profile_handler_.reason);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(scene_state_.hasPendingIntent);
 
   // Even if TaskExecutionUIReady is reached while the switch continuation is
   // still in progress, the task must not execute until the continuation runs.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
-                      forScene:scene_state];
-  EXPECT_FALSE(task_was_executed);
-  EXPECT_TRUE(scene_state.hasPendingIntent);
+                      forScene:scene_state_];
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(scene_state_.hasPendingIntent);
 
   // Running the ChangeProfileContinuation completes the switch and executes the
   // ready task.
-  ASSERT_TRUE([change_profile_handler hasContinuation]);
-  [change_profile_handler runContinuationForSceneState:scene_state];
-  EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));
-  EXPECT_FALSE(scene_state.hasPendingIntent);
+  ASSERT_TRUE([change_profile_handler_ hasContinuation]);
+  [change_profile_handler_ runContinuationForSceneState:scene_state_];
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(scene_state_.hasPendingIntent);
+}
+
+// Tests that the switch is attributed to the share extension when the task
+// reports it was requested by the share extension, without relying on the App
+// Group command still being in the shared defaults.
+TEST_F(TaskOrchestratorProfileSwitchTest, TestProfileSwitchFromShareExtension) {
+  TaskRequest* task = CreateSwitchingTask(^{
+  });
+  id partial_task = OCMPartialMock(task);
+  OCMStub([partial_task isFromShareExtension]).andReturn(YES);
+
+  [orchestrator_ addTaskRequest:task];
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
+                      forScene:scene_state_];
+
+  EXPECT_TRUE(change_profile_handler_.changeProfileCalled);
+  EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromShareExtension,
+            change_profile_handler_.reason);
+  // The orchestrator keeps the task alive after the test body.
+  [partial_task stopMocking];
 }
 
 // Tests that clearTasksForScene: drops the pending tasks of the scene.

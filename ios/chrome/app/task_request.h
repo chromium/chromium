@@ -40,6 +40,13 @@ using ShortcutCompletionHandler = void (^)(BOOL succeeded);
 // URL associated with the task, if any.
 @property(nonatomic, readonly) NSURL* URL;
 
+// Whether the task is an X-Callback `/app-group-command` URL with a recent App
+// Group command, which only Chrome extensions can write. Such requests are
+// attributed to the share extension, the only extension requesting account
+// switches. Computed when the task is created, because the App Group command
+// may no longer be in the shared defaults when the task is executed.
+@property(nonatomic, readonly) BOOL isFromShareExtension;
+
 // Minimum execution stage for a task.
 @property(nonatomic, assign) TaskExecutionStage minimumStage;
 

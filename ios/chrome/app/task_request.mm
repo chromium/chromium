@@ -61,6 +61,10 @@
   return nil;
 }
 
+- (BOOL)isFromShareExtension {
+  return NO;
+}
+
 + (instancetype)taskForURLContext:(UIOpenURLContext*)URLContext
                        sceneState:(SceneState*)sceneState
                       isColdStart:(BOOL)isColdStart {
