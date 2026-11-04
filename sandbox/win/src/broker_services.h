@@ -135,9 +135,9 @@ class BrokerServicesBase final : public BrokerServices,
   // Handles for the same winstation as the parent (desktop==kAlternateDesktop).
   std::unique_ptr<AlternateDesktop> alt_desktop_;
 
-  // Cache of configs backing policies. Entries are retained until shutdown and
-  // used to prime policies created by CreatePolicy() with the same `tag`.
-  base::flat_map<std::string, std::unique_ptr<TargetConfig>> config_cache_;
+  // Configurations shared by policies created with the same tag. Each policy
+  // retains its configuration independently so it can outlive the broker.
+  base::flat_map<std::string, scoped_refptr<ConfigBase>> config_cache_;
 
   // Provides configuration for using parallel or synchronous process launching.
   std::unique_ptr<BrokerServicesDelegate> broker_services_delegate_;

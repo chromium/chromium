@@ -17,6 +17,8 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/types/expected.h"
 #include "base/win/access_token.h"
@@ -41,12 +43,11 @@ struct PolicyGlobal;
 
 // The members of this class are shared between multiple sandbox::PolicyBase
 // objects and must be safe for access from multiple threads once created.
-// When shared members will not be destroyed until BrokerServicesBase is
-// destroyed at process shutdown.
-class ConfigBase final : public TargetConfig {
+// The cache and each policy retain the configuration independently.
+class ConfigBase final : public TargetConfig,
+                         public base::RefCountedThreadSafe<ConfigBase> {
  public:
   ConfigBase() noexcept;
-  ~ConfigBase() override;
 
   ConfigBase(const ConfigBase&) = delete;
   ConfigBase& operator=(const ConfigBase&) = delete;
@@ -85,6 +86,7 @@ class ConfigBase final : public TargetConfig {
   void SetSecurityAttributeName(std::wstring_view name) override;
 
  private:
+  friend class base::RefCountedThreadSafe<ConfigBase>;
   // Can call Freeze() and is_csrss_connected().
   friend class BrokerServicesBase;
   // Can examine private fields.
@@ -93,6 +95,8 @@ class ConfigBase final : public TargetConfig {
   friend class PolicyBase;
   // Can ask for the low-level policy.
   friend class TopLevelDispatcher;
+
+  ~ConfigBase() override;
 
   // Promise that no further changes will be made to the configuration, and
   // this object can be reused by multiple policies.
@@ -239,17 +243,14 @@ class PolicyBase final : public TargetPolicy {
   // Sets up the handle closer for a new target. This policy must own |target|.
   bool SetupHandleCloser(TargetProcess& target);
 
-  // TargetConfig will really be a ConfigBase.
-  bool SetConfig(TargetConfig* config);
+  void SetConfig(scoped_refptr<ConfigBase> config);
 
   // Gets possibly shared data or allocates if it did not already exist.
   ConfigBase* config();
   // Tag provided when this policy was created - mainly for debugging.
   std::string tag_;
-  // Backing data if this object was created with an empty tag_.
-  std::unique_ptr<ConfigBase> config_;
-  // Shared backing data if this object will share fields with other policies.
-  raw_ptr<ConfigBase> config_ptr_;
+  // Retained independently of the broker's cache for pending launch replies.
+  scoped_refptr<ConfigBase> config_;
 
   // Remaining members are unique to this instance and will be configured every
   // time.

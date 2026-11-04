@@ -440,16 +440,13 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
   // Empty key implies we will not use the store. The policy will need
   // to look after its config.
   if (!tag.empty()) {
-    // Otherwise the broker owns the memory, not the policy.
     auto found = config_cache_.find(tag);
-    ConfigBase* shared_config = nullptr;
     if (found == config_cache_.end()) {
-      auto new_config = std::make_unique<ConfigBase>();
-      shared_config = new_config.get();
-      config_cache_[std::string(tag)] = std::move(new_config);
-      policy->SetConfig(shared_config);
+      auto new_config = base::MakeRefCounted<ConfigBase>();
+      config_cache_[std::string(tag)] = new_config;
+      policy->SetConfig(std::move(new_config));
     } else {
-      policy->SetConfig(found->second.get());
+      policy->SetConfig(found->second);
     }
   }
   return policy;

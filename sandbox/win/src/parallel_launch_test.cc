@@ -5,9 +5,11 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/process/process_info.h"
+#include "base/run_loop.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
@@ -222,6 +224,23 @@ TEST_F(ParallelLaunchTest, ParallelLaunch) {
       ::TerminateProcess(second_spawn_result.process_info.process_handle(), 0));
 
   ::WaitForMultipleObjects(2, handles, /*bWaitAll=*/TRUE, INFINITE);
+}
+
+TEST_F(ParallelLaunchTest, SharedConfigOutlivesBroker) {
+  std::optional<BrokerServicesBase> broker(std::in_place);
+  auto first_policy = broker->CreatePolicy("shared-config-test");
+  ASSERT_EQ(SBOX_ALL_OK, first_policy->GetConfig()->SetTokenLevel(
+                             USER_INTERACTIVE, USER_LOCKDOWN));
+  BrokerServicesBase::FreezeTargetConfigForTesting(first_policy->GetConfig());
+  auto second_policy = broker->CreatePolicy("shared-config-test");
+  ASSERT_EQ(first_policy->GetConfig(), second_policy->GetConfig());
+
+  broker.reset();
+  first_policy.reset();
+
+  EXPECT_TRUE(second_policy->GetConfig()->IsConfigured());
+  EXPECT_TRUE(
+      static_cast<PolicyBase*>(second_policy.get())->MakeTokens().has_value());
 }
 
 }  // namespace sandbox
