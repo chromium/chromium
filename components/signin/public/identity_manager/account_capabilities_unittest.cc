@@ -417,6 +417,32 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToUniversalOptOut) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest,
+       MustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(
+      capabilities
+          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(),
+      signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator
+      .set_must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(
+          true);
+  EXPECT_EQ(
+      capabilities
+          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(),
+      signin::Tribool::kTrue);
+
+  mutator
+      .set_must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(
+          false);
+  EXPECT_EQ(
+      capabilities
+          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(),
+      signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, SupportsWalletPrivatePassesInAutofill) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.supports_wallet_private_passes_in_autofill(),

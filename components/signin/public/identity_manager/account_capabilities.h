@@ -177,6 +177,12 @@ class AccountCapabilities {
   signin::Tribool must_fetch_apple_age_range_in_chrome() const;
 #endif
 
+  // Whether Autofill must show equally weighted buttons when offering to save
+  // Wallet private passes.
+  signin::Tribool
+  must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill()
+      const;
+
 #if BUILDFLAG(IS_IOS)
   // Whether the client must skip Apple's age range check in Chrome.
   signin::Tribool must_skip_apple_age_range_in_chrome() const;
