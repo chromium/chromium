@@ -292,7 +292,8 @@ chromium-metrics-reviews@google.com.
       label="Opened from the tab group submenu from the everything menu."/>
   <int value="2" label="Opened from the tab group submenu from the app menu."/>
   <int value="3"
-      label="Opened from the tab group submenu from the mac system menu."/>
+      label="(Obsolete) Opened from the tab group submenu from the mac system
+             menu."/>
   <int value="4"
       label="Opened from the tab group submenu from the organizer panel."/>
 </enum>
@@ -362,7 +363,8 @@ chromium-metrics-reviews@google.com.
       label="Opened from the tab group submenu from the everything menu."/>
   <int value="6" label="Opened from the tab group submenu from the app menu."/>
   <int value="7"
-      label="Opened from the tab group submenu from the mac system menu."/>
+      label="(Obsolete) Opened from the tab group submenu from the mac system
+             menu."/>
   <int value="8"
       label="Opened from the tab group submenu from the organizer panel."/>
 </enum>

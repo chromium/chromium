@@ -401,25 +401,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
         TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, 1);
   }
 
-  // 3. Mac System Menu: Pin/Unpin Group.
-  {
-    STGTabsMenuModel mac_model(browser(), TabGroupMenuContext::MAC_SYSTEM_MENU);
-    mac_model.Build(
-        *GetSyncService()->GetGroup(group_guid),
-        base::BindRepeating(
-            &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
-            base::Unretained(this)));
-
-    std::optional<size_t> pin_index = GetIndexOfElementId(
-        &mac_model, STGTabsMenuModel::kToggleGroupPinStateMenuItem);
-    ASSERT_TRUE(pin_index.has_value());
-    mac_model.ActivatedAt(pin_index.value());
-    histogram_tester.ExpectUniqueSample(
-        "TabGroups.ContextMenu.MacSystemMenu.Action",
-        TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, 1);
-  }
-
-  // 4. Bookmarks Bar Context Menu: Delete Group.
+  // 3. Bookmarks Bar Context Menu: Delete Group.
   {
     STGTabsMenuModel button_model(
         browser(), TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);

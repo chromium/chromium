@@ -161,7 +161,6 @@ chromium-metrics-reviews@google.com.
   <variant name="BookmarksBar" summary="the Bookmarks Bar tab group button"/>
   <variant name="EverythingMenu"
       summary="the Saved Tab Groups Everything Menu"/>
-  <variant name="MacSystemMenu" summary="the macOS Tab Groups system menu bar"/>
   <variant name="OrganizerPanel"
       summary="the Tab Group Organizer (Spice Rack) panel"/>
 </variants>

@@ -85,9 +85,6 @@ GetSharedTabGroupRecallTypeMetric(
     case tab_groups::TabGroupMenuContext::APP_MENU:
       return tab_groups::saved_tab_groups::metrics::
           SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromAppMenu;
-    case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
-      return tab_groups::saved_tab_groups::metrics::
-          SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromMacSystemMenu;
     case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
       return tab_groups::saved_tab_groups::metrics::
           SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromOrganizerPanel;
@@ -107,9 +104,6 @@ GetSavedTabGroupSubmenuOpenedMetric(
     case tab_groups::TabGroupMenuContext::APP_MENU:
       return tab_groups::saved_tab_groups::metrics::
           SavedTabGroupOpenedSubmenuDesktop::kAppMenu;
-    case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
-      return tab_groups::saved_tab_groups::metrics::
-          SavedTabGroupOpenedSubmenuDesktop::kMacSystemMenu;
     case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
       return tab_groups::saved_tab_groups::metrics::
           SavedTabGroupOpenedSubmenuDesktop::kOrganizerPanel;
@@ -126,9 +120,6 @@ TabGroupFocusEntryPoint GetTabGroupFocusEntryPoint(
       return TabGroupFocusEntryPoint::kAppMenu;
     case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
       return TabGroupFocusEntryPoint::kOrganizerPanel;
-    case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
-      // The Mac system menu does not offer a focus option.
-      NOTREACHED();
   }
 }
 
@@ -142,9 +133,6 @@ TabGroupFocusExitReason GetTabGroupFocusExitReason(
       return TabGroupFocusExitReason::kAppMenu;
     case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
       return TabGroupFocusExitReason::kOrganizerPanel;
-    case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
-      // The Mac system menu does not offer an unfocus option.
-      NOTREACHED();
   }
 }
 

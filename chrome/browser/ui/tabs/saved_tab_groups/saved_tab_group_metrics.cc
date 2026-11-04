@@ -24,8 +24,6 @@ std::string_view GetMetricsSuffixForSubmenuSource(
       return "EverythingMenu";
     case SavedTabGroupOpenedSubmenuDesktop::kAppMenu:
       return "AppMenu";
-    case SavedTabGroupOpenedSubmenuDesktop::kMacSystemMenu:
-      return "MacSystemMenu";
     case SavedTabGroupOpenedSubmenuDesktop::kOrganizerPanel:
       return "OrganizerPanel";
   }

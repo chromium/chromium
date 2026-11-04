@@ -45,7 +45,6 @@ source_set("cocoa") {
     "status_icons/status_icon_mac.h",
     "status_icons/status_icons_features.h",
     "tab_contents/web_drag_bookmark_handler_mac.h",
-    "tab_group_menu_bridge.h",
     "tab_menu_bridge.h",
     "touchbar/browser_window_default_touch_bar.h",
     "touchbar/browser_window_touch_bar_controller.h",
@@ -108,7 +107,6 @@ source_set("cocoa") {
     "status_icons/status_tray_mac.h",
     "status_icons/status_tray_mac.mm",
     "tab_contents/web_drag_bookmark_handler_mac.mm",
-    "tab_group_menu_bridge.mm",
     "tab_menu_bridge.mm",
     "touchbar/browser_window_default_touch_bar.mm",
     "touchbar/browser_window_touch_bar_controller.mm",
@@ -330,7 +328,6 @@ source_set("browser_tests") {
     "renderer_context_menu/render_view_context_menu_mac_browsertest.mm",
     "renderer_context_menu/render_view_context_menu_mac_cocoa_browsertest.mm",
     "share_menu_controller_browsertest.mm",
-    "tab_group_menu_bridge_browsertest.mm",
     "touchbar/browser_window_default_touch_bar_browsertest.mm",
     "touchbar/browser_window_touch_bar_controller_browsertest.mm",
   ]
