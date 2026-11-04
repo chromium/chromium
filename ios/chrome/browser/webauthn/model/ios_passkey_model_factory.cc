@@ -25,7 +25,7 @@ IOSPasskeyModelFactory::IOSPasskeyModelFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 

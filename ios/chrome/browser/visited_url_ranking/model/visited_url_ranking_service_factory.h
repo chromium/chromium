@@ -22,7 +22,7 @@ class VisitedURLRankingServiceFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_VISITED_URL_RANKING_MODEL_VISITED_URL_RANKING_SERVICE_FACTORY_H_

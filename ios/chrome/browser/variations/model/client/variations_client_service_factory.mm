@@ -19,6 +19,6 @@ VariationsClientServiceFactory::VariationsClientServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 VariationsClientServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return std::make_unique<VariationsClientService>(profile);
+    ProfileIOS& profile) const {
+  return std::make_unique<VariationsClientService>(&profile);
 }

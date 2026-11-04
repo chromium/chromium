@@ -32,7 +32,7 @@ UniversalOptOutServiceFactory::UniversalOptOutServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 UniversalOptOutServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(features::kUniversalOptOut)) {
     return nullptr;
   }
@@ -44,7 +44,7 @@ UniversalOptOutServiceFactory::BuildServiceInstanceFor(
   }
 
   return std::make_unique<UniversalOptOutService>(
-      CHECK_DEREF(profile->GetPrefs()), *variations_service,
+      CHECK_DEREF(profile.GetPrefs()), *variations_service,
       CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(
           [](base::WeakPtr<ProfileIOS> weak_profile, bool enabled) {
@@ -60,7 +60,7 @@ UniversalOptOutServiceFactory::BuildServiceInstanceFor(
               }
             }
           },
-          profile->AsWeakPtr()));
+          profile.AsWeakPtr()));
 }
 
 }  // namespace universal_optout

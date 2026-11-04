@@ -28,7 +28,7 @@ IOSDeviceAuthorizationServiceFactory::IOSDeviceAuthorizationServiceFactory(
 
 std::unique_ptr<KeyedService>
 IOSDeviceAuthorizationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           webauthn::features::kFetchDeviceAuthorizationKeys)) {
     return nullptr;
@@ -37,6 +37,6 @@ IOSDeviceAuthorizationServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<webauthn::DeviceAuthorizationServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile),
       IOSPasskeyModelFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
+      profile.GetSharedURLLoaderFactory(),
       std::make_unique<IOSDeviceAuthorizationClient>(), ::GetChannel());
 }

@@ -17,6 +17,6 @@ JavaScriptConsoleFeatureFactory::JavaScriptConsoleFeatureFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 JavaScriptConsoleFeatureFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<JavaScriptConsoleFeature>();
 }

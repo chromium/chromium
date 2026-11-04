@@ -17,6 +17,6 @@ UnitConversionServiceFactory::UnitConversionServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 UnitConversionServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<UnitConversionService>();
 }

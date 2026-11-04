@@ -19,7 +19,7 @@ UrlKeyedDataCollectionConsentHelperFactoryIOS::
 
 std::unique_ptr<KeyedService>
 UrlKeyedDataCollectionConsentHelperFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<UrlKeyedDataCollectionConsentHelperIOS>(
-      profile->GetPrefs());
+      profile.GetPrefs());
 }

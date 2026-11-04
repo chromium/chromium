@@ -38,7 +38,7 @@ VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   std::map<visited_url_ranking::Fetcher,
            std::unique_ptr<visited_url_ranking::URLVisitDataFetcher>>
       data_fetchers;
@@ -46,7 +46,7 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
   data_fetchers.emplace(
       visited_url_ranking::Fetcher::kTabModel,
       std::make_unique<visited_url_ranking::IOSTabModelURLVisitDataFetcher>(
-          profile));
+          &profile));
 
   sync_sessions::SessionSyncService* session_sync_service =
       SessionSyncServiceFactory::GetForProfile(profile);
