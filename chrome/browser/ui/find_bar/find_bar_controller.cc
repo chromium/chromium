@@ -307,6 +307,7 @@ void FindBarController::NavigationEntryCommitted(
     find_in_page::FindTabHelper* find_tab_helper =
         find_in_page::FindTabHelper::FromWebContents(web_contents());
     if (find_tab_helper) {
+      find_tab_helper->RecordAndResetSessionMetrics();
       find_tab_helper->StopFinding(find_in_page::SelectionAction::kClear);
       // Use UpdateUIForFindResult instead of ClearResults to preserve the text
       // field content.
@@ -335,7 +336,8 @@ void FindBarController::OnFindResultAvailable(
   // we're only highlighting results (when first opening the find bar).
   // See https://crbug.com/40721569
   if (!find_tab_helper->find_result().final_update() ||
-      !find_tab_helper->should_find_match()) {
+      !find_tab_helper->should_find_match() ||
+      !find_tab_helper->should_scroll_to_match()) {
     return;
   }
 
@@ -349,10 +351,6 @@ void FindBarController::OnFindResultAvailable(
                         current_search, base::CompareCase::SENSITIVE)) {
     GetOrCreateFindBar()->AudibleAlert();
   }
-
-  // Record the completion of the search to suppress future alerts, even if the
-  // page's contents change.
-  find_tab_helper->set_last_completed_find_text(current_search);
 }
 
 void FindBarController::UpdateFindBarForCurrentResult() {
