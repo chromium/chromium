@@ -78,6 +78,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Disk pressure"/>
 </enum>
 
+<!-- LINT.IfChange(MemoryPressureVoter) -->
+
+<enum name="MemoryPressureVoter">
+  <int value="0" label="Unknown/Other"/>
+  <int value="1" label="Native OS Signal"/>
+  <int value="2" label="Available Physical Memory Threshold"/>
+  <int value="3" label="Free Physical Memory Threshold"/>
+  <int value="4" label="Compressor Saturation"/>
+  <int value="5" label="Disk Space"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/memory_pressure/memory_pressure_voter.h:MemoryPressureVoterType) -->
+
 <!-- LINT.IfChange(RequestOutcome) -->
 
 <enum name="RequestOutcome">

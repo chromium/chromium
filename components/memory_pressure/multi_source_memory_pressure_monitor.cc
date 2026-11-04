@@ -38,6 +38,16 @@ MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
       ) {
   CHECK(!g_monitor);
   g_monitor = this;
+#if BUILDFLAG(IS_MAC)
+  // Only macOS handles multiple voters, so attribution is only meaningful
+  // there. Elsewhere the callback stays unset and nothing is recorded.
+  // Unretained is safe because |aggregator_| is declared before
+  // |level_reporter_|, so it outlives the reporter's final flush on
+  // destruction.
+  level_reporter_.SetVoterAttributionCallback(
+      base::BindRepeating(&MemoryPressureVoteAggregator::GetVotersForLevel,
+                          base::Unretained(&aggregator_)));
+#endif
 }
 
 MultiSourceMemoryPressureMonitor::~MultiSourceMemoryPressureMonitor() {
@@ -66,9 +76,10 @@ void MultiSourceMemoryPressureMonitor::MaybeStartPlatformVoter() {
 }
 
 std::unique_ptr<MemoryPressureVoter>
-MultiSourceMemoryPressureMonitor::CreateVoter(bool is_disk_voter) {
+MultiSourceMemoryPressureMonitor::CreateVoter(
+    MemoryPressureVoterType voter_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return aggregator_.CreateVoter(is_disk_voter);
+  return aggregator_.CreateVoter(voter_type);
 }
 
 void MultiSourceMemoryPressureMonitor::OnDiskOnlyCriticalChanged(
@@ -100,6 +111,11 @@ void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
 void MultiSourceMemoryPressureMonitor::OnNotifyListenersRequested() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   dispatch_callback_.Run(current_pressure_level_);
+}
+
+void MultiSourceMemoryPressureMonitor::OnBeforeVoteChange() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  level_reporter_.OnBeforeVoteChange();
 }
 
 void MultiSourceMemoryPressureMonitor::SetSystemEvaluator(

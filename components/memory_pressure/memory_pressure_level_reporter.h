@@ -9,9 +9,11 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
 
 namespace memory_pressure {
 
@@ -48,6 +50,20 @@ class MemoryPressureLevelReporter {
   // the level stays CRITICAL.
   void SetDiskOnlyCritical(bool new_disk_only_critical);
 
+  // Callback used to query which voters are currently voting at a given memory
+  // pressure level.
+  using VoterAttributionCallback =
+      base::RepeatingCallback<MemoryPressureVoterTypeSet(
+          base::MemoryPressureLevel level)>;
+
+  // Sets the callback used to query voter attribution for Moderate and Critical
+  // pressure levels.
+  void SetVoterAttributionCallback(VoterAttributionCallback callback);
+
+  // Called before any vote changes so that accumulated duration can be
+  // attributed to the currently active voters before their votes are modified.
+  void OnBeforeVoteChange();
+
  private:
   void ReportHistogram(base::TimeTicks now);
   void StartPeriodicTimer();
@@ -55,6 +71,7 @@ class MemoryPressureLevelReporter {
 
   const std::optional<std::string> histogram_name_;
   const std::optional<std::string> transition_prefix_;
+  VoterAttributionCallback voter_attribution_callback_;
   base::MemoryPressureLevel current_pressure_level_;
 
   // The timestamp when the current memory pressure level started. Used to

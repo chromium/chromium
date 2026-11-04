@@ -4,8 +4,11 @@
 
 #include "components/memory_pressure/memory_pressure_level_reporter.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_level.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -94,6 +97,15 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
   StartPeriodicTimer();
 }
 
+void MemoryPressureLevelReporter::SetVoterAttributionCallback(
+    VoterAttributionCallback callback) {
+  voter_attribution_callback_ = std::move(callback);
+}
+
+void MemoryPressureLevelReporter::OnBeforeVoteChange() {
+  ReportHistogram(base::TimeTicks::Now());
+}
+
 void MemoryPressureLevelReporter::SetDiskOnlyCritical(
     bool new_disk_only_critical) {
   if (is_disk_only_critical_ == new_disk_only_critical) {
@@ -142,6 +154,24 @@ void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
         base::HistogramBase::kUmaTargetedHistogramFlag)
         ->AddCount(static_cast<int>(bucket),
                    base::saturated_cast<int>(duration_s));
+  }
+
+  if (duration_s && voter_attribution_callback_ &&
+      (current_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_MODERATE ||
+       current_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_CRITICAL)) {
+    const char* hist_name =
+        (current_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_CRITICAL)
+            ? "Memory.PressureVoter.Critical"
+            : "Memory.PressureVoter.Moderate";
+    const int max_voter = static_cast<int>(MemoryPressureVoterType::kMaxValue);
+    auto* histogram = base::LinearHistogram::FactoryGet(
+        hist_name, 1, max_voter + 1, max_voter + 2,
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+    for (MemoryPressureVoterType voter :
+         voter_attribution_callback_.Run(current_pressure_level_)) {
+      histogram->AddCount(static_cast<int>(voter),
+                          base::saturated_cast<int>(duration_s));
+    }
   }
 }
 

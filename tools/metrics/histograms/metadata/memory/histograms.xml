@@ -2898,6 +2898,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.PressureVoter.{Level}" enum="MemoryPressureVoter"
+    expires_after="2027-03-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Time attributed to each voter while Chrome was at {Level} memory pressure.
+    One sample is one second spent at {Level} with that voter voting at {Level}.
+
+    Recorded on macOS only. Emitted whenever a voter's vote changes, whenever
+    the aggregated pressure level changes, and by a periodic 5-minute timer.
+
+    Voters are co-attributed, not split: if N voters are simultaneously at
+    {Level} for T seconds, each receives the full T seconds. The total across
+    all buckets therefore exceeds the wall-clock time spent at {Level}, and the
+    buckets must be read as per-voter shares of that time rather than as
+    percentages of a whole.
+
+    Voters created without an explicit type are recorded as Unknown/Other.
+  </summary>
+  <token key="Level">
+    <variant name="Critical"/>
+    <variant name="Moderate"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.PressureWindowDuration2.{Type}" units="ms"
     expires_after="2027-04-18">
   <owner>fdoray@chromium.org</owner>

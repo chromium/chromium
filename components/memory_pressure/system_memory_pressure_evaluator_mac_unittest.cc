@@ -126,7 +126,7 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
 
   TestSystemMemoryPressureEvaluator evaluator(monitor.CreateVoter());
   TestMacAuxiliaryDiskEvaluator disk_evaluator(
-      monitor.CreateVoter(/*is_disk_voter=*/true));
+      monitor.CreateVoter(MemoryPressureVoterType::kDiskSpace));
 
   // 1. Simulate OS transition: NONE -> MODERATE.
   evaluator.macos_pressure_level_for_testing_ = DISPATCH_MEMORYPRESSURE_WARN;
@@ -249,7 +249,7 @@ TEST(MacSystemMemoryPressureEvaluatorTest,
 
   TestSystemMemoryPressureEvaluator shadow_evaluator(/*voter=*/nullptr);
   TestMacAuxiliaryDiskEvaluator disk_evaluator(
-      monitor.CreateVoter(/*is_disk_voter=*/true));
+      monitor.CreateVoter(MemoryPressureVoterType::kDiskSpace));
   auto memory_voter = monitor.CreateVoter();
 
   // Case 1: Both disk and the active memory voter are CRITICAL while the

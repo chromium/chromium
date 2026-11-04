@@ -40,7 +40,7 @@ TEST(MacDiskSpaceMemoryPressureEvaluatorTest, DiskSpacePressureConversion) {
   MultiSourceMemoryPressureMonitor monitor;
 
   TestDiskSpaceMemoryPressureEvaluator evaluator(
-      monitor.CreateVoter(/*is_disk_voter=*/true));
+      monitor.CreateVoter(MemoryPressureVoterType::kDiskSpace));
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
 
   // Simulate ample disk space (500 MiB).

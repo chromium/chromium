@@ -35,12 +35,13 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
 #if BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<
       memory_pressure::SystemMemoryPressureEvaluatorFuchsia>(
-      monitor->CreateVoter());
+      monitor->CreateVoter(MemoryPressureVoterType::kOS));
 #elif BUILDFLAG(IS_APPLE)
   // The native OS evaluator is always constructed so that the OS pressure
   // signal keeps being observed and reported in every experiment arm. The
   // feature flags control whether it votes, not whether it exists. When an
-  // evaluator replaces it, it runs as a shadow evaluator with no voter.
+  // evaluator replaces it, it runs as a shadow evaluator with no voter. The
+  // compressor evaluator is not listed, as it acts as a complementary voter.
   bool os_signal_replaced = false;
 #if BUILDFLAG(IS_MAC)
   os_signal_replaced =
@@ -50,10 +51,11 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
           memory_pressure::features::kMacFreeMemoryPressureEvaluator);
 #endif
   return std::make_unique<memory_pressure::mac::SystemMemoryPressureEvaluator>(
-      os_signal_replaced ? nullptr : monitor->CreateVoter());
+      os_signal_replaced ? nullptr
+                         : monitor->CreateVoter(MemoryPressureVoterType::kOS));
 #elif BUILDFLAG(IS_WIN)
   return ThresholdMemoryPressureEvaluator::CreateWithWinDefaults(
-      monitor->CreateVoter());
+      monitor->CreateVoter(MemoryPressureVoterType::kAvailableMemory));
 #else
   // Chrome OS and Chromecast evaluators are created in separate components.
   return nullptr;
@@ -68,7 +70,7 @@ SystemMemoryPressureEvaluator::CreateDefaultAuxiliaryEvaluators(
 #if BUILDFLAG(IS_APPLE)
   auto disk_space_evaluator =
       std::make_unique<memory_pressure::mac::DiskSpaceMemoryPressureEvaluator>(
-          monitor->CreateVoter(/*is_disk_voter=*/true));
+          monitor->CreateVoter(MemoryPressureVoterType::kDiskSpace));
   disk_space_evaluator->Start();
   evaluators.push_back(std::move(disk_space_evaluator));
 #endif
@@ -80,19 +82,19 @@ SystemMemoryPressureEvaluator::CreateDefaultAuxiliaryEvaluators(
           memory_pressure::features::kMacAvailableMemoryPressureEvaluator)) {
     evaluators.push_back(
         ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(
-            monitor->CreateVoter()));
+            monitor->CreateVoter(MemoryPressureVoterType::kAvailableMemory)));
   }
   if (base::FeatureList::IsEnabled(
           memory_pressure::features::kMacFreeMemoryPressureEvaluator)) {
     evaluators.push_back(
         FreeMemoryPressureEvaluator::CreateWithMacFeatureParams(
-            monitor->CreateVoter()));
+            monitor->CreateVoter(MemoryPressureVoterType::kFreeMemory)));
   }
   if (base::FeatureList::IsEnabled(
           memory_pressure::features::kMacCompressorMemoryPressureEvaluator)) {
     evaluators.push_back(
         CompressorMemoryPressureEvaluator::CreateWithMacFeatureParams(
-            monitor->CreateVoter()));
+            monitor->CreateVoter(MemoryPressureVoterType::kCompressor)));
   }
 #endif
   return evaluators;

@@ -49,7 +49,8 @@ class MultiSourceMemoryPressureMonitor
 
   // Creates a MemoryPressureVoter to be owned/used by a source that wishes to
   // have input on the overall memory pressure level.
-  std::unique_ptr<MemoryPressureVoter> CreateVoter(bool is_disk_voter = false);
+  std::unique_ptr<MemoryPressureVoter> CreateVoter(
+      MemoryPressureVoterType voter_type = MemoryPressureVoterType::kUnknown);
 
   // Sets the system evaluator on platforms where no default implementation
   // exists, because of layering concerns (ChromeOS & Chromecast).
@@ -80,6 +81,7 @@ class MultiSourceMemoryPressureMonitor
                                     bool is_disk_only_critical) override;
   void OnDiskOnlyCriticalChanged(bool is_disk_only_critical) override;
   void OnNotifyListenersRequested() override;
+  void OnBeforeVoteChange() override;
 
   base::MemoryPressureLevel current_pressure_level_;
 

@@ -410,7 +410,7 @@ TEST(MemoryPressureVoterTest, DiskOnlyCriticalTracking) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::StrictMock<TestDelegate> delegate;
   MemoryPressureVoteAggregator aggregator(&delegate);
-  auto disk_voter = aggregator.CreateVoter(/*is_disk_voter=*/true);
+  auto disk_voter = aggregator.CreateVoter(MemoryPressureVoterType::kDiskSpace);
   auto memory_voter = aggregator.CreateVoter();
 
   // Disk voter enters CRITICAL alone: the level change carries the disk-only
@@ -452,6 +452,71 @@ TEST(MemoryPressureVoterTest, DiskOnlyCriticalTracking) {
                             base::MEMORY_PRESSURE_LEVEL_NONE, false));
   memory_voter.reset();
   disk_voter.reset();
+}
+
+TEST(MemoryPressureVoterTest, GetVotersForLevel) {
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  testing::NiceMock<TestDelegate> delegate;
+  MemoryPressureVoteAggregator aggregator(&delegate);
+
+  auto os_voter = aggregator.CreateVoter(MemoryPressureVoterType::kOS);
+  auto avail_voter =
+      aggregator.CreateVoter(MemoryPressureVoterType::kAvailableMemory);
+  auto comp_voter =
+      aggregator.CreateVoter(MemoryPressureVoterType::kCompressor);
+
+  // Initially, no voters at moderate or critical.
+  EXPECT_TRUE(aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE)
+                  .empty());
+  EXPECT_TRUE(aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL)
+                  .empty());
+
+  // OS votes MODERATE.
+  os_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  {
+    auto moderate_voters =
+        aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+    EXPECT_EQ(moderate_voters,
+              MemoryPressureVoterTypeSet{MemoryPressureVoterType::kOS});
+    EXPECT_TRUE(
+        aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL)
+            .empty());
+  }
+
+  // Compressor votes CRITICAL.
+  comp_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  {
+    // OS is at moderate; Compressor is at critical.
+    auto moderate_voters =
+        aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+    EXPECT_EQ(moderate_voters,
+              MemoryPressureVoterTypeSet{MemoryPressureVoterType::kOS});
+
+    auto critical_voters =
+        aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    EXPECT_EQ(critical_voters,
+              MemoryPressureVoterTypeSet{MemoryPressureVoterType::kCompressor});
+  }
+
+  // AvailableMemory also votes CRITICAL.
+  avail_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  {
+    auto critical_voters =
+        aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    EXPECT_EQ(critical_voters, (MemoryPressureVoterTypeSet{
+                                   MemoryPressureVoterType::kAvailableMemory,
+                                   MemoryPressureVoterType::kCompressor}));
+  }
+
+  // Reset voters.
+  os_voter.reset();
+  comp_voter.reset();
+  avail_voter.reset();
+  EXPECT_TRUE(aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE)
+                  .empty());
+  EXPECT_TRUE(aggregator.GetVotersForLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL)
+                  .empty());
 }
 
 }  // namespace memory_pressure
