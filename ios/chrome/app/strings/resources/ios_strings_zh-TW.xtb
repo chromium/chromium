@@ -2168,7 +2168,7 @@
 <translation id="7719038820139380048">登入即可接收依個人興趣建議的內容。</translation>
 <translation id="7720901330179380635">使用「<ph name="SEARCH_ENGINE" />」進行搜尋</translation>
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
-<translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和歷史記錄。</translation>
+<translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步分頁和歷史記錄。</translation>
 <translation id="7730020510075123961">否，合併資料</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。僅在這部裝置上。</translation>
 <translation id="7737550920399185748">相片庫中的首頁相片不會在裝置間同步。</translation>
