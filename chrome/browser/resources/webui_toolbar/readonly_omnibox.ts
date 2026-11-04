@@ -313,6 +313,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // immediately before. `null` if there is no focus.
   private lastFocusAcquisition_: number|null = null;
   private isDraggingFromSelf_: boolean = false;
+  private droppedOnSelf_: boolean = false;
   private onSelectionChangeBound_ = this.onSelectionChange_.bind(this);
 
   // Bitmap of mouse buttons down. This is using `event.button` as bit position,
@@ -1178,10 +1179,29 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   private onDragEnd_(): void {
     this.isDraggingFromSelf_ = false;
+    // The drag consumed the mouse release, so no mouseup follows. Clear the
+    // pressed buttons, so that selection changes are sent to the browser.
+    this.mouseButtonDown_ = 0;
+    if (this.droppedOnSelf_) {
+      this.droppedOnSelf_ = false;
+      // Like the native omnibox, put the caret after the dropped text, rather
+      // than selecting it. This is done here since the input selects the text
+      // after dispatching the drop and input events.
+      const input = this.$.textInput.inputElement;
+      input.setSelectionRange(input.selectionEnd, input.selectionEnd);
+      // Send the caret to the browser right away, rather than on the
+      // asynchronous selectionchange event: a browser update arriving in
+      // between makes updated() store the input's selection as the synced
+      // one, so the event would see no change and never send it.
+      this.checkForSelectionChange_();
+    }
   }
 
   private onDragEnter_(e: DragEvent): void {
     if (this.isDraggingFromSelf_) {
+      // Let the input move or copy the text by default, rather than the
+      // toolbar app handling the drag.
+      e.stopPropagation();
       return;
     }
     const types = e.dataTransfer?.types;
@@ -1199,6 +1219,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   private onDragOver_(e: DragEvent): void {
     if (this.isDraggingFromSelf_) {
+      e.stopPropagation();
       return;
     }
     const types = e.dataTransfer?.types;
@@ -1213,6 +1234,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   private onDrop_(e: DragEvent): void {
     if (this.isDraggingFromSelf_) {
+      this.droppedOnSelf_ = true;
+      e.stopPropagation();
       return;
     }
 
