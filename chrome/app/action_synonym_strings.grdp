@@ -129,7 +129,7 @@
   <message name="IDS_ACTION_SYNONYMS_SIDE_PANEL_CUSTOMIZE_CHROME" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Customize Chrome') that users might type in the Chrome menu search bar to find the 'Customize Chrome' action, which opens a side panel for changing the browser's theme, colors, and appearance. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     themes, backgrounds, wallpaper, colors, dark, mode, personal, styling, aesthetic
   </message>
-  <!-- kActionShowReadingModeSidePanel: "Reading Mode". -->
+  <!-- kActionShowReadingModeSidePanel: "Reading mode". -->
   <message name="IDS_ACTION_SYNONYMS_SHOW_READING_MODE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Reading mode') that users might type in the Chrome menu search bar to find the 'Reading mode' action, which opens a simplified, distraction-free view of the page's text in a side panel. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     tts, speech, declutter, distraction, accessibility, contrast, font, size, simplify, text, reading, articles
   </message>
@@ -138,11 +138,35 @@
     speed, RAM, lag, freeze, crash, resource, usage, battery, optimizer, slow
   </message>
   <!-- kActionTaskManagerAppMenu: "Task Manager". -->
-  <message name="IDS_ACTION_SYNONYMS_TASK_MANAGER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Task Manager' that users might type in the Chrome menu search bar to find the 'Task Manager' action, which shows the processes Chrome is running and their resource usage. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+  <message name="IDS_ACTION_SYNONYMS_TASK_MANAGER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Task Manager') that users might type in the Chrome menu search bar to find the 'Task Manager' action, which shows the processes Chrome is running and their resource usage. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     speed, monitor, active, processes, tab, list, developer, slow, computer, CPU, resource, leak
   </message>
   <!-- kActionDevTools: "Developer Tools". -->
   <message name="IDS_ACTION_SYNONYMS_DEV_TOOLS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Developer Tools') that users might type in the Chrome menu search bar to find the 'Developer Tools' action, which opens tools for inspecting and debugging web pages. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     inspect, CSS, HTML, console, coding, debugging, source, code, tools, javascript
+  </message>
+  <!-- kActionNewIncognitoWindow: "New Incognito window". -->
+  <message name="IDS_ACTION_SYNONYMS_NEW_INCOGNITO_WINDOW" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'New Incognito window') that users might type in the Chrome menu search bar to find the 'New Incognito window' action, which opens a private browsing window that does not save history, cookies, or site data. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    private, anonymous, stealth, secret, safety, tracking protection, cookies, clear, cache
+  </message>
+  <!-- kActionShowLensOverlayFromAppMenu: "Search this tab with Google Lens". -->
+  <message name="IDS_ACTION_SYNONYMS_SHOW_LENS_OVERLAY" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Search this tab with Google Lens') that users might type in the Chrome menu search bar to find the 'Search this tab with Google Lens' action, which lets the user visually search, translate, or copy text from anything on the current page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    camera, visual search, AI, OCR, translation, photo, find item, page, screen, capture
+  </message>
+  <!-- kActionOpenGlic: "Open Gemini in Chrome". -->
+  <message name="IDS_ACTION_SYNONYMS_OPEN_GLIC" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Open Gemini in Chrome') that users might type in the Chrome menu search bar to find the 'Open Gemini in Chrome' action, which opens the Gemini AI assistant in the browser. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    artificial, intelligence, writing, aid, helper, search, assistant, chat, query, prompt, Gemini, AI
+  </message>
+  <!-- kActionClearBrowsingData: "Delete browsing data". -->
+  <message name="IDS_ACTION_SYNONYMS_CLEAR_BROWSING_DATA" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Delete browsing data') that users might type in the Chrome menu search bar to find the 'Delete browsing data' action, which deletes history, cookies, cached files, and other browsing data. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    delete, remove, security, privacy, cleanup, storage, reset, cache, slow, speed
+  </message>
+  <!-- kActionOptions: "Settings". -->
+  <message name="IDS_ACTION_SYNONYMS_OPTIONS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Settings') that users might type in the Chrome menu search bar to find the 'Settings' action, which opens the Chrome settings page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    controls, customization, language, privacy, defaults, advanced
+  </message>
+  <!-- kActionExit: "Exit". -->
+  <message name="IDS_ACTION_SYNONYMS_EXIT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Exit') that users might type in the Chrome menu search bar to find the 'Exit' action, which closes all Chrome windows and quits the browser. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    quit, close, terminate, shutdown, power off, stop, end
   </message>
 </grit-part>
