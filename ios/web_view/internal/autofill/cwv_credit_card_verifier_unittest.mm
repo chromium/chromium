@@ -14,6 +14,7 @@
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/test_future.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -22,6 +23,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -231,6 +233,96 @@ TEST_F(CWVCreditCardVerifierTest, VerifyCardFailed) {
             completionError.code);
   EXPECT_TRUE([completionError.userInfo[CWVCreditCardVerifierRetryAllowedKey]
       boolValue]);
+}
+
+// Tests CWVCreditCardVerifier's verification method handles virtual card
+// permanent failure case.
+TEST_F(CWVCreditCardVerifierTest, VerifyVirtualCardPermanentFailure) {
+  credit_card_verifier_ = [[CWVCreditCardVerifier alloc]
+       initWithPrefs:pref_service_.get()
+      isOffTheRecord:NO
+          creditCard:autofill::test::GetVirtualCard()
+              reason:autofill::payments::PaymentsAutofillClient::
+                         UnmaskCardReason::kAutofill
+            delegate:card_unmask_delegate_.GetWeakPtr()];
+  card_unmask_delegate_.SetCreditCardVerifier(credit_card_verifier_);
+
+  [credit_card_verifier_ loadRiskData:base::DoNothing()];
+  // A repeating callback lets `TestFuture` report a test failure, rather than
+  // crash, if the completion handler is ever invoked a second time.
+  base::test::TestFuture<NSError*> completion_future;
+  [credit_card_verifier_
+          verifyWithCVC:@"123"
+        expirationMonth:@""
+         expirationYear:@""
+               riskData:@"dummy-risk-data"
+      completionHandler:base::CallbackToBlock(
+                            completion_future.GetRepeatingCallback())];
+
+  [credit_card_verifier_
+      didReceiveUnmaskVerificationResult:
+          autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+              kVcnRetrievalPermanentFailure];
+  NSError* completionError = completion_future.Get();
+  // A late result after the prompt was dismissed must not complete again.
+  // `TestFuture` fails the test if a second value is set.
+  [credit_card_verifier_ didReceiveUnmaskVerificationResult:
+                             autofill::payments::PaymentsAutofillClient::
+                                 PaymentsRpcResult::kSuccess];
+  ASSERT_TRUE(completionError != nil);
+  EXPECT_EQ(CWVCreditCardVerifierErrorDomain, completionError.domain);
+  EXPECT_EQ(CWVCreditCardVerificationErrorPermanentFailure,
+            completionError.code);
+  EXPECT_FALSE([completionError.userInfo[CWVCreditCardVerifierRetryAllowedKey]
+      boolValue]);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION),
+              completionError.localizedDescription);
+}
+
+// Tests CWVCreditCardVerifier's verification method handles virtual card
+// temporary failure case.
+TEST_F(CWVCreditCardVerifierTest, VerifyVirtualCardTemporaryFailure) {
+  credit_card_verifier_ = [[CWVCreditCardVerifier alloc]
+       initWithPrefs:pref_service_.get()
+      isOffTheRecord:NO
+          creditCard:autofill::test::GetVirtualCard()
+              reason:autofill::payments::PaymentsAutofillClient::
+                         UnmaskCardReason::kAutofill
+            delegate:card_unmask_delegate_.GetWeakPtr()];
+  card_unmask_delegate_.SetCreditCardVerifier(credit_card_verifier_);
+
+  [credit_card_verifier_ loadRiskData:base::DoNothing()];
+  // A repeating callback lets `TestFuture` report a test failure, rather than
+  // crash, if the completion handler is ever invoked a second time.
+  base::test::TestFuture<NSError*> completion_future;
+  [credit_card_verifier_
+          verifyWithCVC:@"123"
+        expirationMonth:@""
+         expirationYear:@""
+               riskData:@"dummy-risk-data"
+      completionHandler:base::CallbackToBlock(
+                            completion_future.GetRepeatingCallback())];
+
+  [credit_card_verifier_
+      didReceiveUnmaskVerificationResult:
+          autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+              kVcnRetrievalTryAgainFailure];
+  NSError* completionError = completion_future.Get();
+  // A late result after the prompt was dismissed must not complete again.
+  // `TestFuture` fails the test if a second value is set.
+  [credit_card_verifier_ didReceiveUnmaskVerificationResult:
+                             autofill::payments::PaymentsAutofillClient::
+                                 PaymentsRpcResult::kSuccess];
+  ASSERT_TRUE(completionError != nil);
+  EXPECT_EQ(CWVCreditCardVerifierErrorDomain, completionError.domain);
+  EXPECT_EQ(CWVCreditCardVerificationErrorTryAgainFailure,
+            completionError.code);
+  EXPECT_FALSE([completionError.userInfo[CWVCreditCardVerifierRetryAllowedKey]
+      boolValue]);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION),
+              completionError.localizedDescription);
 }
 
 }  // namespace ios_web_view
