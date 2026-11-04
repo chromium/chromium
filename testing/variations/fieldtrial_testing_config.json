@@ -2118,6 +2118,25 @@
             ]
         }
     ],
+    "AutofillEnableWalletDirectOffers": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableWalletDirectOffers",
+                        "AutofillEnableWalletDirectOffersNotificationBubble"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableWalletReminderNotice": [
         {
             "platforms": [

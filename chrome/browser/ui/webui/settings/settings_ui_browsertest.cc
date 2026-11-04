@@ -222,8 +222,11 @@ IN_PROC_BROWSER_TEST_F(SettingsUITestGlicDisabledButAnchored, DoesNotCrash) {
 class SettingsUIWalletReminderNoticeTest : public SettingsUITest {
  public:
   SettingsUIWalletReminderNoticeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableWalletReminderNotice);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {autofill::features::kAutofillEnableWalletReminderNotice},
+        /*disabled_features=*/
+        {autofill::features::kAutofillEnableWalletDirectOffers});
   }
 
  private:
