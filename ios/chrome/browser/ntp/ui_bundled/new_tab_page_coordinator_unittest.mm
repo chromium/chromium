@@ -272,7 +272,10 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
-    web_state_ = browser_->GetWebStateList()->GetActiveWebState();
+  }
+
+  web::WebState* active_web_state() {
+    return browser_->GetWebStateList()->GetActiveWebState();
   }
 
   // Creates a FakeWebState and simulates that it is loaded with a given `url`.
@@ -293,12 +296,12 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     return std::move(web_state);
   }
 
-  // Simulates loading the NTP in `web_state_`.
+  // Simulates loading the NTP in `active_web_state()`.
   void SetNTPAsCurrentURL() {
     web::FakeNavigationContext navigation_context;
     navigation_context.SetUrl(GURL("chrome://newtab"));
     web::FakeWebState* fake_web_state =
-        static_cast<web::FakeWebState*>(web_state_);
+        static_cast<web::FakeWebState*>(active_web_state());
     fake_web_state->SetVisibleURL(GURL("chrome://newtab"));
     fake_web_state->OnNavigationStarted(&navigation_context);
     fake_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
@@ -401,7 +404,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
-  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
   id toolbar_delegate_;
   id delegate_;
   std::unique_ptr<Browser> browser_;
@@ -469,23 +471,25 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
       std::make_unique<ScopedBlockSwizzler>([NewTabPageMediator class],
                                             @selector(setUp), swizzle_block);
 
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  NewTabPageTabHelper::FromWebState(active_web_state())
+      ->SetShowStartSurface(true);
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
   // Test `-didNavigateAwayFromNTPWithinWebState` when currently showing Start
   // resets the configuration.
   [coordinator_ didNavigateAwayFromNTP];
-  EXPECT_FALSE(
-      NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());
+  EXPECT_FALSE(NewTabPageTabHelper::FromWebState(active_web_state())
+                   ->ShouldShowStartSurface());
   [coordinator_ stop];
 
   // Test the active WebState updates NTP Start state to false if it
   // began as true.
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  NewTabPageTabHelper::FromWebState(active_web_state())
+      ->SetShowStartSurface(true);
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
-  // Save reference before `web_state_` is set to new active WebState.
-  web::WebState* start_web_state = web_state_;
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
+  // Save reference before `active_web_state()` is set to new active WebState.
+  web::WebState* start_web_state = active_web_state();
   // Simulate the active WebState change callback.
   InsertWebState(CreateWebStateWithURL(GURL("chrome://version")));
   [coordinator_ didNavigateAwayFromNTP];
@@ -505,9 +509,10 @@ TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
   FakeUrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
   SetupCommandHandlerMocks();
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  NewTabPageTabHelper::FromWebState(active_web_state())
+      ->SetShowStartSurface(true);
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
   histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kShortcuts, 0);
@@ -525,7 +530,7 @@ TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
   // URL load signal from the URLLoadingBrowserAgent.
   web::FakeNavigationContext navigation_context;
   navigation_context.SetUrl(GURL("chrome://version"));
-  static_cast<web::FakeWebState*>(web_state_)
+  static_cast<web::FakeWebState*>(active_web_state())
       ->OnNavigationStarted(&navigation_context);
   // Simulate BrowserCoordinator receiving NTPTabHelper's
   // newTabPageHelperDidChangeVisibility: callback.
@@ -543,8 +548,8 @@ TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
   histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 1);
   histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
   histogram_tester_->ExpectTotalCount(kHomeImpressionHistogram, 1);
-  EXPECT_FALSE(
-      NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());
+  EXPECT_FALSE(NewTabPageTabHelper::FromWebState(active_web_state())
+                   ->ShouldShowStartSurface());
   [coordinator_ stop];
 }
 
@@ -560,14 +565,14 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateWithinWebState) {
     EXPECT_FALSE(coordinator_.visible);
 
     // Navigate to NTP within the web state and check that NTP is visible.
-    [coordinator_ didNavigateToNTPInWebState:web_state_];
+    [coordinator_ didNavigateToNTPInWebState:active_web_state()];
     EXPECT_TRUE(coordinator_.started);
     EXPECT_TRUE(coordinator_.visible);
 
     // Simulate navigating away from the NTP.
     web::FakeNavigationContext navigation_context;
     navigation_context.SetUrl(GURL("chrome://version"));
-    static_cast<web::FakeWebState*>(web_state_)
+    static_cast<web::FakeWebState*>(active_web_state())
         ->OnNavigationStarted(&navigation_context);
     [coordinator_ didNavigateAwayFromNTP];
 
@@ -597,7 +602,7 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
 
     // Open an NTP in a new web state.
     InsertWebState(CreateWebStateWithURL(GURL("chrome://newtab")));
-    [coordinator_ didNavigateToNTPInWebState:web_state_];
+    [coordinator_ didNavigateToNTPInWebState:active_web_state()];
     if (!off_the_record) {
       histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 0);
       histogram_tester_->ExpectTotalCount(kNTPImpressionHistogram, 1);
@@ -620,7 +625,7 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
     // Close non-NTP web state to get back to NTP web state.
     browser_->GetWebStateList()->CloseWebStateAt(
         /*index=*/1, WebStateList::ClosingReason::kDefault);
-    [coordinator_ didNavigateToNTPInWebState:web_state_];
+    [coordinator_ didNavigateToNTPInWebState:active_web_state()];
     if (!off_the_record) {
       histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 1);
       histogram_tester_->ExpectTotalCount(kNTPImpressionHistogram, 2);
@@ -650,7 +655,7 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
   CreateCoordinator(/*off_the_record=*/false);
   SetupCommandHandlerMocks();
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
   ExpectMethodToProxyToVC(@selector(willUpdateSnapshot),
                           @selector(willUpdateSnapshot));
@@ -696,7 +701,7 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
   CreateCoordinator(/*off_the_record=*/false);
   SetupCommandHandlerMocks();
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
   // Check that initial NTP is scrolled to top.
   CGFloat scrollPosition = coordinator_.NTPViewController.scrollPosition;
@@ -715,7 +720,7 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
 
   // Navigate to another NTP in the same web state.
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
   // Check that newly opened NTP restores saved state.
   EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition, scrollPosition, 1);
@@ -728,7 +733,7 @@ TEST_F(NewTabPageCoordinatorTest, TestShowsAndHidesFeed) {
   CreateCoordinator(/*off_the_record=*/false);
   SetupCommandHandlerMocks();
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
   ASSERT_TRUE([coordinator_
       conformsToProtocol:@protocol(DiscoverFeedVisibilityObserver)]);
@@ -806,7 +811,7 @@ TEST_F(NewTabPageCoordinatorTest, NTPShortcutsMetricLogging) {
   CreateCoordinator(/*off_the_record=*/false);
   SetupCommandHandlerMocks();
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
   // Stub mock handlers to avoid unexpected call failures.
   OCMStub([lens_handler_mock_ openLensInputSelection:[OCMArg any]]);
@@ -866,7 +871,7 @@ TEST_F(NewTabPageCoordinatorTest, ActivityReporting) {
 
   // Navigate to NTP -> reports active.
   OCMExpect([mockInstance reportActiveWithIncognito:NO]);
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
   [mockInstance verify];
 
   // Navigate away -> reports inactive.
@@ -971,7 +976,7 @@ TEST_F(NewTabPageCoordinatorTest, TestIsNTPBypassed) {
   CreateCoordinator(/*off_the_record=*/false);
   SetupCommandHandlerMocks();
   [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
   EXPECT_FALSE([coordinator_ isNTPBypassed]);
 
@@ -1004,7 +1009,7 @@ TEST_F(NewTabPageCoordinatorTest, TestIsNTPBypassed) {
   coordinator_.willFocusOmniboxAfterNewTabAnimation = YES;
   EXPECT_TRUE([coordinator_ isNTPBypassed]);
   [coordinator_ didNavigateAwayFromNTP];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
   EXPECT_TRUE([coordinator_ isNTPBypassed]);
   coordinator_.willFocusOmniboxAfterNewTabAnimation = NO;
   EXPECT_FALSE([coordinator_ isNTPBypassed]);
