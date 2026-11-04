@@ -37,11 +37,9 @@ import java.util.List;
 /**
  * There are some cases where the ClassLoader for components in the chrome split does not match the
  * ClassLoader from the application Context. This can cause issues, such as ClassCastExceptions when
- * trying to cast between the two ClassLoaders. This class attempts to workaround this bug by
- * explicitly setting the activity's ClassLoader. See b/172602571 for more details.
- *
- * <p>Note: this workaround is not needed for services, since they always uses the base module's
- * ClassLoader, see b/169196314 for more details.
+ * trying to cast between the two ClassLoaders, or a component seeing a separate copy of static
+ * state. This class works around this bug by instantiating such components with the application
+ * Context's ClassLoader. See b/172602571 for more details.
  */
 @NullMarked
 public class SplitCompatAppComponentFactory extends AppComponentFactory {
@@ -121,7 +119,7 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     public Service instantiateService(ClassLoader cl, String className, @Nullable Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.SERVICE);
-        return super.instantiateService(cl, className, intent);
+        return super.instantiateService(getComponentClassLoader(cl, className), className, intent);
     }
 
     private static void setProcessCreationReason(@ProcessCreationReason int reason) {
