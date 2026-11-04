@@ -12,6 +12,9 @@
 // A class that provides `OverflowMenuAction`s for given action types.
 @protocol OverflowMenuActionProvider <NSObject>
 
+// Whether a Level Up walkthrough IPH is currently active in the overflow menu.
+@property(nonatomic, assign) BOOL shouldShowLevelUpWalkthroughIPH;
+
 // The default base ranking of page actions (those that act on the current page
 // state) currently supported.
 - (ActionRanking)basePageActions;

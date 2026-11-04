@@ -181,10 +181,12 @@ enum class PopupMenuIPHSessionType {
     case PopupMenuIPHSessionType::kLevelUpPasswordCheckupWalkthrough:
       self.uiConfiguration.highlightDestination =
           static_cast<NSInteger>(overflow_menu::Destination::Passwords);
+      self.actionProvider.shouldShowLevelUpWalkthroughIPH = YES;
       break;
     case PopupMenuIPHSessionType::kLevelUpPaymentMethodsWalkthrough:
       self.uiConfiguration.highlightDestination =
           static_cast<NSInteger>(overflow_menu::Destination::Settings);
+      self.actionProvider.shouldShowLevelUpWalkthroughIPH = YES;
       break;
     case PopupMenuIPHSessionType::kLevelUpQuickDeleteWalkthrough: {
       OverflowMenuAction* clearBrowsingDataAction = [self.actionProvider
