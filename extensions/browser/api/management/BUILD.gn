@@ -30,6 +30,7 @@ source_set("management") {
     "//components/supervised_user/core/common:buildflags",
     "//components/supervised_user/core/common:features",
     "//content/public/browser",
+    "//content/public/common",
     "//extensions/browser/api:extensions_api_client",
     "//extensions/common:mojom",
   ]

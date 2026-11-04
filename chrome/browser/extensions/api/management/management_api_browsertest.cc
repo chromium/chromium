@@ -39,6 +39,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -496,6 +497,8 @@ class ExtensionManagementWebstoreBrowserTest
         LoadExtension(target_dir_->UnpackedPath());
     ASSERT_TRUE(target_extension);
     target_id_ = target_extension->id();
+    expected_greylisted_error_ = ErrorUtils::FormatErrorMessage(
+        keys::kCannotReEnableGreylistedError, target_id_);
 
     extension_registrar()->GreylistExtensionForTest(
         target_id_, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
@@ -560,32 +563,39 @@ class ExtensionManagementWebstoreBrowserTest
   // `SetUpOnMainThread()`.
   const ExtensionId& target_id() const { return target_id_; }
 
+  // Returns the formatted `keys::kCannotReEnableGreylistedError` message for
+  // `target_id()`.
+  const std::string& expected_greylisted_error() const {
+    return expected_greylisted_error_;
+  }
+
  private:
   std::optional<TestExtensionDir> target_dir_;
   std::optional<TestExtensionDir> caller_dir_;
   ExtensionId target_id_;
+  std::string expected_greylisted_error_;
 };
 
-// Verifies the pre-fix issue (https://crbug.com/514533069) when an extension
-// with the `"management"` permission calls `chrome.management.setEnabled()`
-// with a transient user gesture on a greylisted target.
+// Verifies `chrome.management.setEnabled()` when called by an extension with
+// the `"management"` permission with a transient user gesture on a greylisted
+// target. Regression test for crbug.com/514533069.
 IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
                        SetEnabledGreylistedExtension_ExtensionCaller) {
   content::WebContents* web_contents = LoadAndNavigateToCallerExtension();
   ASSERT_TRUE(web_contents);
 
   // `EvalSetEnabled()` runs the script with a transient user gesture.
-  EXPECT_EQ("succeeded",
+  EXPECT_EQ(expected_greylisted_error(),
             EvalSetEnabled(web_contents, target_id(), /*enabled=*/true));
-  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
-  EXPECT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(
+      extension_registry()->disabled_extensions().Contains(target_id()));
+  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
       target_id(), disable_reason::DISABLE_GREYLIST));
 }
 
-// Verifies the pre-fix issue (https://crbug.com/514533069) when the Chrome Web
-// Store web page (`mojom::ContextType::kWebPage`) calls
-// `chrome.management.setEnabled()` with a transient user gesture on a
-// greylisted target.
+// Verifies `chrome.management.setEnabled()` when called from the Chrome Web
+// Store web page (`mojom::ContextType::kWebPage`) with a transient user
+// gesture on a greylisted target. Regression test for crbug.com/514533069.
 IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
                        SetEnabledGreylistedExtension_Webstore) {
   content::WebContents* web_contents = GetActiveWebContents();
@@ -594,16 +604,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
       GURL("https://chromewebstore.google.com/webstore/mock_store.html")));
 
   // `EvalSetEnabled()` runs the script with a transient user gesture.
-  EXPECT_EQ("succeeded",
+  EXPECT_EQ(expected_greylisted_error(),
             EvalSetEnabled(web_contents, target_id(), /*enabled=*/true));
-  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
-  EXPECT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(
+      extension_registry()->disabled_extensions().Contains(target_id()));
+  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
       target_id(), disable_reason::DISABLE_GREYLIST));
 }
 
 // Verifies `chrome.management.setEnabled()` when called from
 // chrome://extensions WebUI (`mojom::ContextType::kWebUi`) on a greylisted
-// target.
+// target. Regression test for crbug.com/514533069.
 IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
                        SetEnabledGreylistedExtension_ExtensionsWebUiAllowed) {
   content::WebContents* web_contents = GetActiveWebContents();
@@ -615,12 +626,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
   EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
 }
 
-// Verifies the pre-fix issue (https://crbug.com/514533069) when only the Safe
-// Browsing greylist state in `ExtensionPrefs` marks the target as greylisted.
-// Manual re-enablement clears `disable_reason::DISABLE_GREYLIST` but keeps that
-// state, and disabling via `chrome.management.setEnabled()` does not restore
-// the disable reason. A `"management"`-permission extension can then re-enable
-// the target even though it is still on the greylist.
+// Verifies `chrome.management.setEnabled()` from a `"management"`-permission
+// extension when only the Safe Browsing greylist state in `ExtensionPrefs`
+// marks the target as greylisted. Manual re-enablement clears
+// `disable_reason::DISABLE_GREYLIST` but keeps that state, and disabling via
+// `chrome.management.setEnabled()` does not restore the disable reason. The
+// re-enable call fails with the greylisted error and the target stays disabled,
+// because `blocklist_prefs::IsExtensionGreylisted()` still reports the target
+// as greylisted. Regression test for crbug.com/514533069.
 IN_PROC_BROWSER_TEST_F(
     ExtensionManagementWebstoreBrowserTest,
     SetEnabledGreylistedExtension_ReEnableAfterDisableWhileGreylisted) {
@@ -642,11 +655,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
       target_id(), disable_reason::DISABLE_GREYLIST));
 
-  // Before the fix, re-enabling from the caller extension succeeds while the
-  // target remains on the greylist.
-  EXPECT_EQ("succeeded",
+  // Re-enabling from the caller extension still fails while the target remains
+  // on the greylist.
+  EXPECT_EQ(expected_greylisted_error(),
             EvalSetEnabled(web_contents, target_id(), /*enabled=*/true));
-  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
+  EXPECT_TRUE(
+      extension_registry()->disabled_extensions().Contains(target_id()));
 }
 
 }  // namespace extensions
