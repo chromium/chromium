@@ -9,6 +9,9 @@
 (define network-service-storage-path-n "NETWORK_SERVICE_STORAGE_PATH_")
 (define network-service-test-certs-dir "NETWORK_SERVICE_TEST_CERTS_DIR")
 
+; Allows the network process to create symlinks.
+(define allow-network-symlink-creation "ALLOW_NETWORK_SYMLINK_CREATION")
+
 ; Allow access to the [0,N) storage location paths.
 ; TODO(https://crbug.com/567101748) remove this once we have fully rolled out
 ; the TriggerNetworkDataMigration feature to macOS.
@@ -33,7 +36,8 @@
   (allow file* (subpath (param user-cache-dir))))
 
 ; Disallow creating symbolic links.
-(deny file-write-create (vnode-type SYMLINK))
+(unless (param-true? allow-network-symlink-creation)
+  (deny file-write-create (vnode-type SYMLINK)))
 
 ; DNS configuration watcher entries. This is a nesty mess of symlinks.
 (allow file-read*

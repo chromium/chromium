@@ -574,7 +574,9 @@ MULTIPROCESS_TEST_MAIN(NetworkDataMigrationRestrictedProcess) {
 // subdirectories (and `USER_CACHE_DIR`), denying access to other profile paths.
 TEST_F(SandboxMacTest, NetworkDataMigrationRestricted) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kTriggerNetworkDataMigration);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kTriggerNetworkDataMigration},
+      /*disabled_features=*/{kMacSandboxAllowNetworkSymlinkCreation});
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -656,7 +658,10 @@ MULTIPROCESS_TEST_MAIN(NetworkDataMigrationUnrestrictedProcess) {
 // recursive subpath access across the entire storage directory.
 TEST_F(SandboxMacTest, NetworkDataMigrationUnrestricted) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kTriggerNetworkDataMigration);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kTriggerNetworkDataMigration,
+                             kMacSandboxAllowNetworkSymlinkCreation});
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -680,6 +685,76 @@ TEST_F(SandboxMacTest, NetworkDataMigrationUnrestricted) {
       old_client));
 
   ExecuteWithParams("NetworkDataMigrationUnrestrictedProcess",
+                    sandbox::mojom::Sandbox::kNetwork,
+                    /*append_temp_dir_suffix=*/false);
+}
+
+MULTIPROCESS_TEST_MAIN(NetworkSymlinkAllowedProcess) {
+  std::string extra_data = GetExtraDataValue();
+  CHECK(!extra_data.empty());
+  std::vector<std::string> parts = base::SplitString(
+      extra_data, ";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  CHECK_EQ(parts.size(), 2u);
+  base::FilePath user_data_dir(parts[0]);
+  base::FilePath user_cache_dir(parts[1]);
+
+  CheckCreateSeatbeltServer();
+
+  base::FilePath network_dir =
+      user_data_dir.Append("Default").Append("Network");
+  CHECK(base::CreateDirectory(network_dir));
+
+  base::FilePath cookies_file = network_dir.Append("cookies.db");
+  base::File file(cookies_file,
+                  base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  CHECK(file.IsValid());
+  file.Close();
+
+  base::FilePath cache_file = user_cache_dir.Append("cache_file");
+  base::File file2(cache_file,
+                   base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  CHECK(file2.IsValid());
+  file2.Close();
+
+  // Symbolic link creation is allowed when
+  // `kMacSandboxAllowNetworkSymlinkCreation` is enabled.
+  CHECK(base::CreateSymbolicLink(cookies_file, network_dir.Append("symlink")));
+  CHECK(base::IsLink(network_dir.Append("symlink")));
+  CHECK(base::CreateSymbolicLink(cache_file, user_cache_dir.Append("symlink")));
+  CHECK(base::IsLink(user_cache_dir.Append("symlink")));
+
+  return 0;
+}
+
+// Verifies that when `kMacSandboxAllowNetworkSymlinkCreation` is enabled, the
+// macOS network service sandbox allows creating symbolic links within writable
+// network service directories.
+TEST_F(SandboxMacTest, NetworkSymlinkAllowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMacSandboxAllowNetworkSymlinkCreation);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath user_data_dir = temp_dir.GetPath().Append("UserData");
+  base::FilePath user_cache_dir = temp_dir.GetPath().Append("Cache");
+  ASSERT_TRUE(base::CreateDirectory(user_data_dir));
+  ASSERT_TRUE(base::CreateDirectory(user_data_dir.Append("Default")));
+  ASSERT_TRUE(base::CreateDirectory(user_cache_dir));
+
+  user_data_dir = sandbox::policy::GetCanonicalPath(user_data_dir);
+  user_cache_dir = sandbox::policy::GetCanonicalPath(user_cache_dir);
+
+  extra_data_ =
+      base::StrCat({user_data_dir.value(), ";", user_cache_dir.value()});
+
+  NetworkTestContentBrowserClient test_client(user_data_dir, user_cache_dir);
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&test_client);
+  base::ScopedClosureRunner restore_client(base::BindOnce(
+      [](ContentBrowserClient* client) { SetBrowserClientForTesting(client); },
+      old_client));
+
+  ExecuteWithParams("NetworkSymlinkAllowedProcess",
                     sandbox::mojom::Sandbox::kNetwork,
                     /*append_temp_dir_suffix=*/false);
 }

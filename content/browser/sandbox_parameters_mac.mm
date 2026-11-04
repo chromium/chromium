@@ -37,6 +37,10 @@
 
 namespace content {
 
+// If enabled, allows the network process to create symlinks.
+BASE_FEATURE(kMacSandboxAllowNetworkSymlinkCreation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, allows the renderer process to query `process-info-pidinfo` for
 // any process rather than only itself.
 BASE_FEATURE(kMacSandboxAllowRendererPidinfo,
@@ -187,6 +191,10 @@ void SetupNetworkSandboxParameters(sandbox::SandboxSerializer* serializer,
         sandbox::policy::GetCanonicalPath(*GetNetworkTestCertsDirectory())
             .value()));
   }
+
+  CHECK(serializer->SetBooleanParameter(
+      sandbox::policy::kParamAllowNetworkSymlinkCreation,
+      base::FeatureList::IsEnabled(kMacSandboxAllowNetworkSymlinkCreation)));
 }
 
 bool SetupGpuSandboxParameters(sandbox::SandboxSerializer* serializer,
