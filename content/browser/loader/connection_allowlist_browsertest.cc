@@ -55,9 +55,16 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/net_buildflags.h"
+#if BUILDFLAG(ENABLE_REPORTING)
+#include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_report.h"
+#include "services/network/public/mojom/reporting_service.mojom.h"
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 #include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -6646,6 +6653,292 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
   EXPECT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_TRUE(manager.was_successful());
 }
+
+#if BUILDFLAG(ENABLE_REPORTING)
+class TestReportingApiObserver : public network::mojom::ReportingApiObserver {
+ public:
+  explicit TestReportingApiObserver(
+      network::mojom::NetworkContext* network_context) {
+    mojo::PendingRemote<network::mojom::ReportingApiObserver> remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    network_context->AddReportingApiObserver(std::move(remote));
+  }
+
+  ~TestReportingApiObserver() override = default;
+
+  void OnReportAdded(const net::ReportingReport& report) override {
+    if (report.type == "connection-allowlist") {
+      report_bodies_.push_back(report.body.Clone());
+    }
+  }
+
+  void OnReportUpdated(const net::ReportingReport& report) override {}
+
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override {}
+
+  const std::vector<base::DictValue>& report_bodies() const {
+    return report_bodies_;
+  }
+
+ private:
+  std::vector<base::DictValue> report_bodies_;
+  mojo::Receiver<network::mojom::ReportingApiObserver> receiver_{this};
+};
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       HistoryNavigationDoesNotQueueReport) {
+  AlwaysPreconnectContentBrowserClient client;
+
+  RegisterResponse("/first_page.html?query=sample_data",
+                   ResponseEntry("<html><body>First page</body></html>", {}));
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry(
+          R"(<html><body><iframe id="sub" sandbox="allow-scripts"></iframe></body></html>)",
+          {{"Connection-Allowlist", "(response-origin); report-to=default"},
+           {"Connection-Allowlist-Report-Only",
+            "(response-origin); report-to=default"}}));
+  RegisterResponse("/other_page.html",
+                   ResponseEntry("<html><body>Other page</body></html>", {}));
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  auto* network_context = shell()
+                              ->web_contents()
+                              ->GetBrowserContext()
+                              ->GetDefaultStoragePartition()
+                              ->GetNetworkContext();
+  TestReportingApiObserver reporting_observer(network_context);
+
+  // 1. Navigate to b.test with a query parameter.
+  GURL first_url = embedded_https_test_server().GetURL(
+      "b.test", "/first_page.html?query=sample_data");
+  ASSERT_TRUE(NavigateToURL(shell(), first_url));
+  RenderFrameHostImpl* rfh_b = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  // 2. Navigate to a.test with enforced and report-only Connection-Allowlist.
+  GURL allowlist_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  ASSERT_TRUE(NavigateToURL(shell(), allowlist_url));
+
+  // Flush the BackForwardCache so history navigations are not served from it.
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  delete_observer_rfh_b.WaitUntilDeleted();
+
+  // 3. Attempt a history traversal from a sandboxed iframe without
+  // allow-top-navigation. The traversal is discarded, and preconnect checking
+  // must not queue any Connection-Allowlist report.
+  RenderFrameHost* sandboxed_subframe =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(sandboxed_subframe);
+  EXPECT_TRUE(ExecJs(sandboxed_subframe, "history.go(-1);"));
+  EXPECT_EQ(allowlist_url, shell()->web_contents()->GetLastCommittedURL());
+
+  // 4. Attempt a history.back() navigation from the main frame. It should be
+  // blocked by the enforced Connection-Allowlist, and must not queue any
+  // violation report disclosing the previous history entry's URL.
+  TestNavigationObserver history_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), "history.back();"));
+  history_observer.Wait();
+  EXPECT_FALSE(history_observer.last_navigation_succeeded());
+  ASSERT_TRUE(shell()->web_contents()->GetController().GetLastCommittedEntry());
+  EXPECT_EQ(PAGE_TYPE_ERROR, shell()
+                                 ->web_contents()
+                                 ->GetController()
+                                 .GetLastCommittedEntry()
+                                 ->GetPageType());
+
+  // 5. Navigate back to `allowlist_url` and perform a normal renderer-initiated
+  // iframe navigation to a disallowed URL to confirm that reporting is active
+  // (and not duplicated by preconnect checks) and synchronize on delivery.
+  ASSERT_TRUE(NavigateToURL(shell(), allowlist_url));
+  GURL disallowed_url =
+      embedded_https_test_server().GetURL("c.test", "/other_page.html");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const frame = document.createElement('iframe');
+        frame.src = $1;
+        document.body.appendChild(frame);
+      )",
+                                                        disallowed_url)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return reporting_observer.report_bodies().size() >= 2u; }));
+
+  // Only the reports for `disallowed_url` (1 report-only + 1 enforce) should
+  // have been queued; `first_url` from session history must never be reported.
+  EXPECT_EQ(reporting_observer.report_bodies().size(), 2u);
+  for (const auto& body : reporting_observer.report_bodies()) {
+    const std::string* connection = body.FindString("connection");
+    ASSERT_TRUE(connection);
+    EXPECT_EQ(*connection, disallowed_url.spec());
+    EXPECT_NE(*connection, first_url.spec());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       HistoryNavigationReportOnlyDoesNotQueueReport) {
+  AlwaysPreconnectContentBrowserClient client;
+
+  RegisterResponse("/first_page.html?query=sample_data",
+                   ResponseEntry("<html><body>First page</body></html>", {}));
+  RegisterResponse("/report_only_page.html",
+                   ResponseEntry("<html><body>Report only</body></html>",
+                                 {{"Connection-Allowlist-Report-Only",
+                                   "(response-origin); report-to=default"}}));
+  RegisterResponse("/other_page.html",
+                   ResponseEntry("<html><body>Other page</body></html>", {}));
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  auto* network_context = shell()
+                              ->web_contents()
+                              ->GetBrowserContext()
+                              ->GetDefaultStoragePartition()
+                              ->GetNetworkContext();
+  TestReportingApiObserver reporting_observer(network_context);
+
+  // 1. Navigate to b.test with a query parameter.
+  GURL first_url = embedded_https_test_server().GetURL(
+      "b.test", "/first_page.html?query=sample_data");
+  ASSERT_TRUE(NavigateToURL(shell(), first_url));
+  RenderFrameHostImpl* rfh_b = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  // 2. Navigate to a.test with Connection-Allowlist-Report-Only.
+  GURL report_only_url =
+      embedded_https_test_server().GetURL("a.test", "/report_only_page.html");
+  ASSERT_TRUE(NavigateToURL(shell(), report_only_url));
+
+  // Flush the BackForwardCache so history.back() performs a network load.
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  delete_observer_rfh_b.WaitUntilDeleted();
+
+  // 3. Navigate back via history.back(). The navigation should succeed and
+  // must not queue a report-only violation report for `first_url`.
+  TestNavigationObserver history_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), "history.back();"));
+  history_observer.Wait();
+  EXPECT_TRUE(history_observer.last_navigation_succeeded());
+  EXPECT_EQ(first_url, shell()->web_contents()->GetLastCommittedURL());
+
+  // 4. Navigate to `report_only_url` and trigger a normal cross-origin iframe
+  // navigation to verify report-only reporting is active and synchronize.
+  ASSERT_TRUE(NavigateToURL(shell(), report_only_url));
+  GURL other_url =
+      embedded_https_test_server().GetURL("c.test", "/other_page.html");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const frame = document.createElement('iframe');
+        frame.src = $1;
+        document.body.appendChild(frame);
+      )",
+                                                        other_url)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !reporting_observer.report_bodies().empty(); }));
+
+  EXPECT_EQ(reporting_observer.report_bodies().size(), 1u);
+  const std::string* connection =
+      reporting_observer.report_bodies()[0].FindString("connection");
+  ASSERT_TRUE(connection);
+  EXPECT_EQ(*connection, other_url.spec());
+  EXPECT_NE(*connection, first_url.spec());
+}
+
+// Same as above, but the session history entry's URL redirects when it is
+// loaded again, exercising the redirect check in
+// NavigationRequest::OnRequestRedirected().
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       HistoryRedirectNavigationReportOnlyDoesNotQueueReport) {
+  net::test_server::ControllableHttpResponse redirect_response(
+      &embedded_https_test_server(), "/redirect_page.html?query=sample_data");
+
+  RegisterResponse("/first_page.html",
+                   ResponseEntry("<html><body>First page</body></html>", {}));
+  RegisterResponse("/final_page.html?query=sample_data",
+                   ResponseEntry("<html><body>Final page</body></html>", {}));
+  RegisterResponse("/report_only_page.html",
+                   ResponseEntry("<html><body>Report only</body></html>",
+                                 {{"Connection-Allowlist-Report-Only",
+                                   "(response-origin); report-to=default"}}));
+  RegisterResponse("/other_page.html",
+                   ResponseEntry("<html><body>Other page</body></html>", {}));
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  auto* network_context = shell()
+                              ->web_contents()
+                              ->GetBrowserContext()
+                              ->GetDefaultStoragePartition()
+                              ->GetNetworkContext();
+  TestReportingApiObserver reporting_observer(network_context);
+
+  // 1. Navigate to b.test and replace the session history entry's URL with one
+  // that redirects when loaded.
+  GURL first_url =
+      embedded_https_test_server().GetURL("b.test", "/first_page.html");
+  GURL redirecting_url = embedded_https_test_server().GetURL(
+      "b.test", "/redirect_page.html?query=sample_data");
+  GURL final_url = embedded_https_test_server().GetURL(
+      "b.test", "/final_page.html?query=sample_data");
+  ASSERT_TRUE(NavigateToURL(shell(), first_url));
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             JsReplace("history.replaceState({}, '', $1);", redirecting_url)));
+  EXPECT_EQ(redirecting_url, shell()->web_contents()->GetLastCommittedURL());
+  RenderFrameHostImpl* rfh_b = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  // 2. Navigate to a.test with Connection-Allowlist-Report-Only.
+  GURL report_only_url =
+      embedded_https_test_server().GetURL("a.test", "/report_only_page.html");
+  ASSERT_TRUE(NavigateToURL(shell(), report_only_url));
+
+  // Flush the BackForwardCache so history.back() performs a network load.
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  delete_observer_rfh_b.WaitUntilDeleted();
+
+  // 3. Navigate back via history.back(). The history entry's URL redirects to
+  // `final_url`. The navigation should succeed and must not queue a report-only
+  // violation report for either URL.
+  TestNavigationObserver history_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), "history.back();"));
+  redirect_response.WaitForRequest();
+  redirect_response.Send(
+      "HTTP/1.1 302 Found\r\n"
+      "Location: " +
+      final_url.spec() + "\r\n\r\n");
+  redirect_response.Done();
+  history_observer.Wait();
+  EXPECT_TRUE(history_observer.last_navigation_succeeded());
+  EXPECT_EQ(final_url, shell()->web_contents()->GetLastCommittedURL());
+
+  // 4. Navigate to `report_only_url` and trigger a normal cross-origin iframe
+  // navigation to verify report-only reporting is active and synchronize.
+  ASSERT_TRUE(NavigateToURL(shell(), report_only_url));
+  GURL other_url =
+      embedded_https_test_server().GetURL("c.test", "/other_page.html");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const frame = document.createElement('iframe');
+        frame.src = $1;
+        document.body.appendChild(frame);
+      )",
+                                                        other_url)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !reporting_observer.report_bodies().empty(); }));
+
+  EXPECT_EQ(reporting_observer.report_bodies().size(), 1u);
+  const std::string* connection =
+      reporting_observer.report_bodies()[0].FindString("connection");
+  ASSERT_TRUE(connection);
+  EXPECT_EQ(*connection, other_url.spec());
+}
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 }  // namespace
 
