@@ -358,6 +358,8 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
+import org.chromium.chrome.browser.ui.browser_instant_controller.BrowserInstantControllerBridge;
+import org.chromium.chrome.browser.ui.browser_instant_controller.BrowserInstantControllerBridgeFactory;
 import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
@@ -1056,6 +1058,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         /* profile= */ null,
                         /* activityWindowAndroid= */ null),
                 () -> TabbedWindowStateTracker.create(mWindowId));
+
+        // Reloads this window's New Tab Pages when the default search engine changes. Keyed on
+        // the original profile: incognito NTPs don't depend on the default search engine, and the
+        // regular-profile browser window always exists for a tabbed activity. The native bridge
+        // decides whether the window actually needs a controller (WebUI NTP and third-party NTPs
+        // enabled); otherwise the feature stays inert. Added for Desktop Android devices only.
+        if (DeviceInfo.isDesktop()) {
+            chromeAndroidTask.addFeature(
+                    new ChromeAndroidTaskFeatureKey(
+                            BrowserInstantControllerBridge.class,
+                            profile.getOriginalProfile(),
+                            activityWindowAndroid),
+                    BrowserInstantControllerBridgeFactory::create);
+        }
     }
 
     boolean shouldRemoveWindowWithZeroTabs(@TabClosingSource int closingSource) {

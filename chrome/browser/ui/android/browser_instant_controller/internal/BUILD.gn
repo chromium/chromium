@@ -1,0 +1,60 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_ntp)
+
+# Android C++ bridge that owns a BrowserInstantController per browser window.
+#
+# This target shouldn't be used by anything outside this directory, except
+# //c/b, which is the C++ "glue" that links the implementation into
+# libchrome.so.
+source_set("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+  sources = [
+    "browser_instant_controller_bridge.cc",
+    "browser_instant_controller_bridge.h",
+  ]
+  deps = [
+    ":jni",
+    "//base",
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/ui:browser_instant_controller",
+    "//chrome/browser/ui/browser_window",
+    "//components/search",
+  ]
+}
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/browser_instant_controller/BrowserInstantControllerBridgeFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/browser_instant_controller/BrowserInstantControllerBridgeImpl.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/ui/android/browser_instant_controller:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni" ]
+}
+
+generate_jni("jni") {
+  visibility = [ ":*" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/browser_instant_controller/BrowserInstantControllerBridgeImpl.java" ]
+  deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
+}

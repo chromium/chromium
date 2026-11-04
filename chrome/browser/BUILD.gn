@@ -2872,6 +2872,10 @@ source_set("browser") {
       public_deps +=
           [ "//ui/webui/resources/cr_components/history:mojo_bindings" ]
     }
+    if (enable_webui_ntp) {
+      deps +=
+          [ "//chrome/browser/ui/android/browser_instant_controller/internal" ]
+    }
     deps += [
       "//chrome/android:jni_headers",
       "//chrome/browser/android",
