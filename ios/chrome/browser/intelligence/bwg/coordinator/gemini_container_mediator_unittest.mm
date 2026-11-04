@@ -142,14 +142,18 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 @property(nonatomic, weak) FakeGeminiContainerConsumer* consumer;
 @property(nonatomic, readonly) std::vector<actor::ActorTaskId> startedTaskIDs;
 @property(nonatomic, readonly) std::vector<actor::ActorTaskId> stoppedTaskIDs;
+@property(nonatomic, weak, readonly) id<ActuationWorklogDataSource>
+    startedDataSource;
 @property(nonatomic, readonly) BOOL actuationActiveOnStart;
 @property(nonatomic, readonly) BOOL actuationActiveOnStop;
 @end
 
 @implementation FakeGeminiContainerMediatorDelegate
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
-    didStartActuationTaskWithID:(actor::ActorTaskId)taskID {
+    didStartActuationTaskWithID:(actor::ActorTaskId)taskID
+                     dataSource:(id<ActuationWorklogDataSource>)dataSource {
   _startedTaskIDs.push_back(taskID);
+  _startedDataSource = dataSource;
   _actuationActiveOnStart = _consumer.isActuationActive;
 }
 
@@ -1323,6 +1327,7 @@ TEST_F(GeminiContainerMediatorTest, TestGeminiActuationTaskNotifiesDelegate) {
                                      std::nullopt);
   [mediator_ actorServiceDidStartTaskWithID:kTaskId sourceInfo:source];
   EXPECT_EQ(std::vector<actor::ActorTaskId>{kTaskId}, delegate.startedTaskIDs);
+  EXPECT_TRUE(delegate.startedDataSource);
   EXPECT_TRUE(delegate.actuationActiveOnStart);
 
   [mediator_ actorServiceDidStopTaskWithID:kTaskId

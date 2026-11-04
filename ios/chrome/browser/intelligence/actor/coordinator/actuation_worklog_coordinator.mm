@@ -83,8 +83,9 @@
 
 #pragma mark - Public
 
-- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID {
-  [_mediator startObservingTaskWithID:taskID];
+- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
+                      dataSource:(id<ActuationWorklogDataSource>)dataSource {
+  [_mediator startObservingTaskWithID:taskID dataSource:dataSource];
 }
 
 - (void)stopObservingTask {

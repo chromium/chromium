@@ -19,6 +19,7 @@ source_set("container_mediator") {
     "//ios/chrome/browser/intelligence/bwg/ui",
   ]
   deps = [
+    ":actor_task_store",
     "//base",
     "//components/actor/core",
     "//components/feature_engagement/public",

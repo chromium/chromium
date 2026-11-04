@@ -10,14 +10,17 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
 @class GeminiContainerMediator;
+@protocol ActuationWorklogDataSource;
 
 // Delegate notified of Gemini actuation task transitions tracked by
 // `GeminiContainerMediator`.
 @protocol GeminiContainerMediatorDelegate <NSObject>
 
 // Called when the Gemini actuation task identified by `taskID` starts.
+// `dataSource` publishes its worklog until the task stops.
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
-    didStartActuationTaskWithID:(actor::ActorTaskId)taskID;
+    didStartActuationTaskWithID:(actor::ActorTaskId)taskID
+                     dataSource:(id<ActuationWorklogDataSource>)dataSource;
 
 // Called when the Gemini actuation task identified by `taskID` stops.
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator

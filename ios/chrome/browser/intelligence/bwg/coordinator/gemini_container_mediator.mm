@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actor_task_store.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
@@ -167,6 +168,10 @@ class GeminiContainerMediatorTabHelperObserver
   raw_ptr<actor::ActorService> _actorService;
   // ID of the Gemini actor task driving actuation, if any.
   std::optional<actor::ActorTaskId> _actuationTaskId;
+  // Store of the Gemini actor task driving actuation, if any.
+  // TODO(crbug.com/579385900): Move ownership to a profile-scoped
+  // `GeminiActorTaskManager` so the store outlives the container.
+  GeminiActorTaskStore* _actuationTaskStore;
   // Authentication service used to retrieve the primary identity.
   raw_ptr<AuthenticationService> _authService;
   // Incognito state for the browser's scene.
@@ -371,6 +376,8 @@ class GeminiContainerMediatorTabHelperObserver
     _actorService = nullptr;
   }
   _actuationTaskId.reset();
+  [_actuationTaskStore disconnect];
+  _actuationTaskStore = nil;
   [_tabGridState removeObserver:self];
   _tabGridState = nil;
   [_lensOverlayStateNotifier removeObserver:self];
@@ -471,11 +478,16 @@ class GeminiContainerMediatorTabHelperObserver
   }
   // TODO(crbug.com/565875367): Track multiple concurrent tasks.
   _actuationTaskId = taskID;
+  [_actuationTaskStore disconnect];
+  _actuationTaskStore =
+      [[GeminiActorTaskStore alloc] initWithTaskID:taskID
+                                      actorService:_actorService];
   // Actuation must be active before the worklog starts, otherwise its initial
   // height updates are ignored by `containerDidChangeActuationHeight:`.
   [self setActuationActive:YES];
   [self.delegate geminiContainerMediator:self
-             didStartActuationTaskWithID:taskID];
+             didStartActuationTaskWithID:taskID
+                              dataSource:_actuationTaskStore];
 }
 
 - (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID
@@ -490,6 +502,8 @@ class GeminiContainerMediatorTabHelperObserver
   [self.delegate geminiContainerMediator:self
               didStopActuationTaskWithID:taskID];
   _actuationTaskId.reset();
+  [_actuationTaskStore disconnect];
+  _actuationTaskStore = nil;
 }
 
 #pragma mark - AssistantContainerDelegate

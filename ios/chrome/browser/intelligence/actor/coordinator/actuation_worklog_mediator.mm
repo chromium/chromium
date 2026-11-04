@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/public/actuation_worklog_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -28,7 +29,7 @@ namespace {
 using SuggestionSelectionCompletionHandler = void (
     ^)(ActorFormSuggestion* selectedSuggestion, BOOL shouldStorePermission);
 
-// Icon size for SF symbols in chips and labeled items.
+// Icon size for SF symbols in chips and card items.
 constexpr CGFloat kIconSize = 16.0;
 
 // Icon size for SF symbols in accessory items.
@@ -233,13 +234,17 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 
 }  // namespace
 
+@interface ActuationWorklogMediator () <ActuationWorklogDataSourceObserver>
+@end
+
 @implementation ActuationWorklogMediator {
   // Service tracking actor tasks and updates.
   raw_ptr<actor::ActorService> _actorService;
   // Currently observed task ID.
   std::optional<actor::ActorTaskId> _currentTaskId;
-  // Latest emitted task update. Deduplicates consecutive identical updates and
-  // is displayed as the current step in the minimized header.
+  // Source of the worklog of the observed task.
+  __weak id<ActuationWorklogDataSource> _dataSource;
+  // Latest task update, displayed as the current step in the minimized header.
   NSString* _latestEmittedTaskUpdate;
   // Title of the observed task.
   NSString* _taskTitle;
@@ -264,7 +269,8 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 
 #pragma mark - Public
 
-- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID {
+- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
+                      dataSource:(id<ActuationWorklogDataSource>)dataSource {
   if (_currentTaskId == taskID) {
     return;
   }
@@ -275,14 +281,11 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 
   // Ensure we are brought back at the init state when subscribing to a task.
   _taskState = actor::ActorTaskState::kInit;
-  // Tracked right away rather than from the posted
-  // `didRegisterAsObserverForTaskID:`, so that `stopObservingTask` still
-  // unregisters if called before the registration is delivered.
-  if (!_actorService->AddTaskUpdatesObserver(taskID, self)) {
-    return;
-  }
   _currentTaskId = taskID;
   _actorService->SetTaskInterventionDelegate(taskID, self);
+  _dataSource = dataSource;
+  // Synchronously delivers the current worklog.
+  [_dataSource addObserver:self];
 }
 
 - (void)stopObservingTask {
@@ -291,15 +294,16 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   }
   if (_actorService) {
     _actorService->SetTaskInterventionDelegate(*_currentTaskId, nil);
-    _actorService->RemoveTaskUpdatesObserver(*_currentTaskId, self);
   }
+  [_dataSource removeObserver:self];
+  _dataSource = nil;
   _currentTaskId.reset();
   [self discardPendingIntervention];
   _selectedSuggestion = nil;
   _latestEmittedTaskUpdate = nil;
   _taskTitle = nil;
-  [_consumer setActuationActive:NO];
-  [_consumer reset];
+  [self.consumer setActuationActive:NO];
+  [self.consumer reset];
 }
 
 - (void)disconnect {
@@ -308,7 +312,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   // once the worklog can be restored.
   [self stopObservingTask];
   _actorService = nullptr;
-  _consumer = nil;
+  self.consumer = nil;
   self.suggestionsConsumer = nil;
 }
 
@@ -318,30 +322,28 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 // handler without calling it (task cancellation, replacement, or disconnect).
 - (void)discardPendingIntervention {
   _pendingInterventionCompletion = nil;
-  [_consumer setIntervention:nil];
+  [self.consumer setIntervention:nil];
 }
 
-// Emits a worklog item and tool chip, deduplicating consecutive updates.
-- (void)processUpdateWithTool:(std::optional<actor::ToolType>)toolType
-                   taskUpdate:(NSString*)taskUpdate {
-  // TODO(crbug.com/555839522): Support updating the tool chip even when the
-  // `taskUpdate` is nil.
-  if (!_consumer || taskUpdate.length == 0) {
-    return;
+// Displays `item` with the chip of `toolType`. Task updates, displayed as
+// simple items, become the current step.
+- (void)displayItem:(ActuationWorklogItem*)item
+           toolType:(std::optional<actor::ToolType>)toolType
+           animated:(BOOL)animated {
+  if (item.style == ActuationWorklogItemStyle::kSimple) {
+    _latestEmittedTaskUpdate = item.title;
   }
+  [self.consumer updateWorklogWithItem:item
+                                  chip:ChipForToolType(toolType)
+                              animated:animated];
+}
 
-  // Deduplicate consecutive identical updates.
-  // TODO(crbug.com/555839522): Support updating the tool chip even when the
-  // `taskUpdate` is deduplicated.
-  if ([_latestEmittedTaskUpdate isEqualToString:taskUpdate]) {
-    return;
-  }
-  _latestEmittedTaskUpdate = [taskUpdate copy];
-
-  ActuationWorklogItem* item =
-      [ActuationWorklogItem simpleItemWithTitle:taskUpdate active:YES];
-  ActuationWorklogChip* chip = ChipForToolType(toolType);
-  [_consumer updateWorklogWithItem:item chip:chip animated:YES];
+// Updates the displayed title and state of the task.
+- (void)applyTaskTitle:(NSString*)taskTitle
+             taskState:(actor::ActorTaskState)taskState {
+  _taskTitle = [taskTitle copy];
+  _taskState = taskState;
+  [self.consumer setActuationActive:!actor::IsTerminalState(taskState)];
   [self updateHeaderContent];
 }
 
@@ -349,11 +351,11 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 - (void)updateHeaderContent {
   ActuationHeaderContent* defaultContent =
       [[ActuationHeaderContent alloc] initWithTitle:_taskTitle subtitle:nil];
-  [_consumer setHeaderContentVariants:
-                 [[ActuationHeaderContentVariants alloc]
-                     initWithMinimizedContent:[self minimizedHeaderContent]
-                               compactContent:defaultContent
-                              expandedContent:defaultContent]];
+  [self.consumer setHeaderContentVariants:
+                     [[ActuationHeaderContentVariants alloc]
+                         initWithMinimizedContent:[self minimizedHeaderContent]
+                                   compactContent:defaultContent
+                                  expandedContent:defaultContent]];
 }
 
 // Returns the header content for the minimized display mode. While the task
@@ -409,52 +411,39 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   }
 }
 
-#pragma mark - ActorTaskUpdatesObserver
+#pragma mark - ActuationWorklogDataSourceObserver
 
-- (void)didRegisterAsObserverForTaskID:(actor::ActorTaskId)taskID
-                             taskTitle:(NSString*)taskTitle
-                            taskUpdate:(NSString*)taskUpdate
-                          currentState:(actor::ActorTaskState)state
-                             webStates:(NSArray<NSNumber*>*)webStatesIDs {
-  if (_currentTaskId != taskID) {
-    return;
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+    didAttachWithTaskTitle:(NSString*)taskTitle
+                 taskState:(actor::ActorTaskState)taskState
+                     items:(NSArray<ActuationWorklogItem*>*)items
+            latestToolType:(std::optional<actor::ToolType>)latestToolType {
+  // The title is unknown until the task is registered with the data source.
+  if (taskTitle) {
+    [self applyTaskTitle:taskTitle taskState:taskState];
   }
-  ActuationWorklogItem* initialItem = [ActuationWorklogItem
-      labeledItemWithTitle:l10n_util::GetNSString(
-                               IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_TITLE)
-                  subtitle:l10n_util::GetNSString(
-                               IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_SUBTITLE)
-                      icon:SymbolWithPointSize(SymbolPlayFill, kIconSize)
-                    active:YES];
-  _taskTitle = [taskTitle copy];
-  _taskState = state;
-  [self updateHeaderContent];
-  [_consumer setActuationActive:!actor::IsTerminalState(state)];
-  [_consumer updateWorklogWithItem:initialItem chip:nil animated:YES];
-
-  // Use the initial task update on top of our default start task update.
-  [self processUpdateWithTool:std::nullopt taskUpdate:taskUpdate];
+  for (ActuationWorklogItem* item in items) {
+    // Only the latest tool is displayed as a chip.
+    std::optional<actor::ToolType> toolType =
+        item == items.lastObject ? latestToolType : std::nullopt;
+    [self displayItem:item toolType:toolType animated:NO];
+  }
+  if (items.count > 0) {
+    [self updateHeaderContent];
+  }
 }
 
-- (void)actorTaskWithID:(actor::ActorTaskId)taskID
-         didChangeState:(actor::ActorTaskState)newState
-              fromState:(actor::ActorTaskState)oldState {
-  if (_currentTaskId != taskID) {
-    return;
-  }
-  _taskState = newState;
-  [_consumer setActuationActive:!actor::IsTerminalState(newState)];
-  [self updateHeaderContent];
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+       didUpdateTaskTitle:(NSString*)taskTitle
+                taskState:(actor::ActorTaskState)taskState {
+  [self applyTaskTitle:taskTitle taskState:taskState];
 }
 
-- (void)actorTaskWithID:(actor::ActorTaskId)taskID
-        willExecuteTool:(actor::ToolType)toolType
-             taskUpdate:(NSString*)taskUpdate
-             onWebState:(web::WebStateID)webStateID {
-  if (_currentTaskId != taskID) {
-    return;
-  }
-  [self processUpdateWithTool:toolType taskUpdate:taskUpdate];
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+            didAppendItem:(ActuationWorklogItem*)item
+                 toolType:(std::optional<actor::ToolType>)toolType {
+  [self displayItem:item toolType:toolType animated:YES];
+  [self updateHeaderContent];
 }
 
 #pragma mark - ActorTaskInterventionDelegate
@@ -488,7 +477,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   }
 
   ActuationWorklogItem* cardItem = CardItemForSuggestion(_selectedSuggestion);
-  [_consumer updateWorklogWithItem:cardItem chip:nil animated:YES];
+  [self.consumer updateWorklogWithItem:cardItem chip:nil animated:YES];
 
   [self.suggestionsConsumer setSuggestions:suggestions
                       forActiveWorklogItem:cardItem];
@@ -514,7 +503,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
                              IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_ALLOW_BUTTON)];
   ActuationInterventionData* data = [ActuationInterventionData
       rowItemWithActions:@[ manualAction, allowAction ]];
-  [_consumer setIntervention:data];
+  [self.consumer setIntervention:data];
 }
 
 - (void)actorTask:(actor::ActorTaskId)taskID
@@ -541,7 +530,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
       [ActuationInterventionData cardItemWithTitle:title
                                           subtitle:subtitle
                                             action:action];
-  [_consumer setIntervention:data];
+  [self.consumer setIntervention:data];
 }
 
 #pragma mark - ActuationWorklogMutator
@@ -569,7 +558,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
            didSelectSuggestion:(ActorFormSuggestion*)suggestion {
   _selectedSuggestion = suggestion;
   ActuationWorklogItem* item = CardItemForSuggestion(_selectedSuggestion);
-  [_consumer setLastItem:item chip:nil];
+  [self.consumer setLastItem:item chip:nil];
   [self.suggestionsConsumer
       updateActiveWorklogItemForReselectedSuggestion:item
                                      fromCoordinator:coordinator];

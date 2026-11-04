@@ -144,8 +144,10 @@
 #pragma mark - GeminiContainerMediatorDelegate
 
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
-    didStartActuationTaskWithID:(actor::ActorTaskId)taskID {
-  [_actuationWorklogCoordinator startObservingTaskWithID:taskID];
+    didStartActuationTaskWithID:(actor::ActorTaskId)taskID
+                     dataSource:(id<ActuationWorklogDataSource>)dataSource {
+  [_actuationWorklogCoordinator startObservingTaskWithID:taskID
+                                              dataSource:dataSource];
 }
 
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
