@@ -115,10 +115,9 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   // response doesn't end it: the request stays open until this object is
   // destroyed, which calls "Close". `callback` runs at most once, with the
   // results of a successful response or with an error. Some portals never
-  // emit a response for such requests, so `callback` may never run. If the
-  // object is destroyed before the method call returns, the request is
-  // closed once its object path is known. `callback` never runs after this
-  // object is destroyed. Release() is not supported.
+  // emit a response for such requests, so `callback` may never run.
+  // `callback` never runs after this object is destroyed. Release() is not
+  // supported.
   template <typename... Args>
   static std::unique_ptr<Request> CreateLongLived(
       scoped_refptr<dbus::Bus> bus,
@@ -132,8 +131,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   {
     auto request =
         base::WrapUnique(new Request(std::move(bus), std::move(callback)));
-    request->close_after_reply_ =
-        base::MakeRefCounted<base::RefCountedData<bool>>(false);
+    request->long_lived_ = true;
 
     dbus::MethodCall method_call(interface_name, method_name);
     dbus::MessageWriter writer(&method_call);
@@ -148,7 +146,9 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   Request& operator=(Request&& other) noexcept = delete;
 
   // If the request has not finished, the destructor will call the "Close"
-  // method on the request object, and the callback will not be run.
+  // method on the request object, and the callback will not be run. If the
+  // method call hasn't returned yet, "Close" is called once the reply names
+  // the request's object path.
   ~Request();
 
   void SetCallback(ResponseCallback callback);
@@ -160,12 +160,9 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
  private:
   Request(scoped_refptr<dbus::Bus> bus, ResponseCallback callback);
 
-  bool is_long_lived() const { return !!close_after_reply_; }
-
-  // Handles the method reply of a long-lived request, which may arrive after
-  // `request` is destroyed. `close_after_reply` is set if the request must
-  // then be closed.
-  static void OnLongLivedMethodResponse(
+  // Handles the method reply, which may arrive after `request` is destroyed.
+  // `close_after_reply` is set if the request must then be closed.
+  static void OnMethodReply(
       base::WeakPtr<Request> request,
       scoped_refptr<base::RefCountedData<bool>> close_after_reply,
       scoped_refptr<dbus::Bus> bus,
@@ -204,9 +201,11 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   std::string portal_service_name_;
   bool released_ = false;
   bool method_call_pending_ = false;
-  // Only set for long-lived requests. Shared with the method reply callback,
-  // which closes the request if this object is destroyed before the reply.
-  scoped_refptr<base::RefCountedData<bool>> close_after_reply_;
+  bool long_lived_ = false;
+  // Shared with the method reply callback, which closes the request if this
+  // object is destroyed before the reply.
+  scoped_refptr<base::RefCountedData<bool>> close_after_reply_ =
+      base::MakeRefCounted<base::RefCountedData<bool>>(false);
   base::WeakPtrFactory<Request> weak_ptr_factory_{this};
 };
 

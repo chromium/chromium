@@ -64,17 +64,11 @@ void Request::Initialize(dbus::ObjectProxy* object_proxy,
       dbus_utils::Variant::Wrap<"s">(std::move(handle_token));
   dbus_utils::WriteValue(*writer, options);
   method_call_pending_ = true;
-  dbus::ObjectProxy::ResponseOrErrorCallback callback;
-  if (is_long_lived()) {
-    callback = base::BindOnce(
-        &Request::OnLongLivedMethodResponse, weak_ptr_factory_.GetWeakPtr(),
-        close_after_reply_, bus_, portal_service_name_, request_object_path_);
-  } else {
-    callback = base::BindOnce(&Request::OnMethodResponse,
-                              weak_ptr_factory_.GetWeakPtr());
-  }
   object_proxy->CallMethodWithErrorResponse(
-      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, std::move(callback));
+      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&Request::OnMethodReply, weak_ptr_factory_.GetWeakPtr(),
+                     close_after_reply_, bus_, portal_service_name_,
+                     request_object_path_));
 }
 
 Request::Request(scoped_refptr<dbus::Bus> bus, ResponseCallback callback)
@@ -87,9 +81,9 @@ Request::~Request() {
     return;
   }
 
-  if (is_long_lived() && method_call_pending_) {
-    // The request's object path isn't known yet. OnLongLivedMethodResponse()
-    // closes the request once it is.
+  if (method_call_pending_) {
+    // The request's object path isn't known yet. OnMethodReply() closes the
+    // request once it is.
     close_after_reply_->data = true;
     return;
   }
@@ -98,7 +92,7 @@ Request::~Request() {
 }
 
 // static
-void Request::OnLongLivedMethodResponse(
+void Request::OnMethodReply(
     base::WeakPtr<Request> request,
     scoped_refptr<base::RefCountedData<bool>> close_after_reply,
     scoped_refptr<dbus::Bus> bus,
@@ -163,7 +157,7 @@ void Request::SetCallback(ResponseCallback callback) {
 
 void Request::Release() {
   // Long-lived requests must be closed to end their effect.
-  CHECK(!is_long_lived());
+  CHECK(!long_lived_);
   released_ = true;
 }
 
@@ -172,10 +166,8 @@ void Request::OnMethodResponse(dbus::Response* response,
   method_call_pending_ = false;
   if (!response) {
     VLOG(1) << "Method call failed.";
-    if (is_long_lived()) {
-      // No request object was created, so there is nothing to close.
-      EndRequest();
-    }
+    // No request object was created, so there is nothing to close.
+    EndRequest();
     Finish(base::unexpected(ResponseError::kMethodCallFailed));
     return;
   }
@@ -277,9 +269,8 @@ void Request::Finish(base::expected<Dictionary, ResponseError>&& result) {
   // destroyed. It may also exist if connecting to the signal failed. Other
   // errors mean the request is over or was never created.
   const bool keep_open =
-      is_long_lived() &&
-      (result.has_value() ||
-       result.error() == ResponseError::kSignalConnectionFailed);
+      long_lived_ && (result.has_value() ||
+                      result.error() == ResponseError::kSignalConnectionFailed);
   if (!keep_open) {
     EndRequest();
   }

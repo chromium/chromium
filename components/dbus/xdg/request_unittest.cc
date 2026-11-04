@@ -191,6 +191,61 @@ TEST_F(RequestTest, SuccessEndsRequest) {
   EXPECT_TRUE(closed_paths_.empty());
 }
 
+// If a request is destroyed before the method call returns, it's closed once
+// the reply arrives.
+TEST_F(RequestTest, DestroyedBeforeReplyIsClosed) {
+  auto request = CreateRequest();
+  request.reset();
+  EXPECT_TRUE(closed_paths_.empty());
+
+  ReplyToMethodCall(request_path_);
+  EXPECT_TRUE(results_.empty());
+  EXPECT_THAT(closed_paths_, ElementsAre(request_path_));
+  EXPECT_TRUE(removed_paths_.empty());
+}
+
+TEST_F(RequestTest, DestroyedBeforeFailedReply) {
+  auto request = CreateRequest();
+  request.reset();
+
+  ReplyToMethodCall(std::nullopt);
+  EXPECT_TRUE(results_.empty());
+  EXPECT_TRUE(closed_paths_.empty());
+  EXPECT_THAT(removed_paths_, ElementsAre(request_path_));
+}
+
+// Portals older than 0.9 ignore handle_token and return another path.
+TEST_F(RequestTest, DestroyedBeforeOldPortalReplyIsClosed) {
+  const dbus::ObjectPath old_path(kOldPortalRequestPath);
+  auto request = CreateRequest();
+  request.reset();
+
+  ReplyToMethodCall(old_path);
+  EXPECT_THAT(closed_paths_, ElementsAre(old_path));
+  EXPECT_THAT(removed_paths_, ElementsAre(request_path_));
+}
+
+TEST_F(RequestTest, OldPortalPathIsClosed) {
+  const dbus::ObjectPath old_path(kOldPortalRequestPath);
+  auto request = CreateRequest();
+  ReplyToMethodCall(old_path);
+  EXPECT_THAT(removed_paths_, ElementsAre(request_path_));
+
+  request.reset();
+  EXPECT_THAT(closed_paths_, ElementsAre(old_path));
+}
+
+// A released request outlives the Request object, so it isn't closed.
+TEST_F(RequestTest, ReleasedBeforeReplyIsNotClosed) {
+  auto request = CreateRequest();
+  request->Release();
+  request.reset();
+
+  ReplyToMethodCall(request_path_);
+  EXPECT_TRUE(results_.empty());
+  EXPECT_TRUE(closed_paths_.empty());
+}
+
 // A long-lived request stays open after a successful response.
 TEST_F(RequestTest, LongLivedSuccessKeepsRequestOpen) {
   auto request = CreateLongLivedRequest();
