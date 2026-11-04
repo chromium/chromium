@@ -160,12 +160,12 @@ void MockSurface::AttachNewBuffer(wl_resource* buffer_resource,
 }
 
 void MockSurface::DestroyPrevAttachedBuffer() {
-  DCHECK(prev_attached_buffer_);
+  CHECK(prev_attached_buffer_, base::NotFatalUntil::M163);
   prev_attached_buffer_ = nullptr;
 }
 
 void MockSurface::ReleaseBuffer(wl_resource* buffer) {
-  DCHECK(buffer);
+  CHECK(buffer, base::NotFatalUntil::M163);
   wl_buffer_send_release(buffer);
   wl_client_flush(wl_resource_get_client(buffer));
 

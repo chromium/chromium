@@ -2246,8 +2246,9 @@ TEST_F(HardwareDisplayPlaneManagerSeamlessModeTest,
   // Invalid crtc will result in a DCHECK.
   int32_t wrong_crtc_id = 9999;
   EXPECT_NE(wrong_crtc_id, crtc_id_);
-  EXPECT_DCHECK_DEATH(
-      plane_manager_->TestSeamlessMode(wrong_crtc_id, arbitrary_mode));
+  EXPECT_CHECK_DEATH(
+      plane_manager_->TestSeamlessMode(wrong_crtc_id, arbitrary_mode),
+      base::NotFatalUntil::M163);
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, CrtcOffsetPageFlip) {

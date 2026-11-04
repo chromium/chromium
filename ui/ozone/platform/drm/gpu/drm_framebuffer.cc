@@ -100,7 +100,8 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
     const gfx::Size& framebuffer_size,
     std::vector<uint64_t> preferred_modifiers,
     bool is_original_buffer) {
-  DCHECK(gfx::Rect(buffer->GetSize()).Contains(gfx::Rect(framebuffer_size)));
+  CHECK(gfx::Rect(buffer->GetSize()).Contains(gfx::Rect(framebuffer_size)),
+        base::NotFatalUntil::M163);
   AddFramebufferParams params;
   params.format = buffer->GetFormat();
   params.modifier = buffer->GetFormatModifier();

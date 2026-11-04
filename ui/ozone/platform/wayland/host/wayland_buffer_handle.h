@@ -42,7 +42,7 @@ class WaylandBufferHandle {
   ~WaylandBufferHandle();
 
   void set_buffer_created_callback(base::OnceClosure callback) {
-    DCHECK(created_callback_.is_null());
+    CHECK(created_callback_.is_null(), base::NotFatalUntil::M163);
     created_callback_ = std::move(callback);
   }
   void set_buffer_released_callback(

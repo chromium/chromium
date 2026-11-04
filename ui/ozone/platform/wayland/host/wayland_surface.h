@@ -153,7 +153,7 @@ class WaylandSurface {
   // Sets the opacity of the wl_surface using zcr_blending_v1_set_alpha.
   // See: alpha-compositing-unstable-v1.xml
   void set_opacity(const float opacity) {
-    DCHECK(!apply_state_immediately_);
+    CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
     if (blending())
       pending_state_.opacity = opacity;
   }
@@ -161,7 +161,7 @@ class WaylandSurface {
   // Sets the blending equation of the wl_surface using
   // zcr_blending_v1_set_blending. See: alpha-compositing-unstable-v1.xml
   void set_blending(const bool use_blending) {
-    DCHECK(!apply_state_immediately_);
+    CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
     if (blending())
       pending_state_.use_blending = use_blending;
   }
@@ -171,7 +171,7 @@ class WaylandSurface {
   // Note this method sends corresponding wayland requests immediately because
   // it does not need a new buffer attach to take effect.
   void set_viewport_destination(const gfx::SizeF& dest_size_px) {
-    DCHECK(!apply_state_immediately_);
+    CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
     pending_state_.viewport_px = dest_size_px;
   }
 

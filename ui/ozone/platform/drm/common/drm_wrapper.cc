@@ -47,7 +47,8 @@ bool DrmCreateDumbBuffer(int fd,
   // The driver may choose to align the last row as well. We don't care about
   // the last alignment bits since they aren't used for display purposes, so
   // just check that the expected size is <= to what the driver allocated.
-  DCHECK_LE(info.computeByteSize(request.pitch), request.size);
+  CHECK_LE(info.computeByteSize(request.pitch), request.size,
+           base::NotFatalUntil::M163);
 
   *handle = request.handle;
   *stride = request.pitch;
@@ -87,8 +88,8 @@ DrmPropertyBlobMetadata::DrmPropertyBlobMetadata(DrmWrapper* drm, uint32_t id)
     : drm_(drm), id_(id) {}
 
 DrmPropertyBlobMetadata::~DrmPropertyBlobMetadata() {
-  DCHECK(drm_);
-  DCHECK(id_);
+  CHECK(drm_, base::NotFatalUntil::M163);
+  CHECK(id_, base::NotFatalUntil::M163);
   drm_->DestroyPropertyBlob(id_);
 }
 
@@ -125,7 +126,7 @@ bool DrmWrapper::Initialize() {
  *******/
 
 ScopedDrmCrtcPtr DrmWrapper::GetCrtc(uint32_t crtc_id) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return ScopedDrmCrtcPtr(drmModeGetCrtc(drm_fd_.get(), crtc_id));
 }
 
@@ -133,8 +134,8 @@ bool DrmWrapper::SetCrtc(uint32_t crtc_id,
                          uint32_t framebuffer,
                          std::vector<uint32_t> connectors,
                          const drmModeModeInfo& mode) {
-  DCHECK(drm_fd_.is_valid());
-  DCHECK(!connectors.empty());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
+  CHECK(!connectors.empty(), base::NotFatalUntil::M163);
 
   TRACE_EVENT2("drm", "DrmWrapper::SetCrtc", "crtc", crtc_id, "size",
                gfx::Size(mode.hdisplay, mode.vdisplay).ToString());
@@ -145,7 +146,7 @@ bool DrmWrapper::SetCrtc(uint32_t crtc_id,
 }
 
 bool DrmWrapper::DisableCrtc(uint32_t crtc_id) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::DisableCrtc", "crtc", crtc_id);
   return !drmModeSetCrtc(drm_fd_.get(), crtc_id, 0, 0, 0, nullptr, 0, nullptr);
 }
@@ -155,12 +156,12 @@ bool DrmWrapper::DisableCrtc(uint32_t crtc_id) {
  **************/
 
 bool DrmWrapper::GetCapability(uint64_t capability, uint64_t* value) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return !drmGetCap(drm_fd_.get(), capability, value);
 }
 
 bool DrmWrapper::SetCapability(uint64_t capability, uint64_t value) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
 
   struct drm_set_client_cap cap = {capability, value};
   return !drmIoctl(drm_fd_.get(), DRM_IOCTL_SET_CLIENT_CAP, &cap);
@@ -171,7 +172,7 @@ bool DrmWrapper::SetCapability(uint64_t capability, uint64_t value) {
  ************/
 
 ScopedDrmConnectorPtr DrmWrapper::GetConnector(uint32_t connector_id) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::GetConnector", "connector", connector_id);
   return ScopedDrmConnectorPtr(
       drmModeGetConnector(drm_fd_.get(), connector_id));
@@ -182,7 +183,7 @@ ScopedDrmConnectorPtr DrmWrapper::GetConnector(uint32_t connector_id) const {
  ********/
 
 bool DrmWrapper::MoveCursor(uint32_t crtc_id, const gfx::Point& point) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::MoveCursor", "crtc_id", crtc_id);
   return !drmModeMoveCursor(drm_fd_.get(), crtc_id, point.x(), point.y());
 }
@@ -190,7 +191,7 @@ bool DrmWrapper::MoveCursor(uint32_t crtc_id, const gfx::Point& point) {
 bool DrmWrapper::SetCursor(uint32_t crtc_id,
                            uint32_t handle,
                            const gfx::Size& size) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT2("drm", "DrmWrapper::SetCursor", "crtc_id", crtc_id, "handle",
                handle);
   return !drmModeSetCursor(drm_fd_.get(), crtc_id, handle, size.width(),
@@ -203,14 +204,14 @@ bool DrmWrapper::SetCursor(uint32_t crtc_id,
 
 bool DrmWrapper::SetMaster() {
   TRACE_EVENT1("drm", "DrmWrapper::SetMaster", "path", device_path_.value());
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   has_master_ = (drmSetMaster(drm_fd_.get()) == 0);
   return has_master_;
 }
 
 bool DrmWrapper::DropMaster() {
   TRACE_EVENT1("drm", "DrmWrapper::DropMaster", "path", device_path_.value());
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   const bool drop_master_result = (drmDropMaster(drm_fd_.get()) == 0);
   // Chrome no longer has DRM master if drop master call succeeded.
   has_master_ = !drop_master_result;
@@ -228,14 +229,14 @@ bool DrmWrapper::has_master() const {
 bool DrmWrapper::CreateDumbBuffer(const SkImageInfo& info,
                                   uint32_t* handle,
                                   uint32_t* stride) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
 
   TRACE_EVENT0("drm", "DrmWrapper::CreateDumbBuffer");
   return DrmCreateDumbBuffer(drm_fd_.get(), info, handle, stride);
 }
 
 bool DrmWrapper::DestroyDumbBuffer(uint32_t handle) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::DestroyDumbBuffer", "handle", handle);
   return DrmDestroyDumbBuffer(drm_fd_.get(), handle);
 }
@@ -275,7 +276,7 @@ bool DrmWrapper::CloseBufferHandle(uint32_t handle) {
  **********/
 
 ScopedDrmEncoderPtr DrmWrapper::GetEncoder(uint32_t encoder_id) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::GetEncoder", "encoder", encoder_id);
   return ScopedDrmEncoderPtr(drmModeGetEncoder(drm_fd_.get(), encoder_id));
 }
@@ -285,13 +286,13 @@ ScopedDrmEncoderPtr DrmWrapper::GetEncoder(uint32_t encoder_id) const {
  **************/
 
 ScopedDrmFramebufferPtr DrmWrapper::GetFramebuffer(uint32_t framebuffer) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::GetFramebuffer", "framebuffer", framebuffer);
   return ScopedDrmFramebufferPtr(drmModeGetFB(drm_fd_.get(), framebuffer));
 }
 
 bool DrmWrapper::RemoveFramebuffer(uint32_t framebuffer) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::RemoveFramebuffer", "framebuffer",
                framebuffer);
   return !drmModeRmFB(drm_fd_.get(), framebuffer);
@@ -306,7 +307,7 @@ bool DrmWrapper::AddFramebuffer2(uint32_t width,
                                  uint64_t modifiers[4],
                                  uint32_t* framebuffer,
                                  uint32_t flags) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT1("drm", "DrmWrapper::AddFramebuffer", "handle", handles[0]);
   return !drmModeAddFB2WithModifiers(drm_fd_.get(), width, height, format,
                                      handles, strides, offsets, modifiers,
@@ -339,7 +340,7 @@ bool DrmWrapper::SetGammaRamp(uint32_t crtc_id,
     curve.Evaluate(i / (gamma_size - 1.f), r[i], g[i], b[i]);
   }
 
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT0("drm", "DrmWrapper::SetGamma");
   return (drmModeCrtcSetGamma(drm_fd_.get(), crtc_id, r.size(), &r[0], &g[0],
                               &b[0]) == 0);
@@ -350,12 +351,12 @@ bool DrmWrapper::SetGammaRamp(uint32_t crtc_id,
  ********/
 
 ScopedDrmPlaneResPtr DrmWrapper::GetPlaneResources() const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return ScopedDrmPlaneResPtr(drmModeGetPlaneResources(drm_fd_.get()));
 }
 
 ScopedDrmPlanePtr DrmWrapper::GetPlane(uint32_t plane_id) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return ScopedDrmPlanePtr(drmModeGetPlane(drm_fd_.get(), plane_id));
 }
 
@@ -366,7 +367,7 @@ ScopedDrmPlanePtr DrmWrapper::GetPlane(uint32_t plane_id) const {
 ScopedDrmObjectPropertyPtr DrmWrapper::GetObjectProperties(
     uint32_t object_id,
     uint32_t object_type) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return ScopedDrmObjectPropertyPtr(
       drmModeObjectGetProperties(drm_fd_.get(), object_id, object_type));
 }
@@ -375,14 +376,14 @@ bool DrmWrapper::SetObjectProperty(uint32_t object_id,
                                    uint32_t object_type,
                                    uint32_t property_id,
                                    uint32_t property_value) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return !drmModeObjectSetProperty(drm_fd_.get(), object_id, object_type,
                                    property_id, property_value);
 }
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
                                              const char* name) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT2("drm", "DrmWrapper::GetProperty", "connector",
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
@@ -402,14 +403,14 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
 }
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(uint32_t id) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return ScopedDrmPropertyPtr(drmModeGetProperty(drm_fd_.get(), id));
 }
 
 bool DrmWrapper::SetProperty(uint32_t connector_id,
                              uint32_t property_id,
                              uint64_t value) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return !drmModeConnectorSetProperty(drm_fd_.get(), connector_id, property_id,
                                       value);
 }
@@ -420,10 +421,10 @@ bool DrmWrapper::SetProperty(uint32_t connector_id,
 
 ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlob(const void* blob,
                                                      size_t size) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   uint32_t id = 0;
   int ret = drmModeCreatePropertyBlob(drm_fd_.get(), blob, size, &id);
-  DCHECK(!ret && id);
+  CHECK(!ret && id, base::NotFatalUntil::M163);
 
   return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
@@ -434,13 +435,13 @@ ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlobWithFlags(const void* blob,
 // TODO(markyacoub): the flag requires being merged to libdrm then backported to
 // CrOS. Remove the #if once that happens.
 #if defined(DRM_MODE_CREATE_BLOB_WRITE_ONLY)
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   uint32_t id = 0;
   int ret = -1;
 
   ret =
       drmModeCreatePropertyBlobWithFlags(drm_fd_.get(), blob, size, &id, flags);
-  DCHECK(!ret && id);
+  CHECK(!ret && id, base::NotFatalUntil::M163);
   return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 #else
   return nullptr;
@@ -448,13 +449,13 @@ ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlobWithFlags(const void* blob,
 }
 
 void DrmWrapper::DestroyPropertyBlob(uint32_t id) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   drmModeDestroyPropertyBlob(drm_fd_.get(), id);
 }
 
 ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
     uint32_t property_id) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return ScopedDrmPropertyBlobPtr(
       drmModeGetPropertyBlob(drm_fd_.get(), property_id));
 }
@@ -462,7 +463,7 @@ ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
 ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
     drmModeConnector* connector,
     const char* name) const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT2("drm", "DrmWrapper::GetPropertyBlob", "connector",
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
@@ -487,7 +488,7 @@ ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
  ***********/
 
 ScopedDrmResourcesPtr DrmWrapper::GetResources() const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   return ScopedDrmResourcesPtr(drmModeGetResources(drm_fd_.get()));
 }
 
@@ -500,7 +501,7 @@ void DrmWrapper::WriteIntoTrace(perfetto::TracedDictionary dict) const {
 }
 
 std::optional<std::string> DrmWrapper::GetDriverName() const {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   ScopedDrmVersionPtr version(drmGetVersion(drm_fd_.get()));
   if (!version) {
     LOG(ERROR) << "Failed to query DRM version";
@@ -524,7 +525,7 @@ base::ScopedFD DrmWrapper::ToScopedFD(std::unique_ptr<DrmWrapper> drm) {
 bool DrmWrapper::CommitProperties(drmModeAtomicReq* properties,
                                   uint32_t flags,
                                   uint64_t page_flip_id) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT("drm", "DrmWrapper::CommitProperties", "test", IsTestOnly(flags),
               "modeset", IsModeset(flags), "blocking", IsBlocking(flags),
               "flags", flags, "page_flip_id", page_flip_id);
@@ -559,7 +560,7 @@ bool DrmWrapper::CommitProperties(drmModeAtomicReq* properties,
 bool DrmWrapper::PageFlip(uint32_t crtc_id,
                           uint32_t framebuffer,
                           uint64_t page_flip_id) {
-  DCHECK(drm_fd_.is_valid());
+  CHECK(drm_fd_.is_valid(), base::NotFatalUntil::M163);
   TRACE_EVENT2("drm", "DrmWrapper::PageFlip", "crtc", crtc_id, "framebuffer",
                framebuffer);
 

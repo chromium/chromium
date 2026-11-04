@@ -76,7 +76,7 @@ void WaylandWindowManager::NotifyWindowRemovedFromSession(
 }
 
 void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
-  DCHECK_NE(located_events_grabber_, window);
+  CHECK_NE(located_events_grabber_, window, base::NotFatalUntil::M163);
 
   // Wayland doesn't allow to grab the mouse. However, we start forwarding all
   // mouse events received by WaylandWindow to the aura::WindowEventDispatcher
@@ -88,7 +88,7 @@ void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
 }
 
 void WaylandWindowManager::UngrabLocatedEvents(WaylandWindow* window) {
-  DCHECK_EQ(located_events_grabber_, window);
+  CHECK_EQ(located_events_grabber_, window, base::NotFatalUntil::M163);
   auto* old_grabber = located_events_grabber_.get();
   located_events_grabber_ = nullptr;
   old_grabber->OnWindowLostCapture();
@@ -169,7 +169,7 @@ WaylandWindow* WaylandWindowManager::GetCurrentPointerFocusedWindow() const {
       break;
     }
   }
-  DCHECK(found);
+  CHECK(found, base::NotFatalUntil::M163);
 #endif
   return pointer_focused_window_;
 }
@@ -193,7 +193,7 @@ WaylandWindow* WaylandWindowManager::GetCurrentKeyboardFocusedWindow() const {
       break;
     }
   }
-  DCHECK(found);
+  CHECK(found, base::NotFatalUntil::M163);
 #endif
   return keyboard_focused_window_;
 }
@@ -261,7 +261,7 @@ void WaylandWindowManager::AddWindow(gfx::AcceleratedWidget widget,
 
 void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
   auto* window = window_map_[widget].get();
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
 
   window_map_.erase(widget);
 
@@ -290,7 +290,7 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
 void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
                                          WaylandSubsurface* subsurface) {
   auto* window = window_map_[widget].get();
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
 
   observers_.Notify(&WaylandWindowObserver::OnSubsurfaceAdded, window,
                     subsurface);
@@ -299,7 +299,7 @@ void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
 void WaylandWindowManager::RemoveSubsurface(gfx::AcceleratedWidget widget,
                                             WaylandSubsurface* subsurface) {
   auto* window = window_map_[widget].get();
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
 
   observers_.Notify(&WaylandWindowObserver::OnSubsurfaceRemoved, window,
                     subsurface);

@@ -36,7 +36,7 @@ void GbmOverlaySurface::SubmitFrame(std::vector<OverlayPlane> overlay_planes,
                                     SubmissionCallback submission_callback,
                                     PresentationCallback presentation_callback,
                                     ReleaseCallback release_callback) {
-  DCHECK(!have_unsubmitted_frame_);
+  CHECK(!have_unsubmitted_frame_, base::NotFatalUntil::M163);
   Frame unsubmitted_frame;
   unsubmitted_frame.overlay_planes.reserve(overlay_planes.size());
   for (auto& plane : overlay_planes) {
@@ -68,8 +68,8 @@ void GbmOverlaySurface::SubmitFrame() {
 
 void GbmOverlaySurface::OnSubmission(gfx::SwapResult swap_result,
                                      gfx::GpuFenceHandle release_fence) {
-  DCHECK(page_flip_pending_);
-  DCHECK(have_unsubmitted_frame_);
+  CHECK(page_flip_pending_, base::NotFatalUntil::M163);
+  CHECK(have_unsubmitted_frame_, base::NotFatalUntil::M163);
 
   have_unsubmitted_frame_ = false;
   submitted_frame_ = std::move(unsubmitted_frame_);
@@ -79,7 +79,7 @@ void GbmOverlaySurface::OnSubmission(gfx::SwapResult swap_result,
 
 void GbmOverlaySurface::OnPresentation(
     const gfx::PresentationFeedback& presentation_feedback) {
-  DCHECK(page_flip_pending_);
+  CHECK(page_flip_pending_, base::NotFatalUntil::M163);
 
   page_flip_pending_ = false;
   Frame previous_frame = std::move(presented_frame_);

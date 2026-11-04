@@ -21,7 +21,7 @@ void Feedback(struct wl_client* client,
   wl_resource* presentation_feedback_resource =
       wl_resource_create(client, &wp_presentation_feedback_interface,
                          wl_resource_get_version(resource), callback);
-  DCHECK(presentation_feedback_resource);
+  CHECK(presentation_feedback_resource, base::NotFatalUntil::M163);
   wp_presentation->OnFeedback(presentation_feedback_resource);
   wp_presentation->Feedback(client, resource, surface, callback);
 }
@@ -39,7 +39,7 @@ MockWpPresentation::MockWpPresentation()
 MockWpPresentation::~MockWpPresentation() = default;
 
 void MockWpPresentation::OnFeedback(wl_resource* callback_resource) {
-  DCHECK(callback_resource);
+  CHECK(callback_resource, base::NotFatalUntil::M163);
   presentation_callbacks_.emplace_back(callback_resource);
 }
 

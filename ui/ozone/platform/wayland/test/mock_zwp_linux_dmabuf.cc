@@ -31,7 +31,7 @@ void CreateParams(wl_client* client, wl_resource* resource, uint32_t id) {
   auto* buffer_params =
       GetUserDataAs<TestZwpLinuxBufferParamsV1>(params_resource);
 
-  DCHECK(buffer_params);
+  CHECK(buffer_params, base::NotFatalUntil::M163);
   zwp_linux_dmabuf->StoreBufferParams(buffer_params);
   buffer_params->SetZwpLinuxDmabuf(zwp_linux_dmabuf);
   zwp_linux_dmabuf->CreateParams(client, resource, id);
@@ -50,7 +50,7 @@ MockZwpLinuxDmabufV1::MockZwpLinuxDmabufV1()
                    kLinuxDmabufVersion) {}
 
 MockZwpLinuxDmabufV1::~MockZwpLinuxDmabufV1() {
-  DCHECK(buffer_params_.empty());
+  CHECK(buffer_params_.empty(), base::NotFatalUntil::M163);
 }
 
 void MockZwpLinuxDmabufV1::StoreBufferParams(

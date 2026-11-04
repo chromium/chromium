@@ -17,7 +17,7 @@ PageFlipRequest::PageFlipRequest(const base::TimeDelta& refresh_interval)
 PageFlipRequest::~PageFlipRequest() = default;
 
 void PageFlipRequest::TakeCallback(PresentationOnceCallback callback) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M163);
   callback_ = std::move(callback);
 }
 

@@ -159,7 +159,7 @@ bool GbmSurfaceless::PendingFrame::ScheduleOverlayPlanes(
 }
 
 void GbmSurfaceless::SubmitFrame() {
-  DCHECK(!unsubmitted_frames_.empty());
+  CHECK(!unsubmitted_frames_.empty(), base::NotFatalUntil::M163);
 
   if (unsubmitted_frames_.front()->ready && !submitted_frame_) {
     for (auto& overlay : unsubmitted_frames_.front()->overlays) {
@@ -222,7 +222,7 @@ void GbmSurfaceless::FenceRetired(uint32_t frame_id) {
   uint32_t index = frame_id - first_frame_id;
   if (index < unsubmitted_frames_.size()) {
     auto& frame = unsubmitted_frames_[index];
-    DCHECK_EQ(frame->frame_id, frame_id);
+    CHECK_EQ(frame->frame_id, frame_id, base::NotFatalUntil::M163);
     // If the frame doesn't have a completion callback yet, it means it hasn't
     // been presented yet (it's the sentinel frame at the back).
     if (!frame->completion_callback) {

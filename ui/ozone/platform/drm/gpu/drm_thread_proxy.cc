@@ -106,7 +106,7 @@ void DrmThreadProxy::CreateBufferFromHandle(
 
 void DrmThreadProxy::SetDisplaysConfiguredCallback(
     base::RepeatingClosure callback) {
-  DCHECK(drm_thread_.task_runner());
+  CHECK(drm_thread_.task_runner(), base::NotFatalUntil::M163);
 
   drm_thread_.task_runner()->PostTask(
       FROM_HERE,
@@ -119,7 +119,7 @@ void DrmThreadProxy::CheckOverlayCapabilities(
     gfx::AcceleratedWidget widget,
     const std::vector<OverlaySurfaceCandidate>& candidates,
     DrmThread::OverlayCapabilitiesCallback callback) {
-  DCHECK(drm_thread_.task_runner());
+  CHECK(drm_thread_.task_runner(), base::NotFatalUntil::M163);
   base::OnceClosure task = base::BindOnce(
       &DrmThread::CheckOverlayCapabilities, base::Unretained(&drm_thread_),
       widget, candidates, CreateSafeOnceCallback(std::move(callback)));
@@ -134,7 +134,7 @@ std::vector<OverlayStatus> DrmThreadProxy::CheckOverlayCapabilitiesSync(
     gfx::AcceleratedWidget widget,
     const std::vector<OverlaySurfaceCandidate>& candidates) {
   TRACE_EVENT0("drm", "DrmThreadProxy::CheckOverlayCapabilitiesSync");
-  DCHECK(drm_thread_.task_runner());
+  CHECK(drm_thread_.task_runner(), base::NotFatalUntil::M163);
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   std::vector<OverlayStatus> result;
   base::OnceClosure task = base::BindOnce(
@@ -151,7 +151,7 @@ void DrmThreadProxy::GetHardwareCapabilities(
     gfx::AcceleratedWidget widget,
     const HardwareCapabilitiesCallback& receive_callback) {
   TRACE_EVENT0("drm", "DrmThreadProxy::GetHardwareCapabilities");
-  DCHECK(drm_thread_.task_runner());
+  CHECK(drm_thread_.task_runner(), base::NotFatalUntil::M163);
   base::RepeatingClosure task = base::BindRepeating(
       &DrmThread::GetHardwareCapabilities, base::Unretained(&drm_thread_),
       widget, CreateSafeRepeatingCallback(receive_callback));
@@ -187,7 +187,7 @@ bool DrmThreadProxy::WaitUntilDrmThreadStarted() {
 
 void DrmThreadProxy::SetDrmModifiersFilter(
     std::unique_ptr<DrmModifiersFilter> filter) {
-  DCHECK(drm_thread_.task_runner());
+  CHECK(drm_thread_.task_runner(), base::NotFatalUntil::M163);
   base::OnceClosure task =
       base::BindOnce(&DrmThread::SetDrmModifiersFilter,
                      base::Unretained(&drm_thread_), std::move(filter));

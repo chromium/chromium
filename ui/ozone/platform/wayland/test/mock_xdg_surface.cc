@@ -148,10 +148,10 @@ void GetXdgPopup(struct wl_client* client,
   }
 
   auto* test_xdg_popup = GetUserDataAs<TestXdgPopup>(xdg_popup_resource);
-  DCHECK(test_xdg_popup);
+  CHECK(test_xdg_popup, base::NotFatalUntil::M163);
 
   auto* positioner = GetUserDataAs<TestPositioner>(positioner_resource);
-  DCHECK(positioner);
+  CHECK(positioner, base::NotFatalUntil::M163);
 
   test_xdg_popup->set_position(positioner->position());
   if (test_xdg_popup->size().IsEmpty() ||

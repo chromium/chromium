@@ -50,8 +50,8 @@ void WaylandSeat::Instantiate(WaylandConnection* connection,
 
 WaylandSeat::WaylandSeat(wl_seat* seat, WaylandConnection* connection)
     : obj_(seat), connection_(connection) {
-  DCHECK(connection_);
-  DCHECK(obj_);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(obj_, base::NotFatalUntil::M163);
 
   static constexpr wl_seat_listener kSeatListener = {
       .capabilities = &OnCapabilities,
@@ -94,7 +94,7 @@ void WaylandSeat::OnName(void* data, wl_seat* seat, const char* name) {
 void WaylandSeat::HandleCapabilities(void* data,
                                      wl_seat* seat,
                                      uint32_t capabilities) {
-  DCHECK(connection_->event_source());
+  CHECK(connection_->event_source(), base::NotFatalUntil::M163);
 
   bool prev_keyboard_available = !!keyboard_;
 

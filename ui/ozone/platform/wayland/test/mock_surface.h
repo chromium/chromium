@@ -100,7 +100,7 @@ class MockSurface : public ServerObject {
       wl_resource_destroy(frame_callback_.ExtractAsDangling());
       frame_callback_ = nullptr;
     }
-    DCHECK(!frame_callback_);
+    CHECK(!frame_callback_, base::NotFatalUntil::M163);
     frame_callback_ = callback_resource;
   }
 

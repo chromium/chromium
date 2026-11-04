@@ -46,9 +46,9 @@ DataSource<T>::DataSource(T* data_source,
                           ui::WaylandConnection* connection,
                           Delegate* delegate)
     : data_source_(data_source), connection_(connection), delegate_(delegate) {
-  DCHECK(data_source_);
-  DCHECK(connection_);
-  DCHECK(delegate_);
+  CHECK(data_source_, base::NotFatalUntil::M163);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 
   Initialize();
   VLOG(1) << "DataSource created:" << this;

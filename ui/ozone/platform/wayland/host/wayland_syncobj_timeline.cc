@@ -103,7 +103,7 @@ WaylandSyncobjAcquireTimeline::Create(const WaylandConnection* connection) {
 
 bool WaylandSyncobjAcquireTimeline::ImportSyncFdAtCurrentSyncPoint(
     int sync_fd) {
-  DCHECK(!current_sync_point_has_fence_);
+  CHECK(!current_sync_point_has_fence_, base::NotFatalUntil::M163);
   // It is illegal to call this before the first sync point.
   CHECK(sync_point_ > 0);
   // Create a binary syncobj wrapping the fence from the sync_fd.

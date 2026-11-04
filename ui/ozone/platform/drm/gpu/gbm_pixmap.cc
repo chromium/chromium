@@ -76,7 +76,7 @@ bool GbmPixmap::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
     const gfx::OverlayPlaneData& overlay_plane_data,
     gfx::GpuFenceHandle acquire_fence) {
-  DCHECK(buffer_->GetFlags() & GBM_BO_USE_SCANOUT);
+  CHECK(buffer_->GetFlags() & GBM_BO_USE_SCANOUT, base::NotFatalUntil::M163);
   // |framebuffer_id| might be 0 if AddFramebuffer2 failed, in that case we
   // already logged the error in GbmBuffer ctor. We avoid logging the error
   // here since this method might be called every pageflip.

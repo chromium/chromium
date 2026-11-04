@@ -40,7 +40,7 @@ DrmDumbBuffer::~DrmDumbBuffer() {
 }
 
 bool DrmDumbBuffer::Initialize(const SkImageInfo& info) {
-  DCHECK(!handle_);
+  CHECK(!handle_, base::NotFatalUntil::M163);
 
   if (!drm_->CreateDumbBuffer(info, &handle_, &stride_)) {
     PLOG(ERROR) << "DrmDumbBuffer: CreateDumbBuffer: width " << info.width()
@@ -54,7 +54,7 @@ bool DrmDumbBuffer::Initialize(const SkImageInfo& info) {
 }
 
 bool DrmDumbBuffer::InitializeFromFramebuffer(uint32_t framebuffer_id) {
-  DCHECK(!handle_);
+  CHECK(!handle_, base::NotFatalUntil::M163);
 
   ScopedDrmFramebufferPtr framebuffer(drm_->GetFramebuffer(framebuffer_id));
   if (!framebuffer)

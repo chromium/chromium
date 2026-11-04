@@ -27,7 +27,8 @@ CrtcCommitRequest::CrtcCommitRequest(uint32_t crtc_id,
       enable_vrr_(enable_vrr) {
   // Verify that at least one overlay plane is a primary plane if we're enabling
   // a CRTC.
-  DCHECK(!should_enable_crtc || DrmOverlayPlane::GetPrimaryPlane(overlays_));
+  CHECK(!should_enable_crtc || DrmOverlayPlane::GetPrimaryPlane(overlays_),
+        base::NotFatalUntil::M163);
 }
 
 CrtcCommitRequest::CrtcCommitRequest(uint32_t crtc_id,
@@ -82,7 +83,7 @@ CrtcCommitRequest CrtcCommitRequest::EnableCrtcRequest(
     HardwareDisplayPlaneList* plane_list,
     DrmOverlayPlaneList overlays,
     bool enable_vrr) {
-  DCHECK(plane_list && !overlays.empty());
+  CHECK(plane_list && !overlays.empty(), base::NotFatalUntil::M163);
 
   return CrtcCommitRequest(crtc_id, connector_id, mode, origin, plane_list,
                            std::move(overlays), enable_vrr,

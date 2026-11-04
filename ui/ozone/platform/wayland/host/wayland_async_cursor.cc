@@ -29,7 +29,7 @@ void WaylandAsyncCursor::AddCursorLoadedCallback(Callback callback) {
 
 void WaylandAsyncCursor::SetBitmapCursor(
     scoped_refptr<BitmapCursor> bitmap_cursor) {
-  DCHECK(!loaded_);
+  CHECK(!loaded_, base::NotFatalUntil::M163);
   bitmap_cursor_ = bitmap_cursor;
   loaded_ = true;
   for (auto& callback : callbacks_) {

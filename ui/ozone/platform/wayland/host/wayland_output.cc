@@ -123,14 +123,14 @@ WaylandOutput::~WaylandOutput() {
 
 void WaylandOutput::InitializeXdgOutput(
     zxdg_output_manager_v1* xdg_output_manager) {
-  DCHECK(!xdg_output_);
+  CHECK(!xdg_output_, base::NotFatalUntil::M163);
   xdg_output_ = std::make_unique<XDGOutput>(
       zxdg_output_manager_v1_get_xdg_output(xdg_output_manager, output_.get()));
 }
 
 void WaylandOutput::InitializeWpColorManagementOutput(
     WaylandWpColorManager* wp_color_manager) {
-  DCHECK(!wp_color_management_output_);
+  CHECK(!wp_color_management_output_, base::NotFatalUntil::M163);
   wp_color_management_output_ =
       std::make_unique<WaylandWpColorManagementOutput>(
           wp_color_manager->CreateColorManagementOutput(output_.get())
@@ -139,7 +139,7 @@ void WaylandOutput::InitializeWpColorManagementOutput(
 }
 
 void WaylandOutput::Initialize(Delegate* delegate) {
-  DCHECK(!delegate_);
+  CHECK(!delegate_, base::NotFatalUntil::M163);
   delegate_ = delegate;
   static constexpr wl_output_listener kOutputListener = {
       .geometry = &OnGeometry,

@@ -12,7 +12,7 @@ namespace ui {
 
 WaylandTablet::WaylandTablet(zwp_tablet_v2* tablet, WaylandTabletSeat* seat)
     : tablet_(tablet), seat_(seat) {
-  DCHECK(seat_);
+  CHECK(seat_, base::NotFatalUntil::M163);
   static constexpr zwp_tablet_v2_listener kListener = {
       .name = &Name,
       .id = &Id,

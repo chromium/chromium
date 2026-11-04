@@ -254,7 +254,8 @@ void WaylandToplevelWindow::SetFullscreen(bool fullscreen,
   // to the compositor to choose which display will be used to map this surface.
 
   // The `target_display_id` must be invalid if not going into fullscreen.
-  DCHECK(fullscreen || target_display_id == display::kInvalidDisplayId);
+  CHECK(fullscreen || target_display_id == display::kInvalidDisplayId,
+        base::NotFatalUntil::M163);
 
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
     if (!xdg_toplevel_) {
@@ -327,7 +328,7 @@ void WaylandToplevelWindow::Minimize() {
 }
 
 void WaylandToplevelWindow::Restore() {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
 
   // Differently from other platforms, under Wayland, unmaximizing the dragged
   // window before starting the drag loop is not needed as it is assumed to be
@@ -365,7 +366,7 @@ void WaylandToplevelWindow::ShowWindowControlsMenu(const gfx::Point& point) {
 }
 
 void WaylandToplevelWindow::ActivateWithToken(std::string token) {
-  DCHECK(connection()->xdg_activation());
+  CHECK(connection()->xdg_activation(), base::NotFatalUntil::M163);
 
   // Stacking the dragged xdg toplevel as the topmost one (and tied to the
   // pointer cursor) is reponsibility of the Wayland compositor, so bail out
@@ -793,7 +794,7 @@ bool WaylandToplevelWindow::IsSurfaceConfigured() {
 
 void WaylandToplevelWindow::SetWindowGeometry(
     const PlatformWindowDelegate::State& state) {
-  DCHECK(connection()->SupportsSetWindowGeometry());
+  CHECK(connection()->SupportsSetWindowGeometry(), base::NotFatalUntil::M163);
 
   if (!xdg_toplevel_) {
     return;
@@ -855,31 +856,31 @@ base::WeakPtr<WaylandWindow> WaylandToplevelWindow::AsWeakPtr() {
 
 bool WaylandToplevelWindow::IsClientControlledWindowMovementSupported() const {
   auto* window_drag_controller = connection()->window_drag_controller();
-  DCHECK(window_drag_controller);
+  CHECK(window_drag_controller, base::NotFatalUntil::M163);
   return window_drag_controller->IsWindowDragProtocolAvailable();
 }
 
 bool WaylandToplevelWindow::ShouldReleaseCaptureForDrag(
     ui::OSExchangeData* data) const {
   auto* data_drag_controller = connection()->data_drag_controller();
-  DCHECK(data_drag_controller);
+  CHECK(data_drag_controller, base::NotFatalUntil::M163);
   return data_drag_controller->ShouldReleaseCaptureForDrag(data);
 }
 
 bool WaylandToplevelWindow::RunMoveLoop(const gfx::Vector2d& drag_offset) {
-  DCHECK(connection()->window_drag_controller());
+  CHECK(connection()->window_drag_controller(), base::NotFatalUntil::M163);
   return connection()->window_drag_controller()->Drag(this, drag_offset);
 }
 
 void WaylandToplevelWindow::EndMoveLoop() {
-  DCHECK(connection()->window_drag_controller());
+  CHECK(connection()->window_drag_controller(), base::NotFatalUntil::M163);
   connection()->window_drag_controller()->StopDragging();
 }
 
 void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
     ui::mojom::DragEventSource event_source,
     bool allow_system_drag) {
-  DCHECK(connection()->window_drag_controller());
+  CHECK(connection()->window_drag_controller(), base::NotFatalUntil::M163);
   // If extended-drag and xdg-toplevel-drag are not available and
   // |allow_system_drag| is set, this is no-op and WaylandDataDragController is
   // assumed to be used instead. i.e: Fallback to a simpler window drag UX based
@@ -1113,7 +1114,7 @@ WmMoveResizeHandler* WaylandToplevelWindow::AsWmMoveResizeHandler() {
 }
 
 void WaylandToplevelWindow::SetSizeConstraints() {
-  DCHECK(delegate());
+  CHECK(delegate(), base::NotFatalUntil::M163);
 
   auto min_size_dip = delegate()->GetMinimumSizeForWindow();
   auto max_size_dip = delegate()->GetMaximumSizeForWindow();
@@ -1148,12 +1149,12 @@ void WaylandToplevelWindow::SetSizeConstraints() {
 
 void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   TryAnnounceAppmenu();
 }
 
 void WaylandToplevelWindow::OnDecorationModeChanged() {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   if (use_native_frame_) {
     // Set server-side decoration for windows using a native frame,
     // e.g. taskmanager

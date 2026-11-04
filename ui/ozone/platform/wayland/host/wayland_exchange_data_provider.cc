@@ -106,7 +106,7 @@ StringType BytesTo(PlatformClipboard::Data bytes) {
 }
 
 void AddString(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
 
   if (data->as_vector().empty()) {
     return;
@@ -116,7 +116,7 @@ void AddString(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 }
 
 void AddHtml(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
 
   if (data->as_vector().empty()) {
     return;
@@ -131,7 +131,7 @@ void AddHtml(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 // 3.  Lines are terminated with a CRLF pair.
 // 4.  URL encoding is used.
 void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
 
   std::string data_as_string = BytesTo<std::string>(data);
 
@@ -160,7 +160,7 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 void AddFileContents(const std::string& filename,
                      PlatformClipboard::Data data,
                      OSExchangeDataProvider* provider) {
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
 
   if (filename.empty()) {
     return;
@@ -174,7 +174,7 @@ void AddFileContents(const std::string& filename,
 // the second one is page title.  The unpleasant feature of text/x-moz-url is
 // that the URL has UTF-16 encoding.
 void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
 
   if (data->as_vector().empty()) {
     return;
@@ -270,8 +270,8 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
 // TODO(crbug.com/40192823): Support custom formats/pickled data.
 void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
                                           const std::string& mime_type) {
-  DCHECK(data);
-  DCHECK(IsMimeTypeSupported(mime_type));
+  CHECK(data, base::NotFatalUntil::M163);
+  CHECK(IsMimeTypeSupported(mime_type), base::NotFatalUntil::M163);
 
 #if BUILDFLAG(IS_LINUX)
   if (mime_type == ui::kMimeTypePortalFileTransfer ||
@@ -304,8 +304,8 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
 // TODO(crbug.com/40192823): Support custom formats/pickled data.
 bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
-  DCHECK(out_content);
-  DCHECK(IsMimeTypeSupported(mime_type));
+  CHECK(out_content, base::NotFatalUntil::M163);
+  CHECK(IsMimeTypeSupported(mime_type), base::NotFatalUntil::M163);
 
   if (mime_type == ui::kMimeTypeMozillaUrl ||
       mime_type == ui::kMimeTypeUriList) {

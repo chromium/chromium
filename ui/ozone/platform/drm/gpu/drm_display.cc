@@ -225,7 +225,7 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
 DrmDisplay::~DrmDisplay() = default;
 
 uint32_t DrmDisplay::GetPrimaryConnectorId() const {
-  DCHECK(primary_crtc_connector_pair_->connector);
+  CHECK(primary_crtc_connector_pair_->connector, base::NotFatalUntil::M163);
   return primary_crtc_connector_pair_->connector->connector_id;
 }
 
@@ -276,7 +276,7 @@ bool DrmDisplay::ReplaceCrtcs(
 }
 
 bool DrmDisplay::SetHdcpKeyProp(const std::string& key) {
-  DCHECK(primary_crtc_connector_pair_->connector);
+  CHECK(primary_crtc_connector_pair_->connector, base::NotFatalUntil::M163);
 
   TRACE_EVENT1("drm", "DrmDisplay::SetHdcpKeyProp", "connector",
                primary_crtc_connector_pair_->connector->connector_id);
@@ -298,7 +298,7 @@ bool DrmDisplay::SetHdcpKeyProp(const std::string& key) {
 
   ScopedDrmPropertyPtr hdcp_key_property(drm_->GetProperty(
       primary_crtc_connector_pair_->connector.get(), kContentProtectionKey));
-  DCHECK(hdcp_key_property);
+  CHECK(hdcp_key_property, base::NotFatalUntil::M163);
 
   return drm_->SetProperty(
       primary_crtc_connector_pair_->connector->connector_id,
@@ -310,7 +310,7 @@ bool DrmDisplay::SetHdcpKeyProp(const std::string& key) {
 bool DrmDisplay::GetHDCPState(
     display::HDCPState* hdcp_state,
     display::ContentProtectionMethod* protection_method) {
-  DCHECK(primary_crtc_connector_pair_->connector);
+  CHECK(primary_crtc_connector_pair_->connector, base::NotFatalUntil::M163);
 
   TRACE_EVENT1("drm", "DrmDisplay::GetHDCPState", "connector",
                primary_crtc_connector_pair_->connector->connector_id);
@@ -374,7 +374,7 @@ bool DrmDisplay::GetHDCPState(
 bool DrmDisplay::SetHDCPState(
     display::HDCPState state,
     display::ContentProtectionMethod protection_method) {
-  DCHECK(primary_crtc_connector_pair_->connector);
+  CHECK(primary_crtc_connector_pair_->connector, base::NotFatalUntil::M163);
 
   if (protection_method != display::CONTENT_PROTECTION_METHOD_NONE) {
     ScopedDrmPropertyPtr content_type_property(drm_->GetProperty(
@@ -471,7 +471,7 @@ gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
 
 bool DrmDisplay::ClearHdrOutputMetadata() {
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
-    DCHECK(crtc_connector_pair.connector);
+    CHECK(crtc_connector_pair.connector, base::NotFatalUntil::M163);
 
     ScopedDrmPropertyPtr hdr_output_metadata_property(drm_->GetProperty(
         crtc_connector_pair.connector.get(), kHdrOutputMetadata));
@@ -503,8 +503,8 @@ bool DrmDisplay::ClearHdrOutputMetadata() {
 }
 
 bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
-  DCHECK(hdr_static_metadata_.has_value());
-  DCHECK(color_space.IsValid());
+  CHECK(hdr_static_metadata_.has_value(), base::NotFatalUntil::M163);
+  CHECK(color_space.IsValid(), base::NotFatalUntil::M163);
 
   ScopedDrmHdrOutputMetadataPtr hdr_output_metadata(
       static_cast<drm_hdr_output_metadata*>(
@@ -513,7 +513,7 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   hdr_output_metadata->hdmi_metadata_type1.metadata_type = 0;
 
   gfx::HDRStaticMetadata::Eotf eotf = GetEotf(color_space.GetTransferID());
-  DCHECK(hdr_static_metadata_->IsEotfSupported(eotf));
+  CHECK(hdr_static_metadata_->IsEotfSupported(eotf), base::NotFatalUntil::M163);
   hdr_output_metadata->hdmi_metadata_type1.eotf = static_cast<uint8_t>(eotf);
 
   hdr_output_metadata->hdmi_metadata_type1.max_cll = 0;
@@ -548,7 +548,7 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
       primaries.fWY * kPrimariesFixedPoint;
 
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
-    DCHECK(crtc_connector_pair.connector);
+    CHECK(crtc_connector_pair.connector, base::NotFatalUntil::M163);
 
     ScopedDrmPropertyBlob hdr_output_metadata_property_blob =
         drm_->CreatePropertyBlob(hdr_output_metadata.get(),
@@ -585,7 +585,7 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
 
 bool DrmDisplay::SetColorspaceProperty(const char* color_space) {
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
-    DCHECK(crtc_connector_pair.connector);
+    CHECK(crtc_connector_pair.connector, base::NotFatalUntil::M163);
 
     // Check whether the DRM device supports the colorspace property
     ScopedDrmPropertyPtr color_space_property(

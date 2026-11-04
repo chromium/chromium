@@ -134,7 +134,7 @@ void HardwareDisplayController::GetEnableProps(
 
 void HardwareDisplayController::GetCurrentModesetPropsWithoutPlanes(
     CommitRequest* commit_request) {
-  DCHECK(commit_request);
+  CHECK(commit_request, base::NotFatalUntil::M163);
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
 
   for (const auto& controller : crtc_controllers_) {
@@ -157,7 +157,7 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
     bool use_current_crtc_mode,
     const drmModeModeInfo& mode,
     std::optional<bool> enable_vrr) {
-  DCHECK(commit_request);
+  CHECK(commit_request, base::NotFatalUntil::M163);
 
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
 
@@ -222,7 +222,7 @@ void HardwareDisplayController::UpdateState(
 
   // Verify that the current state matches the requested state.
   if (crtc_request.should_enable_crtc() && IsEnabled()) {
-    DCHECK(!crtc_request.overlays().empty());
+    CHECK(!crtc_request.overlays().empty(), base::NotFatalUntil::M163);
     // TODO(markyacoub): This should be absorbed in the commit request.
     ResetCursor();
     OnModesetComplete(crtc_request.overlays());
@@ -233,7 +233,7 @@ void HardwareDisplayController::SchedulePageFlip(
     DrmOverlayPlaneList plane_list,
     SwapCompletionOnceCallback submission_callback,
     PresentationOnceCallback presentation_callback) {
-  DCHECK(!page_flip_request_);
+  CHECK(!page_flip_request_, base::NotFatalUntil::M163);
   TRACE_EVENT0("drm", "HDC::SchedulePageFlip");
   scoped_refptr<PageFlipRequest> page_flip_request =
       base::MakeRefCounted<PageFlipRequest>(GetRefreshInterval());
@@ -318,7 +318,7 @@ HardwareDisplayController::ScheduleOrTestPageFlip(
     scoped_refptr<PageFlipRequest> page_flip_request,
     gfx::GpuFenceHandle* release_fence) {
   TRACE_EVENT0("drm", "HDC::ScheduleOrTestPageFlip");
-  DCHECK(IsEnabled());
+  CHECK(IsEnabled(), base::NotFatalUntil::M163);
 
   // Ignore requests with no planes to schedule.
   if (plane_list.empty())
@@ -438,7 +438,8 @@ void HardwareDisplayController::SetCursor(SkBitmap bitmap) {
 void HardwareDisplayController::AddCrtc(
     std::unique_ptr<CrtcController> controller) {
   scoped_refptr<DrmDevice> drm = controller->drm();
-  DCHECK(crtc_controllers_.empty() || drm == GetDrmDevice());
+  CHECK(crtc_controllers_.empty() || drm == GetDrmDevice(),
+        base::NotFatalUntil::M163);
 
   // Check if this controller owns any planes and ensure we keep track of them.
   const std::vector<std::unique_ptr<HardwareDisplayPlane>>& all_planes =
@@ -561,7 +562,7 @@ base::TimeTicks HardwareDisplayController::GetTimeOfLastFlip() const {
 }
 
 scoped_refptr<DrmDevice> HardwareDisplayController::GetDrmDevice() const {
-  DCHECK(!crtc_controllers_.empty());
+  CHECK(!crtc_controllers_.empty(), base::NotFatalUntil::M163);
   // TODO(dnicoara) When we support mirroring across DRM devices, figure out
   // which device should be used for allocations.
   return crtc_controllers_[0]->drm();
@@ -723,7 +724,7 @@ void HardwareDisplayController::InitSupportedCursorSizes() {
 
   // Sort the supported cursor sizes in ascending order so that we can use the
   // smallest buffer.
-  DCHECK(!supported_cursor_sizes_.empty());
+  CHECK(!supported_cursor_sizes_.empty(), base::NotFatalUntil::M163);
   std::sort(supported_cursor_sizes_.begin(), supported_cursor_sizes_.end(),
             CursorSizeComparator());
 }

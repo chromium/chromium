@@ -274,7 +274,8 @@ class OzonePlatformDrm : public OzonePlatform {
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
-    DCHECK(has_initialized_ui() || has_initialized_gpu());
+    CHECK(has_initialized_ui() || has_initialized_gpu(),
+          base::NotFatalUntil::M163);
     return host_properties_;
   }
 
@@ -282,7 +283,7 @@ class OzonePlatformDrm : public OzonePlatform {
   // sandbox to start. This entry point in the Ozone API gives platforms
   // flexibility in handing this requirement.
   void AfterSandboxEntry() override {
-    DCHECK(!single_process());
+    CHECK(!single_process(), base::NotFatalUntil::M163);
     CHECK(has_initialized_gpu()) << "AfterSandboxEntry before InitializeForGPU "
                                     "is invalid startup order.";
 

@@ -32,7 +32,7 @@ void DrmOverlayCandidates::ObserveHardwareCapabilities(
 
 void DrmOverlayCandidates::RegisterOverlayRequirement(bool requires_overlay) {
 #if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  DCHECK(!requires_overlay);
+  CHECK(!requires_overlay, base::NotFatalUntil::M163);
 #endif
   overlay_manager_->RegisterOverlayRequirement(widget_, requires_overlay);
 }

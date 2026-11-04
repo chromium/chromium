@@ -47,7 +47,7 @@ HardwareDisplayControllerInfo::tile_property() const {
 
 void HardwareDisplayControllerInfo::AcquireNonprimaryTileInfo(
     std::unique_ptr<HardwareDisplayControllerInfo> tile_info) {
-  DCHECK(tile_info->tile_property().has_value());
+  CHECK(tile_info->tile_property().has_value(), base::NotFatalUntil::M163);
   nonprimary_tile_infos_.push_back(std::move(tile_info));
 }
 

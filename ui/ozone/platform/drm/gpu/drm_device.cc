@@ -51,14 +51,16 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
 
   int idx = 0;
   while (idx < len) {
-    DCHECK_LE(static_cast<int>(sizeof(drm_event)), len - idx);
+    CHECK_LE(static_cast<int>(sizeof(drm_event)), len - idx,
+             base::NotFatalUntil::M163);
     drm_event event;
     base::byte_span_from_ref(event).copy_from(
         base::as_byte_span(buffer).subspan(static_cast<size_t>(idx),
                                            sizeof(event)));
     switch (event.type) {
       case DRM_EVENT_FLIP_COMPLETE: {
-        DCHECK_LE(static_cast<int>(sizeof(drm_event_vblank)), len - idx);
+        CHECK_LE(static_cast<int>(sizeof(drm_event_vblank)), len - idx,
+                 base::NotFatalUntil::M163);
         drm_event_vblank vblank;
         base::byte_span_from_ref(vblank).copy_from(
             base::as_byte_span(buffer).subspan(static_cast<size_t>(idx),
@@ -73,8 +75,9 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
         // Warning: It is generally unsafe to manufacture TimeTicks values; but
         // here it is required for interfacing with libdrm. Assumption: libdrm
         // is providing the timestamp from the CLOCK_MONOTONIC POSIX clock.
-        DCHECK_EQ(base::TimeTicks::GetClock(),
-                  base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
+        CHECK_EQ(base::TimeTicks::GetClock(),
+                 base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC,
+                 base::NotFatalUntil::M163);
         const base::TimeTicks timestamp =
             base::TimeTicks() +
             base::Microseconds(static_cast<int64_t>(vblank.tv_sec) *
@@ -156,19 +159,19 @@ class DrmDevice::IOWatcher : public base::MessagePumpEpoll::FdWatcher {
 
  private:
   void Register() {
-    DCHECK(base::CurrentIOThread::IsSet());
+    CHECK(base::CurrentIOThread::IsSet(), base::NotFatalUntil::M163);
     base::CurrentIOThread::Get()->WatchFileDescriptor(
         fd_, true, base::MessagePumpForIO::WATCH_READ, &controller_, this);
   }
 
   void Unregister() {
-    DCHECK(base::CurrentIOThread::IsSet());
+    CHECK(base::CurrentIOThread::IsSet(), base::NotFatalUntil::M163);
     controller_.StopWatchingFileDescriptor();
   }
 
   // base::MessagePumpEpoll::FdWatcher overrides:
   void OnFileCanReadWithoutBlocking(int fd) override {
-    DCHECK(base::CurrentIOThread::IsSet());
+    CHECK(base::CurrentIOThread::IsSet(), base::NotFatalUntil::M163);
     TRACE_EVENT1("drm", "OnDrmEvent", "socket", fd);
 
     if (!ProcessDrmEvent(

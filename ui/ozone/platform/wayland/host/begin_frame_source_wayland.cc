@@ -19,7 +19,7 @@ BeginFrameSourceWayland::BeginFrameSourceWayland(
     PlatformWindow* window,
     WaylandFrameManager* frame_manager)
     : frame_manager_(frame_manager), window_(window) {
-  DCHECK(frame_manager_);
+  CHECK(frame_manager_, base::NotFatalUntil::M163);
   SetBeginFrameSourceExtension(window, this);
 }
 

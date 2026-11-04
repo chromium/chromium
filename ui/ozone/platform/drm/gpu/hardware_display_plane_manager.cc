@@ -311,14 +311,15 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
     // Getting the connector is guaranteed if we survived getting the
     // connector's properties.
     ScopedDrmConnectorPtr connector = drm_->GetConnector(connector_id);
-    DCHECK(connector);
+    CHECK(connector, base::NotFatalUntil::M163);
 
     ConnectorProperties state_props;
     state_props.id = connector_id;
     state_props.connection = connector->connection;
     state_props.count_modes = connector->count_modes;
     GetDrmPropertyForName(drm_, props.get(), "CRTC_ID", &state_props.crtc_id);
-    DCHECK(!drm_->is_atomic() || state_props.crtc_id.id);
+    CHECK(!drm_->is_atomic() || state_props.crtc_id.id,
+          base::NotFatalUntil::M163);
     GetDrmPropertyForName(drm_, props.get(), "link-status",
                           &state_props.link_status);
 
@@ -430,10 +431,12 @@ bool HardwareDisplayPlaneManager::InitializeCrtcState() {
 
     GetDrmPropertyForName(drm_, props.get(), "ACTIVE",
                           &state.properties.active);
-    DCHECK(!drm_->is_atomic() || state.properties.active.id);
+    CHECK(!drm_->is_atomic() || state.properties.active.id,
+          base::NotFatalUntil::M163);
     GetDrmPropertyForName(drm_, props.get(), "MODE_ID",
                           &state.properties.mode_id);
-    DCHECK(!drm_->is_atomic() || state.properties.mode_id.id);
+    CHECK(!drm_->is_atomic() || state.properties.mode_id.id,
+          base::NotFatalUntil::M163);
     // These properties are optional. If they don't exist we can tell by the
     // invalid ID.
     GetDrmPropertyForName(drm_, props.get(), "CTM", &state.properties.ctm);
@@ -474,7 +477,7 @@ void HardwareDisplayPlaneManager::DisableConnectedConnectorsToCrtcs(
     const ScopedDrmResourcesPtr& resources) {
   // Should only be called when no CRTC state has been set yet because we
   // hard-disable CRTCs.
-  DCHECK(crtc_state_.empty());
+  CHECK(crtc_state_.empty(), base::NotFatalUntil::M163);
 
   for (int i = 0; i < resources->count_connectors; ++i) {
     ScopedDrmConnectorPtr connector =
@@ -500,7 +503,7 @@ HardwareDisplayPlaneManager::GetCrtcStateForCrtcId(uint32_t crtc_id) {
 HardwareDisplayPlaneManager::CrtcState&
 HardwareDisplayPlaneManager::CrtcStateForCrtcId(uint32_t crtc_id) {
   auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
+  CHECK(crtc_index.has_value(), base::NotFatalUntil::M163);
   return crtc_state_[*crtc_index];
 }
 
@@ -512,7 +515,7 @@ void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
     bool is_enabled = crtc_request.should_enable_crtc();
 
     auto connector_index = LookupConnectorIndex(crtc_request.connector_id());
-    DCHECK(connector_index.has_value());
+    CHECK(connector_index.has_value(), base::NotFatalUntil::M163);
     ConnectorProperties& connector_props = connectors_props_[*connector_index];
     connector_props.crtc_id.value = is_enabled ? crtc_request.crtc_id() : 0;
 

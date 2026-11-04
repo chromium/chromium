@@ -19,7 +19,7 @@ DrmDeviceManager::DrmDeviceManager(
     : drm_device_generator_(std::move(drm_device_generator)) {}
 
 DrmDeviceManager::~DrmDeviceManager() {
-  DCHECK(drm_device_map_.empty());
+  CHECK(drm_device_map_.empty(), base::NotFatalUntil::M163);
 }
 
 bool DrmDeviceManager::AddDrmDevice(const base::FilePath& path,
@@ -53,7 +53,7 @@ void DrmDeviceManager::RemoveDrmDevice(const base::FilePath& path) {
     return;
   }
 
-  DCHECK_NE(primary_device_, *it);
+  CHECK_NE(primary_device_, *it, base::NotFatalUntil::M163);
   devices_.erase(it);
 }
 

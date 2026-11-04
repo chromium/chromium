@@ -46,7 +46,7 @@ WaylandPopup::~WaylandPopup() {
 }
 
 bool WaylandPopup::CreateShellPopup() {
-  DCHECK(parent_window() && !xdg_popup_);
+  CHECK(parent_window() && !xdg_popup_, base::NotFatalUntil::M163);
 
   // Use `xdg_parent_window` and do appropriate origin transformations when
   // sending requests through Wayland.
@@ -132,7 +132,7 @@ void WaylandPopup::Show(bool inactive) {
 
   // Map parent window as WaylandPopup cannot become a visible child of a
   // window that is not mapped.
-  DCHECK(parent_window());
+  CHECK(parent_window(), base::NotFatalUntil::M163);
   auto weak_this = AsWeakPtr();
   if (!parent_window()->IsVisible()) {
     parent_window()->Show(false);
@@ -310,13 +310,13 @@ base::WeakPtr<WaylandWindow> WaylandPopup::AsWeakPtr() {
 void WaylandPopup::OnCloseRequest() {
   // Before calling OnCloseRequest, the `xdg_popup_` must become hidden and
   // only then call OnCloseRequest().
-  DCHECK(!xdg_popup_);
+  CHECK(!xdg_popup_, base::NotFatalUntil::M163);
   WaylandWindow::OnCloseRequest();
 }
 
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
                                 PlatformWindowDelegate::State* state) {
-  DCHECK(parent_window());
+  CHECK(parent_window(), base::NotFatalUntil::M163);
 
   // `window_state` is always `kNormal` on WaylandPopup.
   state->window_state = PlatformWindowState::kNormal;

@@ -68,7 +68,7 @@ std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
     drmModeRes* resources,
     const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>& displays,
     const std::vector<ScopedDrmPlanePtr>& planes) {
-  DCHECK_GE(32, resources->count_crtcs);
+  CHECK_GE(32, resources->count_crtcs, base::NotFatalUntil::M163);
   int most_crtc_planes = -1;
   uint32_t best_crtc = 0;
   uint32_t connected_crtc = 0;
@@ -248,7 +248,7 @@ std::vector<uint64_t> GetPathTopology(const DrmWrapper& drm,
   ScopedDrmPropertyBlobPtr path_blob = drm.GetPropertyBlob(connector, "PATH");
 
   if (!path_blob) {
-    DCHECK_GT(connector->connector_id, 0u);
+    CHECK_GT(connector->connector_id, 0u, base::NotFatalUntil::M163);
 
     // The topology is consisted solely of the connector id.
     return {base::strict_cast<uint64_t>(connector->connector_id)};
@@ -746,7 +746,7 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
     CHECK(connector_iter != connectors.end());
     // |connectors.size()| <= 256, so |index| should be between 0-255.
     const uint8_t index = connector_iter - connectors.begin();
-    DCHECK_LT(index, connectors.size());
+    CHECK_LT(index, connectors.size(), base::NotFatalUntil::M163);
 
     drmModeConnector* connector = connector_iter->get();
     ScopedDrmPropertyBlobPtr edid_blob(
@@ -863,8 +863,8 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
     const gfx::Size& active_pixel_size,
     const display::DisplayMode** out_current_mode,
     const display::DisplayMode** out_native_mode) {
-  DCHECK(out_current_mode);
-  DCHECK(out_native_mode);
+  CHECK(out_current_mode, base::NotFatalUntil::M163);
+  CHECK(out_native_mode, base::NotFatalUntil::M163);
 
   *out_current_mode = nullptr;
   *out_native_mode = nullptr;

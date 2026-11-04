@@ -50,7 +50,7 @@ bool FillModesetBuffer(const scoped_refptr<DrmDevice>& drm,
                        HardwareDisplayController* controller,
                        SkSurface* surface,
                        const std::vector<uint64_t>& modifiers) {
-  DCHECK(!controller->crtc_controllers().empty());
+  CHECK(!controller->crtc_controllers().empty(), base::NotFatalUntil::M163);
   CrtcController* first_crtc = controller->crtc_controllers()[0].get();
   ScopedDrmCrtcPtr saved_crtc(drm->GetCrtc(first_crtc->crtc()));
   if (!saved_crtc || !saved_crtc->buffer_id) {
@@ -139,7 +139,7 @@ void ParamsToTracedValue(
 // `controllers_params` are a part of the same DRM device.
 std::string GenerateConfigurationLogForController(
     const std::vector<ControllerConfigParams>& controllers_params) {
-  DCHECK(!controllers_params.empty());
+  CHECK(!controllers_params.empty(), base::NotFatalUntil::M163);
 
   base::flat_map<uint64_t, std::string> base_connectors_to_keys;
   base::DictValue drm_device;
@@ -186,8 +186,8 @@ std::string GenerateConfigurationLogForController(
                                       : 0;
   bool json_status = base::JSONWriter::WriteWithOptions(
       drm_config, json_writer_options, &drm_config_log);
-  DCHECK(json_status);
-  DCHECK(!drm_config_log.empty());
+  CHECK(json_status, base::NotFatalUntil::M163);
+  CHECK(!drm_config_log.empty(), base::NotFatalUntil::M163);
   // Remove trailing newline
   if (json_writer_options)
     drm_config_log.pop_back();
@@ -248,7 +248,7 @@ void AddNonPrimaryTileControllers(const DrmDisplay& display,
 ScreenManager::ScreenManager() = default;
 
 ScreenManager::~ScreenManager() {
-  DCHECK(window_map_.empty());
+  CHECK(window_map_.empty(), base::NotFatalUntil::M163);
 }
 
 void ScreenManager::AddDisplayController(
@@ -354,8 +354,9 @@ bool ScreenManager::ConfigureDisplayControllers(
       "before", this);
 
   // At least one of these flags must be set.
-  DCHECK(modeset_flags.HasAny({display::ModesetFlag::kCommitModeset,
-                               display::ModesetFlag::kTestModeset}));
+  CHECK(modeset_flags.HasAny({display::ModesetFlag::kCommitModeset,
+                              display::ModesetFlag::kTestModeset}),
+        base::NotFatalUntil::M163);
 
   // Split them to different lists unique to each DRM Device.
   base::flat_map<scoped_refptr<DrmDevice>, std::vector<ControllerConfigParams>>
@@ -537,7 +538,7 @@ void ScreenManager::SetPreferredModifiers(
         uint64_t picked_modifier =
             crtcs_preferred_modifier.at(params.crtc).second;
         auto it = FindDisplayController(params.drm, params.crtc);
-        DCHECK(*it);
+        CHECK(*it, base::NotFatalUntil::M163);
         it->get()->UpdatePreferredModifierForFormat(
             display::DisplaySnapshot::PrimaryFormat(), picked_modifier);
       }
@@ -569,7 +570,7 @@ bool ScreenManager::TestModesetWithOverlays(
       DrmOverlayPlaneList modeset_planes = GetModesetPlanes(
           controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
           modifiers, /*include_overlays=*/true, /*is_testing=*/true);
-      DCHECK(!modeset_planes.empty());
+      CHECK(!modeset_planes.empty(), base::NotFatalUntil::M163);
       does_an_overlay_exist |= modeset_planes.size() > 1;
 
       GetModesetControllerProps(&commit_request, controller, params.origin,
@@ -877,7 +878,7 @@ void ScreenManager::UpdateControllerToWindowMapping() {
           controller,
           gfx::Rect(controller->origin(), controller->GetModeSize()), modifiers,
           /*include_overlays=*/true, /*is_testing=*/false);
-      DCHECK(!modeset_planes.empty());
+      CHECK(!modeset_planes.empty(), base::NotFatalUntil::M163);
 
       CommitRequest commit_request;
       GetEnableControllerProps(&commit_request, controller, modeset_planes);
@@ -980,7 +981,7 @@ void ScreenManager::GetEnableControllerProps(
     CommitRequest* commit_request,
     HardwareDisplayController* controller,
     const DrmOverlayPlaneList& modeset_planes) {
-  DCHECK(!controller->crtc_controllers().empty());
+  CHECK(!controller->crtc_controllers().empty(), base::NotFatalUntil::M163);
 
   controller->GetEnableProps(commit_request, modeset_planes);
 }
@@ -992,7 +993,7 @@ void ScreenManager::GetModesetControllerProps(
     const drmModeModeInfo& mode,
     const DrmOverlayPlaneList& modeset_planes,
     bool enable_vrr) {
-  DCHECK(!controller->crtc_controllers().empty());
+  CHECK(!controller->crtc_controllers().empty(), base::NotFatalUntil::M163);
 
   controller->set_origin(origin);
   controller->GetModesetProps(commit_request, modeset_planes, mode, enable_vrr);
@@ -1009,7 +1010,7 @@ DrmWindow* ScreenManager::FindWindowAt(const gfx::Rect& bounds) const {
 
 void ScreenManager::SetDrmModifiersFilter(
     std::unique_ptr<DrmModifiersFilter> filter) {
-  DCHECK(controllers_.empty());
+  CHECK(controllers_.empty(), base::NotFatalUntil::M163);
   drm_modifiers_filter_ = std::move(filter);
 }
 
