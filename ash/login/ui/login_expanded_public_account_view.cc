@@ -45,7 +45,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -796,12 +795,10 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
           std::make_unique<LoginExpandedPublicAccountEventHandler>(this)) {
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kJellyRoundRectCornerRadiusDp));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kJellyRoundRectCornerRadiusDp,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_ = SystemDecoration::CreateForView(
-      this, SystemDecoration::ShadowType::kElevation12);
-  shadow_->SetRoundedCorners(
+  decoration_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kElevation12,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(
       gfx::RoundedCornersF(kJellyRoundRectCornerRadiusDp));
 
   SetPreferredSize(GetPreferredSizeLandscape());
@@ -909,7 +906,6 @@ const LoginUserInfo& LoginExpandedPublicAccountView::current_user() const {
 }
 
 void LoginExpandedPublicAccountView::Hide() {
-  shadow_.reset();
   SetVisible(false);
   right_pane_->Reset();
   on_dismissed_.Run();
