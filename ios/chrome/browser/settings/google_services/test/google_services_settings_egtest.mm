@@ -256,6 +256,16 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Dismiss the sign-out dialog.
   DismissSignOut();
 
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertTrue(
+      [ChromeEarlGrey localStateBooleanPref:prefs::kSigninAllowedOnDevice],
+      @"Sign-in should remain allowed after canceling sign-out.");
+
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
