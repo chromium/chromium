@@ -16,17 +16,18 @@ export function getHtml(this: LeftHandSideElement) {
                  @click="${this.onFoldedClick_}">
              </cr-threads-rail>`
       : ''}
-  <ntp-iframe id="expanded"
-      class="${this.isExpandedReady_ ? 'ready' : ''}"
-      allow="clipboard-write; unbounded-element"
-      style="${this.enableThreadsRailHybrid_
-                 ? `width: ${this.expandedWidth_}px;`
-                 : ''}"
-      src="${this.expandedLhsUrl_}"
-      ?inert="${!this.isExpandedReady_}"
-      ?hidden="${this.enableThreadsRailHybrid_ &&
-                 (!this.isExpandedReady_ || !this.isExpanded_)}">
-  </ntp-iframe>
+  ${!this.enableThreadsRailHybrid_ || this.isExpanded_ || this.isExpandedReady_
+      ? html`<ntp-iframe id="expanded"
+            class="${this.isExpandedReady_ ? 'ready' : ''}"
+            allow="clipboard-write; unbounded-element"
+            style="${this.enableThreadsRailHybrid_
+                       ? `width: ${this.expandedWidth_}px;`
+                       : ''}"
+            src="${this.expandedLhsUrl_}"
+            ?hidden="${!this.isExpandedReady_ ||
+                       (this.enableThreadsRailHybrid_ && !this.isExpanded_)}">
+        </ntp-iframe>`
+      : ''}
   <!--_html_template_end_-->`;
   // clang-format on
 }

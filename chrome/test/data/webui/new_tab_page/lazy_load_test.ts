@@ -53,7 +53,6 @@ const EAGER_ELEMENTS = [
   'cr-tooltip',
   'help-bubble',
   'ntp-app',
-  'ntp-iframe',
   'ntp-logo',
   'ntp-searchbox',
 ];
@@ -106,6 +105,7 @@ const LAZY_ELEMENTS = [
   'ntp-file-suggestion',
   'ntp-google-calendar-module',
   'ntp-icon-container',
+  'ntp-iframe',
   'ntp-info-dialog',
   'ntp-lens-form',
   'ntp-lens-upload-dialog',

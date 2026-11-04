@@ -10,10 +10,9 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from './i18n_setup.js';
-import {IframeElement} from './iframe.js';
+import type {IframeElement} from './iframe.js';
 import {getCss} from './left_hand_side.css.js';
 import {getHtml} from './left_hand_side.html.js';
-import {strictQuery} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 const DEFAULT_EXPANDED_LHS_WIDTH_PX = 261;
@@ -65,12 +64,6 @@ export type SearchToChromeLhsMessage = NtpLhsReadyMessage|NtpLhsCloseMessage|
 export interface NtpLhsThemePalette {
   primaryFont?: string;
   railBackground?: string;
-}
-
-export interface LeftHandSideElement {
-  $: {
-    expanded: IframeElement,
-  };
 }
 
 export class LeftHandSideElement extends CrLitElement {
@@ -196,11 +189,26 @@ export class LeftHandSideElement extends CrLitElement {
     this.setHostWidth_(width);
   }
 
-  protected onFoldedClick_(): void {
-    this.isExpanded_ = true;
+  // Returns the expanded LHS iframe, or null while it is not in the DOM. In
+  // hybrid mode it is not stamped until the rail is first expanded (see
+  // getHtml()), so that the embedded page is not loaded until the user asks for
+  // it.
+  private getExpandedIframe_(): IframeElement|null {
+    return this.shadowRoot.querySelector<IframeElement>('#expanded');
   }
 
-  protected onExpandRail_(): void {
+  protected async onFoldedClick_() {
+    await this.expand_();
+  }
+
+  protected async onExpandRail_() {
+    await this.expand_();
+  }
+
+  private async expand_() {
+    // <ntp-iframe> is defined in the lazily loaded bundle, which may not have
+    // been loaded yet if the folded rail is clicked right after the NTP loads.
+    await WindowProxy.getInstance().ensureLazyLoaded();
     this.isExpanded_ = true;
   }
 
@@ -210,8 +218,8 @@ export class LeftHandSideElement extends CrLitElement {
       return;
     }
 
-    const expanded = this.$.expanded;
-    const iframe = expanded.shadowRoot.querySelector('iframe');
+    const iframe =
+        this.getExpandedIframe_()?.shadowRoot.querySelector('iframe');
     if (!iframe || event.source !== iframe.contentWindow) {
       return;
     }
@@ -260,6 +268,12 @@ export class LeftHandSideElement extends CrLitElement {
   };
 
   private postThemeColors_ = () => {
+    const expanded = this.getExpandedIframe_();
+    if (!expanded) {
+      // Nothing to post to before the rail is expanded in hybrid mode. The
+      // embedded page asks for the theme with NTP_LHS_READY once it is loaded.
+      return;
+    }
     const computedStyle = getComputedStyle(this);
     const theme: NtpLhsThemePalette = {};
     for (const [key, cssVarSuffix] of Object.entries(NTP_LHS_THEME_CSS_VARS) as
@@ -274,8 +288,7 @@ export class LeftHandSideElement extends CrLitElement {
       theme,
       isDark: this.isDark,
     };
-    strictQuery(this.shadowRoot, '#expanded', IframeElement)
-        .postMessage(message);
+    expanded.postMessage(message);
   };
 }
 
