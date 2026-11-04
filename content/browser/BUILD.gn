@@ -1935,6 +1935,8 @@ source_set("browser") {
     "renderer_host/visible_time_request_trigger.h",
     "resource_broker/resource_broker_host.cc",
     "resource_broker/resource_broker_host.h",
+    "resource_broker/resource_broker_routing.cc",
+    "resource_broker/resource_broker_routing.h",
     "resource_coordinator_service.cc",
     "sandboxed_opaque_origin_creator.cc",
     "sandboxed_opaque_origin_creator.h",

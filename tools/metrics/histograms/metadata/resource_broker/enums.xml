@@ -27,6 +27,27 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <!-- LINT.ThenChange(//content/browser/resource_broker/resource_broker_host.h:ResourceBrokerLifecycleEvent) -->
 
+<!-- LINT.IfChange(ResourceBrokerRoutingDecision) -->
+
+<enum name="ResourceBrokerRoutingDecision">
+  <int value="0" label="Routed"/>
+  <int value="1" label="ErrorPage"/>
+  <int value="2" label="OpaqueOrigin"/>
+  <int value="3" label="WebUI"/>
+  <int value="4" label="Extension"/>
+  <int value="5" label="IsolatedWebApp"/>
+  <int value="6" label="SchemeNotHttpOrHttps"/>
+  <int value="7" label="NotLockedToSite"/>
+  <int value="8" label="Pdf"/>
+  <int value="9" label="Guest"/>
+  <int value="10" label="Privileged"/>
+  <int value="11" label="CrossOriginIsolated"/>
+  <int value="12" label="ServiceWorkerControlled"/>
+  <int value="13" label="NoncePartitioned"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/resource_broker/resource_broker_routing.h:ResourceBrokerRoutingDecision) -->
+
 </enums>
 
 </histogram-configuration>

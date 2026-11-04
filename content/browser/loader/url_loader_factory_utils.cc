@@ -6,8 +6,11 @@
 
 #include <variant>
 
+#include "base/feature_list.h"
+#include "content/browser/resource_broker/resource_broker_routing.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "net/cookies/cookie_setting_override.h"
 
 namespace content {
@@ -137,6 +140,10 @@ StoragePartitionImpl* TerminalParams::storage_partition() const {
 int TerminalParams::process_id() const {
   return process_id_;
 }
+const network::mojom::URLLoaderFactoryParams* TerminalParams::factory_params()
+    const {
+  return factory_params_.get();
+}
 network::mojom::URLLoaderFactoryParamsPtr TerminalParams::TakeFactoryParams() {
   return std::move(factory_params_);
 }
@@ -221,6 +228,32 @@ std::tuple<bool, bool> GetIsNavigationAndDownload(
   }
 }
 
+// Records routing eligibility for network-backed renderer document subresource
+// factories. Browser-trusted factories (e.g. `CreateForPrefetch`) stay in the
+// browser process and supply per-request `trusted_params`, so they are not
+// renderer subresource factories.
+void MaybeRecordResourceBrokerRoutingDecision(
+    ContentBrowserClient::URLLoaderFactoryType type,
+    const TerminalParams& terminal_params,
+    const std::optional<ContentClientParams>& content_client_params) {
+  const network::mojom::URLLoaderFactoryParams* factory_params =
+      terminal_params.factory_params();
+  if (type ==
+          ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource &&
+      terminal_params.is_for_network_service() && factory_params &&
+      !factory_params->is_trusted && content_client_params &&
+      content_client_params->frame() &&
+      base::FeatureList::IsEnabled(features::kResourceBroker)) {
+    const url::Origin& origin =
+        factory_params->isolated_world_origin_lock.has_value()
+            ? *factory_params->isolated_world_origin_lock
+            : content_client_params->request_initiator();
+    RecordResourceBrokerRoutingDecision(
+        content_client_params->frame(), origin,
+        content_client_params->isolation_info());
+  }
+}
+
 }  // namespace
 
 // `FinishArgs...` is `mojo::PendingReceiver<network::mojom::URLLoaderFactory>`
@@ -256,6 +289,9 @@ template <typename OutType, typename... FinishArgs>
             : nullptr,
         factory_override_ptr, terminal_params.is_for_network_service());
   }
+
+  MaybeRecordResourceBrokerRoutingDecision(type, terminal_params,
+                                           content_client_params);
 
   if (devtools_params) {
     auto [is_navigation, is_download] = GetIsNavigationAndDownload(type);

@@ -76,6 +76,10 @@ class CONTENT_EXPORT ContentClientParams final {
            network::mojom::URLLoaderFactoryOverridePtr* factory_override,
            bool is_for_network_service);
 
+  RenderFrameHost* frame() const { return frame_; }
+  const url::Origin& request_initiator() const { return *request_initiator_; }
+  const net::IsolationInfo& isolation_info() const { return *isolation_info_; }
+
  private:
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<RenderFrameHost> frame_;
@@ -154,6 +158,8 @@ class CONTENT_EXPORT TerminalParams final {
   DisableSecureDnsOption disable_secure_dns_option() const;
   StoragePartitionImpl* storage_partition() const;
   int process_id() const;
+  // Null for `ForNonNetwork()` and after `TakeFactoryParams()`.
+  const network::mojom::URLLoaderFactoryParams* factory_params() const;
   network::mojom::URLLoaderFactoryParamsPtr TakeFactoryParams();
   std::optional<URLLoaderFactoryTypes> TakeURLLoaderFactory();
   bool is_for_network_service() const;

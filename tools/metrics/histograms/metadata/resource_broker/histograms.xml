@@ -28,6 +28,31 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="ResourceBroker.RoutingDecision{FrameType}"
+    enum="ResourceBrokerRoutingDecision" expires_after="2027-07-12">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether a subresource URLLoaderFactory is eligible for routing through the
+    Cross-Renderer Resource Broker and, if not, the first reason it was
+    excluded. Recorded once per untrusted, network-backed subresource factory
+    created for a document {FrameType} while the ResourceBroker feature is
+    enabled; non-network factories (e.g. data:/file:/filesystem: scheme handlers
+    or WebUI with bindings) and browser-trusted factories (e.g. cross-origin
+    prefetch) are not counted. Counts factories, not documents: a document can
+    create several (e.g. for isolated worlds or factory updates), and a new
+    tab's initial empty document also creates one (OpaqueOrigin in .MainFrame).
+    Where strict site isolation is not enabled (notably on Android), unisolated
+    sites share unlocked processes and report NotLockedToSite.
+  </summary>
+  <token key="FrameType">
+    <variant name="" summary="in any frame"/>
+    <variant name=".MainFrame"
+        summary="in a main frame that is not embedded in another document"/>
+    <variant name=".Subframe" summary="in an iframe or guest view"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
