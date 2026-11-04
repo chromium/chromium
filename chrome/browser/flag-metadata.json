@@ -1140,7 +1140,7 @@
       "viplavkadam@google.com",
       "payments-autofill-team@google.com"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 166
   },
   {
     "name": "autofill-enable-ai-card-recommendation",
@@ -1157,7 +1157,7 @@
       "vinnypersky@google.com",
       "payments-autofill-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 166
   },
   {
     "name": "autofill-enable-amount-extraction-testing",
@@ -1165,7 +1165,7 @@
       "vinnypersky@google.com",
       "payments-autofill-team@google.com"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 166
   },
   {
     "name": "autofill-enable-autofill-settings-enterprise-policy",
@@ -1190,17 +1190,17 @@
   {
     "name": "autofill-enable-buy-now-pay-later",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 166
   },
  {
     "name": "autofill-enable-buy-now-pay-later-for-externally-linked",
     "owners": ["wilsonlow@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 166
   },
   {
     "name": "autofill-enable-buy-now-pay-later-for-klarna",
     "owners": ["wilsonlow@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 166
   },
   {
     "name": "autofill-enable-buy-now-pay-later-syncing",
