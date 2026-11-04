@@ -428,6 +428,8 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   bool ShouldReplaceTargetBuffer();
   void EnsureResourceReadyForDraw();
+  void EnsureWriteAccess();
+  void EndWriteAccess();
   void RasterRecordToSharedImage(cc::PaintRecord last_recording);
   void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
@@ -462,6 +464,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
+  bool current_resource_has_write_access_ = false;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   bool clear_frame_ = true;
   size_t max_recorded_op_bytes_ = 0;

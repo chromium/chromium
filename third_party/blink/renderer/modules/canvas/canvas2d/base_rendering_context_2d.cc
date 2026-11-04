@@ -246,6 +246,7 @@ void BaseRenderingContext2D::ResetBacking() {
   canvas_image_provider_.reset();
   cached_snapshot_.reset();
   cached_content_id_ = cc::PaintImage::kInvalidContentId;
+  current_resource_has_write_access_ = false;
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
     context_provider_wrapper_.reset();
@@ -404,6 +405,9 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
   context_provider_wrapper_ = context_provider_wrapper;
   context_provider_wrapper_->AddObserver(this);
   shared_image_provider_ = std::move(provider);
+  if (shared_image_provider_->resource()) {
+    EnsureWriteAccess();
+  }
 
   if (is_accelerated) {
     MemoryManagedPaintRecorder recorder(size, nullptr);
@@ -418,6 +422,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     if (!shared_image_provider_->IsValid()) {
       shared_image_provider_.reset();
       canvas_image_provider_.reset();
+      current_resource_has_write_access_ = false;
       if (context_provider_wrapper_) {
         context_provider_wrapper_->RemoveObserver(this);
         context_provider_wrapper_.reset();
@@ -426,6 +431,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     }
   } else if (!shared_image_provider_->resource()) {
     shared_image_provider_.reset();
+    current_resource_has_write_access_ = false;
     if (context_provider_wrapper_) {
       context_provider_wrapper_->RemoveObserver(this);
       context_provider_wrapper_.reset();
@@ -437,6 +443,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     CreateSoftwareSurface();
     if (!surface_) {
       shared_image_provider_.reset();
+      current_resource_has_write_access_ = false;
       if (context_provider_wrapper_) {
         context_provider_wrapper_->RemoveObserver(this);
         context_provider_wrapper_.reset();
@@ -706,7 +713,7 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
 
   if (ShouldReplaceTargetBuffer()) {
     cached_content_id_ = PaintImage::kInvalidContentId;
-    DCHECK(!shared_image_provider_->current_resource_has_write_access_)
+    DCHECK(!current_resource_has_write_access_)
         << "Write access must be released before sharing the resource";
 
     auto old_resource = std::move(shared_image_provider_->resource_);
@@ -740,12 +747,60 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
   }
 }
 
+void BaseRenderingContext2D::EnsureWriteAccess() {
+  DCHECK(shared_image_provider_->resource_);
+  // In software mode, we don't need write access to the resource during
+  // drawing since it is executed on CPU memory managed by Skia.
+  DCHECK(shared_image_provider_->resource_->HasOneRef() ||
+         shared_image_provider_->IsSingleBuffered() ||
+         !shared_image_provider_->IsAccelerated())
+      << "Write access requires exclusive access to the resource";
+  DCHECK(!shared_image_provider_->resource()->is_cross_thread())
+      << "Write access is only allowed on the owning thread";
+
+  if (current_resource_has_write_access_ ||
+      shared_image_provider_->IsGpuContextLost()) {
+    return;
+  }
+  current_resource_has_write_access_ = true;
+}
+
+void BaseRenderingContext2D::EndWriteAccess() {
+  DCHECK(!shared_image_provider_->resource()->is_cross_thread());
+
+  if (!current_resource_has_write_access_ ||
+      shared_image_provider_->IsGpuContextLost()) {
+    return;
+  }
+
+  if (shared_image_provider_->IsAccelerated()) {
+    // As a write operation has just completed on the current resource, it is
+    // now necessary to preserve that resource's contents on a subsequent
+    // CopyOnWrite.
+    shared_image_provider_->must_preserve_content_on_copy_on_write_ = true;
+  } else {
+    if (!shared_image_provider_->resource() ||
+        shared_image_provider_->resource()->IsLost() ||
+        !shared_image_provider_->resource()->HasOneRef()) {
+      shared_image_provider_->resource_ =
+          shared_image_provider_->NewOrRecycledResource();
+    }
+    if (!shared_image_provider_->resource() || !surface_) {
+      return;
+    }
+    shared_image_provider_->resource()->UploadSoftwareRenderingResults(
+        surface_.get());
+  }
+
+  current_resource_has_write_access_ = false;
+}
+
 void BaseRenderingContext2D::RasterRecordToSharedImage(
     cc::PaintRecord last_recording) {
   CHECK(shared_image_provider_->IsAccelerated());
   if (!shared_image_provider_->IsGpuContextLost()) {
     EnsureResourceReadyForDraw();
-    shared_image_provider_->EnsureWriteAccess();
+    EnsureWriteAccess();
 
     const bool needs_clear = !shared_image_provider_->is_cleared_;
     shared_image_provider_->is_cleared_ = true;
@@ -773,7 +828,7 @@ void BaseRenderingContext2D::RasterRecordToSharedImage(
 void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
     cc::PaintRecord last_recording) {
   if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
-    shared_image_provider_->EnsureWriteAccess();
+    EnsureWriteAccess();
   }
   cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
                                   GetOrCreateCanvasImageProvider());
@@ -821,7 +876,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
     }
 
     if (!cached_snapshot_) {
-      shared_image_provider_->EndWriteAccess(/*surface=*/nullptr);
+      EndWriteAccess();
 
       // The |release_callback| keeps a ref on this resource to ensure the
       // backing shared image is kept alive until the lifetime of the image.
@@ -868,7 +923,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
     }
 
     DCHECK(cached_snapshot_);
-    DCHECK(!shared_image_provider_->current_resource_has_write_access_);
+    DCHECK(!current_resource_has_write_access_);
     return cached_snapshot_;
   }
   if (!IsBackingValid()) {
@@ -921,7 +976,7 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
   }
   if (surface_) {
     if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
-      shared_image_provider_->EnsureWriteAccess();
+      EnsureWriteAccess();
     }
     return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x,
                                               y);
@@ -968,7 +1023,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
   // We are about to give the caller read access to this resource (and its
   // backing SharedImage). Hence, we must make sure that we give up any write
   // access.
-  shared_image_provider_->EndWriteAccess(surface_.get());
+  EndWriteAccess();
 
   return shared_image_provider_->resource_
              ? base::MakeRefCounted<ExportedCanvasResource>(

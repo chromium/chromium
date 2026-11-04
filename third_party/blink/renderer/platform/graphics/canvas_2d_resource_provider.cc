@@ -146,46 +146,6 @@ bool Canvas2DResourceProvider::IsValid() const {
   return !IsGpuContextLost();
 }
 
-void Canvas2DResourceProvider::EnsureWriteAccess() {
-  DCHECK(resource_);
-  // In software mode, we don't need write access to the resource during
-  // drawing since it is executed on CPU memory managed by Skia.
-  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
-      << "Write access requires exclusive access to the resource";
-  DCHECK(!resource()->is_cross_thread())
-      << "Write access is only allowed on the owning thread";
-
-  if (current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-  current_resource_has_write_access_ = true;
-}
-
-void Canvas2DResourceProvider::EndWriteAccess(SkSurface* surface) {
-  DCHECK(!resource()->is_cross_thread());
-
-  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-
-  if (is_accelerated_) {
-    // As a write operation has just completed on the current resource, it is
-    // now necessary to preserve that resource's contents on a subsequent
-    // CopyOnWrite.
-    must_preserve_content_on_copy_on_write_ = true;
-  } else {
-    if (!resource() || resource()->IsLost() || !resource()->HasOneRef()) {
-      resource_ = NewOrRecycledResource();
-    }
-    if (!resource() || !surface) {
-      return;
-    }
-    resource()->UploadSoftwareRenderingResults(surface);
-  }
-
-  current_resource_has_write_access_ = false;
-}
-
 void Canvas2DResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
@@ -264,10 +224,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
 
   resource_ = NewOrRecycledResource();
-
-  if (resource_) {
-    EnsureWriteAccess();
-  }
 
   // Single buffered mode supported only for accelerated canvas.
   CHECK(!IsSingleBuffered() || is_accelerated_);

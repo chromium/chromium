@@ -158,9 +158,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
 
-  void EnsureWriteAccess();
-  void EndWriteAccess(SkSurface* surface);
-
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
@@ -184,8 +181,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // resource on CopyOnWrite. True by default, but can be set to false as an
   // optimization if the current resource is known to have been cleared.
   bool must_preserve_content_on_copy_on_write_ = true;
-
-  bool current_resource_has_write_access_ = false;
 
   const bool is_accelerated_;
   bool is_cleared_ = false;
