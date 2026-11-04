@@ -1586,6 +1586,70 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   EXPECT_EQ(1, client().draw_and_swap_count());
 }
 
+TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
+       SwapForPreviousFrameBeforeNextBeginFrame) {
+  scheduler_->SetVisible(true);
+
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+  damage_tracker_->SetNewRootSurface(root_surface_id);
+  EXPECT_EQ(0, client_.draw_and_swap_count());
+
+  // --- VSYNC 1 ---
+  // Send BF1 and draw at deadline (Swap 1).
+  AdvanceTimeAndBeginFrameForTest({root_surface_id}, CreatePossibleDeadlines());
+  scheduler_->BeginFrameDeadlineForTest();
+  EXPECT_EQ(1, client_.draw_and_swap_count());
+  EXPECT_FALSE(scheduler_->inside_begin_frame_deadline_interval());
+
+  // --- VSYNC 2 (Idle VSync) ---
+  const base::TimeDelta interval = last_begin_frame_args_.interval;
+  const base::TimeDelta draw_time = scheduler_->GetDeadlineOffset(interval);
+  const base::TimeDelta epsilon = base::Milliseconds(2);
+  const base::TimeDelta latch_delta = interval + draw_time + epsilon;
+  const base::TimeDelta present_delta = latch_delta + interval;
+
+  PossibleDeadlines bf2_deadlines(0);
+  bf2_deadlines.deadlines.emplace_back(1, latch_delta, present_delta);
+  AdvanceTimeAndBeginFrameForTest({root_surface_id}, bf2_deadlines);
+  EXPECT_TRUE(scheduler_->inside_begin_frame_deadline_interval());
+  EXPECT_EQ(1, client_.draw_and_swap_count());
+
+  // Trigger deadline for BF2 with no damage -> scheduler goes idle.
+  scheduler_->BeginFrameDeadlineForTest();
+  EXPECT_EQ(1, client_.draw_and_swap_count());
+  EXPECT_FALSE(scheduler_->inside_begin_frame_deadline_interval());
+
+  BeginFrameArgs bf2_args = last_begin_frame_args_;
+
+  // Late damage for BF2 arrives before VSync 3. This posts
+  // `swap_for_previous_frame_task_` and re-subscribes DisplayScheduler to
+  // BeginFrameSource.
+  BeginFrameAck bf2_ack(bf2_args, true);
+  damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
+  EXPECT_EQ(1, client_.draw_and_swap_count());
+
+  // --- VSYNC 3 ---
+  // Send BF3 BEFORE `swap_for_previous_frame_task_` executes.
+  // OnBeginFrame(BF3) should run the pending swap for BF2 (Swap 2) before
+  // starting the BF3 deadline interval.
+  AdvanceTimeAndBeginFrameForTest({root_surface_id}, CreatePossibleDeadlines());
+  EXPECT_EQ(2, client_.draw_and_swap_count());
+  EXPECT_EQ(bf2_args.frame_id, client_.last_params().begin_frame_args.frame_id);
+  EXPECT_TRUE(scheduler_->inside_begin_frame_deadline_interval());
+
+  BeginFrameArgs bf3_args = last_begin_frame_args_;
+
+  // Damage for BF3 arrives and draws at BF3 deadline (Swap 3).
+  BeginFrameAck bf3_ack(bf3_args, true);
+  damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf3_ack, true);
+  scheduler_->BeginFrameDeadlineForTest();
+  EXPECT_EQ(3, client_.draw_and_swap_count());
+  EXPECT_EQ(bf3_args.frame_id, client_.last_params().begin_frame_args.frame_id);
+  EXPECT_FALSE(scheduler_->inside_begin_frame_deadline_interval());
+}
+
 TEST_P(DisplaySchedulerTest, NoSyncDrawForCurrentFrameWhenPendingSurfaces) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

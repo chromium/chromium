@@ -445,15 +445,15 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
   // missed frame. Also if this was the missed frame, drop the Callback inside
   // it.
   missed_begin_frame_task_.Cancel();
-  swap_for_previous_frame_task_.Cancel();
 
   // Although this always runs "in sequence" with the VizCompositorThread, it
   // may run on another thread (see use of `RunOrPostTask` in
   // `ExternalBeginFrameSourceWin`). To keep that other thread responsive, run
   // the continuation on the VizCompositorThread if a potentially expensive call
-  // to `OnBeginFrameDeadline()` is needed.
+  // to `OnBeginFrameDeadline()` or `AttemptSwapForPreviousFrame()` is needed.
   CHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (inside_begin_frame_deadline_interval_ &&
+  if ((inside_begin_frame_deadline_interval_ ||
+       !swap_for_previous_frame_task_.IsCancelled()) &&
       !task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DisplayScheduler::OnBeginFrameContinuation,
@@ -470,6 +470,8 @@ void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
   // synchronously trigger the previous deadline before progressing.
   if (inside_begin_frame_deadline_interval_) {
     OnBeginFrameDeadline();
+  } else if (!swap_for_previous_frame_task_.IsCancelled()) {
+    AttemptSwapForPreviousFrame();
   }
 
   // Schedule the deadline.
