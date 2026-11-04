@@ -266,6 +266,22 @@ TEST_P(SBProtocolManagerUtilUrlParsingTest, UrlParsing) {
     EXPECT_EQ(hosts[0], "co.uk");
     EXPECT_EQ(hosts[1], "a.co.uk");
   }
+
+  // Host containing '*' (which GURL escapes to "%2A", while Safe Browsing
+  // canonicalization unescapes it back to '*') and '%20' (which Safe Browsing
+  // canonicalization keeps escaped as "%20").
+  url = GURL("http://a.%20b*c.co.uk/1");
+  SBProtocolManagerUtil::GenerateHostsToCheck(url, &hosts);
+  if (GetParam()) {
+    EXPECT_EQ(hosts.size(), 2u);
+    EXPECT_EQ(hosts[0], "%20b*c.co.uk");
+    EXPECT_EQ(hosts[1], "a.%20b*c.co.uk");
+  } else {
+    EXPECT_EQ(hosts.size(), 3u);
+    EXPECT_EQ(hosts[0], "co.uk");
+    EXPECT_EQ(hosts[1], "%20b*c.co.uk");
+    EXPECT_EQ(hosts[2], "a.%20b*c.co.uk");
+  }
 }
 
 // Tests the url canonicalization according to the Safe Browsing spec.

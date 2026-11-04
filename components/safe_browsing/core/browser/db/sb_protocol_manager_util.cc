@@ -98,11 +98,19 @@ void GenerateHostVariantsToCheckV5(const std::string& host,
   // wasted on the eTLD).
   // Note: This will automatically fall back to TLD+1 for unknown registries.
   const size_t kMaxHostsToCheck = 4;
+  // `host` was canonicalized by SBProtocolManagerUtil::CanonicalizeUrl(), whose
+  // final steps run Unescape() followed by Escape() (which leaves printable
+  // ASCII characters like '*' unescaped, while escaping characters like spaces,
+  // '#', and '%'). GetDomainAndRegistry() internally runs
+  // net::CanonicalizeHost(), which applies standard GURL host escaping and
+  // re-escapes characters like '*' to "%2A". Re-apply Unescape() and Escape()
+  // to the returned eTLD+1 so it uses the same Safe Browsing escaping as
+  // `host`.
   std::string etld_plus_one =
-      net::registry_controlled_domains::GetDomainAndRegistry(
+      Escape(Unescape(net::registry_controlled_domains::GetDomainAndRegistry(
           host,
           /*filter=*/
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)));
 
   if (etld_plus_one.empty()) {
     // eTLD+1 is only empty when a TLD+1 does not exist (e.g., single-label
