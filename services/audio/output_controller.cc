@@ -44,6 +44,10 @@ BASE_FEATURE(kAudioOutputControllerRequestBeforeRead,
 // Time in seconds between two successive measurements of audio power levels.
 constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
 
+// Maximum time since the last `power_monitor_.Scan()` call before the cached
+// power reading is considered stale and silence is reported instead.
+constexpr base::TimeDelta kPowerMonitorStaleThreshold = base::Seconds(1);
+
 // Time in seconds between two successive glitch stat logs.
 constexpr base::TimeDelta kGlitchStatsLogInterval = base::Seconds(15);
 
@@ -419,6 +423,10 @@ void OutputController::StopStream() {
     // A stopped stream is silent, and power_montior_.Scan() is no longer being
     // called; so we must reset the power monitor.
     power_monitor_.Reset();
+    {
+      base::AutoLock lock(power_lock_);
+      last_power_monitor_scan_time_ = base::TimeTicks();
+    }
 
     state_ = kPaused;
   }
@@ -561,6 +569,10 @@ int OutputController::OnMoreData(base::TimeDelta delay,
     power_monitor_.Scan(*dest, frames);
 
     const auto now = base::TimeTicks::Now();
+    {
+      base::AutoLock lock(power_lock_);
+      last_power_monitor_scan_time_ = now;
+    }
     if ((now - last_audio_level_log_time_) > kPowerMonitorLogInterval) {
       LogAudioPowerLevel(__func__);
       last_audio_level_log_time_ = now;
@@ -731,6 +743,17 @@ void OutputController::ProcessDeviceChange() {
 
 std::pair<float, bool> OutputController::ReadCurrentPowerAndClip() {
   DCHECK(will_monitor_audio_levels_);
+  base::TimeTicks last_scan;
+  {
+    base::AutoLock lock(power_lock_);
+    last_scan = last_power_monitor_scan_time_;
+  }
+  const base::TimeDelta stale_threshold =
+      std::max(params_.GetBufferDuration() * 2, kPowerMonitorStaleThreshold);
+  if (last_scan.is_null() ||
+      (base::TimeTicks::Now() - last_scan) > stale_threshold) {
+    return {media::AudioPowerMonitor::zero_power(), false};
+  }
   return power_monitor_.ReadCurrentPowerAndClip();
 }
 

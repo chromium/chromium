@@ -1126,5 +1126,73 @@ TEST_F(OutputControllerTest, LogsStatsInDestructor) {
               Contains(HasSubstr("StopStream => (glitches=")));
 }
 
+TEST(OutputControllerMixingTest, ReadCurrentPowerAndClipExpiresWhenStalled) {
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  AudioManagerForControllerTest audio_manager;
+  NiceMock<MockOutputControllerEventHandler> mock_event_handler;
+  NiceMock<MockOutputControllerSyncReader> mock_sync_reader;
+  // Simulate: initial valid audio, two consecutive read timeouts (at 500ms and
+  // 1100ms), and recovery with valid audio before callbacks stall completely.
+  EXPECT_CALL(mock_sync_reader, Read(_, false))
+      .WillOnce(PopulateBuffer())
+      .WillOnce(Return(false))
+      .WillOnce(Return(false))
+      .WillOnce(PopulateBuffer());
+
+  NiceMock<MockAudioOutputStreamForMixing> mock_output_stream;
+  ON_CALL(mock_output_stream, Open()).WillByDefault(Return(true));
+
+  const AudioParameters params = GetTestParams();
+  OutputController controller(
+      &audio_manager, &mock_event_handler, params, "device id",
+      &mock_sync_reader,
+      base::BindRepeating(
+          [](AudioOutputStream* stream, const std::string&,
+             const AudioParameters&, base::OnceClosure) { return stream; },
+          &mock_output_stream));
+  if (!controller.will_monitor_audio_levels()) {
+    Mock::VerifyAndClearExpectations(&mock_sync_reader);
+    audio_manager.Shutdown();
+    return;
+  }
+
+  auto simulate_on_more_data = [&]() {
+    mock_output_stream.SimulateOnMoreDataCalled(params, {}, false);
+  };
+  auto is_silent = [&]() {
+    return controller.ReadCurrentPowerAndClip().first ==
+           media::AudioPowerMonitor::zero_power();
+  };
+
+  controller.CreateStream();
+  controller.Play();
+  EXPECT_TRUE(is_silent());
+
+  simulate_on_more_data();
+  EXPECT_FALSE(is_silent());
+
+  // A short timeout glitch (< 1s) should keep the last audible power level,
+  // while continued timeouts past 1s should decay to silence.
+  task_environment.FastForwardBy(base::Milliseconds(500));
+  simulate_on_more_data();
+  EXPECT_FALSE(is_silent());
+
+  task_environment.FastForwardBy(base::Milliseconds(600));
+  simulate_on_more_data();
+  EXPECT_TRUE(is_silent());
+
+  // Valid audio data should recover immediately, and then decay to silence if
+  // OnMoreData() stops being called for > 1s.
+  simulate_on_more_data();
+  EXPECT_FALSE(is_silent());
+
+  task_environment.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
+  EXPECT_TRUE(is_silent());
+
+  controller.Close();
+  audio_manager.Shutdown();
+}
+
 }  // namespace
 }  // namespace audio

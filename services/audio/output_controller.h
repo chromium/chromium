@@ -364,6 +364,12 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // Scans audio samples from OnMoreData() as input to compute power levels.
   media::AudioPowerMonitor power_monitor_;
 
+  // Timestamp of the last `power_monitor_.Scan()` call in `OnMoreData()`. Used
+  // to avoid returning stale power readings when `OnMoreData()` stops being
+  // called (e.g. a wedged/suspended platform stream) or continuously times out.
+  base::Lock power_lock_;
+  base::TimeTicks last_power_monitor_scan_time_ GUARDED_BY(power_lock_);
+
   // Updated each time a power measurement is logged.
   base::TimeTicks last_audio_level_log_time_;
 
