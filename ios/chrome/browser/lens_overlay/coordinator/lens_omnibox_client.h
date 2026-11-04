@@ -116,7 +116,7 @@ class LensOmniboxClient final : public OmniboxClientIOS {
   base::WeakPtr<OmniboxClientIOS> AsWeakPtr() override;
 
  private:
-  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
+  raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   __weak id<LensWebProvider> web_provider_;
