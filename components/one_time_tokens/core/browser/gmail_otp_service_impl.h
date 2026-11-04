@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_GMAIL_OTP_SERVICE_IMPL_H_
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_GMAIL_OTP_SERVICE_IMPL_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -62,25 +63,24 @@ class GmailOtpServiceImpl : public GmailOtpService {
   OneTimeTokenLogSink* GetLogSink() override;
 
  private:
-  void StartCachedOtpCheck(
-      std::unique_ptr<GmailOtpSenderDomainMatcher> domain_matcher,
-      std::vector<OneTimeToken> tokens,
-      size_t current_index,
-      bool allow_psl_matching,
-      GetFreshestCachedOtpCallback callback);
-  void OnCachedTokenMatchChecked(
-      std::unique_ptr<GmailOtpSenderDomainMatcher> domain_matcher,
-      std::vector<OneTimeToken> tokens,
-      size_t current_index,
-      bool allow_psl_matching,
-      GetFreshestCachedOtpCallback callback,
-      GmailOtpSenderDomainMatchType match_type);
+  struct ScopedDomainMatcherCleanup;
+
+  void StartCachedOtpCheck(ExpiringSubscriptionHandle check_handle,
+                           std::vector<OneTimeToken> tokens,
+                           size_t current_index,
+                           bool allow_psl_matching,
+                           GetFreshestCachedOtpCallback callback);
+  void OnCachedTokenMatchChecked(ExpiringSubscriptionHandle check_handle,
+                                 std::vector<OneTimeToken> tokens,
+                                 size_t current_index,
+                                 bool allow_psl_matching,
+                                 GetFreshestCachedOtpCallback callback,
+                                 GmailOtpSenderDomainMatchType match_type);
 
   void EnsureBackendSubscription(base::Time expiration);
 
   void NotifySubscriber(
-      const url::Origin& origin,
-      GmailOtpSenderDomainMatcher* domain_matcher,
+      const ScopedDomainMatcherCleanup* cleanup,
       bool allow_psl_matching,
       IncomingTokenCallback callback,
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> result);
@@ -96,14 +96,19 @@ class GmailOtpServiceImpl : public GmailOtpService {
   affiliations::DomainRelationChecker domain_relation_checker_;
   base::CallbackListSubscription log_subscription_;
 
+  // Owns domain matchers for active subscriptions and in-flight
+  // `GetFreshestCachedOtp` checks, and backs `HasPendingRequests()`. Must be
+  // declared after `domain_relation_checker_` so matchers (and their
+  // `raw_ref<DomainRelationChecker>`) are destroyed before it.
+  base::flat_map<ExpiringSubscriptionHandle,
+                 std::unique_ptr<GmailOtpSenderDomainMatcher>>
+      domain_matchers_;
+
   // Active backend subscription and subscribers.
   ExpiringSubscription backend_subscription_;
   ExpiringSubscriptionManager<void(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>)>
       subscription_manager_;
-  base::flat_map<ExpiringSubscriptionHandle,
-                 base::WeakPtr<const GmailOtpSenderDomainMatcher>>
-      subscriber_domain_matchers_;
 
   base::WeakPtrFactory<GmailOtpServiceImpl> weak_ptr_factory_{this};
 };

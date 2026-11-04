@@ -87,10 +87,6 @@ class GmailOtpSenderDomainMatcher {
 
   bool HasPendingChecks() const { return pending_checks_ > 0; }
 
-  base::WeakPtr<const GmailOtpSenderDomainMatcher> GetWeakPtr() const {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
  private:
   void OnDomainRelationChecked(
       const url::SchemeHostPort& sender_tuple,

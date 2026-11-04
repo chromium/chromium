@@ -16,9 +16,11 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -91,6 +93,65 @@ TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_FreshestMatchingReturned) {
   std::optional<OneTimeToken> result = future.Take();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), "222222");
+}
+
+TEST_F(GmailOtpServiceImplTest,
+       GetFreshestCachedOtp_ServiceDestroyedDuringPendingExactMatchCheck) {
+  backend_.ProcessCallbacks(base::ok(
+      OneTimeToken(OneTimeTokenType::kGmail, "123456", base::TimeTicks::Now(),
+                   "noreply@example.com", base::Time::Now())));
+
+  bool callback_called = false;
+  service_->GetFreshestCachedOtp(
+      url::Origin::Create(GURL("https://example.com")),
+      /*allow_psl_matching=*/false,
+      base::BindLambdaForTesting(
+          [&callback_called](std::optional<OneTimeToken>) {
+            callback_called = true;
+          }));
+
+  // Destroy `service_` while `DomainRelationChecker::Check`'s posted task is
+  // still queued on the task runner; `GmailOtpSenderDomainMatcher` must be
+  // destroyed before `service_->domain_relation_checker_`.
+  service_.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(callback_called);
+}
+
+TEST_F(GmailOtpServiceImplTest,
+       GetFreshestCachedOtp_ServiceDestroyedDuringPendingAffiliationCheck) {
+  testing::NiceMock<affiliations::MockAffiliationService>
+      mock_affiliation_service;
+  affiliations::AffiliationService::ResultCallback pending_affiliation_callback;
+  EXPECT_CALL(mock_affiliation_service, GetAffiliationsAndBranding)
+      .WillOnce([&pending_affiliation_callback](
+                    const affiliations::FacetURI&,
+                    affiliations::AffiliationService::ResultCallback callback) {
+        pending_affiliation_callback = std::move(callback);
+      });
+
+  auto service = std::make_unique<GmailOtpServiceImpl>(
+      &backend_, &mock_affiliation_service, std::nullopt);
+  backend_.ProcessCallbacks(base::ok(
+      OneTimeToken(OneTimeTokenType::kGmail, "123456", base::TimeTicks::Now(),
+                   "noreply@other.com", base::Time::Now())));
+
+  bool callback_called = false;
+  service->GetFreshestCachedOtp(
+      url::Origin::Create(GURL("https://example.com")),
+      /*allow_psl_matching=*/false,
+      base::BindLambdaForTesting(
+          [&callback_called](std::optional<OneTimeToken>) {
+            callback_called = true;
+          }));
+  ASSERT_TRUE(pending_affiliation_callback);
+
+  // Destroy `service` before `AffiliationService` finishes or drops its
+  // callback (matching `KeyedService` teardown order).
+  service.reset();
+  std::move(pending_affiliation_callback).Run({}, /*success=*/true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(callback_called);
 }
 
 TEST_F(GmailOtpServiceImplTest, Subscribe_OpaqueOrigin) {
@@ -284,6 +345,80 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_DestructionPreventsNotification) {
                    "noreply@example.com", base::Time::Now())));
 
   EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(GmailOtpServiceImplTest,
+       Subscribe_ExpirationCancelsInFlightDomainCheck) {
+  testing::NiceMock<affiliations::MockAffiliationService>
+      mock_affiliation_service;
+  affiliations::AffiliationService::ResultCallback pending_affiliation_callback;
+  EXPECT_CALL(mock_affiliation_service, GetAffiliationsAndBranding)
+      .WillOnce([&pending_affiliation_callback](
+                    const affiliations::FacetURI&,
+                    affiliations::AffiliationService::ResultCallback callback) {
+        pending_affiliation_callback = std::move(callback);
+      });
+
+  auto service = std::make_unique<GmailOtpServiceImpl>(
+      &backend_, &mock_affiliation_service, std::nullopt);
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      token_future;
+  base::test::TestFuture<void> expiration_future;
+  ExpiringSubscription subscription = service->Subscribe(
+      url::Origin::Create(GURL("https://example.com")),
+      /*allow_psl_matching=*/false, base::Time::Now() + base::Seconds(30),
+      token_future.GetRepeatingCallback(), expiration_future.GetCallback());
+
+  backend_.ProcessCallbacks(base::ok(
+      OneTimeToken(OneTimeTokenType::kGmail, "654321", base::TimeTicks::Now(),
+                   "noreply@other.com", base::Time::Now())));
+  ASSERT_TRUE(pending_affiliation_callback);
+  EXPECT_TRUE(service->HasPendingRequests(subscription));
+
+  task_environment_.FastForwardBy(base::Seconds(31));
+  EXPECT_TRUE(expiration_future.IsReady());
+  EXPECT_FALSE(service->HasPendingRequests(subscription));
+
+  std::move(pending_affiliation_callback).Run({}, /*success=*/true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(token_future.IsReady());
+}
+
+TEST_F(GmailOtpServiceImplTest,
+       Subscribe_ServiceDestroyedDuringPendingAffiliationCheck) {
+  testing::NiceMock<affiliations::MockAffiliationService>
+      mock_affiliation_service;
+  affiliations::AffiliationService::ResultCallback pending_affiliation_callback;
+  EXPECT_CALL(mock_affiliation_service, GetAffiliationsAndBranding)
+      .WillOnce([&pending_affiliation_callback](
+                    const affiliations::FacetURI&,
+                    affiliations::AffiliationService::ResultCallback callback) {
+        pending_affiliation_callback = std::move(callback);
+      });
+
+  auto service = std::make_unique<GmailOtpServiceImpl>(
+      &backend_, &mock_affiliation_service, std::nullopt);
+  bool callback_called = false;
+  ExpiringSubscription subscription = service->Subscribe(
+      url::Origin::Create(GURL("https://example.com")),
+      /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
+      base::BindLambdaForTesting(
+          [&callback_called](
+              base::expected<OneTimeToken, OneTimeTokenRetrievalError>) {
+            callback_called = true;
+          }),
+      base::DoNothing());
+
+  backend_.ProcessCallbacks(base::ok(
+      OneTimeToken(OneTimeTokenType::kGmail, "654321", base::TimeTicks::Now(),
+                   "noreply@other.com", base::Time::Now())));
+  ASSERT_TRUE(pending_affiliation_callback);
+
+  service.reset();
+  std::move(pending_affiliation_callback).Run({}, /*success=*/true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(callback_called);
 }
 
 TEST_F(GmailOtpServiceImplTest, HasPendingRequestsAndGetLogSink) {

@@ -12,7 +12,9 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
@@ -51,6 +53,17 @@ bool IsMatchTypeAllowed(GmailOtpSenderDomainMatchType match_type,
 }
 
 }  // namespace
+
+struct GmailOtpServiceImpl::ScopedDomainMatcherCleanup {
+  ~ScopedDomainMatcherCleanup() {
+    if (service) {
+      service->domain_matchers_.erase(handle);
+    }
+  }
+
+  base::WeakPtr<GmailOtpServiceImpl> service;
+  ExpiringSubscriptionHandle handle;
+};
 
 GmailOtpServiceImpl::GmailOtpServiceImpl(
     GmailOtpBackend* backend,
@@ -102,47 +115,48 @@ void GmailOtpServiceImpl::GetFreshestCachedOtp(
         return lhs.email_received_timestamp() > rhs.email_received_timestamp();
       });
 
-  StartCachedOtpCheck(std::make_unique<GmailOtpSenderDomainMatcher>(
-                          &domain_relation_checker_, origin),
-                      std::move(cached_tokens), /*current_index=*/0,
-                      allow_psl_matching, std::move(callback));
+  ExpiringSubscriptionHandle check_handle(base::Uuid::GenerateRandomV4());
+  domain_matchers_.emplace(check_handle,
+                           std::make_unique<GmailOtpSenderDomainMatcher>(
+                               &domain_relation_checker_, origin));
+  StartCachedOtpCheck(std::move(check_handle), std::move(cached_tokens),
+                      /*current_index=*/0, allow_psl_matching,
+                      std::move(callback));
 }
 
 void GmailOtpServiceImpl::StartCachedOtpCheck(
-    std::unique_ptr<GmailOtpSenderDomainMatcher> domain_matcher,
+    ExpiringSubscriptionHandle check_handle,
     std::vector<OneTimeToken> tokens,
     size_t current_index,
     bool allow_psl_matching,
     GetFreshestCachedOtpCallback callback) {
   if (current_index >= tokens.size()) {
+    domain_matchers_.erase(check_handle);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
+  auto it = domain_matchers_.find(check_handle);
+  CHECK(it != domain_matchers_.end());
+  GmailOtpSenderDomainMatcher& domain_matcher = *it->second;
+
   std::string sender_address =
       tokens[current_index].sender_address().value_or("");
-  // Extract a raw pointer before moving `domain_matcher` into the completion
-  // callback so we can invoke `Check()` on it without relying on argument
-  // evaluation order. Ownership of `domain_matcher` is transferred through the
-  // `OnCachedTokenMatchChecked` callback chain across sequential token checks
-  // and is finally released when the last callback is consumed (either when a
-  // matching token is found or all cached tokens have been checked).
-  GmailOtpSenderDomainMatcher* matcher_ptr = domain_matcher.get();
   LOG_OTT(backend_->GetLogSink())
       << "GmailOtpService checking sender domain match: sender_address="
       << sender_address
-      << ", otp_frame_origin=" << matcher_ptr->otp_frame_origin();
-  matcher_ptr->Check(
+      << ", otp_frame_origin=" << domain_matcher.otp_frame_origin();
+  domain_matcher.Check(
       sender_address,
       base::BindOnce(&GmailOtpServiceImpl::OnCachedTokenMatchChecked,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(domain_matcher),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(check_handle),
                      std::move(tokens), current_index, allow_psl_matching,
                      std::move(callback)));
 }
 
 void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
-    std::unique_ptr<GmailOtpSenderDomainMatcher> domain_matcher,
+    ExpiringSubscriptionHandle check_handle,
     std::vector<OneTimeToken> tokens,
     size_t current_index,
     bool allow_psl_matching,
@@ -155,6 +169,7 @@ void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
       << ", match_type=" << match_type
       << ", allow_psl_matching=" << allow_psl_matching;
   if (allowed) {
+    domain_matchers_.erase(check_handle);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -162,7 +177,7 @@ void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
     return;
   }
 
-  StartCachedOtpCheck(std::move(domain_matcher), std::move(tokens),
+  StartCachedOtpCheck(std::move(check_handle), std::move(tokens),
                       current_index + 1, allow_psl_matching,
                       std::move(callback));
 }
@@ -179,33 +194,26 @@ ExpiringSubscription GmailOtpServiceImpl::Subscribe(
         base::BindOnce(
             callback,
             base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown)));
+    return subscription_manager_.Subscribe(expiration, base::DoNothing(),
+                                           std::move(expiration_callback));
   }
 
-  std::unique_ptr<GmailOtpSenderDomainMatcher> domain_matcher =
-      origin.opaque() ? nullptr
-                      : std::make_unique<GmailOtpSenderDomainMatcher>(
-                            &domain_relation_checker_, origin);
-  base::WeakPtr<const GmailOtpSenderDomainMatcher> matcher_weak_ptr =
-      domain_matcher ? domain_matcher->GetWeakPtr() : nullptr;
+  auto cleanup = std::make_unique<ScopedDomainMatcherCleanup>();
+  ScopedDomainMatcherCleanup* cleanup_ptr = cleanup.get();
 
   ExpiringSubscription subscription = subscription_manager_.Subscribe(
       expiration,
       base::BindRepeating(&GmailOtpServiceImpl::NotifySubscriber,
-                          weak_ptr_factory_.GetWeakPtr(), origin,
-                          base::Owned(std::move(domain_matcher)),
-                          allow_psl_matching, std::move(callback)),
+                          weak_ptr_factory_.GetWeakPtr(),
+                          base::Owned(std::move(cleanup)), allow_psl_matching,
+                          std::move(callback)),
       std::move(expiration_callback));
 
-  base::EraseIf(subscriber_domain_matchers_,
-                [](const auto& item) { return !item.second; });
-  if (matcher_weak_ptr) {
-    subscriber_domain_matchers_[subscription.handle()] =
-        std::move(matcher_weak_ptr);
-  }
-
-  if (origin.opaque()) {
-    return subscription;
-  }
+  cleanup_ptr->service = weak_ptr_factory_.GetWeakPtr();
+  cleanup_ptr->handle = subscription.handle();
+  domain_matchers_.emplace(subscription.handle(),
+                           std::make_unique<GmailOtpSenderDomainMatcher>(
+                               &domain_relation_checker_, origin));
 
   EnsureBackendSubscription(expiration);
 
@@ -217,9 +225,8 @@ bool GmailOtpServiceImpl::HasPendingRequests(
   if (backend_->HasPendingRequests()) {
     return true;
   }
-  auto it = subscriber_domain_matchers_.find(subscription.handle());
-  return it != subscriber_domain_matchers_.end() && it->second &&
-         it->second->HasPendingChecks();
+  auto it = domain_matchers_.find(subscription.handle());
+  return it != domain_matchers_.end() && it->second->HasPendingChecks();
 }
 
 OneTimeTokenLogSink* GmailOtpServiceImpl::GetLogSink() {
@@ -240,26 +247,26 @@ void GmailOtpServiceImpl::EnsureBackendSubscription(base::Time expiration) {
 }
 
 void GmailOtpServiceImpl::NotifySubscriber(
-    const url::Origin& origin,
-    GmailOtpSenderDomainMatcher* domain_matcher,
+    const ScopedDomainMatcherCleanup* cleanup,
     bool allow_psl_matching,
     IncomingTokenCallback callback,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
-  if (origin.opaque()) {
-    return;
-  }
   if (!result.has_value()) {
     callback.Run(base::unexpected(result.error()));
     return;
   }
+
+  auto it = domain_matchers_.find(cleanup->handle);
+  CHECK(it != domain_matchers_.end());
+  GmailOtpSenderDomainMatcher& domain_matcher = *it->second;
 
   OneTimeToken token = std::move(*result);
   std::string sender_address = token.sender_address().value_or("");
   LOG_OTT(backend_->GetLogSink())
       << "GmailOtpService checking sender domain match: sender_address="
       << sender_address
-      << ", otp_frame_origin=" << domain_matcher->otp_frame_origin();
-  domain_matcher->Check(
+      << ", otp_frame_origin=" << domain_matcher.otp_frame_origin();
+  domain_matcher.Check(
       sender_address,
       base::BindOnce(&GmailOtpServiceImpl::OnSubscriberDomainMatchChecked,
                      weak_ptr_factory_.GetWeakPtr(), allow_psl_matching,
