@@ -19,7 +19,7 @@ V5SearchHashesCacheFactory::V5SearchHashesCacheFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-V5SearchHashesCacheFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+V5SearchHashesCacheFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<safe_browsing::V5SearchHashesCache>(
       ios::HistoryServiceFactory::GetForProfile(profile));
 }

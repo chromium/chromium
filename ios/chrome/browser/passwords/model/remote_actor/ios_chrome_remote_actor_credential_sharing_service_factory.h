@@ -21,7 +21,7 @@ class IOSChromeRemoteActorCredentialSharingServiceFactory final
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_REMOTE_ACTOR_IOS_CHROME_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_FACTORY_H_

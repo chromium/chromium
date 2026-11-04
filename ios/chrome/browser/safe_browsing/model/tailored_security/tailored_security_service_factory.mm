@@ -21,8 +21,8 @@ TailoredSecurityServiceFactory::TailoredSecurityServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 TailoredSecurityServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<safe_browsing::ChromeTailoredSecurityService>(
-      profile, IdentityManagerFactory::GetForProfile(profile),
+      &profile, IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));
 }

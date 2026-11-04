@@ -24,11 +24,11 @@ VerdictCacheManagerFactory::VerdictCacheManagerFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-VerdictCacheManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+VerdictCacheManagerFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<safe_browsing::VerdictCacheManager>(
       ios::HistoryServiceFactory::GetForProfile(profile),
       ios::HostContentSettingsMapFactory::GetForProfile(profile),
-      profile->GetPrefs(),
+      profile.GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingSyncObserverImpl>(
           SyncServiceFactory::GetForProfile(profile)));
 }

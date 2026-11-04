@@ -23,12 +23,12 @@ IOSChromeRemoteActorCredentialSharingServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromeRemoteActorCredentialSharingServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!password_manager::features::RemoteActorCredentialSharingEnabled()) {
     return nullptr;
   }
   return std::make_unique<
       password_manager::RemoteActorCredentialSharingServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }

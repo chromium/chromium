@@ -32,14 +32,14 @@ SearchEngineChoiceTriggeringServiceFactory::
 
 std::unique_ptr<KeyedService>
 SearchEngineChoiceTriggeringServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK_EQ(profile, profile->GetOriginalProfile());
+    ProfileIOS& profile) const {
+  CHECK(!profile.IsOffTheRecord());
 
   search_engines::SearchEngineChoiceService& search_engine_choice_service =
       CHECK_DEREF(
           ios::SearchEngineChoiceServiceFactory::GetForProfile(profile));
   const policy::PolicyService& policy_service =
-      CHECK_DEREF(profile->GetPolicyConnector()->GetPolicyService());
+      CHECK_DEREF(profile.GetPolicyConnector()->GetPolicyService());
   const TemplateURLService& template_url_service =
       CHECK_DEREF(ios::TemplateURLServiceFactory::GetForProfile(profile));
   auto condition = search_engine_choice_service.GetStaticChoiceScreenConditions(
@@ -50,7 +50,7 @@ SearchEngineChoiceTriggeringServiceFactory::BuildServiceInstanceFor(
   }
 
   return std::make_unique<SearchEngineChoiceTriggeringService>(
-      CHECK_DEREF(profile->GetPrefs()), policy_service,
+      CHECK_DEREF(profile.GetPrefs()), policy_service,
       search_engine_choice_service, template_url_service);
 }
 

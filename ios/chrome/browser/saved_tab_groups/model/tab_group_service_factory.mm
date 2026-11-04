@@ -16,8 +16,8 @@
 namespace {
 
 // Creates the TabGroupService from `context`.
-std::unique_ptr<KeyedService> CreateService(ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
+std::unique_ptr<KeyedService> CreateService(ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
 
   collaboration::CollaborationService* collaboration_service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
@@ -28,7 +28,7 @@ std::unique_ptr<KeyedService> CreateService(ProfileIOS* profile) {
 
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  return std::make_unique<TabGroupService>(profile, tab_group_sync_service);
+  return std::make_unique<TabGroupService>(&profile, tab_group_sync_service);
 }
 
 }  // namespace
@@ -40,6 +40,6 @@ TabGroupServiceFactory::TabGroupServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> TabGroupServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return CreateService(profile);
 }

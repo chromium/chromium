@@ -22,8 +22,8 @@ SafeBrowsingHelperFactory::SafeBrowsingHelperFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-SafeBrowsingHelperFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+SafeBrowsingHelperFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<SafeBrowsingHelper>(
-      profile->GetPrefs(), GetApplicationContext()->GetSafeBrowsingService(),
+      profile.GetPrefs(), GetApplicationContext()->GetSafeBrowsingService(),
       SafeBrowsingMetricsCollectorFactory::GetForProfile(profile));
 }

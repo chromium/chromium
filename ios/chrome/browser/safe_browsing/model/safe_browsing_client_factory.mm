@@ -65,16 +65,16 @@ SafeBrowsingClientFactory::SafeBrowsingClientFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-SafeBrowsingClientFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+SafeBrowsingClientFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   safe_browsing::HashRealTimeService* hash_real_time_service = nullptr;
   if (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
     hash_real_time_service = HashRealTimeServiceFactory::GetForProfile(profile);
   }
   return std::make_unique<SafeBrowsingClientImpl>(
-      profile->GetPrefs(), hash_real_time_service,
+      profile.GetPrefs(), hash_real_time_service,
       V5GetHashProtocolManagerFactory::GetForProfile(profile),
       // base::Unretained is safe because the RealTimeUrlLookupServiceBase will
       // be destroyed before the profile it is attached to.
-      base::BindRepeating(&GetUrlLookupService, base::Unretained(profile)),
+      base::BindRepeating(&GetUrlLookupService, base::Unretained(&profile)),
       enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile));
 }

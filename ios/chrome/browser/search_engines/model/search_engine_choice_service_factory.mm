@@ -33,11 +33,10 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   auto service = std::make_unique<search_engines::SearchEngineChoiceService>(
       std::make_unique<IOSSearchEngineChoiceServiceClient>(),
-      CHECK_DEREF(profile->GetPrefs()),
-      GetApplicationContext()->GetLocalState(),
+      CHECK_DEREF(profile.GetPrefs()), GetApplicationContext()->GetLocalState(),
       CHECK_DEREF(
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(

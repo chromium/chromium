@@ -35,7 +35,7 @@ V5GetHashProtocolManagerFactory::V5GetHashProtocolManagerFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 V5GetHashProtocolManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
