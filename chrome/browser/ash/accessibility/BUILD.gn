@@ -16,8 +16,6 @@ static_library("accessibility") {
     "accessibility_extension_loader.h",
     "accessibility_manager.cc",
     "accessibility_manager.h",
-    "accessibility_panel.cc",
-    "accessibility_panel.h",
     "chromevox_panel.cc",
     "chromevox_panel.h",
     "dictation.cc",

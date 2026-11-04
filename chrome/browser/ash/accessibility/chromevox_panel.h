@@ -5,15 +5,29 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_CHROMEVOX_PANEL_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_CHROMEVOX_PANEL_H_
 
-#include "chrome/browser/ash/accessibility/accessibility_panel.h"
+#include <memory>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/widget/widget_delegate.h"
+
+namespace content {
+class BrowserContext;
+}
+
+namespace views {
+class Widget;
+}
 
 namespace ash {
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kChromeVoxPanelElementId);
 
-// Displays spoken feedback UI controls for the ChromeVox component extension
-class ChromeVoxPanel : public AccessibilityPanel {
+// Displays spoken feedback UI controls for the ChromeVox component extension.
+class ChromeVoxPanel : public views::WidgetDelegate,
+                       public content::WebContentsDelegate {
  public:
   explicit ChromeVoxPanel(content::BrowserContext* browser_context);
 
@@ -22,10 +36,28 @@ class ChromeVoxPanel : public AccessibilityPanel {
 
   ~ChromeVoxPanel() override;
 
-  class ChromeVoxPanelWebContentsObserver;
+  // Closes the panel immediately, deleting the WebView/WebContents.
+  void CloseNow();
+
+  // Closes the panel asynchronously.
+  void Close();
+
+  // WidgetDelegate:
+  const views::Widget* GetWidget() const override;
+  views::Widget* GetWidget() override;
+  views::View* GetContentsView() override;
 
  private:
+  class ChromeVoxPanelWebContentsObserver;
+
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
+  bool ShouldAllowRendererInitiatedCrossProcessNavigation(
+      bool is_outermost_main_frame_navigation) override;
+
   // Methods indirectly invoked by the component extension.
+  void DidFirstVisuallyNonEmptyPaint();
   void EnterFullscreen();
   void ExitFullscreen();
   void Focus();
@@ -36,6 +68,8 @@ class ChromeVoxPanel : public AccessibilityPanel {
   std::string GetUrlForContent();
 
   std::unique_ptr<ChromeVoxPanelWebContentsObserver> web_contents_observer_;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::View> web_view_ = nullptr;
 };
 
 }  // namespace ash

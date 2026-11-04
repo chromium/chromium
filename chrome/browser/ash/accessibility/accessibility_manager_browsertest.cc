@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
 
 // POC: ChromeVoxPanelWebContentsObserver::DidFinishNavigation() dispatches
 // EnterFullscreen()/Focus() purely on GetLastCommittedURL().GetRef() with no
-// origin check, and AccessibilityPanel (the WebContentsDelegate) does not
+// origin check, and ChromeVoxPanel (the WebContentsDelegate) does not
 // contain renderer-initiated cross-process navigations. Once arbitrary web
 // content commits in the panel WebContents, '#fullscreen' grants it a
 // fullscreen, activatable, keyboard-focused surface in
