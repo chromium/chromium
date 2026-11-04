@@ -58,10 +58,6 @@ enum class MediaLogProperty {
   kFrameUrl,
   kFrameTitle,
 
-  // Whether the media content coming from the same origin as the frame in which
-  // the player is loaded.
-  kIsSingleOrigin,
-
   // Can the url loading the data support the range http header, allowing chunks
   // to be sent rather than entire file.
   kIsRangeHeaderSupported,
@@ -119,7 +115,6 @@ MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsCdmAttached, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsStreaming, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFrameUrl, std::string);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFrameTitle, std::string);
-MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsSingleOrigin, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kRendererName, RendererType);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoDecoderName, VideoDecoderType);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsPlatformVideoDecoder, bool);

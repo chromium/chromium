@@ -278,10 +278,6 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // least once.
   bool media_has_played_ = false;
 
-  // As we follow redirects, we set this variable to false if redirects
-  // go between different origins.
-  bool single_origin_ = true;
-
   // Callback used when a data source becomes tainted.
   media::DataSource::EventCb notify_tainted_cb_;
 

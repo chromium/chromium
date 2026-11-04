@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer.h"
@@ -37,6 +38,29 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
  public:
   // NUmber of times we'll retry if the connection fails.
   enum { kMaxRetries = 30 };
+
+  // Per-request redirect tracking state, reset at the start of each network
+  // request in `Start()`.
+  struct RedirectState {
+    // Post-redirect URL if the current request followed at least one HTTP
+    // redirect; empty otherwise.
+    KURL redirects_to;
+
+    // Worst-case relation (`kSameOrigin < kSameSite < kCrossSite`) of any URL
+    // in the current request's redirect chain relative to
+    // `url_data_->security_origin()`.
+    net::OriginRelation max_origin_relation = net::OriginRelation::kSameOrigin;
+
+    // True if any redirect hop in the current request crossed origins.
+    bool has_cross_origin_redirect = false;
+
+    // Service worker bypass mode for retargeted follow-up range requests.
+    // Matching `blink::ResourceLoader::WillFollowRedirect`, any redirect hop
+    // not synthesized by a Service Worker latches `kSkip` when
+    // `media::kDisallowMixedOpaqueMediaResponses` is enabled.
+    UrlData::ServiceWorkerMode service_worker_mode =
+        UrlData::ServiceWorkerMode::kAllow;
+  };
 
   ResourceMultiBufferDataProvider(
       UrlData* url_data,
@@ -116,16 +140,12 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   // const to make it obvious that redirects cannot change it.
   const UrlData::CorsMode cors_mode_;
 
-  // The origin for the initial request.
-  // const to make it obvious that redirects cannot change it.
-  const KURL original_url_;
-
   // Keeps track of an active WebAssociatedURLLoader.
   // Only valid while loading resource.
   std::unique_ptr<WebAssociatedURLLoader> active_loader_;
 
-  // When we encounter a redirect, this is the source of the redirect.
-  KURL redirects_to_;
+  // Tracks redirects followed by the current request. Reset on `Start()`.
+  RedirectState redirect_state_;
 
   // If the server tries to gives us more bytes than we want, this how
   // many bytes we need to discard before we get to the right place.

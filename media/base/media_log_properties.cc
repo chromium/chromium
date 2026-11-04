@@ -23,7 +23,6 @@ std::string MediaLogPropertyKeyToString(MediaLogProperty property) {
     STRINGIFY(kIsStreaming);
     STRINGIFY(kFrameUrl);
     STRINGIFY(kFrameTitle);
-    STRINGIFY(kIsSingleOrigin);
     STRINGIFY(kRendererName);
     STRINGIFY(kVideoDecoderName);
     STRINGIFY(kIsPlatformVideoDecoder);

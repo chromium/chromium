@@ -136,6 +136,8 @@ class TestUrlData : public UrlData {
               UrlData::CacheMode cache_mode,
               scoped_refptr<const SecurityOrigin> security_origin,
               media::DataSource::EncodingMode encoding_mode,
+              ServiceWorkerMode service_worker_mode,
+              const KURL& original_request_url,
               base::WeakPtr<UrlIndex> url_index,
               scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : UrlData(url,
@@ -143,6 +145,8 @@ class TestUrlData : public UrlData {
                 cache_mode,
                 std::move(security_origin),
                 encoding_mode,
+                service_worker_mode,
+                original_request_url,
                 url_index,
                 task_runner),
         block_shift_(url_index->block_shift()),
@@ -184,11 +188,14 @@ class TestUrlIndex : public UrlIndex {
       UrlData::CorsMode cors_mode,
       UrlData::CacheMode cache_mode,
       scoped_refptr<const SecurityOrigin> security_origin,
-      media::DataSource::EncodingMode encoding_mode) override {
+      media::DataSource::EncodingMode encoding_mode,
+      UrlData::ServiceWorkerMode service_worker_mode,
+      const KURL& original_request_url) override {
     NotifyNewUrlData(url, cors_mode, cache_mode);
     last_url_data_ = base::MakeRefCounted<TestUrlData>(
         url, cors_mode, cache_mode, std::move(security_origin), encoding_mode,
-        weak_factory_.GetWeakPtr(), task_runner_);
+        service_worker_mode, original_request_url, weak_factory_.GetWeakPtr(),
+        task_runner_);
     return last_url_data_;
   }
 
@@ -686,6 +693,10 @@ TEST_F(MultiBufferDataSourceTest, GetUrlDataOrigin_WithDataOrigin) {
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
   ReceiveData(kDataSize);
 
+  // Without an HTTP redirect, `GetUrlAfterRedirects()` stays at `kHttpUrl`
+  // while `GetUrlDataOrigin()` reflects `response.ResponseUrl()`.
+  EXPECT_FALSE(data_source_->DidRedirect());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpUrl));
   EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpDifferentOriginUrl));
   Stop();
 }
@@ -2236,10 +2247,12 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreation) {
   EXPECT_EQ(GetPreload(mb_source), media::DataSource::METADATA);
   EXPECT_TRUE(GetIsClientAudioElement(mb_source));
 
-  CallOnRedirected(mb_source,
-                   url_index_.GetByUrl(KURL(kHttpDifferentOriginUrl),
-                                       UrlData::CORS_UNSPECIFIED,
-                                       UrlData::kNormal, security_origin_));
+  scoped_refptr<UrlData> redirected_url_data = url_index_.GetByUrl(
+      KURL(kHttpDifferentOriginUrl), UrlData::CORS_UNSPECIFIED,
+      UrlData::kNormal, security_origin_);
+  redirected_url_data->SetDataOrigin(KURL(kHttpDifferentOriginUrl),
+                                     /*is_cors_cross_origin=*/true);
+  CallOnRedirected(mb_source, redirected_url_data);
   EXPECT_TRUE(redirect_called);
 }
 
@@ -2329,6 +2342,9 @@ TEST_F(MultiBufferDataSourceTest, Http_RedirectToCachedUrlWithStopPreloading) {
   WebURL redir_url{KURL(kHttpDifferentPathUrl)};
   WebURLResponse redirect_response{KURL(kHttpUrl)};
   redirect_response.SetHttpStatusCode(307);
+  // A Service Worker redirect preserves `ServiceWorkerMode::kAllow`, matching
+  // the directly-loaded `UrlIndex` entry for `kHttpDifferentPathUrl` above.
+  redirect_response.SetWasFetchedViaServiceWorker(true);
   data_provider()->WillFollowRedirect(redir_url, redirect_response);
 
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize * 2))
@@ -2372,6 +2388,346 @@ TEST_F(MultiBufferDataSourceTest, Http_RedirectConcurrentWithReadAndAbort) {
   }
 
   read_thread.Stop();
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest,
+       CrossOriginForwardRedirectRetargetsAndSkipsServiceWorker) {
+  base::test::ScopedFeatureList feature_list{
+      media::kDisallowMixedOpaqueMediaResponses};
+  security_origin_ = SecurityOrigin::CreateFromString(kHttpUrl);
+  bool tainted_called = false;
+  Initialize(kHttpUrl, true);
+  data_source_->SetTaintedCallback(base::BindRepeating(
+      [](bool* called, const media::DataSource*) { *called = true; },
+      base::Unretained(&tainted_called)));
+
+  WebURL redir_url{KURL(kHttpDifferentOriginUrl)};
+  WebURLResponse redirect_response{KURL(kHttpUrl)};
+  redirect_response.SetHttpStatusCode(302);
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse response = response_generator_->Generate206(0);
+  response.SetCurrentRequestUrl(KURL(kHttpDifferentOriginUrl));
+  response.SetType(network::mojom::blink::FetchResponseType::kOpaque);
+  Respond(response);
+
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_TRUE(tainted_called);
+  EXPECT_TRUE(data_source_->WouldTaintOrigin());
+  EXPECT_TRUE(data_source_->DidRedirect());
+  EXPECT_EQ(url_data()->url(), KURL(kHttpDifferentOriginUrl));
+  EXPECT_EQ(url_data()->request_url(), KURL(kHttpDifferentOriginUrl));
+  EXPECT_EQ(url_data()->service_worker_mode(),
+            UrlData::ServiceWorkerMode::kSkip);
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(),
+            GURL(kHttpDifferentOriginUrl));
+  EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpDifferentOriginUrl));
+
+  // A subsequent unbuffered range request targets the retargeted destination
+  // directly while skipping Service Workers.
+  ReadAt(kFarReadPosition);
+  ASSERT_TRUE(data_provider());
+  EXPECT_EQ(url_data()->request_url(), KURL(kHttpDifferentOriginUrl));
+
+  WebURLResponse far_response =
+      response_generator_->Generate206(kFarReadPosition);
+  far_response.SetCurrentRequestUrl(KURL(kHttpDifferentOriginUrl));
+  far_response.SetType(network::mojom::blink::FetchResponseType::kOpaque);
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  EXPECT_CALL(host_, AddBufferedByteRange(kFarReadPosition,
+                                          kFarReadPosition + kDataSize));
+  Respond(far_response);
+  ReceiveData(kDataSize);
+
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest,
+       CrossOriginBounceBackTaintsAndReplaysOriginalUrl) {
+  security_origin_ = SecurityOrigin::CreateFromString(kHttpUrl);
+  bool tainted_called = false;
+  Initialize(kHttpDifferentOriginUrl, true);
+  data_source_->SetTaintedCallback(base::BindRepeating(
+      [](bool* called, const media::DataSource*) { *called = true; },
+      base::Unretained(&tainted_called)));
+
+  WebURL redir_url{KURL(kHttpUrl)};
+  WebURLResponse redirect_response{KURL(kHttpDifferentOriginUrl)};
+  redirect_response.SetHttpStatusCode(302);
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse response = response_generator_->Generate206(0);
+  response.SetCurrentRequestUrl(KURL(kHttpUrl));
+  response.SetType(network::mojom::blink::FetchResponseType::kBasic);
+  Respond(response);
+
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_TRUE(tainted_called);
+  EXPECT_TRUE(data_source_->WouldTaintOrigin());
+  EXPECT_TRUE(data_source_->DidRedirect());
+  EXPECT_EQ(url_data()->url(), KURL(kHttpUrl));
+  EXPECT_EQ(url_data()->request_url(), KURL(kHttpDifferentOriginUrl));
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpUrl));
+  EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpUrl));
+
+  // Follow-up range requests replay `kHttpDifferentOriginUrl` rather than
+  // issuing direct same-origin requests to `kHttpUrl`.
+  ReadAt(kFarReadPosition);
+  ASSERT_TRUE(data_provider());
+  EXPECT_EQ(url_data()->request_url(), KURL(kHttpDifferentOriginUrl));
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  WebURLResponse far_response =
+      response_generator_->Generate206(kFarReadPosition);
+  far_response.SetCurrentRequestUrl(KURL(kHttpUrl));
+  far_response.SetType(network::mojom::blink::FetchResponseType::kBasic);
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  EXPECT_CALL(host_, AddBufferedByteRange(kFarReadPosition,
+                                          kFarReadPosition + kDataSize));
+  Respond(far_response);
+  ReceiveData(kDataSize);
+
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest,
+       MultiHopBounceBackToSameOriginTaintsDataSource) {
+  security_origin_ = SecurityOrigin::CreateFromString(kHttpUrl);
+  bool tainted_called = false;
+  Initialize(kHttpUrl, true);
+  data_source_->SetTaintedCallback(base::BindRepeating(
+      [](bool* called, const media::DataSource*) { *called = true; },
+      base::Unretained(&tainted_called)));
+
+  WebURL bounce_url{KURL(kHttpDifferentOriginUrl)};
+  WebURL final_url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse redir1{KURL(kHttpUrl)};
+  redir1.SetHttpStatusCode(302);
+  WebURLResponse redir2{bounce_url};
+  redir2.SetHttpStatusCode(302);
+  ASSERT_TRUE(data_provider()->WillFollowRedirect(bounce_url, redir1));
+  ASSERT_TRUE(data_provider()->WillFollowRedirect(final_url, redir2));
+
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse response = response_generator_->Generate206(0);
+  response.SetCurrentRequestUrl(KURL(kHttpDifferentPathUrl));
+  response.SetType(network::mojom::blink::FetchResponseType::kBasic);
+  Respond(response);
+
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_TRUE(tainted_called);
+  EXPECT_TRUE(data_source_->WouldTaintOrigin());
+  EXPECT_TRUE(data_source_->DidRedirect());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpDifferentPathUrl));
+  EXPECT_EQ(url_data()->request_url(), KURL(kHttpUrl));
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest,
+       UniversalAccessCrossOriginRedirectDoesNotCrash) {
+  scoped_refptr<SecurityOrigin> origin =
+      SecurityOrigin::CreateFromString(kHttpUrl);
+  origin->GrantUniversalAccess();
+  security_origin_ = origin;
+  Initialize(kHttpUrl, true);
+
+  WebURL redir_url{KURL(kHttpDifferentOriginUrl)};
+  WebURLResponse redirect_response{KURL(kHttpUrl)};
+  redirect_response.SetHttpStatusCode(302);
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse response = response_generator_->Generate206(0);
+  response.SetCurrentRequestUrl(KURL(kHttpDifferentOriginUrl));
+  Respond(response);
+
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+  EXPECT_TRUE(data_source_->WouldTaintOrigin());
+  EXPECT_TRUE(data_source_->DidRedirect());
+
+  // Follow-up range requests replay `kHttpUrl` so `CorsURLLoader` tainting
+  // stays consistent rather than mixing redirected opaque and direct basic
+  // responses under `GrantUniversalAccess()`.
+  ReadAt(kFarReadPosition);
+  ASSERT_TRUE(data_provider());
+  EXPECT_EQ(url_data()->request_url(), KURL(kHttpUrl));
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+  WebURLResponse far_response =
+      response_generator_->Generate206(kFarReadPosition);
+  far_response.SetCurrentRequestUrl(KURL(kHttpDifferentOriginUrl));
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  EXPECT_CALL(host_, AddBufferedByteRange(kFarReadPosition,
+                                          kFarReadPosition + kDataSize));
+  Respond(far_response);
+  ReceiveData(kDataSize);
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest,
+       MidStreamSameOriginRedirectOnCrossOriginResourceSucceeds) {
+  base::test::ScopedFeatureList feature_list{
+      media::kDisallowMixedOpaqueMediaResponses};
+  security_origin_ = SecurityOrigin::CreateFromString("http://embedder.test");
+  InitializeWith206Response();
+  EXPECT_FALSE(data_source_->DidRedirect());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpUrl));
+
+  ReadAt(kFarReadPosition);
+  WebURL redir_url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse redirect_response{KURL(kHttpUrl)};
+  redirect_response.SetHttpStatusCode(307);
+  EXPECT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  WebURLResponse far_response =
+      response_generator_->Generate206(kFarReadPosition);
+  far_response.SetCurrentRequestUrl(KURL(kHttpDifferentPathUrl));
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  EXPECT_CALL(host_, AddBufferedByteRange(kFarReadPosition,
+                                          kFarReadPosition + kDataSize));
+  Respond(far_response);
+  ReceiveData(kDataSize);
+  EXPECT_TRUE(data_source_->DidRedirect());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpDifferentPathUrl));
+  EXPECT_EQ(url_data()->service_worker_mode(),
+            UrlData::ServiceWorkerMode::kSkip);
+  Stop();
+}
+
+TEST_F(
+    MultiBufferDataSourceTest,
+    SameOriginRedirectOnCrossOriginResourceReportsRedirectAndPostRedirectUrl) {
+  base::test::ScopedFeatureList feature_list{
+      media::kDisallowMixedOpaqueMediaResponses};
+  security_origin_ = SecurityOrigin::CreateFromString("http://embedder.test");
+  InitializeWithCors(kHttpUrl, true, UrlData::CORS_ANONYMOUS);
+
+  WebURL redir_url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse redirect_response{KURL(kHttpUrl)};
+  redirect_response.SetHttpStatusCode(302);
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse response = response_generator_->Generate206(0);
+  response.SetCurrentRequestUrl(KURL(kHttpDifferentPathUrl));
+  response.SetType(network::mojom::blink::FetchResponseType::kCors);
+  Respond(response);
+
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_EQ(url_data()->url(), KURL(kHttpDifferentPathUrl));
+  EXPECT_EQ(url_data()->service_worker_mode(),
+            UrlData::ServiceWorkerMode::kSkip);
+  EXPECT_TRUE(data_source_->DidRedirect());
+  EXPECT_FALSE(data_source_->WouldTaintOrigin());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpDifferentPathUrl));
+  EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpDifferentPathUrl));
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest,
+       MidStreamCorsCrossOriginRedirectReportsRedirectWithoutCrash) {
+  InitializeWithCors(kHttpUrl, true, UrlData::CORS_ANONYMOUS);
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse init_response = response_generator_->Generate206(0);
+  init_response.SetType(network::mojom::blink::FetchResponseType::kBasic);
+  Respond(init_response);
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_FALSE(data_source_->DidRedirect());
+  EXPECT_FALSE(data_source_->WouldTaintOrigin());
+
+  ReadAt(kFarReadPosition);
+  WebURL redir_url{KURL(kHttpDifferentOriginUrl)};
+  WebURLResponse redirect_response{KURL(kHttpUrl)};
+  redirect_response.SetHttpStatusCode(307);
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  WebURLResponse far_response =
+      response_generator_->Generate206(kFarReadPosition);
+  far_response.SetCurrentRequestUrl(KURL(kHttpDifferentOriginUrl));
+  far_response.SetType(network::mojom::blink::FetchResponseType::kCors);
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  EXPECT_CALL(host_, AddBufferedByteRange(kFarReadPosition,
+                                          kFarReadPosition + kDataSize));
+  Respond(far_response);
+  ReceiveData(kDataSize);
+
+  EXPECT_EQ(url_data()->url(), KURL(kHttpDifferentOriginUrl));
+  EXPECT_TRUE(data_source_->DidRedirect());
+  EXPECT_FALSE(data_source_->WouldTaintOrigin());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(),
+            GURL(kHttpDifferentOriginUrl));
+  Stop();
+}
+
+TEST_F(
+    MultiBufferDataSourceTest,
+    ServiceWorkerProxiedResponseDoesNotAffectUrlAfterRedirectsOrDidRedirect) {
+  // 1. Direct load intercepted by a Service Worker `respondWith(fetch(...))`
+  // without any HTTP redirect: `DidRedirect()` stays false and
+  // `GetUrlAfterRedirects()` stays at `kHttpUrl`, while `GetUrlDataOrigin()`
+  // returns the Service Worker's fetched URL.
+  InitializeWithCors(kHttpUrl, true, UrlData::CORS_ANONYMOUS);
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse sw_response = response_generator_->Generate206(0);
+  sw_response.SetType(network::mojom::blink::FetchResponseType::kCors);
+  sw_response.SetWasFetchedViaServiceWorker(true);
+  sw_response.SetUrlListViaServiceWorker(
+      std::vector<WebURL>{KURL(kHttpDifferentOriginUrl)});
+  Respond(sw_response);
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_FALSE(data_source_->DidRedirect());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpUrl));
+  EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpDifferentOriginUrl));
+  Stop();
+
+  // 2. Synthetic Service Worker redirect (`Response.redirect(...)`) where a
+  // Service Worker proxies `kHttpDifferentPathUrl` from
+  // `kHttpDifferentOriginUrl`: `DidRedirect()` is true,
+  // `GetUrlAfterRedirects()` returns `kHttpDifferentPathUrl` (not the SW's
+  // internal URL), `service_worker_mode()` stays `kAllow` for offline SW
+  // caching, and `GetUrlDataOrigin()` returns `kHttpDifferentOriginUrl`.
+  constexpr char kRedirectStartUrl[] = "http://localhost/redirect_start.webm";
+  InitializeWithCors(kRedirectStartUrl, true, UrlData::CORS_ANONYMOUS);
+  WebURL redir_url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse redirect_response{KURL(kRedirectStartUrl)};
+  redirect_response.SetHttpStatusCode(302);
+  redirect_response.SetWasFetchedViaServiceWorker(true);
+  ASSERT_TRUE(
+      data_provider()->WillFollowRedirect(redir_url, redirect_response));
+
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  Respond(sw_response);
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_EQ(url_data()->service_worker_mode(),
+            UrlData::ServiceWorkerMode::kAllow);
+  EXPECT_TRUE(data_source_->DidRedirect());
+  EXPECT_EQ(data_source_->GetUrlAfterRedirects(), GURL(kHttpDifferentPathUrl));
+  EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpDifferentOriginUrl));
   Stop();
 }
 

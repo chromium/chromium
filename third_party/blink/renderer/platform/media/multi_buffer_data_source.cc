@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "url/gurl.h"
@@ -126,7 +125,7 @@ MultiBufferDataSource::MultiBufferDataSource(
   DCHECK(host_);
   DCHECK(downloading_cb_);
   DCHECK(render_task_runner_->BelongsToCurrentThread());
-  DCHECK(url_data_);
+  CHECK(url_data_);
   url_data_->Use();
   url_data_->OnRedirect(
       blink::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
@@ -200,7 +199,7 @@ void MultiBufferDataSource::OnRedirected(
     const scoped_refptr<UrlData>& new_destination) {
   did_redirect_ = true;
 
-  if (!new_destination || !url_data_) {
+  if (!new_destination) {
     // A failure occurred.
     failed_ = true;
     if (init_cb_) {
@@ -214,10 +213,6 @@ void MultiBufferDataSource::OnRedirected(
     }
     StopLoader();
     return;
-  }
-  if (!SecurityOrigin::AreSameOrigin(url_data_->url(),
-                                     new_destination->url())) {
-    single_origin_ = false;
   }
   SetReader(nullptr);
   url_data_ = std::move(new_destination);
@@ -278,12 +273,6 @@ bool MultiBufferDataSource::PassedTimingAllowOriginCheck() {
 }
 
 bool MultiBufferDataSource::WouldTaintOrigin() const {
-  // When the resource is redirected to another origin we think of it as
-  // tainted. This is actually not specified, and is under discussion.
-  // See https://github.com/whatwg/fetch/issues/737.
-  if (!single_origin_ && cors_mode() == UrlData::CORS_UNSPECIFIED) {
-    return true;
-  }
   return url_data_->is_cors_cross_origin();
 }
 
@@ -625,10 +614,6 @@ void MultiBufferDataSource::StartCallback() {
         host_->AddBufferedByteRange(0, total_bytes_);
     }
 
-    // Progress callback might be called after the start callback,
-    // make sure that we update single_origin_ now.
-    media_log_->SetProperty<media::MediaLogProperty::kIsSingleOrigin>(
-        single_origin_);
     media_log_->SetProperty<media::MediaLogProperty::kIsRangeHeaderSupported>(
         url_data_->range_supported());
 
