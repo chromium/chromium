@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">โปรดป้อนค่าที่ถูกต้อง ฟิลด์นี้ไม่สมบูรณ์หรือมีวันที่ที่ไม่ถูกต้อง</translation>
 <translation id="310520048233152454">โปรดป้อน URL</translation>
+<translation id="3137127353890528027">ซ่อนรหัสผ่านแล้ว</translation>
 <translation id="3321030238473337787">ความเร็วในการเล่น</translation>
 <translation id="3450233048674729344">ค่าต้องน้อยกว่าหรือเท่ากับ <ph name="MAXIMUM" /></translation>
 <translation id="3732799496749320381">ดด</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0.5</translation>
 <translation id="6070714301435004046">ดูรายละเอียดเพิ่มเติมได้ที่ <ph name="ALERT_HUB_LINK" /></translation>
 <translation id="6310801910862476708">ออกจากการแสดงภาพซ้อนภาพ</translation>
+<translation id="64261224118544870">แสดงรหัสผ่านแล้ว</translation>
 <translation id="6484738902856791350">จัดรูปแบบ</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="65574987622079584">ติดตั้งส่วนขยายเบราว์เซอร์</translation>

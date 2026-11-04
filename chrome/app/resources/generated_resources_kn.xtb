@@ -536,7 +536,6 @@
 <translation id="1401216725754314428">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳ ಕುರಿತು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="1402426911829176748">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1405779994569073824">ಕ್ರ್ಯಾಶ್ ಆಗಿದೆ.</translation>
-<translation id="1406812885827747674">ಈ ಬಾರಿ ಅನುಮತಿಸಿ</translation>
 <translation id="1407069428457324124">ಡಾರ್ಕ್ ಥೀಮ್</translation>
 <translation id="1407135791313364759">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="140723521119632973">ಸೆಲ್ಯುಲರ್ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ</translation>
@@ -5317,7 +5316,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ವಿಳಾಸಗಳು}=1{ವಿಳಾಸಗಳು ({SELECTED_ITEMS})}one{ವಿಳಾಸಗಳು ({SELECTED_ITEMS})}other{ವಿಳಾಸಗಳು ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5033137252639132982">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
-<translation id="5034158480345261097">ನಿಮ್ಮ ಪರವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲು <ph name="ACTOR_NAME" />, Google Password Manager ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಂದ ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಲು ಕೆಳಗೆ "ಇನ್ನಷ್ಟು ವಿವರಗಳು" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5037676449506322593">ಎಲ್ಲವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5038621320029329200">ವಿಶ್ವಾಸಾರ್ಹ ಪ್ರಮಾಣಪತ್ರಗಳು</translation>
@@ -6437,7 +6435,6 @@
 <translation id="5922854266885514646">"Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ" ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5924047253200400718">ಸಹಾಯ ಪಡೆಯಿರಿ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft ಫೈಲ್‌ಗಳನ್ನು Google Drive ಗೆ ಕಾಪಿ ಮಾಡುವ ಅಥವಾ ಸರಿಸುವ ಮೊದಲು ಕೇಳಿ</translation>
-<translation id="5925057331573749968">QR ಕೋಡ್ ಮೂಲಕ ವೇಗವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5926936390113611560">ಎಲ್ಲಾ ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="592880897588170157">Chrome ನಲ್ಲಿ PDF ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯುವ ಬದಲು ಅವುಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="5930567261594625340">ನೈಟ್ ಸ್ಕೈ</translation>
@@ -8497,7 +8494,6 @@
 <translation id="7495149565104413027">Android ಆ್ಯಪ್‌</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">ನಿಮ್ಮಲ್ಲಿ ಇತ್ತೀಚೆಗೆ ಕ್ಯಾಪ್ಚರ್‌ ಆಗಿರುವ WebRTC ಪಠ್ಯ ಲಾಗ್‌ಗಳು ಇಲ್ಲ.</translation>
-<translation id="7499684925421947861">ನಿಮ್ಮ ಪರವಾಗಿ <ph name="DOMAIN" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು <ph name="ACTOR_NAME" /> ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="7501957181231305652">ಅಥವಾ</translation>
 <translation id="7502220299952823578">"ಯಾವಾಗಲೂ ಈ ಸೈಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯವಾಗಿರಿಸಿಕೊಳ್ಳಿ" ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="7502528909759062987">ಟ್ಯಾಬ್ <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
@@ -10727,7 +10723,6 @@
 <translation id="9187967020623675250">ಕೀಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="9192019773545828776">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಆಲಿಸಿ ಇದರಿಂದ ನೀವು ಸ್ಕ್ರೀನ್ ಅನ್ನು ನೋಡದೆಯೇ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸಬಹುದು. ಸಂಪರ್ಕಿತ ಸಾಧನದೊಂದಿಗೆ ಬ್ರೈಲ್ ಪ್ರತಿಕ್ರಿಯೆ ಲಭ್ಯವಿದೆ. ChromeVox ಅನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು Ctrl + Alt + Z ಬಳಸಿ. ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು Search + ಲೆಫ್ಟ್ ಆ್ಯರೋ ಅಥವಾ ರೈಟ್ ಗುರುತನ್ನು ಬಳಸಿ. ಆಯ್ಕೆ ಮಾಡಲು (ಸಕ್ರಿಯಗೊಳಿಸಲು) Search + ಸ್ಪೇಸ್  ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="9195969368671142407">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಉಳಿತಾಯವನ್ನು ಮಿತಿಗೊಳಿಸಿದಾಗ, ನೀವು ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಸೇರಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
-<translation id="9197456336762295195">google.com ಗಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ಕೀಯನ್ನು ಹೊಂದಿರುವ ಸಾಧನದಲ್ಲಿನ ಕ್ಯಾಮರಾ ಮೂಲಕ ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="919840898042157087">ಸ್ಟ್ಯಾಟಿಕ್ ಮೂವ್‌ಮೆಂಟ್</translation>
 <translation id="9199503643457729322">ಗೌಪ್ಯತೆ ಗೈಡ್‌ನಿಂದ ದೂರ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="9199695835892108985">ಎಲ್ಲಾ USB ಸೀರಿಯಲ್ ಪೋರ್ಟ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>

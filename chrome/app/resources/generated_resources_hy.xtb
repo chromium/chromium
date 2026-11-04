@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Իմանալ ավելին նոր ներդիրում առնչվող կայքերի մասին</translation>
 <translation id="1402426911829176748">Միանում է ձեր սարքին</translation>
 <translation id="1405779994569073824">Չհաջողվեց բեռնել:</translation>
-<translation id="1406812885827747674">Թույլատրել այս անգամ</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="140723521119632973">Բջջային ցանցի ակտիվացում</translation>
@@ -5308,7 +5307,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Հասցեներ}=1{Հասցեներ ({SELECTED_ITEMS})}one{Հասցեներ ({SELECTED_ITEMS})}other{Հասցեներ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
 <translation id="5033137252639132982">Չի թույլատրվում օգտագործել շարժման տվիչները</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />-ը կարող է օգտագործել Google գաղտնաբառերի կառավարիչը՝ ձեր փոխարեն մուտք գործելու համար։ <ph name="BEGIN_LINK" />Իմացեք, թե ինչպես է <ph name="ACTOR_NAME" />-ը մշակում ձեր տվյալները<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Ընտրեք «Այլ մանրամասներ» ստորև՝ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից լրացուցիչ տեղեկություններ ստանալու համար։</translation>
 <translation id="5037676449506322593">Select All</translation>
 <translation id="5038621320029329200">Ստուգված հավաստագրեր</translation>
@@ -6424,7 +6422,6 @@
 <translation id="5922854266885514646">Սեղմեք «Անհատականացնել Chrome-ը»</translation>
 <translation id="5924047253200400718">Օգնություն<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Թույլտվություն հարցնել նախքան Google Drive-ում Microsoft ֆայլեր պատճենելը կամ տեղափոխելը</translation>
-<translation id="5925057331573749968">Ավելի արագ մուտք գործեք QR կոդի միջոցով</translation>
 <translation id="5926936390113611560">Բացել բոլոր պրոֆիլները</translation>
 <translation id="592880897588170157">PDF ֆայլերը ներբեռնել՝ Chrome-ում ավտոմատ բացելու փոխարեն</translation>
 <translation id="5930567261594625340">Գիշերային երկինք</translation>
@@ -8480,7 +8477,6 @@
 <translation id="7495149565104413027">Android հավելված</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Վերջերս ստեղծված WebRTC տեքստային մատյաններ չկան:</translation>
-<translation id="7499684925421947861">Թույլատրե՞լ <ph name="ACTOR_NAME" />-ին մուտք գործել <ph name="DOMAIN" /> ձեր փոխարեն</translation>
 <translation id="7501957181231305652">կամ</translation>
 <translation id="7502220299952823578">Ավելացնել «Միշտ ակտիվ պահել այս կայքերը» ցանկում</translation>
 <translation id="7502528909759062987">Դադարեցնել ներդիրի հեռարձակումը <ph name="DEVICE_NAME" /> սարքին</translation>
@@ -10525,6 +10521,7 @@
 <translation id="9043767139743235992">Կապվել Google-ի՝ հատուկ կարիքներով անձանց աջակցման թիմի հետ</translation>
 <translation id="9044646465488564462">Չհաջողվեց կապակցվել ցանցին` <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Ձեր ընթերցանության ցուցակը տեղափոխվել է նոր կողային վահանակ։ Փորձեք այն այստեղ։</translation>
+<translation id="9046240419485318563">Դիտել հիշողությունը</translation>
 <translation id="9048745018038487540">Նշել բոլոր տառատեսակները</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>
 <translation id="905137631551495997">Ընդլայնում(ներ)</translation>
@@ -10711,7 +10708,6 @@
 <translation id="9187967020623675250">Ստեղները չեն համընկնում։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
 <translation id="9192019773545828776">Լսեք ձայնային ուղեկցումը, որպեսզի կարողանաք օգտագործել սարքն առանց էկրանին նայելու։ Բրայլյան գրերի աջակցումը հասանելի է կապակցված սարքի հետ։ Օգտագործեք Ctrl + Alt + Z դյուրանցումը՝ ChromeVox-ը միացնելու և անջատելու համար։ Նավիգացիայի համար օգտագործեք Որոնում + Ձախ սլաք կամ Աջ սլաք դյուրանցումը։ Օգտագործեք Որոնում + Բացատ դյուրանցումը՝ ընտրելու (ակտիվացնելու) համար։</translation>
 <translation id="9195969368671142407">Դա նշանակում է, որ դուք չեք կարող կիսվել ներդիրների խմբերով կամ միանալ դրանց</translation>
-<translation id="9197456336762295195">Սկանավորեք այս QR կոդը այն սարքի տեսախցիկի միջոցով, որում կա google.com կայքի համար անհրաժեշտ մուտքի բանալին</translation>
 <translation id="919840898042157087">Ստատիկ շարժում</translation>
 <translation id="9199503643457729322">Սեղմեք՝ Գաղտնիության ուղեցույցից դուրս գալու համար։</translation>
 <translation id="9199695835892108985">Զրոյացնե՞լ սերիական միացքների բոլոր թույլտվությունները։</translation>

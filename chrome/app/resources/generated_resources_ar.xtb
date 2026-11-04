@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">‏اقتراح استخدام "ترجمة Google" على المواقع الإلكترونية المعروضة بلغات أخرى</translation>
 <translation id="1384959399684842514">تم إيقاف التنزيل مؤقتًا</translation>
 <translation id="1386966479075994683">توسيع علامات التبويب</translation>
+<translation id="1387227841274754059">‏بانتظار أسئلتك باستخدام "عدسة Google" حول محتوى شاشتك</translation>
 <translation id="1388253969141979417">المواقع الإلكترونية التي يُسمح لها باستخدام الميكروفون</translation>
 <translation id="139013308650923562">المواقع الإلكترونية التي يُسمح لها باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="1390306150250850355">"<ph name="APP_TYPE" />" مثبَّت مسبقًا على جهاز <ph name="DEVICE_TYPE" />.</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">مزيد من المعلومات حول المواقع الإلكترونية ذات الصلة في علامة تبويب جديدة</translation>
 <translation id="1402426911829176748">جارٍ الربط بجهازك</translation>
 <translation id="1405779994569073824">علامة التبويب تعطَّلت.</translation>
-<translation id="1406812885827747674">السماح هذه المرة</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="140723521119632973">تفعيل شبكة الجوّال</translation>
@@ -4749,6 +4749,7 @@
 <translation id="4610637590575890427">هل تقصد الانتقال إلى <ph name="SITE" />؟</translation>
 <translation id="4611619000650855880">في حال اختيار زر الماوس الأيسر، يجب استخدام مفتاح "/" للنقر مرّتين</translation>
 <translation id="4613271546271159013">لقد غيّرت الإضافة الصفحة المعروضة عندما فتحت علامة تبويب جديدة.</translation>
+<translation id="4616024182698834938">يمكنك سحب الملفات وإفلاتها هنا</translation>
 <translation id="461613135510474570">جملة</translation>
 <translation id="461661862154729886">مصدر الطاقة</translation>
 <translation id="4617001782309103936">قصير جدًا</translation>
@@ -5313,7 +5314,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{العناوين}=1{العناوين ({SELECTED_ITEMS})}two{العناوين ({SELECTED_ITEMS})}few{العناوين ({SELECTED_ITEMS})}many{العناوين ({SELECTED_ITEMS})}other{العناوين ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="5033137252639132982">المواقع الإلكترونية التي لا يُسمح لها باستخدام مستشعرات الحركة</translation>
-<translation id="5034158480345261097">‏بإمكان "<ph name="ACTOR_NAME" />" استخدام "مدير كلمات المرور في Google" لتسجيل الدخول نيابةً عنك. <ph name="BEGIN_LINK" />كيفية معالجة "<ph name="ACTOR_NAME" />" لبياناتك<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">يُرجى اختيار "مزيد من التفاصيل" أدناه للحصول على مزيد من المعلومات من "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="5037676449506322593">اختيار الكل</translation>
 <translation id="5038621320029329200">الشهادات الموثوق بها</translation>
@@ -5579,6 +5579,7 @@
 <translation id="5230190638672215545">‏اكتب uow لإظهار ươ</translation>
 <translation id="5230516054153933099">نافذة</translation>
 <translation id="5231255476752743708">‏يحتاج Chrome إلى المساعدة في تغيير كلمة المرور</translation>
+<translation id="5232607425694431024">بانتظار أسئلتك حول ملف أو صورة</translation>
 <translation id="5232714764496316200">‏واجباتك المنزلية أصبحت أسهل مع "عدسة Google"</translation>
 <translation id="5233231016133573565">معرِّف العملية</translation>
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
@@ -6432,7 +6433,6 @@
 <translation id="5922854266885514646">‏انقر على "تخصيص Chrome"</translation>
 <translation id="5924047253200400718">الحصول على مساعدة<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Google Drive</translation>
-<translation id="5925057331573749968">تسجيل الدخول بشكل أسرع مع رمز الاستجابة السريعة</translation>
 <translation id="5926936390113611560">فتح جميع الملفات الشخصية</translation>
 <translation id="592880897588170157">‏تنزيل ملفات PDF بدلاً من فتحها تلقائيًا في Chrome</translation>
 <translation id="5930567261594625340">سماء الليل</translation>
@@ -7735,6 +7735,7 @@
 <translation id="6913051485529944333">‏لن يظهر لك "تقويم Google" على هذه الصفحة مرة أخرى</translation>
 <translation id="6914812290245989348">عدم عرض أي تحذيرات قبل الانتقال إلى مواقع إلكترونية غير آمنة</translation>
 <translation id="6916590542764765824">إدارة الإضافات</translation>
+<translation id="6916630302999048499">‏جارٍ تنفيذ مهمة Gemini</translation>
 <translation id="6916676294509106572">‏تم إخفاء بطاقة "تقويم Outlook" ‏(Outlook Calendar)</translation>
 <translation id="6916818963747321523">توسيع الكلّ</translation>
 <translation id="6917873303492266709">‏لمشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها، افتح الإعدادات وفعِّل خيار "السماح بتسجيل الدخول إلى Chrome"</translation>
@@ -8265,6 +8266,7 @@
 <translation id="733058866272972585">تم منع هذا الموقع الإلكتروني من استخدام المعرّفات لتشغيل المحتوى المحمي.</translation>
 <translation id="7331646370422660166">‏‫alt + السهم المتّجه للأسفل</translation>
 <translation id="7332053360324989309">عامل مُخصّص: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">تم البدء</translation>
 <translation id="7333388112938984914">لا يمكن تحميل الملفات أثناء الاتصال بشبكة تفرض تكلفة استخدام.</translation>
 <translation id="7335974957018254119">استخدام التدقيق الإملائي للّغة</translation>
 <translation id="7336799713063880535">تم حظر الإشعارات.</translation>
@@ -8496,7 +8498,6 @@
 <translation id="7495149565104413027">‏تطبيق Android</translation>
 <translation id="7497322070873193353">‏تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="7497981768003291373">‏ليست لديك أي سجلَّات نصية WebRTC تم التقاطها مؤخرًا.</translation>
-<translation id="7499684925421947861">هل المطلوب السماح لـ "<ph name="ACTOR_NAME" />" بتسجيل الدخول إلى "<ph name="DOMAIN" />" نيابةً عنك؟</translation>
 <translation id="7501957181231305652">أو</translation>
 <translation id="7502220299952823578">الإضافة إلى قائمة "إبقاء المواقع الإلكترونية التالية نشطة طوال الوقت"</translation>
 <translation id="7502528909759062987">إيقاف بث علامة التبويب مؤقتًا على "<ph name="DEVICE_NAME" />"</translation>
@@ -10310,6 +10311,7 @@
 <translation id="8876307312329369159">لا يمكن تغيير هذا الإعداد في جلسة تجريبية.</translation>
 <translation id="8876965259056847565">تستخدم ميزة "<ph name="FEATURE_NAME" />" تقنية البلوتوث للعثور على الأجهزة المجاورة.</translation>
 <translation id="8877448029301136595">[الدليل الأصل]</translation>
+<translation id="8878337214401484041">‫<ph name="TASK_TITLE" />: تم البدء</translation>
 <translation id="8879284080359814990">إ&amp;ظهار كعلامة تبويب</translation>
 <translation id="8879921471468674457">تذكّر معلومات تسجيل الدخول</translation>
 <translation id="8880009256105053174">‏البحث في هذه الصفحة باستخدام Google…</translation>
@@ -10729,7 +10731,6 @@
 <translation id="9187967020623675250">مفاتيح التحكّم غير متطابقة. يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">‏يمكنك سماع وصف شفهي للشاشة حتى تتمكّن من استخدام جهازك بدون النظر إلى الشاشة. يتوفّر الوصف الشفهي بلغة برايل عند توصيل جهاز متوافق. اضغط على Ctrl ‏+ Alt ‏+ Z لتفعيل قارئ الشاشة ChromeVox أو إيقافه. واضغط على مفتاح البحث + السهم المتّجه لليسار أو السهم المتّجه لليمين للتنقّل. اضغط على مفتاح البحث + مفتاح المسافة للاختيار (التفعيل).</translation>
 <translation id="9195969368671142407">‏عندما تفرض مؤسستك قيودًا على حفظ المعلومات في حسابك على Google، لن تتمكّن من مشاركة مجموعات علامات التبويب أو الانضمام إليها</translation>
-<translation id="9197456336762295195">‏يمكنك مسح رمز الاستجابة السريعة هذا ضوئيًا باستخدام كاميرا الجهاز الذي يحتوي على مفتاح المرور لتسجيل الدخول إلى google.com</translation>
 <translation id="919840898042157087">ثبات الحركة</translation>
 <translation id="9199503643457729322">انقر على هذا الزر للخروج من "دليل الخصوصية".</translation>
 <translation id="9199695835892108985">هل تريد إعادة ضبط جميع أذونات المنافذ التسلسلية؟</translation>

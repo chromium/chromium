@@ -65,7 +65,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1623563412065267963">Få ut det bästa av Google med Chromium-appen på telefonen</translation>
 <translation id="1625909126243026060">Granska viktiga integritets- och säkerhetskontroller i Chromium</translation>
 <translation id="1640672724030957280">Hämtar ...</translation>
-<translation id="1648201623125974721">Ny ikon, samma genväg: Klicka för att ställa frågor medan du surfar med Sammanhangsbaserade uppgifter.</translation>
+<translation id="1648201623125974721">Ny ikon, samma genväg: Klicka för att ställa frågor medan du surfar med Kontextbaserade uppgifter.</translation>
 <translation id="1665602916345474427">Inloggad som <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, medlemskap. Öppna kontomenyn</translation>
 <translation id="1708414395296835197">Du kan använda Chromium varje gång du klickar på länkar i meddelanden, dokument och andra appar. Det fästs även i aktivitetsfältet.</translation>
 <translation id="1709772298389099340">Ger förhöjd behörighet för <ph name="BROWSER_NAME" />.</translation>
@@ -493,7 +493,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="5960071705175224773">Dina inställningar har ändrats av en okänd app</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisationen avslutar Chromium automatiskt när det inte har använts på 1 minut.}other{Organisationen avslutar Chromium automatiskt när det inte har använts på # minuter.}}</translation>
 <translation id="5987687638152509985">Du måste uppdatera Chromium innan synkroniseringen kan starta</translation>
-<translation id="5990360079535151574">Med knappen Sammanhangsbaserade uppgifter i verktygsfältet kan du öppna Sammanhangsbaserade uppgifter igen för att ställa frågor medan du surfar</translation>
+<translation id="5990360079535151574">Med knappen Kontextbaserade uppgifter i verktygsfältet kan du öppna Kontextbaserade uppgifter igen för att ställa frågor medan du surfar</translation>
 <translation id="6003112304606738118">Laddar ned … <ph name="HOURS" /> timme/timmar kvar</translation>
 <translation id="6009821354356307391">Ställ en följdfråga</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -601,7 +601,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="6877155553248388166">nedre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="BOTTOM" /> % nedåt</translation>
 <translation id="6896758677409633944">Kopiera</translation>
-<translation id="6898028264630240901">Du kan fästa Sammanhangsbaserade uppgifter så att du kan ställa frågor medan du surfar</translation>
+<translation id="6898028264630240901">Du kan fästa Kontextbaserade uppgifter så att du kan ställa frågor medan du surfar</translation>
 <translation id="6901631050894301805">Ställ in Chromium som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="6909503629704372277">&amp;Hantera Chromium-profiler</translation>
 <translation id="6919942714452658456">Den här åtgärden kommer att
@@ -657,7 +657,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="7318036098707714271">Inställningsfilen är skadad eller ogiltig.
 
 Chromium kan inte återställa dina inställningar.</translation>
-<translation id="7324051657739063017">Du kan öppna Sammanhangsbaserade uppgifter igen för att ställa frågor medan du surfar</translation>
+<translation id="7324051657739063017">Du kan öppna Kontextbaserade uppgifter igen för att ställa frågor medan du surfar</translation>
 <translation id="734373864078049451">Här finns webben, bokmärken och allt annat du använder Chromium till.</translation>
 <translation id="7347827960336370838">Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen måste du <ph name="BEGIN_LINK" />radera Chromium-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -868,7 +868,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9106612006984859720">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Chromium. På den här datorn används Windows 8.1.</translation>
 <translation id="91086099826398415">Öppna länken i en ny &amp;flik i Chromium</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>
-<translation id="9118146721060781133">Knappen Sammanhangsbaserade uppgifter i verktygsfältet har en ny ikon. Klicka på den för att ställa frågor medan du surfar med Sammanhangsbaserade uppgifter.</translation>
+<translation id="9118146721060781133">Knappen Kontextbaserade uppgifter i verktygsfältet har en ny ikon. Klicka på den för att ställa frågor medan du surfar med Kontextbaserade uppgifter.</translation>
 <translation id="9134482777260927479">Läxhjälp</translation>
 <translation id="9148058034647219655">Avsluta</translation>
 <translation id="9155105544013854680">Fortsätt där du slutade: Chromium kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>

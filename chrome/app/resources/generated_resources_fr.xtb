@@ -535,7 +535,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1401216725754314428">En savoir plus sur les sites associés dans un nouvel onglet</translation>
 <translation id="1402426911829176748">Connexion à votre appareil…</translation>
 <translation id="1405779994569073824">A planté.</translation>
-<translation id="1406812885827747674">Autoriser cette fois-ci</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="140723521119632973">Activation mobile</translation>
@@ -5309,7 +5308,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresses}=1{Adresses ({SELECTED_ITEMS})}one{Adresses ({SELECTED_ITEMS})}other{Adresses ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Impossible de créer le QR code</translation>
 <translation id="5033137252639132982">Non autorisé à utiliser des capteurs de mouvement</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> peut utiliser le Gestionnaire de mots de passe de Google pour vous connecter. <ph name="BEGIN_LINK" />Découvrez comment <ph name="ACTOR_NAME" /> traite vos données<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Sélectionnez "Plus d'informations" ci-dessous pour obtenir des informations complémentaires auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
 <translation id="5038621320029329200">Certificats approuvés</translation>
@@ -6428,7 +6426,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5922854266885514646">Cliquez sur "Personnaliser Chrome"</translation>
 <translation id="5924047253200400718">Obtenir de l'aide<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Demander avant de copier ou de déplacer des fichiers Microsoft vers Google Drive</translation>
-<translation id="5925057331573749968">Connectez-vous plus vite avec un QR code</translation>
 <translation id="5926936390113611560">Ouvrir tous les profils</translation>
 <translation id="592880897588170157">Télécharger les fichiers PDF au lieu de les ouvrir automatiquement dans Chrome</translation>
 <translation id="5930567261594625340">Ciel nocturne</translation>
@@ -8486,7 +8483,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7495149565104413027">Appli Android</translation>
 <translation id="7497322070873193353">IA de Google</translation>
 <translation id="7497981768003291373">Aucun journal texte WebRTC n'a été créé récemment.</translation>
-<translation id="7499684925421947861">Autoriser <ph name="ACTOR_NAME" /> à se connecter à <ph name="DOMAIN" /> pour vous ?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Ajouter à la liste "Toujours laisser ces sites actifs"</translation>
 <translation id="7502528909759062987">Suspendre la diffusion de l'onglet sur <ph name="DEVICE_NAME" /></translation>
@@ -10075,6 +10071,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8708000541097332489">Supprimer les données à la fin de la session</translation>
 <translation id="870805141700401153">Signature du code individuel Microsoft</translation>
 <translation id="8708671767545720562">Plus d'informations</translation>
+<translation id="8709234440040320647">(Mode isolé)</translation>
 <translation id="8709368517685334931">Vous trouverez les anciennes couleurs sur le Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasy</translation>
 <translation id="8711402221661888347">Hamburger</translation>
@@ -10239,6 +10236,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8836360711089151515"><ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner votre <ph name="DEVICE_TYPE" /> sous 1 semaine. <ph name="LINK_BEGIN" />Voir les détails<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Quitter le groupe}one{Quitter le groupe}other{Quitter les groupes}}</translation>
 <translation id="8836782447513334597">continuer</translation>
+<translation id="8837072669197607689">Autoriser en mode isolé</translation>
 <translation id="8837573527470979311">Remplacer par la vue du bas</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10529,6 +10527,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9043767139743235992">Contacter l'assistance Google dédiée au handicap</translation>
 <translation id="9044646465488564462">Échec de la connexion au réseau : <ph name="DETAILS" />.</translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée vers le nouveau panneau latéral. Faites un essai.</translation>
+<translation id="9046240419485318563">Parcourir la mémoire</translation>
 <translation id="9048745018038487540">Sélectionner toutes les polices</translation>
 <translation id="9050666287014529139">Phrase secrète</translation>
 <translation id="905137631551495997">Extension(s)</translation>
@@ -10715,7 +10714,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9187967020623675250">Les touches ne correspondent pas. Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Activez la lecture vocale pour utiliser votre appareil sans regarder l'écran. Les retours en braille sont disponibles sur un appareil connecté. Appuyez sur Ctrl+Alt+Z pour activer ou désactiver ChromeVox. Appuyez sur Recherche+Flèche vers la gauche ou Flèche vers la droite pour parcourir l'écran, et appuyez sur Recherche+Espace pour sélectionner (activer).</translation>
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement dans votre compte Google, vous ne pouvez pas rejoindre ni partager de groupes d'onglets</translation>
-<translation id="9197456336762295195">Scannez ce QR code avec l'appareil photo de l'appareil qui a votre clé d'accès pour google.com</translation>
 <translation id="919840898042157087">Mouvement statique</translation>
 <translation id="9199503643457729322">Cliquez pour quitter le Guide sur la confidentialité.</translation>
 <translation id="9199695835892108985">Réinitialiser toutes les autorisations de port série ?</translation>

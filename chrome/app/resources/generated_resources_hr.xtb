@@ -521,6 +521,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1384849755549338773">Ponudi Google prevoditelj za web-lokacije na drugim jezicima</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1386966479075994683">Proširi kartice</translation>
+<translation id="1387227841274754059">Postavite pitanje o zaslonu pomoću Google objektiva</translation>
 <translation id="1388253969141979417">Dopuštena je upotreba mikrofona</translation>
 <translation id="139013308650923562">Web-lokacije kojima je dopušteno korištenje fontova instaliranih na uređaju</translation>
 <translation id="1390306150250850355">Aplikacija <ph name="APP_TYPE" /> predinstalirana na vašem uređaju <ph name="DEVICE_TYPE" /></translation>
@@ -535,7 +536,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1401216725754314428">Saznajte više o povezanim web-lokacijama na novoj kartici</translation>
 <translation id="1402426911829176748">Povezivanje s uređajem</translation>
 <translation id="1405779994569073824">Srušilo se.</translation>
-<translation id="1406812885827747674">Dopusti ovaj put</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="140723521119632973">Mobilna aktivacija</translation>
@@ -4748,6 +4748,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4610637590575890427">Jeste li mislili <ph name="SITE" /></translation>
 <translation id="4611619000650855880">Kad je odabrana lijeva tipka miša, upotrijebite tipku / da biste dvaput kliknuli</translation>
 <translation id="4613271546271159013">Proširenje je promijenilo stranicu koja se prikazuje kada otvorite novu karticu.</translation>
+<translation id="4616024182698834938">Povucite i ispustite datoteke ovdje</translation>
 <translation id="461613135510474570">Rečenica</translation>
 <translation id="461661862154729886">Izvor energije</translation>
 <translation id="4617001782309103936">Prekratko</translation>
@@ -5311,7 +5312,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adrese}=1{Adrese ({SELECTED_ITEMS})}one{Adrese ({SELECTED_ITEMS})}few{Adrese ({SELECTED_ITEMS})}other{Adrese ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Izrada QR koda nije uspjela</translation>
 <translation id="5033137252639132982">Nije dopuštena upotreba senzora kretanja</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> se može prijaviti umjesto vas pomoću Google upravitelja zaporki. <ph name="BEGIN_LINK" />Saznajte kako <ph name="ACTOR_NAME" /> postupa s vašim podacima<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Odaberite Više pojedinosti u nastavku da biste saznali više informacija od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Odaberi sve</translation>
 <translation id="5038621320029329200">Pouzdani certifikati</translation>
@@ -5577,6 +5577,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5230190638672215545">Upišite "uow" da biste dobili "ươ"</translation>
 <translation id="5230516054153933099">Prozor</translation>
 <translation id="5231255476752743708">Chrome treba pomoć s promjenom zaporke</translation>
+<translation id="5232607425694431024">Postavite pitanje o datoteci ili slici</translation>
 <translation id="5232714764496316200">Pomoć s domaćom zadaćom uz Google objektiv</translation>
 <translation id="5233231016133573565">ID procesa</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
@@ -6427,7 +6428,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5922854266885514646">Kliknite Prilagodba Chromea</translation>
 <translation id="5924047253200400718">Potražite pomoć<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pitaj prije kopiranja ili premještanja Microsoftovih datoteka na Google disk</translation>
-<translation id="5925057331573749968">Brže se prijavite QR kodom</translation>
 <translation id="5926936390113611560">Otvori sve profile</translation>
 <translation id="592880897588170157">Preuzmite PDF datoteke umjesto da se automatski otvaraju u Chromeu</translation>
 <translation id="5930567261594625340">Noćno nebo</translation>
@@ -7725,6 +7725,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6913051485529944333">Na ovoj stranici više vam se neće prikazivati Google kalendar</translation>
 <translation id="6914812290245989348">Ne prikazuj upozorenja prije otvaranja nesigurnih web-lokacija</translation>
 <translation id="6916590542764765824">Upravljanje proširenjima</translation>
+<translation id="6916630302999048499">Izvršava se zadatak za Gemini</translation>
 <translation id="6916676294509106572">Outlook kalendar je skriven</translation>
 <translation id="6916818963747321523">Proširi sve</translation>
 <translation id="6917873303492266709">Da biste dijelili, pridruživali se i surađivali u grupama kartica, otvorite postavke i uključite Dopusti prijavu u Chrome</translation>
@@ -8254,6 +8255,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="733058866272972585">Web-lokaciji je blokirana upotreba identifikatora za reprodukciju zaštićenog sadržaja.</translation>
 <translation id="7331646370422660166">Alt + strelica prema dolje</translation>
 <translation id="7332053360324989309">Dodijeljeni radnik: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">Pokrenuto</translation>
 <translation id="7333388112938984914">Datoteke se ne mogu prenijeti dok ste povezani s ograničenim prometom.</translation>
 <translation id="7335974957018254119">Upotreba provjere pravopisa za</translation>
 <translation id="7336799713063880535">Obav. su blokirane.</translation>
@@ -8486,7 +8488,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7495149565104413027">Android aplikacija</translation>
 <translation id="7497322070873193353">Googleov AI</translation>
 <translation id="7497981768003291373">Nemate nedavno snimljenih WebRTC tekstnih zapisnika.</translation>
-<translation id="7499684925421947861">Želite li dopustiti da vas <ph name="ACTOR_NAME" /> prijavi na domenu <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">ili</translation>
 <translation id="7502220299952823578">Dodaj na popis Neka ove web-lokacije uvijek budu aktivne</translation>
 <translation id="7502528909759062987">Pauziranje kartice za emitiranje na uređaj <ph name="DEVICE_NAME" /></translation>
@@ -10299,6 +10300,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8876307312329369159">Ta se postavka ne može promijeniti u demo sesiji.</translation>
 <translation id="8876965259056847565">Značajka <ph name="FEATURE_NAME" /> upotrebljava traženje Bluetooth uređaja kako bi pronašla uređaje u blizini.</translation>
 <translation id="8877448029301136595">[matični direktorij]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: pokrenuto</translation>
 <translation id="8879284080359814990">&amp;Prikaži kao karticu</translation>
 <translation id="8879921471468674457">Zapamti podatke za prijavu</translation>
 <translation id="8880009256105053174">Pretražite ovu stranicu pomoću Googlea...</translation>
@@ -10718,7 +10720,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9187967020623675250">Tipke se ne podudaraju. Pritisnite bilo koju tipku za <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Poslušajte govorne povratne informacije kako biste mogli upotrebljavati uređaj bez gledanja u zaslon. Povratne informacije za brajicu dostupne su uz povezani uređaj. Pritisnite Ctrl + Alt + Z da biste uključili ili isključili ChromeVox. Za kretanje upotrijebite strelicu Pretraživanje + strelicu lijevo ili strelicu desno. Za odabir (aktiviranje) upotrijebite tipku za pretraživanje i razmaknicu.</translation>
 <translation id="9195969368671142407">Kada vaša organizacija ograniči spremanje na vaš Google račun, ne možete dijeliti grupe kartica niti im se pridruživati</translation>
-<translation id="9197456336762295195">Skenirajte ovaj QR kôd kamerom na uređaju koji ima vaš pristupni ključ za google.com</translation>
 <translation id="919840898042157087">Statično pomicanje</translation>
 <translation id="9199503643457729322">Kliknite da biste izašli iz vodiča za privatnost.</translation>
 <translation id="9199695835892108985">Želite li poništiti sva dopuštenja serijskog priključka?</translation>

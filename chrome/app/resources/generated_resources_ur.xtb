@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">‏ویب سائٹس کو دیگر زبانوں میں 'ترجمہ Google' کی پیشکش کریں</translation>
 <translation id="1384959399684842514">ڈاؤن لوڈ موقوف ہوگیا</translation>
 <translation id="1386966479075994683">ٹیبز کو پھیلائیں</translation>
+<translation id="1387227841274754059">‏‫Google لینز کے ساتھ اپنی اسکرین کے بارے میں پوچھیں</translation>
 <translation id="1388253969141979417">آپ کا مائیکروفون استعمال کرنے کی اجازت ہے</translation>
 <translation id="139013308650923562">آپ کے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کی اجازت ہے</translation>
 <translation id="1390306150250850355">آپ کے <ph name="DEVICE_TYPE" /> پر <ph name="APP_TYPE" /> پہلے سے انسٹال ہے</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">ایک نئے ٹیب میں متعلقہ سائٹس کے بارے میں مزید جانیں</translation>
 <translation id="1402426911829176748">آپ کے آلے سے منسلک ہو رہا ہے</translation>
 <translation id="1405779994569073824">کریش ہو گیا</translation>
-<translation id="1406812885827747674">اس وقت اجازت دیں</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="140723521119632973">سیلولر فعالیت</translation>
@@ -4746,6 +4746,7 @@
 <translation id="4610637590575890427">کیا آپ کا مطلب <ph name="SITE" /> پر جانے سے ہے؟</translation>
 <translation id="4611619000650855880">ماؤس کا بایاں بٹن منتخب کرنے پر، دو بار کلک کرنے کیلئے "/" کا استعمال کریں</translation>
 <translation id="4613271546271159013">آپ کی جانب سے نیا ٹیب کھولنے پر دکھائی دینے والے صفحہ کو اس ایکسٹینشن نے تبدیل کر دیا ہے۔</translation>
+<translation id="4616024182698834938">فائلز کو کھینچ کر یہاں ڈالیں</translation>
 <translation id="461613135510474570">جملہ</translation>
 <translation id="461661862154729886">توانائی کا ماخذ</translation>
 <translation id="4617001782309103936">بہت چھوٹا</translation>
@@ -5309,7 +5310,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{پتے}=1{پتے ({SELECTED_ITEMS})}other{پتے ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">‏QR کوڈ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="5033137252639132982">موشن سینسرز استعمال کرنے کی اجازت نہیں ہے</translation>
-<translation id="5034158480345261097">‏‫<ph name="ACTOR_NAME" /> آپ کے لیے سائن ان کرنے کے لیے Google پاس ورڈ مینیجر کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK" />جانیں کہ <ph name="ACTOR_NAME" /> آپ کے ڈیٹا کو کیسے ہینڈل کرتا ہے<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے مزید معلومات حاصل کرنے کے لیے نیچے "مزید تفصیلات" کا انتخاب کریں۔</translation>
 <translation id="5037676449506322593">سبھی منتخب کریں</translation>
 <translation id="5038621320029329200">قابل اعتماد سرٹیفکیٹس</translation>
@@ -5575,6 +5575,7 @@
 <translation id="5230190638672215545">‏"ươ" حاصل کرنے کے لیے "uow" ٹائپ کریں</translation>
 <translation id="5230516054153933099">ونڈو</translation>
 <translation id="5231255476752743708">‏آپ کا پاس ورڈ تبدیل کرنے میں Chrome کو مدد کی ضرورت ہے</translation>
+<translation id="5232607425694431024">فائل یا تصویر کے بارے میں پوچھیں</translation>
 <translation id="5232714764496316200">‏‫Google لینز سے ہوم ورک میں مدد حاصل کریں</translation>
 <translation id="5233231016133573565">‏پروسیس ID</translation>
 <translation id="5233638681132016545">نیا ٹیب</translation>
@@ -6426,7 +6427,6 @@
 <translation id="5922854266885514646">‏‫"Chrome کو حسب ضرورت بنائیں" پر کلک کریں</translation>
 <translation id="5924047253200400718">مدد حاصل کریں<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏Microsoft فائلز کو Google Drive میں کاپی یا منتقل کرنے سے پہلے پوچھیں</translation>
-<translation id="5925057331573749968">‏‫QR کوڈ کے ساتھ تیزی سے سائن ان کریں</translation>
 <translation id="5926936390113611560">تمام پروفائلز کھولیں</translation>
 <translation id="592880897588170157">‏PDF فائلیں Chrome میں خودکار طور پر کھولنے کے بجائے انہیں ڈاؤن لوڈ کریں</translation>
 <translation id="5930567261594625340">رات کا آسمانی رنگ</translation>
@@ -7721,6 +7721,7 @@
 <translation id="6913051485529944333">‏آپ کو اس صفحے پر Google کیلنڈر دوبارہ نہیں دکھائی دے گا</translation>
 <translation id="6914812290245989348">غیر محفوظ سائٹس پر جانے سے پہلے کوئی وارننگ نہ دیکھیں</translation>
 <translation id="6916590542764765824">ایکسٹینشنز کا نظم کریں</translation>
+<translation id="6916630302999048499">‏‫Gemini ٹاسک چل رہا ہے</translation>
 <translation id="6916676294509106572">‏‫Outlook کیلنڈر پوشیدہ ہے</translation>
 <translation id="6916818963747321523">سبھی کو توسیع دیں</translation>
 <translation id="6917873303492266709">‏ٹیب گروپس کا اشتراک کرنے، اس میں شامل ہونے اور تعاون کرنے کے لیے، ترتیبات کھولیں اور Chrome کو سائن ان کرنے کی اجازت دیں کو آن کریں</translation>
@@ -8249,6 +8250,7 @@
 <translation id="733058866272972585">اس سائٹ کو تحفظ یافتہ مواد چلانے کے لیے شناخت کنندگان کے استعمال سے بلاک کر دیا گیا ہے۔</translation>
 <translation id="7331646370422660166">‏alt + نیچے تیر کا نشان</translation>
 <translation id="7332053360324989309">سرشار کارکن: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">شروع ہو گئی</translation>
 <translation id="7333388112938984914">میٹرڈ کنکشن کے دوران فائلیں اپ لوڈ نہیں کی جا سکتیں۔</translation>
 <translation id="7335974957018254119">درج ذیل کے لیے املا کی جانچ کا استعمال کریں</translation>
 <translation id="7336799713063880535">اطلاعات مسدود ہیں۔</translation>
@@ -8481,7 +8483,6 @@
 <translation id="7495149565104413027">‏Android ایپ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">‏آپ کے پاس حالیہ کیپچر کردہ کوئی WebRTC ٹیکسٹ لاگ نہیں ہے۔</translation>
-<translation id="7499684925421947861">‫<ph name="ACTOR_NAME" /> کو آپ کیلئے <ph name="DOMAIN" /> میں سائن ان کرنے کی اجازت دیں؟</translation>
 <translation id="7501957181231305652">یا</translation>
 <translation id="7502220299952823578">"ان سائٹس کو ہمیشہ فعال رکھیں" کی فہرست میں شامل کریں</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> پر ٹیب کو کاسٹ کرنا روکیں</translation>
@@ -10294,6 +10295,7 @@
 <translation id="8876307312329369159">ڈیمو سیشن میں اس ترتیب کو تبدیل نہیں کیا جا سکتا ہے۔</translation>
 <translation id="8876965259056847565">قریبی آلات تلاش کرنے کیلئے <ph name="FEATURE_NAME" /> بلوٹوتھ اسکیننگ کا استعمال کرتی ہے۔</translation>
 <translation id="8877448029301136595">[پیرینٹ ڈائرکٹری]</translation>
+<translation id="8878337214401484041">‫<ph name="TASK_TITLE" />: شروع ہو گیا</translation>
 <translation id="8879284080359814990">&amp;ٹیب کے بطور دکھائیں</translation>
 <translation id="8879921471468674457">سائن ان کی معلومات یاد رکھیں</translation>
 <translation id="8880009256105053174">‏Google کے ساتھ یہ صفحہ تلاش کریں...</translation>
@@ -10713,7 +10715,6 @@
 <translation id="9187967020623675250">کلیدیں مماثل نہیں ہیں۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
 <translation id="9192019773545828776">‏صوتی تاثرات سنیں تاکہ آپ اسکرین پر دیکھے بغیر اپنا آلہ استعمال کر سکیں۔ بریل تاثرات منسلک آلہ کے ساتھ دستیاب ہے۔ ChromeVox کو آن اور آف کرنے کے لیے Ctrl + Alt + Z استعمال کریں۔ نیویگیٹ کرنے کے لیے Search + بائیں تیر کے نشان یا دائیں تیر کے نشان کا استعمال کریں۔ منتخب کرنے کے لیے Search + Space استعمال کریں (فعال کریں)۔</translation>
 <translation id="9195969368671142407">‏جب آپ کی تنظیم آپ کے Google اکاؤنٹ میں محفوظ کرنے کے عمل کو محدود کرتی ہے تو آپ ٹیب گروپس کا اشتراک نہیں کر سکتے یا اس میں شامل نہیں ہو سکتے</translation>
-<translation id="9197456336762295195">‏اس QR کوڈ کو کیمرے کے ساتھ اس آلہ پر اسکین کریں جس میں google.com کے لیے آپ کی پاس کی ہے</translation>
 <translation id="919840898042157087">جامد حرکت</translation>
 <translation id="9199503643457729322">رازداری کی گائیڈ سے دور نیویگیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="9199695835892108985">سیریل پورٹ کی تمام اجازتیں ری سیٹ کریں؟</translation>

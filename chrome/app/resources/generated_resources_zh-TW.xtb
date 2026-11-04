@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">在新分頁中進一步瞭解新相關網站</translation>
 <translation id="1402426911829176748">正在連線至裝置</translation>
 <translation id="1405779994569073824">已停止運作。</translation>
-<translation id="1406812885827747674">這次允許</translation>
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="140723521119632973">啟用行動網路</translation>
@@ -5304,7 +5303,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{地址}=1{地址 ({SELECTED_ITEMS})}other{地址 ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">無法建立 QR 圖碼</translation>
 <translation id="5033137252639132982">不得使用動作感應器</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> 可以用 Google 密碼管理工具為你登入帳戶。<ph name="BEGIN_LINK" />瞭解 <ph name="ACTOR_NAME" /> 如何處理你的資料<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">請選擇下方的「更多詳細資料」，即可洽詢「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」瞭解詳情。</translation>
 <translation id="5037676449506322593">全選</translation>
 <translation id="5038621320029329200">信任的憑證</translation>
@@ -6420,7 +6418,6 @@
 <translation id="5922854266885514646">點選「自訂 Chrome」</translation>
 <translation id="5924047253200400718">查看說明。<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">先詢問我，再將 Microsoft 檔案複製或移動到 Google 雲端硬碟</translation>
-<translation id="5925057331573749968">使用 QR code 快速登入</translation>
 <translation id="5926936390113611560">開啟所有設定檔</translation>
 <translation id="592880897588170157">下載 PDF 檔案，而不自動在 Chrome 中開啟</translation>
 <translation id="5930567261594625340">夜空</translation>
@@ -8474,7 +8471,6 @@
 <translation id="7495149565104413027">Android 應用程式</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">你最近並未擷取 WebRTC 文字記錄。</translation>
-<translation id="7499684925421947861">要允許 <ph name="ACTOR_NAME" /> 為你登入「<ph name="DOMAIN" />」嗎？</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">新增至「一律啟用這些網站」清單</translation>
 <translation id="7502528909759062987">暫停將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
@@ -10063,6 +10059,7 @@
 <translation id="8708000541097332489">退出時清除</translation>
 <translation id="870805141700401153">Microsoft 個別程式碼簽署</translation>
 <translation id="8708671767545720562">更多資訊(&amp;M)</translation>
+<translation id="8709234440040320647">(隔離模式)</translation>
 <translation id="8709368517685334931">你可以在 Chrome 線上應用程式商店找到舊版色彩主題</translation>
 <translation id="8710414664106871428">奇幻</translation>
 <translation id="8711402221661888347">漢堡</translation>
@@ -10227,6 +10224,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> 要求你備份自己的資料，並且在 1 週內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{退出群組}other{退出群組}}</translation>
 <translation id="8836782447513334597">繼續</translation>
+<translation id="8837072669197607689">允許在隔離模式中使用</translation>
 <translation id="8837573527470979311">與下方畫面交換</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡</translation>
@@ -10517,6 +10515,7 @@
 <translation id="9043767139743235992">聯絡 Google 身心障礙支援團隊</translation>
 <translation id="9044646465488564462">無法連線至網路：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">你的閱讀清單已移至新的側邊面板。按這裡即可體驗。</translation>
+<translation id="9046240419485318563">瀏覽記憶庫</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">通關密語</translation>
 <translation id="905137631551495997">擴充功能</translation>
@@ -10703,7 +10702,6 @@
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="9192019773545828776">系統會提供互動朗讀內容，讓你不用看螢幕也能夠輕鬆使用裝置。你可透過已連結的裝置使用點字回饋功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左鍵或向右鍵即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
 <translation id="9195969368671142407">如果貴機構限制你儲存內容到 Google 帳戶，你就無法分享或加入分頁群組</translation>
-<translation id="9197456336762295195">使用存有 google.com 密碼金鑰的裝置開啟相機，掃描這個 QR code</translation>
 <translation id="919840898042157087">固定位置</translation>
 <translation id="9199503643457729322">按一下即可離開「隱私權指南」頁面。</translation>
 <translation id="9199695835892108985">要重設所有序列埠權限嗎？</translation>

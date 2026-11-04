@@ -535,7 +535,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1401216725754314428">Máis información sobre sitios relacionados nunha pestana nova</translation>
 <translation id="1402426911829176748">Conectando co teu dispositivo</translation>
 <translation id="1405779994569073824">Produciuse un fallo.</translation>
-<translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="140723521119632973">Activación móbil</translation>
@@ -5315,7 +5314,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Enderezos}=1{Enderezos ({SELECTED_ITEMS})}other{Enderezos ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Non se puido crear o código QR</translation>
 <translation id="5033137252639132982">Permiso denegado para usar sensores de movemento</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> pode usar o xestor de contrasinais de Google para iniciar sesión por ti. <ph name="BEGIN_LINK" />Máis información sobre como xestiona os teus datos <ph name="ACTOR_NAME" /><ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Selecciona a opción Máis detalles que se mostra abaixo para obter máis información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038621320029329200">Certificados de confianza</translation>
@@ -6432,7 +6430,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5922854266885514646">Fai clic en Personalizar Chrome</translation>
 <translation id="5924047253200400718">Obter axuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Preguntar antes de copiar ficheiros de Microsoft ou movelos a Google Drive</translation>
-<translation id="5925057331573749968">Iniciar sesión máis rápido cun código QR</translation>
 <translation id="5926936390113611560">Abrir todos os perfís</translation>
 <translation id="592880897588170157">Descargar ficheiros PDF en lugar de abrilos automaticamente en Chrome</translation>
 <translation id="5930567261594625340">Ceo nocturno</translation>
@@ -8486,7 +8483,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7495149565104413027">Aplicación para Android</translation>
 <translation id="7497322070873193353">IA de Google</translation>
 <translation id="7497981768003291373">Non se capturou ningún rexistro WebRTC recentemente.</translation>
-<translation id="7499684925421947861">Queres permitir que <ph name="ACTOR_NAME" /> inicie sesión por ti en <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Engadir á lista Sitios que se manteñen sempre activos</translation>
 <translation id="7502528909759062987">Pór en pausa a emisión da pestana no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
@@ -10531,6 +10527,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="9043767139743235992">Contactar co servizo de asistencia de Google para persoas con discapacidade</translation>
 <translation id="9044646465488564462">Erro ao conectar coa rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A túa lista de lectura trasladouse ao novo panel lateral. Próbaa aquí.</translation>
+<translation id="9046240419485318563">Explorar datos memorizados</translation>
 <translation id="9048745018038487540">Seleccionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>
 <translation id="905137631551495997">Extensións</translation>
@@ -10717,7 +10714,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9187967020623675250">As teclas non coinciden. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Escoita comentarios de voz para poder utilizar o dispositivo sen mirar a pantalla. Os comentarios están dispoñibles en braille cun dispositivo conectado. Para activar e desactivar ChromeVox, utiliza a combinación Control + Alt + Z. Para navegar, preme Buscar + Frecha esquerda ou Frecha dereita. Para seleccionar (activar) a función, preme Buscar + Espazo.</translation>
 <translation id="9195969368671142407">Cando a túa organización limita a función de gardado para a túa Conta de Google, non podes compartir grupos de pestanas nin unirte a eles</translation>
-<translation id="9197456336762295195">Escanea este código QR coa cámara do dispositivo que teña a túa clave de acceso para google.com</translation>
 <translation id="919840898042157087">Movemento Estático</translation>
 <translation id="9199503643457729322">Fai clic para saír da Guía de privacidade.</translation>
 <translation id="9199695835892108985">Queres restablecer os permisos de todos os portos en serie?</translation>

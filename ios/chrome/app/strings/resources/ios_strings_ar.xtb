@@ -51,6 +51,7 @@
 <translation id="1122068467107743258">العمل</translation>
 <translation id="1126696498560056882">إدارة الحسابات على هذا الجهاز</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
+<translation id="112943553659469376">‫"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">إضافة علامة التبويب الحالية</translation>
 <translation id="1136104150802877429">عرض مراجعات المنتجات</translation>
 <translation id="1142371195993008685">إيقاف إشعارات "<ph name="FEATURE_NAME" />"</translation>
@@ -102,6 +103,7 @@
 <translation id="1291506870746876680">بعد مغادرة الموقع الإلكتروني <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />، ستتم إعادة ضبط أذوناته على وضع الإيقاف.</translation>
 <translation id="1293491796138057740">‏يتم حفظ معلوماتك في "محفظة Google" ضمن حساب <ph name="USER_EMAIL" />. ويمكنك استخدامها في جميع منتجات Google لملء النماذج بشكل أسرع.</translation>
 <translation id="1293556467332435079">الملفات</translation>
+<translation id="1294703224699789269">‏تسري <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />بنود خدمة الموقع الجغرافي في كوريا<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />إشعار الخصوصية<ph name="END_LINK" />. تتم مراجعة المحادثات واستخدامها لتدريب نماذج الذكاء الاصطناعي التوليدي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يعرض معلومات خاطئة، بما فيها تلك المتعلقة بالأشخاص. وقد يكون بعض المحتوى غير مناسب للجميع. يمكنك <ph name="BEGIN_LINK" />إدارة سجلّك<ph name="END_LINK" />، بما في ذلك المعلومات المتعلقة بموقعك الجغرافي. <ph name="BEGIN_LINK" />مزيد من المعلومات حول خياراتك<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1296581780163690620">هل تريد تنزيل الملف؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">‏اكتملت مهمة "البحث باستخدام وضع AI".</translation>
@@ -386,6 +388,7 @@
 <translation id="2104436223719117661">طلبات البحث الرائجة</translation>
 <translation id="21133533946938348">تثبيت علامة التبويب</translation>
 <translation id="2117650889962717098">للحفاظ على خصوصية بيانات التصفّح، يمكنك التبديل إلى "وضع التصفّح المتخفي"</translation>
+<translation id="2119126821484134587">‏لتقديم مساعدة مخصّصة، يشارك Gemini بعض بياناتك (مثل أجزاء من محادثاتك وموقعك الجغرافي ومعلومات أخرى ذات صلة) مع خدمات Google الأخرى، مثل "خرائط Google" و"رحلات جوية من Google". وقد تستخدم الخدمات تلك المعلومات لتحسين أدائها، حتى إذا حذفْت سجلّك في "تطبيقات Gemini" لاحقًا. يمكنك الاطّلاع على مزيد من المعلومات في <ph name="BEGIN_LINK" />مركز الخصوصية على "تطبيقات Gemini"<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">الفتح في…</translation>
 <translation id="2119962645034852864">بعض الخدمات غير متاحة لحسابك</translation>
 <translation id="2120553909046681540">أوقفت مؤسستك ميزة "التصفُّح بخصوصية تامّة".</translation>
@@ -507,6 +510,7 @@
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2496626742194544812">الانتقال إلى علامة التبويب الأولى</translation>
 <translation id="2499505845365628575">يمكنك العثور على سجلّ التصفُّح بالكامل من <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">يمكنك تلقّي إشعارات بشأن تحديثات الأمان والمظاهر المخصّصة والمزيد.</translation>
 <translation id="251033673027346551">‏يُرجى الانتقال إلى "محفظة Google" لإدارة <ph name="BEGIN_LINK" />الإعدادات المفضَّلة للبيانات والخصوصية<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">لديك <ph name="NUMBER_OF_PASSWORDS" /> كلمة مرور محتمَل تعرّضها للاختراق، وقد تسبِّب مشاكل أمنية.</translation>
 <translation id="2512709994717613803">المستوى <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +674,7 @@
 <translation id="3038136505713492417">يجب إثبات هويتك لاستخدام مفاتيح المرور على هذا الجهاز</translation>
 <translation id="3039671569659952257">حذف مجلد</translation>
 <translation id="3041835740069544003">‏بإمكان متصفِّح Chrome الآن رصد المزيد من النماذج وملؤها بفضل ميزة "فهم النماذج بشكل أفضل". لإجراء ذلك، يمكن معالجة محتوى الصفحات وعناوين URL الخاصة بها في مساحة خاصّة في السحابة الإلكترونية. ويمكنك إدارة ذلك في الإعدادات.</translation>
+<translation id="3042118633250374317">‏تستخدم Google سجلّك لتوفير خدماتها وحماية نفسها ومستخدميها والجمهور، وتطوير خدماتها وتحسينها بمساعدة فريق من المراجعين. عليك عدم إدخال أي معلومات لديك مانع في أن تتم مراجعتها أو استخدامها.</translation>
 <translation id="3050988301648974170">افتح ميزة "التحقّق من كلمات المرور"</translation>
 <translation id="3053332585453689122">‏يُرسِل هذا الوضع إلى "التصفّح الآمن من Google" عناوين URL التي تزورها وعيّنة صغيرة من محتوى الصفحة وعمليات التنزيل ونشاط الإضافات ومعلومات النظام للتحقّق ممّا إذا كانت ضارة.</translation>
 <translation id="3055102495753300780">تخزين المعلومات</translation>
@@ -1113,6 +1118,7 @@
 <translation id="4488754974567924717">إذا كان من المحتمل تعرّض كلمات مرورك للاختراق، سنُعلمك بذلك.</translation>
 <translation id="4489536976005181779">{count,plural, =1{تمت إضافة الصفحة إلى قائمة القراءة في حسابك، {email}.}zero{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}two{تمت إضافة الصفحتَين إلى قائمة القراءة في حسابك، {email}.}few{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}many{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}other{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}}</translation>
 <translation id="4493604894403585654">‏لقد سجّلت الدخول باستخدام <ph name="USER_EMAIL" />. يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
+<translation id="4495251723189610737">‏سيتم حفظ محادثاتك في سجلّ Gemini الذي يتضمّن تسجيلاتك الصوتية وفيديوهاتك وتسجيلات مشاركة شاشتك في Gemini Live، والمحتوى الذي شاركته مع Gemini (مثل الطلبات و<ph name="BEGIN_LINK" />الملفات التي حمّلتها<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />لقطات الشاشة<ph name="END_LINK" />)، وردود Gemini ومهامه واستدعاءاته للأدوات، وملاحظاتك، ومعلومات من المواقع الإلكترونية التي زرتها باستخدام Gemini، وبيانات استخدام المنتجات، والموقع الجغرافي العام لجهازك، وعنوان IP، وعنوانَي المنزل أو العمل في حسابك على Google. ويمكن أن يتضمّن أيضًا بيانات من التطبيقات التي اخترت ربطها بـ Gemini.</translation>
 <translation id="4502423230170890588">إزالة من هذا الجهاز</translation>
 <translation id="4508486880075514067">التوسيع إلى وضع "ملء الشاشة"</translation>
 <translation id="4508750114462689118">إغلاق عرض ترويجي لتسجيل الدخول</translation>
@@ -1201,6 +1207,7 @@
 <translation id="4759238208242260848">عمليات التنزيل</translation>
 <translation id="4764612367328936189">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">يساعدك رقم التعريف الشخصي في الوصول إلى مفاتيح المرور المحفوظة على أي جهاز</translation>
+<translation id="476946043193006313">الذكاء الاصطناعي التوليدي يتعلّم من أنشطتك</translation>
 <translation id="4782952780741793211">رمز التأكيد:</translation>
 <translation id="4787847736989526091">‫<ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">هل تريد فتح الرابط في وضع "التصفُّح المتخفي"؟</translation>
@@ -1217,6 +1224,7 @@
 <translation id="4808744395915275922">التحديثات</translation>
 <translation id="4813345808229079766">اتصال</translation>
 <translation id="4821595350501541683">تم إغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
+<translation id="4821645169621230110">كيف يُستخدم سجلّك؟</translation>
 <translation id="4823322556950229674">يمكنك الضغط مع الاستمرار لنقل شريط العناوين وزر الرجوع إلى أسفل الشاشة</translation>
 <translation id="4824480232751123840">الصوت</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} وعلامة تبويب واحدة إضافية}two{{domain} وعلامتا تبويب ({count}) إضافيتان}few{{domain} و{count} علامات تبويب إضافية}many{{domain} و{count} علامة تبويب إضافية}other{{domain} و{count} علامة تبويب إضافية}}</translation>
@@ -1244,6 +1252,7 @@
 <translation id="4877597489778380935">تذكيري لاحقًا</translation>
 <translation id="4881695831933465202">فتح</translation>
 <translation id="4883766694719903356">شبكة علامات التبويب في وضع التصفّح المتخفي</translation>
+<translation id="4884205780547482830">الذكاء الاصطناعي التوليدي يتعلّم من بياناتك</translation>
 <translation id="4884937942297374058">"الحماية المحسَّنة" غير مفعَّلة</translation>
 <translation id="4887391901725877182">الترجمة والشرح</translation>
 <translation id="488785315393301722">عرض التفاصيل</translation>
@@ -1721,6 +1730,7 @@
 <translation id="6347953390226388422">{count,plural, =1{‏سيتم حذف هذا العنوان من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}zero{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}two{‏سيتم حذف هذين العنوانَين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}few{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}many{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}other{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}}</translation>
 <translation id="634878792104344809">مزامنة كلمات المرور والسجلّ وغير ذلك على جميع أجهزتك</translation>
 <translation id="6350745006329795504">إدارة الأجهزة</translation>
+<translation id="6351000590398820964">‏‫Gemini هو نموذج ذكاء اصطناعي وقد يعرض معلومات خاطئة، بما فيها تلك المتعلقة بالأشخاص. وقد يكون بعض المحتوى غير مناسب للجميع. تتم مراجعة المحادثات واستخدامها لتدريب نماذج الذكاء الاصطناعي التوليدي. <ph name="BEGIN_LINK" />إليك الخيارات المتاحة<ph name="END_LINK" />. تسري <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />إشعار الخصوصية<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">فتح "أداة التبديل بين علامات التبويب"</translation>
 <translation id="63519665078626091">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPad من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6354695695659930684">جارٍ ملء كلمة المرور</translation>
@@ -1888,6 +1898,7 @@
 <translation id="6830728435402077660">غير آمن</translation>
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
+<translation id="6843744036364481304">ما الذي يُحفَظ في سجلّ المحادثات؟</translation>
 <translation id="6844773122575789617">‏تفعيل "وضع AI"</translation>
 <translation id="6851516051005285358">طلب موقع إلكتروني متوافق مع أجهزة الكمبيوتر المكتبي</translation>
 <translation id="6857446173140146664">حذف الخلفية</translation>
@@ -2011,6 +2022,7 @@
 <translation id="7223134495231529579">الحفظ في "عمليات التنزيل"</translation>
 <translation id="722339453342442311">التحقق الآن</translation>
 <translation id="7227235818314667565">إدارة المشاركة</translation>
+<translation id="7232376892719594461">‏لن تتم مراجعة محادثاتك مع Gemini أو <ph name="BEGIN_LINK" />بياناتك على Google Workspace<ph name="END_LINK" /> ولن تُستخدَم لتدريب نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="7233006041370588369">اختَر كلمة مرور لاستخدامها.</translation>
 <translation id="7238074332967840767">الأمان</translation>
 <translation id="723874023660911012">التبديل بين الملفات الشخصية</translation>
@@ -2523,7 +2535,9 @@
 <translation id="8746155870861185046">مشاركة النص المميّز</translation>
 <translation id="8748678031495824833">فتح أدوات الذكاء الاصطناعي على الصفحة</translation>
 <translation id="8750037785291841318">ستظهر لك علامات التبويب هنا</translation>
+<translation id="8751126814549746156">يتم حذف سجلّك تلقائيًا بعد 18 شهرًا. ويمكنك تغيير هذه الفترة الزمنية في "الإعدادات". أما محادثاتك التي راجعها مقدمو خدماتك، فسيتم إلغاء ربطها بحسابك والاحتفاظ بها لمدة تصل إلى 3 سنوات. يمكنك <ph name="BEGIN_LINK" />إيقاف<ph name="END_LINK" /> إعدادات "السجلّ" في أي وقت.</translation>
 <translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>
+<translation id="8762190205387442931">تتم مراجعة المحادثات واستخدامها لتدريب نماذج الذكاء الاصطناعي التوليدي. يمكنك <ph name="BEGIN_LINK" />إدارة سجلّك<ph name="END_LINK" />، بما في ذلك المعلومات المتعلقة بموقعك الجغرافي. <ph name="BEGIN_LINK" />مزيد من المعلومات حول خياراتك<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">الانتقال إلى علامة التبويب الأخيرة</translation>
 <translation id="8766790350274092814">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" />. لن يتم حذف حساباتك.</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>
@@ -2568,6 +2582,7 @@
 <translation id="8893208530912252670">الفيديوهات</translation>
 <translation id="890009681345348416">تم ملء أكثر من 40 كلمة مرور تلقائيًا</translation>
 <translation id="8900845556227858314">تطبيق المتصفّح</translation>
+<translation id="8903042868629070803">‏إذا كان عمرك 18 عامًا أو أكثر، تستعين Google أيضًا بسجلّك <ph name="BEGIN_LINK" />لتدريب نماذج الذكاء الاصطناعي التوليدي<ph name="END_LINK" />. يمكنك في أي وقت <ph name="BEGIN_LINK" />إيقاف هذا الإعداد<ph name="END_LINK" /> للمحادثات القادمة.</translation>
 <translation id="890565330728586731">رجوع</translation>
 <translation id="8907722425137681851">البحث في الصفحة…</translation>
 <translation id="8909135823018751308">مشاركة…</translation>

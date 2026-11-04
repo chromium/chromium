@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Даведацца больш пра звязаныя сайты ў новай укладцы</translation>
 <translation id="1402426911829176748">Ідзе падключэнне да вашай прылады</translation>
 <translation id="1405779994569073824">Збой.</translation>
-<translation id="1406812885827747674">Дазволіць толькі ў гэты раз</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="140723521119632973">Актывацыя SIM-карты ў мабільнай сетцы</translation>
@@ -5309,7 +5308,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адрасы}=1{Адрасы ({SELECTED_ITEMS})}one{Адрасы ({SELECTED_ITEMS})}few{Адрасы ({SELECTED_ITEMS})}many{Адрасы ({SELECTED_ITEMS})}other{Адрасы ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
 <translation id="5033137252639132982">Не дазволена выкарыстоўваць датчыкі руху</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> можа выконваць уваход ад вашага імя з дапамогай Менеджара пароляў Google. <ph name="BEGIN_LINK" />Даведацца, як праграма "<ph name="ACTOR_NAME" />" апрацоўвае вашы даныя<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Каб атрымаць больш звестак пра памылку ад сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", націсніце на кнопку "Дадатковая інфармацыя" ўнізе.</translation>
 <translation id="5037676449506322593">Выбраць усё</translation>
 <translation id="5038621320029329200">Давераныя сертыфікаты</translation>
@@ -6427,7 +6425,6 @@
 <translation id="5922854266885514646">Націсніце "Наладзіць Chrome"</translation>
 <translation id="5924047253200400718">Атрымаць даведку <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Запытваць перад капіраваннем або перамяшчэннем файлаў Microsoft на Google Дыск</translation>
-<translation id="5925057331573749968">Уваходзьце хутчэй з дапамогай QR-кода</translation>
 <translation id="5926936390113611560">Адкрыць усе профілі</translation>
 <translation id="592880897588170157">Спампоўваць файлы PDF замест аўтаматычнага адкрыцця ў Chrome</translation>
 <translation id="5930567261594625340">Начное неба</translation>
@@ -8488,7 +8485,6 @@
 <translation id="7495149565104413027">Праграма для Android</translation>
 <translation id="7497322070873193353">AI ад Google</translation>
 <translation id="7497981768003291373">У вас няма апошніх тэкставых журналаў WebRTC.</translation>
-<translation id="7499684925421947861">Дазволіць праграме "<ph name="ACTOR_NAME" />" выконваць уваход у сэрвіс "<ph name="DOMAIN" />" ад вашага імя?</translation>
 <translation id="7501957181231305652">або</translation>
 <translation id="7502220299952823578">Дадаць у спіс сайтаў, укладкі з якімі заўсёды павінны заставацца актыўнымі</translation>
 <translation id="7502528909759062987">Прыпыніць трансляцыю ўкладкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
@@ -10077,6 +10073,7 @@
 <translation id="8708000541097332489">Ачысціць пасля выхаду</translation>
 <translation id="870805141700401153">Індывідуальнае падпісванне кода ў Microsoft</translation>
 <translation id="8708671767545720562">&amp;Дадатковая інфармацыя</translation>
+<translation id="8709234440040320647">(ізаляваны рэжым)</translation>
 <translation id="8709368517685334931">Больш раннія тэмы можна знайсці ў Вэб-краме Chrome</translation>
 <translation id="8710414664106871428">Фэнтэзі</translation>
 <translation id="8711402221661888347">Салёныя агуркі</translation>
@@ -10241,6 +10238,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> патрабуе, каб вы стварылі рэзервовую копію сваіх даных і вярнулі прыладу <ph name="DEVICE_TYPE" /> на працягу 1 тыдня. <ph name="LINK_BEGIN" />Больш падрабязна<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Выйсці з групы}one{Выйсці з груп}few{Выйсці з груп}many{Выйсці з груп}other{Выйсці з груп}}</translation>
 <translation id="8836782447513334597">працягнуць</translation>
+<translation id="8837072669197607689">Дазволіць у ізаляваным рэжыме</translation>
 <translation id="8837573527470979311">Памяняць месцамі з ніжнім экранам</translation>
 <translation id="8838601485495657486">Непразрыста</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
@@ -10715,7 +10713,6 @@
 <translation id="9187967020623675250">Клавішы не супадаюць Каб <ph name="RESPONSE" />, націсніце любую клавішу.</translation>
 <translation id="9192019773545828776">Выкарыстоўвайце галасавую зваротную сувязь, дзякуючы якой можна карыстацца прыладай не гледзячы на экран. Каб тэкст паказваўся з дапамогай шрыфту Брайля, неабходна падключыць спецыяльную прыладу. Каб уключыць або выключыць ChromeVox, выкарыстоўвайце спалучэнне Ctrl + Alt + Z. Для навігацыі націскайце Пошук + стрэлку ўлева або ўправа. Каб выбраць (актываваць) аб’ект, націсніце Пошук + Прабел.</translation>
 <translation id="9195969368671142407">Калі захоўванне даных ва Уліковым запісе Google абмежавана арганізацыяй, вы не можаце абагульваць групы ўкладак і далучацца да іх</translation>
-<translation id="9197456336762295195">Адсканіруйце гэты QR-код з дапамогай камеры прылады, на якой ёсць ключ доступу для google.com</translation>
 <translation id="919840898042157087">Статычны рух</translation>
 <translation id="9199503643457729322">Націснуўшы на яе, вы пакінеце Дапаможнік па прыватнасці.</translation>
 <translation id="9199695835892108985">Скінуць усе дазволы паслядоўнага порта?</translation>

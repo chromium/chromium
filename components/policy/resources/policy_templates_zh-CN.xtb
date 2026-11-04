@@ -3207,6 +3207,15 @@ PAC 样式的字符串：
 如果此政策已停用，即使该选项设为 true，SharedWorker 也无法拥有更长的生命周期。
 
 此政策只是暂时性措施，日后会被移除。</translation>
+<translation id="2974937054630672445">此政策旨在控制浏览器的登录行为。通过设置此政策，您可以指定用户能否使用其账号登录 <ph name="PRODUCT_NAME" /> 并使用账号相关服务，如 <ph name="PRODUCT_NAME" /> 同步。
+
+      如果此政策设为“禁止登录浏览器”，用户便无法登录该浏览器，也无法使用账号相关服务。在这种情况下，<ph name="PRODUCT_NAME" /> 同步等浏览器级功能将无法使用。在 <ph name="IOS_NAME" /> 上，如果用户已登录，而该政策被设为“禁止登录浏览器”，用户将会立即退出登录。在其他平台上，用户将会在下次运行 <ph name="PRODUCT_NAME" /> 时退出登录。在所有平台上，用户的本地个人资料数据（如书签、密码等）会得到保留并且依然可用。用户仍能登录并使用 Gmail 等 Google Web 服务。
+
+      如果此政策设为“允许登录浏览器”，用户将可以登录浏览器。在除 <ph name="IOS_NAME" /> 之外的所有其他平台上，用户会在登录 Gmail 等 Google Web 服务时自动登录浏览器。登录浏览器意味着浏览器将会保存用户的账号信息，但并不意味着 <ph name="PRODUCT_NAME" /> 同步功能会默认开启；用户必须另行选择使用此功能。启用此政策会阻止用户关闭用于允许登录浏览器的设置。若要控制 <ph name="PRODUCT_NAME" /> 同步功能的可用性，请使用 <ph name="SYNC_POLICY_NAME" /> 政策。
+
+      如果此政策设为“强制登录浏览器”，系统将会向用户显示账号选择对话框，而且用户必须选择并登录某个账号才能使用浏览器。这样可确保针对受管理的账号采用并强制执行与该账号关联的政策。在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，<ph name="GUEST_MODE_POLICY_NAME" /> 的默认值将会设为“已停用”，并且启用此政策后，现有的未登录个人资料都会处于锁定且不可访问的状态。如需了解详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/?p=force_browser_signin。在 <ph name="ANDROID_NAME" /> 上，从版本 153 开始支持此选项；在更早的版本上，系统将改为采用“允许登录浏览器”选项。
+
+      如果此政策未设置，用户可以自行决定是否要在 <ph name="PRODUCT_NAME" /> 设置中启用浏览器登录选项并酌情使用登录功能。</translation>
 <translation id="2976033779241323433">基于默认系统启发法启用触摸虚拟键盘</translation>
 <translation id="2976429807269247880">旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
 <translation id="2979696534869541158">强制使用旧实现</translation>

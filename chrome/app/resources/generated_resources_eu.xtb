@@ -535,7 +535,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1401216725754314428">Lortu erlazionatutako webguneei buruzko informazio gehiago beste fitxa batean</translation>
 <translation id="1402426911829176748">Gailura konektatzen</translation>
 <translation id="1405779994569073824">Huts egin du.</translation>
-<translation id="1406812885827747674">Eman baimena bisita honetan</translation>
 <translation id="1407069428457324124">Gai iluna</translation>
 <translation id="1407135791313364759">Ireki guztiak</translation>
 <translation id="140723521119632973">Sare mugikorretarako SIM txartelak aktibatzea</translation>
@@ -5308,7 +5307,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Helbideak}=1{Helbideak ({SELECTED_ITEMS})}other{Helbideak ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Ezin da sortu QR kodea</translation>
 <translation id="5033137252639132982">Ezin dituzte erabili mugimendu-sentsoreak</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> zerbitzuak Google-ren Pasahitz-kudeatzailea erabil dezake zure izenean saioa hasteko. <ph name="BEGIN_LINK" />Lortu <ph name="ACTOR_NAME" /> zerbitzuak zure datuak kudeatzeko duen moduari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearengandik informazio gehiago lortzeko, aukeratu beheko "Xehetasun gehiago" aukera.</translation>
 <translation id="5037676449506322593">Hautatu guztiak</translation>
 <translation id="5038621320029329200">Ziurtagiri fidagarriak</translation>
@@ -6424,7 +6422,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5922854266885514646">Sakatu "Pertsonalizatu Chrome"</translation>
 <translation id="5924047253200400718">Lortu laguntza<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Galdetu Microsoft-eko fitxategiak kopiatu edo Google Drive-ra eraman aurretik</translation>
-<translation id="5925057331573749968">Hasi saioa bizkorrago QR kode batekin</translation>
 <translation id="5926936390113611560">Ireki profil guztiak</translation>
 <translation id="592880897588170157">Chrome-n automatikoki ireki beharrean, deskargatu PDF fitxategiak</translation>
 <translation id="5930567261594625340">Gaueko zerua</translation>
@@ -8477,7 +8474,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7495149565104413027">Android-erako aplikazioa</translation>
 <translation id="7497322070873193353">Google-ren AA</translation>
 <translation id="7497981768003291373">Ez duzu duela gutxi hartutako WebRTC testu-erregistrorik.</translation>
-<translation id="7499684925421947861"><ph name="DOMAIN" /> domeinuan zure izenean saioa hasteko baimena eman nahi diozu <ph name="ACTOR_NAME" /> zerbitzuari?</translation>
 <translation id="7501957181231305652">edo</translation>
 <translation id="7502220299952823578">Gehitu mantendu beti webgune hauek aktibo zerrendan</translation>
 <translation id="7502528909759062987">Pausatu fitxa <ph name="DEVICE_NAME" /> gailura igortzeko prozesua</translation>
@@ -10707,7 +10703,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9187967020623675250">Teklak ez datoz bat. Sakatu edozein tekla <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Entzun ahozko argibideak gailua pantailari begiratu gabe erabili ahal izateko. Braillea erabilita ematen diren argibideak konektatutako gailuekin erabilgarri daude. Erabili Ktrl + Alt + Z ChromeVox aktibatu eta desaktibatzeko. Nabigatzeko, berriz, erabili Bilaketa + ezkerrera edo eskuinera egiteko gezi-tekla. Azkenik, hautatzeko (aktibatzeko), erabili Bilaketa + zuriune-barra.</translation>
 <translation id="9195969368671142407">Erakundeak Google-ko kontuan gordetzeko aukera mugatzen dizunean, ezin dituzu partekatu fitxa taldeak, ezta haietan sartu ere</translation>
-<translation id="9197456336762295195">Eskaneatu QR kodea google.com webgunerako sarbide-gakoa duen gailuaren kamerarekin</translation>
 <translation id="919840898042157087">Mugimendu estatikoa</translation>
 <translation id="9199503643457729322">Egin klik hemen pribatutasun-gidatik irteteko.</translation>
 <translation id="9199695835892108985">Serieko ataken baimen guztiak berrezarri nahi dituzu?</translation>

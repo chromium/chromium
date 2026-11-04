@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Холбоотой сайтуудын талаарх нэмэлт мэдээллийг шинэ табд авах</translation>
 <translation id="1402426911829176748">Таны төхөөрөмжид холбогдож байна</translation>
 <translation id="1405779994569073824">Эвдэрсэн.</translation>
-<translation id="1406812885827747674">Энэ удаад зөвшөөрөх</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="140723521119632973">Үүрэн сүлжээний идэвхжүүлэлт</translation>
@@ -5323,7 +5322,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Хаяг}=1{Хаяг ({SELECTED_ITEMS})}other{Хаяг ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR код үүсгэх боломжгүй байна</translation>
 <translation id="5033137252639132982">Хөдөлгөөн мэдрэгч ашиглахыг зөвшөөрөөгүй</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> танд нэвтэрч өгөхийн тулд Google Нууц үгний менежерийг ашиглаж болно. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> таны өгөгдлийг хэрхэн зохицуулдгийг мэдэж авах<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-с нэмэлт мэдээлэл авахын тулд доорх "Дэлгэрэнгүй мэдээлэл"-ийг сонгоно уу.</translation>
 <translation id="5037676449506322593">Бүгдийг сонгох</translation>
 <translation id="5038621320029329200">Итгэмжлэгдсэн сертификат</translation>
@@ -6442,7 +6440,6 @@
 <translation id="5922854266885514646">"Chrome-г тусгайлан өөрчлөх" дээр товшино уу</translation>
 <translation id="5924047253200400718">Тусламж авах<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft файлуудыг Google Драйв руу хуулах эсвэл зөөхөөсөө өмнө асуух</translation>
-<translation id="5925057331573749968">QR кодоор илүү хурдан нэвтрээрэй</translation>
 <translation id="5926936390113611560">Бүх профайлыг нээх</translation>
 <translation id="592880897588170157">PDF файлыг автоматаар Chrome-д нээхийн оронд татна уу</translation>
 <translation id="5930567261594625340">Шөнийн тэнгэр</translation>
@@ -8497,7 +8494,6 @@
 <translation id="7495149565104413027">Android Апп</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Танд саяхан авсан WebRTC текст лог алга.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" />-д таны өмнөөс <ph name="DOMAIN" />-д нэвтрэхийг зөвшөөрөх үү?</translation>
 <translation id="7501957181231305652">эсвэл</translation>
 <translation id="7502220299952823578">"Эдгээр сайтыг үргэлж идэвхтэй байлгах" жагсаалтад нэмнэ үү</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />-д таб дамжуулахыг түр зогсоох</translation>
@@ -10726,7 +10722,6 @@
 <translation id="9187967020623675250">Товчнууд таарахгүй байна. <ph name="RESPONSE" />-н тулд дурын товчийг дарна уу.</translation>
 <translation id="9192019773545828776">Яриагаар өгөх саналыг сонссоноор та төхөөрөмжөө дэлгэц рүү нь харалгүйгээр ашиглах боломжтой. Холбогдсон төхөөрөмжөөр брайл санал хүсэлт өгөх боломжтой. ChromeVox-г асаах болон унтраахын тулд Ctrl + Alt + Z-г ашиглана уу. Шилжихийн тулд Search + Зүүн сум эсвэл баруун сумыг ашиглана уу. Сонгох (Идэвхжүүлэх) бол Search + Space-г ашиглана уу.</translation>
 <translation id="9195969368671142407">Танай байгууллага таны Google Бүртгэлд хадгалахыг хязгаарлахад та табын бүлэг хуваалцах, нэгдэх боломжгүй</translation>
-<translation id="9197456336762295195">Таны google.com-н нэвтрэх түлхүүртэй төхөөрөмж дээр энэ QR кодыг камераар скан хийнэ үү</translation>
 <translation id="919840898042157087">Статик хөдөлгөөн</translation>
 <translation id="9199503643457729322">Нууцлалын хөтчөөс шилжиж явахын тулд товшино уу.</translation>
 <translation id="9199695835892108985">Цуваа портын бүх зөвшөөрлийг шинэчлэх үү?</translation>

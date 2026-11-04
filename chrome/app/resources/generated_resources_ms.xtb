@@ -536,7 +536,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1401216725754314428">Ketahui lebih lanjut tentang laman berkaitan dalam tab baharu</translation>
 <translation id="1402426911829176748">Menyambung kepada peranti anda</translation>
 <translation id="1405779994569073824">Ranap.</translation>
-<translation id="1406812885827747674">Benarkan kali ini sahaja</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="140723521119632973">Pengaktifan Selular</translation>
@@ -1479,6 +1478,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2131548114076786395">Untuk berkongsi, menyertai dan bekerjasama dalam kumpulan tab, sahkan identiti anda</translation>
 <translation id="2131863825246488194">Lebih selamat dalam talian</translation>
 <translation id="2133857665503360653">Cuba semula <ph name="FILE_NAME" /></translation>
+<translation id="2134044938347520790">Kongsi masalah mod membaca atau permintaan ciri</translation>
 <translation id="2134905185275441536">CA Sistem</translation>
 <translation id="2135420518376202233">Nama Peranti Bluetooth</translation>
 <translation id="21354425047973905">Sembunyikan PIN</translation>
@@ -4297,6 +4297,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4250596587221570622">Pilih tema untuk profil anda</translation>
 <translation id="4250680216510889253">Tidak</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> akan dapat melihat dan membuat salinan fail sendiri dalam <ph name="FOLDERNAME" /></translation>
+<translation id="4251316952800826018">Pengepala Pilihan Fokus</translation>
 <translation id="4252899949534773101">Bluetooth dilumpuhkan</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Kandungan tab dikongsi</translation>
 <translation id="4253168017788158739">Nota</translation>
@@ -5327,7 +5328,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Alamat}=1{Alamat ({SELECTED_ITEMS})}other{Alamat ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kod QR</translation>
 <translation id="5033137252639132982">Tidak dibenarkan untuk menggunakan penderia gerakan</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> boleh menggunakan Google Password Manager untuk log masuk bagi pihak anda. <ph name="BEGIN_LINK" />Ketahui cara <ph name="ACTOR_NAME" /> mengendalikan data anda<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Pilih "Lagi butiran" di bawah untuk mendapatkan maklumat lanjut daripada <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Pilih Semua</translation>
 <translation id="5038621320029329200">Sijil yang Dipercayai</translation>
@@ -6447,7 +6447,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5922854266885514646">Klik "Sesuaikan Chrome"</translation>
 <translation id="5924047253200400718">Dapatkan bantuan<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Tanya sebelum menyalin atau menggerakkan fail Microsoft kepada Google Drive</translation>
-<translation id="5925057331573749968">Log masuk dengan lebih pantas menggunakan kod QR</translation>
 <translation id="5926936390113611560">Buka semua profil</translation>
 <translation id="592880897588170157">Muat turun fail PDF dan bukannya membuka fail dalam Chrome secara automatik</translation>
 <translation id="5930567261594625340">Langit malam</translation>
@@ -6785,6 +6784,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6185151644843671709">Kunci laluan disimpan dan PIN dibuat</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda. Tindakan ini juga akan membersihkan sebarang pendua.}other{{PASSWORD_COUNT} kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda. Tindakan ini juga akan membersihkan sebarang pendua.}}</translation>
 <translation id="6186177419203903310">Tindakan ini akan mendayakan pemberitahuan untuk semua persisian USB baharu merentas sistem. Adakah anda pasti mahu meneruskan tindakan?</translation>
+<translation id="6187116431221566074">Memfokuskan <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">Gunakan menu paparan terpisah untuk beralih antara reka letak bersebelahan dengan reka letak bertindan.</translation>
 <translation id="6190953336330058278">Apl Hab Telefon</translation>
 <translation id="6192333916571137726">Muat turun fail</translation>
@@ -8505,7 +8505,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7495149565104413027">Apl Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Anda tiada log teks WebRTC yang dirakam baru-baru ini.</translation>
-<translation id="7499684925421947861">Benarkan <ph name="ACTOR_NAME" /> log masuk ke <ph name="DOMAIN" /> bagi pihak anda?</translation>
 <translation id="7501957181231305652">atau</translation>
 <translation id="7502220299952823578">Tambahkan pada senarai "sentiasa pastikan laman ini aktif"</translation>
 <translation id="7502528909759062987">Jeda penghantaran tab pada <ph name="DEVICE_NAME" /></translation>
@@ -8642,6 +8641,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7612655942094160088">Dayakan ciri telefon yang disambungkan.</translation>
 <translation id="7612989789287281429">Anda sedang log masuk…</translation>
 <translation id="76131528886466333">Pasang sambungan Google Search untuk Microsoft Edge</translation>
+<translation id="7613308212159091597">Memfokuskan <ph name="GROUP_LABEL" /></translation>
 <translation id="7615365294369022248">Ralat berlaku semasa menambah akaun</translation>
 <translation id="7616964248951412133">Laman menggunakan ciri ini untuk menangkap dan menggunakan input tetikus anda, seperti untuk permainan atau apl desktop jauh</translation>
 <translation id="7617263010641145920">Hidupkan Gedung Play</translation>
@@ -10739,7 +10739,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9187967020623675250">Kekunci tidak sepadan. Tekan mana-mana kekunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Dengar maklum balas yang dituturkan supaya anda boleh menggunakan peranti anda tanpa melihat skrin. Maklum balas Braille tersedia dengan peranti tersambung. Gunakan Ctrl + Alt + Z untuk menghidupkan dan mematikan ChromeVox. Gunakan Cari + Anak panah ke kiri atau Anak panah ke kanan untuk menavigasi. Gunakan Cari + Ruang untuk memilih (aktifkan).</translation>
 <translation id="9195969368671142407">Apabila organisasi anda mengehadkan penyimpanan kepada Google Account anda, anda tidak boleh berkongsi atau menyertai kumpulan tab</translation>
-<translation id="9197456336762295195">Imbas kod QR ini dengan kamera pada peranti yang mengandungi kunci laluan anda untuk google.com</translation>
 <translation id="919840898042157087">Pergerakan statik</translation>
 <translation id="9199503643457729322">Klik untuk menavigasi keluar daripada Panduan Privasi.</translation>
 <translation id="9199695835892108985">Tetapkan semula semua kebenaran Port siri?</translation>

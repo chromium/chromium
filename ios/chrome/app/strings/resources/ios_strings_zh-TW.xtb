@@ -2094,6 +2094,7 @@
 <translation id="7486006552035434095">讓你的裝置保持同步</translation>
 <translation id="7491131399623468277">前往「設定」…</translation>
 <translation id="7491161827858509164">如要查看先前下載的檔案，請開啟「<ph name="BEGIN_LINK" />檔案<ph name="END_LINK" />」</translation>
+<translation id="7496554840683586365">這個網站正在嘗試開啟 App Store。這會使你退出無痕模式。</translation>
 <translation id="7498234416455752244">繼續編輯</translation>
 <translation id="7500244509706269886">自動填入表單</translation>
 <translation id="750493650310597496">已選取 0 個項目</translation>
@@ -2168,7 +2169,7 @@
 <translation id="7719038820139380048">登入即可接收依個人興趣建議的內容。</translation>
 <translation id="7720901330179380635">使用「<ph name="SEARCH_ENGINE" />」進行搜尋</translation>
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
-<translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和歷史記錄。</translation>
+<translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步分頁和歷史記錄。</translation>
 <translation id="7730020510075123961">否，合併資料</translation>
 <translation id="7730937523779541003">已套用專注模式新分頁</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。僅在這部裝置上。</translation>

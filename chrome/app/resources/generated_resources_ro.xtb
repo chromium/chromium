@@ -521,6 +521,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1384849755549338773">Oferă Google Traducere pentru site-uri în alte limbi</translation>
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1386966479075994683">Extinde filele</translation>
+<translation id="1387227841274754059">Întreabă despre ecran cu Google Lens</translation>
 <translation id="1388253969141979417">Au permisiunea de a folosi microfonul</translation>
 <translation id="139013308650923562">Au permisiunea de a folosi fonturile instalate pe dispozitiv</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> a fost preinstalată pe <ph name="DEVICE_TYPE" /></translation>
@@ -535,7 +536,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1401216725754314428">Află mai multe despre site-urile conexe într-o filă nouă</translation>
 <translation id="1402426911829176748">Se conectează la dispozitiv</translation>
 <translation id="1405779994569073824">S-a blocat.</translation>
-<translation id="1406812885827747674">Permite de această dată</translation>
 <translation id="1407069428457324124">Temă întunecată</translation>
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="140723521119632973">Activare celulară</translation>
@@ -4747,6 +4747,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4610637590575890427">Ai vrut să accesezi <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Când butonul stâng al mouse-ului este selectat, folosește „/” pentru a da dublu clic</translation>
 <translation id="4613271546271159013">O extensie a schimbat pagina afișată când deschideți o filă nouă.</translation>
+<translation id="4616024182698834938">Trage și plasează fișiere aici</translation>
 <translation id="461613135510474570">Propoziție</translation>
 <translation id="461661862154729886">Sursa de energie</translation>
 <translation id="4617001782309103936">Prea scurt</translation>
@@ -5310,7 +5311,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adrese}=1{Adrese ({SELECTED_ITEMS})}few{Adrese ({SELECTED_ITEMS})}other{Adrese ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Nu s-a putut crea codul QR</translation>
 <translation id="5033137252639132982">Nu au permisiunea de a folosi senzorii de mișcare</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> poate folosi Managerul de parole Google pentru a te conecta. <ph name="BEGIN_LINK" />Află cum îți gestionează <ph name="ACTOR_NAME" /> datele<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Alege Mai multe detalii de mai jos pentru a afla mai multe informații de la <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selectează tot</translation>
 <translation id="5038621320029329200">Certificate de încredere</translation>
@@ -5576,6 +5576,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5230190638672215545">Introdu „uow” pentru a obține „ươ”</translation>
 <translation id="5230516054153933099">Fereastră</translation>
 <translation id="5231255476752743708">Chrome are nevoie de ajutor pentru a schimba parola</translation>
+<translation id="5232607425694431024">Întreabă despre un fișier sau o imagine</translation>
 <translation id="5232714764496316200">Primește ajutor la teme folosind Google Lens</translation>
 <translation id="5233231016133573565">ID proces</translation>
 <translation id="5233638681132016545">Filă nouă</translation>
@@ -6428,7 +6429,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5922854266885514646">Dă clic pe Personalizează Chrome</translation>
 <translation id="5924047253200400718">Obține ajutor <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Întreabă înainte de a copia sau a muta fișiere Microsoft în Google Drive</translation>
-<translation id="5925057331573749968">Conectează-te mai rapid cu un cod QR</translation>
 <translation id="5926936390113611560">Deschide toate profilurile</translation>
 <translation id="592880897588170157">Descarcă fișierele PDF în loc să le deschizi automat în Chrome</translation>
 <translation id="5930567261594625340">Cer nocturn</translation>
@@ -7725,6 +7725,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6913051485529944333">Nu vei mai vedea Google Calendar în această pagină</translation>
 <translation id="6914812290245989348">Nu vezi niciun avertisment înainte de a accesa site-uri nesigure</translation>
 <translation id="6916590542764765824">Gestionează extensiile</translation>
+<translation id="6916630302999048499">Activitate Gemini în curs</translation>
 <translation id="6916676294509106572">Calendarul Outlook a fost ascuns</translation>
 <translation id="6916818963747321523">Extinde tot</translation>
 <translation id="6917873303492266709">Pentru a trimite, a te alătura și a colabora la grupuri de file, deschide setările și activează Permite conectarea la Chrome</translation>
@@ -8254,6 +8255,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="733058866272972585">Site-ul nu are permisiunea de a folosi identificatori pentru a reda conținut protejat.</translation>
 <translation id="7331646370422660166">alt + săgeată în jos</translation>
 <translation id="7332053360324989309">Worker dedicat: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">A început</translation>
 <translation id="7333388112938984914">Nu poți încărca fișiere atât timp cât folosești o conexiune contorizată.</translation>
 <translation id="7335974957018254119">Folosește verificarea ortografiei pentru</translation>
 <translation id="7336799713063880535">Notificări blocate.</translation>
@@ -8486,7 +8488,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7495149565104413027">Aplicație Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Nu ai jurnale text WebRTC înregistrate recent.</translation>
-<translation id="7499684925421947861">Permiți ca <ph name="ACTOR_NAME" /> să te conecteze la <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">sau</translation>
 <translation id="7502220299952823578">Adaugă în lista Menține întotdeauna active aceste site-uri</translation>
 <translation id="7502528909759062987">Întrerupe proiectarea filei pe <ph name="DEVICE_NAME" /></translation>
@@ -10075,6 +10076,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8708000541097332489">Ștergeți la ieșire</translation>
 <translation id="870805141700401153">Semnare individuală a codului Microsoft</translation>
 <translation id="8708671767545720562">&amp;Mai multe informații</translation>
+<translation id="8709234440040320647">(Modul izolat)</translation>
 <translation id="8709368517685334931">Poți găsi culori mai vechi în Magazinul web Chrome</translation>
 <translation id="8710414664106871428">Fantezie</translation>
 <translation id="8711402221661888347">Murături</translation>
@@ -10239,6 +10241,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8836360711089151515"><ph name="MANAGER" /> solicită să faci backup datelor și să returnezi acest <ph name="DEVICE_TYPE" /> într-o săptămână. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Ieși din grup}few{Ieși din grupuri}other{Ieși din grupuri}}</translation>
 <translation id="8836782447513334597">continuare</translation>
+<translation id="8837072669197607689">Permite în modul izolat</translation>
 <translation id="8837573527470979311">Schimbă cu afișarea de jos</translation>
 <translation id="8838601485495657486">Opac</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10297,6 +10300,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8876307312329369159">Setarea nu poate fi modificată într-o sesiune demonstrativă.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> folosește scanarea Bluetooth pentru a găsi dispozitive din apropiere.</translation>
 <translation id="8877448029301136595">[directorul părinte]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: a început</translation>
 <translation id="8879284080359814990">&amp;Afișează ca filă</translation>
 <translation id="8879921471468674457">Reține informațiile de conectare</translation>
 <translation id="8880009256105053174">Caut&amp;ă această pagină pe Google...</translation>
@@ -10529,6 +10533,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9043767139743235992">Contactează asistența Google pentru persoanele cu dizabilități</translation>
 <translation id="9044646465488564462">Conectarea la rețea nu s-a realizat: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista de lecturi s-a mutat într-un panou lateral nou. Încearcă-l aici.</translation>
+<translation id="9046240419485318563">Răsfoiește memoria</translation>
 <translation id="9048745018038487540">Selectează toate fonturile</translation>
 <translation id="9050666287014529139">Expresie de acces</translation>
 <translation id="905137631551495997">Extensii</translation>
@@ -10715,7 +10720,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9187967020623675250">Tastele nu corespund. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Auzi feedback rostit, ca să poți folosi dispozitivul fără să te uiți la ecran. Feedbackul Braille este disponibil pe un dispozitiv conectat. Folosește Ctrl + Alt + Z ca să activezi și să dezactivezi ChromeVox. Folosește tasta de căutare + săgeată spre stânga sau săgeată spre dreapta pentru a naviga. Folosește tasta de căutare + bara de spațiu pentru a selecta (activa).</translation>
 <translation id="9195969368671142407">Când organizația limitează salvarea în Contul Google, nu poți să permiți accesul sau să te alături grupurilor de file</translation>
-<translation id="9197456336762295195">Scanează codul QR cu camera foto a dispozitivului care are cheia de acces pentru google.com</translation>
 <translation id="919840898042157087">Mișcare statică</translation>
 <translation id="9199503643457729322">Dă clic pentru a închide Ghidul privind confidențialitatea.</translation>
 <translation id="9199695835892108985">Resetezi toate permisiunile pentru portul serial?</translation>

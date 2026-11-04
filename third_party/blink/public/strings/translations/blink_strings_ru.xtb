@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Введите верное значение. Поле не заполнено или введена недействительная дата.</translation>
 <translation id="310520048233152454">Введите URL.</translation>
+<translation id="3137127353890528027">Пароль скрыт</translation>
 <translation id="3321030238473337787">Скорость воспроизведения</translation>
 <translation id="3450233048674729344">Значение должно быть меньше или равно <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">Подробную информацию можно найти на сайте <ph name="ALERT_HUB_LINK" />.</translation>
 <translation id="6310801910862476708">Выйти из режима "Картинка в картинке"</translation>
+<translation id="64261224118544870">Пароль виден</translation>
 <translation id="6484738902856791350">Автоформатировать</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="65574987622079584">установить расширение браузера</translation>

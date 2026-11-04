@@ -536,7 +536,6 @@
 <translation id="1401216725754314428">मिलती-जुलती साइटों को नए टैब में देखने के बारे में ज़्यादा जानें</translation>
 <translation id="1402426911829176748">आपके डिवाइस से कनेक्ट किया जा रहा है</translation>
 <translation id="1405779994569073824">बंद हो गया.</translation>
-<translation id="1406812885827747674">अभी के लिए अनुमति दें</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
 <translation id="140723521119632973">सेल्युलर एक्टिवेशन</translation>
@@ -1479,6 +1478,7 @@
 <translation id="2131548114076786395">टैब ग्रुप में शामिल होने, उन्हें शेयर करने, और उनमें साथ मिलकर करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="2131863825246488194">इंटरनेट पर सुरक्षित रहें</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> को फिर से डाउनलोड करने की कोशिश करें</translation>
+<translation id="2134044938347520790">रीडिंग मोड से जुड़ी समस्याएं या सुविधा के अनुरोध शेयर करें</translation>
 <translation id="2134905185275441536">सिस्टम CA सर्टिफ़िकेट</translation>
 <translation id="2135420518376202233">ब्लूटूथ डिवाइसों के नाम</translation>
 <translation id="21354425047973905">पिन छिपाएं</translation>
@@ -4296,6 +4296,7 @@
 <translation id="4250596587221570622">अपनी प्रोफ़ाइल के लिए कोई थीम चुनें</translation>
 <translation id="4250680216510889253">नहीं</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> में मौजूद फ़ाइलों को देख सकेगी और उनकी कॉपी बना सकेगी</translation>
+<translation id="4251316952800826018">सिलेक्शन हेडर पर फ़ोकस करें</translation>
 <translation id="4252899949534773101">ब्लूटूथ बंद है</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - टैब सामग्री शेयर की गई</translation>
 <translation id="4253168017788158739">नोट</translation>
@@ -5325,7 +5326,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{पते}=1{पते ({SELECTED_ITEMS})}one{पते ({SELECTED_ITEMS})}other{पते ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5033137252639132982">मोशन सेंसर इस्तेमाल करने की अनुमति नहीं है</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />, Google Password Manager का इस्तेमाल करके आपके लिए साइन इन कर सकता है. <ph name="BEGIN_LINK" />जानें कि <ph name="ACTOR_NAME" /> आपके डेटा को कैसे मैनेज करता है<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से ज़्यादा जानकारी पाने के लिए, नीचे मौजूद "ज़्यादा जानकारी" चुनें.</translation>
 <translation id="5037676449506322593">सभी को चुनें</translation>
 <translation id="5038621320029329200">भरोसेमंद सर्टिफ़िकेट</translation>
@@ -6444,7 +6444,6 @@
 <translation id="5922854266885514646">"Chrome को पसंद के मुताबिक बनाएं" पर क्लिक करें</translation>
 <translation id="5924047253200400718">सहायता पाएं<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft फ़ाइलों को कॉपी करने या Google Drive में ट्रांसफ़र करने से पहले पूछें</translation>
-<translation id="5925057331573749968">क्यूआर कोड से झटपट साइन इन करें</translation>
 <translation id="5926936390113611560">सभी प्रोफ़ाइलें खोलें</translation>
 <translation id="592880897588170157">PDF फ़ाइलों को Chrome में अपने आप खोलने के बजाय उन्हें डाउनलोड करें</translation>
 <translation id="5930567261594625340">रात के समय में आसमान</translation>
@@ -6782,6 +6781,7 @@
 <translation id="6185151644843671709">पासकी सेव की गई और पिन बनाया गया</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 पासवर्ड और अन्य आइटम सिर्फ़ इस डिवाइस में सेव किए गए हैं. अपने दूसरे डिवाइसों पर इनका इस्तेमाल करने के लिए, इन्हें अपने Google खाते में सेव करें. इससे डुप्लीकेट आइटम भी हट जाएंगे.}one{{PASSWORD_COUNT} पासवर्ड और अन्य आइटम सिर्फ़ इस डिवाइस में सेव किए गए हैं. अपने दूसरे डिवाइसों पर इनका इस्तेमाल करने के लिए, इन्हें अपने Google खाते में सेव करें. इससे डुप्लीकेट आइटम भी हट जाएंगे.}other{{PASSWORD_COUNT} पासवर्ड और अन्य आइटम सिर्फ़ इस डिवाइस में सेव किए गए हैं. अपने दूसरे डिवाइसों पर इनका इस्तेमाल करने के लिए, इन्हें अपने Google खाते में सेव करें. इससे डुप्लीकेट आइटम भी हट जाएंगे.}}</translation>
 <translation id="6186177419203903310">इससे सिस्टम में, यूएसबी वाले सभी नए सहायक डिवाइसों के लिए, सूचनाएं पाने की सुविधा चालू हो जाएगी. क्या आपको वाकई इसे चालू करना है?</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" /> पर फ़ोकस किया गया - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">अगल-बगल और एक के ऊपर एक दिखने वाले टैब के बीच स्विच करने के लिए, स्प्लिट व्यू मेन्यू का इस्तेमाल करें.</translation>
 <translation id="6190953336330058278">फ़ोन हब से जुड़े ऐप्लिकेशन</translation>
 <translation id="6192333916571137726">फ़ाइल डाउनलोड करें</translation>
@@ -8503,7 +8503,6 @@
 <translation id="7495149565104413027">Android ऐप्लिकेशन</translation>
 <translation id="7497322070873193353">Google का एआई</translation>
 <translation id="7497981768003291373">आपके पास हाल ही में कैप्चर किया गया कोई WebRTC लेख लॉग नहीं है.</translation>
-<translation id="7499684925421947861">क्या आपको <ph name="ACTOR_NAME" /> को आपकी ओर से <ph name="DOMAIN" /> में साइन इन करने की अनुमति देनी है?</translation>
 <translation id="7501957181231305652">या</translation>
 <translation id="7502220299952823578">"इन साइटों को हमेशा चालू रखें" सूची में जोड़ें</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> पर, टैब कास्ट करना रोकें</translation>
@@ -8640,6 +8639,7 @@
 <translation id="7612655942094160088">कनेक्ट किए गए फ़ोन की सुविधाएं चालू करें.</translation>
 <translation id="7612989789287281429">साइन इन किया जा रहा है…</translation>
 <translation id="76131528886466333">Google Search for Microsoft Edge एक्सटेंशन इंस्टॉल करें</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" /> पर फ़ोकस किया गया</translation>
 <translation id="7615365294369022248">खाता जोड़ने के दौरान कोई गड़बड़ी हुई</translation>
 <translation id="7616964248951412133">साइटें इस सुविधा का इस्तेमाल, आपके माउस इनपुट को कैप्चर करने और उसका इस्तेमाल करने के लिए करती हैं. जैसे, गेम या रिमोट डेस्कटॉप ऐप्लिकेशन</translation>
 <translation id="7617263010641145920">'Play Store' चालू करें</translation>
@@ -10736,7 +10736,6 @@
 <translation id="9187967020623675250">कुंजियां मेल नहीं खा रही हैं. <ph name="RESPONSE" /> के लिए कोई भी बटन दबाएं.</translation>
 <translation id="9192019773545828776">बोलकर दिया गया जवाब सुनें, ताकि बिना स्क्रीन देखे डिवाइस का इस्तेमाल किया जा सके. कनेक्ट किए गए डिवाइस से, ब्रेल का इस्तेमाल करके सुझाव, शिकायत या राय देने की सुविधा उपलब्ध होती है. ChromeVox को चालू या बंद करने के लिए, Ctrl + Alt + Z का इस्तेमाल करें. एक जगह से दूसरी जगह पर जाने के लिए Search + लेफ़्ट ऐरो या राइट ऐरो का इस्तेमाल करें. चुनने के लिए, Search + Space का इस्तेमाल करें (चालू करें).</translation>
 <translation id="9195969368671142407">जब आपका संगठन, Google खाते में डेटा सेव करने की सुविधा को सीमित कर देता है, तब आपके पास टैब ग्रुप शेयर करने या उनमें शामिल होने का विकल्प नहीं होता</translation>
-<translation id="9197456336762295195">इस क्यूआर कोड को उस डिवाइस के कैमरे से स्कैन करें जिस पर google.com के लिए आपकी पासकी मौजूद है</translation>
 <translation id="919840898042157087">स्टैटिक मूवमेंट</translation>
 <translation id="9199503643457729322">निजता गाइड वाले पेज से बाहर आने के लिए क्लिक करें.</translation>
 <translation id="9199695835892108985">क्या आपको सीरियल पोर्ट की सभी अनुमतियां रीसेट करनी हैं?</translation>

@@ -521,6 +521,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1384849755549338773">Oferecer o Google Tradutor para sites em outros idiomas</translation>
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1386966479075994683">Mostrar guias</translation>
+<translation id="1387227841274754059">Pergunte sobre o que está na tela com o Google Lens</translation>
 <translation id="1388253969141979417">Permitir o uso do microfone</translation>
 <translation id="139013308650923562">Com autorização para usar as fontes instaladas no dispositivo</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> pré-instalado no seu <ph name="DEVICE_TYPE" /></translation>
@@ -535,7 +536,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1401216725754314428">Saiba mais sobre os sites relacionados em uma nova guia</translation>
 <translation id="1402426911829176748">Conectando ao seu dispositivo</translation>
 <translation id="1405779994569073824">Falha.</translation>
-<translation id="1406812885827747674">Permitir desta vez</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Ativação da rede celular</translation>
@@ -4761,6 +4761,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4610637590575890427">Você quis ir a <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Quando o botão esquerdo do mouse estiver selecionado, use a tecla “/” para clicar duas vezes</translation>
 <translation id="4613271546271159013">Uma extensão alterou a página exibida quando uma nova guia é aberta.</translation>
+<translation id="4616024182698834938">Arraste e solte arquivos aqui</translation>
 <translation id="461613135510474570">Sentença</translation>
 <translation id="461661862154729886">Fonte de energia</translation>
 <translation id="4617001782309103936">Muito curto</translation>
@@ -5325,7 +5326,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Endereço}=1{Endereço ({SELECTED_ITEMS})}one{Endereço ({SELECTED_ITEMS})}other{Endereços ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Não é possível criar o QR code</translation>
 <translation id="5033137252639132982">Bloquear o uso de sensores de movimento</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> pode usar o Gerenciador de Senhas do Google para fazer login por você. <ph name="BEGIN_LINK" />Saiba como o <ph name="ACTOR_NAME" /> trata seus dados<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Selecione "Mais detalhes" abaixo para saber mais informações sobre o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selecionar todas</translation>
 <translation id="5038621320029329200">Certificados confiáveis</translation>
@@ -5591,6 +5591,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5230190638672215545">Digite "uow" para inserir "ươ"</translation>
 <translation id="5230516054153933099">Janela</translation>
 <translation id="5231255476752743708">O Chrome precisa de ajuda para mudar sua senha</translation>
+<translation id="5232607425694431024">Pergunte sobre um arquivo ou imagem</translation>
 <translation id="5232714764496316200">Receba ajuda com o dever de casa usando o Google Lens</translation>
 <translation id="5233231016133573565">ID do processo</translation>
 <translation id="5233638681132016545">Nova guia</translation>
@@ -6445,7 +6446,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5922854266885514646">Clique em "Personalizar o Chrome"</translation>
 <translation id="5924047253200400718">Receber ajuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Perguntar antes de copiar ou mover arquivos da Microsoft para o Google Drive</translation>
-<translation id="5925057331573749968">Faça login mais rápido com um QR code</translation>
 <translation id="5926936390113611560">Abrir todos os perfis</translation>
 <translation id="592880897588170157">Fazer o download de arquivos PDF em vez de abri-los automaticamente no Chrome</translation>
 <translation id="5930567261594625340">Céu noturno</translation>
@@ -7742,6 +7742,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6913051485529944333">O Google Agenda não vai mais aparecer nesta página</translation>
 <translation id="6914812290245989348">Não recebo nenhum aviso antes de acessar sites não seguros</translation>
 <translation id="6916590542764765824">Gerenciar extensões</translation>
+<translation id="6916630302999048499">Tarefa do Gemini em execução</translation>
 <translation id="6916676294509106572">Calendário do Outlook oculto</translation>
 <translation id="6916818963747321523">Abrir tudo</translation>
 <translation id="6917873303492266709">Para compartilhar, participar e colaborar em grupos de guias, abra as configurações e ative a opção "Permitir login no Chrome"</translation>
@@ -8271,6 +8272,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="733058866272972585">Este site foi impedido de usar identificadores para abrir conteúdo protegido.</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
 <translation id="7332053360324989309">Worker dedicado: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">Iniciada</translation>
 <translation id="7333388112938984914">Não é possível fazer upload de arquivos com uma conexão limitada.</translation>
 <translation id="7335974957018254119">Usar verificação ortográfica para</translation>
 <translation id="7336799713063880535">Notificações bloq.</translation>
@@ -8503,7 +8505,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7495149565104413027">App Android</translation>
 <translation id="7497322070873193353">IA do Google</translation>
 <translation id="7497981768003291373">Você não tem nenhum registro de texto WebRTC capturado recentemente.</translation>
-<translation id="7499684925421947861">Permitir que <ph name="ACTOR_NAME" /> faça login por você neste serviço: <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Adicionar à lista "Sempre manter estes sites ativos"</translation>
 <translation id="7502528909759062987">Pausar a transmissão da guia para <ph name="DEVICE_NAME" /></translation>
@@ -10316,6 +10317,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8876307312329369159">Não é possível alterar essa configuração em uma sessão de demonstração.</translation>
 <translation id="8876965259056847565">O <ph name="FEATURE_NAME" /> usa a busca por Bluetooth para encontrar dispositivos por perto.</translation>
 <translation id="8877448029301136595">[diretório pai]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: iniciada</translation>
 <translation id="8879284080359814990">&amp;Mostrar como guia</translation>
 <translation id="8879921471468674457">Lembrar informações de login</translation>
 <translation id="8880009256105053174">Procurar nesta página com o Google...</translation>
@@ -10735,7 +10737,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9187967020623675250">As teclas não correspondem. Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Ouça uma resposta falada para que você possa usar o dispositivo sem olhar para a tela. O feedback em braille está disponível quando há um dispositivo conectado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou direita para navegar. Use as teclas Pesquisa + espaço para selecionar (ativar).</translation>
 <translation id="9195969368671142407">Quando a organização limita o salvamento na sua Conta do Google, não é possível compartilhar ou participar de grupos de guias</translation>
-<translation id="9197456336762295195">Leia este QR code com a câmera do dispositivo que tem sua chave de acesso ao google.com</translation>
 <translation id="919840898042157087">Movimento estático</translation>
 <translation id="9199503643457729322">Clique para sair do Guia de privacidade.</translation>
 <translation id="9199695835892108985">Redefinir todas as permissões de portas seriais?</translation>

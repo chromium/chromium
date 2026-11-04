@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">ఇతర భాషలలోని వెబ్‌సైట్‌లకు Google Translateను అందించు</translation>
 <translation id="1384959399684842514">డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
 <translation id="1386966479075994683">ట్యాబ్‌లను విస్తరించండి</translation>
+<translation id="1387227841274754059">Google Lensతో మీ స్క్రీన్ గురించి అడగండి</translation>
 <translation id="1388253969141979417">మీ మైక్రోఫోన్ ఉపయోగించడానికి అనుమతించబడింది</translation>
 <translation id="139013308650923562">మీ పరికరంలో ఇన్‌స్టాల్ చేయబడిన ఫాంట్‌లను ఉపయోగించడానికి సైట్‌లకు అనుమతి ఉంది</translation>
 <translation id="1390306150250850355">మీ <ph name="DEVICE_TYPE" />‌లో <ph name="APP_TYPE" /> ప్రీ - ఇన్‌స్టాల్ చేయబడింది</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">కొత్త ట్యాబ్‌లో సంబంధిత సైట్‌ల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="1402426911829176748">మీ పరికరానికి కనెక్ట్ చేస్తోంది</translation>
 <translation id="1405779994569073824">క్రాష్ అయింది.</translation>
-<translation id="1406812885827747674">ఈ సారికి అనుమతించండి</translation>
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="140723521119632973">సెల్యులార్ యాక్టివేషన్</translation>
@@ -4759,6 +4759,7 @@
 <translation id="4610637590575890427">మీరు <ph name="SITE" />కు వెళ్లాలనుకుంటున్నారా?</translation>
 <translation id="4611619000650855880">ఎడమ మౌస్ బటన్‌ను ఎంచుకున్నప్పుడు, డబుల్-క్లిక్ చేయడానికి “/”ను వినియోగించండి</translation>
 <translation id="4613271546271159013">మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు చూపబడే పేజీని ఎక్స్‌టెన్ష‌న్‌ మార్చింది.</translation>
+<translation id="4616024182698834938">ఫైళ్లను ఇక్కడకు లాగి, వదలండి</translation>
 <translation id="461613135510474570">వాక్యం</translation>
 <translation id="461661862154729886">పవర్ సోర్స్</translation>
 <translation id="4617001782309103936">ఇది మరీ చిన్నది</translation>
@@ -5323,7 +5324,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{అడ్రస్‌లు}=1{అడ్రస్‌లు ({SELECTED_ITEMS})}other{అడ్రస్‌లు ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR కోడ్‌ను క్రియేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="5033137252639132982">మోషన్ సెన్సార్‌లను ఉపయోగించడానికి అనుమతించబడలేదు</translation>
-<translation id="5034158480345261097">మీ తరపున సైన్ ఇన్ చేయడానికి <ph name="ACTOR_NAME" />, Google Password Managerను ఉపయోగించగలదు. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> మీ డేటాను ఎలా హ్యాండిల్ చేస్తుందో తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> నుండి మరింత సమాచారాన్ని పొందడానికి దిగువున "మరిన్ని వివరాలు" ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="5037676449506322593">అన్నీ ఎంచుకోండి</translation>
 <translation id="5038621320029329200">విశ్వసించదగిన సర్టిఫికెట్‌లు</translation>
@@ -5589,6 +5589,7 @@
 <translation id="5230190638672215545">"ươ"ను పొందడానికి "uow"ను టైప్ చేయండి</translation>
 <translation id="5230516054153933099">విండో</translation>
 <translation id="5231255476752743708">మీ పాస్‌వర్డ్‌ను మార్చడంలో Chrome సహాయం కోరుతోంది</translation>
+<translation id="5232607425694431024">ఫైల్ గురించి లేదా ఇమేజ్ గురించి అడగండి</translation>
 <translation id="5232714764496316200">Google Lensతో హోమ్‌వర్క్‌లో సహాయం పొందండి</translation>
 <translation id="5233231016133573565">ప్రాసెస్ ID</translation>
 <translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
@@ -6441,7 +6442,6 @@
 <translation id="5922854266885514646">"Chromeను అనుకూలంగా మార్చండి"ని క్లిక్ చేయండి</translation>
 <translation id="5924047253200400718">సహాయం పొందండి<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft ఫైల్స్‌ను కాపీ చేయడానికి లేదా Google Driveకి తరలించడానికి ముందు అడగండి</translation>
-<translation id="5925057331573749968">QR కోడ్‌తో మరింత వేగంగా సైన్ ఇన్ అవ్వండి</translation>
 <translation id="5926936390113611560">అన్ని ప్రొఫైల్స్‌ను తెరవండి</translation>
 <translation id="592880897588170157">PDF ఫైళ్లను ఆటోమేటిక్‌గా Chromeలో తెరవడానికి బదులుగా వాటిని డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="5930567261594625340">రాత్రిపూట ఆకాశం</translation>
@@ -7736,6 +7736,7 @@
 <translation id="6913051485529944333">మీకు ఈ పేజీలో Google Calendar మళ్లీ కనిపించదు</translation>
 <translation id="6914812290245989348">సురక్షితం కాని సైట్‌లకు వెళ్లే ముందు ఎలాంటి హెచ్చరికలను చూడవద్దు</translation>
 <translation id="6916590542764765824">ఎక్స్‌టెన్షన్‌లను నిర్వహించండి</translation>
+<translation id="6916630302999048499">Gemini టాస్క్ రన్ అవుతోంది</translation>
 <translation id="6916676294509106572">Outlook క్యాలెండర్‌ను దాచారు</translation>
 <translation id="6916818963747321523">అన్నింటినీ విస్తరించండి</translation>
 <translation id="6917873303492266709">ట్యాబ్ గ్రూప్‌లలో షేర్ చేయడానికి, వాటిలో చేరడానికి, సహకరించడానికి, సెట్టింగ్‌లను తెరిచి, 'Chrome సైన్-ఇన్‌ను అనుమతించండి' సెట్టింగ్‌ను ఆన్ చేయండి</translation>
@@ -8265,6 +8266,7 @@
 <translation id="733058866272972585">సురక్షిత కంటెంట్‌ను ప్లే చేయడానికి ఐడెంటిఫయర్‌లను ఉపయోగించకుండా ఈ సైట్ బ్లాక్ చేయబడింది.</translation>
 <translation id="7331646370422660166">alt + కింది వైపు బాణం గుర్తు</translation>
 <translation id="7332053360324989309">డెడికేటెడ్ వర్కర్: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">ప్రారంభమైంది</translation>
 <translation id="7333388112938984914">డేటా నియంత్రణ గల కనెక్షన్‌లో ఉన్నప్పుడు ఫైల్‌లను అప్‌లోడ్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="7335974957018254119">వీటికి స్పెల్ చెక్‌ను ఉపయోగించండి</translation>
 <translation id="7336799713063880535">నోటిఫి. బ్లాక్‌డ్</translation>
@@ -8497,7 +8499,6 @@
 <translation id="7495149565104413027">Android యాప్</translation>
 <translation id="7497322070873193353">Googleకు చెందిన AI టెక్నాలజీలు</translation>
 <translation id="7497981768003291373">మీ వద్ద ఇటీవల క్యాప్చర్ చేయబడిన WebRTC వచన లాగ్‌లు ఏవీ లేవు.</translation>
-<translation id="7499684925421947861">మీ తరపున <ph name="DOMAIN" />‌లోకి సైన్ ఇన్ చేయడానికి <ph name="ACTOR_NAME" />‌ను అనుమతించాలా?</translation>
 <translation id="7501957181231305652">లేదా</translation>
 <translation id="7502220299952823578">"ఈ సైట్‌లను ఎల్లప్పుడూ యాక్టివ్‌గా ఉంచండి" లిస్ట్‌కు జోడించండి</translation>
 <translation id="7502528909759062987">ట్యాబ్‌ను <ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని పాజ్ చేయండి</translation>
@@ -10307,6 +10308,7 @@
 <translation id="8876307312329369159">ఈ సెట్టింగ్‌ను డెమో సెషన్‌లో మార్చడం సాధ్యపడదు.</translation>
 <translation id="8876965259056847565">సమీపంలోని పరికరాలను కనుగొనడానికి <ph name="FEATURE_NAME" />, బ్లూటూత్ స్కానింగ్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="8877448029301136595">[పేరెంట్ డైరెక్టరీ]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: ప్రారంభమైంది</translation>
 <translation id="8879284080359814990">&amp;ట్యాబ్ లాగా చూపండి</translation>
 <translation id="8879921471468674457">సైన్-ఇన్ సమాచారం గుర్తుంచుకో</translation>
 <translation id="8880009256105053174">Googleతో ఈ పేజీని సెర్చ్ చేయండి...</translation>
@@ -10726,7 +10728,6 @@
 <translation id="9187967020623675250">కీలు మ్యాచ్ కాలేదు. <ph name="RESPONSE" /> కోసం ఏదైనా కీని నొక్కండి.</translation>
 <translation id="9192019773545828776">'మాటల ప్రతిస్పందన'ను వినండి, తద్వారా మీరు స్క్రీన్‌ను చూడకుండానే మీ డివైజ్‌ను ఉపయోగించవచ్చు. కనెక్ట్ అయిన డివైజ్‌లో బ్రెయిలీ ఫీడ్‌బ్యాక్ అందుబాటులో ఉంది. Ctrl + Alt + Zను ఉపయోగించి ChromeVoxను ఆన్, ఆఫ్ చేయండి. సెర్చ్ + ఎడమ వైపు బాణం లేదా కుడి వైపు బాణాన్ని ఉపయోగించి నావిగేట్ చేయండి. సెర్చ్ + స్పేస్‌ను ఉపయోగించి ఎంచుకోండి (యాక్టివేట్ చేయండి).</translation>
 <translation id="9195969368671142407">మీ సంస్థ మీ Google ఖాతాకు డేటా సేవింగ్‌ను పరిమితం చేసినప్పుడు, ట్యాబ్ గ్రూప్‌లను షేర్ చేయడానికి లేదా వాటిలో చేరడానికి మీకు ఆప్షన్ ఉండదు</translation>
-<translation id="9197456336762295195">google.com కోసం మీ పాస్-కీ ఉన్న డివైజ్‌లో కెమెరాతో ఈ QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="919840898042157087">స్టాటిక్ మూవ్‌మెంట్</translation>
 <translation id="9199503643457729322">గోప్యతా గైడ్ నుండి దూరంగా నావిగేట్ అవ్వడానికి క్లిక్ చేయండి.</translation>
 <translation id="9199695835892108985">సీరియల్ పోర్ట్ అనుమతులన్నింటినీ రీసెట్ చేయాలా?</translation>

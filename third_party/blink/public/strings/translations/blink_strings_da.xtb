@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Angiv en gyldig værdi. Feltet er ufuldstændigt eller har en ugyldig dato.</translation>
 <translation id="310520048233152454">Angiv en webadresse.</translation>
+<translation id="3137127353890528027">Adgangskoden er skjult</translation>
 <translation id="3321030238473337787">Afspilningshastighed</translation>
 <translation id="3450233048674729344">Værdien skal være mindre end eller lig med <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">Gå til <ph name="ALERT_HUB_LINK" /> for at få flere oplysninger.</translation>
 <translation id="6310801910862476708">Afslut integreret billede</translation>
+<translation id="64261224118544870">Adgangskoden vises</translation>
 <translation id="6484738902856791350">Anvend pretty print</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
 <translation id="65574987622079584">installere en browserudvidelse</translation>

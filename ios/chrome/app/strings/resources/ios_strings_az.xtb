@@ -51,6 +51,7 @@
 <translation id="1122068467107743258">İş</translation>
 <translation id="1126696498560056882">Bu cihazdakı hesabları idarə edin</translation>
 <translation id="1126809382673880764">Sizi təhlükəli veb sayt, endirmə və artırmalardan qorumur. Hələ də Gmail və Axtarış kimi digər Google xidmətlərində mümkün olduğu qədər Təhlükəsiz Baxış qoruması əldə edəcəksiniz.</translation>
+<translation id="112943553659469376">"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">Cari tabı əlavə edin</translation>
 <translation id="1136104150802877429">Məhsul rəylərini göstərin</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> üçün bildirişləri deaktiv edin</translation>
@@ -102,6 +103,7 @@
 <translation id="1291506870746876680">Bu saytdan çıxdığınız zaman <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> icazələri sıfırlanaraq deaktiv olacaq.</translation>
 <translation id="1293491796138057740">Məlumatınız <ph name="USER_EMAIL" /> üçün Google Pulqabıda yadda saxlanılır. Formaları daha sürətli doldurmaq üçün onu Google məhsullarında istifadə edə bilərsiniz.</translation>
 <translation id="1293556467332435079">Fayllar</translation>
+<translation id="1294703224699789269"><ph name="BEGIN_LINK" />Şərtlərimiz<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreya Məkan Şərtlərimiz<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Məxfilik Bildirişimiz<ph name="END_LINK" /> tətbiq olunur. Çatlar nəzərdən keçirilir və generativ Sİ modellərini öyrətmək üçün istifadə olunur. Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər. Məkanınız haqqında məlumat da daxil olmaqla <ph name="BEGIN_LINK" />tarixçənizi idarə edə<ph name="END_LINK" /> bilərsiniz. <ph name="BEGIN_LINK" />Seçimləriniz haqqında ətraflı məlumat əldə edin<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Son qapadılan</translation>
 <translation id="1296581780163690620">Fayl endirilsin? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">"Sİ rejimi ilə axtarış" tamamlandı!</translation>
@@ -386,6 +388,7 @@
 <translation id="2104436223719117661">Populyar axtarışlar</translation>
 <translation id="21133533946938348">Tabı sancın</translation>
 <translation id="2117650889962717098">Anonim rejimə keçməklə axtarışınızı gizli saxlayın</translation>
+<translation id="2119126821484134587">Fərdi yardım təmin etmək üçün Gemini datanızın bir hissəsini (məsələn, bəzi çatlarınız, məkanınız və digər müvafiq məlumatlar) Xəritə və Uçuş kimi digər Google xidmətləri ilə paylaşır. Gemini tətbiq tarixçənizi sonradan silsəniz belə, bu xidmətlər təkmilləşdirmə üçün həmin məlumatlardan istifadə edə bilər. <ph name="BEGIN_LINK" />Gemini tətbiqi məxfilik mərkəzində<ph name="END_LINK" /> ətraflı məlumat əldə edin.</translation>
 <translation id="2119636449201577317">Burada açın:</translation>
 <translation id="2119962645034852864">Bəzi xidmətlər hesabınız üçün əlçatan deyil</translation>
 <translation id="2120553909046681540">Təşkilatınız şəxsi brauzinqi deaktiv edib.</translation>
@@ -507,6 +510,7 @@
 <translation id="2496180316473517155">Brauzer tarixçəsi</translation>
 <translation id="2496626742194544812">İlk Taba keçin</translation>
 <translation id="2499505845365628575"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> bölməsində brauzer tarixçəsini tapa bilərsiniz.</translation>
+<translation id="2499948218922929716">Təhlükəsizlik güncəllənmələri, fərdi temalar və daha çoxu haqqında bildiriş alın.</translation>
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />Data və məxfilik tərcihlərini<ph name="END_LINK" /> idarə etmək üçün Google Pulqabına daxil olun.</translation>
 <translation id="2511117522375201202">Təhlükəsizliyi riskə atan <ph name="NUMBER_OF_PASSWORDS" /> oğurlanmış parol var.</translation>
 <translation id="2512709994717613803">Səviyyə <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +674,7 @@
 <translation id="3038136505713492417">Bu cihazda giriş açarlarınızdan istifadə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="3039671569659952257">Qovluğu silin</translation>
 <translation id="3041835740069544003">Chrome artıq daha məntiqli forma anlayışı ilə daha çox formanı aşkarlaya və doldura bilər. Bunun üçün səhifə kontenti və URL-ləri buludda şəxsi sahədə emal edilə bilər. Ayarlarda idarə edin.</translation>
+<translation id="3042118633250374317">Google tarixçənizdən xidmətlərini təqdim etmək, Google-u, istifadəçilərini və ictimaiyyəti qorumaq, həmçinin mütəxəssislərin köməyi ilə xidmətlərini təkmilləşdirmək və inkişaf etdirmək üçün istifadə edir. Nəzərdən keçirilməsini və ya istifadə olunmasını istəmədiyiniz məlumatları daxil etməyin.</translation>
 <translation id="3050988301648974170">Parol Yoxlanışını açın</translation>
 <translation id="3053332585453689122">Zərərli olub-olmadığını yoxlamaq üçün daxil olduğunuz URL-i, habelə səhifə kontenti, endirmə, artırma fəaliyyəti və sistem məlumatının kiçik hissəsini Google Güvənli Axtarışa göndərir.</translation>
 <translation id="3055102495753300780">Məlumat yaddaşı</translation>
@@ -1113,6 +1118,7 @@
 <translation id="4488754974567924717">Parollar oğurlansa, sizə xəbər verəcəyik</translation>
 <translation id="4489536976005181779">{count,plural, =1{Səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}other{Səhifələr hesabdakı ({email}) oxu siyahısına əlavə edildi}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> kimi daxil olmusunuz. Ayarlarda sinxronlaşdırmanı dayandıra bilərsiniz. Google tarixçəyə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
+<translation id="4495251723189610737">Çatlarınız Gemini tarixçənizdə yadda saxlanılacaq. Tarixçəyə audio, Gemini Live videoları və ekran paylaşımları, Gemini ilə paylaşdıqlarınız (məsələn, göstərişlər, <ph name="BEGIN_LINK" />yükləmələr<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />ekranlar<ph name="END_LINK" />), Gemini-ın cavabları, tapşırıqlar və alət zəngləri, rəy, Gemini ilə daxil olduğunuz veb-saytlardan məlumatlar, məhsul istifadəsi datası, cihazınızın ümumi məkanı, IP ünvanı və Google Hesabınızdakı ev və ya iş ünvanları daxildir. Buraya Gemini ilə birləşdirdiyiniz tətbiqlərdən əldə edilən data da daxil ola bilər.</translation>
 <translation id="4502423230170890588">Bu cihazdan silin</translation>
 <translation id="4508486880075514067">Tam ekrana genişləndirin</translation>
 <translation id="4508750114462689118">Giriş reklamını bağlayın</translation>
@@ -1201,6 +1207,7 @@
 <translation id="4759238208242260848">Endirmələr</translation>
 <translation id="4764612367328936189">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir. İcazə verilməyən hesablar gizlədilib. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">İstənilən cihazda yadda saxlanmış giriş açarlarına daxil olmağa kömək edir</translation>
+<translation id="476946043193006313">Fəaliyyətiniz generativ Sİ-ni öyrətməyə kömək edir</translation>
 <translation id="4782952780741793211">Təsdiq kodu:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Anonim rejimində açılsın?</translation>
@@ -1217,6 +1224,7 @@
 <translation id="4808744395915275922">Güncəlləmələr</translation>
 <translation id="4813345808229079766">Bağlantı</translation>
 <translation id="4821595350501541683">Tablar bağlandı və baxış datası silindi</translation>
+<translation id="4821645169621230110">Tarixçənizdən necə istifadə olunur</translation>
 <translation id="4823322556950229674">Ünvan panelini və geri düyməsini aşağıya köçürmək üçün basıb saxlaya bilərsiniz</translation>
 <translation id="4824480232751123840">Həcm</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} və digər 1 tab}other{{domain} və digər {count} tab}}</translation>
@@ -1244,6 +1252,7 @@
 <translation id="4877597489778380935">Sonra xatırladın</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4883766694719903356">Anonim tab toru</translation>
+<translation id="4884205780547482830">Datanız generativ Sİ-ni öyrətməyə kömək edir</translation>
 <translation id="4884937942297374058">Təkmil qoruma deaktivdir</translation>
 <translation id="4887391901725877182">Subtitrlər</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
@@ -1723,6 +1732,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6347953390226388422">{count,plural, =1{Bu ünvan Google Hesabı (<ph name="USER_EMAIL" />) və bu cihazdan silinəcək.}other{Bu ünvanlar Google Hesabı (<ph name="USER_EMAIL" />) və bu cihazdan silinəcək.}}</translation>
 <translation id="634878792104344809">Bütün cihazlardakı parol, tarixçə və daha çoxunu sinxronizasiya edin</translation>
 <translation id="6350745006329795504">Cihazlarınızı idarə edin</translation>
+<translation id="6351000590398820964">Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər. Çatlar nəzərdən keçirilir və generativ Sİ modellərini öyrətmək üçün istifadə olunur. <ph name="BEGIN_LINK" />Seçimləriniz haqqında məlumat əldə edin<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Şərtlər<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Məxfilik Bildirişi<ph name="END_LINK" /> tətbiq olunur.</translation>
 <translation id="6351147166808964033">Tab keçiricisi daxil edin</translation>
 <translation id="63519665078626091">Web Inspector üçün kabel ilə kompüterdə Safari-yə qoşulun və Develop menyusundan iPad-ə daxil olun. Kompüterdə Safari ayarlarının Təkmil bölməsində develop menyusunu aktivləşdirə bilərsiniz.</translation>
 <translation id="6354695695659930684">Parol daxil edilir</translation>
@@ -1890,6 +1900,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6830728435402077660">Təhlükəsiz deyil</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6842136130964845393">Həmişə yadda saxlanmış parollarınıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
+<translation id="6843744036364481304">Hansı çat tarixçəsi yadda saxlanılır?</translation>
 <translation id="6844773122575789617">Sİ rejimini aktiv edin</translation>
 <translation id="6851516051005285358">Masaüstü Saytı tələb edin</translation>
 <translation id="6857446173140146664">Fonu silin</translation>
@@ -2013,6 +2024,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7223134495231529579">Endirmələrdə yadda saxlayın</translation>
 <translation id="722339453342442311">İndi yoxlayın</translation>
 <translation id="7227235818314667565">Paylaşımı idarə edin</translation>
+<translation id="7232376892719594461">Gemini ilə söhbətləriniz və ya <ph name="BEGIN_LINK" />Google Workspace datanız<ph name="END_LINK" /> nəzərdən keçirilməyəcək, yaxud generativ Sİ modellərini öyrətmək üçün istifadə olunmayacaq.</translation>
 <translation id="7233006041370588369">Daxil etmək üçün parol seçin.</translation>
 <translation id="7238074332967840767">Təhlükəsizlik</translation>
 <translation id="723874023660911012">Profilləri dəyişin</translation>
@@ -2524,7 +2536,9 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8746155870861185046">Vurğulamanı paylaşın</translation>
 <translation id="8748678031495824833">Səhifə Sİ alətlərini açın</translation>
 <translation id="8750037785291841318">Tabları burada tapa bilərsiniz</translation>
+<translation id="8751126814549746156">Tarixçəniz 18 ay sonra avtomatik silinir. Bu müddəti Ayarlarda dəyişə bilərsiniz. Xidmət provayderləri tərəfindən nəzərdən keçirilən çatlar hesabınızdan ayrılır və 3 ilə qədər saxlanılır. İstənilən vaxt Tarixçə ayarınızı <ph name="BEGIN_LINK" />deaktiv edə<ph name="END_LINK" /> bilərsiniz.</translation>
 <translation id="8756969031206844760">Parol yenilənsin?</translation>
+<translation id="8762190205387442931">Çatlar nəzərdən keçirilir və generativ Sİ modellərini öyrətmək üçün istifadə olunur. Məkanınız haqqında məlumat da daxil olmaqla <ph name="BEGIN_LINK" />tarixçənizi idarə edə<ph name="END_LINK" /> bilərsiniz. <ph name="BEGIN_LINK" />Seçimləriniz haqqında ətraflı məlumat əldə edin<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Son Taba keçin</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> və <ph name="SECOND_WEBSITE" /> üçün parollar silinəcək. Hesablarınız silinməyəcək.</translation>
 <translation id="8775144690796719618">Yanlış URL</translation>
@@ -2569,6 +2583,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8893208530912252670">Videolar</translation>
 <translation id="890009681345348416">40+ parol avtomatik dolduruldu</translation>
 <translation id="8900845556227858314">Brauzer tətbiqi</translation>
+<translation id="8903042868629070803">18 yaşınız tamam olubsa, Google tarixçənizdən <ph name="BEGIN_LINK" />generativ Sİ modellərini öyrətmək<ph name="END_LINK" /> üçün də istifadə edir. Gələcək çatlar üçün bunu istənilən vaxt <ph name="BEGIN_LINK" />deaktiv edə bilərsiniz<ph name="END_LINK" />.</translation>
 <translation id="890565330728586731">Geri</translation>
 <translation id="8907722425137681851">Səhifədə tapın…</translation>
 <translation id="8909135823018751308">Paylaşın...</translation>

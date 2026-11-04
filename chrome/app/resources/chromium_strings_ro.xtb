@@ -185,6 +185,7 @@
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2803971713792056305">Chromium</translation>
 <translation id="2816462166102338036">Caută acest videoclip cu Căutarea de imagini</translation>
+<translation id="2819844767470613567">Avertisment: Chromium nu poate împiedica extensiile să înregistreze istoricul de navigare. Pentru a dezactiva această extensie în modul izolat, debifează această opțiune.</translation>
 <translation id="282591729717417030">Descoperă produse cu camera foto, urmărește scăderile de prețuri și multe altele din mers cu Chromium pe iOS.</translation>
 <translation id="2841525013647267359">Tradu din</translation>
 <translation id="2846251086934905009">Eroare la instalare: programul de instalare nu a finalizat procesul. Instalarea a fost anulată.</translation>
@@ -481,6 +482,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5889361821821684993">Chromium verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5896077214220653386">Gemini Enterprise în Chromium</translation>
+<translation id="5900507321340749588">Ca să ofere funcții precum detectarea escrocheriilor, Chromium poate să folosească modele AI care rulează direct pe dispozitivul tău. Când opțiunea este dezactivată, este posibil ca aceste funcții să nu fie disponibile. <ph name="BEGIN_LINK" />Află mai multe despre AI pe dispozitiv<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – conectare la rețea</translation>
 <translation id="5924017743176219022">Se conectează la internet…</translation>
 <translation id="5941711191222866238">Minimizează</translation>

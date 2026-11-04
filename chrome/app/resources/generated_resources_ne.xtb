@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">अन्य भाषाका वेबसाइटहरू Google Translate प्रयोग गरी अनुवाद गर्ने विकल्प दिइयोस्</translation>
 <translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
 <translation id="1386966479075994683">ट्याबहरू एक्स्पान्ड गर्नुहोस्</translation>
+<translation id="1387227841274754059">Google लेन्स प्रयोग गरी आफ्नो स्क्रिनमा भएका कुराका बारेमा सोध्नुहोस्</translation>
 <translation id="1388253969141979417">तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="139013308650923562">तपाईंको डिभाइसमा इन्स्टल गरिएका फन्ट प्रयोग गर्न दिइएका साइटहरू</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> तपाईंको <ph name="DEVICE_TYPE" /> मा अग्रिम रूपमा इन्स्टल गरिएको छ</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">नयाँ ट्याबमा गई सम्बन्धित साइटहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="1402426911829176748">तपाईंको डिभाइसमा कनेक्ट गरिँदै छ</translation>
 <translation id="1405779994569073824">क्र्यास भयो।</translation>
-<translation id="1406812885827747674">यस पटक अनुमति दिनुहोस्</translation>
 <translation id="1407069428457324124">अँध्यारो थिम</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="140723521119632973">सेलुलर सक्रिय गर्ने कार्य</translation>
@@ -4746,6 +4746,7 @@
 <translation id="4610637590575890427">के तपाईं <ph name="SITE" /> मा जान चाहनुहुन्छ?</translation>
 <translation id="4611619000650855880">माउसको बायाँ बटन चयन गरिएका बेला डबल क्लिक गर्न “/” प्रयोग गर्नुहोस्</translation>
 <translation id="4613271546271159013">तपाइँले एक सञ्झ्याल खोल्दा कुन पृष्ठ देखाउँछ भनेर इक विस्तारले परिवर्तन गरेको छ।</translation>
+<translation id="4616024182698834938">फाइलहरू ड्र्याग गरेर यहाँ ड्रप गर्नुहोस्</translation>
 <translation id="461613135510474570">वाक्य</translation>
 <translation id="461661862154729886">चार्जिङको स्रोत</translation>
 <translation id="4617001782309103936">अत्यन्त छोटो</translation>
@@ -5310,7 +5311,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ठेगानाहरू}=1{ठेगानाहरू ({SELECTED_ITEMS} वटा)}other{ठेगानाहरू ({SELECTED_ITEMS} वटा)}}</translation>
 <translation id="5032430150487044192">QR कोड सिर्जना गर्न सकिएन</translation>
 <translation id="5033137252639132982">मोसन सेन्सरहरू प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> ले Google पासवर्ड म्यानेजर प्रयोग गरी तपाईंका तर्फबाट साइन इन गर्न सक्छ। <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> ले तपाईंको जानकारी कसरी व्यवस्थापन गर्छ भन्ने बारेमा जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट थप जानकारी प्राप्त गर्न तल "थप विवरणहरू" नामक बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="5037676449506322593">सबै चयन गर्नुहोस्</translation>
 <translation id="5038621320029329200">विश्वसनीय सर्टिफिकेटहरू</translation>
@@ -5576,6 +5576,7 @@
 <translation id="5230190638672215545">"ươ" प्राप्त गर्न "uow" टाइप गर्नुहोस्</translation>
 <translation id="5230516054153933099">विन्डो</translation>
 <translation id="5231255476752743708">Chrome लाई तपाईंको पासवर्ड परिवर्तन गर्न मद्दत चाहिन्छ</translation>
+<translation id="5232607425694431024">कुनै फाइल वा फोटोका बारेमा सोध्नुहोस्</translation>
 <translation id="5232714764496316200">Google लेन्सका सहायताले गृहकार्य गर्न मद्दत पाउनुहोस्</translation>
 <translation id="5233231016133573565">प्रक्रिया आइडी</translation>
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
@@ -6427,7 +6428,6 @@
 <translation id="5922854266885514646">"Chrome कस्टमाइज गर्नुहोस्" मा क्लिक गर्नुहोस्</translation>
 <translation id="5924047253200400718">मद्दत प्राप्त गर्नुहोस्<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft फाइलहरू Google Drive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोध्नुहोस्</translation>
-<translation id="5925057331573749968">QR कोड प्रयोग गरी अझ छिटो साइन इन गर्नुहोस्</translation>
 <translation id="5926936390113611560">सबै प्रोफाइलहरू खोल्नुहोस्</translation>
 <translation id="592880897588170157">PDF फाइलहरूलाई Chrome मा स्वतः खोल्नुको सट्टा डाउनलोड गर्नुहोस्</translation>
 <translation id="5930567261594625340">रात्रि आकाश</translation>
@@ -7722,6 +7722,7 @@
 <translation id="6913051485529944333">तपाईं अब यो पेजमा Google पात्रो देख्नु हुने छैन</translation>
 <translation id="6914812290245989348">असुरक्षित साइटहरूमा जानुअघि कुनै पनि चेतावनी नदेखाउनुहोस्</translation>
 <translation id="6916590542764765824">विस्तार व्यवस्थापन गर्नुहोस्</translation>
+<translation id="6916630302999048499">Gemini को कार्य रन गरिँदै छ</translation>
 <translation id="6916676294509106572">Outlook पात्रो लुकाइएको छ</translation>
 <translation id="6916818963747321523">सबै एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="6917873303492266709">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न सेटिङ खोल्नुहोस् र "Chrome मा साइन इन गर्ने अनुमति दिनुहोस्" अन गर्नुहोस्</translation>
@@ -8250,6 +8251,7 @@
 <translation id="733058866272972585">यो साइटलाई संरक्षित सामग्री प्ले गर्नका निम्ति आइडेन्टिफायरहरू प्रयोग गर्न रोक लगाइएको छ।</translation>
 <translation id="7331646370422660166">alt + डाउन एरो</translation>
 <translation id="7332053360324989309">यसै कामको लागि तोकिएको कर्मचारी: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">सुरु भएको छ</translation>
 <translation id="7333388112938984914">सीमा तोकिएको इन्टरनेटमा कनेक्ट गरिएका बेला फाइल अपलोड गर्न सकिँदैन।</translation>
 <translation id="7335974957018254119">यी भाषाहरूका लागि हिज्जे जाँच प्रयोग गर्नुहोस्</translation>
 <translation id="7336799713063880535">सूचनालाई रोक लगाइयो।</translation>
@@ -8482,7 +8484,6 @@
 <translation id="7495149565104413027">Android एप</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">तपाईंसँग हालै क्याप्चर गरिएको WebRTC पाठको कुनै पनि लग छैन।</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> लाई तपाईंका तर्फबाट <ph name="DOMAIN" /> मा साइन इन गर्ने अनुमति दिने हो?</translation>
 <translation id="7501957181231305652">वा</translation>
 <translation id="7502220299952823578">"यी साइटहरू सधैँ सक्रिय राख्नुहोस्" नामक सूचीमा हाल्नुहोस्</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> मा ट्याब कास्ट गर्ने कार्य पज गर्नुहोस्</translation>
@@ -10295,6 +10296,7 @@
 <translation id="8876307312329369159">डेमो सत्रमा यो सेटिङ परिवर्तन गर्न सकिँदैन।</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> ले नजिकैका डिभाइसहरू भेट्टाउन ब्लुटुथ स्क्यानिङ प्रयोग गर्छ।</translation>
 <translation id="8877448029301136595">[आमाबाबु डाइरेक्टरी]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: सुरु भएको छ</translation>
 <translation id="8879284080359814990">ट्याबको रूपमा &amp;देखाउनुहोस्</translation>
 <translation id="8879921471468674457">साइन इनसम्बन्धी जानकारी याद गर्नुहोस्</translation>
 <translation id="8880009256105053174">Google मा यो पेज खोज्नुहोस्...</translation>
@@ -10714,7 +10716,6 @@
 <translation id="9187967020623675250">की मिलेन। तपाईं <ph name="RESPONSE" /> चाहनुहुन्छ भने कुनै की थिच्नुहोस्।</translation>
 <translation id="9192019773545828776">तपाईं स्क्रिनमा नहेरिकन आफ्नो डिभाइस प्रयोग गर्न सक्नुहोस् भन्नाका लागि बोलेर दिइने प्रतिक्रिया सुन्नुहोस्। डिभाइस कनेक्ट गरेर ब्रेल प्रतिक्रिया प्राप्त गर्न सकिन्छ। ChromeVox अन र अफ गर्न Ctrl + Alt + Z थिच्नुहोस्। एउटा वस्तुबाट अर्को वस्तुमा जान Search + लेफ्ट एरो वा राइट एरो प्रयोग गर्नुहोस्। चयन (एक्टिभेट) गर्न Search + Space थिच्नुहोस्।</translation>
 <translation id="9195969368671142407">तपाईंको सङ्गठनले तपाईंको Google खातामा सेभ गर्न पाइने कुराहरूको सीमा तोकेका अवस्थामा तपाईं ट्याब समूह सेयर गर्न वा तिनमा सामेल हुन पाउनुहुन्न</translation>
-<translation id="9197456336762295195">google.com को पासकी भएको डिभाइसको क्यामेरा प्रयोग गरी यो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="919840898042157087">स्थिर चाल</translation>
 <translation id="9199503643457729322">गोपनीयतासम्बन्धी गाइडबाट बाहिरिन क्लिक गर्नुहोस्।</translation>
 <translation id="9199695835892108985">सिरियल पोर्टलाई दिइएका सबै अनुमति रिसेट गर्ने हो?</translation>

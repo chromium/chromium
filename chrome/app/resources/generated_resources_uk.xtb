@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Докладніше про пов’язані сайти на новій вкладці</translation>
 <translation id="1402426911829176748">Підключення до пристрою</translation>
 <translation id="1405779994569073824">Аварійно завершено роботу.</translation>
-<translation id="1406812885827747674">Дозволити цього разу</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1407135791313364759">Відкрити все</translation>
 <translation id="140723521119632973">Активація мобільної мережі</translation>
@@ -5324,7 +5323,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адреси}=1{Адреси ({SELECTED_ITEMS})}one{Адреси ({SELECTED_ITEMS})}few{Адреси ({SELECTED_ITEMS})}many{Адреси ({SELECTED_ITEMS})}other{Адреси ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
 <translation id="5033137252639132982">Заборонено використовувати датчики руху</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> може використовувати ваші дані з Google Менеджера паролів, щоб входити в облікові записи за вас. <ph name="BEGIN_LINK" />Дізнайтесь, як <ph name="ACTOR_NAME" /> обробляє ваші дані.<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Натисніть "Докладніше" нижче, щоб отримати докладнішу інформацію від сервісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="5037676449506322593">Вибрати всі</translation>
 <translation id="5038621320029329200">Надійні сертифікати</translation>
@@ -6440,7 +6438,6 @@
 <translation id="5922854266885514646">Натисніть "Налаштувати Chrome"</translation>
 <translation id="5924047253200400718">Довідка<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Запитувати, перш ніж копіювати або переміщувати файли Microsoft на Google Диск</translation>
-<translation id="5925057331573749968">Швидше входьте в обліковий запис за допомогою QR-коду</translation>
 <translation id="5926936390113611560">Відкрити всі профілі</translation>
 <translation id="592880897588170157">Завантажуйте файли PDF замість автоматичного відкривання їх у Chrome</translation>
 <translation id="5930567261594625340">Нічне небо</translation>
@@ -8500,7 +8497,6 @@
 <translation id="7495149565104413027">Додаток для Android</translation>
 <translation id="7497322070873193353">ШІ від Google</translation>
 <translation id="7497981768003291373">Немає нещодавно створених текстових журналів WebRTC.</translation>
-<translation id="7499684925421947861">Надати <ph name="ACTOR_NAME" /> дозвіл увійти в сервіс <ph name="DOMAIN" /> за вас?</translation>
 <translation id="7501957181231305652">або</translation>
 <translation id="7502220299952823578">Додати до списку "Ніколи не закривати ці сайти"</translation>
 <translation id="7502528909759062987">Призупинити трансляцію вкладки на пристрій "<ph name="DEVICE_NAME" />"</translation>
@@ -10732,7 +10728,6 @@
 <translation id="9187967020623675250">Клавіші не збігаються. Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
 <translation id="9192019773545828776">Слухайте голосові підказки, щоб користуватися пристроєм, не дивлячись на екран. Якщо підключено брайлівський пристрій, можна ввімкнути відгук. Щоб увімкнути або вимкнути ChromeVox, використовуйте комбінацію клавіш Ctrl + Alt + Z. Для навігації натисніть клавішу пошуку + стрілку вліво або вправо. Щоб вибрати (активувати) елемент, натисніть клавішу пошуку + пробіл.</translation>
 <translation id="9195969368671142407">Якщо ваша організація дозволяє зберігати в обліковому записі Google не всі дані, ви не зможете ділитися групами вкладок або приєднуватися до них</translation>
-<translation id="9197456336762295195">Відскануйте цей QR-код за допомогою камери пристрою, на якому є ключ доступу для google.com</translation>
 <translation id="919840898042157087">Рух: статичний</translation>
 <translation id="9199503643457729322">Натисніть, щоб вийти зі сторінки посібника з конфіденційності.</translation>
 <translation id="9199695835892108985">Скинути всі дозволи для послідовних портів?</translation>

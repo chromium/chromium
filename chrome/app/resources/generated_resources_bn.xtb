@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">অন্য ভাষার ওয়েবসাইটের জন্য Google Translate-এর সুবিধা প্রদান করুন</translation>
 <translation id="1384959399684842514">ডাউনলোড পজ করা আছে</translation>
 <translation id="1386966479075994683">ট্যাব বড় করুন</translation>
+<translation id="1387227841274754059">Google Lens-এর মাধ্যমে আপনার স্ক্রিন সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="1388253969141979417">মাইক্রোফোন ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="139013308650923562">সাইটকে আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে দেয়</translation>
 <translation id="1390306150250850355">আপনার <ph name="DEVICE_TYPE" />-এ <ph name="APP_TYPE" /> আগে থেকে ইনস্টল করা আছে</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">নতুন ট্যাবে সম্পর্কিত সাইটের বিষয়ে আরও জানুন</translation>
 <translation id="1402426911829176748">আপনার ডিভাইসে কানেক্ট করা হচ্ছে</translation>
 <translation id="1405779994569073824">ক্র্যাশ করেছে।</translation>
-<translation id="1406812885827747674">একবারের জন্য অনুমতি দিন</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="140723521119632973">সেলুলার চালু করা</translation>
@@ -4761,6 +4761,7 @@
 <translation id="4610637590575890427">আপনি <ph name="SITE" />-এ যাওয়ার কথা বলছেন কি?</translation>
 <translation id="4611619000650855880">মাউসের বাঁদিকের বোতামটি বেছে নেওয়া হলে, ডবল ক্লিক করতে “/” ব্যবহার করুন</translation>
 <translation id="4613271546271159013">আপনি যখন একটি নতুন ট্যাব খুলবেন তখন কোন পৃষ্ঠা দেখানো হবে, একটি এক্সটেনশন তার পরিবর্তন করেছে।</translation>
+<translation id="4616024182698834938">এখানে ফাইল টেনে নিয়ে রাখুন</translation>
 <translation id="461613135510474570">বাক্য</translation>
 <translation id="461661862154729886">পাওয়ার সোর্স</translation>
 <translation id="4617001782309103936">খুবই ছোট</translation>
@@ -5325,7 +5326,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ঠিকানা}=1{ঠিকানা ({SELECTED_ITEMS}টি)}one{ঠিকানা ({SELECTED_ITEMS}টি)}other{ঠিকানা ({SELECTED_ITEMS}টি)}}</translation>
 <translation id="5032430150487044192">QR কোড তৈরি করা যায়নি</translation>
 <translation id="5033137252639132982">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />, আপনার হয়ে সাইন-ইন করার জন্য Google Password Manager ব্যবহার করতে পারবে। <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> কীভাবে আপনার ডেটা ম্যানেজ করে তা জানুন<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> থেকে আরও তথ্য পেতে নিচে "আরও বিবরণ" বিকল্প বেছে নিন।</translation>
 <translation id="5037676449506322593">সকল বেছে নিন</translation>
 <translation id="5038621320029329200">বিশ্বস্ত সার্টিফিকেট</translation>
@@ -5591,6 +5591,7 @@
 <translation id="5230190638672215545">"ươ" পেতে "uow" টাইপ করুন</translation>
 <translation id="5230516054153933099">উইন্ডো</translation>
 <translation id="5231255476752743708">Chrome-এর আপনার পাসওয়ার্ড পরিবর্তন করার জন্য সাহায্য প্রয়োজন</translation>
+<translation id="5232607425694431024">কোনও ফাইল বা ছবি সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="5232714764496316200">Google Lens-এর মাধ্যমে হোমওয়ার্কের ব্যাপারে সাহায্য পান</translation>
 <translation id="5233231016133573565">প্রক্রিয়া ID</translation>
 <translation id="5233638681132016545">নতুন ট্যাব</translation>
@@ -6445,7 +6446,6 @@
 <translation id="5922854266885514646">"Chrome কাস্টমাইজ করুন" বিকল্পে ক্লিক করুন</translation>
 <translation id="5924047253200400718">সাহায্য পান<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Google Drive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
-<translation id="5925057331573749968">QR কোড ব্যবহার করে আরও দ্রুত সাইন-ইন করুন</translation>
 <translation id="5926936390113611560">সব প্রোফাইল খুলুন</translation>
 <translation id="592880897588170157">Chrome-এ PDF ফাইলগুলি অটোমেটিকভাবে খোলার পরিবর্তে সেগুলি ডাউনলোড করুন</translation>
 <translation id="5930567261594625340">নাইট স্কাই</translation>
@@ -7742,6 +7742,7 @@
 <translation id="6913051485529944333">এই পৃষ্ঠায় আপনি আর Google Calendar দেখতে পাবেন না</translation>
 <translation id="6914812290245989348">অসুরক্ষিত সাইটে যাওয়ার আগে কোনও সতর্কতা দেখতে পাওয়া যাবে না</translation>
 <translation id="6916590542764765824">এক্সটেনশানগুলি পরিচালনা করুন</translation>
+<translation id="6916630302999048499">Gemini টাস্ক চলছে</translation>
 <translation id="6916676294509106572">Outlook Calendar লুকানো আছে</translation>
 <translation id="6916818963747321523">সব বড় করুন</translation>
 <translation id="6917873303492266709">ট্যাব গ্রুপে শেয়ার করতে, যোগ দিতে এবং কোল্যাবরেট করতে, সেটিংস খুলে 'Chrome-এ সাইন-ইনের অনুমতি দিন' বিকল্প চালু করুন</translation>
@@ -8271,6 +8272,7 @@
 <translation id="733058866272972585">সুরক্ষিত কন্টেন্ট চালানোর জন্য এই সাইটের কাছে শনাক্তকারী ব্যবহার করার অনুমতি নেই।</translation>
 <translation id="7331646370422660166">alt + নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="7332053360324989309">ডেডিকেটেড ওয়ার্কার: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">শুরু হয়েছে</translation>
 <translation id="7333388112938984914">মিটারড কানেকশনে ফাইল আপলোড করা যাচ্ছে না।</translation>
 <translation id="7335974957018254119">এই ভাষাগুলির জন্য বানান পরীক্ষা করা যায়</translation>
 <translation id="7336799713063880535">বিজ্ঞপ্তি ব্লক করা হয়েছে।</translation>
@@ -8503,7 +8505,6 @@
 <translation id="7495149565104413027">Android অ্যাপ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">আপনার সাম্প্রতিক কোনও ক্যাপচার করা WebRTC টেক্সট লগ নেই।</translation>
-<translation id="7499684925421947861">আপনার হয়ে <ph name="DOMAIN" />-এ সাইন-ইন করতে <ph name="ACTOR_NAME" />-কে অনুমতি দেবেন?</translation>
 <translation id="7501957181231305652">অথবা</translation>
 <translation id="7502220299952823578">"এইসব সাইট সব সময় অ্যাক্টিভ রাখুন" তালিকায় যোগ করুন</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />-এ ট্যাব কাস্ট করা পজ করুন</translation>
@@ -10316,6 +10317,7 @@
 <translation id="8876307312329369159">ডেমো সেশনে এই সেটিংটি পরিবর্তন করা যাবে না।</translation>
 <translation id="8876965259056847565">আশেপাশের ডিভাইস খুঁজতে <ph name="FEATURE_NAME" /> ব্লুটুথ স্ক্যানিং ব্যবহার করে।</translation>
 <translation id="8877448029301136595">[parent directory]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: শুরু হয়েছে</translation>
 <translation id="8879284080359814990">ট্যাব রূপে &amp;দেখান</translation>
 <translation id="8879921471468674457">সাইন-ইন সংক্রান্ত তথ্য মনে রাখুন</translation>
 <translation id="8880009256105053174">Google ব্যবহার করে এই পৃষ্ঠা সার্চ করুন...</translation>
@@ -10735,7 +10737,6 @@
 <translation id="9187967020623675250">'কী' মিলছে না। <ph name="RESPONSE" />-এর জন্য যেকোনও 'কী' প্রেস করুন।</translation>
 <translation id="9192019773545828776">পড়ে শোনানোর সুবিধা পান যাতে স্ক্রিনের দিকে না তাকিয়েই ডিভাইস ব্যবহার করতে পারেন। কানেক্ট করা ডিভাইসের সাথে ব্রেইল ফিডব্যাকের সুবিধা উপলভ্য। 'Ctrl + Alt + Z' কী ব্যবহার করে ChromeVox চালু বা বন্ধ করুন। নেভিগেট করতে 'Search + বামদিকের তীরচিহ্ন বা ডানদিকের তীরচিহ্ন' কী ব্যবহার করুন। বেছে নিতে 'Search + Space' কী ব্যবহার করুন (চালু করুন)।</translation>
 <translation id="9195969368671142407">আপনার সংস্থা আপনাকে Google অ্যাকাউন্টে সেভ করতে না দিলে, আপনি ট্যাব গ্রুপে শেয়ার করতে বা যোগ দিতে পারবেন না</translation>
-<translation id="9197456336762295195">যে ডিভাইসে google.com-এর জন্য আপনার পাসকী আছে, তার ক্যামেরা ব্যবহার করে এই QR কোড স্ক্যান করুন</translation>
 <translation id="919840898042157087">স্ট্যাটিক মুভমেন্ট</translation>
 <translation id="9199503643457729322">গোপনীয়তা সংক্রান্ত গাইড থেকে দূরে নেভিগেট করতে ক্লিক করুন।</translation>
 <translation id="9199695835892108985">সব সিরিয়াল পোর্টের অনুমতি রিসেট করবেন?</translation>

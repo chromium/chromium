@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">பிற மொழிகளில் உள்ள இணையதளங்களிலும் Google Translateடைக் காட்டு</translation>
 <translation id="1384959399684842514">பதிவிறக்கம் இடைநிறுத்தப்பட்டது</translation>
 <translation id="1386966479075994683">பக்கங்களை விரிவாக்கும்</translation>
+<translation id="1387227841274754059">உங்கள் திரையில் உள்ளதைப் பற்றி Google Lens மூலம் கேளுங்கள்</translation>
 <translation id="1388253969141979417">மைக்ரோஃபோனைப் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="139013308650923562">சாதனத்தில் நிறுவப்பட்டுள்ள எழுத்து வடிவங்களைப் பயன்படுத்த அனுமதியுள்ள தளங்கள்</translation>
 <translation id="1390306150250850355">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் <ph name="APP_TYPE" /> ஆப்ஸ் முன்பே நிறுவப்பட்டுள்ளது</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">தொடர்புடைய தளங்களைப் பற்றி புதிய பக்கத்தில் மேலும் அறியலாம்</translation>
 <translation id="1402426911829176748">உங்கள் சாதனத்துடன் இணைக்கிறது</translation>
 <translation id="1405779994569073824">சிதைந்துவிட்டது.</translation>
-<translation id="1406812885827747674">இந்த முறை அனுமதி</translation>
 <translation id="1407069428457324124">டார்க் தீம்</translation>
 <translation id="1407135791313364759">எல்லாவற்றையும் திற</translation>
 <translation id="140723521119632973">செல்லுலார் செயல்படுத்தல்</translation>
@@ -4761,6 +4761,7 @@
 <translation id="4610637590575890427"><ph name="SITE" /> க்கு செல்வதைக் குறித்தீர்களா?</translation>
 <translation id="4611619000650855880">இடது மவுஸ் பட்டன் தேர்ந்தெடுக்கப்பட்டிருக்கும்போது இரு கிளிக் செய்ய “/” பட்டனைப் பயன்படுத்தவும்</translation>
 <translation id="4613271546271159013">புதிய தாவலைத் திறக்கும்போது காண்பிக்கப்படும் பக்கத்தை நீட்டிப்பு மாற்றியுள்ளது.</translation>
+<translation id="4616024182698834938">ஃபைல்களை இங்கே இழுத்து விடுங்கள்</translation>
 <translation id="461613135510474570">வாக்கியம்</translation>
 <translation id="461661862154729886">மின்சக்தி மூலம்</translation>
 <translation id="4617001782309103936">மிகவும் சிறிதாக உள்ளது</translation>
@@ -5325,7 +5326,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{முகவரிகள்}=1{முகவரிகள் ({SELECTED_ITEMS})}other{முகவரிகள் ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR குறியீட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5033137252639132982">மோஷன் சென்சார்களைப் பயன்படுத்த அனுமதி இல்லாத தளங்கள்</translation>
-<translation id="5034158480345261097">உங்களுக்காக உள்நுழைய Google Password Managerரை <ph name="ACTOR_NAME" /> பயன்படுத்தலாம். <ph name="BEGIN_LINK" />உங்கள் தரவை <ph name="ACTOR_NAME" /> எப்படிக் கையாள்கிறது என்று தெரிந்துகொள்ளுங்கள்<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> இடமிருந்து கூடுதல் தகவல்களைப் பெற, கீழே உள்ள "கூடுதல் விவரங்கள்" என்பதைத் தேர்வுசெய்யுங்கள்.</translation>
 <translation id="5037676449506322593">எல்லாம் தேர்ந்தெடு</translation>
 <translation id="5038621320029329200">நம்பகமான சான்றிதழ்கள்</translation>
@@ -5591,6 +5591,7 @@
 <translation id="5230190638672215545">"ươ" என்பதைப் பெற "uow" என்று டைப் செய்யுங்கள்</translation>
 <translation id="5230516054153933099">விண்டோ</translation>
 <translation id="5231255476752743708">உங்கள் கடவுச்சொல்லை மாற்ற Chromeமிற்கு உதவி தேவை</translation>
+<translation id="5232607425694431024">ஃபைல் அல்லது படம் குறித்துக் கேளுங்கள்</translation>
 <translation id="5232714764496316200">Google Lens மூலம் வீட்டுப்பாடங்களைச் செய்வதற்கான உதவியைப் பெறுங்கள்</translation>
 <translation id="5233231016133573565">செயலாக்க ID</translation>
 <translation id="5233638681132016545">புதிய தாவல்</translation>
@@ -6445,7 +6446,6 @@
 <translation id="5922854266885514646">"Chromeமைப் பிரத்தியேகப்படுத்து" என்பதைக் கிளிக் செய்யவும்</translation>
 <translation id="5924047253200400718">உதவி பெறுக<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft ஃபைல்களை Google Driveவிற்கு நகலெடுக்கும் முன் அல்லது நகர்த்தும் முன் கேள்</translation>
-<translation id="5925057331573749968">QR குறியீடு மூலம் விரைவாக உள்நுழையுங்கள்</translation>
 <translation id="5926936390113611560">எல்லா சுயவிவரங்களையும் திற</translation>
 <translation id="592880897588170157">தானாக Chromeமில் திறப்பதற்குப் பதிலாக, PDF ஃபைல்களைப் பதிவிறக்கவும்</translation>
 <translation id="5930567261594625340">இரவு நேர வானம்</translation>
@@ -7740,6 +7740,7 @@
 <translation id="6913051485529944333">இந்தப் பக்கத்தில் Google Calendar மீண்டும் காட்டப்படாது</translation>
 <translation id="6914812290245989348">பாதுகாப்பற்ற தளங்களுக்குச் செல்லும் முன் எச்சரிக்கைகளைக் காட்ட வேண்டாம்</translation>
 <translation id="6916590542764765824">நீட்டிப்புகளை நிர்வகி</translation>
+<translation id="6916630302999048499">Gemini பணி இயங்குகிறது</translation>
 <translation id="6916676294509106572">Outlook Calendar மறைக்கப்பட்டது</translation>
 <translation id="6916818963747321523">எல்லாம் விரிவாக்கு</translation>
 <translation id="6917873303492266709">பக்கக் குழுக்களைப் பகிர, அவற்றில் சேர மற்றும் கூட்டுப்பணியாற்ற, அமைப்புகளுக்குச் சென்று ‘Chrome உள்நுழைவை அனுமதி’ என்பதை இயக்கவும்</translation>
@@ -8269,6 +8270,7 @@
 <translation id="733058866272972585">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைப் பிளே செய்வதற்கு அடையாளங்காட்டிகளைப் பயன்படுத்த முடியாதபடி இந்தத் தளம் தடுக்கப்பட்டுள்ளது.</translation>
 <translation id="7331646370422660166">Alt + கீழ்நோக்கிய அம்புக்குறி</translation>
 <translation id="7332053360324989309">பிரத்தியேக வொர்க்கர்: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">தொடங்கியது</translation>
 <translation id="7333388112938984914">வரம்புள்ள இணைப்பில் இருக்கும்போது ஃபைல்களைப் பதிவேற்ற முடியாது.</translation>
 <translation id="7335974957018254119">எழுத்துப்பிழைச் சரிபார்ப்பை இதற்குப் பயன்படுத்தவும்</translation>
 <translation id="7336799713063880535">அறிவிப்புக்குத் தடை.</translation>
@@ -8501,7 +8503,6 @@
 <translation id="7495149565104413027">Android ஆப்ஸ்</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">சமீபத்தில் எடுக்கப்பட்ட WebRTC உரைப் பதிவுகள் எதுவும் இல்லை.</translation>
-<translation id="7499684925421947861"><ph name="DOMAIN" /> இல் உங்களுக்காக <ph name="ACTOR_NAME" />உள்நுழைய அனுமதிக்கவா?</translation>
 <translation id="7501957181231305652">அல்லது</translation>
 <translation id="7502220299952823578">"இந்தத் தளங்களை எப்போதும் செயலில் வைத்திரு" என்ற பட்டியலில் சேர்க்கும்</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />க்குப் பக்கத்தை அலைபரப்புவதை இடைநிறுத்தும்</translation>
@@ -10314,6 +10315,7 @@
 <translation id="8876307312329369159">டெமோ அமர்வில் இந்த அமைப்பை மாற்ற முடியாது.</translation>
 <translation id="8876965259056847565">அருகிலுள்ள சாதனங்களைக் கண்டறிய, <ph name="FEATURE_NAME" /> அம்சம் புளூடூத் ஸ்கேனிங்கைப் பயன்படுத்துகிறது.</translation>
 <translation id="8877448029301136595">[மூலக் கோப்பகம்]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: தொடங்கியது</translation>
 <translation id="8879284080359814990">தாவலாகக் &amp;காண்பி</translation>
 <translation id="8879921471468674457">உள்நுழைவுத் தகவல்களை நினைவில்கொள்</translation>
 <translation id="8880009256105053174">Google மூலம் இந்தப் பக்கத்தைத் தேடு...</translation>
@@ -10733,7 +10735,6 @@
 <translation id="9187967020623675250">ஒரே பட்டனை மீண்டும் அழுத்தக்கூடாது. <ph name="RESPONSE" />, ஏதேனும் ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="9192019773545828776">பேச்சுவடிவத்தில் விளக்கம் அளிக்கப்படுவதால் திரையைப் பார்க்காமலேயே நீங்கள் சாதனத்தைப் பயன்படுத்த முடியும். இணைக்கப்பட்ட சாதனத்தின் மூலம் பிரெய்ல் கருத்தைப் பெறலாம். ChromeVoxஸை இயக்கவும் முடக்கவும் Ctrl + Alt + Z அழுத்தவும். உலாவ, Search + இடது அம்புக்குறி/வலது அம்புக்குறியைப் பயன்படுத்தவும். தேர்ந்தெடுக்க (செயல்படுத்த) Search + Space அழுத்தவும்.</translation>
 <translation id="9195969368671142407">உங்கள் Google கணக்கில் சேமிப்பதை உங்கள் நிறுவனம் கட்டுப்படுத்தினால், பக்கக் குழுக்களை உங்களால் பகிரவோ அவற்றில் சேரவோ முடியாது</translation>
-<translation id="9197456336762295195">google.com தளத்துக்கான உங்கள் கடவுச்சாவி உள்ள சாதனத்தின் கேமரா மூலம் இந்த QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="919840898042157087">நிலையான நகர்வு</translation>
 <translation id="9199503643457729322">தனியுரிமை வழிகாட்டியில் இருந்து அமைப்புகளுக்குச் செல்ல, கிளிக் செய்யவும்.</translation>
 <translation id="9199695835892108985">அனைத்து சீரியல் போர்ட் அனுமதிகளையும் மீட்டமைக்கவா?</translation>

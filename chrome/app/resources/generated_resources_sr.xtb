@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">Понуди Google преводилац за веб-сајтове на другим језицима</translation>
 <translation id="1384959399684842514">Преузимање је паузирано</translation>
 <translation id="1386966479075994683">Прошири картице</translation>
+<translation id="1387227841274754059">Поставите питање о екрану помоћу Google објектива</translation>
 <translation id="1388253969141979417">Дозвољено им је коришћење микрофона</translation>
 <translation id="139013308650923562">Имају дозволу да користе фонтове инсталиране на уређају</translation>
 <translation id="1390306150250850355">Апликација <ph name="APP_TYPE" /> је унапред инсталирана на уређају <ph name="DEVICE_TYPE" /></translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">Сазнајте више о сродним сајтовима на новој картици</translation>
 <translation id="1402426911829176748">Повезује се са уређајем</translation>
 <translation id="1405779994569073824">Картица је отказала.</translation>
-<translation id="1406812885827747674">Дозволи овај пут</translation>
 <translation id="1407069428457324124">Тамна тема</translation>
 <translation id="1407135791313364759">Отвори све</translation>
 <translation id="140723521119632973">Мобилна активација</translation>
@@ -4747,6 +4747,7 @@
 <translation id="4610637590575890427">Да ли сте желели да одете на <ph name="SITE" /></translation>
 <translation id="4611619000650855880">Када је изабран леви тастер миша, користите „/“ да бисте кликнули двапут</translation>
 <translation id="4613271546271159013">Додатак је променио страницу која се приказује када отворите нову картицу.</translation>
+<translation id="4616024182698834938">Превуците и отпустите фајлове овде</translation>
 <translation id="461613135510474570">Реченица</translation>
 <translation id="461661862154729886">Извор енергије</translation>
 <translation id="4617001782309103936">Прекратко</translation>
@@ -5311,7 +5312,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адресе}=1{Адресе ({SELECTED_ITEMS})}one{Адресе ({SELECTED_ITEMS})}few{Адресе ({SELECTED_ITEMS})}other{Адресе ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Прављење QR кода није успело</translation>
 <translation id="5033137252639132982">Није им дозвољено да користе сензоре покрета</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> може да вас пријави помоћу Google менаџера лозинки. <ph name="BEGIN_LINK" />Сазнајте како <ph name="ACTOR_NAME" /> поступа са вашим подацима<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Изаберите Још детаља испод да бисте пронашли више информација од: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Изабери све</translation>
 <translation id="5038621320029329200">Поуздани сертификати</translation>
@@ -5577,6 +5577,7 @@
 <translation id="5230190638672215545">Унесите „uow“ да бисте добили „ươ“</translation>
 <translation id="5230516054153933099">Прозор</translation>
 <translation id="5231255476752743708">Chrome-у треба помоћ да промени лозинку</translation>
+<translation id="5232607425694431024">Поставите питање о фајлу или слици</translation>
 <translation id="5232714764496316200">Пронађите помоћ за домаће задатке помоћу Google објектива</translation>
 <translation id="5233231016133573565">ИД процеса</translation>
 <translation id="5233638681132016545">Нова картица</translation>
@@ -6429,7 +6430,6 @@
 <translation id="5922854266885514646">Кликните на Прилагодите Chrome</translation>
 <translation id="5924047253200400718">Потражите помоћ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Питај пре копирања или премештања Microsoft фајлова на Google диск</translation>
-<translation id="5925057331573749968">Брже се пријављујте помоћу QR кода</translation>
 <translation id="5926936390113611560">Отвори све профиле</translation>
 <translation id="592880897588170157">Преузмите PDF датотеке да се не би аутоматски отварале у Chrome-у</translation>
 <translation id="5930567261594625340">Ноћно небо</translation>
@@ -7728,6 +7728,7 @@
 <translation id="6913051485529944333">Више нећете видети Google календар на овој страници</translation>
 <translation id="6914812290245989348">Не видим никаква упозорења пре одласка на небезбедне сајтове</translation>
 <translation id="6916590542764765824">Управљајте додацима</translation>
+<translation id="6916630302999048499">Gemini задатак је у току</translation>
 <translation id="6916676294509106572">Outlook календар је скривен</translation>
 <translation id="6916818963747321523">Прошири све</translation>
 <translation id="6917873303492266709">Да бисте делили групе картица, придруживали им се и сарађивали у њима, отворите подешавања и укључите Дозволи пријављивање у Chrome</translation>
@@ -8257,6 +8258,7 @@
 <translation id="733058866272972585">Овом сајту није дозвољено коришћење идентификатора за пуштање заштићеног садржаја.</translation>
 <translation id="7331646370422660166">alt + стрелица надоле</translation>
 <translation id="7332053360324989309">Наменски обрађивач: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">Започето</translation>
 <translation id="7333388112938984914">Не можете да отпремате фајлове док користите везу ограниченог промета података.</translation>
 <translation id="7335974957018254119">Користите проверу правописа за:</translation>
 <translation id="7336799713063880535">Обавештења су блокирана.</translation>
@@ -8489,7 +8491,6 @@
 <translation id="7495149565104413027">Android апликација</translation>
 <translation id="7497322070873193353">Google вештачка интелигенција</translation>
 <translation id="7497981768003291373">Нисте недавно снимили ниједну WebRTC евиденцију текста.</translation>
-<translation id="7499684925421947861">Желите да дозволите да вас <ph name="ACTOR_NAME" /> пријављује на домен <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Додај на листу Увек задржи ове сајтове активним</translation>
 <translation id="7502528909759062987">Паузирајте картицу за пребацивање на <ph name="DEVICE_NAME" /></translation>
@@ -10302,6 +10303,7 @@
 <translation id="8876307312329369159">Ово подешавање не можете да промените у сесији демонстрације.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> користи Bluetooth скенирање за проналажење уређаја у близини.</translation>
 <translation id="8877448029301136595">[матични директоријум]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: Покренуто</translation>
 <translation id="8879284080359814990">&amp;Прикажи као картицу</translation>
 <translation id="8879921471468674457">Запамти податке за пријављивање</translation>
 <translation id="8880009256105053174">Претражи ову страницу помоћу Google-а...</translation>
@@ -10534,6 +10536,7 @@
 <translation id="9043767139743235992">Обратите се Google тиму за подршку особама са инвалидитетом</translation>
 <translation id="9044646465488564462">Повезивање са мрежом није успело: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Листа за читање је премештена у нову бочну табелу. Испробајте овде.</translation>
+<translation id="9046240419485318563">Прегледајте меморију</translation>
 <translation id="9048745018038487540">Изабери све фонтове</translation>
 <translation id="9050666287014529139">Приступна фраза</translation>
 <translation id="905137631551495997">Додаци</translation>
@@ -10720,7 +10723,6 @@
 <translation id="9187967020623675250">Тастери се не подударају. Притисните било који тастер да бисте <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Слушајте говорне повратне информације да бисте могли да користите уређај без гледања у екран. Повратне информације са Брајевом азбуком доступне су помоћу повезаног уређаја. Користите Ctrl + Alt + Z да бисте укључили или искључили ChromeVox. Користите тастер за претрагу + стрелицу налево или стрелицу надесно да бисте се кретали. За избор (активирање) користите тастер за претрагу + тастер за размак.</translation>
 <translation id="9195969368671142407">Када организација ограничи чување на Google налогу, не можете да делите групе картица нити да им се придружите</translation>
-<translation id="9197456336762295195">Скенирајте овај QR кôд камером на уређају који има приступни кључ за google.com</translation>
 <translation id="919840898042157087">Статично кретање</translation>
 <translation id="9199503643457729322">Кликните да бисте напустили Водич за приватност.</translation>
 <translation id="9199695835892108985">Желите да ресетујете све дозволе за серијски порт?</translation>

@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" />MB</translation>
 <translation id="3075154866155599887">유효한 값을 입력하세요. 입력을 완료하지 않았거나 날짜가 잘못되었습니다.</translation>
 <translation id="310520048233152454">URL을 입력하세요.</translation>
+<translation id="3137127353890528027">비밀번호 숨김</translation>
 <translation id="3321030238473337787">재생 속도</translation>
 <translation id="3450233048674729344">값은 <ph name="MAXIMUM" /> 이하여야 합니다.</translation>
 <translation id="3732799496749320381">월</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0.5</translation>
 <translation id="6070714301435004046">자세한 내용은 <ph name="ALERT_HUB_LINK" />를 참고하세요.</translation>
 <translation id="6310801910862476708">PIP 모드 종료</translation>
+<translation id="64261224118544870">비밀번호 표시됨</translation>
 <translation id="6484738902856791350">pretty print 적용</translation>
 <translation id="6550675742724504774">옵션</translation>
 <translation id="65574987622079584">브라우저 확장 프로그램을 설치</translation>

@@ -536,7 +536,6 @@
 <translation id="1401216725754314428">新しいタブで関連サイトの詳細を確認します</translation>
 <translation id="1402426911829176748">デバイスに接続しています</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
-<translation id="1406812885827747674">今回のみ許可</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="140723521119632973">モバイル有効化</translation>
@@ -5310,7 +5309,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{住所}=1{住所（{SELECTED_ITEMS}）}other{住所（{SELECTED_ITEMS}）}}</translation>
 <translation id="5032430150487044192">QR コードを作成できません</translation>
 <translation id="5033137252639132982">モーション センサーの使用を許可しないサイト</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> は Google パスワード マネージャーを使用して、ユーザーに代わってログイン操作を行えます。<ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> によるユーザーデータの取り扱いについて<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">下の [詳細] を選択して、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="5037676449506322593">すべてを選択</translation>
 <translation id="5038621320029329200">信頼できる証明書</translation>
@@ -6427,7 +6425,6 @@
 <translation id="5922854266885514646">[Chrome をカスタマイズ] をクリック</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> ヘルプ</translation>
 <translation id="5924438086390153180">Microsoft のファイルを Google ドライブにコピーまたは移動する前に確認する</translation>
-<translation id="5925057331573749968">QR コードですばやくログイン</translation>
 <translation id="5926936390113611560">すべてのプロフィールを開く</translation>
 <translation id="592880897588170157">PDF ファイルを Chrome で自動的に開く代わりにダウンロードする</translation>
 <translation id="5930567261594625340">夜空</translation>
@@ -8485,7 +8482,6 @@
 <translation id="7495149565104413027">Android アプリ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">最近記録された WebRTC テキストログはありません。</translation>
-<translation id="7499684925421947861"><ph name="DOMAIN" /> へのログインを <ph name="ACTOR_NAME" /> に許可しますか？</translation>
 <translation id="7501957181231305652">または</translation>
 <translation id="7502220299952823578">常にアクティブにするサイトのリストに追加</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> へのタブのキャストを一時停止する</translation>
@@ -10717,7 +10713,6 @@
 <translation id="9187967020623675250">キーが一致しません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="9192019773545828776">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。ChromeVox のオンとオフを切り替えるには Ctrl+Alt+Z キーを使用します。移動するには検索+左矢印または右矢印キーを使用します。選択（有効化）するには検索+Space キーを使用します。</translation>
 <translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
-<translation id="9197456336762295195">google.com のパスキーを保存したデバイスのカメラでこの QR コードをスキャンしてください</translation>
 <translation id="919840898042157087">静的な動き</translation>
 <translation id="9199503643457729322">クリックするとプライバシー ガイドから離れます。</translation>
 <translation id="9199695835892108985">シリアルポートの権限をすべてリセットしますか？</translation>

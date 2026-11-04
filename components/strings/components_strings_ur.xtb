@@ -579,7 +579,6 @@
 <translation id="1978555033938440688">فرم ویئر ورژن</translation>
 <translation id="1979156660928743046">میڈیا کی معلومات</translation>
 <translation id="1980625250417123895">میرے ساتھ سوچ بچار کریں</translation>
-<translation id="1987486584747170374">‏آپ کی تلاشیں، بہترین مماثلتیں اور ان کے صفحہ کے مواد Google کو بھیجے جاتے ہیں۔ یہ انسانی جائزہ کاران کے ذریعے AI کو بہتر بنانے کے لیے استعمال نہیں کیا جائے گا۔ آپ کی تنظیم کسی بھی وقت ان ترتیبات کو تبدیل کر سکتی ہے۔</translation>
 <translation id="1988881251331415125">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1991370806334788445">فریق ثالث کوکیز کو اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="1992331125980284532">JIS B3</translation>
@@ -734,6 +733,7 @@
 <translation id="2215727959747642672">فائل میں ترمیم کریں</translation>
 <translation id="2219658597883514593">ٹیوٹوریل ری سٹارٹ کریں</translation>
 <translation id="2219735899272417925">آلے کو ری سیٹ کرنے کی ضرورت ہے</translation>
+<translation id="2221460252073828078">‏اپنا تلاش کا AI جواب یہاں دیکھیں</translation>
 <translation id="2222604080869344662">‏ڈاؤن لوڈ جاری رکھنے کے لیے OneDrive میں سائن ان کریں</translation>
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
 <translation id="2225927550500503913">ورچوئل کارڈ آن ہو گیا</translation>
@@ -919,7 +919,6 @@
 <translation id="251033673027346551">‏<ph name="BEGIN_LINK" />ڈیٹا اور رازداری کی ترجیحات<ph name="END_LINK" /> کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں۔</translation>
 <translation id="2512101340618156538">اجازت نہیں ہے (ڈیفالٹ)</translation>
 <translation id="2512413427717747692">‏Chrome کو بطور ڈیفالٹ براؤزر بٹن سیٹ کریں، iOS ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے Enter دبائیں</translation>
-<translation id="2513217232843681817">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /> میں آٹو براؤز کے دورے</translation>
 <translation id="2515629240566999685">آپ کے علاقہ میں سگنل چیک کیا جا رہا ہے</translation>
 <translation id="2518584823165598232">یہ کارڈ دستیاب نہیں ہے۔ براہ کرم اپنے کارڈ فراہم کنندہ سے رابطہ کریں۔</translation>
 <translation id="2521385132275182522">نیچے بائیں طرف سٹیپل</translation>
@@ -1025,7 +1024,6 @@
 <translation id="2687555958734450033">بہترین فٹ</translation>
 <translation id="2688186765492306706">‏‎500 x 760 ملی میٹر</translation>
 <translation id="2688969097326701645">ہاں، جاری رکھیں</translation>
-<translation id="2690699652723742414">آخری 30 دن</translation>
 <translation id="2691385045260836588">ماڈل</translation>
 <translation id="2691924980723297736">حفاظتی وارننگ</translation>
 <translation id="2696385693639654606">‏‫Chrome Enterprise Core آپ کو کلاؤڈ سے براؤزر کی پالیسیوں، ایپس اور ایکسٹینشنز کا نظم کرنے کی سہولت دیتا ہے</translation>
@@ -1263,7 +1261,6 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="3120807611504813890">لفافہ (لائٹ ویٹ)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> پر جائیں</translation>
-<translation id="3122696783148405307">پچھلے 30 دن کے نتائج دکھائیں</translation>
 <translation id="3126023634486644099">لیبلز (مستقل)</translation>
 <translation id="3131746543143948171">یہ سائٹ فریب دہی، میلوئیر اور اسکیموں سے وابستہ دیگر سائٹس سے ملتی جلتی معلوم ہوتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">ریڈریس نمبر محفوظ کریں</translation>
@@ -1671,7 +1668,6 @@
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">بلوٹوتھ آلات</translation>
 <translation id="3785246317262748285">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن Chrome اس بار محفوظ کنکشن استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
-<translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" کے لیے بہترین مماثلتیں</translation>
 <translation id="3787429331139352881">مندرجہ ذیل ٹیکسٹ کو دوبارہ لکھیں تاکہ یہ دفتر کی ترتیب کے لیے پیشہ ورانہ، شائستہ اور واضح لگے۔ اصل بنیادی پیغام کو برقرار رکھیں لیکن لہجے کو ایگزیکٹو آڈئینس کے لیے مناسب بنائیں: [اپنا ٹیکسٹ یہاں داخل کریں]</translation>
 <translation id="3787887386289385215">‫<ph name="ISSUER_1_NAME" />، <ph name="ISSUER_2_NAME" /> یا <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
@@ -1714,7 +1710,6 @@
 <translation id="3832522519263485449">بائیں طرف متعدد سوراخ</translation>
 <translation id="3835233591525155343">آپ کے آلے کا استعمال</translation>
 <translation id="383710924053593293">مزید فیلڈز کو تیزی سے پُر کریں</translation>
-<translation id="3841356782900714251">اسمارٹ کارڈ ریڈرز</translation>
 <translation id="3843447501960446468">لائلٹی کارڈز کا نظم کریں...</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267">‏<ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />، تیزی سے ایک نیا Google Doc تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
@@ -2092,7 +2087,6 @@
 <translation id="4439665841041786039">کیا آپ میری پریشانی کو حل کرنے میں میری مدد کے لیے میرے ساتھ سوچ بچار کر سکتے ہیں؟</translation>
 <translation id="4441832193888514600">نظر انداز کر دیا گیا کیونکہ پالیسی صرف کلاؤڈ صارف کی پالیسی کے بطور سیٹ کی جا سکتی ہے۔</translation>
 <translation id="4444062564459679679">‏آپ کے <ph name="DEVICE_NAME" /> پر Chrome کو پہلے ہی بھیج دیا گیا ہے</translation>
-<translation id="4445964943162061557">یہ ایک تجرباتی خصوصیت ہے اور یہ ہمیشہ درست نہیں ہوگی۔</translation>
 <translation id="4449116177348980384">‏سائٹ کی ترتیبات کا نظم کریں بٹن، Chrome کی ترتیبات میں تمام سائٹس پر محفوظ کردہ اجازتوں اور ڈیٹا کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="4451135742916150903">‏سائٹ HID آلات سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="4452328064229197696">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Google پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
@@ -2181,7 +2175,6 @@
 <translation id="462989688138616749"><ph name="HOURS" /> گھنٹوں میں آپ کی فائل <ph name="CLOUD_PROVIDER" /> میں اپ لوڈ ہونا شروع ہو جائے گی</translation>
 <translation id="4635278307999235413">منتظم کونسول کو ڈیٹا بھیجا جا رہا ہے</translation>
 <translation id="4636930964841734540">معلومات</translation>
-<translation id="4640225694041297329">پچھلے 7 دن کے نتائج دکھائیں</translation>
 <translation id="4642296966515958616">‏اس ٹیب گروپ میں شامل ہونے کے لیے، Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="464342062220857295">خصوصیات تلاش کریں</translation>
 <translation id="4644567637638438744">‏آپ کے Microsoft OneDrive میں سائن ان ہونے پر ہی فائلز اپ لوڈ ہو سکتی ہیں</translation>
@@ -2279,7 +2272,6 @@
 <translation id="4785273477715803444">لاگز کو فلٹر کریں</translation>
 <translation id="4785376858512657294">‏Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="4785689107224900852">اس ٹیب پر سوئچ کریں</translation>
-<translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" کی تلاش ہو رہی ہے</translation>
 <translation id="4787182171088676626">لفافہ (فائن)</translation>
 <translation id="4791134497475588553">‏Linux ایپس انسٹال کی گئیں اور کب آخری بار استعمال کی گئیں</translation>
 <translation id="4792686369684665359">آپ جو معلومات جمع کرانے والے ہیں وہ محفوظ نہیں ہے</translation>
@@ -2437,6 +2429,7 @@
 <translation id="5026121202864677765">میرا کور لیٹر لکھیں</translation>
 <translation id="5030338702439866405">جاری کردہ بذریعہ</translation>
 <translation id="503069730517007720">‏"<ph name="SOFTWARE_NAME" />" کے لیے ایک روٹ سرٹیفکیٹ درکار ہے لیکن انسٹال نہیں ہے۔ آپ کے IT منتظم کو یہ مسئلہ حل کرنے کے لیے "<ph name="SOFTWARE_NAME" />" کی کنفیگریشن ہدایات کو دیکھنا چاہئے۔ <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097">‏‫<ph name="ACTOR_NAME" /> آپ کے لیے سائن ان کرنے کے لیے Google پاس ورڈ مینیجر کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK" />جانیں کہ <ph name="ACTOR_NAME" /> آپ کے ڈیٹا کو کیسے ہینڈل کرتا ہے<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">‏‫Google والٹ میں KTN کو محفوظ طریقے سے محفوظ کریں</translation>
 <translation id="503498442187459473"><ph name="HOST" /> آپ کا کیمرا اور مائیکروفون استعمال کرنا چاہتا ہے</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -2819,7 +2812,6 @@
 <translation id="5644128326840674462">پروموشن بینر</translation>
 <translation id="5645132789250840550">پلاسٹک (سیمی گلوس)</translation>
 <translation id="5645854190134202180">دوسری شفٹ</translation>
-<translation id="5648166631817621825">آخری 7 دن</translation>
 <translation id="5649053991847567735">خود کار ڈاؤن لوڈز</translation>
 <translation id="5651323159439184939">ٹریکٹر فیڈ</translation>
 <translation id="5653681867130739344">‏‫Google والٹ میں اپنا شناختی کارڈ محفوظ طریقے سے اپ ڈیٹ کریں</translation>
@@ -2830,7 +2822,6 @@
 <translation id="5663955426505430495">اس آلے کے منتظم نے اضافی فنکشنز کیلئے ایکسٹینشنز انسٹال کی ہیں۔ ایکسٹینشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
 <translation id="5664075349639500330">علیحدہ وضع میں براؤزنگ کے بارے میں مزید جانیں۔</translation>
 <translation id="5675650730144413517">یہ صفحہ کام نہیں کر رہا ہے</translation>
-<translation id="5675959228867414813">تاریخ کے لحاظ سے دکھائیں</translation>
 <translation id="567604591393105935">کامرس سے متعلق نیچے کی شیٹ آدھی اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="5676124785522323481">منسلک ایپس کا نظم کریں</translation>
 <translation id="5676641328629468296">‏‫Google Pay‏، Pix</translation>
@@ -3088,7 +3079,6 @@
 <translation id="6107924765192360631">تحریری تجاویز حاصل کرنے کے لیے صرف چند الفاظ یا پہلے مسودے کے ساتھ شروع کریں۔</translation>
 <translation id="6108580855199168381">سرٹیفیکیٹ کی تفصیلات</translation>
 <translation id="6108702513636120202">‏Chromium میں آپ کا سرچ انجن</translation>
-<translation id="611018310643025551">‏آپ کی تلاشیں، بہترین مماثلتیں اور ان کے صفحہ کے مواد Google کو بھیجے جاتے ہیں اور اس خصوصیت کو بہتر بنانے کے لیے انسانی جائزہ کاران دیکھ سکتے ہیں۔</translation>
 <translation id="6111759749003439722">اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی کیلئے پوچھ سکتی ہے</translation>
 <translation id="6116338172782435947">کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھیں</translation>
 <translation id="6116500665626559298">‏اپنے اکاؤنٹ میں ڈیٹا کا نظم کریں بٹن، آپ اپنے Google اکاؤنٹ میں Chrome کی کون سی معلومات محفوظ کرتے ہیں، اس کا نظم کرنے کے لیے فعال کریں</translation>
@@ -3375,7 +3365,6 @@
 <translation id="6587923378399804057">آپ کا کاپی کردہ لنک</translation>
 <translation id="6591833882275308647">آپ کا <ph name="DEVICE_TYPE" /> زیر انتظام نہیں ہے</translation>
 <translation id="6595495738567740002">‏اس آلہ سے Google کوکیز کو حذف کرنے کے لیے، <ph name="BEGIN_LINK" />Chrome سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
-<translation id="6596573334527383067">گزشتہ کل سے نتائج دکھائیں</translation>
 <translation id="6596816719288285829">‏IP پتہ</translation>
 <translation id="6597665340361269064">90 ڈگریز</translation>
 <translation id="6599642189720630047">ٹریک کردہ پروڈکٹس</translation>
@@ -3910,7 +3899,7 @@
 <translation id="7490622939531327327">فارم کی بہتر تفہیم</translation>
 <translation id="7495528107193238112">یہ مواد مسدود ہے۔ مسئلے کو حل کرنے کے لیے سائٹ کے مالک سے رابطہ کریں۔</translation>
 <translation id="7499188644237027195">‏جب آپ Chrome میں خريداری کرتے ہيں تو eWallet اور Pix کو اختيارات کے طور پر ديکھيں</translation>
-<translation id="7500917112031739411">گروپ کے لحاظ سے دکھائیں</translation>
+<translation id="7499684925421947861">‫<ph name="ACTOR_NAME" /> کو آپ کیلئے <ph name="DOMAIN" /> میں سائن ان کرنے کی اجازت دیں؟</translation>
 <translation id="7501663406926337752">آگے کی سائٹ کو آپ کی تنظیم نے پرچم لگا دیا ہے</translation>
 <translation id="7502044688973049724">اپنی معلومات کا نظم کریں</translation>
 <translation id="7506748477220312995">تجویز کے لیے ماخذات</translation>
@@ -3970,7 +3959,6 @@
 <translation id="7584287158780898016">قیمت کی ٹریکنگ کے الرٹس کو فعال کریں</translation>
 <translation id="7586676035079382730">اطلاعات کی اجازت نہیں ہے</translation>
 <translation id="7588707273764747927">ٹرانسفر</translation>
-<translation id="7589062909165841767">‏آپ کے Google اکاؤنٹ میں آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /> موجود ہو سکتی ہے</translation>
 <translation id="7591288787774558753">رازدارانہ مواد کا اشتراک کریں؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> پر موجود کوکیز اور سائٹ کا ڈیٹا استعمال کرنا چاہتا ہے</translation>
 <translation id="7592362899630581445">سرور سرٹیفیکیٹ نام کی پابندیوں کی خلاف ورزی کرتا ہے۔</translation>
@@ -4263,7 +4251,6 @@
 <translation id="8075736640322370409">‏تیزی سے ایک نئی Google Sheet تخلیق کریں</translation>
 <translation id="8075898834294118863">سائٹ کی ترتیبات کا نظم کریں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
-<translation id="8076880883123051368">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /></translation>
 <translation id="8077465698530018904">منتخب کردہ علاقے کو ہٹائیں</translation>
 <translation id="8077669823243888800">‏Chinese #8 لفافہ</translation>
 <translation id="8078006011486731853">{0,plural, =1{رازدارانہ فائل اپ لوڈ کریں؟}other{رازدارانہ فائلز اپ لوڈ کریں؟}}</translation>
@@ -4838,7 +4825,6 @@
 <translation id="9084304544887760521">کسی بھی سائٹ پر آپ کے ٹریک کردہ آئٹمز کی قیمت گرنے پر <ph name="EMAIL" /> پر بھیجی گئی ای میلز حاصل کریں۔</translation>
 <translation id="9089260154716455634">بند اوقات سے متعلق پالیسی:</translation>
 <translation id="9090243919347147717">منسلکات</translation>
-<translation id="9090548458280093580">‏‫AI کے ذریعے تقویت یافتہ اپنی سرگزشت تلاش کریں</translation>
 <translation id="9094424186948667194">اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی حاصل کریں</translation>
 <translation id="9094544726794842788">اظہار ناپسندیدگی آپ کو ان نتائج کو ناپسند کرنے کے بارے میں تفصیلی تاثرات جمع کرانے کے لیے ایک فارم کھولتا ہے</translation>
 <translation id="9094809883254050729">اگلی بار آٹو فل کریں۔ کارڈ کو محفوظ کرنے پر مرموز کیا جاتا ہے۔</translation>

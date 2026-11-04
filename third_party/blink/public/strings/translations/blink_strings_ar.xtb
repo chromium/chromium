@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ميغابايت</translation>
 <translation id="3075154866155599887">يرجى إدخال قيمة صالحة. الحقل غير مكتمل أو أن التاريخ غير صالح.</translation>
 <translation id="310520048233152454">‏يُرجى إدخال عنوان URL.</translation>
+<translation id="3137127353890528027">تم إخفاء كلمة المرور</translation>
 <translation id="3321030238473337787">سرعة التشغيل</translation>
 <translation id="3450233048674729344">يجب أن تكون القيمة أقل من أو تساوي <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">شهر</translation>
@@ -72,6 +73,7 @@
 <translation id="5985507339671257014">0.5</translation>
 <translation id="6070714301435004046">يمكنك الاطّلاع على <ph name="ALERT_HUB_LINK" /> لمزيد من التفاصيل.</translation>
 <translation id="6310801910862476708">الخروج من وضع "نافذة ضمن نافذة"</translation>
+<translation id="64261224118544870">تم عرض كلمة المرور</translation>
 <translation id="6484738902856791350">عرض النص بتنسيق محسّن</translation>
 <translation id="6550675742724504774">خيارات</translation>
 <translation id="65574987622079584">تثبيت إضافة في المتصفّح</translation>

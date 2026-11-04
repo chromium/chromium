@@ -51,6 +51,7 @@
 <translation id="1122068467107743258">Darba</translation>
 <translation id="1126696498560056882">Pārvaldīt kontus šajā ierīcē</translation>
 <translation id="1126809382673880764">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Jūs joprojām saņemsiet drošas pārlūkošanas aizsardzību, ja tā ir pieejama, citos Google pakalpojumos, piemēram, Gmail un Meklēšana.</translation>
+<translation id="112943553659469376">“<ph name="PROMPT" />”</translation>
 <translation id="1133418583142946603">Pievienot pašreizējo cilni</translation>
 <translation id="1136104150802877429">Rādīt produktu atsauksmes</translation>
 <translation id="1142371195993008685">Paziņojumu izslēgšana par funkciju “<ph name="FEATURE_NAME" />”</translation>
@@ -102,6 +103,7 @@
 <translation id="1291506870746876680">Kad iziesiet no vietnes <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, šīs vietnes atļaujas tiks atkal izslēgtas.</translation>
 <translation id="1293491796138057740">Jūsu informācija tiek saglabāta lietotnē Google maks kontam <ph name="USER_EMAIL" />. Varat to izmantot Google produktos, lai ātrāk aizpildītu veidlapas.</translation>
 <translation id="1293556467332435079">Faili</translation>
+<translation id="1294703224699789269">Ir spēkā mūsu <ph name="BEGIN_LINK" />noteikumi<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korejas atrašanās vietu noteikumi<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />konfidencialitātes paziņojums<ph name="END_LINK" />. Tērzēšanas sarunas tiek pārskatītas un izmantotas ģeneratīvā MI modeļu apmācībai. Gemini ir MI un var pieļaut kļūdas, tostarp par personām. Noteikts saturs var nebūt piemērots visiem. Varat <ph name="BEGIN_LINK" />pārvaldīt savu vēsturi<ph name="END_LINK" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK" />Uzziniet vairāk par savām iespējām<ph name="END_LINK" />.</translation>
 <translation id="129553762522093515">Nesen aizvērtas</translation>
 <translation id="1296581780163690620">Vai lejupielādēt failu? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Darbība “Meklēšana, izmantojot MI režīmu” ir pabeigta.</translation>
@@ -386,6 +388,7 @@
 <translation id="2104436223719117661">Populāri meklēšanas vaicājumi</translation>
 <translation id="21133533946938348">Piespraust cilni</translation>
 <translation id="2117650889962717098">Nodrošiniet pārlūkošanas konfidencialitāti, pārejot uz inkognito režīmu</translation>
+<translation id="2119126821484134587">Lai sniegtu pielāgotu palīdzību, Gemini kopīgo noteiktus jūsu datus (piemēram, tērzēšanas sarunu fragmentus, atrašanās vietas datus un citu atbilstošu informāciju) ar citiem Google pakalpojumiem, piemēram, Maps un Lidojumi. Šie pakalpojumi var izmantot šo informāciju, lai uzlabotu darbību, pat ja vēlāk izdzēsīsiet savu Gemini Apps vēsturi. Uzziniet vairāk <ph name="BEGIN_LINK" />Gemini Apps konfidencialitātes palīdzības centrā<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Atvērt šeit:</translation>
 <translation id="2119962645034852864">Noteikti pakalpojumi nav pieejami jūsu kontam.</translation>
 <translation id="2120553909046681540">Jūsu organizācija izslēdza privātu pārlūkošanu.</translation>
@@ -507,6 +510,7 @@
 <translation id="2496180316473517155">Pārlūkošanas vēsture</translation>
 <translation id="2496626742194544812">Pāriet uz pirmo cilni</translation>
 <translation id="2499505845365628575">Varat skatīt visu savu pārlūkošanas vēsturi šeit: <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Saņemiet paziņojumus par drošības atjauninājumiem, pielāgotiem motīviem un daudz ko citu.</translation>
 <translation id="251033673027346551">Pārejiet uz lietotni Google maks, lai pārvaldītu <ph name="BEGIN_LINK" />datu un konfidencialitātes preferences<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Jums ir <ph name="NUMBER_OF_PASSWORDS" /> uzlauztas paroles, kas var apdraudēt jūsu drošību.</translation>
 <translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. līmenis</translation>
@@ -670,6 +674,7 @@
 <translation id="3038136505713492417">Apstipriniet savu identitāti, lai varētu izmantot piekļuves atslēgas šajā ierīcē</translation>
 <translation id="3039671569659952257">Dzēst mapi</translation>
 <translation id="3041835740069544003">Tagad Chrome var noteikt un aizpildīt vairāk veidlapu, izmantojot viedās veidlapu aizpildes funkciju. Lai to paveiktu, lapu saturs un vietrāži URL var tikt apstrādāti privātā telpā mākonī. Šo funkciju varat pārvaldīt iestatījumos.</translation>
+<translation id="3042118633250374317">Google izmanto jūsu vēsturi, lai sniegtu savus pakalpojumus, aizsargātu Google, tā lietotājus un sabiedrību, kā arī izstrādātu un uzlabotu pakalpojumus, piesaistot pārskatītājus. Neiekļaujiet informāciju, kas, jūsuprāt, nebūtu jāpārskata vai jāizmanto.</translation>
 <translation id="3050988301648974170">Atvērt paroļu pārbaudi</translation>
 <translation id="3053332585453689122">Uz funkciju “Google droša pārlūkošana” tiek sūtīti jūsu apmeklētie vietrāži URL, nelieli lapu satura paraugi, informācija par lejupielādēm un paplašinājumu darbību, kā arī sistēmas informācija, lai pārbaudītu, vai šie vietrāži, lejupielādes un paplašinājumi nav kaitīgi.</translation>
 <translation id="3055102495753300780">Informācijas glabāšana</translation>
@@ -1113,6 +1118,7 @@
 <translation id="4488754974567924717">Mēs jums paziņosim, ja jūsu paroles tiks uzlauztas.</translation>
 <translation id="4489536976005181779">{count,plural, =1{Lapa tika pievienota lasīšanas sarakstam jūsu kontā ({email})}zero{Lapas tika pievienotas lasīšanas sarakstam jūsu kontā ({email})}one{Lapas tika pievienotas lasīšanas sarakstam jūsu kontā ({email})}other{Lapas tika pievienotas lasīšanas sarakstam jūsu kontā ({email})}}</translation>
 <translation id="4493604894403585654">Jūs esat pierakstījies ar kontu <ph name="USER_EMAIL" />. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
+<translation id="4495251723189610737">Jūsu tērzēšanas sarunas tiks saglabātas jūsu Gemini vēsturē. Vēsturē ir ietverti jūsu audio ieraksti, Gemini Live video un ekrāna kopīgošanas dati, saturs, ko kopīgojat ar Gemini (piemēram, uzvednes, <ph name="BEGIN_LINK" />augšupielādes<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />ekrāni<ph name="END_LINK" />), Gemini atbildes, uzdevumi un rīku izsaukumi, atsauksmes, informācija no vietnēm, kuras apmeklējat, izmantojot Gemini, produktu lietojuma dati, jūsu ierīces vispārīgā atrašanās vieta, IP adrese un jūsu Google kontā norādītā mājas vai darbavietas adrese. Tajā var tikt iekļauti arī dati no lietotnēm, kuras saistāt ar Gemini.</translation>
 <translation id="4502423230170890588">Noņemt no šīs ierīces</translation>
 <translation id="4508486880075514067">Izvērst pilnekrāna režīmā</translation>
 <translation id="4508750114462689118">Aizvērt pierakstīšanās piedāvājumu</translation>
@@ -1201,6 +1207,7 @@
 <translation id="4759238208242260848">Lejupielādes</translation>
 <translation id="4764612367328936189">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem. Konti, kas nav atļauti, ir paslēpti. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4769198578611055647">Palīdz piekļūt saglabātajām piekļuves atslēgām jebkurā ierīcē</translation>
+<translation id="476946043193006313">Jūsu darbības palīdz apmācīt ģeneratīvo MI</translation>
 <translation id="4782952780741793211">Apstiprinājuma kods:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vai atvērt inkognito režīmā?</translation>
@@ -1217,6 +1224,7 @@
 <translation id="4808744395915275922">Atjauninājumi</translation>
 <translation id="4813345808229079766">Savienojums</translation>
 <translation id="4821595350501541683">Cilnes tika aizvērtas, un pārlūkošanas dati tika dzēsti</translation>
+<translation id="4821645169621230110">Kā tiek lietota jūsu vēsture</translation>
 <translation id="4823322556950229674">Varat nospiest un turēt, lai pārvietotu adreses joslu un pogu Atpakaļ uz apakšdaļu.</translation>
 <translation id="4824480232751123840">Tilpums</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} un viena cita cilne}zero{{domain} un {count} citu ciļņu}one{{domain} un {count} cita cilne}other{{domain} un {count} citas cilnes}}</translation>
@@ -1244,6 +1252,7 @@
 <translation id="4877597489778380935">Atgādināt vēlāk</translation>
 <translation id="4881695831933465202">Atvērt</translation>
 <translation id="4883766694719903356">Inkognito ciļņu režģis</translation>
+<translation id="4884205780547482830">Jūsu dati palīdz apmācīt ģeneratīvo MI</translation>
 <translation id="4884937942297374058">Uzlabota aizsardzība ir izslēgta</translation>
 <translation id="4887391901725877182">Subtitru pievienošana</translation>
 <translation id="488785315393301722">Rādīt detaļas</translation>
@@ -1723,6 +1732,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6347953390226388422">{count,plural, =1{Šī adrese tiks dzēsta no jūsu Google konta (<ph name="USER_EMAIL" />) un no šīs ierīces.}zero{Šīs adreses tiks dzēstas no jūsu Google konta (<ph name="USER_EMAIL" />) un no šīs ierīces.}one{Šīs adreses tiks dzēstas no jūsu Google konta (<ph name="USER_EMAIL" />) un no šīs ierīces.}other{Šīs adreses tiks dzēstas no jūsu Google konta (<ph name="USER_EMAIL" />) un no šīs ierīces.}}</translation>
 <translation id="634878792104344809">Sinhronizējiet paroles, vēsturi un citu saturu visās savās ierīcēs.</translation>
 <translation id="6350745006329795504">Pārvaldīt ierīces</translation>
+<translation id="6351000590398820964">Gemini ir MI un var pieļaut kļūdas, tostarp par personām. Noteikts saturs var nebūt piemērots visiem. Tērzēšanas sarunas tiek pārskatītas un izmantotas ģeneratīvā MI modeļu apmācībai. <ph name="BEGIN_LINK" />Uzziniet par jums pieejamajām izvēles iespējām<ph name="END_LINK" />. Ir spēkā mūsu <ph name="BEGIN_LINK" />noteikumi<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />konfidencialitātes paziņojums<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Atvērt ciļņu pārslēdzēju</translation>
 <translation id="63519665078626091">Lai izmantotu tīmekļa inspektoru, datorā izveidojiet savienojumu ar pārlūku Safari, izmantojot vadu, un izvēlnē Develop (Izstrāde) piekļūstiet iPad planšetdatoram. Izvēlni Develop (Izstrāde) varat iespējot, datorā izmantojot Safari iestatījumu sadaļu Advanced (Papildu iestatījumi).</translation>
 <translation id="6354695695659930684">Paroles aizpildīšana</translation>
@@ -1890,6 +1900,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6830728435402077660">Nav droši</translation>
 <translation id="6831043979455480757">Tulkot</translation>
 <translation id="6842136130964845393">Lai vienmēr varētu piekļūt savām saglabātajām parolēm, apstipriniet savu identitāti.</translation>
+<translation id="6843744036364481304">Kāda tērzēšanas vēsture tiek saglabāta</translation>
 <translation id="6844773122575789617">Ieslēgt MI režīmu</translation>
 <translation id="6851516051005285358">Pieprasīt datora vietni</translation>
 <translation id="6857446173140146664">Dzēst fonu</translation>
@@ -2013,6 +2024,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="7223134495231529579">Save to Downloads (Saglabāt lejupielādēs)</translation>
 <translation id="722339453342442311">Pārbaudīt tūlīt</translation>
 <translation id="7227235818314667565">Pārvaldīt kopīgošanu</translation>
+<translation id="7232376892719594461">Netiks pārskatītas ne jūsu sarunas ar Gemini, ne jūsu <ph name="BEGIN_LINK" />Google Workspace dati<ph name="END_LINK" />, kā arī šīs sarunas un dati netiks izmantoti ģeneratīvā MI modeļu apmācībai.</translation>
 <translation id="7233006041370588369">Atlasiet paroli, ko aizpildīt.</translation>
 <translation id="7238074332967840767">Drošība</translation>
 <translation id="723874023660911012">Mainīt profilus</translation>
@@ -2524,7 +2536,9 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8746155870861185046">Kopīgot atzīmēto tekstu</translation>
 <translation id="8748678031495824833">Atvērt lapā ietvertos MI rīkus</translation>
 <translation id="8750037785291841318">Šeit varēsiet skatīt savas cilnes</translation>
+<translation id="8751126814549746156">Jūsu vēsture tiek automātiski dzēsta pēc 18 mēnešiem. Šo laika periodu varat mainīt iestatījumos. Tērzēšanas sarunas, ko pārskata pakalpojumu sniedzēji, tiek atdalītas no jūsu konta un glabātas līdz trim gadiem. Jebkurā laikā varat <ph name="BEGIN_LINK" />izslēgt<ph name="END_LINK" /> vēstures iestatījumu.</translation>
 <translation id="8756969031206844760">Vai atjaunināt paroli?</translation>
+<translation id="8762190205387442931">Tērzēšanas sarunas tiek pārskatītas un izmantotas ģeneratīvā MI modeļu apmācībai. Varat <ph name="BEGIN_LINK" />pārvaldīt savu vēsturi<ph name="END_LINK" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK" />Uzziniet vairāk par savām iespējām<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Pāriet uz pēdējo cilni</translation>
 <translation id="8766790350274092814">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" /> un <ph name="SECOND_WEBSITE" />. Jūsu konti netiks dzēsti.</translation>
 <translation id="8775144690796719618">Nederīgs URL</translation>
@@ -2569,6 +2583,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8893208530912252670">Videoklipi</translation>
 <translation id="890009681345348416">Vairāk nekā 40 automātiski aizpildītu paroļu</translation>
 <translation id="8900845556227858314">Pārlūka lietotne</translation>
+<translation id="8903042868629070803">Ja esat sasniedzis 18 gadu vecumu, Google izmanto jūsu vēsturi arī tam, lai <ph name="BEGIN_LINK" />apmācītu ģeneratīvā MI modeļus<ph name="END_LINK" />. Jebkurā laikā varat <ph name="BEGIN_LINK" />izslēgt šo funkciju<ph name="END_LINK" /> turpmākajām tērzēšanas sarunām.</translation>
 <translation id="890565330728586731">Atpakaļ</translation>
 <translation id="8907722425137681851">Atrast lapā…</translation>
 <translation id="8909135823018751308">Kopīgot...</translation>

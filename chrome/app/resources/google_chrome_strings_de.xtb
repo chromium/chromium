@@ -20,6 +20,7 @@
 <translation id="1125124144982679672">Wer verwendet gerade Chrome?</translation>
 <translation id="1142745911746664600">Chrome kann nicht aktualisiert werden</translation>
 <translation id="1148360048981192980">Wenn du Chrome das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du aufgefordert, den Google Passwortmanager zu verwenden.</translation>
+<translation id="1150418667633096194">Der Button „Seitenleiste der Google Suche“ in der Symbolleiste hat ein neues Symbol. Klicke darauf, um über die Seitenleiste der Google Suche beim Surfen Fragen zu stellen.</translation>
 <translation id="1152920704813762236">Über ChromeOS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
 <translation id="1157952955648710254">Seitenleiste der Google Suche schließen</translation>
@@ -50,11 +51,13 @@
 <translation id="1439793550875056299">Chrome anpinnen</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein isoliertes Fenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. # isolierte Fenster werden nicht wieder geöffnet.}}</translation>
 <translation id="146866447420868597">In Chrome anmelden?</translation>
+<translation id="1470136641087909499">Du kannst die Google Suche in Chrome wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="1476347941828409626">Chrome-Profile &amp;verwalten</translation>
 <translation id="1492280395845991349">Neu starten, um das Chrome-Update abzuschließen</translation>
 <translation id="1497802159252041924">Installationsfehler: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalisiere dein neues Chrome-Profil</translation>
 <translation id="1518627427551567882">Diese Seite ist geschützt</translation>
+<translation id="15408169957028265">Google Suche in Chrome wieder öffnen</translation>
 <translation id="1547295885616600893">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="1547469039832541117">Beendet den ausgewählten Task.</translation>
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
@@ -85,6 +88,7 @@
 <translation id="1713301662689114961">{0,plural, =1{Chrome wird in einer Stunde neu gestartet}other{Chrome wird in # Stunden neu gestartet}}</translation>
 <translation id="1722488837206509557">So kannst du aus verfügbaren Geräten auswählen und Inhalte darauf anzeigen lassen.</translation>
 <translation id="1724094881572874997">Zum Schutz deiner Arbeit in Chrome kann deine Organisation bestimmte Informationen ansehen oder verwalten, wenn du in Chrome angemeldet bist.</translation>
+<translation id="1769661297620183092">Du kannst das Google-Suchfeld wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="177180974022074201">Mit Gemini in Chrome ausprobieren</translation>
 <translation id="1786003790898721085">Du musst auf deinem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chrome angemeldet sein. Versuche es dann noch einmal.</translation>
 <translation id="1786044937610313874">Verknüpfungen werden in Chrome geöffnet</translation>
@@ -103,6 +107,7 @@
 <translation id="1880677175115548835">Text auswählen</translation>
 <translation id="1896602904211344018">Chrome App herunterladen</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
+<translation id="1925069572871307609">Du benötigst Windows 10 Version 1809 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird eine ältere Version von Windows 10 ausgeführt.</translation>
 <translation id="1953553007165777902">Wird heruntergeladen… Noch <ph name="MINUTE" /> Minute(n)</translation>
 <translation id="1975400514743766362">Mit der Chrome App auf deinem <ph name="DEVICE_TYPE" /> die Sicherheitsfunktionen von Google unterwegs nutzen</translation>
 <translation id="1979600810166324878">Mit dem erweiterten Safe Browsing in Chrome für iOS bist du unterwegs besser geschützt</translation>
@@ -116,6 +121,7 @@
 <translation id="2040220733769034247">Scanne den QR-Code mit deinem Smartphone, um Chrome herunterzuladen und dich in deinem Google-Konto anzumelden.</translation>
 <translation id="2044908892530830113">Suche mit Chrome unter macOS in der Menüleiste anzeigen und die Tastenkombination aktivieren</translation>
 <translation id="2050189601866423230">Du kannst den KI-Modus der Google Suche anpinnen, um während des Surfens Fragen zu stellen</translation>
+<translation id="2060311596979880693">Fertig! Mit der Google Suche in Chrome kannst du jetzt ganz einfach Fragen stellen, während du surfst.</translation>
 <translation id="2091012649849228750">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="2094648590148273905">Nutzungsbedingungen für Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome trotzdem beenden?</translation>
@@ -141,6 +147,7 @@
 <translation id="2216543877350048334">Wenn du dein Google-Konto von Chrome entfernen möchtest, melde dich ab</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="22791603784558743">Gemini in Chrome Dev schließen</translation>
+<translation id="2283228908180457226">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um über die Seitenleiste der Google Suche beim Surfen Fragen zu stellen.</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchtest du Google Chrome wirklich deinstallieren?</translation>
 <translation id="2295218613066132598">Chrome-Website-Tastenkombinationen anzeigen</translation>
@@ -203,6 +210,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="2861074815332034794">Chrome wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2875053229394024379">Wenn du dich mit deinem Google-Konto in Chrome anmeldest, kannst du dein Chrome-Profil mit Gemini verwenden. <ph name="BEGIN_LINK" />Informationen zur Anmeldung in Chrome<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">Google-Suchfeld wieder öffnen</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
@@ -218,6 +226,8 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3003694935412297923">Alle Tasks</translation>
 <translation id="3018957014024118866">Auch Daten aus Chrome löschen (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Neu starten, um &amp;Chrome OS Flex zu aktualisieren</translation>
+<translation id="3034219227076811559">Google Suche in Chrome</translation>
+<translation id="3037190258341683404">Du kannst die Google Suche in Chrome anpinnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="3037517125981011456">Aufforderungen für die Anmeldung in Chrome werden angezeigt</translation>
 <translation id="3037838751736561277">Google Chrome wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="3038232873781883849">Warten auf Installation…</translation>
@@ -323,6 +333,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3968962723676998462">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="3973161977468201858">Google Chrome möchte deine Google Passwortmanager-Daten löschen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
+<translation id="3984557288004650913">Über den Button „Google Suche in Chrome“ in der Symbolleiste kannst du die Google Suche in Chrome wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="400161754580828648">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen.</translation>
 <translation id="4012899077942246412">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chrome verwenden. Wenn du das ändern möchtest, rufe „Mein Konto in Chrome“ auf.</translation>
 <translation id="4022972681110646219">Bildschirm übersetzen</translation>
@@ -397,6 +408,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4768676935374695498">Dieses Video mit Google Lens durchsuchen</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
+<translation id="4803313124144656665">Google Suche in Chrome schließen</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4836321460899997044">Chrome-Profil</translation>
 <translation id="4839733921943823254">Kurzbefehl anpinnen</translation>
@@ -445,6 +457,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5239627039202700673">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst</translation>
 <translation id="524751727772074981">Mit Gemini in Chrome zu allem Fragen stellen</translation>
+<translation id="5247617065091903691">Du kannst die Seitenleiste der Google Suche anpinnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="5251420635869119124">Gastnutzer können Chrome verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="5271833978500241046">Skills zusammen mit anderen Gemini-Funktionen in Chrome verwenden</translation>
 <translation id="5286907366254680517">Erkannt</translation>
@@ -464,6 +477,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5430073640787465221">Deine Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="5465210843490471889">Wähle ein Chrome-Profil aus, das du mit <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> verwenden möchtest</translation>
 <translation id="547202872422499512">Chrome wird jetzt beim Starten von Windows geöffnet, damit du sofort mit dem Surfen beginnen kannst. Dies lässt sich in den Einstellungen deaktivieren.</translation>
+<translation id="5482575505313585759">Google-Suchfeld schließen</translation>
 <translation id="5486346529181556467">Wenn du eine Website meldest, die deiner Meinung nach schädlich ist, trägst du dazu bei, die Onlinesicherheit für alle zu verbessern. <ph name="BEGIN_LINK" />Weitere Informationen zu den Richtlinien von Google für unsichere Websites<ph name="END_LINK" /></translation>
 <translation id="5503069778428381665">Wenn du Google Lens auf dem Computer verwendest, werden der Seitentitel, die URL und der Inhalt, einschließlich PDFs, an Google gesendet</translation>
 <translation id="5524890928877629608">Linke obere Ecke des Suchbereichs: links <ph name="LEFT" /> %, oben <ph name="TOP" /> %</translation>
@@ -481,6 +495,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="566568153320186256">In Chrome wird der Akkuverbrauch reduziert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen zum Energiesparmodus<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Chrome-Daten in deinem Konto löschen</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen}=1{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
+<translation id="568656514202614970">Fertig! Über die Seitenleiste der Google Suche kannst du jetzt ganz einfach beim Surfen Fragen stellen</translation>
 <translation id="5686916850681061684">Du kannst Google Chrome anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetverbindung kann nicht hergestellt werden. Für den Proxyserver ist eine Authentifizierung erforderlich.</translation>
@@ -556,11 +571,14 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6288580400488258237">Google Chrome als Standardbrowser festlegen und an die Taskleiste anheften</translation>
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
+<translation id="6294638840436017818">Über den Button „Seitenleiste der Google Suche“ in der Symbolleiste kannst du die Seitenleiste der Google Suche wieder öffnen, um beim Surfen Fragen zu stellen</translation>
+<translation id="6308106880471005841">Der Button „Google-Suchfeld“ in der Symbolleiste hat ein neues Symbol. Klicke darauf, um über das Google-Suchfeld beim Surfen Fragen zu stellen.</translation>
 <translation id="6311220991371174222">Chrome kann nicht gestartet werden, da beim Öffnen deines Profils ein Fehler aufgetreten ist. Versuche, Chrome neu zu starten.</translation>
 <translation id="6319856120645568262">Chrome benötigt eine Berechtigung für das Erstellen einer Karte deiner Umgebung und das Hand-Tracking</translation>
 <translation id="6321592572353357376">Die Erweiterung „<ph name="EXTENSION_NAME" />“ fordert dich auf, dich in Chrome anzumelden</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6334815226785304306">Google Chrome als Standardbrowser festlegen und an Taskleiste anpinnen</translation>
+<translation id="6339888439788291743">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um mit dem KI-Modus der Google Suche beim Surfen Fragen zu stellen.</translation>
 <translation id="63540178978900677">Chrome ist nicht mehr dein Standardbrowser. Chrome als Standardbrowser verwenden?</translation>
 <translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chrome schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
@@ -610,6 +628,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6723445727540769832">Mit der Chrome App auf deinem Smartphone die besten Google-Funktionen nutzen</translation>
 <translation id="6734827584173583205">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere Berechtigungen entfernt.</translation>
 <translation id="6735387454586646204">Chrome OS Flex-System</translation>
+<translation id="674891594898436429">Aktive Suche in diesem Tab schließen</translation>
 <translation id="6750954913813541382">Zur Behebung von Tippfehlern sendet Chrome im Browser eingegebenen Text an Google</translation>
 <translation id="6760235774835597023">Websites werden mit der V8-Engine von Chrome beschleunigt, Chrome wird dadurch aber etwas anfälliger für Angriffe. Diese Einstellung ist aktiviert.</translation>
 <translation id="677276454032249905">Chrome trotzdem beenden?</translation>
@@ -628,6 +647,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="689368324615299626">Mit der Chrome App auf deinem <ph name="DEVICE_TYPE" /> das Beste von Google nutzen</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6908182077349113099">Passwörter, Lesezeichen und Verlauf werden auf allen Geräten synchronisiert. Wenn du deinen Standardbrowser auf Chrome aktualisierst, kannst du ganz einfach auf die vertrauten Funktionen zugreifen.</translation>
+<translation id="6926772305569367352">Der Button „Google Suche in Chrome“ in der Symbolleiste hat ein neues Symbol. Klicke darauf, um über die Google Suche in Chrome beim Surfen Fragen zu stellen.</translation>
 <translation id="6930294499209825">Hält deine Google-Software auf dem neuesten Stand. Wenn dieser Dienst deaktiviert oder angehalten wurde, wird deine Google-Software nicht mehr aktualisiert. Das heißt, dass eventuelle neue Sicherheitslücken nicht behoben werden können und einige Funktionen möglicherweise nicht funktionieren. Dieser Dienst deinstalliert sich selbst, wenn er nicht von einer Google-Software verwendet wird.</translation>
 <translation id="6933858244219479645">ChromeOS-System</translation>
 <translation id="6938166777909186039">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
@@ -664,6 +684,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7285616922384953075">Chrome wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="7285990705317078173">Lade Chrome auf dein Smartphone herunter, um Preise zu beobachten und bei Preissenkungen auf Websites benachrichtigt zu werden</translation>
 <translation id="7288567540154601580">Tabs und Erweiterungen</translation>
+<translation id="7290997427370476749">Über den Button „Google-Suchfeld“ in der Symbolleiste kannst du das Google-Suchfeld wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="7296210096911315575">Wichtige Informationen zu Verwendung und Sicherheit</translation>
 <translation id="7299899569525778554">Vom Desktop aus suchen</translation>
 <translation id="7302361266603927550">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
@@ -671,6 +692,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7308322188646931570">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7371412052245999753">Schützt den Arbeitsspeicher von Chrome vor anderen Anwendungen auf deinem Computer.</translation>
+<translation id="7374061268215476070">Du kannst die Seitenleiste der Google Suche wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="73786666777299047">Chrome Web Store öffnen</translation>
 <translation id="7386878009611068389">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, wechsle zu deinem Chrome-Profil, in dem du bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet bist.</translation>
 <translation id="7398801000654795464">Du warst in Chrome als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
@@ -724,6 +746,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="7787950393032327779">Das Profil wird offenbar gerade von einem Google Chrome-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chrome gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chrome neu starten.</translation>
 <translation id="7800043020703832708">Google Suche in der Seitenleiste schließen</translation>
+<translation id="7801317262080715012">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um über das Google-Suchfeld beim Surfen Fragen zu stellen.</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7804364787702057554">Mein Konto in Chrome</translation>
 <translation id="7804947029129221742">Deine Suchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die ursprüngliche Standardsuchmaschine wiederhergestellt. <ph name="LEARN_MORE_LINK" /></translation>
@@ -778,7 +801,9 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8162006532256575008">Chrome ohne Konto verwenden</translation>
 <translation id="8172231188687329735">Mit der Chrome App kannst du Passwörter unterwegs speichern</translation>
 <translation id="8177472873527554730">Inhalt auf der Seite nicht gefunden</translation>
+<translation id="818985547157682832">Der Button „KI-Modus der Google Suche“ in der Symbolleiste hat ein neues Symbol. Klicke darauf, um mit dem KI-Modus der Google Suche beim Surfen Fragen zu stellen.</translation>
 <translation id="8196526165798579689">Mit Chrome Dev suchen</translation>
+<translation id="8203105157044679380">Google-Suchfeld</translation>
 <translation id="8221491193165283816">Normalerweise blockierst du Benachrichtigungen. Klicke hier, wenn du von dieser Website Benachrichtigungen erhalten möchtest.</translation>
 <translation id="8227493674161801700">Mit Chrome Beta suchen</translation>
 <translation id="8233224921566021881">Chrome benötigt Zugriff auf dein lokales Netzwerk, um Geräte in der Nähe zu finden und zu verwenden</translation>
@@ -790,6 +815,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8291415872436043161">Chrome herunterladen</translation>
 <translation id="829923460755755423">Verknüpfung zum Google Passwortmanager hinzufügen</translation>
 <translation id="8313851650939857356">Fehler beim Starten: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">Fertig! Mit dem Google-Suchfeld kannst du jetzt ganz einfach Fragen stellen, während du surfst.</translation>
 <translation id="8321888067342493336">Als Bild speichern</translation>
 <translation id="8336463659890584292">Wenn eine Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verwendet Chrome dazu die Server von Google. Dadurch wird deine Identität vor der vorab geladenen Website verborgen. Google lernt dabei, welche Websites vorab geladen werden.</translation>
 <translation id="8342675569599923794">Diese Datei ist schädlich und wurde von Chrome blockiert.</translation>
@@ -815,10 +841,12 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 
 Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelöscht hast. Wenn du dich jetzt abmeldest, werden nicht gespeicherte Lesezeichen gelöscht.</translation>
 <translation id="8458117863387545390">Chrome auf deinem Smartphone installieren</translation>
+<translation id="8467931559764188481">Aktive Google-Suche schließen</translation>
 <translation id="848851325211467878">Angemeldet als <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-Abo. Kontomenü öffnen.</translation>
 <translation id="8496177819998570653">Google P&amp;asswortmanager</translation>
 <translation id="8498858610309223613">Da soeben ein kritisches Sicherheitsupdate für Google Chrome installiert wurde, solltest du jetzt einen Neustart durchführen. Deine Tabs werden dann automatisch wiederhergestellt.</translation>
 <translation id="8502181052659370">Diesen Tab mit Google Lens durchsuchen</translation>
+<translation id="8520489851087523435">Seitenleiste der Google Suche wieder öffnen</translation>
 <translation id="8521348052903287641">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Dev.</translation>
 <translation id="852529348814672339">Chrome in dieser Sprache verwenden</translation>
 <translation id="8525579356836940628">Installation angehalten</translation>
@@ -827,6 +855,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8564408666201523086">Fertig! Mit der Google Suche in der Seitenleiste kannst du jetzt ganz einfach Fragen stellen, während du surfst</translation>
 <translation id="856656450041460113">In Liste mit Sprachen suchen</translation>
+<translation id="8568499811906962479">Du kannst das Google-Suchfeld anpinnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="8575047640889685742">Verwende deine <ph name="BEGIN_LINK" />eigene Passphrase<ph name="END_LINK" /> für die Verschlüsselung aller Chrome-Daten in deinem Google-Konto. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
 <translation id="8590782867495422699">KI-Modus der Google Suche wieder öffnen</translation>
 <translation id="8598779894319572882">Über den Button „KI-Modus der Google Suche“ in der Symbolleiste kannst du den KI-Modus der Google Suche wieder öffnen, um beim Surfen Fragen zu stellen</translation>
@@ -839,6 +868,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8656634243791296665">Gemini in Chrome Dev öffnen</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>
+<translation id="8689408573494410517">Der Button „Google Suche in der Seitenleiste“, den du in der Symbolleiste findest, hat ein neues Symbol. Klicke darauf, um über die Google Suche in der Seitenleiste beim Surfen Fragen zu stellen.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8712767363896337380">Fast geschafft! Starte Chrome zum Abschluss der Aktualisierung neu.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf deine Leseliste und weitere Daten von <ph name="DEVICE" /> zugreifen.</translation>
@@ -858,8 +888,10 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8834965163890861871">Google Chrome versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8841151363570555833">Gemini in Chrome unter macOS in der Menüleiste anzeigen</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome empfiehlt, sie zu entfernen}other{Chrome empfiehlt, sie zu entfernen}}</translation>
+<translation id="8861692536395317751">Für Google Chrome ist Windows 10 Version 1809 oder höher erforderlich.</translation>
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm noch einmal als Admin.</translation>
 <translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
+<translation id="8897637834206928776">Neues Symbol, gleiche Verknüpfung: Klicke hier, um über die Google Suche in der Seitenleiste beim Surfen Fragen zu stellen.</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8920304659326707347">Mit Chrome für iOS kannst du genau da weitermachen, wo du aufgehört hast.</translation>
 <translation id="8922998289262614701">Daten dieser App aus Chrome entfernen</translation>
@@ -885,6 +917,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="9018218886431812662">Installation abgeschlossen</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary schließen</translation>
 <translation id="9074041031320636790">Fertig! Mit dem KI-Modus der Google Suche kannst du jetzt ganz einfach Fragen stellen, während du surfst</translation>
+<translation id="9074163480955555019">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um über die Google Suche in Chrome beim Surfen Fragen zu stellen.</translation>
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>
 <translation id="9106236359747881194">Einen Text für die Suche auswählen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>

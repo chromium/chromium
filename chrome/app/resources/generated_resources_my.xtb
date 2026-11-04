@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">ဆက်စပ်ဝဘ်ဆိုက်များအကြောင်း တဘ်အသစ်တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="1402426911829176748">သင့်စက်သို့ ချိတ်ဆက်နေသည်</translation>
 <translation id="1405779994569073824">ရပ်တန့်သွားသည်။</translation>
-<translation id="1406812885827747674">ဤတစ်ကြိမ် ခွင့်ပြုရန်</translation>
 <translation id="1407069428457324124">အမှောင်အပြင်အဆင်</translation>
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="140723521119632973">ဆယ်လူလာ စတင်ခြင်း</translation>
@@ -5323,7 +5322,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{လိပ်စာများ}=1{လိပ်စာများ ({SELECTED_ITEMS})}other{လိပ်စာများ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR ကုဒ် ပြုလုပ်၍မရပါ</translation>
 <translation id="5033137252639132982">လှုပ်ရှားမှုအာရုံခံစနစ်များ သုံးရန် ခွင့်ပြုမထားပါ</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> သည် သင့်ကိုယ်စား လက်မှတ်ထိုးဝင်ရန် Google Password Manager ကို သုံးနိုင်သည်။ <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> က သင့်ဒေတာကို စီမံပုံအကြောင်း လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ထံမှ နောက်ထပ်အချက်အလက်များ ရယူရန် “နောက်ထပ်အသေးစိတ်” ကိုရွေးပါ။</translation>
 <translation id="5037676449506322593">အားလုံးကို ရွေးရန်</translation>
 <translation id="5038621320029329200">ယုံကြည်ရသော အသိအမှတ်ပြုလက်မှတ်များ</translation>
@@ -6443,7 +6441,6 @@
 <translation id="5922854266885514646">“Chrome ကို စိတ်ကြိုက်ပြင်ဆင်ရန်” ကို နှိပ်ပါ</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> အကူအညီ ရယူရန်</translation>
 <translation id="5924438086390153180">Microsoft ဖိုင်များကို Google Drive သို့ မိတ္တူမကူးမီ (သို့) မရွှေ့မီ မေးပါ</translation>
-<translation id="5925057331573749968">QR ကုဒ်ဖြင့် အမြန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="5926936390113611560">ပရိုဖိုင်အားလုံး ဖွင့်ရန်</translation>
 <translation id="592880897588170157">PDF ဖိုင်များကို Chrome တွင် အလိုအလျောက် ဖွင့်မည့်အစား ဒေါင်းလုဒ်လုပ်လိုက်ပါ</translation>
 <translation id="5930567261594625340">ညကောင်းကင်</translation>
@@ -8497,7 +8494,6 @@
 <translation id="7495149565104413027">Android အက်ပ်</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">သင့်ထံတွင် မကြာသေးခင်က မှတ်သားထားသည့် WebRTC စာသားမှတ်တမ်းများ မရှိပါ။</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> ကို <ph name="DOMAIN" /> သို့ သင့်ကိုယ်စား လက်မှတ်ထိုးဝင်ခွင့်ပြုမလား</translation>
 <translation id="7501957181231305652">သို့မဟုတ်</translation>
 <translation id="7502220299952823578">“အမြဲဖွင့်ထားရမည့် ဝဘ်ဆိုက်များ” စာရင်းတွင် ထည့်ရန်</translation>
 <translation id="7502528909759062987">တဘ်ကို <ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်ခြင်း ခဏရပ်ရန်</translation>
@@ -8759,7 +8755,7 @@
 <translation id="7701869757853594372">အသုံးပြုသူ ကိုင်တွယ်</translation>
 <translation id="770231223935918661">ဤပုံအကြောင်း မေးရန်</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်ခြင်း ရပ်ရန်</translation>
-<translation id="7704305437604973648">လုပ်ဆောင်စရာ</translation>
+<translation id="7704305437604973648">လုပ်ငန်း</translation>
 <translation id="7705085181312584869">ကူရေးပေးပါ</translation>
 <translation id="7705230242432916648">‘AI ဖြင့် ဖွင့်ခြင်း’ သုံး၍ ဤစာမျက်နှာကို ပေါ့တ်ကာစ်ကဲ့သို့ နားထောင်ပါ</translation>
 <translation id="7705276765467986571">စာညှပ် မော်ဒယ်ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
@@ -10729,7 +10725,6 @@
 <translation id="9187967020623675250">ကီးများ မတူပါ။ <ph name="RESPONSE" /> အတွက် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
 <translation id="9192019773545828776">ဖန်သားပြင်ကိုမကြည့်ဘဲ စက်သုံးနိုင်ရန် တုံ့ပြန်မှုများပြောပေးပါသည်။ မျက်မမြင်စာရေးစနစ် အကြံပြုချက်ကို ချိတ်ထားသည့်စက်တွင် ရနိုင်သည်။ ChromeVox ဖွင့်၊ ပိတ်ရန် Ctrl + Alt + Z ကို သုံးပါ။ ရွှေ့ကြည့်ရန် Search + ‘ဘယ်ညွှန်မြား’ (သို့) ‘ညာညွှန်မြား’ ကို သုံးပါ။ ရွေးရန် (ဖွင့်ရန်) Search + Space ကို သုံးပါ။</translation>
 <translation id="9195969368671142407">သင်၏ Google Account တွင် သိမ်းသည့်အရာများကို သင့်အဖွဲ့အစည်းက ကန့်သတ်လိုက်သည့်အခါ တဘ်အုပ်စုများကို မျှဝေခြင်း (သို့) ၎င်းတို့တွင် ပါဝင်ခြင်းတို့ မလုပ်နိုင်ပါ</translation>
-<translation id="9197456336762295195">google.com အတွက် သင့်လျှို့ဝှက်ကီးရှိသော စက်ရှိ ကင်မရာဖြင့် ဤ QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
 <translation id="919840898042157087">ပုံသေလှုပ်ရှားမှု</translation>
 <translation id="9199503643457729322">‘ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန်’ မှ ထွက်ခွာရန် နှိပ်နိုင်သည်။</translation>
 <translation id="9199695835892108985">Serial ပို့တ် ခွင့်ပြုချက်အားလုံးကို ပြင်ဆင်သတ်မှတ်မလား။</translation>

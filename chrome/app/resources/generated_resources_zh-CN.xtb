@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">在新标签页中详细了解相关网站</translation>
 <translation id="1402426911829176748">正在连接到您的设备</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
-<translation id="1406812885827747674">仅此一次</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="140723521119632973">移动网络激活</translation>
@@ -3240,7 +3239,7 @@
 <translation id="3471687177769494956">修改导航快捷键</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3474218480460386727">新字词最多只能包含 99 个字母</translation>
-<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
+<translation id="3474624961160222204">继续用“<ph name="NAME" />”的账号登录</translation>
 <translation id="3477772589943384839">节省适量内存。标签页会在较长的一段时间后变为非活跃状态。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
 <translation id="3478038704461103178">已关闭拆分视图</translation>
@@ -5308,7 +5307,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{地址}=1{地址（{SELECTED_ITEMS} 个）}other{地址（{SELECTED_ITEMS} 个）}}</translation>
 <translation id="5032430150487044192">无法创建二维码</translation>
 <translation id="5033137252639132982">不允许使用移动传感器</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> 可以使用 Google 密码管理工具为您登录账号。<ph name="BEGIN_LINK" />了解 <ph name="ACTOR_NAME" /> 如何处理您的数据<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">选择下方的“更多详情”可从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处获取更多信息。</translation>
 <translation id="5037676449506322593">全选</translation>
 <translation id="5038621320029329200">可信证书</translation>
@@ -6166,7 +6164,7 @@
 <translation id="5720729194423017301">网站和搜索引擎的快捷字词</translation>
 <translation id="572155275267014074">Android 设置</translation>
 <translation id="5722086096420375088">绿色和白色</translation>
-<translation id="572328651809341494">最近打开的标签页</translation>
+<translation id="572328651809341494">最近访问的标签页</translation>
 <translation id="5723508132121499792">没有任何后台应用在运行</translation>
 <translation id="5724723163580775373">大焦点</translation>
 <translation id="5725112283692663422">发送有关“利用 AI 创建主题”的反馈</translation>
@@ -6424,7 +6422,6 @@
 <translation id="5922854266885514646">点击“自定义 Chrome”</translation>
 <translation id="5924047253200400718">获取帮助<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">将 Microsoft 文件复制到或移到 Google 云端硬盘前询问我</translation>
-<translation id="5925057331573749968">使用二维码更快登录</translation>
 <translation id="5926936390113611560">打开所有资料</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
 <translation id="5930567261594625340">夜空</translation>
@@ -8479,7 +8476,6 @@
 <translation id="7495149565104413027">Android 应用</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">您最近未记录 WebRTC 文本日志。</translation>
-<translation id="7499684925421947861">要允许 <ph name="ACTOR_NAME" /> 为您登录 <ph name="DOMAIN" /> 吗？</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">添加到“始终让这些网站保持活动状态”列表</translation>
 <translation id="7502528909759062987">暂停将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
@@ -10068,6 +10064,7 @@
 <translation id="8708000541097332489">退出时清除</translation>
 <translation id="870805141700401153">Microsoft 个人代码签名</translation>
 <translation id="8708671767545720562">详细信息(&amp;M)</translation>
+<translation id="8709234440040320647">（隔离模式）</translation>
 <translation id="8709368517685334931">您可在 Chrome 应用商店中找到较旧的色彩</translation>
 <translation id="8710414664106871428">奇幻</translation>
 <translation id="8711402221661888347">汉堡包</translation>
@@ -10232,6 +10229,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> 要求您备份自己的数据并在 1 周内退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{退出分组}other{退出分组}}</translation>
 <translation id="8836782447513334597">继续</translation>
+<translation id="8837072669197607689">允许在隔离模式下使用</translation>
 <translation id="8837573527470979311">与底部视图交换</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">汉堡</translation>
@@ -10709,7 +10707,6 @@
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="9192019773545828776">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。使用 Ctrl + Alt + Z 可开启和关闭 ChromeVox。使用搜索键 + 向左键或向右键可进行导航。使用搜索键 + 空格键即可选择（启用）。</translation>
 <translation id="9195969368671142407">如果您所在的组织限制您将内容保存到 Google 账号，您将无法分享或加入标签页分组</translation>
-<translation id="9197456336762295195">请使用存有 google.com 通行密钥的设备的摄像头扫描此二维码</translation>
 <translation id="919840898042157087">固定焦点移动</translation>
 <translation id="9199503643457729322">点击即可退出“隐私保护指南”。</translation>
 <translation id="9199695835892108985">重置所有串行端口权限？</translation>

@@ -51,6 +51,7 @@
 <translation id="1122068467107743258">工作</translation>
 <translation id="1126696498560056882">管理此裝置上的帳戶</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
+<translation id="112943553659469376">「<ph name="PROMPT" />」</translation>
 <translation id="1133418583142946603">新增目前的分頁</translation>
 <translation id="1136104150802877429">顯示產品評論</translation>
 <translation id="1142371195993008685">關閉「<ph name="FEATURE_NAME" />」通知</translation>
@@ -102,6 +103,7 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />的權限會在您離開此網站後重設為停用。</translation>
 <translation id="1293491796138057740">資料會儲存至 <ph name="USER_EMAIL" /> 的「Google 錢包」。你可以在各項 Google 產品中使用有關資料，加快填表速度。</translation>
 <translation id="1293556467332435079">檔案</translation>
+<translation id="1294703224699789269">受我們的《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》、《<ph name="BEGIN_LINK" />韓國定位條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />私隱聲明<ph name="END_LINK" />》約束。對話會送交審核，並用於訓練生成式 AI 模型。Gemini 是 AI，可能會出錯 (包括有關人物的資料)。部分內容不一定適合所有人使用。你可以<ph name="BEGIN_LINK" />管理記錄<ph name="END_LINK" />，包括位置資料。<ph name="BEGIN_LINK" />進一步瞭解你有哪些選擇<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
 <translation id="1296581780163690620">要下載檔案嗎？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">完成「使用『AI 模式』搜尋」！</translation>
@@ -386,6 +388,7 @@
 <translation id="2104436223719117661">熱門搜尋</translation>
 <translation id="21133533946938348">固定分頁</translation>
 <translation id="2117650889962717098">切換至無痕模式，確保瀏覽資料保密</translation>
+<translation id="2119126821484134587">為提供個人化支援，Gemini 會與「地圖」和「機票」等其他 Google 服務分享你的部分資料 (例如部分對話、位置和其他相關資料)。即使你之後刪除「Gemini 應用程式」記錄，這些服務可能仍會使用有關資料改善功能。詳情請瀏覽「<ph name="BEGIN_LINK" />Gemini 應用程式私隱說明中心<ph name="END_LINK" />」。</translation>
 <translation id="2119636449201577317">開啟方式…</translation>
 <translation id="2119962645034852864">你的帳戶無法使用部分服務</translation>
 <translation id="2120553909046681540">你的機構已關閉私密瀏覽功能。</translation>
@@ -507,6 +510,7 @@
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2496626742194544812">前往第一個分頁</translation>
 <translation id="2499505845365628575">你可以喺「<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />」度睇到所有瀏覽記錄。</translation>
+<translation id="2499948218922929716">接收有關安全更新、自訂主題等內容的通知。</translation>
 <translation id="251033673027346551">前往「Google 錢包」管理<ph name="BEGIN_LINK" />資料和私隱偏好設定<ph name="END_LINK" />。</translation>
 <translation id="2511117522375201202">你有 <ph name="NUMBER_OF_PASSWORDS" /> 個密碼被盜用，可能導致安全風險。</translation>
 <translation id="2512709994717613803">第 <ph name="LEVEL_NUMBER" /> 級</translation>
@@ -670,6 +674,7 @@
 <translation id="3038136505713492417">驗證你的身分，以在此裝置上使用密鑰</translation>
 <translation id="3039671569659952257">刪除資料夾</translation>
 <translation id="3041835740069544003">Chrome 現可透過更智能的表格理解能力，偵測並填寫更多表格。為此，系統可能會在雲端私人空間處理網頁內容和網址。這可以在設定中管理。</translation>
+<translation id="3042118633250374317">Google 會使用你的記錄提供服務、保護 Google、使用者及公眾，並在人手審查員的協助下開發和改善服務。請勿提供不想被審查或使用的資料。</translation>
 <translation id="3050988301648974170">開啟「密碼安全檢查」</translation>
 <translation id="3053332585453689122">將你瀏覽的網址和少量網頁內容、下載檔案、擴充程式活動和系統資料的樣本傳送給「Google 安全瀏覽」，檢查是否有害。</translation>
 <translation id="3055102495753300780">資料儲存空間</translation>
@@ -1113,6 +1118,7 @@
 <translation id="4488754974567924717">如果您的密碼被盜用，我們會通知您</translation>
 <translation id="4489536976005181779">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將網頁新增至帳戶 {email} 的閱讀清單}}</translation>
 <translation id="4493604894403585654">目前登入的帳戶是 <ph name="USER_EMAIL" />。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
+<translation id="4495251723189610737">你的對話會儲存在「Gemini 記錄」。「記錄」包括你的音訊、Gemini Live 影片和螢幕分享畫面、你與 Gemini 分享的內容 (例如提示、<ph name="BEGIN_LINK" />上載項目<ph name="END_LINK" />和<ph name="BEGIN_LINK" />螢幕畫面<ph name="END_LINK" />)、Gemini 的答覆、工作和工具調用情況、意見、透過 Gemini 瀏覽的網站資料、產品使用情況資料、裝置大概位置、IP 位址，以及 Google 帳戶中的住宅或公司地址。「記錄」亦可包括你連結至 Gemini 的應用程式資料。</translation>
 <translation id="4502423230170890588">從此裝置中移除</translation>
 <translation id="4508486880075514067">打開去全螢幕</translation>
 <translation id="4508750114462689118">閂登入宣傳元素</translation>
@@ -1201,6 +1207,7 @@
 <translation id="4759238208242260848">下載</translation>
 <translation id="4764612367328936189">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">讓你在任何裝置上存取所儲存的密鑰</translation>
+<translation id="476946043193006313">你的活動有助訓練生成式 AI</translation>
 <translation id="4782952780741793211">確認碼：</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
@@ -1217,6 +1224,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4813345808229079766">連線</translation>
 <translation id="4821595350501541683">系統已關閉分頁並刪除瀏覽資料</translation>
+<translation id="4821645169621230110">記錄的使用方式</translation>
 <translation id="4823322556950229674">按住即可將網址列和返回按鈕移到底部</translation>
 <translation id="4824480232751123840">體積</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個}other{{domain} 和另外 {count} 個}}</translation>
@@ -1244,6 +1252,7 @@
 <translation id="4877597489778380935">稍後提醒我</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4883766694719903356">無痕式分頁網格</translation>
+<translation id="4884205780547482830">你的資料有助訓練生成式 AI</translation>
 <translation id="4884937942297374058">已關閉強化保護功能</translation>
 <translation id="4887391901725877182">隱藏字幕</translation>
 <translation id="488785315393301722">顯示詳情</translation>
@@ -1623,7 +1632,7 @@
 <translation id="6078236141387574983">重新調整表格高度</translation>
 <translation id="6084848228346514841">選取分頁</translation>
 <translation id="6089212833343035912">Google 密碼管理工具 PIN</translation>
-<translation id="6090690847556987004">此設定發生問題，請更新 Chrome 和 iOS，重新啟動裝置後再試一次。如果此問題持續，代表你的 iPhone 可能不支援此設定。</translation>
+<translation id="6090690847556987004">此設定發生問題，請更新 Chrome 和 iOS，重新啟動裝置後再試一次。如果此問題持續，表示你的 iPhone 可能不支援此設定。</translation>
 <translation id="6090760257419195752">已關閉的警告</translation>
 <translation id="6094325891006032858">開啟「強化安全瀏覽」功能</translation>
 <translation id="6096965253650248286">找到 <ph name="COUNT" /> 個</translation>
@@ -1723,6 +1732,7 @@
 <translation id="6347953390226388422">{count,plural, =1{此地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}other{這些地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}}</translation>
 <translation id="634878792104344809">將所有裝置上的密碼、記錄及其他設定保持同步</translation>
 <translation id="6350745006329795504">管理你的裝置</translation>
+<translation id="6351000590398820964">Gemini 是 AI，可能會出錯 (包括有關人物的資料)。部分內容不一定適合所有人使用。對話會送交審核，並用於訓練生成式 AI 模型。<ph name="BEGIN_LINK" />瞭解你有哪些選擇<ph name="END_LINK" />。受我們的《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />私隱聲明<ph name="END_LINK" />》約束。</translation>
 <translation id="6351147166808964033">進入分頁切換工具</translation>
 <translation id="63519665078626091">如要使用「網絡檢查工具」，請透過連接線連線至電腦的 Safari，並從「開發」選單存取 iPad。您可透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
 <translation id="6354695695659930684">正在填入密碼</translation>
@@ -1890,6 +1900,7 @@
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保您可隨時存取已儲存的密碼，請驗證您的身分</translation>
+<translation id="6843744036364481304">系統會儲存的對話記錄</translation>
 <translation id="6844773122575789617">啟用 AI 模式</translation>
 <translation id="6851516051005285358">切換至電腦版網站</translation>
 <translation id="6857446173140146664">刪除背景</translation>
@@ -2011,6 +2022,7 @@
 <translation id="7223134495231529579">儲存至下載內容</translation>
 <translation id="722339453342442311">立即檢查</translation>
 <translation id="7227235818314667565">管理共用設定</translation>
+<translation id="7232376892719594461">你與 Gemini 的對話或 <ph name="BEGIN_LINK" />Google Workspace 資料<ph name="END_LINK" />都不會送交審核，亦不會用於訓練生成式 AI 模型。</translation>
 <translation id="7233006041370588369">揀要填入嘅密碼。</translation>
 <translation id="7238074332967840767">安全</translation>
 <translation id="723874023660911012">切換設定檔</translation>
@@ -2522,7 +2534,9 @@
 <translation id="8746155870861185046">分享突顯項目</translation>
 <translation id="8748678031495824833">打開頁面 AI 工具</translation>
 <translation id="8750037785291841318">您可在此查看分頁</translation>
+<translation id="8751126814549746156">你的記錄會在 18 個月後自動刪除。你可在「設定」中變更此時間範圍。經服務供應商審查的對話會與你的帳戶解除連結，並保留最多 3 年。你可隨時<ph name="BEGIN_LINK" />關閉<ph name="END_LINK" />「記錄」設定。</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
+<translation id="8762190205387442931">對話會送交審核，並用於訓練生成式 AI 模型。你可以<ph name="BEGIN_LINK" />管理記錄<ph name="END_LINK" />，包括位置資料。<ph name="BEGIN_LINK" />進一步瞭解你的選項<ph name="END_LINK" />。</translation>
 <translation id="8763613688786959833">前往最後一個分頁</translation>
 <translation id="8766790350274092814">系統會刪除 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密碼。但不會刪除您的帳戶。</translation>
 <translation id="8775144690796719618">網址無效</translation>
@@ -2567,6 +2581,7 @@
 <translation id="8893208530912252670">影片</translation>
 <translation id="890009681345348416">已自動填入超過 40 個密碼</translation>
 <translation id="8900845556227858314">瀏覽器應用程式</translation>
+<translation id="8903042868629070803">如果你年滿 18 歲，Google 亦會使用你的記錄<ph name="BEGIN_LINK" />訓練生成式 AI 模型<ph name="END_LINK" />。你可隨時為日後的對話<ph name="BEGIN_LINK" />關閉此功能<ph name="END_LINK" />。</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8907722425137681851">在網頁中搜尋…</translation>
 <translation id="8909135823018751308">共用…</translation>
@@ -2662,7 +2677,7 @@
 <translation id="9203951165704618409">你可將網址列從頂端移至底部，享受自訂瀏覽體驗。</translation>
 <translation id="9205189991633470489">無痕模式鎖定</translation>
 <translation id="9206887540681440657">速度</translation>
-<translation id="9218088788182688902">此設定發生問題，請更新 Chrome 和 iPadOS，重新啟動裝置後再試一次。如果此問題持續，代表你的 iPad 可能不支援此設定。</translation>
+<translation id="9218088788182688902">此設定發生問題，請更新 Chrome 和 iPadOS，重新啟動裝置後再試一次。如果此問題持續，表示你的 iPad 可能不支援此設定。</translation>
 <translation id="9218430445555521422">設定為預設</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="9219154867334666734">搜尋分頁…</translation>

@@ -51,6 +51,7 @@
 <translation id="1122068467107743258">Serviciu</translation>
 <translation id="1126696498560056882">Gestionează conturile de pe acest dispozitiv</translation>
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
+<translation id="112943553659469376"><ph name="PROMPT" /></translation>
 <translation id="1133418583142946603">Adaugă fila actuală</translation>
 <translation id="1136104150802877429">Afișează recenziile produselor</translation>
 <translation id="1142371195993008685">Dezactivează notificările pentru <ph name="FEATURE_NAME" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1291506870746876680">Permisiunile pentru <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vor fi resetate la starea dezactivat când părăsești site-ul.</translation>
 <translation id="1293491796138057740">Informațiile tale se salvează în Portofelul Google pentru <ph name="USER_EMAIL" />. Le poți folosi în produsele Google pentru a completa mai rapid formulare.</translation>
 <translation id="1293556467332435079">Fișiere</translation>
+<translation id="1294703224699789269">Se aplică <ph name="BEGIN_LINK" />Termenii<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Termenii privind locația în Coreea<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />Notificarea privind confidențialitatea<ph name="END_LINK" />. Chaturile sunt examinate și folosite pentru a instrui modelele AI generative. Gemini este un AI și poate să facă greșeli, inclusiv în legătură cu persoane. Este posibil ca unele tipuri de conținut să nu fie adecvate pentru toată lumea. Poți să <ph name="BEGIN_LINK" />gestionezi istoricul<ph name="END_LINK" />, inclusiv informațiile despre locație. <ph name="BEGIN_LINK" />Află mai multe despre alegerile tale<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Închise recent</translation>
 <translation id="1296581780163690620">Descarci fișierul? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">S-a finalizat acțiunea Caută cu modul AI!</translation>
@@ -386,6 +388,7 @@
 <translation id="2104436223719117661">Căutări populare</translation>
 <translation id="21133533946938348">Fixează fila</translation>
 <translation id="2117650889962717098">Păstrează-ți navigarea privată trecând la modul incognito</translation>
+<translation id="2119126821484134587">Pentru a-ți oferi ajutor personalizat, Gemini trimite o parte din datele tale (cum ar fi fragmente din chaturi, locația și alte informații relevante) altor servicii Google, cum ar fi Maps și Zboruri. Aceste servicii pot folosi informațiile respective pentru a se îmbunătăți, chiar dacă ulterior ștergi istoricul din Aplicațiile Gemini. Află mai multe în secțiunea <ph name="BEGIN_LINK" />Ajutor privind confidențialitatea în Aplicațiile Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Deschide în…</translation>
 <translation id="2119962645034852864">Unele servicii nu sunt disponibile pentru contul tău.</translation>
 <translation id="2120553909046681540">Organizația ta a dezactivat navigarea privată.</translation>
@@ -507,6 +510,7 @@
 <translation id="2496180316473517155">Istoricul de navigare</translation>
 <translation id="2496626742194544812">Accesează prima filă</translation>
 <translation id="2499505845365628575">Poți găsi tot istoricul de navigare din <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Primește notificări despre actualizările de securitate, temele personalizate și altele.</translation>
 <translation id="251033673027346551">Accesează Portofel Google ca să gestionezi <ph name="BEGIN_LINK" />datele și preferințele de confidențialitate<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Ai <ph name="NUMBER_OF_PASSWORDS" /> parole compromise care îți pot periclita securitatea.</translation>
 <translation id="2512709994717613803">Nivelul <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +674,7 @@
 <translation id="3038136505713492417">Confirmă-ți identitatea pentru a folosi cheile de acces pe acest dispozitiv</translation>
 <translation id="3039671569659952257">Șterge dosarul</translation>
 <translation id="3041835740069544003">Chrome poate acum să detecteze și să completeze mai multe formulare cu ajutorul Completării inteligente a formularelor. În acest scop, conținutul paginii și adresele URL pot fi procesate într-un spațiu privat din cloud. Gestionează în setări.</translation>
+<translation id="3042118633250374317">Google îți folosește istoricul pentru a-și oferi serviciile, pentru a proteja Google, utilizatorii săi și publicul și pentru a-și dezvolta și îmbunătăți serviciile cu ajutorul evaluatorilor umani. Nu include informații care nu vrei să fie examinate sau folosite.</translation>
 <translation id="3050988301648974170">Deschide Verificarea parolei</translation>
 <translation id="3053332585453689122">Trimite adresele URL pe care le accesezi și un mic eșantion cu conținutul paginilor, descărcări, activități ale extensiilor și informații despre sistem la Navigarea sigură Google pentru a verifica dacă sunt dăunătoare.</translation>
 <translation id="3055102495753300780">Stocarea informațiilor</translation>
@@ -1113,6 +1118,7 @@
 <translation id="4488754974567924717">Te vom anunța dacă îți sunt compromise parolele</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina a fost adăugată în lista de lecturi din contul tău, {email}}few{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}other{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}}</translation>
 <translation id="4493604894403585654">Te-ai conectat ca <ph name="USER_EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
+<translation id="4495251723189610737">Chaturile tale vor fi salvate în Istoricul Gemini. Istoricul include conținutul audio, videoclipurile și înregistrările de ecran din Gemini Live, ce trimiți la Gemini (cum ar fi solicitările, <ph name="BEGIN_LINK" />încărcările<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />ecranele<ph name="END_LINK" />), răspunsurile de la Gemini, sarcinile și apelurile de instrumente, feedbackul, informațiile de pe site-urile pe care le accesezi cu Gemini, datele privind folosirea produsului, locația aproximativă a dispozitivului, adresa IP și adresele de acasă sau de la serviciu din Contul Google. Poate include și date din aplicațiile pe care le conectezi la Gemini.</translation>
 <translation id="4502423230170890588">Elimină de pe acest dispozitiv</translation>
 <translation id="4508486880075514067">Extinde pe ecran complet</translation>
 <translation id="4508750114462689118">Închide mesajul promoțional de conectare</translation>
@@ -1201,6 +1207,7 @@
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4764612367328936189">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Te ajută să accesezi cheile de acces salvate pe orice dispozitiv</translation>
+<translation id="476946043193006313">Activitatea ta ajută la instruirea AI-ului generativ</translation>
 <translation id="4782952780741793211">Cod de confirmare:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Deschizi în modul incognito?</translation>
@@ -1217,6 +1224,7 @@
 <translation id="4808744395915275922">Actualizări</translation>
 <translation id="4813345808229079766">Conexiune</translation>
 <translation id="4821595350501541683">Filele au fost închise și datele de navigare au fost șterse</translation>
+<translation id="4821645169621230110">Cum este folosit istoricul tău</translation>
 <translation id="4823322556950229674">Poți să apeși lung pentru a muta bara de adrese și butonul Înapoi în partea de jos</translation>
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} și încă una}few{{domain} și încă {count}}other{{domain} și încă {count}}}</translation>
@@ -1244,6 +1252,7 @@
 <translation id="4877597489778380935">Amintește-mi mai târziu</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4883766694719903356">Grila de file incognito</translation>
+<translation id="4884205780547482830">Datele tale ajută la instruirea AI-ului generativ</translation>
 <translation id="4884937942297374058">Protecția îmbunătățită este dezactivată</translation>
 <translation id="4887391901725877182">Subtitrări</translation>
 <translation id="488785315393301722">Afișați detaliile</translation>
@@ -1723,6 +1732,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6347953390226388422">{count,plural, =1{Adresa se va șterge din Contul Google (<ph name="USER_EMAIL" />) și de pe acest dispozitiv.}few{Adresele se vor șterge din Contul Google (<ph name="USER_EMAIL" />) și de pe acest dispozitiv.}other{Adresele se vor șterge din Contul Google (<ph name="USER_EMAIL" />) și de pe acest dispozitiv.}}</translation>
 <translation id="634878792104344809">Sincronizează parolele, istoricul și alte date, pe toate dispozitivele</translation>
 <translation id="6350745006329795504">Gestionează dispozitivele</translation>
+<translation id="6351000590398820964">Gemini este un AI și poate să facă greșeli, inclusiv în legătură cu persoane. Este posibil ca unele tipuri de conținut să nu fie adecvate pentru toată lumea. Chaturile sunt examinate și folosite pentru a instrui modelele AI generative. <ph name="BEGIN_LINK" />Află mai multe despre opțiunile tale.<ph name="END_LINK" /> Se aplică <ph name="BEGIN_LINK" />Condițiile<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />Notificarea privind confidențialitatea<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Accesează comutatorul de file</translation>
 <translation id="63519665078626091">Pentru a folosi Web Inspector, conectează-te la Safari pe computer printr-un cablu și accesează iPad-ul din meniul Dezvoltare. Poți activa meniul Dezvoltare din secțiunea Avansat a setărilor Safari de pe computer.</translation>
 <translation id="6354695695659930684">Se completează parola</translation>
@@ -1890,6 +1900,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6830728435402077660">Nesecurizată</translation>
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="6842136130964845393">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la parolele salvate</translation>
+<translation id="6843744036364481304">Ce istoric al chaturilor se salvează</translation>
 <translation id="6844773122575789617">Activează Modul AI</translation>
 <translation id="6851516051005285358">Solicită site desktop</translation>
 <translation id="6857446173140146664">Șterge fundalul</translation>
@@ -2013,6 +2024,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7223134495231529579">Salvează în descărcări</translation>
 <translation id="722339453342442311">Verifică acum</translation>
 <translation id="7227235818314667565">Gestionare colaborări</translation>
+<translation id="7232376892719594461">Conversațiile tale cu Gemini și <ph name="BEGIN_LINK" />datele tale din Google Workspace<ph name="END_LINK" /> nu vor fi examinate sau folosite pentru a instrui modele AI generative.</translation>
 <translation id="7233006041370588369">Selectează o parolă de completat.</translation>
 <translation id="7238074332967840767">Siguranță</translation>
 <translation id="723874023660911012">Schimbă profilul</translation>
@@ -2094,6 +2106,7 @@ Poți reporni oricând.</translation>
 <translation id="7486006552035434095">Menține dispozitivele sincronizate</translation>
 <translation id="7491131399623468277">Accesează Setările…</translation>
 <translation id="7491161827858509164">Pentru a vedea fișierele pe care le-ai descărcat anterior, deschide <ph name="BEGIN_LINK" />Fișiere<ph name="END_LINK" /></translation>
+<translation id="7496554840683586365">Site-ul încearcă să deschidă App Store. Astfel, vei ieși din modul incognito.</translation>
 <translation id="7498234416455752244">Continuați editarea</translation>
 <translation id="7500244509706269886">Completare automată a formularelor</translation>
 <translation id="750493650310597496">Niciunul selectat</translation>
@@ -2523,7 +2536,9 @@ Poți reporni oricând.</translation>
 <translation id="8746155870861185046">Distribuie selecția</translation>
 <translation id="8748678031495824833">Deschide instrumentele AI din pagină</translation>
 <translation id="8750037785291841318">Aici vei vedea filele</translation>
+<translation id="8751126814549746156">Istoricul este șters automat după 18 luni. Poți modifica acest interval de timp în Setări. Chaturile examinate de furnizorii de servicii sunt separate de contul tău și păstrate timp de până la trei ani. Poți <ph name="BEGIN_LINK" />să dezactivezi<ph name="END_LINK" /> oricând setarea Istoric.</translation>
 <translation id="8756969031206844760">Actualizezi parola?</translation>
+<translation id="8762190205387442931">Chaturile sunt examinate și folosite pentru a instrui modelele AI generative. Poți să <ph name="BEGIN_LINK" />gestionezi istoricul<ph name="END_LINK" />, inclusiv informațiile despre locație. <ph name="BEGIN_LINK" />Află mai multe despre alegerile tale<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Accesează ultima filă</translation>
 <translation id="8766790350274092814">Parolele pentru <ph name="WEBSITE" /> și <ph name="SECOND_WEBSITE" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="8775144690796719618">Adresă URL nevalidă</translation>
@@ -2568,6 +2583,7 @@ Poți reporni oricând.</translation>
 <translation id="8893208530912252670">Videoclipuri</translation>
 <translation id="890009681345348416">Peste 40 de parole completate automat</translation>
 <translation id="8900845556227858314">Aplicația browser</translation>
+<translation id="8903042868629070803">Dacă ai peste 18 ani, Google îți folosește istoricul și pentru a <ph name="BEGIN_LINK" />instrui modelele AI generative<ph name="END_LINK" />. Poți <ph name="BEGIN_LINK" />dezactiva oricând această setare<ph name="END_LINK" /> pentru chaturile viitoare.</translation>
 <translation id="890565330728586731">Înapoi</translation>
 <translation id="8907722425137681851">Găsește în pagină…</translation>
 <translation id="8909135823018751308">Trimite…</translation>

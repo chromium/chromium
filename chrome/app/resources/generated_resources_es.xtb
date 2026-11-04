@@ -521,6 +521,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1384849755549338773">Ofrecer el Traductor de Google en el caso de sitios web que estén en otros idiomas</translation>
 <translation id="1384959399684842514">Descarga en pausa</translation>
 <translation id="1386966479075994683">Mostrar pestañas</translation>
+<translation id="1387227841274754059">Pregunta sobre tu pantalla con Google Lens</translation>
 <translation id="1388253969141979417">Puede usar tu micrófono</translation>
 <translation id="139013308650923562">Permitir que se usen las fuentes instaladas en tu dispositivo</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> preinstalada en tu <ph name="DEVICE_TYPE" /></translation>
@@ -535,7 +536,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una nueva pestaña</translation>
 <translation id="1402426911829176748">Conectando con tu dispositivo</translation>
 <translation id="1405779994569073824">Error.</translation>
-<translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Activación de datos móviles</translation>
@@ -4748,6 +4748,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4610637590575890427">¿Tal vez quieres ir a <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Cuando el botón izquierdo del ratón esté seleccionado, usa "/" para hacer doble clic</translation>
 <translation id="4613271546271159013">Una extensión ha cambiado la página que se muestra cuando abres una nueva pestaña.</translation>
+<translation id="4616024182698834938">Arrastra y suelta archivos aquí</translation>
 <translation id="461613135510474570">Oración</translation>
 <translation id="461661862154729886">Fuente de energía</translation>
 <translation id="4617001782309103936">Demasiado corto</translation>
@@ -5311,7 +5312,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Direcciones}=1{Direcciones ({SELECTED_ITEMS})}other{Direcciones ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
 <translation id="5033137252639132982">No puede usar sensores de movimiento</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> puede usar el Gestor de contraseñas de Google para iniciar sesión por ti. <ph name="BEGIN_LINK" />Consulta cómo trata <ph name="ACTOR_NAME" /> tus datos<ph name="END_LINK" />.</translation>
 <translation id="5035846135112863536">Selecciona el botón Más detalles para consultar más información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038621320029329200">Certificados de confianza</translation>
@@ -5577,6 +5577,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5230190638672215545">Escribe "uow" para obtener "ươ"</translation>
 <translation id="5230516054153933099">Ventana</translation>
 <translation id="5231255476752743708">Chrome necesita ayuda para cambiar tu contraseña</translation>
+<translation id="5232607425694431024">Pregunta sobre un archivo o una imagen</translation>
 <translation id="5232714764496316200">Recibe ayuda con los deberes con Google Lens</translation>
 <translation id="5233231016133573565">ID de proceso</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
@@ -6429,7 +6430,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5922854266885514646">Haz clic en Personalizar Chrome</translation>
 <translation id="5924047253200400718">Obtener ayuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Preguntar antes de copiar o mover archivos de Microsoft a Google Drive</translation>
-<translation id="5925057331573749968">Inicia sesión más rápido con un código QR</translation>
 <translation id="5926936390113611560">Abrir todos los perfiles</translation>
 <translation id="592880897588170157">Descargar archivos PDF en lugar de abrirlos automáticamente en Chrome</translation>
 <translation id="5930567261594625340">Cielo nocturno</translation>
@@ -7724,6 +7724,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6913051485529944333">No volverás a ver Google Calendar en esta página</translation>
 <translation id="6914812290245989348">No mostrar ninguna advertencia antes de acceder a sitios no seguros</translation>
 <translation id="6916590542764765824">Gestionar extensiones</translation>
+<translation id="6916630302999048499">Tarea de Gemini en ejecución</translation>
 <translation id="6916676294509106572">Calendario de Outlook oculto</translation>
 <translation id="6916818963747321523">Mostrar todo</translation>
 <translation id="6917873303492266709">Para compartir, unirte y colaborar en grupos de pestañas, abre la configuración y activa Permitir el inicio de sesión en Chrome</translation>
@@ -8253,6 +8254,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="733058866272972585">Se ha impedido que este sitio use identificadores para reproducir contenido protegido.</translation>
 <translation id="7331646370422660166">Alt + flecha hacia abajo</translation>
 <translation id="7332053360324989309">Worker dedicado: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">Iniciada</translation>
 <translation id="7333388112938984914">No se pueden subir archivos si se tiene una conexión medida.</translation>
 <translation id="7335974957018254119">Utilizar la revisión ortográfica con los siguientes idiomas</translation>
 <translation id="7336799713063880535">Notificaciones bloq.</translation>
@@ -8485,7 +8487,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7495149565104413027">Aplicación Android</translation>
 <translation id="7497322070873193353">IA de Google</translation>
 <translation id="7497981768003291373">No has capturado ningún registro de texto de WebRTC recientemente.</translation>
-<translation id="7499684925421947861">¿Permitir que <ph name="ACTOR_NAME" /> inicie sesión en <ph name="DOMAIN" /> por ti?</translation>
 <translation id="7501957181231305652">o</translation>
 <translation id="7502220299952823578">Añadir a la lista Mantener siempre activos estos sitios</translation>
 <translation id="7502528909759062987">Pausar envío de pestaña a <ph name="DEVICE_NAME" /></translation>
@@ -10298,6 +10299,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8876307312329369159">Este ajuste no se puede cambiar en una sesión de demostración.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> usa la búsqueda de dispositivos Bluetooth para encontrar dispositivos cercanos.</translation>
 <translation id="8877448029301136595">[directorio principal]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: iniciada</translation>
 <translation id="8879284080359814990">&amp;Mostrar como pestaña</translation>
 <translation id="8879921471468674457">Recordar información de inicio de sesión</translation>
 <translation id="8880009256105053174">Bus&amp;car esta página en Google...</translation>
@@ -10717,7 +10719,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9187967020623675250">Las teclas no coinciden. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Escucha mensajes de voz para poder usar el dispositivo sin mirar la pantalla. Se pueden recibir mensajes en braille con un dispositivo conectado. Pulsa Ctrl + Alt + Z para activar o desactivar ChromeVox. Usa la tecla de búsqueda + flecha hacia la izquierda o hacia la derecha para desplazarte. Pulsa la tecla de búsqueda y la barra espaciadora para seleccionar (activar).</translation>
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
-<translation id="9197456336762295195">Escanea este código QR con la cámara del dispositivo que tenga tu llave de acceso de google.com</translation>
 <translation id="919840898042157087">Movimiento estático</translation>
 <translation id="9199503643457729322">Haz clic para salir de la guía de privacidad.</translation>
 <translation id="9199695835892108985">¿Restablecer todos los permisos del puerto serie?</translation>

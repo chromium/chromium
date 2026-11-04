@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">മറ്റ് ഭാഷകളിലുള്ള വെബ്‌സൈറ്റുകൾക്ക് Google Translate നൽകുക</translation>
 <translation id="1384959399684842514">ഡൗൺലോഡ് താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="1386966479075994683">ടാബുകൾ വികസിപ്പിക്കുക</translation>
+<translation id="1387227841274754059">Google Lens ഉപയോഗിച്ച് നിങ്ങളുടെ സ്ക്രീനിനെ കുറിച്ച് ചോദിക്കുക</translation>
 <translation id="1388253969141979417">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="139013308650923562">നിങ്ങളുടെ ഉപകരണത്തിൽ ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടുള്ള ഫോണ്ടുകൾ ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="1390306150250850355">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ <ph name="APP_TYPE" /> മുൻകൂറായി ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നു</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">പുതിയൊരു ടാബിൽ അനുബന്ധ സൈറ്റുകളെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="1402426911829176748">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="1405779994569073824">ക്രാഷായി.</translation>
-<translation id="1406812885827747674">ഇത്തവണ അനുവദിക്കുക</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="140723521119632973">സെല്ലുലാൽ നെറ്റ്‌വർക്ക് സജീവമാക്കൽ</translation>
@@ -4746,6 +4746,7 @@
 <translation id="4610637590575890427"><ph name="SITE" /> -ലേക്ക് പോകണമെന്നാണോ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="4611619000650855880">ഇടത് മൗസ് ബട്ടൺ തിരഞ്ഞെടുക്കുമ്പോൾ, ഡബിൾ ക്ലിക്ക് ചെയ്യാൻ “/” ഉപയോഗിക്കുക</translation>
 <translation id="4613271546271159013">ഒരു വിപുലീകരണം, നിങ്ങൾ പുതിയ ടാബ് തുറക്കുമ്പോൾ കാണിക്കേണ്ട പേജ് മാറ്റി.</translation>
+<translation id="4616024182698834938">ഫയലുകൾ ഇവിടെ വലിച്ചിടുക</translation>
 <translation id="461613135510474570">വാക്യം</translation>
 <translation id="461661862154729886">വൈദ്യുതി സ്രോതസ്സ്</translation>
 <translation id="4617001782309103936">തീരെ ചെറുതാണ്</translation>
@@ -5310,7 +5311,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{വിലാസങ്ങൾ}=1{വിലാസങ്ങൾ ({SELECTED_ITEMS})}other{വിലാസങ്ങൾ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR കോഡ് സൃഷ്‌ടിക്കാനാകില്ല</translation>
 <translation id="5033137252639132982">മോഷൻ സെൻസറുകൾ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
-<translation id="5034158480345261097">നിങ്ങൾക്ക് വേണ്ടി സൈൻ ഇൻ ചെയ്യാൻ <ph name="ACTOR_NAME" /> എന്നതിന് Google Password Manager ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ കൈകാര്യം ചെയ്യുന്നുവെന്ന് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിൽ നിന്ന് കൂടുതൽ വിവരങ്ങൾ നേടാൻ ചുവടെയുള്ള "കൂടുതൽ വിശദാംശങ്ങൾ" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5037676449506322593">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5038621320029329200">അംഗീകൃത സർട്ടിഫിക്കറ്റുകൾ</translation>
@@ -5576,6 +5576,7 @@
 <translation id="5230190638672215545">"ươ" ലഭിക്കാൻ "uow" ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="5230516054153933099">വിന്‍‌ഡോ</translation>
 <translation id="5231255476752743708">നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റാൻ Chrome-ന് സഹായം ആവശ്യമാണ്</translation>
+<translation id="5232607425694431024">ഒരു ഫയലിനെക്കുറിച്ചോ ചിത്രത്തെക്കുറിച്ചോ ചോദിക്കുക</translation>
 <translation id="5232714764496316200">Google Lens ഉപയോഗിച്ച് ഗൃഹപാഠത്തിന് സഹായം നേടൂ</translation>
 <translation id="5233231016133573565">പ്രോസസ് ഐഡി</translation>
 <translation id="5233638681132016545">പുതിയ ടാബ്</translation>
@@ -6429,7 +6430,6 @@
 <translation id="5922854266885514646">"Chrome ഇഷ്ടാനുസൃതമാക്കുക" ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5924047253200400718">സഹായം തേടുക<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft ഫയലുകൾ Google Drive-ലേക്ക് പകർത്തുന്നതിനോ നീക്കുന്നതിനോ മുമ്പ് ചോദിക്കുക</translation>
-<translation id="5925057331573749968">QR കോഡ് ഉപയോഗിച്ച് വേഗത്തിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="5926936390113611560">എല്ലാ പ്രൊഫൈലുകളും തുറക്കുക</translation>
 <translation id="592880897588170157">PDF ഫയലുകൾ Chrome-ൽ സ്വയമേവ തുറക്കുന്നതിന് പകരം ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5930567261594625340">രാത്രിയിലെ ആകാശം</translation>
@@ -7724,6 +7724,7 @@
 <translation id="6913051485529944333">ഈ പേജിൽ നിങ്ങൾ Google Calendar വീണ്ടും കാണില്ല</translation>
 <translation id="6914812290245989348">സുരക്ഷിതമല്ലാത്ത സൈറ്റുകളിലേക്ക് പോകുന്നതിന് മുമ്പ് മുന്നറിയിപ്പുകളൊന്നും കാണരുത്</translation>
 <translation id="6916590542764765824">വിപുലീകരണങ്ങൾ നിയന്ത്രിക്കുക</translation>
+<translation id="6916630302999048499">Gemini ടാസ്‌ക് റൺ ചെയ്യുന്നു</translation>
 <translation id="6916676294509106572">Outlook കലണ്ടർ മറച്ചിരിക്കുന്നു</translation>
 <translation id="6916818963747321523">എല്ലാം വികസിപ്പിക്കുക</translation>
 <translation id="6917873303492266709">ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനോ അവയിൽ ചേരാനോ സഹകരിക്കാനോ, ക്രമീകരണം തുറന്ന് Chrome സൈൻ ഇൻ അനുവദിക്കുക ഓണാക്കുക</translation>
@@ -8253,6 +8254,7 @@
 <translation id="733058866272972585">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യുന്നതിനായി ഐഡന്റിഫയറുകൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് ഈ സൈറ്റിനെ തടഞ്ഞിരിക്കുന്നു.</translation>
 <translation id="7331646370422660166">alt + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="7332053360324989309">ഡെഡിക്കേറ്റഡ് വർക്കർ: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">ആരംഭിച്ചു</translation>
 <translation id="7333388112938984914">മീറ്റർ ചെയ്ത കണക്ഷനിലായിരിക്കുമ്പോൾ ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യാനാകില്ല.</translation>
 <translation id="7335974957018254119">സ്പെൽ ചെക്ക് ഉപയോഗിക്കേണ്ട ഭാഷകൾ</translation>
 <translation id="7336799713063880535">അറിയിപ്പുകൾ തടഞ്ഞു.</translation>
@@ -8484,7 +8486,6 @@
 <translation id="7495149565104413027">Android ആപ്പ്</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">നിങ്ങൾക്ക് അടുത്തിടെ രേഖപ്പെടുത്തിയ WebRTC ടെക്‌സ്‌റ്റ് ലോഗുകളൊന്നുമില്ല.</translation>
-<translation id="7499684925421947861">നിങ്ങൾക്ക് വേണ്ടി <ph name="DOMAIN" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ <ph name="ACTOR_NAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
 <translation id="7501957181231305652">അല്ലെങ്കിൽ</translation>
 <translation id="7502220299952823578">"ഈ സൈറ്റുകൾ എപ്പോഴും സജീവമായി നിലനിർത്തുക" ലിസ്റ്റിലേക്ക് ചേർക്കുക</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് ടാബ് കാസ്‌റ്റ് ചെയ്യുന്നത് താൽക്കാലികമായി നിർത്തുക</translation>
@@ -10296,6 +10297,7 @@
 <translation id="8876307312329369159">ഒരു ഡെമോ സെഷനിൽ ഈ ക്രമീകരണം മാറ്റാനാകില്ല.</translation>
 <translation id="8876965259056847565">സമീപമുള്ള ഉപകരണങ്ങൾ കണ്ടെത്താൻ <ph name="FEATURE_NAME" />, Bluetooth സ്‌കാനിംഗ് ഉപയോഗിക്കുന്നു.</translation>
 <translation id="8877448029301136595">[രക്ഷാകര്‍തൃ ഡയറക്റ്ററി]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: ആരംഭിച്ചു</translation>
 <translation id="8879284080359814990">&amp;ടാബായി കാണിക്കുക</translation>
 <translation id="8879921471468674457">സൈൻ ഇൻ വിവരം ഓർക്കുക</translation>
 <translation id="8880009256105053174">ഈ പേജ് Google ഉപയോഗിച്ച് തിരയുക...</translation>
@@ -10715,7 +10717,6 @@
 <translation id="9187967020623675250">കീകൾ പൊരുത്തപ്പെടുന്നില്ല. <ph name="RESPONSE" /> ചെയ്യാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
 <translation id="9192019773545828776">സംഭാഷണ ഫീഡ്‌ബാക്ക് കേൾക്കുക, അതുവഴി നിങ്ങൾക്ക് സ്‌ക്രീനിൽ നോക്കാതെ ഉപകരണം ഉപയോഗിക്കാം. കണക്‌റ്റ് ചെയ്‌ത ഉപകരണത്തിൽ ബ്രെയ്‌ലി ഫീഡ്ബാക്ക് ലഭ്യമാണ്. ChromeVox ഓണാക്കാനും ഓഫാക്കാനും Ctrl + Alt + Z ഉപയോഗിക്കുക. നാവിഗേറ്റ് ചെയ്യാൻ, Search + ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം അല്ലെങ്കിൽ വലത്തേയ്ക്കുള്ള അമ്പടയാളം ഉപയോഗിക്കുക. തിരഞ്ഞെടുക്കാൻ Search + Space ഉപയോഗിക്കുക (സജീവമാക്കുക).</translation>
 <translation id="9195969368671142407">നിങ്ങളുടെ Google Account-ലേക്ക് സംരക്ഷിക്കുന്നത് നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തുമ്പോൾ, നിങ്ങൾക്ക് ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനോ അവയിൽ ചേരാനോ കഴിയില്ല</translation>
-<translation id="9197456336762295195">google.com -ന്റെ പാസ്‌കീ ഉള്ള ഉപകരണത്തിലെ ക്യാമറ ഉപയോഗിച്ച് ഈ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="919840898042157087">സ്റ്റാറ്റിക് മൂവ്മെന്റ്</translation>
 <translation id="9199503643457729322">സ്വകാര്യതാ ഗൈഡിൽ നിന്ന് പുറത്തേക്ക് നാവിഗേറ്റ് ചെയ്യാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="9199695835892108985">എല്ലാ സീരിയൽ പോർട്ട് അനുമതികളും റീസെറ്റ് ചെയ്യണോ?</translation>

@@ -51,6 +51,7 @@
 <translation id="1122068467107743258">ที่ทำงาน</translation>
 <translation id="1126696498560056882">จัดการบัญชีในอุปกรณ์เครื่องนี้</translation>
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
+<translation id="112943553659469376">"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">เพิ่มแท็บปัจจุบัน</translation>
 <translation id="1136104150802877429">แสดงรีวิวสินค้า</translation>
 <translation id="1142371195993008685">ปิดการแจ้งเตือนสำหรับ<ph name="FEATURE_NAME" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
 <translation id="1293491796138057740">ระบบจะบันทึกข้อมูลของคุณลงใน Google Wallet สำหรับ <ph name="USER_EMAIL" /> คุณสามารถใช้ในผลิตภัณฑ์ต่างๆ ของ Google เพื่อให้กรอกแบบฟอร์มได้เร็วขึ้น</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
+<translation id="1294703224699789269">เป็นไปตาม<ph name="BEGIN_LINK" />ข้อกำหนด<ph name="END_LINK" /> <ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการตำแหน่งในประเทศเกาหลี<ph name="END_LINK" /> และ<ph name="BEGIN_LINK" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว<ph name="END_LINK" /> แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI Gemini เป็น AI และอาจทำผิดพลาดได้ ซึ่งรวมถึงข้อมูลเกี่ยวกับผู้คน เนื้อหาบางรายการอาจไม่เหมาะสำหรับทุกคน คุณสามารถ<ph name="BEGIN_LINK" />จัดการประวัติการใช้งาน<ph name="END_LINK" /> รวมถึงข้อมูลเกี่ยวกับตำแหน่งของคุณได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">เพิ่งปิด</translation>
 <translation id="1296581780163690620">ดาวน์โหลดไฟล์ใช่ไหม (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">"ค้นหาด้วยโหมด AI" เสร็จแล้ว</translation>
@@ -386,6 +388,7 @@
 <translation id="2104436223719117661">การค้นหาที่มาแรง</translation>
 <translation id="21133533946938348">ปักหมุดแท็บ</translation>
 <translation id="2117650889962717098">รักษาความเป็นส่วนตัวในการท่องเว็บโดยเปลี่ยนไปใช้โหมดไม่ระบุตัวตน</translation>
+<translation id="2119126821484134587">Gemini จะแชร์ข้อมูลบางอย่างของคุณ (เช่น แชทบางส่วน ตำแหน่ง และข้อมูลอื่นๆ ที่เกี่ยวข้อง) กับบริการอื่นๆ ของ Google เช่น Maps และ Flights เพื่อให้ความช่วยเหลือที่เหมาะสมกับความต้องการของคุณ บริการเหล่านี้อาจใช้ข้อมูลดังกล่าวเพื่อปรับปรุงระบบ แม้ว่าคุณจะลบประวัติการใช้แอป Gemini ในภายหลังก็ตาม ดูข้อมูลเพิ่มเติมได้ใน<ph name="BEGIN_LINK" />ฮับด้านความเป็นส่วนตัวของแอป Gemini<ph name="END_LINK" /></translation>
 <translation id="2119636449201577317">เปิดใน…</translation>
 <translation id="2119962645034852864">บริการบางอย่างไม่พร้อมให้บริการสำหรับบัญชีของคุณ</translation>
 <translation id="2120553909046681540">องค์กรปิดการท่องเว็บแบบส่วนตัวไว้</translation>
@@ -507,6 +510,7 @@
 <translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="2496626742194544812">ไปที่แท็บแรก</translation>
 <translation id="2499505845365628575">คุณดูประวัติการท่องเว็บทั้งหมดได้จาก "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />"</translation>
+<translation id="2499948218922929716">รับการแจ้งเตือนเกี่ยวกับการอัปเดตความปลอดภัย ธีมที่กำหนดเอง และอื่นๆ</translation>
 <translation id="251033673027346551">ไปที่ Google Wallet เพื่อจัดการ<ph name="BEGIN_LINK" />ค่ากำหนดข้อมูลและความเป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="2511117522375201202">คุณมี <ph name="NUMBER_OF_PASSWORDS" /> รหัสผ่านที่ถูกละเมิดซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
 <translation id="2512709994717613803">ระดับ <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +674,7 @@
 <translation id="3038136505713492417">ยืนยันว่าเป็นคุณเพื่อใช้พาสคีย์ในอุปกรณ์นี้</translation>
 <translation id="3039671569659952257">ลบโฟลเดอร์</translation>
 <translation id="3041835740069544003">ตอนนี้ Chrome สามารถตรวจหาและกรอกแบบฟอร์มได้มากขึ้นด้วยการทำความเข้าใจแบบฟอร์มที่ชาญฉลาดยิ่งขึ้น โดยระบบจะประมวลผลเนื้อหาและ URL ของหน้าเว็บในพื้นที่ส่วนตัวในระบบคลาวด์ ซึ่งสามารถจัดการได้ในการตั้งค่า</translation>
+<translation id="3042118633250374317">Google ใช้ประวัติของคุณเพื่อให้บริการ, ปกป้อง Google, ผู้ใช้ของ Google และสาธารณชน ตลอดจนพัฒนาและปรับปรุงบริการต่างๆ ด้วยความช่วยเหลือจากเจ้าหน้าที่ตรวจสอบ อย่าใส่ข้อมูลที่คุณไม่ต้องการให้มีการตรวจสอบหรือใช้งาน</translation>
 <translation id="3050988301648974170">เปิดการตรวจสอบรหัสผ่าน</translation>
 <translation id="3053332585453689122">ส่ง URL ที่คุณเข้าชมและตัวอย่างส่วนเล็กๆ ของเนื้อหาในหน้าเว็บ ไฟล์ที่ดาวน์โหลด กิจกรรมของส่วนขยาย และข้อมูลระบบไปยัง Google Safe Browsing เพื่อตรวจสอบว่าเป็นอันตรายหรือไม่</translation>
 <translation id="3055102495753300780">พื้นที่เก็บข้อมูล</translation>
@@ -1113,6 +1118,7 @@
 <translation id="4488754974567924717">หากรหัสผ่านถูกละเมิด เราจะแจ้งให้คุณทราบ</translation>
 <translation id="4489536976005181779">{count,plural, =1{เพิ่มหน้าลงในเรื่องรออ่านในบัญชีของคุณแล้ว {email}}other{เพิ่มหน้าลงในเรื่องรออ่านในบัญชีของคุณแล้ว {email}}}</translation>
 <translation id="4493604894403585654">คุณลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
+<translation id="4495251723189610737">ระบบจะบันทึกแชทของคุณไว้ในประวัติการใช้ Gemini ประวัติรวมถึงเสียง, วิดีโอและหน้าจอที่แชร์ใน Gemini Live, สิ่งที่คุณแชร์กับ Gemini (เช่น พรอมต์, <ph name="BEGIN_LINK" />การอัปโหลด<ph name="END_LINK" /> และ<ph name="BEGIN_LINK" />หน้าจอ<ph name="END_LINK" />), คำตอบของ Gemini, งานและการเรียกใช้เครื่องมือ, ความคิดเห็น, ข้อมูลจากเว็บไซต์ที่คุณเข้าชมด้วย Gemini, ข้อมูลการใช้งานผลิตภัณฑ์, ตำแหน่งทั่วไปของอุปกรณ์, ที่อยู่ IP และที่อยู่บ้านหรือที่ทำงานในบัญชี Google นอกจากนี้ประวัติยังอาจมีข้อมูลจากแอปที่คุณเชื่อมต่อกับ Gemini ด้วย</translation>
 <translation id="4502423230170890588">นำออกจากอุปกรณ์นี้</translation>
 <translation id="4508486880075514067">ขยายให้เต็มหน้าจอ</translation>
 <translation id="4508750114462689118">ปิดโปรโมชันการลงชื่อเข้าใช้</translation>
@@ -1201,6 +1207,7 @@
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4764612367328936189">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น ระบบซ่อนบัญชีที่ไม่ได้รับอนุญาตไว้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">ช่วยให้คุณเข้าถึงพาสคีย์ที่บันทึกไว้ในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="476946043193006313">กิจกรรมของคุณช่วยฝึก Generative AI</translation>
 <translation id="4782952780741793211">รหัสยืนยัน</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">เปิดในโหมดไม่ระบุตัวตนไหม</translation>
@@ -1217,6 +1224,7 @@
 <translation id="4808744395915275922">อัปเดต</translation>
 <translation id="4813345808229079766">การเชื่อมต่อ</translation>
 <translation id="4821595350501541683">ปิดแท็บและลบข้อมูลการท่องเว็บแล้ว</translation>
+<translation id="4821645169621230110">ระบบใช้ประวัติของคุณอย่างไร</translation>
 <translation id="4823322556950229674">คุณสามารถกดค้างเพื่อย้ายแถบที่อยู่และปุ่มย้อนกลับไปไว้ด้านล่าง</translation>
 <translation id="4824480232751123840">ระดับเสียง</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} และอีก 1 แท็บ}other{{domain} และอีก {count} แท็บ}}</translation>
@@ -1244,6 +1252,7 @@
 <translation id="4877597489778380935">เตือนฉันในภายหลัง</translation>
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4883766694719903356">ตารางกริดของแท็บที่ไม่ระบุตัวตน</translation>
+<translation id="4884205780547482830">ข้อมูลของคุณช่วยฝึก Generative AI</translation>
 <translation id="4884937942297374058">การปกป้องที่ดียิ่งขึ้นปิดอยู่</translation>
 <translation id="4887391901725877182">คำบรรยายแทนเสียง</translation>
 <translation id="488785315393301722">แสดงรายละเอียด</translation>
@@ -1723,6 +1732,7 @@
 <translation id="6347953390226388422">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากบัญชี Google (<ph name="USER_EMAIL" />) และจากอุปกรณ์เครื่องนี้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากบัญชี Google (<ph name="USER_EMAIL" />) และจากอุปกรณ์เครื่องนี้}}</translation>
 <translation id="634878792104344809">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="6350745006329795504">จัดการอุปกรณ์</translation>
+<translation id="6351000590398820964">Gemini เป็น AI และอาจทำผิดพลาดได้ ซึ่งรวมถึงข้อมูลเกี่ยวกับผู้คน เนื้อหาบางรายการอาจไม่เหมาะสำหรับทุกคน แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI <ph name="BEGIN_LINK" />ดูข้อมูลเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK" /> การใช้งานต้องเป็นไปตาม<ph name="BEGIN_LINK" />ข้อกำหนด<ph name="END_LINK" />และ<ph name="BEGIN_LINK" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว<ph name="END_LINK" />ของเรา</translation>
 <translation id="6351147166808964033">เข้าสู่ตัวสลับแท็บ</translation>
 <translation id="63519665078626091">หากต้องการใช้เครื่องมือตรวจสอบเว็บ ให้เชื่อมต่อ Safari ในคอมพิวเตอร์โดยใช้สายและเข้าถึง iPad จากเมนู "พัฒนา" คุณเปิดใช้เมนู "พัฒนา" ในส่วนขั้นสูงของการตั้งค่า Safari บนคอมพิวเตอร์ได้</translation>
 <translation id="6354695695659930684">กำลังกรอกรหัสผ่าน</translation>
@@ -1890,6 +1900,7 @@
 <translation id="6830728435402077660">ไม่ปลอดภัย</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>
+<translation id="6843744036364481304">ประวัติการแชทที่บันทึกไว้</translation>
 <translation id="6844773122575789617">เปิดโหมด AI</translation>
 <translation id="6851516051005285358">ขอเว็บไซต์เวอร์ชันเดสก์ท็อป</translation>
 <translation id="6857446173140146664">ลบพื้นหลัง</translation>
@@ -2013,6 +2024,7 @@
 <translation id="7223134495231529579">บันทึกลงในรายการที่ดาวน์โหลด</translation>
 <translation id="722339453342442311">ตรวจสอบเลย</translation>
 <translation id="7227235818314667565">จัดการการแชร์</translation>
+<translation id="7232376892719594461">การสนทนาของคุณกับ Gemini หรือ<ph name="BEGIN_LINK" />ข้อมูลใน Google Workspace<ph name="END_LINK" /> จะไม่มีการตรวจสอบหรือนำไปใช้เพื่อฝึกโมเดล Generative AI</translation>
 <translation id="7233006041370588369">เลือกรหัสผ่านเพื่อกรอก</translation>
 <translation id="7238074332967840767">ความปลอดภัย</translation>
 <translation id="723874023660911012">สลับโปรไฟล์</translation>
@@ -2524,7 +2536,9 @@
 <translation id="8746155870861185046">แชร์ไฮไลต์</translation>
 <translation id="8748678031495824833">เปิดเครื่องมือ AI ในหน้าเว็บ</translation>
 <translation id="8750037785291841318">คุณจะเห็นแท็บที่เปิดไว้ที่นี่</translation>
+<translation id="8751126814549746156">ระบบจะลบประวัติของคุณโดยอัตโนมัติหลังจากผ่านไป 18 เดือน คุณเปลี่ยนระยะเวลานี้ได้ในการตั้งค่า แชทที่ผู้ให้บริการตรวจสอบจะแยกออกจากบัญชีของคุณและเก็บไว้นานสูงสุด 3 ปี คุณ<ph name="BEGIN_LINK" />ปิด<ph name="END_LINK" />การตั้งค่าประวัติได้ทุกเมื่อ</translation>
 <translation id="8756969031206844760">อัปเดตรหัสผ่านไหม</translation>
+<translation id="8762190205387442931">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI คุณสามารถ<ph name="BEGIN_LINK" />จัดการประวัติการใช้งาน<ph name="END_LINK" /> รวมถึงข้อมูลเกี่ยวกับตำแหน่งของคุณได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">ไปที่แท็บสุดท้าย</translation>
 <translation id="8766790350274092814">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" /> และ <ph name="SECOND_WEBSITE" /> โดยระบบจะไม่ลบบัญชีของคุณ</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
@@ -2569,6 +2583,7 @@
 <translation id="8893208530912252670">วิดีโอ</translation>
 <translation id="890009681345348416">ป้อนรหัสผ่านอัตโนมัติมากกว่า 40 รายการแล้ว</translation>
 <translation id="8900845556227858314">แอปเบราว์เซอร์</translation>
+<translation id="8903042868629070803">หากคุณมีอายุตั้งแต่ 18 ปีขึ้นไป Google จะใช้ประวัติของคุณเพื่อ<ph name="BEGIN_LINK" />ฝึกโมเดล Generative AI<ph name="END_LINK" /> ด้วย คุณสามารถ<ph name="BEGIN_LINK" />ปิดการตั้งค่านี้<ph name="END_LINK" />สำหรับแชทในอนาคตได้ทุกเมื่อ</translation>
 <translation id="890565330728586731">กลับ</translation>
 <translation id="8907722425137681851">ค้นหาในหน้าเว็บ…</translation>
 <translation id="8909135823018751308">แชร์…</translation>

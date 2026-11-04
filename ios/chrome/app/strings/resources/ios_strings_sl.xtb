@@ -51,6 +51,7 @@
 <translation id="1122068467107743258">Delo</translation>
 <translation id="1126696498560056882">Upravljanje računov v tej napravi</translation>
 <translation id="1126809382673880764">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. Še vedno boste deležni zaščite Varnega brskanja, kjer je na voljo, v drugih Googlovih storitvah, kot sta Gmail in Iskanje Google.</translation>
+<translation id="112943553659469376">»<ph name="PROMPT" />«</translation>
 <translation id="1133418583142946603">Dodaj trenutni zavihek</translation>
 <translation id="1136104150802877429">Prikaže mnenja o izdelkih</translation>
 <translation id="1142371195993008685">Izklop obvestil za: <ph name="FEATURE_NAME" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1291506870746876680">Dovoljenja za spletno mesto <ph name="BEGIN_BOLD" />»<ph name="SITE_NAME" />«<ph name="END_BOLD" /> bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
 <translation id="1293491796138057740">Vaši podatki se shranijo v Google Denarnico za <ph name="USER_EMAIL" />. Uporabljate jih lahko v Googlovih izdelkih za hitrejše izpolnjevanje obrazcev.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
+<translation id="1294703224699789269">Veljajo naši <ph name="BEGIN_LINK" />pogoji<ph name="END_LINK" />, <ph name="BEGIN_LINK" />pogoji za lokacijo za Korejo<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />Obvestilo o zasebnosti<ph name="END_LINK" />. Klepeti se pregledujejo in uporabljajo za usposabljanje modelov generativne umetne inteligence. Gemini je umetna inteligenca in se lahko kdaj zmoti, tudi o ljudeh. Nekatera vsebina morda ni primerna za vsakogar. <ph name="BEGIN_LINK" />Upravljate lahko zgodovino<ph name="END_LINK" />, vključno s podatki o lokaciji. <ph name="BEGIN_LINK" />Preberite več o možnostih, ki so vam na voljo<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Nedavno zaprto</translation>
 <translation id="1296581780163690620">Želite prenesti datoteko? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">»Iskanje z načinom umetne inteligence« je končano.</translation>
@@ -386,6 +388,7 @@
 <translation id="2104436223719117661">Iskanja v trendu</translation>
 <translation id="21133533946938348">Pripni zavihek</translation>
 <translation id="2117650889962717098">Poskrbite za zasebno brskanje tako, da preklopite v anonimni način</translation>
+<translation id="2119126821484134587">Gemini za zagotavljanje prilagojene pomoči nekatere vaše podatke (kot so deli klepetov, lokacija in druge ustrezne informacije) deli z drugimi Googlovimi storitvami, kot so Zemljevidi in Leti. Te storitve lahko te podatke uporabijo za izboljšanje, tudi če pozneje izbrišete zgodovino v aplikacijah Gemini. Več o tem lahko preberete v <ph name="BEGIN_LINK" />središču za zasebnost za aplikacije Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Odpri v aplikaciji …</translation>
 <translation id="2119962645034852864">Nekatere storitve niso na voljo za vaš račun</translation>
 <translation id="2120553909046681540">Vaša organizacija je izklopila zasebno brskanje.</translation>
@@ -507,6 +510,7 @@
 <translation id="2496180316473517155">Zgodovina brskanja</translation>
 <translation id="2496626742194544812">Na prvi zavihek</translation>
 <translation id="2499505845365628575">Vso zgodovino brskanja si lahko ogledate tukaj: <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Prejemajte obvestila o varnostnih posodobitvah, temah po meri in drugem.</translation>
 <translation id="251033673027346551">Obiščite Google Denarnico, če želite upravljati <ph name="BEGIN_LINK" />nastavitve podatkov in zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Imate toliko ogroženih gesel, ki lahko ogrozijo vašo varnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. stopnja</translation>
@@ -670,6 +674,7 @@
 <translation id="3038136505713492417">Če želite uporabljati ključe za dostop v tej napravi, potrdite, da ste to res vi</translation>
 <translation id="3039671569659952257">Izbriši mapo</translation>
 <translation id="3041835740069544003">Chrome lahko zdaj zazna in izpolni več obrazcev s pametnejšim razumevanjem obrazcev. V ta namen se lahko vsebina strani in URL-ji obdelujejo v zasebnem prostoru v oblaku. To možnost upravljate v nastavitvah.</translation>
+<translation id="3042118633250374317">Google vašo zgodovino uporablja za zagotavljanje svojih storitev, zaščito Googla, njegovih uporabnikov in javnosti ter razvoj in izboljšanje svojih storitev s pomočjo pregledovalcev. Ne vnašajte podatkov, za katere ne želite, da bi jih pregledali ali uporabili.</translation>
 <translation id="3050988301648974170">Odprite pregled gesel</translation>
 <translation id="3053332585453689122">V Google Varno brskanje pošilja URL-je, ki jih obiščete, in majhen vzorec vsebine strani, prenose, dejavnost razširitve in podatke o sistemu, da preveri, ali so škodljivi.</translation>
 <translation id="3055102495753300780">Količina podatkov</translation>
@@ -1113,6 +1118,7 @@
 <translation id="4488754974567924717">Če bodo vaša gesla ogrožena, vas bomo o tem obvestili.</translation>
 <translation id="4489536976005181779">{count,plural, =1{Stran je bila dodana na bralni seznam v računu {email}}one{Strani so bile dodane na bralni seznam v računu {email}}two{Strani so bile dodane na bralni seznam v računu {email}}few{Strani so bile dodane na bralni seznam v računu {email}}other{Strani so bile dodane na bralni seznam v računu {email}}}</translation>
 <translation id="4493604894403585654">Prijavljeni ste kot <ph name="USER_EMAIL" />. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
+<translation id="4495251723189610737">Klepeti bodo shranjeni v zgodovini v Geminiju. Zgodovina vključuje zvok, videoposnetke in deljene zaslone Geminija Live, vsebino, ki jo delite z Geminijem (kot so pozivi, <ph name="BEGIN_LINK" />naložena vsebina<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />zasloni<ph name="END_LINK" />), Geminijeve odgovore, opravila in klice orodij, povratne informacije, podatke s spletnih mest, ki jih obiščete z Geminijem, podatke o uporabi izdelka, splošno lokacijo naprave, naslov IP ter domači ali službeni naslov v računu Google. Vključuje lahko tudi podatke iz aplikacij, ki jih povežete z Geminijem.</translation>
 <translation id="4502423230170890588">Odstrani iz naprave</translation>
 <translation id="4508486880075514067">Razširitev na celozaslonski prikaz</translation>
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
@@ -1201,6 +1207,7 @@
 <translation id="4759238208242260848">Prenosi</translation>
 <translation id="4764612367328936189">Organizacija dovoli prijavo samo z nekaterimi računi. Nedovoljeni računi so skriti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Pomaga vam pri dostopu do shranjenih ključev za dostop v kateri koli napravi</translation>
+<translation id="476946043193006313">Vaša dejavnost pomaga usposabljati generativno umetno inteligenco</translation>
 <translation id="4782952780741793211">Potrditvena koda:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Želite odpreti v anonimnem načinu?</translation>
@@ -1217,6 +1224,7 @@
 <translation id="4808744395915275922">Posodobitve</translation>
 <translation id="4813345808229079766">Povezava</translation>
 <translation id="4821595350501541683">Zavihki so bili zaprti in podatki brskanja so bili izbrisani</translation>
+<translation id="4821645169621230110">Kako se uporablja vaša zgodovina</translation>
 <translation id="4823322556950229674">Naslovno vrstico in gumb za vrnitev lahko premaknete na dno tako, da ju pridržite</translation>
 <translation id="4824480232751123840">Prostornina</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} in še 1}one{{domain} in še {count}}two{{domain} in še {count}}few{{domain} in še {count}}other{{domain} in še {count}}}</translation>
@@ -1244,6 +1252,7 @@
 <translation id="4877597489778380935">Opomni me pozneje</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4883766694719903356">Mreža anonimnih zavihkov</translation>
+<translation id="4884205780547482830">Vaši podatki pomagajo usposabljati generativno umetno inteligenco</translation>
 <translation id="4884937942297374058">Izboljšana zaščita je izklopljena</translation>
 <translation id="4887391901725877182">Podnapisi</translation>
 <translation id="488785315393301722">Pokaži podrobnosti</translation>
@@ -1723,6 +1732,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6347953390226388422">{count,plural, =1{Ta naslov bo izbrisan iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}one{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}two{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}few{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}other{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}}</translation>
 <translation id="634878792104344809">Sinhronizirajte gesla, zgodovino in druge podatke v vseh svojih napravah.</translation>
 <translation id="6350745006329795504">Upravljanje naprav</translation>
+<translation id="6351000590398820964">Gemini je umetna inteligenca in se lahko kdaj zmoti, tudi o ljudeh. Nekatera vsebina morda ni primerna za vsakogar. Klepeti se pregledujejo in uporabljajo za usposabljanje modelov generativne umetne inteligence. <ph name="BEGIN_LINK" />Preberite več o možnostih, ki so vam na voljo<ph name="END_LINK" />. Veljajo naši <ph name="BEGIN_LINK" />pogoji<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />obvestilo o zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Zagon preklopa med zavihki</translation>
 <translation id="63519665078626091">Če želite uporabljati spletni pregledovalnik, se s kablom povežite s Safarijem v računalniku in v meniju za razvijalce dostopajte do iPada. Meni za razvijalce lahko omogočite v razdelku »Advanced« (Dodatno) v nastavitvah Safarija v računalniku.</translation>
 <translation id="6354695695659930684">Izpolnjevanje gesla</translation>
@@ -1890,6 +1900,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6830728435402077660">Ni varno</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Če želite poskrbeti, da boste vedno lahko dostopali do shranjenih gesel, potrdite, da ste to vi.</translation>
+<translation id="6843744036364481304">Kateri podatki iz zgodovine klepeta se shranjujejo</translation>
 <translation id="6844773122575789617">Vklop načina umetne inteligence</translation>
 <translation id="6851516051005285358">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="6857446173140146664">Brisanje ozadja</translation>
@@ -2013,6 +2024,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7223134495231529579">Shrani med prenose</translation>
 <translation id="722339453342442311">Preveri</translation>
 <translation id="7227235818314667565">Upravljanje deljenja</translation>
+<translation id="7232376892719594461">Vaših pogovorov z Geminijem in vaših <ph name="BEGIN_LINK" />podatkov iz storitve Google Workspace<ph name="END_LINK" /> ne bomo pregledali niti se ti podatki ne bodo uporabili za usposabljanje modelov generativne umetne inteligence.</translation>
 <translation id="7233006041370588369">Izberite geslo, ki ga želite vnesti.</translation>
 <translation id="7238074332967840767">Varnost</translation>
 <translation id="723874023660911012">Preklopi profil</translation>
@@ -2524,7 +2536,9 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8746155870861185046">Deli oznako</translation>
 <translation id="8748678031495824833">Odpiranje orodij z umetno inteligenco na strani</translation>
 <translation id="8750037785291841318">Tukaj bodo prikazani zavihki</translation>
+<translation id="8751126814549746156">Zgodovina se samodejno izbriše po 18 mesecih. To časovno obdobje lahko spremenite v nastavitvah. Klepeti, ki jih pregledajo ponudniki storitev, so ločeni od vašega računa in se hranijo do tri leta. Nastavitev zgodovine lahko kadar koli <ph name="BEGIN_LINK" />izklopite<ph name="END_LINK" />.</translation>
 <translation id="8756969031206844760">Želite posodobiti geslo?</translation>
+<translation id="8762190205387442931">Klepeti se pregledujejo in uporabljajo za usposabljanje modelov generativne umetne inteligence. <ph name="BEGIN_LINK" />Upravljate lahko zgodovino<ph name="END_LINK" />, vključno s podatki o lokaciji. <ph name="BEGIN_LINK" />Preberite več o izbirah<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Na zadnji zavihek</translation>
 <translation id="8766790350274092814">Gesli za <ph name="WEBSITE" /> in <ph name="SECOND_WEBSITE" /> bosta izbrisani. Vaši računi ne bodo izbrisani.</translation>
 <translation id="8775144690796719618">Neveljaven URL</translation>
@@ -2569,6 +2583,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8893208530912252670">Videoposnetki</translation>
 <translation id="890009681345348416">Več kot 40 gesel je bilo samodejno izpolnjenih</translation>
 <translation id="8900845556227858314">Brskalnik</translation>
+<translation id="8903042868629070803">Če imate najmanj 18 let, Google vašo zgodovino uporablja tudi za <ph name="BEGIN_LINK" />usposabljanje modelov generativne umetne inteligence<ph name="END_LINK" />. To lahko za prihodnje klepete kadar koli <ph name="BEGIN_LINK" />izklopite<ph name="END_LINK" />.</translation>
 <translation id="890565330728586731">Nazaj</translation>
 <translation id="8907722425137681851">Najdi na strani …</translation>
 <translation id="8909135823018751308">Skupna raba …</translation>

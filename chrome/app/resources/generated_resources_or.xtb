@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">ଅନ୍ୟ ଭାଷାରେ ଥିବା ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ Google Translate ଅଫର୍ କରନ୍ତୁ</translation>
 <translation id="1384959399684842514">ଡାଉନ୍‌ଲୋଡ୍ ବିରତ ହୋଇଛି</translation>
 <translation id="1386966479075994683">ଟାବଗୁଡ଼ିକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
+<translation id="1387227841274754059">Google Lens ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ବିଷୟରେ ପଚାରନ୍ତୁ</translation>
 <translation id="1388253969141979417">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="139013308650923562">ଆପଣଙ୍କ ଡିଭାଇସରେ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଫଣ୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ପୂର୍ବରୁ ଇନଷ୍ଟଲ ହୋଇଛି</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">ଏକ ନୂଆ ଟାବରେ ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="1402426911829176748">ଆପଣଙ୍କ ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଉଛି</translation>
 <translation id="1405779994569073824">କ୍ରାସ୍ ହୋଇଯାଇଛି।</translation>
-<translation id="1406812885827747674">ଏହି ଥର ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="1407069428457324124">ଡାର୍କ ଥିମ</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="140723521119632973">ସେଲ୍ୟୁଲାର୍ ସକ୍ରିୟକରଣ</translation>
@@ -4749,6 +4749,7 @@
 <translation id="4610637590575890427"><ph name="SITE" /> କୁ ଯିବା ଲାଗି ଆପଣ ବୁଝନ୍ତି କି?</translation>
 <translation id="4611619000650855880">ବାମ ମାଉସ ବଟନକୁ ଚୟନ କରାଯିବା ସମୟରେ, ଦୁଇଥର-କ୍ଲିକ କରିବା ପାଇଁ “/”କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4613271546271159013">ଯେତେବେଳେ ଆପଣ ଏକ ନୂଆ ଟାବ୍‌ ଖୋଲନ୍ତି, ସେତେବେଳେ ଯେଉଁ ପୃଷ୍ଠା ଦେଖାଯାଇଥାଏ ତାହାକୁ ଗୋଟିଏ ଏକ୍ସଟେନ୍‍ସନ୍‍ ପରିବର୍ତ୍ତନ କରିଛି।</translation>
+<translation id="4616024182698834938">ଫାଇଲଗୁଡ଼ିକୁ ଏଠାକୁ ଡ୍ରାଗ ଏବଂ ଡ୍ରପ କରନ୍ତୁ</translation>
 <translation id="461613135510474570">ବାକ୍ୟ</translation>
 <translation id="461661862154729886">ଏନର୍ଜି ସୋର୍ସ୍</translation>
 <translation id="4617001782309103936">ବହୁତ ଛୋଟ</translation>
@@ -5312,7 +5313,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ଠିକଣା}=1{ଠିକଣା ({SELECTED_ITEMS})}other{ଠିକଣା ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR କୋଡ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5033137252639132982">ମୋସନ୍ ସେନ୍ସରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
-<translation id="5034158480345261097">ଆପଣଙ୍କ ପାଇଁ ସାଇନ ଇନ କରିବାକୁ <ph name="ACTOR_NAME" />, Google Password Managerକୁ ବ୍ୟବହାର କରିପାରିବ। <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପରିଚାଳନା କରେ ତାହା ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରୁ ଅଧିକ ସୂଚନା ପାଇବା ପାଇଁ ନିମ୍ନରେ "ଅଧିକ ବିବରଣୀ"କୁ ବାଛନ୍ତୁ।</translation>
 <translation id="5037676449506322593">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5038621320029329200">ବିଶ୍ୱାସ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟଗୁଡ଼ିକ</translation>
@@ -5578,6 +5578,7 @@
 <translation id="5230190638672215545">"ươ" ପାଇବାକୁ "uow" ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="5230516054153933099">ୱିଣ୍ଡୋ</translation>
 <translation id="5231255476752743708">ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିବାରେ Chromeକୁ ସାହାଯ୍ୟ ଆବଶ୍ୟକ</translation>
+<translation id="5232607425694431024">ଏକ ଫାଇଲ କିମ୍ବା ଇମେଜ ବିଷୟରେ ପଚାରନ୍ତୁ</translation>
 <translation id="5232714764496316200">Google Lens ମାଧ୍ୟମରେ ହୋମୱାର୍କ ପାଇଁ ସହାୟତା ପାଆନ୍ତୁ</translation>
 <translation id="5233231016133573565">ID ପ୍ରକ୍ରିୟା କରନ୍ତୁ</translation>
 <translation id="5233638681132016545">ନୂଆ ଟାବ</translation>
@@ -6429,7 +6430,6 @@
 <translation id="5922854266885514646">"Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ"ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="5924438086390153180">Microsoft ଫାଇଲଗୁଡ଼ିକୁ Google Driveକୁ କପି କିମ୍ବା ମୁଭ କରିବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ</translation>
-<translation id="5925057331573749968">ଏକ QR କୋଡ ମାଧ୍ୟମରେ ଶୀଘ୍ର ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="5926936390113611560">ସମସ୍ତ ପ୍ରୋଫାଇଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="592880897588170157">ସ୍ୱଚାଳିତ ଭାବେ Chromeରେ ଖୋଲିବା ବଦଳରେ PDF ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5930567261594625340">ନାଇଟ ସ୍କାଏ</translation>
@@ -7725,6 +7725,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6913051485529944333">ଆପଣ ଏହି ପୃଷ୍ଠାରେ Google Calendar ପୁଣି ଦେଖିବେ ନାହିଁ</translation>
 <translation id="6914812290245989348">ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକୁ ଯିବା ପୂର୍ବରୁ କୌଣସି ଚେତାବନୀ ଦେଖୁନାହାଁନ୍ତି</translation>
 <translation id="6916590542764765824">ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="6916630302999048499">Gemini ଟାସ୍କ ଚାଲୁଛି</translation>
 <translation id="6916676294509106572">Outlook Calendar ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="6916818963747321523">ସବୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="6917873303492266709">ଟାବ ଗ୍ରୁପରେ ସେୟାର କରିବା, ଯୋଗ ଦେବା ଏବଂ ସହଯୋଗ କରିବାକୁ ସେଟିଂସ ଖୋଲନ୍ତୁ ଏବଂ 'Chromeରେ ସାଇନ-ଇନ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ'କୁ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -8253,6 +8254,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="733058866272972585">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଚଲାଇବା ପାଇଁ ଚିହ୍ନଟକାରୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାରୁ ଏହି ସାଇଟକୁ ବ୍ଲକ କରାଯାଇଛି।</translation>
 <translation id="7331646370422660166">alt + ଡାଉନ ତୀର</translation>
 <translation id="7332053360324989309">ଉତ୍ସର୍ଗୀକୃତ କର୍ମଚାରୀ: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">ଆରମ୍ଭ ହୋଇଛି</translation>
 <translation id="7333388112938984914">ଏକ ମିଟରଯୁକ୍ତ କନେକ୍ସନରେ ଥିବା ସମୟରେ ଫାଇଲଗୁଡ଼ିକୁ ଅପଲୋଡ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7335974957018254119">ଏହା ପାଇଁ ବନାନ ଯାଞ୍ଚ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7336799713063880535">ବିଜ୍ଞପ୍ତି ବ୍ଲକ ହେଲା।</translation>
@@ -8485,7 +8487,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7495149565104413027">Android ଆପ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">ଆପଣଙ୍କ ପାଖରେ ନିକଟରେ କ୍ୟାପଚର୍‌ କରାଯାଇଥିବା କୌଣସି WebRTC ଇଭେଣ୍ଟ ଲଗ୍‌ ନାହିଁ।</translation>
-<translation id="7499684925421947861">ଆପଣଙ୍କ ପାଇଁ <ph name="DOMAIN" />ରେ ସାଇନ ଇନ କରିବାକୁ <ph name="ACTOR_NAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="7501957181231305652">କିମ୍ବା</translation>
 <translation id="7502220299952823578">"ଏହି ସାଇଟଗୁଡ଼ିକୁ ସର୍ବଦା ସକ୍ରିୟ ରଖନ୍ତୁ" ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />ରେ ଟାବ କାଷ୍ଟ କରିବା ବିରତ କରନ୍ତୁ</translation>
@@ -10297,6 +10298,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8876307312329369159">ଏହି ସେଟିଂ, ଡେମୋ ଅବଧି ସମୟରେ ପରିବର୍ତ୍ତନ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="8876965259056847565">ଆଖପାଖର ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜିବା ପାଇଁ <ph name="FEATURE_NAME" /> ବ୍ଲୁଟୁଥ ସ୍କାନିଂ ବ୍ୟବହାର କରେ।</translation>
 <translation id="8877448029301136595">[ଆଦ୍ୟ ନିର୍ଦ୍ଦେଶିକା]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: ଆରମ୍ଭ ହୋଇଛି</translation>
 <translation id="8879284080359814990">&amp;ଟାବ୍ ରୂପେ ଦେଖାନ୍ତୁ</translation>
 <translation id="8879921471468674457">ସାଇନ୍-ଇନ୍ ସୂଚନା ମନେ ରଖନ୍ତୁ</translation>
 <translation id="8880009256105053174">Google ମାଧ୍ୟମରେ ଏହି ପୃଷ୍ଠାକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ...</translation>
@@ -10716,7 +10718,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9187967020623675250">କୀଗୁଡ଼ିକ ମେଳ ହେଉନାହିଁ। <ph name="RESPONSE" /> ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="9192019773545828776">କଥିତ ମତାମତ ଶୁଣନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ସ୍କ୍ରିନକୁ ନଦେଖି ଆପଣଙ୍କ ଡିଭାଇସ ବ୍ୟବହାର କରିପାରିବେ। ଏକ କନେକ୍ଟ ହୋଇଥିବା ଡିଭାଇସରେ ବ୍ରେଲି ମତାମତ ଉପଲବ୍ଧ ଅଛି। ChromeVoxକୁ ଚାଲୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ Ctrl + Alt + Z ବ୍ୟବହାର କରନ୍ତୁ। ନାଭିଗେଟ କରିବାକୁ Search + ବାମ ତୀର କିମ୍ବା ଡାହାଣ ତୀର ବ୍ୟବହାର କରନ୍ତୁ। ଚୟନ (ସକ୍ରିୟ) କରିବାକୁ Search + Space ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9195969368671142407">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିବା ସୀମିତ କଲେ, ଆପଣ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ସେୟାର କରିପାରିବେ ନାହିଁ କିମ୍ବା ଏଥିରେ ଯୋଗ ଦେଇପାରିବେ ନାହିଁ</translation>
-<translation id="9197456336762295195">google.com ପାଇଁ ଆପଣଙ୍କ ପାସକୀ ଥିବା ଡିଭାଇସରେ ଏକ କେମେରା ମାଧ୍ୟମରେ ଏହି QR କୋଡକୁ ସ୍କାନ କରନ୍ତୁ</translation>
 <translation id="919840898042157087">ଷ୍ଟାଟିକ ମୁଭମେଣ୍ଟ</translation>
 <translation id="9199503643457729322">ଗୋପନୀୟତା ଗାଇଡରୁ ନାଭିଗେଟ କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="9199695835892108985">ସମସ୍ତ ସିରିଏଲ ପୋର୍ଟ ଅନୁମତିକୁ ରିସେଟ କରିବେ?</translation>

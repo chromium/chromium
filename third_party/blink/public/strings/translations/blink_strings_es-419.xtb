@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Debes ingresar un valor válido. El campo está incompleto o contiene una fecha no válida.</translation>
 <translation id="310520048233152454">Ingresa una URL.</translation>
+<translation id="3137127353890528027">Se ocultó la contraseña</translation>
 <translation id="3321030238473337787">Velocidad de reproducción</translation>
 <translation id="3450233048674729344">El valor debe ser menor de o igual a <ph name="MAXIMUM" /></translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0.5</translation>
 <translation id="6070714301435004046">Consulta <ph name="ALERT_HUB_LINK" /> para obtener más información.</translation>
 <translation id="6310801910862476708">Salir del modo de pantalla en pantalla</translation>
+<translation id="64261224118544870">Se muestra la contraseña</translation>
 <translation id="6484738902856791350">Impresión con formato estilístico</translation>
 <translation id="6550675742724504774">Opciones</translation>
 <translation id="65574987622079584">instalar una extensión del navegador</translation>

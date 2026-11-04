@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">Предлагать перевести сайты на других языках с помощью Google Переводчика</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1386966479075994683">Развернуть вкладки</translation>
+<translation id="1387227841274754059">Спросите Google Объектив о том, что видите на экране</translation>
 <translation id="1388253969141979417">Разрешить сайтам использовать микрофон</translation>
 <translation id="139013308650923562">Сайты, которым разрешено использовать шрифты, установленные на устройстве</translation>
 <translation id="1390306150250850355">Приложение <ph name="APP_TYPE" /> предустановлено на устройство <ph name="DEVICE_TYPE" />.</translation>
@@ -535,7 +536,6 @@
 <translation id="1401216725754314428">Открыть сведения о связанных сайтах в новой вкладке</translation>
 <translation id="1402426911829176748">Подключение…</translation>
 <translation id="1405779994569073824">Произошел сбой</translation>
-<translation id="1406812885827747674">Разрешить в этот раз</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="140723521119632973">Активация мобильной сети</translation>
@@ -4748,6 +4748,7 @@
 <translation id="4610637590575890427">Возможно, вы хотели перейти на <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Чтобы нажать дважды левую кнопку мыши, когда она выбрана, используйте косую черту вправо (/).</translation>
 <translation id="4613271546271159013">Одно из расширений изменило страницу, которая открывается в новой вкладке.</translation>
+<translation id="4616024182698834938">Перетащите файлы сюда</translation>
 <translation id="461613135510474570">Предложение.</translation>
 <translation id="461661862154729886">Источник электропитания</translation>
 <translation id="4617001782309103936">Слишком короткий</translation>
@@ -5311,7 +5312,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адреса}=1{{SELECTED_ITEMS} адрес}one{{SELECTED_ITEMS} адрес}few{{SELECTED_ITEMS} адреса}many{{SELECTED_ITEMS} адресов}other{{SELECTED_ITEMS} адреса}}</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
 <translation id="5033137252639132982">Запретить сайтам использовать датчики движения</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> сможет использовать Google Менеджер паролей, чтобы входить в аккаунт за вас. Узнайте, <ph name="BEGIN_LINK" />как <ph name="ACTOR_NAME" /> обрабатывает ваши данные<ph name="END_LINK" />.</translation>
 <translation id="5035846135112863536">Чтобы изучить информацию, предоставленную сервисом "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", нажмите "Подробнее" ниже.</translation>
 <translation id="5037676449506322593">Выделить все</translation>
 <translation id="5038621320029329200">Доверенные сертификаты</translation>
@@ -5577,6 +5577,7 @@
 <translation id="5230190638672215545">Ввод "ươ" с помощью "uow"</translation>
 <translation id="5230516054153933099">Окно</translation>
 <translation id="5231255476752743708">Chrome не может сменить пароль</translation>
+<translation id="5232607425694431024">Спросите о файле или изображении</translation>
 <translation id="5232714764496316200">Делайте домашнее задание с помощью Google Объектива</translation>
 <translation id="5233231016133573565">Идентификатор процесса</translation>
 <translation id="5233638681132016545">Новая вкладка</translation>
@@ -6430,7 +6431,6 @@
 <translation id="5922854266885514646">Нажмите "Настроить Chrome".</translation>
 <translation id="5924047253200400718">Справка<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Запрашивать разрешение перед копированием или перемещением файлов Microsoft на Google Диск</translation>
-<translation id="5925057331573749968">Входите в аккаунт быстрее по QR-коду</translation>
 <translation id="5926936390113611560">Открыть все профили</translation>
 <translation id="592880897588170157">Скачивать файлы PDF, а не автоматически открывать их в Chrome</translation>
 <translation id="5930567261594625340">Ночное небо</translation>
@@ -7731,6 +7731,7 @@
 <translation id="6913051485529944333">На этой странице Google Календарь больше не появится.</translation>
 <translation id="6914812290245989348">Не показывать предупреждения о переходе на незащищенные сайты</translation>
 <translation id="6916590542764765824">Управление расширениями</translation>
+<translation id="6916630302999048499">Задача Gemini выполняется</translation>
 <translation id="6916676294509106572">Календарь Outlook скрыт.</translation>
 <translation id="6916818963747321523">Развернуть все</translation>
 <translation id="6917873303492266709">Чтобы делиться группами вкладок, присоединяться к ним и работать вместе с другими пользователями, откройте настройки и включите параметр "Разрешить вход в Chrome".</translation>
@@ -8260,6 +8261,7 @@
 <translation id="733058866272972585">Этому сайту запрещено использовать идентификаторы для воспроизведения защищенного контента</translation>
 <translation id="7331646370422660166">Alt + Стрелка вниз</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">Выполняется</translation>
 <translation id="7333388112938984914">Загрузка файлов недоступна, когда используется подключение с тарификацией.</translation>
 <translation id="7335974957018254119">Для каких языков применяется проверка правописания</translation>
 <translation id="7336799713063880535">Заблокировано.</translation>
@@ -8491,7 +8493,6 @@
 <translation id="7495149565104413027">Приложение Android</translation>
 <translation id="7497322070873193353">ИИ от Google</translation>
 <translation id="7497981768003291373">Не обнаружено недавно сохраненных текстовых журналов WebRTC.</translation>
-<translation id="7499684925421947861">Разрешить сервису "<ph name="ACTOR_NAME" />" входить на сайт <ph name="DOMAIN" /> за вас?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Добавить в список сайтов, которые всегда активны</translation>
 <translation id="7502528909759062987">Приостановить трансляцию вкладки на устройство "<ph name="DEVICE_NAME" />"</translation>
@@ -10304,6 +10305,7 @@
 <translation id="8876307312329369159">Эту настройку нельзя изменить в демонстрационном сеансе.</translation>
 <translation id="8876965259056847565">Чтобы находить устройства поблизости, функция "<ph name="FEATURE_NAME" />" использует Bluetooth.</translation>
 <translation id="8877448029301136595">[родительский каталог]</translation>
+<translation id="8878337214401484041">Задача "<ph name="TASK_TITLE" />" выполняется</translation>
 <translation id="8879284080359814990">Показать как вкладку</translation>
 <translation id="8879921471468674457">Запомнить учетные данные</translation>
 <translation id="8880009256105053174">Найт&amp;и эту страницу в Google</translation>
@@ -10723,7 +10725,6 @@
 <translation id="9187967020623675250">Клавиши не совпадают. Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Озвучивать текст, чтобы вы могли использовать устройство, не глядя на экран. Чтобы представлять текст с помощью шрифта Брайля, нужно подключить специальное устройство. Программа ChromeVox включается и выключается с помощью сочетания клавиш Ctrl + Alt + Z. Для навигации нажимайте Поиск + Стрелка влево или вправо. Чтобы выбрать (активировать) объект, нажмите клавиши Поиск + Пробел.</translation>
 <translation id="9195969368671142407">Это значит, что вы не можете делиться группами вкладок и присоединяться к ним.</translation>
-<translation id="9197456336762295195">Отсканируйте этот QR-код с помощью камеры устройства с ключом доступа для google.com.</translation>
 <translation id="919840898042157087">Без движения</translation>
 <translation id="9199503643457729322">Нажмите, чтобы вернуться в настройки Chrome.</translation>
 <translation id="9199695835892108985">Сбросить все разрешения для последовательных портов?</translation>

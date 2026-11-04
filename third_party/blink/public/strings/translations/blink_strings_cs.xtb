@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Zadejte prosím platnou hodnotu. Pole obsahuje neúplnou hodnotu nebo neplatné datum.</translation>
 <translation id="310520048233152454">Zadejte prosím adresu URL.</translation>
+<translation id="3137127353890528027">Heslo je skryto</translation>
 <translation id="3321030238473337787">Rychlost přehrávání</translation>
 <translation id="3450233048674729344">Hodnota musí být menší nebo rovna <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">Další podrobnosti, viz <ph name="ALERT_HUB_LINK" />.</translation>
 <translation id="6310801910862476708">Ukončit režim obrazu v obraze</translation>
+<translation id="64261224118544870">Heslo se zobrazuje</translation>
 <translation id="6484738902856791350">Naformátovat</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="65574987622079584">nainstalovat rozšíření prohlížeče</translation>

@@ -289,6 +289,7 @@
 <translation id="1195210374336998651">להגדרות האפליקציה</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
 <translation id="1195558154361252544">הצגת ההודעות חסומה באופן אוטומטי בכל האתרים, מלבד האתרים שבהם היא אושרה</translation>
+<translation id="1196850329140740621">כדי לראות שוב את הכרטיסיות האחרות, צריך ללחוץ על הכפתור "ביטול המיקוד"</translation>
 <translation id="1197088940767939838">כתום</translation>
 <translation id="11978075283960463">נפח הנתונים ששמורים באפליקציה: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">כלי דיבור ללקויי ראייה</translation>
@@ -534,7 +535,6 @@
 <translation id="1401216725754314428">מידע נוסף על אתרים קשורים בכרטיסייה חדשה</translation>
 <translation id="1402426911829176748">מתבצע חיבור למכשיר שלך</translation>
 <translation id="1405779994569073824">קריסה.</translation>
-<translation id="1406812885827747674">לאפשר הפעם</translation>
 <translation id="1407069428457324124">עיצוב כהה</translation>
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
 <translation id="140723521119632973">הפעלה סלולרית</translation>
@@ -768,6 +768,7 @@
 <translation id="1586075235463145108">‏קודם צריך להפעיל את התכונה "פעולות אוטומטיות בדפדפן" ב-Chrome במכשיר הזה</translation>
 <translation id="1587275751631642843">‏קונסולת JavaScript&amp;</translation>
 <translation id="1588438908519853928">רגיל</translation>
+<translation id="1588626416445753732">פופולריים באזור שלך (בסדר אקראי)</translation>
 <translation id="1588772269240419305">בדיקת עדכוני השם והלוגו</translation>
 <translation id="1588870296199743671">פתיחת קישור באמצעות...</translation>
 <translation id="1588919647604819635">לחיצה ימנית על הכרטיס</translation>
@@ -1252,6 +1253,7 @@
 <translation id="1944921356641260203">נמצא עדכון</translation>
 <translation id="1947136734041527201">אפשרות להיכנס לאתרים באמצעות החשבון שלך בשירות זיהוי מסוים</translation>
 <translation id="1948528728718281125">הגישה למצלמה מותרת לאפליקציות, לאתרים עם הרשאת גישה למצלמה ולשירותי המערכת</translation>
+<translation id="1949054568937504107">פופולריים באזור שלך</translation>
 <translation id="1949332606889020901">מזהי קריסת מחשב</translation>
 <translation id="1949584741547056205">תשובות מהירות</translation>
 <translation id="1949980990364952348">שם האפליקציה</translation>
@@ -3388,6 +3390,7 @@
 <translation id="3577178956237526436">ביטול ההשתקה של האתר שבצד שמאל</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577487026101678864">סנכרון הקבצים פועל</translation>
+<translation id="3578100826941720337">מנועי חיפוש נוספים</translation>
 <translation id="3578230582111850125">‏סימון טקסט כדי לשאול את Gemini</translation>
 <translation id="3581605050355435601">‏הגדרה אוטומטית של כתובת IP</translation>
 <translation id="3581861561942370740">חיפוש בהיסטוריית ההורדות</translation>
@@ -3555,6 +3558,7 @@
 <translation id="3699920817649120894">להשבית את הסנכרון וההתאמה האישית?</translation>
 <translation id="3700888195348409686">מציג (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">לא לאפשר לאתרים לעקוב אחר מיקום המצלמה</translation>
+<translation id="3701028563242674350">כדי להגדיל את סמן העכבר, צריך לנער אותו</translation>
 <translation id="3701167022068948696">לפתרון הבעיה</translation>
 <translation id="3701515417135397388">הצגת אזהרה אם סיסמה נחשפה בפרצה באבטחת מידע</translation>
 <translation id="3701778844313851487">מעבר לתוספים</translation>
@@ -4814,6 +4818,7 @@
 <translation id="4663373278480897665">ניתן להשתמש במצלמה בדף זה</translation>
 <translation id="4664375726751122009">מעבר לתצוגה מורחבת</translation>
 <translation id="4665014895760275686">יצרן</translation>
+<translation id="4665035764476941598">כדי לראות שוב את הכרטיסיות האחרות, צריך ללחוץ כאן</translation>
 <translation id="4665446389743427678">כל הנתונים שמאוחסנים על ידי <ph name="SITE" /> יימחקו.</translation>
 <translation id="4666472247053585787">קבלת התראות מהטלפון במכשיר ה-<ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="4666911709726371538">עוד אפליקציות</translation>
@@ -5308,7 +5313,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{כתובות}=1{כתובות ({SELECTED_ITEMS})}one{Addresses ({SELECTED_ITEMS})}two{כתובות ({SELECTED_ITEMS})}other{כתובות ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">‏לא ניתן ליצור קוד QR</translation>
 <translation id="5033137252639132982">לא מורשים להשתמש בחיישני תנועה</translation>
-<translation id="5034158480345261097">‏‫<ph name="ACTOR_NAME" /> יכול להשתמש במנהל הסיסמאות של Google כדי להכניס אותך לחשבון. <ph name="BEGIN_LINK" />איך <ph name="ACTOR_NAME" /> מטפל בנתונים שלך<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">לקבלת מידע נוסף מ-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, צריך לבחור באפשרות 'פרטים נוספים' למטה.</translation>
 <translation id="5037676449506322593">הכול</translation>
 <translation id="5038621320029329200">אישורים מהימנים</translation>
@@ -5799,6 +5803,7 @@
 <translation id="5425042808445046667">המשך הורדה</translation>
 <translation id="542570217857307910">עכשיו אפשר להרחיב את הכרטיסיות על ידי הצבת הסמן מעליהן. כדי להשבית את האפשרות הזו, צריך ללחוץ לחיצה ימנית כאן.</translation>
 <translation id="5425863515030416387">כניסה קלה לחשבון במכשירים שונים</translation>
+<translation id="542606797693939821">איתור סמן העכבר</translation>
 <translation id="5427278936122846523">ברצוני לקבל תרגום תמיד</translation>
 <translation id="5427459444770871191">סיבוב &amp;בכיוון השעון</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (עדכון זמין)</translation>
@@ -6424,7 +6429,6 @@
 <translation id="5922854266885514646">‏לוחצים על "התאמה אישית של Chrome"</translation>
 <translation id="5924047253200400718">קבלת עזרה<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏צריך לשאול לפני שמעתיקים או מעבירים קובצי Microsoft ל-Google Drive</translation>
-<translation id="5925057331573749968">‏רוצה להיכנס לחשבון מהר יותר עם קוד QR?</translation>
 <translation id="5926936390113611560">פתיחת כל הפרופילים</translation>
 <translation id="592880897588170157">‏הורדת קובצי PDF במקום פתיחה אוטומטית שלהם ב-Chrome</translation>
 <translation id="5930567261594625340">שמי לילה</translation>
@@ -6657,6 +6661,7 @@
 <translation id="6104929924898022309">שימוש במקש החיפוש לשינוי ההתנהגות של מקשי הפונקציות</translation>
 <translation id="6108952804512516814">‏יצירה בעזרת AI</translation>
 <translation id="6110794992500777605">קיצורי הדרך והאתרים שלי</translation>
+<translation id="611080676871930948">שליחת משוב על מצב הקריאה</translation>
 <translation id="6111718295497931251">‏הסרת הגישה ל-Google Drive</translation>
 <translation id="6112197885362646874">‏שאלה ל-Google לגבי "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="6112727384379533756">הוספת כרטיס</translation>
@@ -7027,6 +7032,7 @@
 <translation id="6402042774506839496">כדי לברר למה, צריך לפנות למפתח האפליקציה</translation>
 <translation id="6402921224457714577">‏אתרים יכולים לבקש הרשאה לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
+<translation id="6405999530973682789">איך למצוא את הסמן של העכבר</translation>
 <translation id="6406303162637086258">ביצוע הדמיה של הפעלת דפדפן מחדש</translation>
 <translation id="6406506848690869874">סנכרון</translation>
 <translation id="6406571339342621375">‏לא להציג את Gemini בסרגל התפריטים</translation>
@@ -7970,6 +7976,7 @@
 <translation id="7113314569799918830">‏‫Gemini ב-Chrome מתרחב למיקומים נוספים, אבל עדיין לא זמין בכל מקום</translation>
 <translation id="7113502843173351041">לדעת את כתובת האימייל שלך</translation>
 <translation id="7115361495406486998">אין אנשי קשר זמינים</translation>
+<translation id="7116931001458704701">ניעור העכבר לאיתור הסמן</translation>
 <translation id="7117228822971127758">אפשר לנסות שוב מאוחר יותר</translation>
 <translation id="7118268675952955085">צילום מסך</translation>
 <translation id="711840821796638741">הצגת סימניות מנוהלות</translation>
@@ -8476,7 +8483,6 @@
 <translation id="7495149565104413027">‏אפליקציה ל‑Android</translation>
 <translation id="7497322070873193353">‏‫AI מבית Google</translation>
 <translation id="7497981768003291373">‏אין לך יומני טקסט של WebRTC שתועדו לאחרונה.</translation>
-<translation id="7499684925421947861">לאפשר ל-<ph name="ACTOR_NAME" /> להתחבר אל <ph name="DOMAIN" /> בשבילך?</translation>
 <translation id="7501957181231305652">או</translation>
 <translation id="7502220299952823578">הוספה לרשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
 <translation id="7502528909759062987">השהיה של העברת הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
@@ -8638,6 +8644,7 @@
 <translation id="7634337648687970851">בשלב זה, אין תמיכה בשחזור נתונים מקומיים.</translation>
 <translation id="7634566076839829401">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="7635048370253485243">מנהל המערכת הצמיד את התוסף הזה</translation>
+<translation id="7636175154537919400">כדי להסתיר באופן זמני את הכרטיסיות האחרות, צריך ללחוץ לחיצה ימנית</translation>
 <translation id="7636346903338549690">‏אתרים שמורשים להשתמש בקובצי cookie של צד שלישי</translation>
 <translation id="7636919061354591437">התקנה במכשיר זה</translation>
 <translation id="7637593984496473097">אין מספיק נפח אחסון בדיסק</translation>
@@ -9592,6 +9599,7 @@
 <translation id="8345099007452202761">יש גרסה חדשה (<ph name="VERSION" />) של <ph name="APP_NAME" />. רוצה להפעיל אותה עכשיו?</translation>
 <translation id="8345848587667658367">עכשיו יש לך אפשרות לראות את התמונות, המדיה, ההתראות והאפליקציות האחרונות שבטלפון</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
+<translation id="8347654878156675116">חיפוש</translation>
 <translation id="8347728744337089388">שליחה אל המכ&amp;שיר שלך</translation>
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8348896480272971199">צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
@@ -10696,7 +10704,6 @@
 <translation id="9187967020623675250">המקשים לא תואמים. צריך להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">‏אפשר להאזין לקורא מסך קולי כדי להשתמש במכשיר בלי להסתכל במסך. ניתן לקבל משוב ברייל ממכשיר מחובר. כדי להפעיל או להשבית את ChromeVox, מקישים על Ctrl‏ + Alt‏ + Z. כדי לנווט, מקישים על מקש החיפוש + חץ שמאלה או חץ ימינה. כדי לבחור (להפעיל), מקישים על מקש החיפוש + מקש הרווח.</translation>
 <translation id="9195969368671142407">‏כשהארגון מגביל את האפשרות לשמור בחשבון Google, לא ניתן לשתף קבוצות של כרטיסיות או להצטרף אליהן</translation>
-<translation id="9197456336762295195">‏צריך לסרוק את קוד ה-QR הזה באמצעות המצלמה במכשיר שמכיל את מפתח הגישה ל-google.com</translation>
 <translation id="919840898042157087">מצב סטטי באפשרויות התנועה</translation>
 <translation id="9199503643457729322">אפשר ללחוץ על הלחצן הזה כדי לצאת מהמדריך בנושא פרטיות.</translation>
 <translation id="9199695835892108985">לאפס את כל ההרשאות ליציאה הטורית?</translation>

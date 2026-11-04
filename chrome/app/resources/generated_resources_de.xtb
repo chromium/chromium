@@ -535,7 +535,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1401216725754314428">Weitere Informationen zu ähnlichen Websites in einem neuen Tab</translation>
 <translation id="1402426911829176748">Verbindung zum Gerät wird hergestellt</translation>
 <translation id="1405779994569073824">Abgestürzt.</translation>
-<translation id="1406812885827747674">Dieses Mal erlauben</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="140723521119632973">Mobilfunkaktivierung</translation>
@@ -683,6 +682,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1523279371236772909">Im letzten Monat angesehen</translation>
 <translation id="1523978563989812243">Text-zu-Sprache-Engines</translation>
 <translation id="1524563461097350801">Nein, danke</translation>
+<translation id="1524903662136734524">Aus Google Drive hinzufügen</translation>
 <translation id="1525740877599838384">Zur Standortbestimmung nur WLAN nutzen</translation>
 <translation id="1526274304859009691">Melde dich an, um auf deine Erweiterungen und weitere Daten von <ph name="DEVICE" /> zuzugreifen</translation>
 <translation id="1526560967942511387">Unbenanntes Dokument</translation>
@@ -3189,6 +3189,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3436118221454753036">Im KI-Modus fragen</translation>
 <translation id="3437397693214267762">Outlook-Kalender sowie SharePoint- und OneDrive-Dateien aufrufen</translation>
 <translation id="3437494162908353428">Entwicklertools sind für diese URL nicht zulässig.</translation>
+<translation id="3437498061222607130">Du bist mit deinem Konto „<ph name="USER_EMAIL" />“ in der Google Suche angemeldet</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> immer Zugriff auf dein Mikrofon gestatten</translation>
 <translation id="3439970425423980614">PDF-Vorschau wird geöffnet...</translation>
@@ -5013,6 +5014,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4823484602432206655">Nutzer- und Geräteeinstellungen lesen und ändern</translation>
 <translation id="4824037980212326045">Linux-Sicherung und ‑Wiederherstellung</translation>
 <translation id="4824263260587281352">Tastenkombination „<ph name="KEY_COMBINATION" />“ ändern</translation>
+<translation id="4824320026281030716">Google-Konto: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Synchronisierung abbrechen?</translation>
 <translation id="4825462365587146530">Weitere Informationen zum Chrome Root Store erhältst du auf einem neuen Tab.</translation>
 <translation id="4825532258163983651">Passkey kann nicht gelöscht werden</translation>
@@ -5298,7 +5300,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adressen}=1{Adresse ({SELECTED_ITEMS})}other{Adressen ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR-Code konnte nicht erstellt werden</translation>
 <translation id="5033137252639132982">Dürfen keine Bewegungssensoren verwenden</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kann den Google Passwortmanager verwenden, um dich anzumelden. <ph name="BEGIN_LINK" />Informationen dazu, wie <ph name="ACTOR_NAME" /> mit deinen Daten umgeht<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Wähle unten „Weitere Details“ aus, um mehr Informationen von <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> zu erhalten.</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
 <translation id="5038621320029329200">Vertrauenswürdige Zertifikate</translation>
@@ -6412,7 +6413,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5922854266885514646">Klicke auf „Chrome anpassen“</translation>
 <translation id="5924047253200400718">Hilfe aufrufen, <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Vor dem Kopieren oder Verschieben von Microsoft-Dateien in bzw. nach Google Drive fragen</translation>
-<translation id="5925057331573749968">Per QR-Code schneller anmelden</translation>
 <translation id="5926936390113611560">Alle Profile öffnen</translation>
 <translation id="592880897588170157">PDF-Dateien herunterladen, anstatt sie automatisch in Chrome zu öffnen</translation>
 <translation id="5930567261594625340">Nachthimmel</translation>
@@ -7857,6 +7857,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7030304022046916278">Sendet URLs an Safe Browsing, um sie zu prüfen</translation>
 <translation id="7030695672997239647">Klicke mit der rechten Maustaste auf einen Tab, wähle „Tab zu Gruppe hinzufügen“ aus und klicke dann auf „Neue Gruppe“</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: serielle Schnittstelle verbunden</translation>
+<translation id="7032334023419126809">Google-Konto: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Du darfst höchstens 62 Zeichen eingeben</translation>
 <translation id="7033731598469029604">Automatisches Browsen</translation>
 <translation id="70356134210715500">Passkeys verwenden</translation>
@@ -8462,7 +8463,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7495149565104413027">Android-App</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Es sind keine kürzlich erfassten WebRTC-Textprotokolle vorhanden.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> erlauben, dich bei <ph name="DOMAIN" /> anzumelden?</translation>
 <translation id="7501957181231305652">oder</translation>
 <translation id="7502220299952823578">Zur Liste „Diese Websites immer aktiv lassen“ hinzufügen</translation>
 <translation id="7502528909759062987">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ pausieren</translation>
@@ -9378,6 +9378,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8199300056570174101">Netzwerk(dienst) und Geräteeigenschaften</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8202827109322349110">Im Basiseditor öffnen</translation>
+<translation id="8203105157044679380">Google-Suchfeld</translation>
 <translation id="8203152941016626022">Nearby Share-Gerätename</translation>
 <translation id="8203732864715032075">Messages sendet Benachrichtigungen und merkt sich diesen Computer. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Rechtsklick</translation>
@@ -10189,6 +10190,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8818152010000655963">Hintergrund</translation>
 <translation id="8818988764764862764">Fenster nach links verschoben</translation>
 <translation id="8819510664278523111">Die Geräte-EID lautet <ph name="EID_NUMBER" />, die Geräte-IMEI <ph name="IMEI_NUMBER" /> und die Geräte-Seriennummer <ph name="SERIAL_NUMBER" />. Diese Nummern können zur Aktivierung des Diensts verwendet werden.</translation>
+<translation id="8819762137851963556">Cursor finden</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8821045908425223359">IP-Adresse automatisch konfigurieren</translation>
 <translation id="8821206216942230957">Mit deinem Konto hast du keinen Zugriff auf Gemini in Chrome</translation>
@@ -10499,6 +10501,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="9043767139743235992">Support für Barrierefreiheit bei Google-Produkten kontaktieren</translation>
 <translation id="9044646465488564462">Fehler beim Herstellen einer Verbindung mit dem Netzwerk: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Deine Leseliste wurde in die neue Seitenliste verschoben. Hier kannst du die Funktion testen.</translation>
+<translation id="9046240419485318563">In gemerkten Informationen suchen</translation>
 <translation id="9048745018038487540">Alle Schriftarten auswählen</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="905137631551495997">Erweiterung(en)</translation>
@@ -10684,7 +10687,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9187967020623675250">Die Tasten stimmen nicht überein. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="9192019773545828776">Du erhältst gesprochenes Feedback, sodass du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Braille-Feedback ist auf einem verbundenen Gerät verfügbar. Verwende Strg + Alt + Z, um ChromeVox zu aktivieren oder zu deaktivieren. Mit der Suchtaste + Links- oder Rechtspfeil kannst du den Cursor bewegen. Drücke die Suchtaste + Leertaste, um ein Element auszuwählen (zu aktivieren).</translation>
 <translation id="9195969368671142407">Wenn deine Organisation die Speicheroption für dein Google-Konto einschränkt, kannst du Tabgruppen nicht teilen oder ihnen beitreten</translation>
-<translation id="9197456336762295195">Scanne diesen QR-Code mit der Kamera des Geräts, auf dem sich dein Passkey für google.com befindet</translation>
 <translation id="919840898042157087">Bewegung „Statisch“</translation>
 <translation id="9199503643457729322">Klicke hier, um den Datenschutz-Leitfaden zu verlassen.</translation>
 <translation id="9199695835892108985">Alle Berechtigungen für serielle Ports zurücksetzen?</translation>

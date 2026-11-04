@@ -184,6 +184,7 @@
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2803971713792056305">Chromium'unuz</translation>
 <translation id="2816462166102338036">Bu videoyu görsel aramayla arayın</translation>
+<translation id="2819844767470613567">Uyarı: Chromium, uzantıların tarama geçmişinizi kaydetmesini engelleyemez. İzole modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="282591729717417030">iOS'te Chromium ile hareket halindeyken kameranızla ürünleri keşfedin, fiyat düşüşlerini takip edin ve daha fazlasını yapın.</translation>
 <translation id="2841525013647267359">Şu dilden çevir:</translation>
 <translation id="2846251086934905009">Yükleme hatası: Yükleyici tamamlanmadı. Yükleme işlemi iptal edildi.</translation>
@@ -478,6 +479,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="5889361821821684993">Chromium, tarayıcınızın en güvenli ayarlara sahip olup olmadığını düzenli olarak kontrol eder. İncelemeniz gereken bir konu varsa sizi bilgilendiririz.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5896077214220653386">Chromium'da Gemini Enterprise</translation>
+<translation id="5900507321340749588">Chromium, Dolandırıcılık Tespiti gibi özellikleri desteklemek için doğrudan cihazınızda çalışan yapay zeka modellerini kullanabilir. Bu ayar kapalıyken bu özellikler çalışmayabilir. <ph name="BEGIN_LINK" />Cihaz üzerinde yapay zeka hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın</translation>
 <translation id="5924017743176219022">İnternete bağlanılıyor...</translation>
 <translation id="5941711191222866238">Küçült</translation>
