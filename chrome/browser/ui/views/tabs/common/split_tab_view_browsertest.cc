@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
@@ -20,7 +21,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/compositor/canvas_painter.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view_utils.h"
 
 class SplitTabViewTestBase
@@ -155,6 +160,97 @@ IN_PROC_BROWSER_TEST_P(SplitTabViewTest, CreateSplitWithCollapsedTabGroup) {
   ASSERT_TRUE(split_view);
   EXPECT_LE(split_view->GetMinimumSize().width(),
             split_view->GetPreferredSize().width());
+}
+
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest,
+                       AdjacentTabsTargetableInHorizontalOverlapRegion) {
+  if (!is_horizontal()) {
+    GTEST_SKIP();
+  }
+
+  const auto animation_mode_reset =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  // Tabs layout:
+  // Tab 0: Leading unsplit tab
+  // Tab 1, 2: Split tab (active so SplitTabView has highest Z-order)
+  // Tab 3: Trailing unsplit tab
+  AppendSplitTab();
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  RunScheduledLayouts();
+
+  auto* unpinned_node = unpinned_collection_node();
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+  auto* unpinned_container =
+      views::AsViewClass<UnpinnedTabContainerView>(unpinned_node->view());
+
+  auto* leading_tab =
+      views::AsViewClass<TabView>(unpinned_node->children()[0]->view());
+  auto* split_view =
+      views::AsViewClass<SplitTabView>(unpinned_node->children()[1]->view());
+  auto* trailing_tab =
+      views::AsViewClass<TabView>(unpinned_node->children()[2]->view());
+
+  split_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  auto* leading_split_tab =
+      views::AsViewClass<TabView>(split_view->children()[0]);
+  auto* trailing_split_tab =
+      views::AsViewClass<TabView>(split_view->children()[1]);
+
+  gfx::RectF leading_hit_bounds = gfx::SkRectToRectF(
+      leading_split_tab->tab_styling()
+          ->GetPath(TabStyle::PathType::kHitTest, /*scale=*/1.0f,
+                    {.render_units = TabStyle::RenderUnits::kDips})
+          .getBounds());
+  views::View::ConvertRectToTarget(leading_split_tab, unpinned_container,
+                                   &leading_hit_bounds);
+  const int leading_threshold_x = gfx::ToEnclosingRect(leading_hit_bounds).x();
+
+  gfx::RectF trailing_hit_bounds = gfx::SkRectToRectF(
+      trailing_split_tab->tab_styling()
+          ->GetPath(TabStyle::PathType::kHitTest, /*scale=*/1.0f,
+                    {.render_units = TabStyle::RenderUnits::kDips})
+          .getBounds());
+  views::View::ConvertRectToTarget(trailing_split_tab, unpinned_container,
+                                   &trailing_hit_bounds);
+  const int trailing_threshold_x =
+      gfx::ToEnclosingRect(trailing_hit_bounds).right();
+
+  // Points 1 DIP outside the leading and trailing hit-test thresholds of the
+  // split tabs (still within `split_view->bounds()`) should target the adjacent
+  // tabs rather than `split_view`.
+  const gfx::Point point_in_leading_overlap(leading_threshold_x - 1,
+                                            split_view->height() / 2);
+  ASSERT_TRUE(split_view->bounds().Contains(point_in_leading_overlap));
+  EXPECT_EQ(
+      unpinned_container->GetEventHandlerForPoint(point_in_leading_overlap),
+      leading_tab);
+
+  const gfx::Point point_in_trailing_overlap(trailing_threshold_x + 1,
+                                             split_view->height() / 2);
+  ASSERT_TRUE(split_view->bounds().Contains(point_in_trailing_overlap));
+  EXPECT_EQ(
+      unpinned_container->GetEventHandlerForPoint(point_in_trailing_overlap),
+      trailing_tab);
+
+  // Points 1 DIP inside the left and right split tabs' hit-test thresholds
+  // should still target the respective child TabViews.
+  const gfx::Point point_in_leading_split_tab(leading_threshold_x + 1,
+                                              split_view->height() / 2);
+  EXPECT_EQ(
+      unpinned_container->GetEventHandlerForPoint(point_in_leading_split_tab),
+      leading_split_tab);
+
+  const gfx::Point point_in_trailing_split_tab(trailing_threshold_x - 1,
+                                               split_view->height() / 2);
+  EXPECT_EQ(
+      unpinned_container->GetEventHandlerForPoint(point_in_trailing_split_tab),
+      trailing_split_tab);
 }
 
 INSTANTIATE_TEST_SUITE_P(

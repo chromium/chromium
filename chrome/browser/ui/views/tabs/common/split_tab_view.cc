@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/common/child_view_targeter_delegate.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
@@ -29,6 +30,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_targeter.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,6 +43,10 @@ SplitTabView::SplitTabView(TabCollectionNode* collection_node)
                                   TabView::kGlowHoverAnimationDuration)
                             : nullptr) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(
+        std::make_unique<ChildViewTargeterDelegate>()));
+  }
 
   collection_node->set_detach_child_from_node(base::BindRepeating(
       &SplitTabView::RemoveChildViewForReparenting, base::Unretained(this)));

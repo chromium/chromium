@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
@@ -39,6 +40,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -47,6 +49,8 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
@@ -1250,6 +1254,68 @@ IN_PROC_BROWSER_TEST_F(
               expected_widths[i]);
   }
   ExpectTrailingPadding(group_view);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       TabAfterGroupIsTargetableInOverlapRegion) {
+  // Tabs layout:
+  // Tab 0, 1: Group (with Tab 1 active so the group has highest Z-order)
+  // Tab 2: Ungrouped tab immediately after the group
+  AppendTab();
+  AppendTab();
+  tab_groups::TabGroupId group_id = GetTabStripModel()->AddToNewGroup({0, 1});
+  GetTabStripModel()->ActivateTabAt(1);
+
+  auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  auto* tab_strip_view =
+      views::AsViewClass<TabStripView>(base_region_view->GetTabStripView());
+  auto* unpinned_container = tab_strip_view->GetUnpinnedTabsContainer();
+
+  auto* group_node = root_node()->GetNodeForHandle(GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->GetCollectionHandle());
+  ASSERT_EQ(group_node->children().size(), 2u);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+
+  auto* unpinned_node =
+      root_node()->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED);
+  ASSERT_EQ(unpinned_node->children().size(), 2u);
+  auto* ungrouped_tab_view =
+      views::AsViewClass<TabView>(unpinned_node->children()[1]->view());
+  auto* last_grouped_tab_view =
+      views::AsViewClass<TabView>(group_node->children()[1]->view());
+
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  gfx::RectF last_grouped_tab_hit_bounds = gfx::SkRectToRectF(
+      last_grouped_tab_view->tab_styling()
+          ->GetPath(TabStyle::PathType::kHitTest, /*scale=*/1.0f,
+                    {.render_units = TabStyle::RenderUnits::kDips})
+          .getBounds());
+  views::View::ConvertRectToTarget(last_grouped_tab_view, unpinned_container,
+                                   &last_grouped_tab_hit_bounds);
+  const int hit_threshold_x =
+      gfx::ToEnclosingRect(last_grouped_tab_hit_bounds).right();
+
+  // A point 1 DIP past `last_grouped_tab_view`'s right hit-test edge still
+  // lies inside `group_view->bounds()` and inside `ungrouped_tab_view`'s
+  // hit-test mask, so it should target `ungrouped_tab_view`.
+  const gfx::Point point_in_trailing_overlap(hit_threshold_x + 1,
+                                             group_view->height() / 2);
+  ASSERT_TRUE(group_view->bounds().Contains(point_in_trailing_overlap));
+  EXPECT_EQ(
+      unpinned_container->GetEventHandlerForPoint(point_in_trailing_overlap),
+      ungrouped_tab_view);
+
+  // A point 1 DIP inside `last_grouped_tab_view`'s right hit-test edge should
+  // still target `last_grouped_tab_view`.
+  const gfx::Point point_in_last_grouped_tab(hit_threshold_x - 1,
+                                             group_view->height() / 2);
+  EXPECT_EQ(
+      unpinned_container->GetEventHandlerForPoint(point_in_last_grouped_tab),
+      last_grouped_tab_view);
 }
 
 // TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group

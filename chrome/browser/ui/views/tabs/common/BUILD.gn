@@ -45,6 +45,8 @@ source_set("common") {
 
 source_set("impl") {
   sources = [
+    "child_view_targeter_delegate.cc",
+    "child_view_targeter_delegate.h",
     "dragged_tabs_container.cc",
     "horizontal_tab_style_views.cc",
     "horizontal_tab_style_views.h",
