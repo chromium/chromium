@@ -40,6 +40,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
@@ -2982,4 +2984,24 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsWithOrigin) {
   auto origin_psl = get_origin(mech_psl);
   EXPECT_TRUE(origin_psl.has_value());
   EXPECT_EQ(origin_psl.value(), u"sub.example.com");
+}
+
+TEST(WebAuthnUiHelpersTest, GetProviderIcon) {
+  using device::AuthenticatorType;
+
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kEnclave),
+            &GooglePasswordManagerVectorIcon());
+  EXPECT_EQ(
+      webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kICloudKeychain),
+      &kApplePasswordsColorCustomIcon);
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kWinNative),
+            &kWindowsHelloColorCustomIcon);
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kTouchID),
+            &vector_icons::kProductRefreshIcon);
+
+  // Other sources have no provider icon.
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kPhone),
+            nullptr);
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kOther),
+            nullptr);
 }

@@ -9,7 +9,11 @@
 
 #include "base/check.h"
 #include "base/strings/strcat.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/vector_icons/vector_icons.h"
+#include "device/fido/public/fido_types.h"
 #include "ui/gfx/font_list.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -23,6 +27,21 @@ std::u16string RpIdToElidedHost(const std::string& relying_party_id,
       {url::kHttpsScheme, url::kStandardSchemeSeparator, relying_party_id}));
   CHECK(relying_party_id_url.is_valid(), base::NotFatalUntil::M162);
   return url_formatter::ElideHost(relying_party_id_url, font_list, width);
+}
+
+const gfx::VectorIcon* GetProviderIcon(device::AuthenticatorType type) {
+  switch (type) {
+    case device::AuthenticatorType::kICloudKeychain:
+      return &kApplePasswordsColorCustomIcon;
+    case device::AuthenticatorType::kEnclave:
+      return &GooglePasswordManagerVectorIcon();
+    case device::AuthenticatorType::kWinNative:
+      return &kWindowsHelloColorCustomIcon;
+    case device::AuthenticatorType::kTouchID:
+      return &vector_icons::kProductRefreshIcon;
+    default:
+      return nullptr;
+  }
 }
 
 }  // namespace webauthn_ui_helpers

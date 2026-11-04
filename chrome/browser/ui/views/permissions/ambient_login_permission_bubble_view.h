@@ -7,9 +7,11 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class HoverButton;
@@ -98,6 +100,8 @@ class AmbientLoginPermissionBubbleView : public PermissionPromptBubbleBaseView {
       size_t index);
 
   raw_ptr<views::MdTextButton> sign_in_button_ = nullptr;
+  // The site's brand colour, used for credential monograms.
+  const std::optional<SkColor> site_color_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_AMBIENT_LOGIN_PERMISSION_BUBBLE_VIEW_H_

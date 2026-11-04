@@ -12,10 +12,13 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/permissions/ambient_login_credential_icon.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_prompt.h"
@@ -23,14 +26,24 @@
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkClipOp.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -55,7 +68,8 @@
 namespace {
 
 // The size of vector icons.
-constexpr int kIconSize = 20;
+constexpr int kIconSize = ambient_login_credential_icon::kVectorIconSize;
+constexpr int kBadgeImageSize = ambient_signin::kBadgeImageSize;
 constexpr int kViewportBottomMargin = 48;
 
 // The padding on the left and right of the title and the credentials.
@@ -69,6 +83,46 @@ constexpr int kBottomPadding = 4;
 // Domains are elided at the start, since their end is the most significant
 // part.
 constexpr gfx::ElideBehavior kIdpNameElideBehavior = gfx::ELIDE_HEAD;
+
+// A badge is a circle near the bottom right corner of a picture, with the
+// badge's image (`kBadgeImageSize` DIPs) in the middle, e.g. the identity
+// provider's icon on an account picture, or the password manager's icon on the
+// monogram of a passkey or password. The circle is transparent around the
+// image, and it casts a shadow.
+constexpr int kBadgeRadius = 10;
+static_assert(2 * kBadgeRadius >= kBadgeImageSize,
+              "The badge's image must fit in its circle");
+// How far the badge's circle extends beyond the right and bottom edges of the
+// picture.
+constexpr int kBadgeOverhang = 2;
+
+// A shadow of the badge's circle, in DIPs.
+struct BadgeShadow {
+  int y_offset;
+  int spread;
+  // Like the blur radius of a CSS box-shadow, i.e. twice the standard deviation
+  // of the blur.
+  int blur;
+  SkAlpha alpha;
+};
+
+// The shadows of Material elevation level 1: a key shadow, and a lighter but
+// larger ambient shadow.
+constexpr BadgeShadow kBadgeShadows[] = {
+    {.y_offset = 1, .spread = 0, .blur = 2, .alpha = 0x4D},
+    {.y_offset = 1, .spread = 1, .blur = 3, .alpha = 0x26},
+};
+
+// How far the shadows extend beyond the badge's circle.
+constexpr int kBadgeShadowMargin = 5;
+static_assert(std::ranges::all_of(kBadgeShadows, [](const BadgeShadow& shadow) {
+  return shadow.y_offset + shadow.spread + shadow.blur <= kBadgeShadowMargin;
+}));
+
+// The size of a picture with a badge, including the parts of the badge and its
+// shadows that extend beyond the picture.
+constexpr int kBadgedPictureSize =
+    ambient_signin::kAccountPictureSize + kBadgeOverhang + kBadgeShadowMargin;
 
 // Returns the spacing between the icon and the text of a credential, in both
 // the collapsed and the expanded bubble.
@@ -98,16 +152,123 @@ ui::ImageModel GetFederatedCredentialIcon(
   return GetDefaultCredentialIcon();
 }
 
-// Returns a view that shows `icon`. Account pictures are shown at
-// `ambient_signin::kAccountPictureSize`, whereas vector icons already have
-// their size.
-std::unique_ptr<views::ImageView> CreateIconView(const ui::ImageModel& icon) {
-  auto icon_view = std::make_unique<views::ImageView>(icon);
-  if (icon.IsImage()) {
-    icon_view->SetImageSize(gfx::Size(ambient_signin::kAccountPictureSize,
-                                      ambient_signin::kAccountPictureSize));
+// Draws a picture with a badge near its bottom right corner, as described
+// above `kBadgeRadius`.
+class BadgedPictureSource : public gfx::CanvasImageSource {
+ public:
+  BadgedPictureSource(gfx::ImageSkia picture, gfx::ImageSkia badge)
+      : gfx::CanvasImageSource(
+            gfx::Size(kBadgedPictureSize, kBadgedPictureSize)),
+        picture_(std::move(picture)),
+        badge_(std::move(badge)) {}
+
+  BadgedPictureSource(const BadgedPictureSource&) = delete;
+  BadgedPictureSource& operator=(const BadgedPictureSource&) = delete;
+
+  ~BadgedPictureSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    constexpr int kPictureSize = ambient_signin::kAccountPictureSize;
+    constexpr int kBadgeCenter = kPictureSize + kBadgeOverhang - kBadgeRadius;
+    {
+      // Neither the picture nor the shadows cover the badge's circle, so that
+      // what is behind the picture shows around the badge's image.
+      gfx::ScopedCanvas scoped_canvas(canvas);
+      canvas->ClipPath(SkPath::Circle(kBadgeCenter, kBadgeCenter, kBadgeRadius),
+                       /*do_anti_alias=*/true, SkClipOp::kDifference);
+      canvas->DrawImageInt(picture_, 0, 0, picture_.width(), picture_.height(),
+                           0, 0, kPictureSize, kPictureSize, /*filter=*/true);
+      for (const BadgeShadow& shadow : kBadgeShadows) {
+        cc::PaintFlags flags;
+        flags.setAntiAlias(true);
+        flags.setColor(SkColorSetA(SK_ColorBLACK, shadow.alpha));
+        const float sigma = shadow.blur / 2.0f;
+        flags.setImageFilter(sk_make_sp<cc::BlurPaintFilter>(
+            sigma, sigma, SkTileMode::kDecal, /*input=*/nullptr));
+        canvas->DrawCircle(
+            gfx::PointF(kBadgeCenter, kBadgeCenter + shadow.y_offset),
+            kBadgeRadius + shadow.spread, flags);
+      }
+    }
+    constexpr int kBadgeImageOrigin = kBadgeCenter - kBadgeImageSize / 2;
+    canvas->DrawImageInt(badge_, 0, 0, badge_.width(), badge_.height(),
+                         kBadgeImageOrigin, kBadgeImageOrigin, kBadgeImageSize,
+                         kBadgeImageSize, /*filter=*/true);
   }
-  return icon_view;
+
+ private:
+  const gfx::ImageSkia picture_;
+  const gfx::ImageSkia badge_;
+};
+
+// Returns `picture` with `badge` near its bottom right corner. Both are
+// rasterized when the result is painted, so that they follow the colors of the
+// bubble, e.g. if `badge` is a vector icon.
+ui::ImageModel CreateBadgedPicture(const ui::ImageModel& picture,
+                                   const ui::ImageModel& badge) {
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](const ui::ImageModel& picture, const ui::ImageModel& badge,
+             const ui::ColorProvider* color_provider) {
+            return gfx::CanvasImageSource::MakeImageSkia<BadgedPictureSource>(
+                picture.Rasterize(color_provider),
+                badge.Rasterize(color_provider));
+          },
+          picture, badge),
+      gfx::Size(kBadgedPictureSize, kBadgedPictureSize));
+}
+
+// Shows a picture with a badge near its bottom right corner. Only the picture
+// takes up space in the layout, so that the badge extends into the padding
+// around it rather than moving the text next to it.
+class BadgedPictureView : public views::View {
+  METADATA_HEADER(BadgedPictureView, views::View)
+
+ public:
+  BadgedPictureView(const ui::ImageModel& picture,
+                    const ui::ImageModel& badge) {
+    SetPreferredSize(gfx::Size(ambient_signin::kAccountPictureSize,
+                               ambient_signin::kAccountPictureSize));
+    // The badged picture is wider than this view, so mirroring its position in
+    // right-to-left UIs would move the picture out of place. The badge stays
+    // on the bottom right corner instead.
+    SetMirrored(false);
+    // Screen readers skip the picture, like a picture without a badge.
+    GetViewAccessibility().SetIsIgnored(true);
+    auto image_view =
+        std::make_unique<views::ImageView>(CreateBadgedPicture(picture, badge));
+    // A layer is necessary to paint beyond the bounds of this view.
+    image_view->SetPaintToLayer();
+    image_view->layer()->SetFillsBoundsOpaquely(false);
+    image_view->SizeToPreferredSize();
+    AddChildView(std::move(image_view));
+  }
+};
+
+BEGIN_METADATA(BadgedPictureView)
+END_METADATA
+
+// Returns a view that shows `icon`. Vector icons already have their size,
+// whereas pictures, i.e. other images such as account pictures and monograms,
+// are shown at `ambient_signin::kAccountPictureSize`, with `badge` near their
+// bottom right corner if it isn't empty.
+std::unique_ptr<views::View> CreateIconView(
+    const ui::ImageModel& icon,
+    const ui::ImageModel& badge = ui::ImageModel()) {
+  if (icon.IsVectorIcon()) {
+    return std::make_unique<views::ImageView>(icon);
+  }
+  if (!badge.IsEmpty()) {
+    // The badge is square (see `kBadgeImageSize`), so it isn't stretched.
+    CHECK_EQ(badge.Size().width(), badge.Size().height(),
+             base::NotFatalUntil::M162);
+    return std::make_unique<BadgedPictureView>(icon, badge);
+  }
+  auto picture_view = std::make_unique<views::ImageView>(icon);
+  picture_view->SetImageSize(gfx::Size(ambient_signin::kAccountPictureSize,
+                                       ambient_signin::kAccountPictureSize));
+  return picture_view;
 }
 
 // A row for a credential in the expanded bubble. It has the same padding and
@@ -178,7 +339,9 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
     content::WebContents* web_contents,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     PermissionPromptStyle prompt_style)
-    : PermissionPromptBubbleBaseView(web_contents, delegate, prompt_style) {
+    : PermissionPromptBubbleBaseView(web_contents, delegate, prompt_style),
+      site_color_(ambient_login_credential_icon::GetSiteColorForWebContents(
+          web_contents)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_title_margins(
       gfx::Insets::TLBR(12, kHorizontalPadding, 8, kHorizontalPadding));
@@ -189,6 +352,7 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
   std::u16string provider;
   gfx::ElideBehavior provider_elide_behavior = gfx::ELIDE_TAIL;
   ui::ImageModel credential_icon = GetDefaultCredentialIcon();
+  ui::ImageModel credential_badge;
   CHECK_EQ(delegate->Requests().size(), 1u);
   ambient_signin::AmbientLoginPermissionRequest* ambient_request =
       GetAmbientRequest();
@@ -198,10 +362,9 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
         ambient_request->credentials().front();
     username = cred.username;
     provider = cred.provider_name;
-    credential_icon = ui::ImageModel::FromVectorIcon(
-        ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
-            cred.type),
-        ui::kColorIcon, kIconSize);
+    credential_icon =
+        ambient_login_credential_icon::CreateCredentialIcon(cred, site_color_);
+    credential_badge = ambient_login_credential_icon::GetCredentialBadge(cred);
   } else if (!ambient_request->federated_credentials().empty()) {
     const ambient_signin::FederatedCredential& fed_cred =
         ambient_request->federated_credentials().front();
@@ -220,7 +383,7 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
       views::BoxLayout::Orientation::kHorizontal));
   layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
 
-  AddChildView(CreateIconView(credential_icon));
+  AddChildView(CreateIconView(credential_icon, credential_badge));
 
   auto text_container = std::make_unique<views::View>();
   text_container->SetProperty(
@@ -459,10 +622,10 @@ AmbientLoginPermissionBubbleView::CreateCredentialRow(
           : credential.username;
 
   HoverButton::Params params;
-  params.icon_view = CreateIconView(ui::ImageModel::FromVectorIcon(
-      ambient_signin::AmbientLoginPermissionRequest::GetCredentialIcon(
-          credential.type),
-      ui::kColorIcon, kIconSize));
+  params.icon_view = CreateIconView(
+      ambient_login_credential_icon::CreateCredentialIcon(credential,
+                                                          site_color_),
+      ambient_login_credential_icon::GetCredentialBadge(credential));
   if (credential.type == ambient_signin::CredentialType::kPasskey &&
       !credential.display_name.empty() && credential.display_name != username) {
     params.title = credential.display_name;

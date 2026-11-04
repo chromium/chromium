@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
+#include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
@@ -363,17 +364,10 @@ const gfx::VectorIcon& GetMechanismIcon(
                  base::FeatureList::IsEnabled(
                      device::kWebAuthnModalProviderIcons));
             if (show_modal_provider_icons) {
-              switch (credential.value().source) {
-                case AuthenticatorType::kICloudKeychain:
-                  return kApplePasswordsColorCustomIcon;
-                case AuthenticatorType::kEnclave:
-                  return GooglePasswordManagerVectorIcon();
-                case AuthenticatorType::kWinNative:
-                  return kWindowsHelloColorCustomIcon;
-                case AuthenticatorType::kTouchID:
-                  return vector_icons::kProductRefreshIcon;
-                default:
-                  break;
+              if (const gfx::VectorIcon* provider_icon =
+                      webauthn_ui_helpers::GetProviderIcon(
+                          credential.value().source)) {
+                return *provider_icon;
               }
             }
             // Default icon for non-modal mode or other credential sources.

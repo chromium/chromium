@@ -10,6 +10,14 @@
 
 #include "ui/gfx/font_list.h"
 
+namespace device {
+enum class AuthenticatorType;
+}  // namespace device
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace webauthn_ui_helpers {
 
 // Takes a valid relying party identifier and elides it so that it's suitable to
@@ -17,6 +25,10 @@ namespace webauthn_ui_helpers {
 std::u16string RpIdToElidedHost(const std::string& relying_party_id,
                                 size_t width,
                                 gfx::FontList font_list);
+
+// Returns the icon of the provider that stores a passkey of `type`, e.g. Google
+// Password Manager, or null if the provider has no icon.
+const gfx::VectorIcon* GetProviderIcon(device::AuthenticatorType type);
 
 }  // namespace webauthn_ui_helpers
 

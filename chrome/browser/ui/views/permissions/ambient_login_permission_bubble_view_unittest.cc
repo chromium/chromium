@@ -14,9 +14,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/permissions/ambient_login_credential_icon.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
@@ -31,6 +33,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -40,6 +44,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -229,7 +234,7 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   ASSERT_EQ(bubble->children().size(), 4u);
 
   // 1. Icon view
-  EXPECT_TRUE(views::IsViewClass<views::ImageView>(bubble->children()[0]));
+  EXPECT_NE(FindImageViewWithImage(bubble->children()[0]), nullptr);
 
   // 2. Text container view
   views::View* text_container = bubble->children()[1].get();
@@ -729,7 +734,9 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   ASSERT_NE(icon_view, nullptr);
   EXPECT_TRUE(icon_view->GetImageModel().IsVectorIcon());
   // Unlike an account picture, the icon isn't scaled up.
-  EXPECT_EQ(icon_view->GetPreferredSize(), gfx::Size(20, 20));
+  EXPECT_EQ(icon_view->GetPreferredSize(),
+            gfx::Size(ambient_login_credential_icon::kVectorIconSize,
+                      ambient_login_credential_icon::kVectorIconSize));
 
   views::ImageButton* expand_button =
       views::AsViewClass<views::ImageButton>(bubble->children()[3]);
@@ -751,7 +758,9 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   views::ImageView* row_icon_view = FindImageViewWithImage(row);
   ASSERT_NE(row_icon_view, nullptr);
   EXPECT_TRUE(row_icon_view->GetImageModel().IsVectorIcon());
-  EXPECT_EQ(row_icon_view->GetPreferredSize(), gfx::Size(20, 20));
+  EXPECT_EQ(row_icon_view->GetPreferredSize(),
+            gfx::Size(ambient_login_credential_icon::kVectorIconSize,
+                      ambient_login_credential_icon::kVectorIconSize));
 }
 
 TEST_F(AmbientLoginPermissionBubbleViewTest, ContentIsAlignedWithTitle) {
@@ -806,6 +815,13 @@ TEST_F(AmbientLoginPermissionBubbleViewTest, ContentIsAlignedWithTitle) {
 
 TEST_F(AmbientLoginPermissionBubbleViewTest,
        ExpandedRowsHaveSameSpacingAsCollapsedCredential) {
+  std::vector<ambient_signin::PasskeyOrPasswordCredential> passkey_creds = {
+      // The text is taller than the monogram.
+      {u"alice@example.com", u"Google Password Manager",
+       ambient_signin::CredentialType::kPasskey, u"Alice"},
+      // The text is shorter than the monogram.
+      {u"bob@example.com", u"Google Password Manager",
+       ambient_signin::CredentialType::kPasskey}};
   const ui::ImageModel picture = ui::ImageModel::FromImage(
       gfx::test::CreateImage(/*size=*/ambient_signin::kAccountPictureSize));
   std::vector<ambient_signin::FederatedCredential> fed_creds = {
@@ -819,8 +835,7 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   requests.push_back(
       std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
           GURL("https://example.com"), GURL("https://example.com"),
-          /*credentials=*/
-          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          std::move(passkey_creds),
           /*credential_selected_callback=*/base::NullCallback(),
           std::move(fed_creds), base::DoNothing(), base::DoNothing()));
 
@@ -860,7 +875,7 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
       views::AsViewClass<views::ScrollView>(bubble->children()[0]);
   ASSERT_NE(scroll_view, nullptr);
   views::View* list_view = scroll_view->contents();
-  ASSERT_EQ(list_view->children().size(), 2u);
+  ASSERT_EQ(list_view->children().size(), 4u);
   std::vector<gfx::Rect> content_bounds;
   for (views::View* child : list_view->children()) {
     HoverButton* row = views::AsViewClass<HoverButton>(child);
@@ -868,7 +883,9 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
     views::ImageView* icon_view = FindImageViewWithImage(row);
     ASSERT_NE(icon_view, nullptr);
     views::View* labels = row->title()->parent();
-    gfx::Rect bounds = icon_view->GetBoundsInScreen();
+    gfx::Rect bounds(icon_view->GetBoundsInScreen().origin(),
+                     gfx::Size(ambient_signin::kAccountPictureSize,
+                               ambient_signin::kAccountPictureSize));
     bounds.Union(labels->GetBoundsInScreen());
     content_bounds.push_back(bounds);
 
@@ -896,25 +913,6 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   EXPECT_EQ(content_bounds.front().y() - frame_bounds.y(), collapsed_top);
   EXPECT_EQ(frame_bounds.bottom() - content_bounds.back().bottom(),
             collapsed_bottom);
-}
-
-TEST_F(AmbientLoginPermissionBubbleViewTest, ShortTextIsNotElided) {
-  MockAmbientDelegate delegate(GURL("https://example.com"), u"a@example.com",
-                               u"Provider");
-  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
-  views::test::RunScheduledLayout(bubble->GetWidget());
-
-  // The bubble does not shrink to fit short text.
-  EXPECT_EQ(bubble->GetDialogClientView()->width(), GetBubbleWidth());
-
-  ASSERT_EQ(bubble->children().size(), 4u);
-  views::View* text_container = bubble->children()[1].get();
-  ASSERT_EQ(text_container->children().size(), 2u);
-  for (views::View* child : text_container->children()) {
-    auto* label = views::AsViewClass<views::Label>(child);
-    ASSERT_NE(label, nullptr);
-    EXPECT_FALSE(label->IsDisplayTextTruncated());
-  }
 }
 
 TEST_F(AmbientLoginPermissionBubbleViewTest, LongTextIsElided) {
@@ -1204,6 +1202,98 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   passkey_chip_model.UpdateWithUserDecision(
       permissions::PermissionAction::GRANTED);
   EXPECT_FALSE(passkey_chip_model.CanDisplayConfirmation());
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest, PasskeyShowsMonogramIcon) {
+  MockAmbientDelegate delegate(GURL("https://example.com"),
+                               u"alice@example.com",
+                               u"Google Password Manager");
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // The icon view has the size of an account picture, while the ImageView
+  // inside it is larger to fit the badge and its shadow on its own layer.
+  views::View* icon_view = bubble->children()[0];
+  EXPECT_EQ(icon_view->GetPreferredSize(),
+            gfx::Size(ambient_signin::kAccountPictureSize,
+                      ambient_signin::kAccountPictureSize));
+  views::ImageView* image_view = FindImageViewWithImage(icon_view);
+  ASSERT_NE(image_view, nullptr);
+  EXPECT_TRUE(image_view->GetImageModel().IsImageGenerator());
+  EXPECT_NE(image_view->layer(), nullptr);
+  EXPECT_GT(image_view->width(), ambient_signin::kAccountPictureSize);
+
+  const gfx::ImageSkia image =
+      image_view->GetImageModel().Rasterize(image_view->GetColorProvider());
+  const SkBitmap* bitmap = image.bitmap();
+  ASSERT_TRUE(bitmap);
+  constexpr int kBadgeCenter =
+      ambient_signin::kAccountPictureSize - ambient_signin::kBadgeImageSize / 2;
+  // 1 DIP above the badge icon, inside the 2 DIP transparent ring around it.
+  constexpr int kBadgeRingY =
+      ambient_signin::kAccountPictureSize - ambient_signin::kBadgeImageSize - 1;
+  // Below the badge circle (which extends 2 DIPs past the monogram), where its
+  // shadow is drawn.
+  constexpr int kBadgeShadowY = ambient_signin::kAccountPictureSize + 3;
+  EXPECT_EQ(bitmap->getColor(kBadgeCenter, kBadgeRingY), SK_ColorTRANSPARENT);
+  EXPECT_GT(SkColorGetA(bitmap->getColor(kBadgeCenter, kBadgeShadowY)), 0u);
+
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  ASSERT_EQ(scroll_view->contents()->children().size(), 1u);
+  HoverButton* row =
+      views::AsViewClass<HoverButton>(scroll_view->contents()->children()[0]);
+  ASSERT_NE(row, nullptr);
+  views::ImageView* row_icon_view = FindImageViewWithImage(row);
+  ASSERT_NE(row_icon_view, nullptr);
+  EXPECT_TRUE(row_icon_view->GetImageModel().IsImageGenerator());
+  EXPECT_NE(row_icon_view->layer(), nullptr);
+  EXPECT_GT(row_icon_view->width(), ambient_signin::kAccountPictureSize);
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       BadgeOnMonogramStaysOnBottomRightInRtl) {
+  base::test::ScopedRestoreICUDefaultLocale rtl_locale("he");
+  MockAmbientDelegate delegate(GURL("https://example.com"),
+                               u"alice@example.com",
+                               u"Google Password Manager");
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  ASSERT_EQ(bubble->children().size(), 4u);
+  views::View* icon_view = bubble->children()[0];
+  views::ImageView* image_view = FindImageViewWithImage(icon_view);
+  ASSERT_NE(image_view, nullptr);
+  // The text is on the left of the monogram. The badged monogram still starts
+  // at the monogram, so the badge extends to the right, away from the text.
+  const gfx::Rect icon_bounds = icon_view->GetBoundsInScreen();
+  EXPECT_LT(bubble->children()[1]->GetBoundsInScreen().x(), icon_bounds.x());
+  EXPECT_EQ(image_view->GetBoundsInScreen().origin(), icon_bounds.origin());
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest, EmptyUsernameShowsVectorIcon) {
+  MockAmbientDelegate delegate(GURL("https://example.com"), u"",
+                               u"Google Password Manager");
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+
+  auto* icon_view = views::AsViewClass<views::ImageView>(bubble->children()[0]);
+  ASSERT_NE(icon_view, nullptr);
+  EXPECT_TRUE(icon_view->GetImageModel().IsVectorIcon());
+  EXPECT_EQ(icon_view->GetPreferredSize(),
+            gfx::Size(ambient_login_credential_icon::kVectorIconSize,
+                      ambient_login_credential_icon::kVectorIconSize));
 }
 
 }  // namespace

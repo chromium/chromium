@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_controller.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
@@ -67,17 +68,19 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   credentials.reserve(credential_indices_.size());
   for (size_t index : credential_indices_) {
     const auto& mechanism = model_->mechanisms.at(index);
-    ambient_signin::CredentialType cred_type =
-        std::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Credential>(
-            mechanism.type)
-            ? ambient_signin::CredentialType::kPasskey
-            : ambient_signin::CredentialType::kPassword;
+    const auto* passkey =
+        std::get_if<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+            &mechanism.type);
     credentials.push_back({
         /*username=*/mechanism.name,
         /*provider_name=*/mechanism.description,
-        /*type=*/cred_type,
+        /*type=*/
+        passkey ? ambient_signin::CredentialType::kPasskey
+                : ambient_signin::CredentialType::kPassword,
         /*display_name=*/mechanism.display_name,
+        /*provider_icon=*/
+        passkey ? webauthn_ui_helpers::GetProviderIcon(passkey->value().source)
+                : &GooglePasswordManagerVectorIcon(),
     });
   }
 

@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_request.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
@@ -32,11 +33,19 @@ struct PasskeyOrPasswordCredential {
   std::u16string provider_name;
   CredentialType type = CredentialType::kPasskey;
   std::u16string display_name;
+  // Icon of the provider that stores the credential, e.g. Google Password
+  // Manager. The prompt shows it as a badge on the credential's monogram. If
+  // null, the prompt uses the generic passkey or password icon instead.
+  raw_ptr<const gfx::VectorIcon> provider_icon = nullptr;
 };
 
 // The size of account pictures in the prompt, in DIPs. Callers should crop
 // pictures to this size so that they aren't scaled.
 inline constexpr int kAccountPictureSize = 40;
+
+// The size of the image in a badge on an account picture or a monogram, in
+// DIPs.
+inline constexpr int kBadgeImageSize = 16;
 
 // Represents a federated sign-in credential option (e.g. from FedCM).
 struct FederatedCredential {
