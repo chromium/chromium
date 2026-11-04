@@ -115,8 +115,8 @@ class GeminiEnterpriseGlicFreStore final : public GlicFreStore {
   ~GeminiEnterpriseGlicFreStore() override = default;
 
   prefs::FreStatus GetStatus(Profile* profile) const override {
-    // Not enforced until the GE web app can complete it.
-    // TODO(b/576766756): Remove once `features::kGeicFre` is enabled.
+    // Not enforced if `features::kGeicFre` is disabled, e.g. as a kill switch.
+    // TODO(b/581395107): Remove along with `features::kGeicFre`.
     if (!base::FeatureList::IsEnabled(features::kGeicFre)) {
       return prefs::FreStatus::kCompleted;
     }

@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceHelperBrowserTest,
 
 class GlicInstanceHelperGeicBrowserTest : public GlicBrowserTest {
  private:
-  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/false};
+  ScopedGeicTestFeatures geic_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceHelperGeicBrowserTest,

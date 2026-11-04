@@ -14,14 +14,13 @@ inline constexpr char kTestGeicGuestUrl[] =
     "https://business.gemini.google/side-panel?configId=test";
 
 // Enables GEiC (`features::kGeic`) with `kTestGeicGuestUrl` as the guest URL
-// for the lifetime of this object, and also `features::kGeicFre` if
-// `enable_fre` is true. Doesn't enable `features::kGlic`.
+// for the lifetime of this object. Doesn't enable `features::kGlic`.
 //
 // Create it before the profile, e.g. as a browser test fixture member, so
 // that the profile is latched to Gemini Enterprise.
 class ScopedGeicTestFeatures {
  public:
-  explicit ScopedGeicTestFeatures(bool enable_fre);
+  ScopedGeicTestFeatures();
   ScopedGeicTestFeatures(const ScopedGeicTestFeatures&) = delete;
   ScopedGeicTestFeatures& operator=(const ScopedGeicTestFeatures&) = delete;
   ~ScopedGeicTestFeatures();

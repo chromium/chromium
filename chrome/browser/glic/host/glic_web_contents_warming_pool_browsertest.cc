@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingDisabledBrowserTest, NoWarming) {
 
 class GlicWarmingPoolGeicBrowserTest : public GlicWarmingPoolBrowserTest {
  private:
-  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/false};
+  ScopedGeicTestFeatures geic_features_;
 };
 
 // TODO(b/496609005): Skip on ChromeOS due to profile ineligibility timeouts.

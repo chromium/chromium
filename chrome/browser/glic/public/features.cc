@@ -292,7 +292,7 @@ BASE_FEATURE(kGeicProviderChangePrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
                                                     ""};
 
-BASE_FEATURE(kGeicFre, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeicFre, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
 
 BASE_FEATURE(kGlicHotkeyLocalScope,
 #if BUILDFLAG(IS_ANDROID)

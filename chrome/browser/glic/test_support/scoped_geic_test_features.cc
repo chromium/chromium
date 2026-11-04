@@ -4,19 +4,13 @@
 
 #include "chrome/browser/glic/test_support/scoped_geic_test_features.h"
 
-#include <vector>
-
 #include "chrome/browser/glic/public/features.h"
 
 namespace glic {
 
-ScopedGeicTestFeatures::ScopedGeicTestFeatures(bool enable_fre) {
-  std::vector<base::test::FeatureRefAndParams> enabled_features = {
-      {features::kGeic, {{features::kGeicGuestURL.name, kTestGeicGuestUrl}}}};
-  if (enable_fre) {
-    enabled_features.push_back({features::kGeicFre, {}});
-  }
-  feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+ScopedGeicTestFeatures::ScopedGeicTestFeatures() {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGeic, {{features::kGeicGuestURL.name, kTestGeicGuestUrl}});
 }
 
 ScopedGeicTestFeatures::~ScopedGeicTestFeatures() = default;

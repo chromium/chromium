@@ -41,7 +41,7 @@ class GlicGeminiEnterpriseManagerBrowserTest : public PlatformBrowserTest {
   }
 
  protected:
-  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/false};
+  ScopedGeicTestFeatures geic_features_;
   std::unique_ptr<GlicGeminiEnterpriseManager> manager_;
   mojo::Remote<mojom::GeminiEnterpriseHandler> handler_remote_;
 };

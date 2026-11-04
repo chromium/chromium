@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, NormalIconIsGlicIcon) {
 // icon instead.
 class GlicButtonGeicIconTest : public GlicButtonTest {
  private:
-  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/false};
+  ScopedGeicTestFeatures geic_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicButtonGeicIconTest, NormalIconIsGeicIcon) {

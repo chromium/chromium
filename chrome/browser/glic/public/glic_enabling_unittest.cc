@@ -4252,13 +4252,13 @@ TEST_F(GlicEnablingGeicPolicyTest, GeicEnabledWithoutConsumerAccountChecks) {
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                   .IsEmpty());
 
+  // Consent comes from the GEiC FRE, not the consumer FRE.
+  // `GeicFreControlsConsentInEnablement` covers consent in more detail.
+  geic::CompleteFre(profile());
+
   GlicEnabling::ProfileEnablement enablement =
       GlicEnabling::EnablementForProfile(profile());
   EXPECT_TRUE(enablement.IsEnabled());
-  // This is true only because `features::kGeicFre` is disabled (the default),
-  // so `GeminiEnterpriseGlicFreStore` reports the FRE as `kCompleted` (see
-  // glic_fre_store_impl.cc). `GeicFreControlsConsentInEnablement` covers
-  // consent with the GEiC FRE enabled.
   EXPECT_TRUE(enablement.IsEnabledAndConsented());
   EXPECT_TRUE(enablement.ShouldShowGlicButton());
   EXPECT_TRUE(enablement.ShouldShowSettingsPage());

@@ -93,11 +93,11 @@ class GlicInternalsBrowserTest : public PlatformBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Enables GEiC and the GEiC FRE before the profile is created, so that the
-// profile is latched to Gemini Enterprise.
+// Enables GEiC before the profile is created, so that the profile is latched
+// to Gemini Enterprise.
 class GlicInternalsGeicBrowserTest : public GlicInternalsBrowserTest {
  private:
-  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/true};
+  ScopedGeicTestFeatures geic_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
