@@ -284,13 +284,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         }
 
         public void simulateServerPrediction(int serverType) throws Throwable {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            AutofillProviderTestHelper
-                                    .simulateMainFrameAutofillServerResponseForTesting(
-                                            mTest.mAwContents.getWebContents(),
-                                            new String[] {"text1"},
-                                            new int[] {serverType}));
+            mTest.simulateServerPrimaryTypes(new String[] {"text1"}, new int[] {serverType});
         }
 
         public void simulateUserSelectSuggestion() throws Throwable {
@@ -2592,20 +2586,16 @@ public class AwAutofillTest extends AwParameterizedTest {
                     <input type='text' name='email' id='text2' autocomplete='email' />
                 </form>\
                 """);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillProviderTestHelper
-                                .simulateMainFramePredictionsAutofillServerResponseForTesting(
-                                        mAwContents.getWebContents(),
-                                        new String[] {"text1", "text2"},
-                                        new int[][] {
-                                            {
-                                                FieldType.USERNAME, FieldType.EMAIL_ADDRESS,
-                                            },
-                                            {
-                                                FieldType.EMAIL_ADDRESS,
-                                            }
-                                        }));
+        simulateServerPredictions(
+                new String[] {"text1", "text2"},
+                new int[][] {
+                    {
+                        FieldType.USERNAME, FieldType.EMAIL_ADDRESS,
+                    },
+                    {
+                        FieldType.EMAIL_ADDRESS,
+                    }
+                });
 
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -2678,24 +2668,14 @@ public class AwAutofillTest extends AwParameterizedTest {
                     <iframe srcdoc='<input id=csc>'></iframe>
                 </form>\
                 """);
-        // `OnPageFinished` does not guarantee that autofill is fully initialized, therefore let's
-        // wait for a short time.
-        // TODO(b/527998144): Find a better way to wait for the autofill to be initialized.
-        // Note: Prior to https://crrev.com/c/7960537, OnPageFinished was triggered with a 500ms
-        // delay for simple pages like the above, which internally did what the following wait does.
-        Thread.sleep(500);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillProviderTestHelper
-                                .simulateMainFramePredictionsAutofillServerResponseForTesting(
-                                        mAwContents.getWebContents(),
-                                        new String[] {"name", "num", "exp", "csc"},
-                                        new int[][] {
-                                            {FieldType.CREDIT_CARD_NAME_FULL},
-                                            {FieldType.CREDIT_CARD_NUMBER},
-                                            {FieldType.CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-                                            {FieldType.CREDIT_CARD_VERIFICATION_CODE}
-                                        }));
+        simulateServerPredictions(
+                new String[] {"name", "num", "exp", "csc"},
+                new int[][] {
+                    {FieldType.CREDIT_CARD_NAME_FULL},
+                    {FieldType.CREDIT_CARD_NUMBER},
+                    {FieldType.CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                    {FieldType.CREDIT_CARD_VERIFICATION_CODE}
+                });
 
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.forms[0].elements[0].select();");
@@ -2795,13 +2775,9 @@ public class AwAutofillTest extends AwParameterizedTest {
                     <input type='text' name='email' id='text2' autocomplete='email' />
                 </form>\
                 """);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillProviderTestHelper
-                                .simulateMainFrameAutofillServerResponseForTesting(
-                                        mAwContents.getWebContents(),
-                                        new String[] {"text1", "text2"},
-                                        new int[] {FieldType.USERNAME, FieldType.EMAIL_ADDRESS}));
+        simulateServerPrimaryTypes(
+                new String[] {"text1", "text2"},
+                new int[] {FieldType.USERNAME, FieldType.EMAIL_ADDRESS});
 
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -2919,16 +2895,12 @@ public class AwAutofillTest extends AwParameterizedTest {
                 new AutofillHintsServiceTestHelper();
         autofillHintsServiceTestHelper.registerViewTypeService(binder);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillProviderTestHelper
-                                .simulateMainFramePredictionsAutofillServerResponseForTesting(
-                                        mAwContents.getWebContents(),
-                                        new String[] {"text1", "text2"},
-                                        new int[][] {
-                                            {FieldType.USERNAME, FieldType.EMAIL_ADDRESS},
-                                            {FieldType.EMAIL_ADDRESS}
-                                        }));
+        simulateServerPredictions(
+                new String[] {"text1", "text2"},
+                new int[][] {
+                    {FieldType.USERNAME, FieldType.EMAIL_ADDRESS},
+                    {FieldType.EMAIL_ADDRESS}
+                });
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
@@ -3011,13 +2983,9 @@ public class AwAutofillTest extends AwParameterizedTest {
                 new AutofillHintsServiceTestHelper();
         autofillHintsServiceTestHelper.registerViewTypeService(binder);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillProviderTestHelper
-                                .simulateMainFrameAutofillServerResponseForTesting(
-                                        mAwContents.getWebContents(),
-                                        new String[] {"text1", "text2"},
-                                        new int[] {FieldType.USERNAME, FieldType.EMAIL_ADDRESS}));
+        simulateServerPrimaryTypes(
+                new String[] {"text1", "text2"},
+                new int[] {FieldType.USERNAME, FieldType.EMAIL_ADDRESS});
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
@@ -3092,16 +3060,12 @@ public class AwAutofillTest extends AwParameterizedTest {
                         .getHtmlInfo()
                         .getAttribute("crowdsourcing-predictions-autofill-hints"));
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillProviderTestHelper
-                                .simulateMainFramePredictionsAutofillServerResponseForTesting(
-                                        mAwContents.getWebContents(),
-                                        new String[] {"text1", "text2"},
-                                        new int[][] {
-                                            {FieldType.USERNAME, FieldType.EMAIL_ADDRESS},
-                                            {FieldType.EMAIL_ADDRESS}
-                                        }));
+        simulateServerPredictions(
+                new String[] {"text1", "text2"},
+                new int[][] {
+                    {FieldType.USERNAME, FieldType.EMAIL_ADDRESS},
+                    {FieldType.EMAIL_ADDRESS}
+                });
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
@@ -3427,6 +3391,38 @@ public class AwAutofillTest extends AwParameterizedTest {
         executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
+    }
+
+    /**
+     * Simulates an Autofill server response with the primary types `fieldTypes[i]` for the fields
+     * with id `fieldIds[i]`. Form parsing in the browser is asynchronous, so this waits until the
+     * main frame has parsed a form that contains all of `fieldIds`. For a frame-transcending form,
+     * this is only the case after the forms of all subframes have been parsed.
+     */
+    private void simulateServerPrimaryTypes(String[] fieldIds, int[] fieldTypes) {
+        CriteriaHelper.pollUiThread(
+                () ->
+                        AutofillProviderTestHelper
+                                .simulateMainFrameAutofillServerResponseForTesting(
+                                        mAwContents.getWebContents(), fieldIds, fieldTypes),
+                "The browser hasn't parsed a form with the fields " + Arrays.toString(fieldIds),
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    /**
+     * Like {@link #simulateServerPrimaryTypes}, but with all server predictions for each field. The
+     * first prediction for a field is its primary type.
+     */
+    private void simulateServerPredictions(String[] fieldIds, int[][] fieldTypes) {
+        CriteriaHelper.pollUiThread(
+                () ->
+                        AutofillProviderTestHelper
+                                .simulateMainFramePredictionsAutofillServerResponseForTesting(
+                                        mAwContents.getWebContents(), fieldIds, fieldTypes),
+                "The browser hasn't parsed a form with the fields " + Arrays.toString(fieldIds),
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {

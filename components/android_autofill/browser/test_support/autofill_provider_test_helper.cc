@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+#include <vector>
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
@@ -25,6 +26,7 @@
 namespace autofill {
 
 namespace {
+
 AutofillManager* GetAutofillManager(content::WebContents* web_contents,
                                     content::RenderFrameHost* rfh) {
   // Avoid using ContentAutofillDriver::GetForRenderFrameHost(), it will create
@@ -43,10 +45,80 @@ AutofillManager* ToMainFrameAutofillManager(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
-  AutofillManager* autofill_manager =
-      GetAutofillManager(web_contents, web_contents->GetPrimaryMainFrame());
-  CHECK(autofill_manager);
-  return autofill_manager;
+  return GetAutofillManager(web_contents, web_contents->GetPrimaryMainFrame());
+}
+
+std::vector<std::u16string> ToFieldIds(
+    JNIEnv* env,
+    const base::android::JavaRef<JArray<jstring>>& jfield_ids) {
+  std::vector<std::u16string> field_ids;
+  for (int32_t i = 0; i < jfield_ids.GetLength(env); ++i) {
+    field_ids.push_back(jfield_ids.GetAs<std::u16string>(env, i));
+  }
+  return field_ids;
+}
+
+// Returns the first form cached by `manager` that has a field for each id of
+// `field_ids`, or nullptr if there is none. Since form parsing is
+// asynchronous, the renderer may have extracted a form that the browser has not
+// parsed yet. For frame-transcending forms, the form only contains all fields
+// once the forms of all subframes have been parsed.
+const FormStructure* FindFormWithFieldIds(
+    AutofillManager& manager,
+    const std::vector<std::u16string>& field_ids) {
+  for (const FormStructure* form_structure :
+       test_api(manager).form_structures()) {
+    if (std::ranges::all_of(field_ids, [&](const std::u16string& field_id) {
+          return std::ranges::any_of(
+              form_structure->fields(),
+              [&](const std::unique_ptr<AutofillField>& field) {
+                return field->id_attribute() == field_id;
+              });
+        })) {
+      return form_structure;
+    }
+  }
+  return nullptr;
+}
+
+// Simulates a server response with `field_predictions[i]` for the field with
+// id `field_ids[i]`. Returns false and does nothing if the main frame's
+// AutofillManager has not parsed a form with all `field_ids` yet. Callers are
+// expected to retry until this returns true.
+bool SimulateServerResponse(
+    const base::android::JavaRef<jobject>& jweb_contents,
+    const std::vector<std::u16string>& field_ids,
+    const std::vector<std::vector<FieldType>>& field_predictions) {
+  CHECK_EQ(field_ids.size(), field_predictions.size());
+  AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
+  if (!autofill_manager) {
+    return false;
+  }
+  const FormStructure* form_structure =
+      FindFormWithFieldIds(*autofill_manager, field_ids);
+  if (!form_structure) {
+    return false;
+  }
+
+  FormData form_data = form_structure->ToFormData();
+  AutofillQueryResponse response;
+  AutofillQueryResponse::FormSuggestion* form_suggestion =
+      response.add_form_suggestions();
+  for (size_t i = 0; i < field_ids.size(); ++i) {
+    auto field = std::ranges::find(form_data.fields(), field_ids[i],
+                                   &FormFieldData::id_attribute);
+    CHECK(field != form_data.fields().end());
+    test::AddFieldPredictionsToForm(*field, field_predictions[i],
+                                    form_suggestion);
+  }
+
+  std::string response_string;
+  CHECK(response.SerializeToString(&response_string));
+  test_api(*autofill_manager)
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
+                                 test::GetEncodedSignatures(*form_structure),
+                                 {std::move(form_data)});
+  return true;
 }
 
 }  // namespace
@@ -57,50 +129,13 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
     const base::android::JavaRef<jobject>& jweb_contents,
     const base::android::JavaRef<JArray<jstring>>& jfield_ids,
     const base::android::JavaRef<JArray<int32_t>>& jfield_types) {
-  std::vector<FieldType> field_types = base::ToVector(
-      jfield_types.CreateViewCritical(env),
-      [](int32_t type) -> FieldType { return static_cast<FieldType>(type); });
-
-  AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
-  std::vector<const FormStructure*> form_structures =
-      test_api(*autofill_manager).form_structures();
-  CHECK(!form_structures.empty());
-
-  // Make API response with suggestions.
-  AutofillQueryResponse response;
-  AutofillQueryResponse::FormSuggestion* form_suggestion;
-
-  form_suggestion = response.add_form_suggestions();
-  size_t found_fields_count = 0;
-  std::vector<FormSignature> signatures;
-  std::vector<FormData> forms;
-  for (const FormStructure* form_structure : form_structures) {
-    FormData form_data = form_structure->ToFormData();
-    for (size_t i = 0; i < field_types.size(); ++i) {
-      for (auto form_field_data : form_data.fields()) {
-        if (form_field_data.id_attribute() ==
-            jfield_ids.GetAs<std::u16string>(env, static_cast<int32_t>(i))) {
-          test::AddFieldPredictionToForm(form_field_data, field_types[i],
-                                         form_suggestion);
-          found_fields_count++;
-          break;
-        }
-      }
-    }
-    if (found_fields_count > 0) {
-      signatures = test::GetEncodedSignatures(*form_structure);
-      forms.push_back(std::move(form_data));
-      break;
-    }
-  }
-  CHECK(found_fields_count == field_types.size());
-
-  std::string response_string;
-  CHECK(response.SerializeToString(&response_string));
-  test_api(*autofill_manager)
-      .OnLoadedServerPredictions(base::Base64Encode(response_string),
-                                 signatures, forms);
-  return true;
+  std::vector<std::vector<FieldType>> field_predictions =
+      base::ToVector(jfield_types.CreateViewCritical(env), [](int32_t type) {
+        return std::vector<FieldType>{
+            ToSafeFieldType(type).value_or(NO_SERVER_DATA)};
+      });
+  return SimulateServerResponse(jweb_contents, ToFieldIds(env, jfield_ids),
+                                field_predictions);
 }
 
 static bool
@@ -109,51 +144,17 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     const base::android::JavaRef<jobject>& jweb_contents,
     const base::android::JavaRef<JArray<jstring>>& jfield_ids,
     const base::android::JavaRef<JArray<JArray<int32_t>>>& jfield_types) {
-  int32_t field_ids_length = jfield_ids.GetLength(env);
-  AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
-  std::vector<const FormStructure*> form_structures =
-      test_api(*autofill_manager).form_structures();
-  CHECK(!form_structures.empty());
-
-  // Make API response with suggestions.
-  AutofillQueryResponse response;
-  AutofillQueryResponse::FormSuggestion* form_suggestion;
-
-  form_suggestion = response.add_form_suggestions();
-  size_t found_fields_count = 0;
-  std::vector<FormSignature> signatures;
-  std::vector<FormData> forms;
-  for (const FormStructure* form_structure : form_structures) {
-    FormData form_data = form_structure->ToFormData();
-    for (int32_t i = 0; i < field_ids_length; ++i) {
-      for (auto form_field_data : form_data.fields()) {
-        if (form_field_data.id_attribute() ==
-            jfield_ids.GetAs<std::u16string>(env, i)) {
-          base::android::ScopedJavaLocalRef<JArray<int32_t>>
-              field_types_jarray = jfield_types.Get(env, i);
-          std::vector<FieldType> field_types = base::ToVector(
-              field_types_jarray.CreateViewCritical(env),
-              [](int32_t type) -> FieldType { return FieldType(type); });
-          test::AddFieldPredictionsToForm(form_field_data, field_types,
-                                          form_suggestion);
-          found_fields_count++;
-          break;
-        }
-      }
-    }
-    if (found_fields_count > 0) {
-      signatures = test::GetEncodedSignatures(*form_structure);
-      CHECK(found_fields_count == static_cast<size_t>(field_ids_length));
-      forms = {std::move(form_data)};
-    }
+  std::vector<std::vector<FieldType>> field_predictions;
+  for (int32_t i = 0; i < jfield_types.GetLength(env); ++i) {
+    base::android::ScopedJavaLocalRef<JArray<int32_t>> field_types_jarray =
+        jfield_types.Get(env, i);
+    field_predictions.push_back(base::ToVector(
+        field_types_jarray.CreateViewCritical(env), [](int32_t type) {
+          return ToSafeFieldType(type).value_or(NO_SERVER_DATA);
+        }));
   }
-
-  std::string response_string;
-  CHECK(response.SerializeToString(&response_string));
-  test_api(*autofill_manager)
-      .OnLoadedServerPredictions(base::Base64Encode(response_string),
-                                 signatures, forms);
-  return true;
+  return SimulateServerResponse(jweb_contents, ToFieldIds(env, jfield_ids),
+                                field_predictions);
 }
 
 }  // namespace autofill

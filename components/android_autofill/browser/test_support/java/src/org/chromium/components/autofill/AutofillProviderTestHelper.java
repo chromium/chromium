@@ -9,10 +9,21 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
 
-/** The help class for Autofill Provider test to access the native code. */
+/**
+ * The help class for Autofill Provider test to access the native code.
+ *
+ * <p>Form parsing in the browser is asynchronous, so a form that the renderer has extracted may not
+ * be known to the browser yet. The methods below return false in that case and do nothing; callers
+ * should retry them until they return true.
+ */
 @JNINamespace("autofill")
 public class AutofillProviderTestHelper {
-    /** Simulate the primary server type only. */
+    /**
+     * Simulates the primary server type only.
+     *
+     * @return whether the response was simulated, i.e. whether the main frame has parsed a form
+     *     that contains a field for each of `fieldIds`.
+     */
     public static boolean simulateMainFrameAutofillServerResponseForTesting(
             WebContents webContents, String[] fieldIds, int[] fieldTypes) {
         return AutofillProviderTestHelperJni.get()
@@ -20,7 +31,12 @@ public class AutofillProviderTestHelper {
                         webContents, fieldIds, fieldTypes);
     }
 
-    /** Simulate the server predictions, the first prediction will be set as primary server type. */
+    /**
+     * Simulates the server predictions, the first prediction will be set as primary server type.
+     *
+     * @return whether the response was simulated, i.e. whether the main frame has parsed a form
+     *     that contains a field for each of `fieldIds`.
+     */
     public static boolean simulateMainFramePredictionsAutofillServerResponseForTesting(
             WebContents webContents, String[] fieldIds, int[][] fieldTypes) {
         return AutofillProviderTestHelperJni.get()
