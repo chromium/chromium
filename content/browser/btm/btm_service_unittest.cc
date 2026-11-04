@@ -513,11 +513,7 @@ TEST_F(BtmServiceStateRemovalTest,
   EXPECT_EQ(chain_counter.count(), 0u);
 }
 
-// NOTE: The use of a MockBrowsingDataRemoverDelegate in this test fixture
-// means that when BTM deletion is enabled, the row for 'url' is not actually
-// removed from the BTM db since 'delegate_' doesn't actually carryout the
-// removal task.
-TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
+TEST_F(BtmServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -566,11 +562,9 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
   task_environment_.RunUntilIdle();
 
   // Verify that a removal task was posted to the BrowsingDataRemover(Delegate)
-  // for 'url'.
+  // for 'url' and the BTM entry was removed.
   delegate_.VerifyAndClearExpectations();
-  // Because this test fixture uses a MockBrowsingDataRemoverDelegate the BTM
-  // entry should not actually be removed. However, in practice it would be.
-  EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
+  EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
 
   EXPECT_THAT(ukm_recorder,
               EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
@@ -977,7 +971,7 @@ TEST_F(BtmServiceHistogramTest, DeletionLatency) {
 TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs1P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -1011,7 +1005,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs1P) {
 TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs3P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -1041,10 +1035,10 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs3P) {
   EXPECT_FALSE(GetBtmState(GetService(), excepted_3p_url).has_value());
 }
 
-TEST_F(BtmServiceHistogramTest, DISABLED_Deletion_Enforced) {
+TEST_F(BtmServiceHistogramTest, Deletion_Enforced) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -1063,14 +1057,14 @@ TEST_F(BtmServiceHistogramTest, DISABLED_Deletion_Enforced) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify a deletion metric was emitted and the BTM entry was not removed.
+  // Verify a deletion metric was emitted and the BTM entry was removed.
   base::HistogramTester::CountsMap expected_counts;
   expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
   EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
               testing::ContainerEq(expected_counts));
   histograms().ExpectUniqueSample(kUmaHistogramDeletionPrefix + kBlock3PC,
                                   BtmDeletionAction::kEnforced, 1);
-  EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
+  EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
 }
 
 MATCHER_P(HasSourceId, id, "") {
