@@ -8,7 +8,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/scoped_temp_dir.h"
-#import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -109,12 +108,10 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
 
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
-    navigation_manager_ = navigation_manager.get();
     test_web_state_ = std::make_unique<web::FakeWebState>();
     test_web_state_->SetBrowserState(profile_.get());
     test_web_state_->SetNavigationManager(std::move(navigation_manager));
     test_web_state_->SetLoading(true);
-    web_state_ = test_web_state_.get();
     mediator_ = [[TestAdaptiveToolbarMediator alloc]
         initWithMessagingService:&messaging_backend_];
     mediator_.navigationBrowserAgent =
@@ -203,12 +200,19 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
 
   void SetUpActiveWebState() { web_state_list_->ActivateWebStateAt(0); }
 
+  web::FakeWebState* web_state() {
+    return static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(0));
+  }
+
+  ToolbarTestNavigationManager* navigation_manager() {
+    return static_cast<ToolbarTestNavigationManager*>(
+        web_state()->GetNavigationManager());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   TestAdaptiveToolbarMediator* mediator_;
   std::unique_ptr<TestBrowser> test_browser_;
-  raw_ptr<web::FakeWebState, DanglingUntriaged> web_state_;
-  raw_ptr<ToolbarTestNavigationManager, DanglingUntriaged> navigation_manager_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   id consumer_;
@@ -301,12 +305,12 @@ TEST_F(AdaptiveToolbarMediatorTest, TestWebstateListRelatedSetupReverse) {
 TEST_F(AdaptiveToolbarMediatorTest, TestDidStartLoading) {
   // Change the default loading state to false to verify the Webstate
   // callback with true.
-  web_state_->SetLoading(false);
+  web_state()->SetLoading(false);
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  web_state_->SetLoading(true);
+  web_state()->SetLoading(true);
   [consumer_ setLoadingState:YES];
 }
 
@@ -317,7 +321,7 @@ TEST_F(AdaptiveToolbarMediatorTest, TestDidStopLoading) {
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  web_state_->SetLoading(false);
+  web_state()->SetLoading(false);
   [consumer_ setLoadingState:NO];
 }
 
@@ -328,9 +332,9 @@ TEST_F(AdaptiveToolbarMediatorTest, TestDidStartLoadingNTP) {
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  web_state_->SetLoading(false);
-  web_state_->SetVisibleURL(GURL(kChromeUINewTabURL));
-  web_state_->SetLoading(true);
+  web_state()->SetLoading(false);
+  web_state()->SetVisibleURL(GURL(kChromeUINewTabURL));
+  web_state()->SetLoading(true);
   [consumer_ setLoadingState:NO];
 }
 
@@ -341,11 +345,11 @@ TEST_F(AdaptiveToolbarMediatorTest, TestDidLoadPageWithSucess) {
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  navigation_manager_->set_can_go_forward(true);
-  navigation_manager_->set_can_go_back(true);
+  navigation_manager()->set_can_go_forward(true);
+  navigation_manager()->set_can_go_back(true);
 
-  web_state_->SetCurrentURL(GURL(kTestUrl));
-  web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  web_state()->SetCurrentURL(GURL(kTestUrl));
+  web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 
   [consumer_ setCanGoForward:YES];
   [consumer_ setCanGoBack:YES];
@@ -359,12 +363,12 @@ TEST_F(AdaptiveToolbarMediatorTest, TestDidFinishNavigation) {
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  navigation_manager_->set_can_go_forward(true);
-  navigation_manager_->set_can_go_back(true);
+  navigation_manager()->set_can_go_forward(true);
+  navigation_manager()->set_can_go_back(true);
 
-  web_state_->SetCurrentURL(GURL(kTestUrl));
+  web_state()->SetCurrentURL(GURL(kTestUrl));
   web::FakeNavigationContext context;
-  web_state_->OnNavigationFinished(&context);
+  web_state()->OnNavigationFinished(&context);
 
   [consumer_ setCanGoForward:YES];
   [consumer_ setCanGoBack:YES];
@@ -378,11 +382,11 @@ TEST_F(AdaptiveToolbarMediatorTest, TestDidChangeVisibleSecurityState) {
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  navigation_manager_->set_can_go_forward(true);
-  navigation_manager_->set_can_go_back(true);
+  navigation_manager()->set_can_go_forward(true);
+  navigation_manager()->set_can_go_back(true);
 
-  web_state_->SetCurrentURL(GURL(kTestUrl));
-  web_state_->OnVisibleSecurityStateChanged();
+  web_state()->SetCurrentURL(GURL(kTestUrl));
+  web_state()->OnVisibleSecurityStateChanged();
 
   [consumer_ setCanGoForward:YES];
   [consumer_ setCanGoBack:YES];
@@ -396,7 +400,7 @@ TEST_F(AdaptiveToolbarMediatorTest, TestLoadingProgress) {
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  [mediator_ webState:web_state_ didChangeLoadingProgress:0.42];
+  [mediator_ webState:web_state() didChangeLoadingProgress:0.42];
   [consumer_ setLoadingProgressFraction:0.42];
 }
 
@@ -407,10 +411,10 @@ TEST_F(AdaptiveToolbarMediatorTest, TestDidChangeBackForwardState) {
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
 
-  navigation_manager_->set_can_go_forward(true);
-  navigation_manager_->set_can_go_back(true);
+  navigation_manager()->set_can_go_forward(true);
+  navigation_manager()->set_can_go_back(true);
 
-  web_state_->OnBackForwardStateChanged();
+  web_state()->OnBackForwardStateChanged();
 
   [consumer_ setCanGoForward:YES];
   [consumer_ setCanGoBack:YES];
