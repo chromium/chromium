@@ -29,17 +29,6 @@ class RegisteredMockMemoryPressureListener : public MockMemoryPressureListener {
   MemoryPressureListenerRegistration registration_;
 };
 
-// Async version of RegisteredMockMemoryPressureListener.
-class RegisteredMockAsyncMemoryPressureListener
-    : public MockMemoryPressureListener {
- public:
-  RegisteredMockAsyncMemoryPressureListener();
-  ~RegisteredMockAsyncMemoryPressureListener() override;
-
- private:
-  AsyncMemoryPressureListenerRegistration registration_;
-};
-
 }  // namespace base
 
 #endif  // BASE_MEMORY_MOCK_MEMORY_PRESSURE_LISTENER_H_

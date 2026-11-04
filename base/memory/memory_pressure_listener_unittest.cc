@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
@@ -106,50 +105,6 @@ TEST(MemoryPressureListenerTest, SubscribeDuringPressure) {
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
-TEST(MemoryPressureListenerTest, AsyncMemoryPressureListenerRegistration) {
-  MemoryPressureListenerRegistry registry;
-  test::TaskEnvironment task_env;
-
-  // Set initial pressure level.
-  MemoryPressureListenerRegistry::NotifyMemoryPressure(
-      MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  // The listener is initialized to MEMORY_PRESSURE_LEVEL_NONE.
-  RegisteredMockAsyncMemoryPressureListener listener;
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE));
-  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
-      FROM_HERE, DoNothing(), task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL));
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-}
-
-TEST(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
-  MemoryPressureListenerRegistry registry;
-  test::SingleThreadTaskEnvironment task_env;
-
-  auto listener_to_be_deleted =
-      std::make_unique<RegisteredMockAsyncMemoryPressureListener>();
-  EXPECT_CALL(*listener_to_be_deleted, OnMemoryPressure(_)).Times(0);
-
-  auto deleter_listener =
-      std::make_unique<RegisteredMockMemoryPressureListener>();
-  EXPECT_CALL(*deleter_listener, OnMemoryPressure(_)).WillOnce([&]() {
-    listener_to_be_deleted.reset();
-  });
-
-  // This should trigger the sync callback in |deleter_listener|, which will
-  // delete |listener_to_be_deleted|.
-  MemoryPressureListener::NotifyMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL);
-}
-
 TEST(MemoryPressureListenerTest, MemoryLimit) {
   MemoryPressureListenerRegistry registry;
   RegisteredMockMemoryPressureListener listener;
@@ -217,81 +172,6 @@ TEST(MemoryPressureListenerTest, IgnoreRepeatedNotifications) {
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
-TEST(MemoryPressureListenerTest, AsyncRepeatedNotifications) {
-  MemoryPressureListenerRegistry registry;
-  test::TaskEnvironment task_env;
-
-  MockMemoryPressureListener listener;
-  AsyncMemoryPressureListenerRegistration registration(
-      FROM_HERE, MemoryPressureListenerTag::kTest, &listener);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
-      .Times(1);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
-      .Times(1);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
-      .Times(1);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
-      .Times(1);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-}
-
-TEST(MemoryPressureListenerTest, AsyncIgnoreRepeatedNotifications) {
-  MemoryPressureListenerRegistry registry;
-  test::TaskEnvironment task_env;
-
-  MockMemoryPressureListener listener;
-  AsyncMemoryPressureListenerRegistration registration(
-      FROM_HERE, MemoryPressureListenerTag::kTest, &listener,
-      /*ignore_repeated_notifications=*/true);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
-      .Times(1);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
-      .Times(0);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
-      .Times(1);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
-      .Times(0);
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
-  task_env.RunUntilQuit();
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-}
-
 TEST(MemoryPressureListenerTest, SuppressMemoryListenersSyncInitial) {
   test::ScopedFeatureList feature_list;
   // Use InitAndEnableFeatureWithParameters instead of InitWithCommandLine
@@ -343,35 +223,6 @@ TEST(MemoryPressureListenerTest,
   // Since it is NOT suppressed for CRITICAL, it should be initialized to
   // CRITICAL.
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-}
-
-TEST(MemoryPressureListenerTest, SuppressMemoryListenersAsyncInitial) {
-  test::ScopedFeatureList feature_list;
-  // Use InitAndEnableFeatureWithParameters instead of InitWithCommandLine -see
-  // SuppressMemoryListenersSyncInitial for why.
-  // Suppress kTest (tag 0) for MODERATE.
-  feature_list.InitAndEnableFeatureWithParameters(
-      kSuppressMemoryListeners, {{"suppress_memory_listeners_mask", "1"}});
-
-  MemoryPressureListenerRegistry registry;
-  test::TaskEnvironment task_env;
-
-  // Simulate before registration.
-  MemoryPressureListenerRegistry::SimulatePressureNotification(
-      MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  MockMemoryPressureListener listener;
-  EXPECT_CALL(listener, OnMemoryPressure(_)).Times(0);
-
-  AsyncMemoryPressureListenerRegistration registration(
-      FROM_HERE, MemoryPressureListenerTag::kTest, &listener);
-
-  // Spin the loop to run pending tasks.
-  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                        task_env.QuitClosure());
-  task_env.RunUntilQuit();
-
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
 }
 
 TEST(MemoryPressureListenerTest, SuppressionTokenFromNonMainThread) {

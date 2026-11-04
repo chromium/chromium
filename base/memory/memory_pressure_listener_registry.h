@@ -46,11 +46,10 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   static void DecreaseNotificationSuppressionCount();
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
-  // Invokes `SimulatePressureNotification` asynchronously on the main thread,
-  // ensuring that any pending registration tasks have completed by the time it
-  // runs, then posts back `on_notification_sent_callback` to the calling
-  // sequence, allowing tests to ensure that the notification was received by
-  // the MemoryPressureListener under test.
+  // Posts a task to the main thread that invokes
+  // `SimulatePressureNotification`, then runs `on_notification_sent_callback`
+  // on the main thread once the notification has been sent. Must be called on
+  // the main thread.
   static void SimulatePressureNotificationAsync(
       MemoryPressureLevel memory_pressure_level,
       OnceClosure on_notification_sent_callback);

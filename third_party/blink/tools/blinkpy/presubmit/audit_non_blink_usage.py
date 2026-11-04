@@ -127,8 +127,6 @@ _CONFIG = [
             'base::MaxThreadType',
             'base::MemoryConsumer',
             'base::MemoryConsumerTraits',
-            'base::MemoryPressureListener',
-            'base::MemoryPressureListenerTag',
             'base::MessagePump',
             'base::MiBS',
             'base::MiB',
@@ -2269,9 +2267,10 @@ _CONFIG = [
         # base::RefCounted and base::RefCountedThreadSafe should still be
         # explicitly blocked. blink::RefCounted and blink::ThreadSafeRefCounted
         # should be used instead.
-        # Also, there is a blink-specific version of
-        # MemoryPressureListenerRegistration and MemoryConsumerRegistration that
-        # should be used over their base counterpart.
+        # Also, there is a blink-specific version of MemoryConsumerRegistration
+        # that should be used over its base counterpart, and
+        # base::MemoryPressureListener is deprecated in favor of
+        # base::MemoryConsumer.
         'allowed': ['.+'],
         'inclass_allowed': ['.+'],
         'disallowed': [
@@ -2287,11 +2286,7 @@ _CONFIG = [
             ),
             (
                 'base::MemoryPressureListenerRegistration',
-                'Use blink::MemoryPressureListenerRegistration',
-            ),
-            (
-                'base::AsyncMemoryPressureListenerRegistration',
-                'Use blink::MemoryPressureListenerRegistration',
+                'Use base::MemoryConsumer with blink::MemoryConsumerRegistration',
             ),
             # TODO(https://crbug.com/1267866): this warning is shown twice for
             # renderer/platform/ violations.
@@ -2305,15 +2300,6 @@ _CONFIG = [
         'allowed': [
             'base::AsyncMemoryConsumerRegistration',
             'base::MemoryConsumerRegistration',
-        ],
-    },
-    {
-        'paths': [
-            'third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.cc',
-            'third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h',
-        ],
-        'allowed': [
-            'base::AsyncMemoryPressureListenerRegistration',
         ],
     },
     {
