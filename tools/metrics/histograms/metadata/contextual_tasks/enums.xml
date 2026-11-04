@@ -92,6 +92,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_utils.h:ContextualTasksLinkOpenDisposition) -->
 
+<!-- LINT.IfChange(ContextualTasksPageState) -->
+
+<enum name="ContextualTasksPageState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Zero state"/>
+  <int value="2" label="Active thread"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h:ContextualTasksPageState) -->
+
 <!-- LINT.IfChange(ContextualTasksPermanentToolbarButtonThreadAction) -->
 
 <enum name="ContextualTasksPermanentToolbarButtonThreadAction">

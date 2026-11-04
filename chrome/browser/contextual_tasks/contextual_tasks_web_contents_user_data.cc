@@ -326,6 +326,10 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   bool context_library_is_active = false;
   bool tab_picker_is_active = false;
   bool is_zero_state = false;
+  // Whether `is_zero_state` reflects a known state, i.e. the page has reported
+  // its state via `OnPageChanged()` or a query was submitted since the page
+  // connected or the input plate was last cleared.
+  bool has_known_page_state = false;
   std::vector<contextual_tasks::UrlResource> committed_url_resources;
   ContextState last_sent_context_state = ContextState::kNone;
   std::string last_sent_context_state_serialized =
@@ -616,6 +620,7 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   page_state.context_library_is_active = false;
   page_state.tab_picker_is_active = false;
   page_state.is_zero_state = false;
+  page_state.has_known_page_state = false;
   page_state.committed_url_resources.clear();
   page_state.last_sent_context_state = ContextState::kNone;
   page_state.last_sent_context_state_serialized =
@@ -660,6 +665,15 @@ const std::string&
 ContextualTasksWebContentsUserData::GetConnectedDocumentIdForTesting() const {
   const auto* page_state = GetPrimaryPageSearchState();
   return page_state ? page_state->connected_document_id : base::EmptyString();
+}
+
+ContextualTasksWebContentsUserData::PageState
+ContextualTasksWebContentsUserData::GetPageState() const {
+  const auto* page_state = GetPrimaryPageSearchState();
+  if (!page_state || !page_state->has_known_page_state) {
+    return PageState::kUnknown;
+  }
+  return page_state->is_zero_state ? PageState::kZeroState : PageState::kThread;
 }
 
 ContextualTasksWebContentsUserData::PageSearchDebugState
@@ -939,6 +953,10 @@ void ContextualTasksWebContentsUserData::RenderFrameDeleted(
 
 void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
     std::string_view query_text) {
+  auto& page_state = GetPrimaryPageSearchState();
+  page_state.is_zero_state = false;
+  page_state.has_known_page_state = true;
+
   if (pending_submit_.has_value()) {
     return;
   }
@@ -1169,6 +1187,7 @@ void ContextualTasksWebContentsUserData::OnPageChanged(bool is_zero_state) {
   }
   auto& page_state = GetPrimaryPageSearchState();
   page_state.is_zero_state = is_zero_state;
+  page_state.has_known_page_state = true;
   if (page_state.is_handshake_complete) {
     page_state.handshake_complete_time = base::TimeTicks::Now();
     page_state.has_recorded_first_thread_context_library_update = false;
@@ -1859,7 +1878,9 @@ ContextualTasksWebContentsUserData::GetLensSearchController() const {
 #endif
 
 void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
-  GetPrimaryPageSearchState().is_zero_state = false;
+  auto& page_state = GetPrimaryPageSearchState();
+  page_state.is_zero_state = false;
+  page_state.has_known_page_state = true;
   implicit_tab_.reset();
   pending_context_uploads_.clear();
   failed_context_uploads_.clear();
@@ -2171,6 +2192,7 @@ void ContextualTasksWebContentsUserData::ClearInputPlateState() {
   RemoveLensCrop();
   auto& page_state = GetPrimaryPageSearchState();
   page_state.is_zero_state = false;
+  page_state.has_known_page_state = false;
   page_state.last_lens_crop_data_uri.clear();
   if (page_state.is_lens_crop_mounted) {
     page_state.is_lens_crop_mounted = false;

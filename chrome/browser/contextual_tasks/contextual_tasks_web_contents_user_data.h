@@ -84,6 +84,22 @@ class ContextualTasksWebContentsUserData
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksThreadContextLibraryUpdateOutcome)
 
+  // Whether the AI Mode page is in the zero state or mid-thread, as far as the
+  // browser knows. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  // LINT.IfChange(ContextualTasksPageState)
+  enum class PageState {
+    // The page has not reported its state since it connected or since the
+    // input plate was last cleared (e.g. on a task change).
+    kUnknown = 0,
+    // The page reported that it is in the zero state.
+    kZeroState = 1,
+    // The page reported that it is mid-thread, or a query was submitted.
+    kThread = 2,
+    kMaxValue = kThread,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksPageState)
+
   enum class ContextState {
     kNone,
     kUploading,
@@ -177,6 +193,13 @@ class ContextualTasksWebContentsUserData
   bool IsHandshakeCompleteForTesting() const;
   const std::string& GetConnectedDocumentIdForTesting() const;
   PageSearchDebugState GetPageSearchDebugState() const;
+
+  // Returns the zero-state/mid-thread state of the AI Mode page in the primary
+  // page. This is `kZeroState` or `kThread` once the page reports its state via
+  // `OnPageChanged()`, and `kThread` after a query is submitted. It is
+  // `kUnknown` after the page connects and after the input plate is cleared
+  // (e.g. via `OnTaskChanged()`), until the page next reports its state.
+  PageState GetPageState() const;
 
   // Parses and handles an incoming SearchToClientMessage. Returns true if the
   // message was a valid SearchToClientMessage with a recognized payload, or

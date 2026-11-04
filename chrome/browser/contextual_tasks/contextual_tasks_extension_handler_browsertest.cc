@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -573,8 +574,79 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       HandleLensButtonClick_RecordsPageStateHistogram) {
+  using PageState = ContextualTasksWebContentsUserData::PageState;
+  constexpr char kPageStateHistogram[] =
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked.PageState";
+
+  EmbedHandlerInSidePanel();
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(mock_lens_controller_);
+  ASSERT_TRUE(composebox_handler_remote_.is_bound());
+
+  EXPECT_CALL(*mock_lens_controller_, IsShowingUI())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*mock_lens_controller_, OpenLensOverlay(_, _))
+      .Times(testing::AnyNumber());
+
+  auto click = [&]() {
+    composebox_handler_remote_->HandleLensButtonClick();
+    composebox_handler_remote_.FlushForTesting();
+  };
+
+  // Click before the AI Mode page has reported its state.
+  click();
+  histogram_tester.ExpectUniqueSample(kPageStateHistogram, PageState::kUnknown,
+                                      1);
+
+  // Click while the AI Mode page reports the zero state.
+  SendOnPageChanged(/*is_zero_state=*/true);
+  click();
+  histogram_tester.ExpectBucketCount(kPageStateHistogram, PageState::kZeroState,
+                                     1);
+
+  // Submitting a query transitions `kZeroState` -> `kThread` even though the AI
+  // Mode page does not send `OnPageChanged(false)` on submit.
+  lens::SearchToClientMessage submit_msg;
+  submit_msg.mutable_on_submit_query_request();
+  SendSearchMessage(submit_msg);
+  click();
+  histogram_tester.ExpectBucketCount(kPageStateHistogram, PageState::kThread,
+                                     1);
+
+  // `OnDocumentConnected()` resets the state back to `kUnknown` until the page
+  // next reports its state.
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          panel_web_contents_.get());
+  user_data->OnDocumentConnected(panel_web_contents_->GetPrimaryMainFrame());
+  click();
+  histogram_tester.ExpectBucketCount(kPageStateHistogram, PageState::kUnknown,
+                                     2);
+
+  // Click while the AI Mode page reports it is mid-thread.
+  SendOnPageChanged(/*is_zero_state=*/false);
+  click();
+  histogram_tester.ExpectBucketCount(kPageStateHistogram, PageState::kThread,
+                                     2);
+
+  // A task change clears the input plate, so the state is unknown again until
+  // the page next reports it.
+  user_data->OnTaskChanged();
+  click();
+  histogram_tester.ExpectBucketCount(kPageStateHistogram, PageState::kUnknown,
+                                     3);
+
+  histogram_tester.ExpectTotalCount(kPageStateHistogram, 6);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked", true, 6);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        HandleLensButtonClick_NotInSidePanel_DoesNothing) {
   base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(mock_lens_controller_);
   ASSERT_TRUE(composebox_handler_remote_.is_bound());
@@ -587,6 +659,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked.PageState", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(

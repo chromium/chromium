@@ -332,9 +332,18 @@ void ContextualTasksExtensionHandler::HandleLensButtonClick() {
 
   base::RecordAction(base::UserMetricsAction(
       "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+  base::UmaHistogramBoolean(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked", true);
+
+  auto* user_data = GetOrCreateWebContentsUserData();
+  if (user_data) {
+    base::UmaHistogramEnumeration(
+        "ContextualTasks.Composebox.UserAction.LensButtonClicked.PageState",
+        user_data->GetPageState());
+  }
 
   if (auto* controller = GetLensSearchController()) {
-    if (auto* user_data = GetOrCreateWebContentsUserData()) {
+    if (user_data) {
       controller->SetThumbnailCreatedCallback(base::BindRepeating(
           &contextual_tasks::ContextualTasksWebContentsUserData::
               OnLensThumbnailCreated,

@@ -151,6 +151,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContextualTasks.Composebox.UserAction.LensButtonClicked.PageState"
+    enum="ContextualTasksPageState" expires_after="2027-06-18">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the Lens button inside the contextual tasks
+    composebox embedded in the side panel. Records whether the AI Mode page was
+    in the zero state (no query submitted in the current thread yet) or
+    mid-thread at the time of the click. Records Unknown if the page had not yet
+    reported its state since it loaded or since the input was last cleared (e.g.
+    on a task change). Recorded on every click, including clicks that close a
+    Lens overlay that was previously opened from the composebox.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.CandidateTabHasEmbeddings"
     enum="Boolean" expires_after="2027-04-18">
   <owner>sophiechang@chromium.org</owner>
