@@ -1327,6 +1327,10 @@ suite('HistoryListTest', function() {
 
   // <if expr="is_android">
   test('EmptyStateIllustrationAndroid', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+    });
     await finishSetup([]);
     assertFalse(element.$.noResults.hidden);
     const svg = element.$.noResults.querySelector('svg');
