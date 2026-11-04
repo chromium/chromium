@@ -24,6 +24,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_api/managed_configuration_store.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -38,6 +39,13 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace features {
 BASE_FEATURE(kManagedConfigurationRecoverFromFailedFetches,
@@ -221,7 +229,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
     if (desired_ != desired) {
       retry_timer_.Stop();
       retry_backoff_.Reset();
-      retry_count_ = 0;
     }
     desired_ = std::move(desired);
     SyncStoreWithDesiredConfiguration();
@@ -232,7 +239,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
     downloader_.reset();
     retry_timer_.Stop();
     retry_backoff_.Reset();
-    retry_count_ = 0;
     ScopedDictPrefUpdate update(api_->profile_->GetPrefs(),
                                 prefs::kLastManagedConfigurationHashForOrigin);
     update->Remove(GetOriginEncoded(origin_));
@@ -254,11 +260,12 @@ class ManagedConfigurationAPI::OriginConfiguration {
     if (!IsRecoveryEnabled()) {
       return;
     }
+    // Cancel any in-flight download (which may be stalled on a dead or
+    // pre-online socket) and stop any active backoff timer so `EnsureSynced()`
+    // retries immediately, while keeping `retry_backoff_` intact so exponential
+    // backoff continues growing if this retry also fails.
+    downloader_.reset();
     retry_timer_.Stop();
-    // Reset backoff to fast-track the pending retry on reconnection, while
-    // keeping `retry_count_` intact so total retries for `desired_` remain
-    // accurate.
-    retry_backoff_.Reset();
     EnsureSynced();
   }
 
@@ -289,7 +296,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
     if (!IsRecoveryEnabled()) {
       return;
     }
-    ++retry_count_;
     base::UmaHistogramEnumeration(kRetryReasonHistogram, reason);
     retry_backoff_.InformOfRequest(false);
     retry_timer_.Start(FROM_HERE, retry_backoff_.GetTimeUntilRelease(),
@@ -331,7 +337,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
         downloader_.reset();
         retry_timer_.Stop();
         retry_backoff_.Reset();
-        retry_count_ = 0;
       }
       return;
     }
@@ -471,11 +476,10 @@ class ManagedConfigurationAPI::OriginConfiguration {
           prefs::kLastManagedConfigurationHashForOrigin);
       update->Set(GetOriginEncoded(origin_), *hash_to_commit);
       base::UmaHistogramCounts1000(kRetryCountUntilSuccessHistogram,
-                                   retry_count_);
+                                   retry_backoff_.failure_count());
       // Only a durably committed configuration counts as success; resetting
       // earlier would keep the backoff from growing while writes keep failing.
       retry_backoff_.Reset();
-      retry_count_ = 0;
     }
     api_->InformObserversIfConfigurationChanged(origin_, *changed);
   }
@@ -492,10 +496,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
   std::unique_ptr<ManagedConfigurationDownloader> downloader_;
   net::BackoffEntry retry_backoff_{&retry_policy_};
   base::OneShotTimer retry_timer_;
-  // Number of retries scheduled for the current `desired_` configuration.
-  // Tracked separately from `retry_backoff_.failure_count()` because network
-  // reconnection resets `retry_backoff_` to retry immediately.
-  int retry_count_ = 0;
   int in_flight_store_writes_ = 0;
   // Hash the most recently queued store write will commit, while any write is
   // in flight. std::nullopt for clears and test writes.
@@ -503,6 +503,61 @@ class ManagedConfigurationAPI::OriginConfiguration {
 
   base::WeakPtrFactory<OriginConfiguration> weak_ptr_factory_{this};
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS, `NetworkConnectionTracker` fires once when Shill enters a
+// connected state (often before DHCP or captive portal checks finish) and does
+// not fire again when the network reaches `online`. Observe
+// `ash::NetworkStateHandler` directly instead.
+class ManagedConfigurationAPI::NetworkStateObserver
+    : public ash::NetworkStateHandlerObserver {
+ public:
+  explicit NetworkStateObserver(ManagedConfigurationAPI* api) : api_(api) {
+    if (!ash::NetworkHandler::IsInitialized()) {
+      return;
+    }
+    ash::NetworkStateHandler* handler =
+        ash::NetworkHandler::Get()->network_state_handler();
+    if (const ash::NetworkState* default_network = handler->DefaultNetwork();
+        default_network && default_network->IsConnectedState()) {
+      default_service_path_ = default_network->path();
+      was_online_ = default_network->IsOnline();
+    }
+    observation_.Observe(handler);
+  }
+
+  NetworkStateObserver(const NetworkStateObserver&) = delete;
+  NetworkStateObserver& operator=(const NetworkStateObserver&) = delete;
+  ~NetworkStateObserver() override = default;
+
+  // ash::NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(
+      const ash::NetworkState* default_network) override {
+    if (!default_network || !default_network->IsConnectedState()) {
+      default_service_path_.clear();
+      was_online_ = false;
+      return;
+    }
+    const bool network_changed =
+        default_network->path() != default_service_path_;
+    const bool became_online = !was_online_ && default_network->IsOnline();
+    default_service_path_ = default_network->path();
+    was_online_ = default_network->IsOnline();
+
+    if (network_changed || became_online) {
+      api_->OnNetworkAvailable();
+    }
+  }
+
+  void OnShuttingDown() override { observation_.Reset(); }
+
+ private:
+  const raw_ptr<ManagedConfigurationAPI> api_;
+  std::string default_service_path_;
+  bool was_online_ = false;
+  ash::NetworkStateHandlerScopedObservation observation_{this};
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ManagedConfigurationAPI::ManagedConfigurationAPI(Profile* profile)
     : profile_(profile),
@@ -516,8 +571,17 @@ ManagedConfigurationAPI::ManagedConfigurationAPI(Profile* profile)
           &ManagedConfigurationAPI::OnConfigurationPolicyChanged,
           weak_ptr_factory_.GetWeakPtr()));
   if (IsRecoveryEnabled()) {
-    if (auto* tracker = content::GetNetworkConnectionTracker()) {
-      network_connection_observation_.Observe(tracker);
+    bool observing_ash_network_state = false;
+#if BUILDFLAG(IS_CHROMEOS)
+    if (ash::NetworkHandler::IsInitialized()) {
+      network_state_observer_ = std::make_unique<NetworkStateObserver>(this);
+      observing_ash_network_state = true;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    if (!observing_ash_network_state) {
+      if (auto* tracker = content::GetNetworkConnectionTracker()) {
+        network_connection_observation_.Observe(tracker);
+      }
     }
   }
   OnConfigurationPolicyChanged();
@@ -627,6 +691,13 @@ void ManagedConfigurationAPI::OnConnectionChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   if (!IsRecoveryEnabled() ||
       type == net::NetworkChangeNotifier::CONNECTION_NONE) {
+    return;
+  }
+  OnNetworkAvailable();
+}
+
+void ManagedConfigurationAPI::OnNetworkAvailable() {
+  if (!IsRecoveryEnabled()) {
     return;
   }
   for (const auto& origin : managed_origins_) {

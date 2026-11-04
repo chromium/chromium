@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -133,10 +134,19 @@ class ManagedConfigurationAPI
   // Encapsulates the store, active downloader and retry backoff/timer for a
   // single origin so all per-origin resources are cleaned up together via RAII.
   class OriginConfiguration;
+#if BUILDFLAG(IS_CHROMEOS)
+  // Observes Ash default-network changes and `IsOnline()` transitions so
+  // pending syncs retry right away when connectivity is established.
+  class NetworkStateObserver;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
+
+  // Cancels any stalled download and retries pending configuration syncs of all
+  // managed origins right away.
+  void OnNetworkAvailable();
 
   // Tries to download the managed configuration stored at the url provided
   // by policy.
@@ -183,6 +193,11 @@ class ManagedConfigurationAPI
       network::NetworkConnectionTracker,
       network::NetworkConnectionTracker::NetworkConnectionObserver>
       network_connection_observation_{this};
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only set while recovery from failed fetches is enabled.
+  std::unique_ptr<NetworkStateObserver> network_state_observer_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Test-only overrides; see the corresponding setters.
   std::optional<base::TimeDelta> retry_initial_delay_for_testing_;

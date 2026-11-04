@@ -66,6 +66,7 @@ source_set("impl") {
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/profiles",
+      "//chromeos/ash/components/network",
       "//chromeos/ash/components/system",
       "//chromeos/components/kiosk",
     ]
@@ -124,6 +125,8 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ash/login/test:test_support",
       "//chrome/browser/ash/policy/core:test_support",
+      "//chromeos/ash/components/dbus/shill",
+      "//chromeos/ash/components/network",
       "//chromeos/ash/components/system",
     ]
   }
