@@ -68,10 +68,12 @@ namespace {
 
 void UpdateAnimationTiming(
     Document& document,
-    HeapHashSet<WeakMember<AnimationTimeline>>& timelines,
+    const HeapHashSet<WeakMember<AnimationTimeline>>& timelines,
     TimingUpdateReason reason) {
-  for (auto& timeline : timelines)
+  HeapVector<Member<AnimationTimeline>> timelines_to_service(timelines);
+  for (auto& timeline : timelines_to_service) {
     timeline->ServiceAnimations(reason);
+  }
   document.GetWorkletAnimationController().UpdateAnimationTimings(reason);
 }
 }  // namespace

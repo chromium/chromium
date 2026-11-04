@@ -116,6 +116,31 @@ TEST_F(DocumentAnimationsTest, UpdateAnimationTimingServicesAllTimelines) {
   document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
 }
 
+// Regression test for crbug.com/567611698: adding new timelines while servicing
+// animations must not invalidate iteration over the document's timelines set.
+TEST_F(DocumentAnimationsTest,
+       UpdateAnimationTimingAllowsTimelineAdditionDuringService) {
+  MockAnimationTimeline* timeline1 =
+      MakeGarbageCollected<MockAnimationTimeline>(document);
+  MockAnimationTimeline* timeline2 =
+      MakeGarbageCollected<MockAnimationTimeline>(document);
+
+  HeapVector<Member<MockAnimationTimeline>> added_timelines;
+  EXPECT_CALL(*timeline1, ServiceAnimations(_))
+      .WillOnce([&](TimingUpdateReason) {
+        for (int i = 0; i < 64; ++i) {
+          auto* added = MakeGarbageCollected<MockAnimationTimeline>(document);
+          EXPECT_CALL(*added, ServiceAnimations(_)).Times(0);
+          added_timelines.push_back(added);
+        }
+      });
+  EXPECT_CALL(*timeline2, ServiceAnimations(_));
+
+  document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
+  EXPECT_GE(document->GetDocumentAnimations().GetTimelinesForTesting().size(),
+            66u);
+}
+
 // Test correctness of DocumentAnimations::UpdateAnimations.
 TEST_F(DocumentAnimationsTest, UpdateAnimationsUpdatesAllTimelines) {
   // Test that all timelines are traversed to schedule next service.
