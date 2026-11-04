@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
@@ -121,6 +122,20 @@ TEST_F(ContentAutofillDriverFactoryTest, MainDriver) {
   EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(main_rfh()),
             main_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
+}
+
+// Tests that no driver is created for frames in a PDF renderer process.
+TEST_F(ContentAutofillDriverFactoryTest, DisableAutofillInPdfProcess) {
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://a.com/test.pdf"), web_contents());
+  simulator->ReadyToCommit();
+  static_cast<content::MockRenderProcessHost*>(
+      simulator->GetFinalRenderFrameHost()->GetProcess())
+      ->SetIsPdf(true);
+  simulator->Commit();
+
+  EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(main_rfh()), nullptr);
+  EXPECT_EQ(test_api(factory()).num_drivers(), 0u);
 }
 
 enum class SourceOfRecursion {

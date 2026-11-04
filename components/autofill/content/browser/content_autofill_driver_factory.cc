@@ -104,10 +104,15 @@ ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
 
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     content::RenderFrameHost* render_frame_host) {
-  // Within fenced frames and their descendants, Password Manager should for now
-  // be disabled (crbug.com/1294378).
+  if (render_frame_host->GetProcess()->IsPdf()) {
+    // Do not create AutofillDrivers in PDFs for security reasons
+    // (crbug.com/578225392).
+    return nullptr;
+  }
   if (render_frame_host->IsNestedWithinFencedFrame() &&
       !base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
+    // Within fenced frames and their descendants, Password Manager should for
+    // now be disabled (crbug.com/1294378).
     return nullptr;
   }
 

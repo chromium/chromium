@@ -751,8 +751,15 @@ void ChromeContentRendererClient::RenderFrameCreated(
   blink::AssociatedInterfaceRegistry* associated_interfaces =
       render_frame_observer->associated_interfaces();
 
-  if (!render_frame->IsInFencedFrameTree() ||
-      base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
+  const bool is_pdf_renderer =
+#if BUILDFLAG(ENABLE_PDF)
+      pdf::IsPdfRenderer();
+#else
+      false;
+#endif
+  if (!is_pdf_renderer && (!render_frame->IsInFencedFrameTree() ||
+                           base::FeatureList::IsEnabled(
+                               blink::features::kFencedFramesAPIChanges))) {
     auto password_autofill_agent = std::make_unique<PasswordAutofillAgent>(
         render_frame, associated_interfaces);
     auto password_generation_agent = std::make_unique<PasswordGenerationAgent>(
