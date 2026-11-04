@@ -44,7 +44,6 @@ import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.PageHitTestDataCondition;
 import org.chromium.chrome.test.transit.page.PageInteractableOrHiddenCondition;
 import org.chromium.chrome.test.transit.page.PageLoadedCondition;
-import org.chromium.chrome.test.transit.page.PageTitleCondition;
 import org.chromium.chrome.test.transit.page.PageUrlCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
@@ -62,8 +61,6 @@ import java.util.concurrent.TimeUnit;
 
 /** A utility class that contains methods generic to all Tabs tests. */
 public class ChromeTabUtils {
-    public static final int TITLE_UPDATE_TIMEOUT_SECONDS = 3;
-
     /**
      * The required page load percentage for the page to be considered ready assuming the
      * TextureView is also ready.
@@ -453,12 +450,6 @@ public class ChromeTabUtils {
         if (observer != null) {
             observer.simulateRendererKilledForTesting();
         }
-    }
-
-    public static void waitForTitle(Tab tab, String newTitle) {
-        Triggers.noopTo()
-                .withTimeout(TimeUnit.SECONDS.toMillis(TITLE_UPDATE_TIMEOUT_SECONDS))
-                .waitFor(new PageTitleCondition(newTitle, () -> tab));
     }
 
     /**

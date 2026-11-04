@@ -36,6 +36,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.page.PageTitleCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -115,7 +117,7 @@ public class CustomTabPostMessageTest {
 
     private void waitForTitle(String newTitle) {
         Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        ChromeTabUtils.waitForTitle(currentTab, newTitle);
+        Triggers.noopTo().waitFor(new PageTitleCondition(newTitle, () -> currentTab));
     }
 
     private void setCanUseHiddenTabForSession(SessionHolder sessionHolder, boolean useHiddenTab) {

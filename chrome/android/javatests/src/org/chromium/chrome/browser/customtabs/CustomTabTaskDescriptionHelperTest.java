@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -33,7 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.PageTitleCondition;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -199,10 +200,8 @@ public class CustomTabTaskDescriptionHelperTest {
         return mWebappActivityTestRule.getActivity();
     }
 
-    private void waitForTitle(Tab tab, String expectedTitle) throws Exception {
-        if (ChromeTabUtils.getTitleOnUiThread(tab).equals(expectedTitle)) return;
-
-        ChromeTabUtils.waitForTitle(tab, expectedTitle);
+    private void waitForTitle(Tab tab, String expectedTitle) {
+        Triggers.noopTo().waitFor(new PageTitleCondition(expectedTitle, () -> tab));
     }
 
     private int computeDefaultThemeColor(@NonNull ChromeActivity activity) throws Exception {
