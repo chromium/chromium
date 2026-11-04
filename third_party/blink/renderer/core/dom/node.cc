@@ -174,8 +174,10 @@ using ReattachHookScope = LayoutShiftTracker::ReattachHookScope;
 
 // We want to keep Node small.  This struct + assert calls our attention to a
 // change that might be undesirable, so that we make sure to consider whether
-// it's worthwhile.
-struct SameSizeAsNode : EventTarget {
+// it's worthwhile. EventTarget's member is listed here too, so that growing
+// EventTarget is also caught.
+struct SameSizeAsNode : ScriptWrappable {
+  Member<void*> event_target_data;
   uint32_t node_flags_;
   subtle::UncompressedMember<int> uncompressed[2];
   Member<void*> members[4];
