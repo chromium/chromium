@@ -56,6 +56,8 @@
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_manager_cib.h"
+#include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
@@ -786,10 +788,19 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                       perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"),
                       "layerTreeId", id_);
 
-  browser_controls_offset_manager_ = BrowserControlsOffsetManager::Create(
-      this, settings.top_controls_show_threshold,
-      settings.top_controls_hide_threshold,
-      settings.trees_in_viz_in_viz_process);
+  // Browser UI trees (ui::Compositor) have no browser controls, and the Android
+  // browser compositor does not use LayerTreeHostImpl, so this only selects the
+  // manager for the renderer compositor and its Viz display tree.
+  if (!settings.is_layer_tree_for_ui &&
+      base::FeatureList::IsEnabled(features::kControlsInBrowser)) {
+    browser_controls_offset_manager_ =
+        std::make_unique<BrowserControlsOffsetManagerCib>(this);
+  } else {
+    browser_controls_offset_manager_ = BrowserControlsOffsetManager::Create(
+        this, settings.top_controls_show_threshold,
+        settings.top_controls_hide_threshold,
+        settings.trees_in_viz_in_viz_process);
+  }
 
   SetDebugState(settings.initial_debug_state);
   compositor_frame_reporting_controller_->SetFrameSorter(&frame_sorter_);

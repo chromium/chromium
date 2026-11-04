@@ -25,26 +25,27 @@ namespace cc {
 namespace {
 
 base::test::ScopedFeatureList InitScopedFeatureListForMode(
-    LayerTreeImplTestMode mode) {
-  base::test::ScopedFeatureList feature_list;
+    LayerTreeImplTestMode mode,
+    std::vector<base::test::FeatureRef> enabled_features = {}) {
+  std::vector<base::test::FeatureRef> disabled_features = {
+      features::kSnapFlingNearExtremes};
   switch (mode) {
     case CommitToActiveTreeTreesInVizClient:
     case CommitToPendingTreeTreesInVizClient:
     case CommitToActiveTreeTreesInVizService:
-      feature_list.InitWithFeatures({features::kTreesInViz},
-                                    {features::kSnapFlingNearExtremes});
+      enabled_features.push_back(features::kTreesInViz);
       break;
     case CommitToActiveTreeAnimationsInVizService:
-      feature_list.InitWithFeatures(
-          {features::kTreesInViz, features::kTreeAnimationsInViz},
-          {features::kSnapFlingNearExtremes});
+      enabled_features.push_back(features::kTreesInViz);
+      enabled_features.push_back(features::kTreeAnimationsInViz);
       break;
     case CommitToActiveTree:
     case CommitToPendingTree:
-      feature_list.InitWithFeatures(
-          {}, {features::kTreesInViz, features::kSnapFlingNearExtremes});
+      disabled_features.push_back(features::kTreesInViz);
       break;
   }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(enabled_features, disabled_features);
   return feature_list;
 }
 
@@ -1028,6 +1029,11 @@ void LayerTreeHostImplTestBase::SetupMouseMoveAtTestScrollbarStates(
 
 LayerTreeHostImplTest::LayerTreeHostImplTest()
     : LayerTreeHostImplTestBase(InitScopedFeatureListForMode(GetParam())) {}
+
+LayerTreeHostImplTest::LayerTreeHostImplTest(
+    const std::vector<base::test::FeatureRef>& extra_enabled_features)
+    : LayerTreeHostImplTestBase(
+          InitScopedFeatureListForMode(GetParam(), extra_enabled_features)) {}
 
 LayerTreeHostImplTest::~LayerTreeHostImplTest() = default;
 

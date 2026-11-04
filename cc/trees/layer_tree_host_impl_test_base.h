@@ -423,6 +423,11 @@ class LayerTreeHostImplTest
       public testing::WithParamInterface<LayerTreeImplTestMode> {
  public:
   LayerTreeHostImplTest();
+  // Enables `extra_enabled_features` in addition to the features of the test
+  // mode. Derived classes must use this instead of a ScopedFeatureList member;
+  // see LayerTreeHostImplTestBase.
+  explicit LayerTreeHostImplTest(
+      const std::vector<base::test::FeatureRef>& extra_enabled_features);
   ~LayerTreeHostImplTest() override;
   static bool CommitsToActiveTree();
   LayerTreeSettings DefaultSettings() override;

@@ -24,6 +24,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -266,10 +267,13 @@ class LayerTreeHostImplTestMultiScrollable : public LayerTreeHostImplTest {
 
 class LayerTreeHostImplBrowserControlsTest : public LayerTreeHostImplTest {
  public:
-  LayerTreeHostImplBrowserControlsTest()
+  explicit LayerTreeHostImplBrowserControlsTest(
+      const std::vector<base::test::FeatureRef>& extra_enabled_features = {})
       // Make the clip size the same as the layer (content) size so the layer is
       // non-scrollable.
-      : layer_size_(10, 10), clip_size_(layer_size_) {
+      : LayerTreeHostImplTest(extra_enabled_features),
+        layer_size_(10, 10),
+        clip_size_(layer_size_) {
     viewport_size_ = gfx::Size(clip_size_.width(),
                                clip_size_.height() + top_controls_height_);
   }
@@ -2444,6 +2448,43 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 }
 
 INSTANTIATE_CLIENT_MODE_TREE_TEST_P(LayerTreeHostImplBrowserControlsTest);
+
+// Tests browser controls with kControlsInBrowser enabled.
+class LayerTreeHostImplControlsInBrowserTest
+    : public LayerTreeHostImplBrowserControlsTest {
+ public:
+  LayerTreeHostImplControlsInBrowserTest()
+      : LayerTreeHostImplBrowserControlsTest({features::kControlsInBrowser}) {}
+
+  void SetUp() override {
+    LayerTreeHostImplBrowserControlsTest::SetUp();
+    SetupBrowserControlsAndScrollLayerWithVirtualViewport(
+        gfx::Size(100, 100), gfx::Size(100, 100), gfx::Size(100, 400));
+    LayerImpl* outer_scroll = OuterViewportScrollLayer();
+    outer_scroll->layer_tree_impl()
+        ->property_trees()
+        ->scroll_tree_mutable()
+        .UpdateScrollOffsetBaseForTesting(outer_scroll->element_id(),
+                                          gfx::PointF(0, 200));
+  }
+};
+
+TEST_P(LayerTreeHostImplControlsInBrowserTest, ScrollDoesNotMoveControls) {
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2dF(0, 50),
+                                           ui::ScrollInputType::kTouchscreen)
+                                    .get(),
+                                ui::ScrollInputType::kTouchscreen);
+  GetInputHandler().ScrollUpdate(UpdateState(
+      gfx::Point(), gfx::Vector2dF(0, 50), ui::ScrollInputType::kTouchscreen));
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+
+  EXPECT_FLOAT_EQ(1.0f,
+                  host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(250, CurrentScrollOffset(OuterViewportScrollLayer()).y());
+  EXPECT_FALSE(host_impl_->browser_controls_manager()->HasAnimation());
+}
+
+INSTANTIATE_CLIENT_MODE_TREE_TEST_P(LayerTreeHostImplControlsInBrowserTest);
 
 // TODO(crbug.com/458776836): Review memory limit related cc_unittests for
 // TreesInViz Service mode

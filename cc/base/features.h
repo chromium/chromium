@@ -337,6 +337,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionsNewRoundingChange);
 // pages.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsExtraHideGestures);
 
+// When enabled, the browser process owns the browser controls position. The
+// renderer compositor does not move the controls in response to scrolls and
+// does not animate them unless instructed by the browser process.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kControlsInBrowser);
+
 // When enabled, prevents sending a pipelined BeginMainFrame when the primary
 // BeginMainFrame is READY_TO_COMMIT but blocked from committing by an
 // unactivated pending tree. Killswitch for crbug.com/467678916.

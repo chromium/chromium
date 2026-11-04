@@ -354,6 +354,8 @@ BASE_FEATURE(kViewTransitionsNewRoundingChange,
 BASE_FEATURE(kBrowserControlsExtraHideGestures,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kControlsInBrowser, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeferMainFrameBeforeCommitWithPendingTree,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
