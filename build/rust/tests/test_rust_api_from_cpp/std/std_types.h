@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -57,6 +58,18 @@ inline std::string_view RemoveFirstChar(std::string_view s) {
     s.remove_prefix(1);
   }
   return s;
+}
+
+inline std::string RepeatString(std::string_view s, int n) {
+  std::string result;
+  for (int i = 0; i < n; i++) {
+    result += s;
+  }
+  return result;
+}
+
+inline size_t GetStringLength(const std::string& s) {
+  return s.size();
 }
 
 #endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_STD_STD_TYPES_H_

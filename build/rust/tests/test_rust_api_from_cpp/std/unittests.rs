@@ -97,3 +97,22 @@ fn test_string_view() {
     let result: string_view<'_> = RemoveFirstChar(s.as_str().into());
     assert_eq!(result, *"bc");
 }
+
+#[gtest(RustApiFromCppStd, String)]
+fn test_string() {
+    use ::cpp_std::{string, string_wrapper};
+    use ::ctor::{CtorNew, Emplace};
+    use ::std_types::{GetStringLength, RepeatString};
+    use std::pin::Pin;
+
+    // `std::string` returned by value is represented as `string_wrapper`
+    // (which owns a heap-allocated C++ `std::string` and is Rust-movable).
+    let s: string_wrapper = RepeatString("ab".into(), 2);
+    expect_eq!(s.to_str(), Ok("abab"));
+
+    // `const std::string&` is represented as `&cpp_std::string`.  The
+    // `cpp_std::string` type is not Rust-movable, so it needs to be emplaced
+    // (e.g. into a `Pin<Box<...>>`).
+    let s: Pin<Box<string>> = Box::emplace(string::ctor_new("abc"));
+    expect_eq!(GetStringLength(&s), 3);
+}

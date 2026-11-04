@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Tests for `rust_api_from_cpp` bindings of C++ standard library types (e.g.
-# `std::optional`, `std::unique_ptr`, `std::vector`).
+# `std::optional`, `std::string`, `std::unique_ptr`, `std::vector`).
 
 import("//build/rust/rust_api_from_cpp.gni")
 import("//build/rust/rust_static_library.gni")
@@ -16,6 +16,7 @@ rust_static_library("rust_unittests") {
   deps = [
     ":std_types_rs_api",
     "//build/rust/crubit:cpp_std",
+    "//build/rust/crubit:ctor",
     "//testing/rust_gtest_interop",
   ]
 }

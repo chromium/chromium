@@ -137,17 +137,20 @@ if (enable_rust_api_from_cpp) {
 
     # Other C++ standard library types to cover (in dependency order):
     # TODO(crbug.com/40226863): std::shared_ptr.
-    # TODO(crbug.com/40226863): std::string.
     # TODO(crbug.com/40226863): Other headers from Crubit's `headers.bzl`.
     public_headers = [
       "${libcxx_prefix}/include/compare",
       "${libcxx_prefix}/include/memory",
       "${libcxx_prefix}/include/optional",
+      "${libcxx_prefix}/include/string",
       "${libcxx_prefix}/include/string_view",
       "${libcxx_prefix}/include/vector",
 
       # Helpers used by `allocator.rs` (e.g. `cpp_new` and `cpp_delete`).
       "${crubit_src_dir}/support/cc_std_impl/allocator.h",
+
+      # Helpers used by `string.rs` (e.g. `StringCreateInPlace`).
+      "${crubit_src_dir}/support/cc_std_impl/conversion_function_helpers.h",
     ]
 
     # Some standard library types (e.g. `std::unique_ptr`) are defined in
@@ -179,6 +182,7 @@ if (enable_rust_api_from_cpp) {
           "${crubit_src_dir}/support/cc_std_impl/allocator.rs",
           "${crubit_src_dir}/support/cc_std_impl/non_null.rs",
           "${crubit_src_dir}/support/cc_std_impl/optional.rs",
+          "${crubit_src_dir}/support/cc_std_impl/string.rs",
           "${crubit_src_dir}/support/cc_std_impl/string_view.rs",
           "${crubit_src_dir}/support/cc_std_impl/unique_ptr.rs",
           "${crubit_src_dir}/support/cc_std_impl/vector.rs",
