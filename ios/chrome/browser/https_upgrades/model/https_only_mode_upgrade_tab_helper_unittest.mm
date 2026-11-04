@@ -4,26 +4,48 @@
 
 #import "ios/chrome/browser/https_upgrades/model/https_only_mode_upgrade_tab_helper.h"
 
+#import <map>
+#import <memory>
+#import <string>
+#import <vector>
+
+#import "base/functional/bind.h"
+#import "base/strings/stringprintf.h"
+#import "base/synchronization/lock.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/http/http_request_headers.h"
+#import "net/http/http_status_code.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -334,3 +356,298 @@ INSTANTIATE_TEST_SUITE_P(
                     HttpsUpgradesTestType::kHttpsOnlyMode,
                     HttpsUpgradesTestType::kHttpsUpgrades,
                     HttpsUpgradesTestType::kBoth));
+
+namespace {
+
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+
+constexpr char kFirstPagePath[] = "/first_page.html";
+constexpr char kSecondPagePath[] = "/second_page.html";
+constexpr char kFallbackPagePath[] = "/defaultresponse";
+constexpr char kFaviconPath[] = "/favicon.ico";
+
+constexpr char kSecondPageLinkId[] = "second-page-link";
+constexpr char kNoReferrerFallbackLinkId[] = "no-referrer-fallback-link";
+
+constexpr char kLocationReloadScript[] = "location.reload();";
+constexpr base::TimeDelta kFallbackDelay = base::Milliseconds(20);
+
+// Thread-safe recorder of HTTP requests and their `Referer` headers.
+class RequestRecorder {
+ public:
+  RequestRecorder() = default;
+  ~RequestRecorder() = default;
+
+  void Record(const net::test_server::HttpRequest& request) {
+    if (request.relative_url == kFaviconPath) {
+      return;
+    }
+    base::AutoLock auto_lock(lock_);
+    auto it = request.headers.find(net::HttpRequestHeaders::kReferer);
+    std::string referer = (it != request.headers.end()) ? it->second : "";
+    referrers_by_path_[request.relative_url].push_back(referer);
+  }
+
+  void Clear() {
+    base::AutoLock auto_lock(lock_);
+    referrers_by_path_.clear();
+  }
+
+  std::vector<std::string> GetReferrers(const std::string& path) {
+    base::AutoLock auto_lock(lock_);
+    auto it = referrers_by_path_.find(path);
+    return it == referrers_by_path_.end() ? std::vector<std::string>()
+                                          : it->second;
+  }
+
+ private:
+  base::Lock lock_;
+  std::map<std::string, std::vector<std::string>> referrers_by_path_;
+};
+
+}  // namespace
+
+// Integration test fixture using a real `WKWebView`-backed `WebState` and
+// embedded HTTP / faux-HTTPS test servers to verify whether stale
+// `NavigationItem` referrers reach upgraded and fallback requests in
+// `HttpsOnlyModeUpgradeTabHelper`.
+class HttpsOnlyModeUpgradeTabHelperReferrerTest
+    : public IOSChromeTestWithWebState {
+ protected:
+  void SetUp() override {
+    IOSChromeTestWithWebState::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(
+        security_interstitials::features::kHttpsUpgrades);
+
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
+    profile->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+
+    http_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTP);
+    net::test_server::RegisterDefaultHandlers(http_server_.get());
+    http_server_->RegisterRequestMonitor(base::BindRepeating(
+        &RequestRecorder::Record, base::Unretained(&http_recorder_)));
+    ASSERT_TRUE(http_server_->Start());
+
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTP);
+    https_server_->RegisterRequestMonitor(base::BindRepeating(
+        &RequestRecorder::Record, base::Unretained(&https_recorder_)));
+    https_server_->RegisterRequestHandler(base::BindRepeating(
+        &HttpsOnlyModeUpgradeTabHelperReferrerTest::HandleHttpsRequest,
+        base::Unretained(this)));
+    net::test_server::RegisterDefaultHandlers(https_server_.get());
+    ASSERT_TRUE(https_server_->Start());
+
+    HttpsUpgradeService* service =
+        HttpsUpgradeServiceFactory::GetForProfile(profile);
+    service->SetHttpsPortForTesting(https_server_->port(),
+                                    /*use_fake_https_for_testing=*/true);
+    service->SetFallbackHttpPortForTesting(http_server_->port());
+    service->SetFallbackDelayForTesting(kFallbackDelay);
+
+    web_state()->GetView();
+    web_state()->SetKeepRenderProcessAlive(true);
+    HttpsOnlyModeContainer::CreateForWebState(web_state());
+    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
+        web_state(), profile->GetPrefs(), service);
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleHttpsRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url == kFirstPagePath) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(base::StringPrintf(
+          "<html><body><a id=\"%s\" href=\"%s\">Second Page</a>"
+          "</body></html>",
+          kSecondPageLinkId, kSecondPagePath));
+      return response;
+    }
+    if (request.relative_url == kSecondPagePath) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(base::StringPrintf(
+          "<html><body>"
+          "<a id=\"%s\" rel=\"noreferrer\" "
+          "href=\"%s\">Fallback Page</a>"
+          "</body></html>",
+          kNoReferrerFallbackLinkId,
+          http_server_->GetURL(kFallbackPagePath).spec().c_str()));
+      return response;
+    }
+    if (request.relative_url == kFallbackPagePath) {
+      // `GetUpgradedHttpsUrl()` preserves the path from `http_server_`, so hang
+      // `kFallbackPagePath` on `https_server_` to trigger `FallbackToHttp()`
+      // while `RegisterDefaultHandlers` serves 200 OK on `http_server_`.
+      return std::make_unique<net::test_server::HungResponse>();
+    }
+    return nullptr;
+  }
+
+  // Navigates to `kFirstPagePath` and clicks the link to `kSecondPagePath` so
+  // `kSecondPagePath` commits with `kFirstPagePath` as its `Referer`.
+  void NavigateToSecondPage() {
+    const GURL first_url = https_server_->GetURL(kFirstPagePath);
+    const GURL second_url = https_server_->GetURL(kSecondPagePath);
+
+    ASSERT_TRUE(LoadUrl(first_url));
+
+    ASSERT_TRUE(
+        web::test::TapWebViewElementWithId(web_state(), kSecondPageLinkId));
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(
+        kWaitForPageLoadTimeout,
+        /*run_message_loop=*/true, ^{
+          web::NavigationItem* item =
+              web_state()->GetNavigationManager()->GetLastCommittedItem();
+          return !web_state()->IsLoading() && item &&
+                 item->GetURL() == second_url;
+        }));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  RequestRecorder http_recorder_;
+  RequestRecorder https_recorder_;
+  std::unique_ptr<net::EmbeddedTestServer> http_server_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+};
+
+// Tests that `HttpsOnlyModeUpgradeTabHelper` does not send a prior navigation's
+// `Referer` header over the wire on upgraded HTTPS or HTTP fallback requests
+// when reloading a page reached via `rel="noreferrer"`.
+TEST_F(HttpsOnlyModeUpgradeTabHelperReferrerTest,
+       StaleReferrerOnUpgradeAndFallbackRequests) {
+  const GURL first_url = https_server_->GetURL(kFirstPagePath);
+  const GURL http_fallback_url = http_server_->GetURL(kFallbackPagePath);
+
+  // 1. Navigates to `kFirstPagePath` and clicks the link to `kSecondPagePath`
+  // (`Referer` is `kFirstPagePath`).
+  NavigateToSecondPage();
+  web::NavigationItem* second_item =
+      web_state()->GetNavigationManager()->GetLastCommittedItem();
+  ASSERT_TRUE(second_item);
+  EXPECT_EQ(first_url, second_item->GetReferrer().url);
+
+  http_recorder_.Clear();
+  https_recorder_.Clear();
+
+  // 2. Clicks `<a rel="noreferrer" href="http://.../defaultresponse">`.
+  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
+                                                 kNoReferrerFallbackLinkId));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForPageLoadTimeout,
+      /*run_message_loop=*/true, ^{
+        web::NavigationItem* item =
+            web_state()->GetNavigationManager()->GetLastCommittedItem();
+        return !web_state()->IsLoading() && item &&
+               item->GetURL() == http_fallback_url &&
+               http_recorder_.GetReferrers(kFallbackPagePath).size() >= 2u &&
+               https_recorder_.GetReferrers(kFallbackPagePath).size() >= 1u;
+      }));
+
+  std::vector<std::string> initial_http_refs =
+      http_recorder_.GetReferrers(kFallbackPagePath);
+  std::vector<std::string> initial_https_refs =
+      https_recorder_.GetReferrers(kFallbackPagePath);
+  ASSERT_EQ(2u, initial_http_refs.size());
+  ASSERT_EQ(1u, initial_https_refs.size());
+  web::NavigationItem* fallback_item =
+      web_state()->GetNavigationManager()->GetLastCommittedItem();
+  ASSERT_TRUE(fallback_item);
+  EXPECT_EQ("", initial_http_refs[0]);
+  EXPECT_EQ("", initial_https_refs[0]);
+  EXPECT_EQ("", initial_http_refs[1]);
+  EXPECT_EQ(GURL(), fallback_item->GetReferrer().url);
+
+  // 3. Reloads the committed HTTP fallback item and verifies that neither the
+  // upgraded HTTPS request nor the fallback HTTP request sends `kFirstPagePath`
+  // as `Referer`.
+  http_recorder_.Clear();
+  https_recorder_.Clear();
+  web_state()->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
+                                              /*check_for_repost=*/true);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForPageLoadTimeout,
+      /*run_message_loop=*/true, ^{
+        return !web_state()->IsLoading() &&
+               http_recorder_.GetReferrers(kFallbackPagePath).size() >= 2u &&
+               https_recorder_.GetReferrers(kFallbackPagePath).size() >= 1u;
+      }));
+
+  std::vector<std::string> reload_http_refs =
+      http_recorder_.GetReferrers(kFallbackPagePath);
+  std::vector<std::string> reload_https_refs =
+      https_recorder_.GetReferrers(kFallbackPagePath);
+  ASSERT_EQ(2u, reload_http_refs.size());
+  ASSERT_EQ(1u, reload_https_refs.size());
+  web::NavigationItem* reloaded_item =
+      web_state()->GetNavigationManager()->GetLastCommittedItem();
+  ASSERT_TRUE(reloaded_item);
+  EXPECT_EQ("", reload_http_refs[0]);
+  EXPECT_EQ("", reload_https_refs[0]);
+  EXPECT_EQ("", reload_http_refs[1]);
+  EXPECT_EQ(GURL(), reloaded_item->GetReferrer().url);
+}
+
+// Tests that a page-script-initiated `location.reload()` on a page reached via
+// `rel="noreferrer"` does not send a prior navigation's `Referer` header over
+// the wire on upgraded HTTPS or HTTP fallback requests.
+TEST_F(HttpsOnlyModeUpgradeTabHelperReferrerTest,
+       StaleReferrerOnScriptLocationReload) {
+  const GURL http_fallback_url = http_server_->GetURL(kFallbackPagePath);
+
+  // 1. Navigates `kFirstPagePath` -> `kSecondPagePath` -> `rel="noreferrer"`
+  // `http://.../defaultresponse`.
+  NavigateToSecondPage();
+  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
+                                                 kNoReferrerFallbackLinkId));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForPageLoadTimeout,
+      /*run_message_loop=*/true, ^{
+        web::NavigationItem* item =
+            web_state()->GetNavigationManager()->GetLastCommittedItem();
+        return !web_state()->IsLoading() && item &&
+               item->GetURL() == http_fallback_url &&
+               http_recorder_.GetReferrers(kFallbackPagePath).size() >= 2u &&
+               https_recorder_.GetReferrers(kFallbackPagePath).size() >= 1u;
+      }));
+  web::NavigationItem* fallback_item =
+      web_state()->GetNavigationManager()->GetLastCommittedItem();
+  ASSERT_TRUE(fallback_item);
+  EXPECT_EQ(GURL(), fallback_item->GetReferrer().url);
+
+  // 2. Triggers page-initiated `location.reload()` on the fallback item.
+  http_recorder_.Clear();
+  https_recorder_.Clear();
+  web::test::ExecuteJavaScript(web_state(), kLocationReloadScript);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForPageLoadTimeout,
+      /*run_message_loop=*/true, ^{
+        return !web_state()->IsLoading() &&
+               http_recorder_.GetReferrers(kFallbackPagePath).size() >= 2u &&
+               https_recorder_.GetReferrers(kFallbackPagePath).size() >= 1u;
+      }));
+
+  std::vector<std::string> js_http_refs =
+      http_recorder_.GetReferrers(kFallbackPagePath);
+  std::vector<std::string> js_https_refs =
+      https_recorder_.GetReferrers(kFallbackPagePath);
+  ASSERT_EQ(2u, js_http_refs.size());
+  ASSERT_EQ(1u, js_https_refs.size());
+  web::NavigationItem* js_reloaded_item =
+      web_state()->GetNavigationManager()->GetLastCommittedItem();
+  ASSERT_TRUE(js_reloaded_item);
+  // WebKit's page-initiated `location.reload()` sends the page's own URL as
+  // `Referer` on the initial reload request, while the upgraded HTTPS and
+  // fallback HTTP loads initiated by `HttpsOnlyModeUpgradeTabHelper` send no
+  // `Referer`.
+  EXPECT_EQ(http_fallback_url.spec(), js_http_refs[0]);
+  EXPECT_EQ("", js_https_refs[0]);
+  EXPECT_EQ("", js_http_refs[1]);
+  EXPECT_EQ(GURL(), js_reloaded_item->GetReferrer().url);
+}

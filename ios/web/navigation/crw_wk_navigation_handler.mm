@@ -2601,9 +2601,7 @@ NSError* SanitizeNavigationError(
 // Updates current state with any pending information. Should be called when a
 // navigation is committed.
 - (void)commitPendingNavigationInfoInWebView:(WKWebView*)webView {
-  if (self.pendingNavigationInfo.referrer) {
-    _currentReferrerString = [self.pendingNavigationInfo.referrer copy];
-  }
+  _currentReferrerString = [self.pendingNavigationInfo.referrer copy];
   [self updateCurrentBackForwardListItemHolderInWebView:webView];
 
   self.pendingNavigationInfo = nil;

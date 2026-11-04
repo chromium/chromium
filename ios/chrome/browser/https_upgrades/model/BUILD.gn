@@ -45,14 +45,17 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:ios_chrome_test_with_web_state",
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/components/security_interstitials/https_only_mode:test_util",
     "//ios/web/public",
     "//ios/web/public/test",
     "//net",
+    "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",
+    "//url",
   ]
 }
 
