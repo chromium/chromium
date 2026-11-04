@@ -5,6 +5,7 @@
 #include "base/path_service.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
@@ -30,6 +31,10 @@
 #include "base/apple/bundle_locations.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/path_utils.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -37,8 +42,15 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 // Defined in
 // //base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java.
-constexpr char kExpectedChromiumTestsRoot[] =
-    "/storage/emulated/0/chromium_tests_root";
+// The external storage directory depends on the Android user that the test
+// runs as, e.g. /storage/emulated/0 for user 0, or /storage/emulated/10 for a
+// secondary user on devices with headless system user mode.
+std::string GetExpectedChromiumTestsRoot() {
+  FilePath external_storage_dir;
+  CHECK(android::GetExternalStorageDirectory(&external_storage_dir));
+  return external_storage_dir.Append(FILE_PATH_LITERAL("chromium_tests_root"))
+      .value();
+}
 #endif
 
 // Returns true if PathService::Get returns true and sets the path parameter
@@ -359,7 +371,7 @@ TEST_F(PathServiceTest, DIR_ASSETS) {
   EXPECT_EQ(path.value(), "/pkg");
 #elif BUILDFLAG(IS_ANDROID)
   // This key is overridden in //base/test/test_support_android.cc.
-  EXPECT_EQ(path.value(), kExpectedChromiumTestsRoot);
+  EXPECT_EQ(path.value(), GetExpectedChromiumTestsRoot());
 #elif BUILDFLAG(IS_IOS_MACCATALYST)
   EXPECT_TRUE(base::apple::FrameworkBundlePath().IsParent(path));
 #elif BUILDFLAG(IS_IOS)
@@ -379,7 +391,7 @@ TEST_F(PathServiceTest, DIR_OUT_TEST_DATA_ROOT) {
   EXPECT_EQ(path.value(), "/pkg");
 #elif BUILDFLAG(IS_ANDROID)
   // This key is overridden in //base/test/test_support_android.cc.
-  EXPECT_EQ(path.value(), kExpectedChromiumTestsRoot);
+  EXPECT_EQ(path.value(), GetExpectedChromiumTestsRoot());
 #elif BUILDFLAG(IS_IOS)
   // On iOS, build output files are moved to the resources directory.
   EXPECT_EQ(path, base::apple::FrameworkBundlePath());
@@ -464,13 +476,13 @@ TEST_F(PathServiceTest, DIR_SRC_TEST_DATA_ROOT) {
 // These keys are overridden in //base/test/test_support_android.cc.
 TEST_F(PathServiceTest, AndroidTestOverrides) {
   EXPECT_EQ(PathService::CheckedGet(DIR_ANDROID_APP_DATA).value(),
-            kExpectedChromiumTestsRoot);
+            GetExpectedChromiumTestsRoot());
   EXPECT_EQ(PathService::CheckedGet(DIR_ASSETS).value(),
-            kExpectedChromiumTestsRoot);
+            GetExpectedChromiumTestsRoot());
   EXPECT_EQ(PathService::CheckedGet(DIR_SRC_TEST_DATA_ROOT).value(),
-            kExpectedChromiumTestsRoot);
+            GetExpectedChromiumTestsRoot());
   EXPECT_EQ(PathService::CheckedGet(DIR_OUT_TEST_DATA_ROOT).value(),
-            kExpectedChromiumTestsRoot);
+            GetExpectedChromiumTestsRoot());
 }
 
 #endif  // BUILDFLAG(IS_FUCHSIA)
