@@ -401,6 +401,11 @@ TEST_F(AutofillAiManagerTest,
 TEST_F(
     AutofillAiManagerTest,
     OnAutofillAiSuggestionsShown_SetsPrivateInferenceNoticeFirstShownTimestamp) {
+  // `AutofillAiManagerTest` opts the user in by default, which sets
+  // `kAutofillAiPrivateInferenceNoticeShownTimestamp`. Clear it to simulate a
+  // user who has not seen the notice yet (and is thus opted out).
+  autofill_client().GetPrefs()->ClearPref(
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp);
   FormStructure form_structure(
       test::GetFormData({.fields = {{.role = PASSPORT_NUMBER}}}));
 

@@ -110,7 +110,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
                                     0, 0);
-  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2, 0);
 
   // Section 1: When On
   EXPECT_EQ(1, NumberOfItemsInSection(1));
@@ -121,15 +121,16 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   // Section 2: Things to Consider
   EXPECT_EQ(1, NumberOfItemsInSection(2));
   CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
-  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE, 2,
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2, 2,
                           0);
 }
 
 // Test model when Autofill AI is allowed by policy and enabled, with Private AI
-// feature enabled.
-TEST_F(AutofillSettingsTableViewControllerTest, TestModelWithPrivateAiEnabled) {
+// feature disabled.
+TEST_F(AutofillSettingsTableViewControllerTest,
+       TestModelWithPrivateAiDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  feature_list.InitAndDisableFeature(
       autofill::features::kAutofillAiUsePrivateAi);
 
   AutofillSettingsTableViewController* view_controller =
@@ -146,7 +147,7 @@ TEST_F(AutofillSettingsTableViewControllerTest, TestModelWithPrivateAiEnabled) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
                                     0, 0);
-  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
 
   // Section 1: When On
   EXPECT_EQ(1, NumberOfItemsInSection(1));
@@ -157,7 +158,7 @@ TEST_F(AutofillSettingsTableViewControllerTest, TestModelWithPrivateAiEnabled) {
   // Section 2: Things to Consider
   EXPECT_EQ(1, NumberOfItemsInSection(2));
   CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
-  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2, 2,
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE, 2,
                           0);
 }
 
@@ -183,7 +184,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE, 0,
                                     0);
-  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2, 0);
 
   // Section 1: When On
   EXPECT_EQ(1, NumberOfItemsInSection(1));
@@ -194,7 +195,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   // Section 2: Things to Consider
   EXPECT_EQ(1, NumberOfItemsInSection(2));
   CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
-  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE, 2,
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2, 2,
                           0);
 }
 
@@ -215,7 +216,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
                                     0, 0);
-  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2, 0);
 
   // Section 1: When On
   EXPECT_EQ(1, NumberOfItemsInSection(1));
@@ -226,7 +227,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   // Section 2: Things to Consider
   EXPECT_EQ(1, NumberOfItemsInSection(2));
   CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
-  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE, 2,
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2, 2,
                           0);
 }
 
@@ -247,7 +248,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
                                     0, 0);
-  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2, 0);
 
   // Section 1: When On
   EXPECT_EQ(1, NumberOfItemsInSection(1));
@@ -258,7 +259,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   // Section 2: Things to Consider
   EXPECT_EQ(2, NumberOfItemsInSection(2));
   CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
-  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE, 2,
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2, 2,
                           0);
   CheckTextCellTextWithId(
       IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED, 2, 1);
@@ -281,7 +282,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
                                     0, 0);
-  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL_V2, 0);
 
   // Section 1: When On
   EXPECT_EQ(1, NumberOfItemsInSection(1));
@@ -292,7 +293,7 @@ TEST_F(AutofillSettingsTableViewControllerTest,
   // Section 2: Things to Consider
   EXPECT_EQ(2, NumberOfItemsInSection(2));
   CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
-  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE, 2,
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2, 2,
                           0);
   CheckTextCellTextWithId(
       IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED, 2, 1);
