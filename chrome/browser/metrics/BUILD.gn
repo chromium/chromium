@@ -693,6 +693,7 @@ source_set("unit_tests") {
       "structured/cros_events_processor_unittest.cc",
       "structured/key_data_provider_ash_unittest.cc",
       "structured/storage_manager_unittest.cc",
+      "update_engine_metrics_provider_unittest.cc",
     ]
     deps += [
       "//chrome/browser/ash/multidevice_setup",
@@ -702,12 +703,19 @@ source_set("unit_tests") {
       "//chrome/browser/unified_consent",
       "//chromeos/ash/components/install_attributes:test_support",
       "//chromeos/ash/components/login/login_state",
+      "//chromeos/ash/components/signin:test_support",
       "//chromeos/ash/components/system",
       "//chromeos/ash/services/multidevice_setup/public/cpp",
       "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
       "//chromeos/dbus/power",
       "//chromeos/dbus/u2f",
+      "//components/account_id",
       "//components/metrics/structured:test_support",
+      "//components/session_manager/core",
+      "//components/session_manager/test:test_support",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/user_manager",
     ]
   } else {
     sources += [ "family_link_user_metrics_provider_unittest.cc" ]

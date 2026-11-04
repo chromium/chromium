@@ -181,6 +181,7 @@
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "components/session_manager/core/session_manager.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -1012,7 +1013,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<ChromeShelfMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<UpdateEngineMetricsProvider>());
+      std::make_unique<UpdateEngineMetricsProvider>(
+          session_manager::SessionManager::Get()));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<UserTypeByDeviceTypeMetricsProvider>());
