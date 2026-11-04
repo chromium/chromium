@@ -19,6 +19,33 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+namespace data_sharing {
+
+// Java observer for testing, counter part of TestServiceObserver.
+// On each observation increments a counter and runs the callback.
+class TestJavaObserver {
+ public:
+  TestJavaObserver(DataSharingService* service, base::OnceClosure callback);
+  ~TestJavaObserver();
+
+  int GetGroupChangeCount();
+  int GetGroupAddedCount();
+  int GetGroupRemovedCount();
+
+  void ResetCallback(base::OnceClosure callback);
+
+  void OnObserverNotify(JNIEnv* env);
+
+ private:
+  base::android::ScopedJavaLocalRef<jobject> service_;
+  base::android::ScopedJavaLocalRef<jobject> java_obj_;
+
+  base::OnceClosure callback_;
+};
+
+}  // namespace data_sharing
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/data_sharing/internal/test_jni_headers/TestServiceObserver_jni.h"
@@ -28,52 +55,39 @@ namespace data_sharing {
 using ::base::android::AttachCurrentThread;
 using ::base::android::ScopedJavaLocalRef;
 
-// Java observer for testing, counter part of TestServiceObserver.
-// On each observation increments a counter and runs the callback.
-class TestJavaObserver {
- public:
-  TestJavaObserver(DataSharingService* service, base::OnceClosure callback)
-      : service_(DataSharingService::GetJavaObject(service)),
-        java_obj_(Java_TestServiceObserver_createAndAdd(
-            AttachCurrentThread(),
-            service_,
-            reinterpret_cast<long>(this))),
-        callback_(std::move(callback)) {}
-  ~TestJavaObserver() {
-    Java_TestServiceObserver_destroy(AttachCurrentThread(), java_obj_,
-                                     service_);
-  }
+TestJavaObserver::TestJavaObserver(DataSharingService* service,
+                                   base::OnceClosure callback)
+    : service_(DataSharingService::GetJavaObject(service)),
+      java_obj_(Java_TestServiceObserver_createAndAdd(AttachCurrentThread(),
+                                                      service_,
+                                                      jni_zero::MakeRaw(this))),
+      callback_(std::move(callback)) {}
 
-  int GetGroupChangeCount() {
-    return Java_TestServiceObserver_getOnGroupChangeCount(AttachCurrentThread(),
-                                                          java_obj_);
-  }
-  int GetGroupAddedCount() {
-    return Java_TestServiceObserver_getOnGroupAddedCount(AttachCurrentThread(),
+TestJavaObserver::~TestJavaObserver() {
+  Java_TestServiceObserver_destroy(AttachCurrentThread(), java_obj_, service_);
+}
+
+int TestJavaObserver::GetGroupChangeCount() {
+  return Java_TestServiceObserver_getOnGroupChangeCount(AttachCurrentThread(),
+                                                        java_obj_);
+}
+
+int TestJavaObserver::GetGroupAddedCount() {
+  return Java_TestServiceObserver_getOnGroupAddedCount(AttachCurrentThread(),
+                                                       java_obj_);
+}
+
+int TestJavaObserver::GetGroupRemovedCount() {
+  return Java_TestServiceObserver_getOnGroupRemovedCount(AttachCurrentThread(),
                                                          java_obj_);
-  }
-  int GetGroupRemovedCount() {
-    return Java_TestServiceObserver_getOnGroupRemovedCount(
-        AttachCurrentThread(), java_obj_);
-  }
+}
 
-  void ResetCallback(base::OnceClosure callback) {
-    callback_ = std::move(callback);
-  }
+void TestJavaObserver::ResetCallback(base::OnceClosure callback) {
+  callback_ = std::move(callback);
+}
 
-  void OnObserverNotify() { std::move(callback_).Run(); }
-
- private:
-  ScopedJavaLocalRef<jobject> service_;
-  ScopedJavaLocalRef<jobject> java_obj_;
-
-  base::OnceClosure callback_;
-};
-
-// Implements TestServiceObserver.onObserverNotify static method.
-static void JNI_TestServiceObserver_OnObserverNotify(JNIEnv* env,
-                                                     int64_t observer_ptr) {
-  reinterpret_cast<TestJavaObserver*>(observer_ptr)->OnObserverNotify();
+void TestJavaObserver::OnObserverNotify(JNIEnv* env) {
+  std::move(callback_).Run();
 }
 
 namespace {

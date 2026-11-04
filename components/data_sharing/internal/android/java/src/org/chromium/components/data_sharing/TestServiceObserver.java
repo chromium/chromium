@@ -6,7 +6,14 @@ package org.chromium.components.data_sharing;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Test observer that registers itself to the Java service, and sends notification to the native
@@ -15,13 +22,17 @@ import org.jni_zero.NativeMethods;
  * <p>See data_sharing_service_android_unittest.cc for usage.
  */
 @JNINamespace("data_sharing")
+@NullMarked
 public class TestServiceObserver implements DataSharingService.Observer {
-    private final long mNativePtr;
+    @JniType("::data_sharing::TestJavaObserver")
+    interface NativeTestJavaObserver extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeTestJavaObserver> mNativePtr;
     private int mOnGroupChangeCount;
     private int mOnGroupAddedCount;
     private int mOnGroupRemovedCount;
 
-    public TestServiceObserver(long nativePtr) {
+    private TestServiceObserver(JniRawPtr<NativeTestJavaObserver> nativePtr) {
         this.mNativePtr = nativePtr;
         this.mOnGroupChangeCount = 0;
         this.mOnGroupAddedCount = 0;
@@ -29,15 +40,20 @@ public class TestServiceObserver implements DataSharingService.Observer {
     }
 
     @CalledByNative
-    public static TestServiceObserver createAndAdd(DataSharingService service, long nativePtr) {
+    static TestServiceObserver createAndAdd(
+            DataSharingService service, JniRawPtr<NativeTestJavaObserver> nativePtr) {
         TestServiceObserver obs = new TestServiceObserver(nativePtr);
         service.addObserver(obs);
         return obs;
     }
 
     @CalledByNative
-    public void destroy(DataSharingService service) {
+    void destroy(DataSharingService service) {
         service.removeObserver(this);
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
     }
 
     @CalledByNative
@@ -58,23 +74,29 @@ public class TestServiceObserver implements DataSharingService.Observer {
     @Override
     public void onGroupChanged(GroupData groupData) {
         mOnGroupChangeCount++;
-        TestServiceObserverJni.get().onObserverNotify(mNativePtr);
+        if (mNativePtr != null) {
+            TestServiceObserverJni.get().onObserverNotify(mNativePtr);
+        }
     }
 
     @Override
     public void onGroupAdded(GroupData groupData) {
         mOnGroupAddedCount++;
-        TestServiceObserverJni.get().onObserverNotify(mNativePtr);
+        if (mNativePtr != null) {
+            TestServiceObserverJni.get().onObserverNotify(mNativePtr);
+        }
     }
 
     @Override
     public void onGroupRemoved(String groupId) {
         mOnGroupRemovedCount++;
-        TestServiceObserverJni.get().onObserverNotify(mNativePtr);
+        if (mNativePtr != null) {
+            TestServiceObserverJni.get().onObserverNotify(mNativePtr);
+        }
     }
 
     @NativeMethods
     interface Natives {
-        void onObserverNotify(long observerPtr);
+        void onObserverNotify(JniPtr<NativeTestJavaObserver> self);
     }
 }
