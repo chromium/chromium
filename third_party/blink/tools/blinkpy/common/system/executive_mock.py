@@ -286,13 +286,23 @@ class MockExecutive(object):
 
 
 def mock_git_commands(vals, strict=False):
-    # TODO(robertma): Support optional look-up by arguments.
+    """Returns a MockExecutive with responses for Git commands.
+
+    Tuple keys match all arguments after `git` and take precedence over
+    subcommand string keys. Exception responses are raised.
+    """
+
     def run_fn(args):
-        sub_command = args[1]
-        if strict and sub_command not in vals:
+        key = tuple(args[1:])
+        if key not in vals:
+            key = args[1]
+        if strict and key not in vals:
             raise AssertionError(
-                '{} not found in sub-command list {}'.format(sub_command, vals)
+                f'Unexpected Git command {args!r}. Configured responses: {vals!r}'
             )
-        return vals.get(sub_command, '')
+        response = vals.get(key, '')
+        if isinstance(response, BaseException):
+            raise response
+        return response
 
     return MockExecutive(run_command_fn=run_fn)
