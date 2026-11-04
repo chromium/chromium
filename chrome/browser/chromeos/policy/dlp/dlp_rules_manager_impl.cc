@@ -14,6 +14,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -67,39 +68,36 @@ scoped_refptr<url_matcher::URLMatcherConditionSet> CreateConditionSet(
                                                *components);
 }
 
-// Creates `urls` conditions, saves patterns strings mapping in
-// `patterns_mapping`, and saves conditions ids to rules ids mapping in `map`.
-void AddUrlConditions(url_matcher::URLMatcher* matcher,
-                      UrlConditionId& condition_id,
-                      const base::ListValue* urls,
-                      url_matcher::URLMatcherConditionSet::Vector& conditions,
-                      std::map<UrlConditionId, std::string>& patterns_mapping,
-                      RuleId rule_id,
-                      std::map<UrlConditionId, RuleId>& map) {
-  CHECK(urls, base::NotFatalUntil::M161);
-  for (const auto& list_entry : *urls) {
-    const std::string& url = list_entry.GetString();
-
-    ++condition_id;
-    auto condition_set = CreateConditionSet(matcher, condition_id, url);
-    if (!condition_set) {
-      continue;
-    }
-    conditions.push_back(std::move(condition_set));
-    map[condition_id] = rule_id;
-    patterns_mapping[condition_id] = url;
+// Creates a condition for `url`, saves its pattern string mapping in
+// `patterns_mapping`, and saves its condition id to rule id mapping in `map`.
+void AddUrlCondition(std::string_view url,
+                     RuleId rule_id,
+                     url_matcher::URLMatcher* matcher,
+                     UrlConditionId& condition_id,
+                     url_matcher::URLMatcherConditionSet::Vector& conditions,
+                     std::map<UrlConditionId, std::string>& patterns_mapping,
+                     std::map<UrlConditionId, RuleId>& map) {
+  ++condition_id;
+  auto condition_set = CreateConditionSet(matcher, condition_id, url);
+  if (!condition_set) {
+    return;
   }
+  conditions.push_back(std::move(condition_set));
+  map[condition_id] = rule_id;
+  patterns_mapping[condition_id] = url;
 }
 
-// Returns the URLs associated with the given component. An empty vector is
+// Returns the URLs associated with the given component. An empty span is
 // returned if there are none.
-std::vector<std::string> GetAssociatedUrlsConditions(
+base::span<const std::string_view> GetAssociatedUrlsConditions(
     data_controls::Component component) {
+  static constexpr std::string_view kDriveUrls[] = {kDrivePattern};
+  static constexpr std::string_view kOneDriveUrls[] = {kOneDrivePattern};
   switch (component) {
     case data_controls::Component::kDrive:
-      return {kDrivePattern};
+      return kDriveUrls;
     case data_controls::Component::kOneDrive:
-      return {kOneDrivePattern};
+      return kOneDriveUrls;
     case data_controls::Component::kUnknownComponent:
     case data_controls::Component::kArc:
     case data_controls::Component::kCrostini:
@@ -112,21 +110,15 @@ std::vector<std::string> GetAssociatedUrlsConditions(
 // Add URL conditions associated with the given `component`.
 void AddAssociatedUrlConditions(
     data_controls::Component component,
+    RuleId rule_id,
     url_matcher::URLMatcher* matcher,
     UrlConditionId& condition_id,
     url_matcher::URLMatcherConditionSet::Vector& conditions,
     std::map<UrlConditionId, std::string>& patterns_mapping,
-    RuleId rule_id,
     std::map<UrlConditionId, RuleId>& map) {
-  base::ListValue destinations_urls;
-
-  for (const auto& url : GetAssociatedUrlsConditions(component)) {
-    destinations_urls.Append(url);
-  }
-
-  if (!destinations_urls.empty()) {
-    AddUrlConditions(matcher, condition_id, &destinations_urls, conditions,
-                     patterns_mapping, rule_id, map);
+  for (std::string_view url : GetAssociatedUrlsConditions(component)) {
+    AddUrlCondition(url, rule_id, matcher, condition_id, conditions,
+                    patterns_mapping, map);
   }
 }
 
@@ -357,18 +349,23 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
           base::NotFatalUntil::M161);  // This DCHECK should be removed when
                                        // other types are supported as sources.
 
-    AddUrlConditions(src_url_matcher_.get(), src_url_condition_id, sources_urls,
-                     src_conditions_, src_patterns_mapping_, rules_counter,
-                     src_url_rules_mapping_);
+    for (const auto& list_entry : *sources_urls) {
+      AddUrlCondition(list_entry.GetString(), rules_counter,
+                      src_url_matcher_.get(), src_url_condition_id,
+                      src_conditions_, src_patterns_mapping_,
+                      src_url_rules_mapping_);
+    }
 
     const base::DictValue* destinations = rule.FindDict("destinations");
     const base::ListValue* destinations_urls =
         destinations ? destinations->FindList("urls") : nullptr;
     if (destinations_urls) {
-      AddUrlConditions(dst_url_matcher_.get(), dst_url_condition_id,
-                       destinations_urls, dst_conditions_,
-                       dst_patterns_mapping_, rules_counter,
-                       dst_url_rules_mapping_);
+      for (const auto& list_entry : *destinations_urls) {
+        AddUrlCondition(list_entry.GetString(), rules_counter,
+                        dst_url_matcher_.get(), dst_url_condition_id,
+                        dst_conditions_, dst_patterns_mapping_,
+                        dst_url_rules_mapping_);
+      }
     }
     const base::ListValue* destinations_components =
         destinations ? destinations->FindList("components") : nullptr;
@@ -378,9 +375,9 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
         data_controls::Component component_mapping =
             data_controls::GetComponentMapping(component.GetString());
         components_rules_[component_mapping].insert(rules_counter);
-        AddAssociatedUrlConditions(component_mapping, dst_url_matcher_.get(),
-                                   dst_url_condition_id, dst_conditions_,
-                                   dst_patterns_mapping_, rules_counter,
+        AddAssociatedUrlConditions(component_mapping, rules_counter,
+                                   dst_url_matcher_.get(), dst_url_condition_id,
+                                   dst_conditions_, dst_patterns_mapping_,
                                    dst_url_rules_mapping_);
       }
     }
