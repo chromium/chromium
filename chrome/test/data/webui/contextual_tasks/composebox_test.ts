@@ -1389,8 +1389,8 @@ suite('ContextualTasksComposeboxTest', () => {
     });
 
     for (const source
-             of ['ContentAreaContextMenuPage',
-                 'AppMenu',
+             of ['ContentAreaContextMenuPageAskGoogle',
+                 'AppMenuAskGoogle',
                  'HomeworkActionChip',
     ]) {
       test(`ImmediateUploadWhen${source}`, async () => {

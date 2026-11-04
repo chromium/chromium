@@ -419,8 +419,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         invocationSource === 'OmniboxPageAction';
     const isUpdatedEntryPoint =
         this.contextualTasksUpdatedEntryPointsEnabled_ &&
-        (invocationSource === 'ContentAreaContextMenuPage' ||
-         invocationSource === 'AppMenu' ||
+        (invocationSource === 'ContentAreaContextMenuPageAskGoogle' ||
+         invocationSource === 'AppMenuAskGoogle' ||
          invocationSource === 'HomeworkActionChip');
     const askGAndPageAction =
         (isOmniboxAskG || isUpdatedEntryPoint) && this.isSidePanel;

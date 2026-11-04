@@ -1235,8 +1235,8 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
 
     for (const source
              of ['OmniboxPageAction',
-                 'ContentAreaContextMenuPage',
-                 'AppMenu',
+                 'ContentAreaContextMenuPageAskGoogle',
+                 'AppMenuAskGoogle',
                  'HomeworkActionChip',
     ]) {
       test(
