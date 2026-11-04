@@ -261,7 +261,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     std::vector<GPUDevice> npus;
     std::string pixel_shader_version;
     std::string vertex_shader_version;
-    std::string max_msaa_samples;
     std::string machine_model_name;
     std::string machine_model_version;
     std::string display_type;
@@ -286,6 +285,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
 #if BUILDFLAG(IS_WIN)
     uint32_t directml_feature_level;
     uint32_t d3d12_feature_level;
+    uint32_t d3d11_feature_level;
     uint32_t vulkan_version;
     OverlayInfo overlay_info;
     bool shared_image_d3d;
@@ -329,7 +329,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddBool("amdSwitchable", amd_switchable);
   enumerator->AddString("pixelShaderVersion", pixel_shader_version);
   enumerator->AddString("vertexShaderVersion", vertex_shader_version);
-  enumerator->AddString("maxMsaaSamples", max_msaa_samples);
   enumerator->AddString("displayType", display_type);
   enumerator->AddString("skiaBackendType",
                         SkiaBackendTypeToString(skia_backend_type));

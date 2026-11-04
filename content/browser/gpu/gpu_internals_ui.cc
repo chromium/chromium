@@ -203,8 +203,6 @@ base::ListValue GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
                                                gpu_info.pixel_shader_version));
   basic_info.Append(display::BuildGpuInfoEntry("Vertex shader version",
                                                gpu_info.vertex_shader_version));
-  basic_info.Append(display::BuildGpuInfoEntry("Max. MSAA samples",
-                                               gpu_info.max_msaa_samples));
   basic_info.Append(display::BuildGpuInfoEntry("Machine model name",
                                                gpu_info.machine_model_name));
   basic_info.Append(display::BuildGpuInfoEntry("Machine model version",

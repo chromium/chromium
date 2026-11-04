@@ -132,7 +132,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const std::string driver_date = "driver_date";
   const std::string pixel_shader_version = "pixel_shader_version";
   const std::string vertex_shader_version = "vertex_shader_version";
-  const std::string max_msaa_samples = "max_msaa_samples";
   const std::string machine_model_name = "machine_model_name";
   const std::string machine_model_version = "machine_model_version";
   const std::string gl_version = "gl_version";
@@ -174,7 +173,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.gpu.driver_version = driver_version;
   input.pixel_shader_version = pixel_shader_version;
   input.vertex_shader_version = vertex_shader_version;
-  input.max_msaa_samples = max_msaa_samples;
   input.machine_model_name = machine_model_name;
   input.machine_model_version = machine_model_version;
   input.gl_version = gl_version;
@@ -238,7 +236,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(driver_version, output.gpu.driver_version);
   EXPECT_EQ(pixel_shader_version, output.pixel_shader_version);
   EXPECT_EQ(vertex_shader_version, output.vertex_shader_version);
-  EXPECT_EQ(max_msaa_samples, output.max_msaa_samples);
   EXPECT_EQ(machine_model_name, output.machine_model_name);
   EXPECT_EQ(machine_model_version, output.machine_model_version);
   EXPECT_EQ(gl_version, output.gl_version);

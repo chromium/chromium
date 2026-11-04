@@ -337,10 +337,6 @@ struct GPU_CONFIG_EXPORT GPUInfo {
   // The version of the vertex shader used by the gpu.
   std::string vertex_shader_version;
 
-  // The maximum multisapling sample count, either through ES3 or
-  // EXT_multisampled_render_to_texture MSAA.
-  std::string max_msaa_samples;
-
   // The machine model identifier. They can contain any character, including
   // whitespaces.  Currently it is supported on MacOSX and Android.
   // Android examples: "Naxus 5", "XT1032".

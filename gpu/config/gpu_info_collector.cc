@@ -704,18 +704,6 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
     active_gpu.driver_version = gl_info.driver_version;
   }
 
-  GLint max_samples = 0;
-  if (gl_info.IsAtLeastGLES(3, 0) ||
-      gfx::HasExtension(extension_set, "GL_ANGLE_framebuffer_multisample") ||
-      gfx::HasExtension(extension_set, "GL_APPLE_framebuffer_multisample") ||
-      gfx::HasExtension(extension_set, "GL_EXT_framebuffer_multisample") ||
-      gfx::HasExtension(extension_set,
-                        "GL_EXT_multisampled_render_to_texture") ||
-      gfx::HasExtension(extension_set, "GL_NV_framebuffer_multisample")) {
-    glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-  }
-  gpu_info->max_msaa_samples = base::NumberToString(max_samples);
-
 #if BUILDFLAG(IS_ANDROID)
   gpu_info->can_support_threaded_texture_mailbox =
       egl_display->ext->b_EGL_KHR_fence_sync &&

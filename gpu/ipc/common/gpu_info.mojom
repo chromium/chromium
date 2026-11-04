@@ -150,7 +150,6 @@ struct GpuInfo {
   array<GpuDevice> npus;
   string pixel_shader_version;
   string vertex_shader_version;
-  string max_msaa_samples;
   string machine_model_name;
   string machine_model_version;
   string display_type;

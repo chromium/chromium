@@ -28,8 +28,6 @@
 
 using ::gl::MockGLInterface;
 using ::testing::Return;
-using ::testing::SetArgPointee;
-using ::testing::_;
 
 namespace {
 
@@ -162,9 +160,6 @@ class GPUInfoCollectorTest
     EXPECT_CALL(*gl_, GetString(GL_RENDERER))
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
             test_values_.gl_renderer.c_str())));
-    EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_SAMPLES, _))
-        .WillOnce(SetArgPointee<1>(8))
-        .RetiresOnSaturation();
   }
 
   void TearDown() override {

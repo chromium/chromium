@@ -262,10 +262,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuInfoDataView,
     return input.vertex_shader_version;
   }
 
-  static const std::string& max_msaa_samples(const gpu::GPUInfo& input) {
-    return input.max_msaa_samples;
-  }
-
   static const std::string& machine_model_name(const gpu::GPUInfo& input) {
     return input.machine_model_name;
   }
