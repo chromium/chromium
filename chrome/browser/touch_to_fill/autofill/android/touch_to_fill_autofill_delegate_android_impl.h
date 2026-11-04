@@ -26,7 +26,7 @@ class FormStructure;
 //
 // State transitions on dismissal:
 // - User dismissal (swipe down or click Acknowledge): Transitions from
-//   `kShowing` to `kInactive`, which triggers standard keyboard suggestions
+//   `kShowing` to `kSuppressing`, which triggers standard keyboard suggestions
 //   so the user can continue filling the form.
 // - Navigation dismissal (click on Settings): Transitions from `kShowing` to
 //   `kNavigatingAway`. When the sheet is closed, it transitions to `kInactive`
@@ -105,9 +105,9 @@ class TouchToFillAutofillDelegateAndroidImpl
   TouchToFillAutofillState ttf_autofill_state_ =
       TouchToFillAutofillState::kInactive;
 
-  // The notice that is currently shown, or was shown last. It determines which
-  // notice-specific logic (e.g. prefs or settings page) runs on user
-  // interactions. Unset until a notice has been shown.
+  // The notice that is currently shown (or being navigated away from). It
+  // determines which notice-specific logic (e.g. prefs or settings page) runs
+  // on user interactions. Unset when no notice is active.
   std::optional<NoticeType> shown_notice_;
 
   FieldGlobalId query_field_id_;

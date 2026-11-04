@@ -218,8 +218,9 @@ bool TouchToFillAutofillDelegateAndroidImpl::IsShowingTouchToFill() {
 void TouchToFillAutofillDelegateAndroidImpl::HideTouchToFill() {
   switch (ttf_autofill_state_) {
     case TouchToFillAutofillState::kShowing:
-      manager_->client().HideTouchToFillAutofillNotice();
       ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
+      shown_notice_.reset();
+      manager_->client().HideTouchToFillAutofillNotice();
       break;
     case TouchToFillAutofillState::kNavigatingAway:
     case TouchToFillAutofillState::kSuppressing:
@@ -287,6 +288,7 @@ void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::OnDismissed() {
+  shown_notice_.reset();
   switch (ttf_autofill_state_) {
     case TouchToFillAutofillState::kInactive:
     case TouchToFillAutofillState::kSuppressing:

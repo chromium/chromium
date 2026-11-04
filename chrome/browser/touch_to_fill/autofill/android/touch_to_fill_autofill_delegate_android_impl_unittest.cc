@@ -314,6 +314,46 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, HideTouchToFillHidesNotice) {
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
 }
 
+// Verifies that if HideTouchToFillAutofillNotice synchronously invokes
+// OnDismissed(), the state remains kInactive (not kSuppressing) and stale
+// notice acknowledgements after hide are ignored.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       HideTouchToFillWithSynchronousOnDismissedDoesNotSuppress) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(true);
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
+      .WillRepeatedly(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  ASSERT_TRUE(delegate().IsShowingTouchToFill());
+
+  EXPECT_CALL(autofill_client(), HideTouchToFillAutofillNotice)
+      .WillOnce([this]() { delegate().OnDismissed(); });
+  delegate().HideTouchToFill();
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
+
+  // Late OnNoticeAcknowledged and OnSettingsLinkClicked after hide must be
+  // ignored.
+  delegate().OnNoticeAcknowledged();
+  delegate().OnSettingsLinkClicked();
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalContextFirstRunService()
+                   ->is_ambient_autofill_notice_acknowledged());
+
+  // Because HideTouchToFill transitioned to kInactive before OnDismissed(),
+  // the field is not suppressed on the next TryToShowTouchToFill call.
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  EXPECT_TRUE(delegate().IsShowingTouchToFill());
+}
+
 // Verifies that OnDismissed resets the showing state to inactive.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest, OnDismissedResetsState) {
   auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
@@ -333,6 +373,14 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, OnDismissedResetsState) {
 
   delegate().OnDismissed();
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
+
+  // Late OnNoticeAcknowledged and OnSettingsLinkClicked after user dismissal
+  // must be ignored.
+  delegate().OnNoticeAcknowledged();
+  delegate().OnSettingsLinkClicked();
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalContextFirstRunService()
+                   ->is_ambient_autofill_notice_acknowledged());
 }
 
 // Verifies that OnDismissed triggers standard suggestions and temporarily
