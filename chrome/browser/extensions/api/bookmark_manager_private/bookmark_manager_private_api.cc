@@ -701,6 +701,16 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
   if (!drag_data) {
     return RespondNow(Error(kDropFailedNoDragDataError));
   }
+  if (drag_data->IsFromProfilePath(GetProfile()->GetPath())) {
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+        dragged_nodes = drag_data->GetNodes(model, GetProfile()->GetPath());
+    if (std::ranges::any_of(dragged_nodes, [&](const BookmarkNode* node) {
+          return drop_parent->HasAncestor(node);
+        })) {
+      router->ClearBookmarkNodeData();
+      return RespondNow(Error(bookmarks_errors::kInvalidMoveDestinationError));
+    }
+  }
   const bool copy = false;
   BookmarkUIOperationsHelperNonMergedSurfaces(model, drop_parent)
       .DropBookmarks(GetProfile(), *drag_data, drop_index, copy,

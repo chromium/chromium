@@ -1358,6 +1358,19 @@ TEST_F(BookmarkModelTest, MoveWithUuidCollisionInDescendant) {
                                    NodeTypeForUuidLookup::kAccountNodes));
 }
 
+#if defined(GTEST_HAS_DEATH_TEST)
+using BookmarkModelDeathTest = BookmarkModelTest;
+
+TEST_F(BookmarkModelDeathTest, MoveIntoSelfOrDescendantCrashes) {
+  const BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"Folder");
+  const BookmarkNode* child = model()->AddFolder(folder, 0, u"Child");
+
+  EXPECT_DEATH(model()->Move(folder, folder, 0), "");
+  EXPECT_DEATH(model()->Move(folder, child, 0), "");
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+
 // Tests the default node if no bookmarks have been added yet
 TEST_F(BookmarkModelTest, ParentForNewNodesWithEmptyModel) {
   EXPECT_EQ(TestBookmarkClient::IsDesktopFormFactorByDefault()

@@ -573,7 +573,7 @@ void BookmarkModel::Move(const BookmarkNode* node,
   DCHECK(IsValidIndex(new_parent, index, true));
   DCHECK(!is_root_node(new_parent));
   DCHECK(!is_permanent_node(node));
-  DCHECK(!new_parent->HasAncestor(node));
+  CHECK(!new_parent->HasAncestor(node));
 
   SCOPED_CRASH_KEY_NUMBER("BookmarkModelMove", "newParentType",
                           new_parent->type());

@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -18,8 +19,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -254,6 +257,54 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
       api_test_utils::RunFunctionAndReturnError(
           drop_function.get(),
           base::StringPrintf(R"(["%s", 0])", parent_id.c_str()), GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
+                       DropFolderIntoSelfOrDescendantFails) {
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  BookmarkManagerPrivateDragEventRouter::CreateForWebContents(web_contents);
+  auto* router =
+      BookmarkManagerPrivateDragEventRouter::FromWebContents(web_contents);
+  ASSERT_TRUE(router);
+
+  const BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"Folder");
+  const BookmarkNode* child = model()->AddFolder(folder, 0, u"Child");
+
+  bookmarks::BookmarkNodeData drag_self(folder);
+  drag_self.SetOriginatingProfilePath(GetProfile()->GetPath());
+  router->OnDrop(drag_self);
+  ASSERT_NE(nullptr, router->GetBookmarkNodeData());
+
+  auto drop_self = base::MakeRefCounted<BookmarkManagerPrivateDropFunction>();
+  drop_self->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(bookmarks_errors::kInvalidMoveDestinationError,
+            api_test_utils::RunFunctionAndReturnError(
+                drop_self.get(),
+                base::StringPrintf(R"(["%s", 0])",
+                                   base::NumberToString(folder->id()).c_str()),
+                GetProfile()));
+  EXPECT_EQ(nullptr, router->GetBookmarkNodeData());
+  EXPECT_EQ(model()->bookmark_bar_node(), folder->parent());
+
+  bookmarks::BookmarkNodeData drag_descendant(folder);
+  drag_descendant.SetOriginatingProfilePath(GetProfile()->GetPath());
+  router->OnDrop(drag_descendant);
+
+  auto drop_descendant =
+      base::MakeRefCounted<BookmarkManagerPrivateDropFunction>();
+  drop_descendant->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(bookmarks_errors::kInvalidMoveDestinationError,
+            api_test_utils::RunFunctionAndReturnError(
+                drop_descendant.get(),
+                base::StringPrintf(R"(["%s", 0])",
+                                   base::NumberToString(child->id()).c_str()),
+                GetProfile()));
+  EXPECT_EQ(nullptr, router->GetBookmarkNodeData());
+  EXPECT_EQ(model()->bookmark_bar_node(), folder->parent());
+  EXPECT_EQ(folder, child->parent());
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
