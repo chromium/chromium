@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -37,7 +39,6 @@ class CORE_EXPORT ContainerTiming final
   // populated during the pre-paint walk.
   static bool ContributesToContainerTiming(Element* element);
 
-  bool CanReportToContainerTiming() const;
   void MaybeUpdateContainerRootIdentifier(Element* element,
                                           const AtomicString& new_value);
 
@@ -45,15 +46,37 @@ class CORE_EXPORT ContainerTiming final
     return paint_attribution_tracker_.Get();
   }
 
+  // Queues the paint of `element` if it contributes to container timing.
+  void MaybeQueuePaint(Element& element, const gfx::RectF& intersection_rect);
+
+  // Returns a callback that records the paints queued since the last call and
+  // emits their entries once the frame is presented, or nullopt if none were
+  // queued.
+  OptionalPaintTimingCallback TakePaintTimingCallback();
+
+  // Emits an entry for each container root updated since the last call.
   void EmitPerformanceEntries();
 
-  void OnElementPainted(const DOMPaintTimingInfo& paint_timing_info,
-                        Element* element,
-                        const gfx::RectF& intersection_rect);
+  void OnElementPaintedForTesting(const DOMPaintTimingInfo& paint_timing_info,
+                                  Element* element,
+                                  const gfx::RectF& intersection_rect) {
+    OnElementPainted(paint_timing_info, element, intersection_rect);
+  }
 
   void Trace(Visitor* visitor) const override;
 
  private:
+  // A paint queued at paint time, recorded once the frame is presented.
+  struct PendingPaint final : public GarbageCollected<PendingPaint> {
+    PendingPaint(const gfx::RectF& intersection_rect, Element* element)
+        : intersection_rect(intersection_rect), element(element) {}
+
+    void Trace(Visitor* visitor) const { visitor->Trace(element); }
+
+    const gfx::RectF intersection_rect;
+    const WeakMember<Element> element;
+  };
+
   class Record final : public GarbageCollected<Record> {
    public:
     Record(const DOMPaintTimingInfo& paint_timing_info,
@@ -83,11 +106,20 @@ class CORE_EXPORT ContainerTiming final
     cc::Region painted_region_;
     bool has_pending_changes_ = false;
   };
+
+  void OnElementPainted(const DOMPaintTimingInfo& paint_timing_info,
+                        Element* element,
+                        const gfx::RectF& intersection_rect);
+  void FlushTimingsOnFramePresented(GCedHeapVector<Member<PendingPaint>>*,
+                                    const base::TimeTicks&,
+                                    const DOMPaintTimingInfo&,
+                                    uint64_t navigation_id);
   Record* GetOrCreateRecord(const DOMPaintTimingInfo& paint_timing_info,
                             Element* container_root);
 
   Member<WindowPerformance> performance_;
   HeapHashMap<WeakMember<Element>, Member<Record>> container_root_records_;
+  HeapVector<Member<PendingPaint>> pending_paints_;
   // Never null: created in the constructor, which CHECKs that container timing
   // is enabled, and never reassigned.
   const Member<ContainerTimingPaintAttributionTracker>

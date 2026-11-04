@@ -129,7 +129,6 @@ class CORE_EXPORT Performance : public EventTarget {
   virtual EventCounts* eventCounts();
   virtual SpeculationData* getSpeculations();
   virtual std::uint64_t interactionCount() const = 0;
-  virtual void PopulateContainerTimingEntries() {}
 
   // Reduce the resolution to prevent timing attacks. See:
   // http://www.w3.org/TR/hr-time-2/#privacy-security
@@ -237,7 +236,6 @@ class CORE_EXPORT Performance : public EventTarget {
 
   bool IsContainerTimingBufferFull() const;
   void AddToContainerTimingBuffer(PerformanceContainerTiming&);
-  void NotifyObserversOfContainerTiming();
 
   bool IsElementTimingBufferFull() const;
   void AddToElementTimingBuffer(PerformanceElementTiming&);

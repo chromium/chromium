@@ -98,22 +98,9 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
  private:
   friend class ElementTimingTest;
 
-  // TODO(crbug.com/559075199): Decouple ContainerTiming from ElementTiming and
-  // remove this.
-  struct ContainerTimingInfo final
-      : public GarbageCollected<ContainerTimingInfo> {
-    ContainerTimingInfo(const gfx::RectF& intersection_rect, Element* element)
-        : intersection_rect(intersection_rect), element(element) {}
-
-    void Trace(Visitor* visitor) const { visitor->Trace(element); }
-
-    const gfx::RectF intersection_rect;
-    const WeakMember<Element> element;
-  };
-
   void FlushTimingsOnFramePresented(
       GCedHeapVector<Member<PerformanceElementTiming>>*,
-      GCedHeapVector<Member<ContainerTimingInfo>>*,
+      OptionalPaintTimingCallback container_timing_callback,
       const base::TimeTicks&,
       const DOMPaintTimingInfo&,
       uint64_t navigation_id);
@@ -142,10 +129,9 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
   Member<ContainerTiming> container_timing_;
   Member<const ImagePaintTimingDetector> image_paint_timing_detector_;
 
-  // Pending element timing entries and container timing info queued during
-  // paint to be processed on frame presentation.
+  // Pending element timing entries queued during paint to be processed on
+  // frame presentation.
   HeapVector<Member<PerformanceElementTiming>> element_timings_;
-  HeapVector<Member<ContainerTimingInfo>> container_timings_;
 
   // Set of images that have already been considered for Element Timing.
   HashSet<MediaRecordIdHash> recorded_images_;

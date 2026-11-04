@@ -33,9 +33,7 @@ class ContainerTimingTest : public PageTestBase {
   }
 
   void TriggerPopulateEntries() {
-    auto* performance =
-        DOMWindowPerformance::performance(*GetDocument().domWindow());
-    performance->PopulateContainerTimingEntries();
+    GetContainerTiming().EmitPerformanceEntries();
   }
 
   wtf_size_t GetContainerEntryCount() {
@@ -940,8 +938,8 @@ TEST_F(ContainerTimingIframeIsolationTest, IframeIsolation) {
   auto* parent_performance =
       DOMWindowPerformance::performance(*GetDocument().domWindow());
   auto* child_performance = DOMWindowPerformance::performance(*child_window);
-  parent_performance->PopulateContainerTimingEntries();
-  child_performance->PopulateContainerTimingEntries();
+  parent_ct.EmitPerformanceEntries();
+  child_ct.EmitPerformanceEntries();
 
   EXPECT_EQ(0u, parent_performance
                     ->getBufferedEntriesByType(AtomicString("container"))

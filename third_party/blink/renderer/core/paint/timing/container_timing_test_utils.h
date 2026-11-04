@@ -13,7 +13,8 @@
 namespace blink {
 
 // Constructs a DOMPaintTimingInfo with the current time and calls
-// ContainerTiming::OnElementPainted(). Shared by unit tests and perf tests.
+// ContainerTiming::OnElementPaintedForTesting(). Shared by unit tests and perf
+// tests.
 inline void SimulateContainerTimingPaint(ContainerTiming& container_timing,
                                          Element* element,
                                          const gfx::RectF& rect) {
@@ -22,7 +23,7 @@ inline void SimulateContainerTimingPaint(ContainerTiming& container_timing,
           base::TimeTicks::Now().since_origin().InMillisecondsF()),
       .presentation_time = static_cast<DOMHighResTimeStamp>(
           base::TimeTicks::Now().since_origin().InMillisecondsF())};
-  container_timing.OnElementPainted(paint_info, element, rect);
+  container_timing.OnElementPaintedForTesting(paint_info, element, rect);
 }
 
 }  // namespace blink

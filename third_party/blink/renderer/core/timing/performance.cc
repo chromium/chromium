@@ -1266,14 +1266,6 @@ void Performance::NotifyObserversOfContainerEntry(
   }
 }
 
-void Performance::NotifyObserversOfContainerTiming() {
-  for (auto& observer : observers_) {
-    if (observer->FilterOptions() & PerformanceEntry::EntryType::kContainer) {
-      ActivateObserver(*observer);
-    }
-  }
-}
-
 bool Performance::HasObserverFor(
     PerformanceEntry::EntryType filter_type) const {
   return observer_filter_options_ & filter_type;
@@ -1302,9 +1294,6 @@ void Performance::SuspendObserver(PerformanceObserver& observer) {
 }
 
 void Performance::DeliverObservationsTimerFired(TimerBase*) {
-  if (HasObserverFor(PerformanceEntry::kContainer)) {
-    PopulateContainerTimingEntries();
-  }
   decltype(active_observers_) observers;
   active_observers_.Swap(observers);
   for (const auto& observer : observers) {

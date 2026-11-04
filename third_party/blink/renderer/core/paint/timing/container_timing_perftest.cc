@@ -124,7 +124,7 @@ void RunImageAttributionBenchmark(const std::string& story,
   auto* performance = DOMWindowPerformance::performance(*document.domWindow());
   SimulateContainerTimingPaint(container_timing, images.front(),
                                gfx::RectF(0, 0, 10, 10));
-  performance->PopulateContainerTimingEntries();
+  container_timing.EmitPerformanceEntries();
   ASSERT_FALSE(
       performance->getBufferedEntriesByType(AtomicString("container")).empty());
 

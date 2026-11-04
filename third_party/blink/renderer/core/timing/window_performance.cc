@@ -87,7 +87,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
-#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_candidate.h"
@@ -1397,32 +1396,6 @@ void WindowPerformance::ApplyContextMenuFallbackToPendingEvents(
               FallbackReason::kInteractionInterruptedByContextMenu);
         }
       });
-}
-
-void WindowPerformance::SetHasContainerTimingChanges() {
-  DCHECK(IsContainerTimingEnabled());
-
-  has_container_timing_changes_ = true;
-  NotifyObserversOfContainerTiming();
-}
-
-void WindowPerformance::PopulateContainerTimingEntries() {
-  if (!has_container_timing_changes_) {
-    return;
-  }
-
-  DCHECK(IsContainerTimingEnabled());
-
-  LocalDOMWindow* window = DomWindow();
-  if (!window) {
-    return;
-  }
-
-  ContainerTiming& container_timing = ContainerTiming::From(*window);
-
-  container_timing.EmitPerformanceEntries();
-
-  has_container_timing_changes_ = false;
 }
 
 void WindowPerformance::QueueLongAnimationFrameTiming(
