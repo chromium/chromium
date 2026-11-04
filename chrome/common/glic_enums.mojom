@@ -183,6 +183,8 @@ enum InvocationSource {
   [MinVersion=32] kWebContentsContextMenuTextSelection = 48,
   // Invoked by the actor GeminiPanelTool.
   [MinVersion=33] kActorTool = 49,
+  // User clicked a conversation row in the activity list bubble.
+  [MinVersion=34] kActivityListBubble = 50,
 };
 
 // LINT.ThenChange(//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java:GlicInvocationSource,

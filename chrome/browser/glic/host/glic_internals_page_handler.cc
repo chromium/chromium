@@ -290,6 +290,8 @@ std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
       return "kWebContentsContextMenuTextSelection";
     case glic::mojom::InvocationSource::kActorTool:
       return "kActorTool";
+    case glic::mojom::InvocationSource::kActivityListBubble:
+      return "kActivityListBubble";
   }
   LOG(ERROR) << "Unexpected value for InvocationSource: "
              << static_cast<int>(source);

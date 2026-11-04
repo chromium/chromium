@@ -169,6 +169,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
 <variants name="GlicInvocationSource">
+  <variant name="ActivityListBubble"/>
   <variant name="ActorTaskIcon"/>
   <variant name="ActorTool"/>
   <variant name="AfterSignIn"/>
@@ -1209,6 +1210,9 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram name="Glic.Invoke.Duration.{InvocationSource}" units="ms"
     expires_after="2027-06-01">
+<!-- Allowed unsplittable: TODO(b/581415303): Split GlicInvokeMetrics
+(glic_invoke_metrics.cc) by GlicProvider; see go/geic-metrics-split. -->
+
   <owner>wry@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -1241,6 +1245,9 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram name="Glic.Invoke.TimeoutStage.{InvocationSource}"
     enum="GlicInvokeTimeoutStage" expires_after="2027-06-01">
+<!-- Allowed unsplittable: TODO(b/581415303): Split GlicInvokeMetrics
+(glic_invoke_metrics.cc) by GlicProvider; see go/geic-metrics-split. -->
+
   <owner>csharrison@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -1265,6 +1272,9 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram name="Glic.InvokeResult2.{InvocationSource}" enum="GlicInvokeResult"
     expires_after="2027-06-01">
+<!-- Allowed unsplittable: TODO(b/581415303): Split GlicInvokeMetrics
+(glic_invoke_metrics.cc) by GlicProvider; see go/geic-metrics-split. -->
+
   <owner>vollick@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -2607,6 +2617,21 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     {GlicProvider}.
   </summary>
   <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.ReturnSource"
+    enum="GlicInvocationSource" expires_after="2027-06-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the invocation source when an existing Glic conversation is reopened
+    or revealed (e.g. switching back to a tab with an open panel, reopening a
+    closed panel on a bound tab, clicking a conversation in the Activity Hub
+    bubble, or tab restore). Also recorded when switching to an existing
+    conversation from the web client's conversation selector, including when
+    reusing a visible blank panel in-place. Scope: {GlicProvider}.
+  </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 

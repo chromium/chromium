@@ -625,7 +625,7 @@ void GlicActivityListBubbleController::OnConversationRowClicked(
     target.conversation = ConversationId(conversation_id);
     target.surface = LastActiveOrNew{};
     GlicInvokeOptions options(std::move(target),
-                              mojom::InvocationSource::kTopChromeButton);
+                              mojom::InvocationSource::kActivityListBubble);
     glic_service->Invoke(std::move(options));
   }
   CloseBubble();

@@ -51,6 +51,9 @@ TEST(MetricsTypesTest, GetInvocationSourceString) {
                 mojom::InvocationSource::kWebContentsContextMenuTextSelection));
   EXPECT_EQ("ActorTool",
             GetInvocationSourceString(mojom::InvocationSource::kActorTool));
+  EXPECT_EQ(
+      "ActivityListBubble",
+      GetInvocationSourceString(mojom::InvocationSource::kActivityListBubble));
 }
 
 TEST(MetricsTypesTest, GetResponseSegmentation) {
@@ -174,6 +177,30 @@ TEST(MetricsTypesTest, GetResponseSegmentation) {
             GetResponseSegmentation(
                 /*attached=*/true, mojom::WebClientMode::kText,
                 mojom::InvocationSource::kActorTool));
+
+  // ActivityListBubble Attached Text
+  EXPECT_EQ(ResponseSegmentation::kActivityListBubbleAttachedText,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kActivityListBubble));
+
+  // ActivityListBubble Attached Audio
+  EXPECT_EQ(ResponseSegmentation::kActivityListBubbleAttachedAudio,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kAudio,
+                mojom::InvocationSource::kActivityListBubble));
+
+  // ActivityListBubble Detached Text
+  EXPECT_EQ(ResponseSegmentation::kActivityListBubbleDetachedText,
+            GetResponseSegmentation(
+                /*attached=*/false, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kActivityListBubble));
+
+  // ActivityListBubble Detached Audio
+  EXPECT_EQ(ResponseSegmentation::kActivityListBubbleDetachedAudio,
+            GetResponseSegmentation(
+                /*attached=*/false, mojom::WebClientMode::kAudio,
+                mojom::InvocationSource::kActivityListBubble));
 }
 
 }  // namespace

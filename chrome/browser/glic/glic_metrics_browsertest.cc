@@ -838,6 +838,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Glic.Instance.Floaty.OpenSource",
       mojom::InvocationSource::kConversationSwitch, 1);
+  histogram_tester.ExpectTotalCount("Glic.Instance.ReturnSource", 0);
 }
 
 class GlicMetricsBrowserTestWithTabGroups : public GlicMetricsBrowserTest {
@@ -915,6 +916,42 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithTabGroups,
   histogram_tester.ExpectBucketCount(
       "Glic.InvocationSource.ConversationSwitch.EventCounts",
       GlicInstanceEvent::kTabBound, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Instance.ReturnSource",
+      mojom::InvocationSource::kConversationSwitch, 1);
+}
+
+// Verifies that switching to an existing conversation in-place on an already
+// visible blank instance (where
+// `GlicInstanceCoordinatorImpl::SwitchConversation()` calls
+// `RegisterConversation()` before `Show()`) records
+// `Glic.Instance.ReturnSource` with
+// `mojom::InvocationSource::kConversationSwitch`.
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
+                       SwitchConversationInPlace_ReturnSource) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  service()->ToggleUI(GetBrowser(),
+                      /*prevent_close=*/false,
+                      mojom::InvocationSource::kOsButton);
+
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  ASSERT_FALSE(instance->conversation_id().has_value());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return instance->IsShowing(); }));
+
+  base::HistogramTester histogram_tester;
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = "existing_conv";
+  instance->SwitchConversation(ShowOptions::ForSidePanel(*tab), std::move(info),
+                               base::DoNothing());
+
+  EXPECT_EQ(GetInstanceForTab(tab), instance);
+  EXPECT_EQ(instance->conversation_id(), "existing_conv");
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Instance.ReturnSource",
+      mojom::InvocationSource::kConversationSwitch, 1);
 }
 
 // Verifies that invoking a new instance on a background tab (e.g. via the tab

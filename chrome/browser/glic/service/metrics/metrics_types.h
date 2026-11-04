@@ -223,7 +223,11 @@ enum class ResponseSegmentation {
   kActorToolAttachedAudio = 198,
   kActorToolDetachedText = 199,
   kActorToolDetachedAudio = 200,
-  kMaxValue = kActorToolDetachedAudio,
+  kActivityListBubbleAttachedText = 201,
+  kActivityListBubbleAttachedAudio = 202,
+  kActivityListBubbleDetachedText = 203,
+  kActivityListBubbleDetachedAudio = 204,
+  kMaxValue = kActivityListBubbleDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 

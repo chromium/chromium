@@ -760,8 +760,14 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
   EXPECT_TRUE(rows[2].has_been_seen);
   EXPECT_EQ(ui::kColorMenuIcon, rows[2].icon_and_subtitle_color);
 
-  // Clicking a conversation row marks it as seen and invokes GlicKeyedService.
-  EXPECT_CALL(*mock_glic_keyed_service_, Invoke(testing::_)).Times(1);
+  // Clicking a conversation row marks it as seen and invokes `GlicKeyedService`
+  // with `mojom::InvocationSource::kActivityListBubble`.
+  EXPECT_CALL(*mock_glic_keyed_service_, Invoke(testing::_))
+      .WillOnce([](GlicInvokeOptions options) {
+        EXPECT_EQ(options.GetInvocationSource(),
+                  mojom::InvocationSource::kActivityListBubble);
+        return nullptr;
+      });
   ASSERT_TRUE(rows[0].on_clicked);
   rows[0].on_clicked.Run();
 

@@ -483,21 +483,23 @@ void GlicInstanceImpl::Show(ShowOptions options) {
 
   EmbedderKey new_key = GetEmbedderKey(options);
 
-  if (IsActiveEmbedder(new_key)) {
-    if (!options.reinitialize_if_already_active) {
-      // The panel is already up, so there is nothing to re-show. Unless this
-      // is an automatic reshow (such as OnBrowserActivated() when focusing a
-      // window whose panel is already open), the page still gets told: a show
-      // is also what makes it retry a client that failed to load, and someone
-      // invoking Glic again at a failed panel should get that retry rather than
-      // the stale failure. This is a no-op for a page whose client is up.
-      if (options.invocation_source !=
-          mojom::InvocationSource::kReshowInactive) {
-        host_.NotifyWindowIntentToShow();
-      }
-      return;
+  if (IsActiveEmbedder(new_key) && !options.reinitialize_if_already_active) {
+    // The panel is already up, so there is nothing to re-show. Unless this
+    // is an automatic reshow (such as OnBrowserActivated() when focusing a
+    // window whose panel is already open), the page still gets told: a show
+    // is also what makes it retry a client that failed to load, and someone
+    // invoking Glic again at a failed panel should get that retry rather than
+    // the stale failure. This is a no-op for a page whose client is up.
+    if (options.invocation_source != mojom::InvocationSource::kReshowInactive) {
+      host_.NotifyWindowIntentToShow();
     }
-  } else {
+    return;
+  }
+
+  instance_metrics().OnWillShow(options.invocation_source,
+                                conversation_id().has_value());
+
+  if (!IsActiveEmbedder(new_key)) {
     DeactivateCurrentEmbedder();
     // Ensure that there is a WebContents for the embedder to use.
     EnsureHostAwake();

@@ -160,6 +160,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "WebContentsContextMenuTextSelection";
     case mojom::InvocationSource::kActorTool:
       return "ActorTool";
+    case mojom::InvocationSource::kActivityListBubble:
+      return "ActivityListBubble";
   }
 }
 

@@ -46,6 +46,7 @@ public interface GlicKeyedService {
         GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_PAGE,
         GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION,
         GlicInvocationSource.ACTOR_TOOL,
+        GlicInvocationSource.ACTIVITY_LIST_BUBBLE,
         GlicInvocationSource.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -61,8 +62,9 @@ public interface GlicKeyedService {
         int WEB_CONTENTS_CONTEXT_MENU_PAGE = 47;
         int WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION = 48;
         int ACTOR_TOOL = 49;
+        int ACTIVITY_LIST_BUBBLE = 50;
         // Must match the largest mojom value, since MAX_VALUE + 1 bounds Glic.EntryPoint.Click.
-        int MAX_VALUE = 49;
+        int MAX_VALUE = 50;
     }
 
     // LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource)

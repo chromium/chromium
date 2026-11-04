@@ -740,6 +740,8 @@ export enum InvocationSource {
   WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION = 48,
   // Invoked by the actor GeminiPanelTool.
   ACTOR_TOOL = 49,
+  // User clicked a conversation row in the activity list bubble.
+  ACTIVITY_LIST_BUBBLE = 50,
 }
 
 // Target for actuation.

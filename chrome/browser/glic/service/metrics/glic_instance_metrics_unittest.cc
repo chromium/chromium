@@ -2171,4 +2171,109 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.Instance.TimeToInputFocus.NonOnboarded", 2);
 }
 
+TEST_F(GlicInstanceMetricsTest, ReturnSource_RecordedCorrectly) {
+  ShowOptions show_options = ShowOptions::ForSidePanel(mock_tab_);
+
+  // Cold open with no conversation history -> ReturnSource NOT recorded.
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.ReturnSource", 0);
+
+  // Conversation switch while visible with no conversation ID -> NOT recorded.
+  metrics_.OnWillShow(mojom::InvocationSource::kConversationSwitch,
+                      /*has_conversation_id=*/false);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.ReturnSource", 0);
+
+  // Tab switch away and back with no conversation ID -> NOT recorded.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnWillShow(mojom::InvocationSource::kReshowInactive,
+                      /*has_conversation_id=*/false);
+  metrics_.OnVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.ReturnSource", 0);
+
+  // Tab switch away and back with conversation ID.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnWillShow(mojom::InvocationSource::kReshowInactive,
+                      /*has_conversation_id=*/true);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount("Glic.Instance.ReturnSource",
+                                      mojom::InvocationSource::kReshowInactive,
+                                      1);
+
+  // Surface move while already visible -> ReturnSource NOT recorded.
+  metrics_.OnWillShow(mojom::InvocationSource::kDetachAttachButton,
+                      /*has_conversation_id=*/true);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.ReturnSource",
+      mojom::InvocationSource::kDetachAttachButton, 0);
+
+  // Close panel and reopen via Top Chrome button.
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/true);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount("Glic.Instance.ReturnSource",
+                                      mojom::InvocationSource::kTopChromeButton,
+                                      1);
+
+  // Close panel and reopen via Hotkey.
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnWillShow(mojom::InvocationSource::kOsHotkey,
+                      /*has_conversation_id=*/true);
+  metrics_.OnOpen(mojom::InvocationSource::kOsHotkey, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount("Glic.Instance.ReturnSource",
+                                      mojom::InvocationSource::kOsHotkey, 1);
+
+  // Close panel and reopen via Activity Hub.
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnWillShow(mojom::InvocationSource::kActivityListBubble,
+                      /*has_conversation_id=*/true);
+  metrics_.OnOpen(mojom::InvocationSource::kActivityListBubble, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.ReturnSource",
+      mojom::InvocationSource::kActivityListBubble, 1);
+
+  // Re-open via Actor task icon.
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnWillShow(mojom::InvocationSource::kActorTaskIcon,
+                      /*has_conversation_id=*/true);
+  metrics_.OnOpen(mojom::InvocationSource::kActorTaskIcon, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.ReturnSource", mojom::InvocationSource::kActorTaskIcon, 1);
+
+  // In-place conversation switch while visible.
+  metrics_.OnWillShow(mojom::InvocationSource::kConversationSwitch,
+                      /*has_conversation_id=*/true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.ReturnSource",
+      mojom::InvocationSource::kConversationSwitch, 1);
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
 }  // namespace glic

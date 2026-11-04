@@ -168,6 +168,11 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Sets `initial_invocation_source_` if it has not been set yet.
   void MaybeSetInitialInvocationSource(mojom::InvocationSource source);
 
+  // Called before showing the instance to record return source if the
+  // instance has conversation history.
+  void OnWillShow(glic::mojom::InvocationSource source,
+                  bool has_conversation_id);
+
   // Called when the UI is shown and it was not already showing for this
   // instance.
   void OnOpen(glic::mojom::InvocationSource source, const ShowOptions& options);
@@ -330,6 +335,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void MaybeRecordTimeToDismissWhileLoading();
 
   void RecordTimeToActionable(base::TimeTicks end_time);
+
+  bool IsVisible() const;
 
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;

@@ -841,6 +841,25 @@ bool GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
   return seen_embedders_.erase(ToSafeKey(key)) > 0;
 }
 
+bool GlicInstanceMetrics::IsVisible() const {
+  return visibility_tracker_ ? visibility_tracker_->state() : false;
+}
+
+void GlicInstanceMetrics::OnWillShow(glic::mojom::InvocationSource source,
+                                     bool has_conversation_id) {
+  // Record when a hidden conversation becomes visible again, or when the user
+  // selects an existing conversation from the web client's Recent Chats menu
+  // (which may reuse an already-visible blank instance in-place in
+  // `GlicInstanceCoordinatorImpl::SwitchConversation()`).
+  bool is_resumption =
+      has_conversation_id &&
+      (!IsVisible() || source == mojom::InvocationSource::kConversationSwitch);
+
+  if (is_resumption) {
+    metric_reporter_.RecordEnumeration("Instance.ReturnSource", source);
+  }
+}
+
 void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
                                  const ShowOptions& options) {
   const base::TimeTicks now = base::TimeTicks::Now();
