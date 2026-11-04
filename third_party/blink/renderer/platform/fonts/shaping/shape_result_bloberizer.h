@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BLOBERIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BLOBERIZER_H_
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "cc/paint/node_id.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
@@ -77,6 +80,16 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
  private:
   friend class ShapeResultBloberizerTest;
+
+  using CommitTextRunCallback =
+      void (*)(void* context,
+               const ShapeResultBloberizer& bloberizer,
+               size_t blob_index,
+               size_t run_index,
+               std::string_view utf8,
+               base::span<const uint32_t> clusters);
+  static void SetCommitTextRunCallback(CommitTextRunCallback callback,
+                                       void* context);
 
   ShapeResultBloberizer(const FontDescription&, Type);
   ShapeResultBloberizer(const FontDescription&,

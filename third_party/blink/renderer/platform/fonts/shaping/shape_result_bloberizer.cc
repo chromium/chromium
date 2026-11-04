@@ -26,12 +26,35 @@ namespace blink {
 
 namespace {
 
+using CommitTextRunCallback = void (*)(void* context,
+                                       const ShapeResultBloberizer& bloberizer,
+                                       size_t blob_index,
+                                       size_t run_index,
+                                       std::string_view utf8,
+                                       base::span<const uint32_t> clusters);
+
+// Test-only hook used by `ShapeResultBloberizerTest` to inspect the UTF-8 text
+// and cluster indices passed to `SkTextBlobBuilder` (which `SkTextBlob` does
+// not expose publicly). Stored as globals rather than `ShapeResultBloberizer`
+// data members to avoid increasing `ShapeResultBloberizer`'s stack footprint or
+// adding per-instance initialization overhead on the text-painting hot path.
+CommitTextRunCallback g_commit_text_run_callback = nullptr;
+void* g_commit_text_run_context = nullptr;
+
 // A helper for FillGlyphsSlow().
 inline const ShapeResult* GetShapeResult(const PlainTextItem& item) {
   return item.GetShapeResult();
 }
 
 }  // namespace
+
+// static
+void ShapeResultBloberizer::SetCommitTextRunCallback(
+    CommitTextRunCallback callback,
+    void* context) {
+  g_commit_text_run_callback = callback;
+  g_commit_text_run_context = context;
+}
 
 ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
@@ -203,6 +226,13 @@ void ShapeResultBloberizer::CommitPendingRun() {
     DVLOG(4) << "  CommitPendingRun indexes: "
              << base::ToString(base::span(pending_utf8_character_indexes_));
     DCHECK_EQ(pending_utf8_character_indexes_.size(), run_size);
+    if (g_commit_text_run_callback) [[unlikely]] {
+      g_commit_text_run_callback(
+          g_commit_text_run_context, *this, blobs_.size(),
+          builder_run_count_ - 1,
+          std::string_view(base::as_chars(base::span(pending_utf8_))),
+          pending_utf8_character_indexes_);
+    }
     std::ranges::copy(pending_utf8_character_indexes_, buffer.clusters);
     std::ranges::copy(pending_utf8_, buffer.utf8text);
 

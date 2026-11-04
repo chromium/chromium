@@ -63,7 +63,6 @@ rust_static_library("bridge_rust_side") {
 config("skia_config") {
   defines = [
     "SK_ENABLE_SKSL",
-    "SK_UNTIL_CRBUG_1187654_IS_FIXED",
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_USE_PARTITION_ALLOC",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",

@@ -4,9 +4,13 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/numerics/safe_conversions.h"
 #include "skia/ext/font_utils.h"
@@ -56,68 +60,23 @@ struct ExpectedRange {
   wtf_size_t length() { return to - from; }
 };
 
-void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
-                     const std::vector<ExpectedBlob>& expected_blobs) {
-  EXPECT_EQ(blob_buffer.size(), expected_blobs.size());
-  auto blob_info_iter = blob_buffer.begin();
-  auto&& expected_blob_iter = expected_blobs.begin();
-  for (; blob_info_iter != blob_buffer.end() &&
-         expected_blob_iter != expected_blobs.end();
-       UNSAFE_TODO(++blob_info_iter), ++expected_blob_iter) {
-    size_t blob_index = expected_blob_iter - expected_blobs.begin();
-    const ExpectedBlob& expected_blob = *expected_blob_iter;
-    SkTextBlob::Iter::Run run;
-    size_t actual_run_count = 0;
-    for (SkTextBlob::Iter it(*blob_info_iter->blob.get()); it.next(&run);) {
-      ++actual_run_count;
-    }
-    EXPECT_EQ(actual_run_count, expected_blob.size()) << "Blob: " << blob_index;
-    auto&& expected_run_iter = expected_blob.begin();
-    SkTextBlob::Iter it(*blob_info_iter->blob.get());
-    for (; it.next(&run) && expected_run_iter != expected_blob.end();
-         ++expected_run_iter) {
-      size_t run_index = expected_run_iter - expected_blob.begin();
-      const ExpectedRun& expected_run = *expected_run_iter;
-      EXPECT_EQ(expected_run.glyph_count, run.fGlyphCount)
-          << "Blob: " << blob_index << " Run: " << run_index;
-
-      size_t actual_size = base::checked_cast<size_t>(run.fUtf8Size_forTest);
-      size_t expected_size = expected_run.utf8.size();
-      EXPECT_EQ(actual_size, expected_size)
-          << "Blob: " << blob_index << " Run: " << run_index;
-      for (size_t i = 0; i < actual_size && i < expected_size; ++i) {
-        EXPECT_EQ(UNSAFE_TODO(run.fUtf8_forTest[i]), expected_run.utf8[i])
-            << "Blob: " << blob_index << " Run: " << run_index << " i: " << i;
-      }
-
-      auto utf8_index_previous = run.fClusterIndex_forTest[0];
-      for (int i = 0; i < run.fGlyphCount; ++i) {
-        EXPECT_LE(0ul, UNSAFE_TODO(run.fClusterIndex_forTest[i]));
-        EXPECT_LT((int)UNSAFE_TODO(run.fClusterIndex_forTest[i]),
-                  run.fUtf8Size_forTest);
-        auto expected_direction = expected_run.cluster_direction;
-        if (expected_direction == ExpectedRun::ClusterDirection::kAscending) {
-          EXPECT_LE(utf8_index_previous,
-                    UNSAFE_TODO(run.fClusterIndex_forTest[i]));
-        } else {
-          EXPECT_GE(utf8_index_previous,
-                    UNSAFE_TODO(run.fClusterIndex_forTest[i]));
-        }
-        utf8_index_previous = UNSAFE_TODO(run.fClusterIndex_forTest[i]);
-      }
-    }
-  }
-}
-
 }  // anonymous namespace
 
 class ShapeResultBloberizerTest : public FontTestBase {
  protected:
   void SetUp() override {
+    FontTestBase::SetUp();
     font_description.SetComputedSize(12.0);
     font_description.SetLocale(LayoutLocale::Get(AtomicString("en")));
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
+    ShapeResultBloberizer::SetCommitTextRunCallback(&RecordCommittedTextRun,
+                                                    this);
+  }
+
+  void TearDown() override {
+    ShapeResultBloberizer::SetCommitTextRunCallback(nullptr, nullptr);
+    FontTestBase::TearDown();
   }
 
   static ShapeResultBloberizer CreateBloberizer(
@@ -178,7 +137,119 @@ class ShapeResultBloberizerTest : public FontTestBase {
     return bloberizer.blobs_.size();
   }
 
+  void CheckBlobBuffer(ShapeResultBloberizer& bloberizer,
+                       const std::vector<ExpectedBlob>& expected_blobs) {
+    const ShapeResultBloberizer::BlobBuffer& blob_buffer = bloberizer.Blobs();
+    EXPECT_EQ(blob_buffer.size(), expected_blobs.size());
+
+    const uintptr_t id = reinterpret_cast<uintptr_t>(&bloberizer);
+    const Vector<CommittedTextBlob>* committed_blobs = nullptr;
+    for (const auto& entry : committed_runs_) {
+      if (entry.bloberizer_id == id) {
+        committed_blobs = &entry.blobs;
+        break;
+      }
+    }
+    ASSERT_NE(committed_blobs, nullptr);
+    EXPECT_EQ(committed_blobs->size(), expected_blobs.size());
+
+    for (wtf_size_t blob_index = 0; blob_index < blob_buffer.size() &&
+                                    blob_index < expected_blobs.size() &&
+                                    blob_index < committed_blobs->size();
+         ++blob_index) {
+      const ExpectedBlob& expected_blob = expected_blobs[blob_index];
+      const CommittedTextBlob& committed_runs = (*committed_blobs)[blob_index];
+      SkTextBlob::Iter::Run run;
+      size_t actual_run_count = 0;
+      for (SkTextBlob::Iter it(*blob_buffer[blob_index].blob); it.next(&run);) {
+        ++actual_run_count;
+      }
+      EXPECT_EQ(actual_run_count, expected_blob.size())
+          << "Blob: " << blob_index;
+      EXPECT_EQ(committed_runs.size(), expected_blob.size())
+          << "Blob: " << blob_index;
+
+      SkTextBlob::Iter it(*blob_buffer[blob_index].blob);
+      for (wtf_size_t run_index = 0;
+           it.next(&run) && run_index < expected_blob.size() &&
+           run_index < committed_runs.size();
+           ++run_index) {
+        const ExpectedRun& expected_run = expected_blob[run_index];
+        const CommittedTextRun& actual_run = committed_runs[run_index];
+        EXPECT_EQ(expected_run.glyph_count, run.fGlyphCount)
+            << "Blob: " << blob_index << " Run: " << run_index;
+
+        EXPECT_EQ(actual_run.utf8, expected_run.utf8)
+            << "Blob: " << blob_index << " Run: " << run_index;
+
+        EXPECT_EQ(actual_run.clusters.size(),
+                  base::checked_cast<size_t>(run.fGlyphCount))
+            << "Blob: " << blob_index << " Run: " << run_index;
+        if (!actual_run.clusters.empty()) {
+          uint32_t utf8_index_previous = actual_run.clusters[0];
+          for (uint32_t utf8_index : actual_run.clusters) {
+            EXPECT_LT(utf8_index, actual_run.utf8.size());
+            if (expected_run.cluster_direction ==
+                ExpectedRun::ClusterDirection::kAscending) {
+              EXPECT_LE(utf8_index_previous, utf8_index);
+            } else {
+              EXPECT_GE(utf8_index_previous, utf8_index);
+            }
+            utf8_index_previous = utf8_index;
+          }
+        }
+      }
+    }
+  }
+
   FontDescription font_description;
+
+ private:
+  struct CommittedTextRun {
+    std::string utf8;
+    Vector<uint32_t> clusters;
+  };
+  using CommittedTextBlob = Vector<CommittedTextRun>;
+  struct BloberizerCommittedRuns {
+    uintptr_t bloberizer_id;
+    Vector<CommittedTextBlob> blobs;
+  };
+
+  static void RecordCommittedTextRun(void* context,
+                                     const ShapeResultBloberizer& bloberizer,
+                                     size_t blob_index,
+                                     size_t run_index,
+                                     std::string_view utf8,
+                                     base::span<const uint32_t> clusters) {
+    auto* self = static_cast<ShapeResultBloberizerTest*>(context);
+    const uintptr_t id = reinterpret_cast<uintptr_t>(&bloberizer);
+    Vector<CommittedTextBlob>* blobs = nullptr;
+    for (auto& entry : self->committed_runs_) {
+      if (entry.bloberizer_id == id) {
+        blobs = &entry.blobs;
+        break;
+      }
+    }
+    if (!blobs) {
+      self->committed_runs_.push_back(BloberizerCommittedRuns{id, {}});
+      blobs = &self->committed_runs_.back().blobs;
+    }
+    const wtf_size_t wtf_blob_index =
+        base::checked_cast<wtf_size_t>(blob_index);
+    const wtf_size_t wtf_run_index = base::checked_cast<wtf_size_t>(run_index);
+    if (blobs->size() <= wtf_blob_index) {
+      blobs->resize(wtf_blob_index + 1);
+    }
+    CommittedTextBlob& runs = (*blobs)[wtf_blob_index];
+    if (runs.size() <= wtf_run_index) {
+      runs.resize(wtf_run_index + 1);
+    }
+    CommittedTextRun& committed_run = runs[wtf_run_index];
+    committed_run.utf8 = std::string(utf8);
+    committed_run.clusters.assign(clusters);
+  }
+
+  Vector<BloberizerCommittedRuns> committed_runs_;
 };
 
 TEST_F(ShapeResultBloberizerTest, StartsEmpty) {
@@ -387,11 +458,10 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   EXPECT_EQ(reference_glyphs[3], glyphs[3]);
   EXPECT_EQ(reference_glyphs[4], glyphs[4]);
 
-  CheckBlobBuffer(bloberizer.Blobs(),
-                  {{
-                      {5, text_run.ToStringView().ToString().Utf8(),
-                       ExpectedRun::ClusterDirection::kAscending},
-                  }});
+  CheckBlobBuffer(bloberizer, {{
+                                  {5, text_run.ToStringView().ToString().Utf8(),
+                                   ExpectedRun::ClusterDirection::kAscending},
+                              }});
 }
 
 TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
@@ -411,7 +481,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
 
   CheckBlobBuffer(
-      bloberizer.Blobs(),
+      bloberizer,
       {{
           {5,
            string.substr(text_info.from, text_info.to - text_info.from).Utf8(),
@@ -436,7 +506,7 @@ TEST_F(ShapeResultBloberizerTest, FourByteUtf8CodepointsNG) {
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
 
   CheckBlobBuffer(
-      bloberizer.Blobs(),
+      bloberizer,
       {{
           {2,
            string.substr(text_info.from, text_info.to - text_info.from).Utf8(),
@@ -466,7 +536,7 @@ TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
   EXPECT_EQ(1u, glyphs.size());
 
   CheckBlobBuffer(
-      bloberizer.Blobs(),
+      bloberizer,
       {{
           {1,
            string.substr(text_info.from + 1, text_info.to - text_info.from - 1)
@@ -494,11 +564,10 @@ TEST_F(ShapeResultBloberizerTest, EndAtLeadingSurrogate) {
   const auto& glyphs = PendingRunGlyphs(bloberizer);
   EXPECT_EQ(1u, glyphs.size());
 
-  CheckBlobBuffer(bloberizer.Blobs(),
-                  {{
-                      {1, string.substr(0, 2).Utf8(),
-                       ExpectedRun::ClusterDirection::kAscending},
-                  }});
+  CheckBlobBuffer(bloberizer, {{
+                                  {1, string.substr(0, 2).Utf8(),
+                                   ExpectedRun::ClusterDirection::kAscending},
+                              }});
 }
 
 TEST_F(ShapeResultBloberizerTest, Latin1TwoByteUtf8) {
@@ -518,7 +587,7 @@ TEST_F(ShapeResultBloberizerTest, Latin1TwoByteUtf8) {
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
 
   CheckBlobBuffer(
-      bloberizer.Blobs(),
+      bloberizer,
       {{
           {4, string.Utf8(), ExpectedRun::ClusterDirection::kAscending},
       }});
@@ -559,7 +628,7 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
 
   CheckBlobBuffer(
-      bloberizer.Blobs(),
+      bloberizer,
       {{
           // "Testi"
           {static_cast<int>(range_a.length() - 1),
@@ -620,7 +689,7 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
       font->GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
 
-  CheckBlobBuffer(bloberizer.Blobs(),
+  CheckBlobBuffer(bloberizer,
                   {{
                       // "𠜎𠜱𠝹"
                       {static_cast<int>(range_a.length() / 2),
