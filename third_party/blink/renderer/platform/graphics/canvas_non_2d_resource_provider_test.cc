@@ -95,9 +95,6 @@ class CanvasNon2DResourceProviderTest : public testing::Test {
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
-#if BUILDFLAG(IS_WIN)
-    shared_image_caps.shared_image_swap_chain = true;
-#endif
     test_context_provider_->SharedImageInterface()->SetCapabilities(
         shared_image_caps);
 
@@ -123,8 +120,7 @@ class CanvasNon2DResourceProviderTest : public testing::Test {
 
 TEST_F(CanvasNon2DResourceProviderTest, BeginExternalOverwrite) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    gfx::HDRMetadata(),
@@ -151,8 +147,7 @@ TEST_F(CanvasNon2DResourceProviderTest, AcceleratedOverlay) {
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    gfx::HDRMetadata(),
@@ -164,17 +159,16 @@ TEST_F(CanvasNon2DResourceProviderTest, AcceleratedOverlay) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_FALSE(provider->IsSoftware());
-  EXPECT_TRUE(provider->IsSingleBuffered());
-  // As it is an accelerated canvas, it will internally force it to RGBA8 on
-  // MacOS, or otherwise RGBA8 if not on Windows
+  EXPECT_TRUE(provider->GetSharedImageUsageFlags().Has(
+      gpu::SHARED_IMAGE_USAGE_SCANOUT));
+  // As it is an accelerated canvas, it will internally force it to BGRA8 on
+  // MacOS when scanout is used, or RGBA8 otherwise.
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
-#elif !BUILDFLAG(IS_WIN)
+#else
   EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
-#else
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 #endif
 }
 
@@ -194,12 +188,11 @@ TEST_F(CanvasNon2DResourceProviderTest, Texture) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_FALSE(provider->IsSoftware());
-  EXPECT_FALSE(provider->IsSingleBuffered());
+  EXPECT_FALSE(provider->GetSharedImageUsageFlags().Has(
+      gpu::SHARED_IMAGE_USAGE_SCANOUT));
   // As it is an accelerated canvas, it will internally force it to kRGBA8
   EXPECT_EQ(GetSkImageInfo(provider.get()),
             kInfo.makeColorType(kRGBA_8888_SkColorType));
-
-  EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
 class CanvasNon2DResourceProviderSyncTokenTest
@@ -309,42 +302,6 @@ TEST_F(CanvasNon2DResourceProviderTest, SoftwareSharedImage_SWCompositing) {
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_TRUE(provider->IsSoftware());
   EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
-
-  EXPECT_FALSE(provider->IsSingleBuffered());
-}
-
-TEST_F(CanvasNon2DResourceProviderTest,
-       ConcurrentReadWriteUsageResultsInSingleBuffering) {
-  const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo =
-      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
-
-  const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   gfx::HDRMetadata(),
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProvider::Create(
-      kSize, color_params, context_provider_wrapper_, shared_image_usage_flags);
-
-  EXPECT_EQ(provider->Size(), kSize);
-  EXPECT_TRUE(provider && provider->IsValid());
-  EXPECT_FALSE(provider->IsSoftware());
-  EXPECT_TRUE(provider->IsSingleBuffered());
-  // As it is an accelerated canvas, it will internally force it to RGBA8 on
-  // MacOS, or otherwise RGBA8 if not on Windows
-#if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
-              kInfo.makeColorType(kBGRA_8888_SkColorType));
-#elif !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
-              kInfo.makeColorType(kRGBA_8888_SkColorType));
-#else
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
-#endif
 }
 
 TEST_F(CanvasNon2DResourceProviderTest,

@@ -2348,7 +2348,6 @@ bool WebGLRenderingContextBase::
         CanvasNon2DResourceProvider* resource_provider,
         SourceDrawingBuffer source_buffer) {
   DCHECK(resource_provider);
-  DCHECK(!resource_provider->IsSingleBuffered());
   CHECK(!resource_provider->IsSoftware());
 
   // Early-out if the context has been lost.

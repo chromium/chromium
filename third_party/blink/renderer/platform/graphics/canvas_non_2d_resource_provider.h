@@ -145,7 +145,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   ~CanvasNon2DResourceProvider() override;
 
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
-  bool IsSingleBuffered() const;
 
   bool IsSoftware() const { return is_software_; }
 

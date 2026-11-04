@@ -88,14 +88,6 @@ CanvasNon2DResourceProvider::Create(
   bool should_force_bgra8_to_rgba =
       !shared_image_usage_flags.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                                        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-#if BUILDFLAG(IS_WIN)
-  // Concurrent read/write on Windows results in a swapchain backing, which
-  // supports BGRA; hence there is no need to force to RGBA in this case.
-  should_force_bgra8_to_rgba =
-      should_force_bgra8_to_rgba &&
-      !shared_image_usage_flags.Has(
-          gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-#endif
 
 #if BUILDFLAG(IS_LINUX)
   // WebGpu preferred canvas on linux is RGBA and interop (vk on gl) is
@@ -112,28 +104,15 @@ CanvasNon2DResourceProvider::Create(
       is_gpu_compositing_enabled &&
       IsScanoutSupportedForCanvasWithFormat(format, capabilities);
 
-  // If we cannot use overlay, we have to remove the scanout flag and the
-  // concurrent read write flag.
+  // If we cannot use overlay, we have to remove the scanout flag.
   const auto& shared_image_caps = context_provider_wrapper->ContextProvider()
                                       .SharedImageInterface()
                                       ->GetCapabilities();
   bool is_overlay_supported = is_mappable_shared_image_allowed &&
                               shared_image_caps.supports_scanout_shared_images;
 
-#if BUILDFLAG(IS_WIN)
-  // On Windows, SCANOUT usage is additionally supported in the special case
-  // of the swapchain being used on the service side to implement concurrent
-  // read/write.
-  is_overlay_supported = is_overlay_supported ||
-                         (shared_image_usage_flags.Has(
-                              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
-                          shared_image_caps.shared_image_swap_chain);
-#endif
-
   if (!is_overlay_supported) {
-    shared_image_usage_flags.RemoveAll(
-        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-        gpu::SHARED_IMAGE_USAGE_SCANOUT);
+    shared_image_usage_flags.RemoveAll(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -284,12 +263,9 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
               ? std::make_optional(
                     Canvas2DResourceProvider::kUnusedResourceExpirationTime)
               : std::nullopt;
-      bool is_single_buffered = shared_image_usage_flags.Has(
-          gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii, "CanvasResourceRaster",
-          is_single_buffered ? 0 : kMaxRecycledCanvasResources,
+          image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
           expiration_time);
     }
   }
@@ -366,8 +342,6 @@ CanvasNon2DResourceProvider::NewOrRecycledResource() {
   if (!resource) {
     return nullptr;
   }
-
-  CHECK(!IsSingleBuffered() || !resource->IsInitialized());
 
   if (!resource->IsInitialized()) {
     if (image_pool_->GetImageInfo().is_software) {
@@ -456,11 +430,6 @@ void CanvasNon2DResourceProvider::ClearUnusedResources() {
   }
 }
 
-bool CanvasNon2DResourceProvider::IsSingleBuffered() const {
-  return image_pool_ && image_pool_->GetImageInfo().usage.Has(
-                            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-}
-
 void CanvasNon2DResourceProvider::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
   if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
@@ -485,14 +454,6 @@ bool CanvasNon2DResourceProvider::IsGpuContextLost() const {
 bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
   CHECK(!is_software_);
-
-  // If the canvas is single buffered, concurrent read/writes to the resource
-  // are allowed. Note that we ignore the resource lost case as well since
-  // that only indicates that we did not get a sync token for read/write
-  // synchronization which is not a requirement for single buffered canvas.
-  if (IsSingleBuffered()) {
-    return false;
-  }
 
   // If the resource was lost, we can not use it for writes again.
   if (resource()->IsLost()) {
@@ -603,9 +564,6 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
   DCHECK(resource_);
 
   // Since the resource will be updated, the cached snapshot is no longer valid.
-  // Note that this is valid for single buffered mode also, since while the
-  // resource/mailbox remains the same, the snapshot needs an updated sync token
-  // for these writes.
   cached_snapshot_.reset();
 
   // Determine if a new resource is needed.
