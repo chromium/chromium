@@ -7,6 +7,9 @@
 #import <UIKit/UIKit.h>
 
 #import <ranges>
+#import <string>
+#import <string_view>
+#import <utility>
 
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
@@ -27,6 +30,32 @@
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+
+namespace {
+
+// Suffix appended to the host of Google AMP cache pages in the zoom pref keys.
+constexpr std::string_view kAmpUrlKeySuffix = "/amp";
+
+// Adds to `hosts` the hosts of the zoom levels in `zoom_levels`. Zoom levels
+// are stored by dotted path, so a host like `www.example.com` is stored as
+// nested dictionaries; `host_prefix` is the part of the host already visited.
+void CollectZoomHosts(const base::DictValue& zoom_levels,
+                      const std::string& host_prefix,
+                      std::set<std::string>& hosts) {
+  for (const auto [key, value] : zoom_levels) {
+    std::string host = host_prefix.empty() ? key : host_prefix + "." + key;
+    if (value.is_dict()) {
+      CollectZoomHosts(value.GetDict(), host, hosts);
+      continue;
+    }
+    if (host.ends_with(kAmpUrlKeySuffix)) {
+      host.resize(host.size() - kAmpUrlKeySuffix.size());
+    }
+    hosts.insert(std::move(host));
+  }
+}
+
+}  // namespace
 
 FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
     : web_state_(web_state), weak_factory_(this) {
@@ -58,6 +87,19 @@ void FontSizeTabHelper::RegisterProfilePrefs(
 
 void FontSizeTabHelper::ClearUserZoomPrefs(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kIosUserZoomMultipliers);
+}
+
+// static
+std::set<std::string> FontSizeTabHelper::GetHostsWithUserZoom(
+    const PrefService* pref_service) {
+  std::set<std::string> hosts;
+  for (const auto [content_size_category, zoom_levels] :
+       pref_service->GetDict(prefs::kIosUserZoomMultipliers)) {
+    if (zoom_levels.is_dict()) {
+      CollectZoomHosts(zoom_levels.GetDict(), std::string(), hosts);
+    }
+  }
+  return hosts;
 }
 
 void FontSizeTabHelper::SetPageFontSize(int size) {
@@ -232,7 +274,7 @@ std::string FontSizeTabHelper::GetCurrentUserZoomMultiplierKey() const {
 
 std::string FontSizeTabHelper::GetUserZoomMultiplierKeyUrlPart() const {
   if (IsGoogleCachedAMPPage()) {
-    return web_state_->GetLastCommittedURL().GetHost().append("/amp");
+    return web_state_->GetLastCommittedURL().GetHost().append(kAmpUrlKeySuffix);
   }
 
   return web_state_->GetLastCommittedURL().GetHost();

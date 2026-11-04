@@ -25,6 +25,7 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -65,6 +66,13 @@ const char kOldSiteURL[] = "https://old.example.com";
 
 // Age of a site settings exception that falls outside of the last hour.
 constexpr base::TimeDelta kOldSiteSettingAge = base::Days(2);
+
+// Pref path of a stored zoom level, as `<content size category>.<host>`. The
+// content size category is arbitrary.
+const char kZoomLevelPath[] = "UICTContentSizeCategoryL.www.example.com";
+
+// Arbitrary non-default zoom multiplier.
+constexpr double kZoomMultiplier = 1.5;
 
 // Hosts used for "never translate" entries.
 const char kRecentNeverTranslateSite[] = "recent.example.com";
@@ -404,4 +412,44 @@ TEST_F(BrowsingDataRemoverImplTest, RemovesNeverTranslateSitesInTimePeriod) {
   EXPECT_FALSE(
       translate_prefs->IsSiteOnNeverPromptList(kRecentNeverTranslateSite));
   EXPECT_TRUE(translate_prefs->IsSiteOnNeverPromptList(kOldNeverTranslateSite));
+}
+
+// Tests that zoom levels are removed with site settings for all time.
+TEST_F(BrowsingDataRemoverImplTest, RemovesZoomLevelsForAllTime) {
+  ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kIosUserZoomMultipliers)
+      ->SetByDottedPath(kZoomLevelPath, kZoomMultiplier);
+
+  RemoveAndWait(browsing_data::TimePeriod::ALL_TIME,
+                BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS);
+
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers).empty());
+}
+
+// Tests that zoom levels are kept when removing site settings for a time
+// range, since they don't store a last-modified time.
+TEST_F(BrowsingDataRemoverImplTest, KeepsZoomLevelsForTimeRange) {
+  ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kIosUserZoomMultipliers)
+      ->SetByDottedPath(kZoomLevelPath, kZoomMultiplier);
+
+  RemoveAndWait(browsing_data::TimePeriod::LAST_HOUR,
+                BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS);
+
+  EXPECT_EQ(kZoomMultiplier, profile_->GetPrefs()
+                                 ->GetDict(prefs::kIosUserZoomMultipliers)
+                                 .FindDoubleByDottedPath(kZoomLevelPath));
+}
+
+// Tests that zoom levels are kept when removing site settings older than 30
+// days, since that period also has an open start but isn't all time.
+TEST_F(BrowsingDataRemoverImplTest, KeepsZoomLevelsForOlderThan30Days) {
+  ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kIosUserZoomMultipliers)
+      ->SetByDottedPath(kZoomLevelPath, kZoomMultiplier);
+
+  RemoveAndWait(browsing_data::TimePeriod::OLDER_THAN_30_DAYS,
+                BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS);
+
+  EXPECT_EQ(kZoomMultiplier, profile_->GetPrefs()
+                                 ->GetDict(prefs::kIosUserZoomMultipliers)
+                                 .FindDoubleByDottedPath(kZoomLevelPath));
 }

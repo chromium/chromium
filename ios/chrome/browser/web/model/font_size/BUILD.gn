@@ -46,6 +46,7 @@ source_set("unit_tests") {
     ":font_size_js",
     "//base",
     "//base/test:test_support",
+    "//components/prefs",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",

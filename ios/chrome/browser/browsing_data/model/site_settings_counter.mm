@@ -18,6 +18,7 @@
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 
 SiteSettingsCounter::SiteSettingsCounter(
     scoped_refptr<HostContentSettingsMap> host_content_settings_map,
@@ -76,6 +77,12 @@ void SiteSettingsCounter::Count() {
        translate::TranslatePrefs(pref_service_)
            .GetNeverPromptSitesBetween(period_start, period_end)) {
     hosts.insert(site);
+  }
+
+  // Zoom levels don't store a last-modified time, so they're only counted for
+  // all time, matching when they're cleared.
+  if (period_start.is_null() && period_end.is_max()) {
+    hosts.merge(FontSizeTabHelper::GetHostsWithUserZoom(pref_service_));
   }
 
   ReportResult(static_cast<ResultInt>(hosts.size()) + empty_host_pattern_count);

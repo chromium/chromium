@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -330,4 +331,35 @@ TEST_F(FontSizeTabHelperTest, GoogleCachedAMPPageHasSeparateKey) {
       profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(google_pref_key));
   EXPECT_EQ(0.9, pref.FindDoubleByDottedPath(google_amp_pref_key));
+}
+
+// Tests that the hosts with a stored zoom level are returned for all content
+// size categories, with the Google AMP cache suffix removed.
+TEST_F(FontSizeTabHelperTest, GetHostsWithUserZoom) {
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kIosUserZoomMultipliers);
+    update->SetByDottedPath(
+        base::StringPrintf(
+            "%s.%s",
+            base::SysNSStringToUTF8(UIContentSizeCategoryLarge).c_str(),
+            "www.example.com"),
+        1.1);
+    update->SetByDottedPath(
+        base::StringPrintf(
+            "%s.%s",
+            base::SysNSStringToUTF8(UIContentSizeCategoryExtraLarge).c_str(),
+            "test.url"),
+        0.9);
+    update->SetByDottedPath(
+        base::StringPrintf(
+            "%s.%s",
+            base::SysNSStringToUTF8(UIContentSizeCategoryLarge).c_str(),
+            "www.google.com/amp"),
+        1.2);
+  }
+
+  EXPECT_EQ(
+      (std::set<std::string>{"test.url", "www.example.com", "www.google.com"}),
+      FontSizeTabHelper::GetHostsWithUserZoom(profile_->GetPrefs()));
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_WEB_MODEL_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_
 
 #include <optional>
+#include <set>
 #include <string>
 
 #import "base/memory/raw_ptr.h"
@@ -68,6 +69,11 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
 
   // Remove any stored zoom levels from `pref_service`.
   static void ClearUserZoomPrefs(PrefService* pref_service);
+
+  // Returns the hosts with a stored zoom level in `pref_service`, for any
+  // content size category.
+  static std::set<std::string> GetHostsWithUserZoom(
+      const PrefService* pref_service);
 
   // Register the Profile's preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

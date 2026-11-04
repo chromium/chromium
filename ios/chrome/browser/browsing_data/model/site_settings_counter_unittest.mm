@@ -17,6 +17,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -31,6 +32,16 @@ const char kSecondSiteURL[] = "https://second.example.com";
 // Hosts of `kFirstSiteURL` and of a site only on the "never translate" list.
 const char kFirstSiteHost[] = "first.example.com";
 const char kNeverTranslateOnlyHost[] = "translate.example.com";
+
+// Pref paths of stored zoom levels, as `<content size category>.<host>`. The
+// content size category is arbitrary.
+const char kFirstSiteZoomLevelPath[] =
+    "UICTContentSizeCategoryL.first.example.com";
+const char kZoomOnlyZoomLevelPath[] =
+    "UICTContentSizeCategoryL.zoom.example.com";
+
+// Arbitrary non-default zoom multiplier.
+constexpr double kZoomMultiplier = 1.5;
 
 // Age of a site settings exception that falls outside of the counted period.
 constexpr base::TimeDelta kOldSiteSettingAge = base::Days(2);
@@ -151,4 +162,27 @@ TEST_F(SiteSettingsCounterTest, CountsOnlyNeverTranslateSitesInPeriod) {
 
   EXPECT_EQ(1, CountSince(now - kCountedPeriod));
   EXPECT_EQ(2, CountSince(base::Time()));
+}
+
+// Tests that zoom levels are counted for all time, and that a site with both
+// a zoom level and another site setting is counted once.
+TEST_F(SiteSettingsCounterTest, CountsZoomLevelsForAllTime) {
+  AddNeverTranslateSite(kFirstSiteHost, base::Time::Now());
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kIosUserZoomMultipliers);
+    update->SetByDottedPath(kFirstSiteZoomLevelPath, kZoomMultiplier);
+    update->SetByDottedPath(kZoomOnlyZoomLevelPath, kZoomMultiplier);
+  }
+
+  EXPECT_EQ(2, CountSince(base::Time()));
+}
+
+// Tests that zoom levels aren't counted for a time range, since they don't
+// store a last-modified time.
+TEST_F(SiteSettingsCounterTest, DoesNotCountZoomLevelsForTimeRange) {
+  ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kIosUserZoomMultipliers)
+      ->SetByDottedPath(kZoomOnlyZoomLevelPath, kZoomMultiplier);
+
+  EXPECT_EQ(0, CountSince(base::Time::Now() - kCountedPeriod));
 }

@@ -111,6 +111,7 @@ source_set("counters") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/web/model/font_size",
     "//ios/web/public",
     "//net",
   ]
@@ -169,6 +170,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model:authentication_service_factory",

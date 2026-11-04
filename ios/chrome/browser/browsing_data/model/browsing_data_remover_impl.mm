@@ -741,8 +741,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS)) {
-    // TODO(crbug.com/580896516): Also clear per-site zoom levels, matching
-    // Desktop/Android.
     base::RecordAction(
         base::UserMetricsAction("ClearBrowsingData_ContentSettings"));
     RemoveSiteSettings(
@@ -750,6 +748,12 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
         delete_begin, delete_end);
     ChromeIOSTranslateClient::CreateTranslatePrefs(profile_->GetPrefs())
         ->DeleteNeverPromptSitesBetween(delete_begin, delete_end);
+    // TODO(crbug.com/581332708): Clear zoom levels within the time range once
+    // they store a last-modified time. Until then, they can only be cleared
+    // for all time.
+    if (delete_begin.is_null() && delete_end.is_max()) {
+      FontSizeTabHelper::ClearUserZoomPrefs(profile_->GetPrefs());
+    }
   }
 
   // Remove stored zoom levels.

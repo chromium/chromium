@@ -14,7 +14,8 @@ class PrefService;
 
 // `SiteSettingsCounter` is a `BrowsingDataCounter` that counts the number of
 // sites with user-set permission exceptions or "never translate" entries
-// modified within the deletion period.
+// modified within the deletion period, and, for all time only, sites with zoom
+// levels.
 class SiteSettingsCounter : public browsing_data::BrowsingDataCounter {
  public:
   SiteSettingsCounter(
