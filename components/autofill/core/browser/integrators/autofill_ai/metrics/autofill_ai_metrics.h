@@ -19,18 +19,6 @@ namespace autofill {
 
 class EntityType;
 
-// Logs metrics related to the user seeing an IPH, accepting it and eventually
-// seeing or accepting the FFR dialog.
-enum class AutofillAiOptInFunnelEvents {
-  kIphShown = 0,
-  kFFRDialogShown = 1,
-  kFFRLearnMoreButtonClicked = 2,
-  kFFRDialogAccepted = 3,
-  kMaxValue = kFFRDialogAccepted,
-};
-
-void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event);
-
 // Funnel events for fetching and displaying the Google Wallet public pass
 // legal disclosure notice during the save prompt.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai

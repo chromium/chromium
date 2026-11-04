@@ -3089,8 +3089,6 @@ source_set("browser") {
       "//chrome/browser/ui/desktop_to_mobile_promos:service",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions:extensions_menu_handler",
-      "//chrome/browser/ui/feature_first_run",
-      "//chrome/browser/ui/feature_first_run:impl",
       "//chrome/browser/ui/focus",
       "//chrome/browser/ui/focus:impl",
       "//chrome/browser/ui/frame",

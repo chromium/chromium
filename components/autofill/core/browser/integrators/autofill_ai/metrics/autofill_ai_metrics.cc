@@ -35,10 +35,6 @@ constexpr std::string_view kNumberOfEntitiesDedupedHistogramName =
 
 }  // namespace
 
-void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event) {
-  base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Funnel", event);
-}
-
 void LogWalletNoticeFunnelEvent(AutofillAiWalletNoticeFunnelEvents event,
                                 bool in_settings) {
   base::UmaHistogramEnumeration(in_settings

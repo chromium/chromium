@@ -198,9 +198,6 @@
   E_CPONLY(kColorExtensionsMenuSecondaryText) \
   /* Extension manager WebUI colors. */ \
   E_CPONLY(kColorExtensionManagerHighlightText) \
-  /* Feature first run dialog colors. */ \
-  E_CPONLY(kColorFeatureFirstRunInfoContainerBackground) \
-  E_CPONLY(kColorFeatureFirstRunIconColor) \
   /* Feature Promo bubble colors. */ \
   E_CPONLY(kColorFeaturePromoBubbleBackground) \
   E_CPONLY(kColorFeaturePromoBubbleButtonBorder) \

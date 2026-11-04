@@ -339,13 +339,6 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="The model returned a valid, non-empty result."/>
 </enum>
 
-<enum name="AutofillAiOptInFunnelEvents">
-  <int value="0" label="IPH was shown"/>
-  <int value="1" label="FFR was shown"/>
-  <int value="2" label="The FFR learn more button was clicked"/>
-  <int value="3" label="FFR was accepted"/>
-</enum>
-
 <!-- LINT.IfChange(AutofillAiOptInStatus) -->
 
 <enum name="AutofillAiOptInStatus">
