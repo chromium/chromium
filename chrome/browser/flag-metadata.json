@@ -2103,14 +2103,9 @@
     "expiry_milestone": 150
   },
   {
-    "name": "clank-mini-omnibox",
+    "name": "clank-omnibox-minimization",
     "owners": [ "lukedeng@chromium.org" ],
-    "expiry_milestone": 170
-  },
-  {
-    "name": "clank-omnibox-same-origin-minimization",
-    "owners": [ "lukedeng@chromium.org" ],
-    "expiry_milestone": 170
+    "expiry_milestone": 175
   },
   {
     "name": "clank-startup-tab-optimizations",

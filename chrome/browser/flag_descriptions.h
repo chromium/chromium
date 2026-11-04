@@ -6121,16 +6121,12 @@ inline constexpr char kClankDefaultBrowserPromoRoleManagerDescription[] =
     "Sets the Role Manager Default Browser Promo for testing the new "
     "Default Browser Promo Feature";
 
-inline constexpr char kClankMiniOmniboxName[] = "Clank Mini-Omnibox";
-inline constexpr char kClankMiniOmniboxDescription[] =
-    "Enables a compact mini-Omnibox toolbar with reduced height and dense "
-    "typography.";
-
-inline constexpr char kClankOmniboxSameOriginMinimizationName[] =
-    "Clank Omnibox Same-Origin Minimization";
-inline constexpr char kClankOmniboxSameOriginMinimizationDescription[] =
-    "Suppresses Omnibox expansion during same-origin navigations when the user "
-    "has scrolled down.";
+inline constexpr char kClankOmniboxMinimizationName[] =
+    "Clank Omnibox Minimization";
+inline constexpr char kClankOmniboxMinimizationDescription[] =
+    "Enables Omnibox minimization experiments: suppressing expansion during "
+    "same-origin navigations when scrolled down (Experiment A) or using a "
+    "compact mini-Omnibox toolbar (Experiment B).";
 
 inline constexpr char kClankStartupTabOptimizationsName[] =
     "Clank startup and tab creation optimizations";

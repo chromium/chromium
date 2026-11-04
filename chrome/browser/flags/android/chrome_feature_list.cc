@@ -384,8 +384,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kChromeSurveyNextAndroid,
     &kClampAutomotiveScaling,
     &kClankGlicContextMenu,
-    &kClankMiniOmnibox,
-    &kClankOmniboxSameOriginMinimization,
+    &kClankOmniboxMinimization,
     &kClankStartupLatencyInjection,
     &kClankStartupTabOptimizations,
     &kClankWhatsNew,
@@ -846,8 +845,7 @@ BASE_FEATURE(kChromeNativeUrlOverriding, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeSurveyNextAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kClampAutomotiveScaling, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kClankGlicContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kClankMiniOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kClankOmniboxSameOriginMinimization, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClankOmniboxMinimization, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClankStartupLatencyInjection, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClankStartupTabOptimizations, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClankWhatsNew, base::FEATURE_DISABLED_BY_DEFAULT);

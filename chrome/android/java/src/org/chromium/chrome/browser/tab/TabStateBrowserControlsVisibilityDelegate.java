@@ -97,7 +97,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     // There shouldn't be very many outstanding navigations at once so an ArraySet should be fine.
     private final Set<Long> mOutstandingNavigations = new ArraySet<>();
 
-    // Outstanding navigations that skipped the load lock (ClankOmniboxSameOriginMinimization).
+    // Outstanding navigations that skipped the load lock (ClankOmniboxMinimization).
     private final Set<Long> mKeepHiddenNavigationIds = new ArraySet<>();
 
     /**
@@ -289,10 +289,10 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         return enableHidingBrowserControls;
     }
 
-    /** Returns whether a navigation can skip the load lock (ClankOmniboxSameOriginMinimization). */
+    /** Returns whether a navigation can skip the load lock (ClankOmniboxMinimization Exp A). */
     private boolean shouldKeepControlsHiddenOnStart(NavigationHandle navigation) {
         // TODO(crbug.com/579544759): Filter by navigation type.
-        return ChromeFeatureList.sClankOmniboxSameOriginMinimization.isEnabled()
+        return BrowserControlsUtils.isHideOmniboxOnSameOriginNavEnabled()
                 && canKeepOmniboxHiddenInTab()
                 && areBrowserControlsOffScreen()
                 && isSameOriginHttpOrHttpsNavigation(navigation);

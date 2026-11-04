@@ -3379,13 +3379,20 @@ const FeatureEntry::FeatureVariation
         {"1500ms", kBrowserControlsLockoutDuration1500msParam, nullptr},
         {"2000ms", kBrowserControlsLockoutDuration2000msParam, nullptr}};
 
-const FeatureEntry::FeatureParam kClankMiniOmnibox44dpParams[] = {
-    {"mini_toolbar_height_dp", "44"}};
-const FeatureEntry::FeatureParam kClankMiniOmnibox40dpParams[] = {
-    {"mini_toolbar_height_dp", "40"}};
-const FeatureEntry::FeatureVariation kClankMiniOmniboxVariations[] = {
-    {"44dp Compact Height", kClankMiniOmnibox44dpParams, nullptr},
-    {"40dp Extra Compact Height", kClankMiniOmnibox40dpParams, nullptr},
+const FeatureEntry::FeatureParam
+    kClankOmniboxMinimizationHideOnSameOriginParams[] = {
+        {"arm", "hide_on_same_origin_nav"},
+        {"fallback_show_after_ms", "1000"},
+        {"suppress_pull_to_refresh_reveal", "true"}};
+const FeatureEntry::FeatureParam
+    kClankOmniboxMinimizationMinimizeOmniboxParams[] = {
+        {"arm", "minimize_omnibox"},
+        {"mini_toolbar_height_dp", "44"}};
+const FeatureEntry::FeatureVariation kClankOmniboxMinimizationVariations[] = {
+    {"Hide on Same-Origin Navigation",
+     kClankOmniboxMinimizationHideOnSameOriginParams, nullptr},
+    {"Minimize Omnibox", kClankOmniboxMinimizationMinimizeOmniboxParams,
+     nullptr},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -11756,17 +11763,12 @@ const FeatureEntry kFeatureEntries[] = {
          kBrowserControlsLockoutDurationVariations,
          "BrowserControlsLockoutDuration")},
 
-    {"clank-mini-omnibox", flag_descriptions::kClankMiniOmniboxName,
-     flag_descriptions::kClankMiniOmniboxDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kClankMiniOmnibox,
-                                    kClankMiniOmniboxVariations,
-                                    "ClankMiniOmnibox")},
-
-    {"clank-omnibox-same-origin-minimization",
-     flag_descriptions::kClankOmniboxSameOriginMinimizationName,
-     flag_descriptions::kClankOmniboxSameOriginMinimizationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kClankOmniboxSameOriginMinimization)},
+    {"clank-omnibox-minimization",
+     flag_descriptions::kClankOmniboxMinimizationName,
+     flag_descriptions::kClankOmniboxMinimizationDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kClankOmniboxMinimization,
+                                    kClankOmniboxMinimizationVariations,
+                                    "ClankOmniboxMinimization")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

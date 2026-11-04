@@ -18420,6 +18420,7 @@ from previous Chrome versions.
       label="AndroidShowRestoreTabsPromoOnFREBypassedKillSwitch:disabled"/>
   <int value="1022960145" label="CrosBlockWarnings:enabled"/>
   <int value="1022992701" label="enable-origin-chip-always"/>
+  <int value="1023204202" label="ClankOmniboxMinimization:enabled"/>
   <int value="1023319882" label="HttpsOnlyMode:disabled"/>
   <int value="1023668536" label="PrintServerUi:enabled"/>
   <int value="1023777155" label="AutocorrectParamsTuning:enabled"/>
@@ -20787,6 +20788,7 @@ from previous Chrome versions.
   <int value="1715338237" label="ContextualSearchSecondTap:disabled"/>
   <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
   <int value="1715574211" label="ExtensionInstallSiteAccessOptions:enabled"/>
+  <int value="1715622249" label="ClankOmniboxMinimization:disabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>
   <int value="1716533817" label="FastPairLowPower:enabled"/>
   <int value="1717051555" label="AndroidTabDeclutterArchiveOnDesktop:enabled"/>

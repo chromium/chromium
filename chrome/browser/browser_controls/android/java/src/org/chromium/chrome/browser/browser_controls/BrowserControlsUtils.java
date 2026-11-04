@@ -85,6 +85,48 @@ public class BrowserControlsUtils {
                 && ChromeFeatureList.sLockTopControlsForceAdjustHeightOnStartup.getValue();
     }
 
+    /**
+     * Returns whether Omnibox expansion is suppressed on same-origin navigations while scrolled
+     * down (Experiment A of {@link ChromeFeatureList#CLANK_OMNIBOX_MINIMIZATION}).
+     */
+    public static boolean isHideOmniboxOnSameOriginNavEnabled() {
+        return ChromeFeatureList.sClankOmniboxMinimization.isEnabled()
+                && "hide_on_same_origin_nav"
+                        .equals(ChromeFeatureList.sClankOmniboxMinimizationArm.getValue());
+    }
+
+    /**
+     * Returns whether the compact Mini-Omnibox toolbar is enabled (Experiment B of {@link
+     * ChromeFeatureList#CLANK_OMNIBOX_MINIMIZATION}).
+     */
+    public static boolean isMinimizeOmniboxEnabled() {
+        return ChromeFeatureList.sClankOmniboxMinimization.isEnabled()
+                && "minimize_omnibox"
+                        .equals(ChromeFeatureList.sClankOmniboxMinimizationArm.getValue());
+    }
+
+    /** Returns the slow-load fallback reveal delay in ms when Experiment A is enabled, or 0. */
+    public static int getSameOriginOmniboxFallbackShowAfterMs() {
+        if (!isHideOmniboxOnSameOriginNavEnabled()) return 0;
+        return ChromeFeatureList.sClankOmniboxMinimizationFallbackShowAfterMs.getValue();
+    }
+
+    /**
+     * Returns whether pull-to-refresh should be suppressed until the Omnibox is revealed when
+     * Experiment A is enabled.
+     */
+    public static boolean shouldSuppressPullToRefreshOnOmniboxReveal() {
+        return isHideOmniboxOnSameOriginNavEnabled()
+                && ChromeFeatureList.sClankOmniboxMinimizationSuppressPullToRefreshReveal
+                        .getValue();
+    }
+
+    /** Returns the compact toolbar height in dp when Experiment B is enabled, or 0 otherwise. */
+    public static int getMiniOmniboxHeightDp() {
+        if (!isMinimizeOmniboxEnabled()) return 0;
+        return ChromeFeatureList.sClankOmniboxMinimizationMiniToolbarHeightDp.getValue();
+    }
+
     /** Returns whether the top-controls hairline needs an extra offset to stay hidden. */
     public static boolean shouldContentOffsetHideTopControlsHairline(
             int contentOffset, int topControlsMinHeight, int topControlsHairlineHeight) {

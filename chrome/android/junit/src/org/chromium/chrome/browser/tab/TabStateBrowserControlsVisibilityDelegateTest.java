@@ -701,7 +701,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_SameOriginNavigationKeepsControlsHidden() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -734,7 +734,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_VisibleSameOriginLocksControls() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -751,7 +751,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_CrossOriginLocksControls() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL crossOrigin = JUnitTestGURLs.RED_1;
@@ -768,7 +768,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_CrossOriginRedirectLocksAtCommit() {
         GURL sameOriginPage = JUnitTestGURLs.BLUE_1;
         GURL sameOriginLink = JUnitTestGURLs.BLUE_2;
@@ -797,7 +797,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_RedirectBackToSameOriginStaysHidden() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -819,7 +819,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_SameOriginCommitsErrorPage() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -848,7 +848,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_NonCommittedFinishStaysHidden() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -875,7 +875,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_UserRevealsDuringSlowLoadThenCommits() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -907,7 +907,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_OverlappingEligibleNavigationsCheckedAtEachCommit() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -936,7 +936,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @DisableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_FlagDisabledParityWithBaseline() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -992,7 +992,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_OutsideTabbedBrowserNeverTriggers() {
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
@@ -1002,7 +1002,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_ReadsControlsOfTabsCurrentWindow() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -1026,7 +1026,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_BottomControlsNeverTriggers() {
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
@@ -1036,7 +1036,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_AutomotiveNeverTriggers() {
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
@@ -1045,7 +1045,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_TvNeverTriggers() {
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
@@ -1054,7 +1054,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_SubdomainChangeTreatedAsCrossOrigin() {
         GURL httpsRoot = new GURL("https://example.com/page1");
         GURL httpsSubdomain = new GURL("https://sub.example.com/page2");
@@ -1070,7 +1070,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_FromFilesystemUrlLocksControls() {
         // GURL#getOrigin() of a filesystem: URL is its inner https origin.
         GURL filesystemPage = new GURL("filesystem:https://www.blue.com/temporary/page1");
@@ -1085,7 +1085,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_SchemeChangeTreatedAsCrossOrigin() {
         GURL httpRoot = new GURL("http://example.com/page1");
         GURL httpsRoot = new GURL("https://example.com/page1");
@@ -1101,7 +1101,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_BackgroundTabNavigationLocksControls() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
         GURL page2 = JUnitTestGURLs.BLUE_2;
@@ -1120,6 +1120,14 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
         finishNavigation(navigation, page2, /* isSameOrigin= */ true);
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION + ":arm/minimize_omnibox")
+    public void testSameOriginMinimization_MinimizeOmniboxArmNeverTriggers() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        assertSameOriginNavigationLocksControls(delegate);
     }
 
     HistogramWatcher expectBrowserControlLocked() {
