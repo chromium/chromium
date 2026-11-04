@@ -168,19 +168,17 @@ void DeviceTabVisibilityHandler::HandleGetDeviceTabVisibilityList(
 
 void DeviceTabVisibilityHandler::HandleSetDeviceTabVisibility(
     const base::ListValue& args) {
-  CHECK_EQ(args.size(), 3U);
-  const base::Value& callback_id = args[0];
-  const std::string& session_tag = args[1].GetString();
+  CHECK_EQ(args.size(), 2U);
+  const std::string& session_tag = args[0].GetString();
   // TODO(crbug.com/570417844): Verify that `session_tag` corresponds to a
   // known foreign session.
   CHECK(!session_tag.empty());
-  const bool visible = args[2].GetBool();
+  const bool visible = args[1].GetBool();
   AllowJavascript();
 
   session_sync_prefs_.SetSessionVisibility(
       session_tag,
       visible ? SessionVisibility::kVisible : SessionVisibility::kHidden);
-  ResolveJavascriptCallback(callback_id, base::Value(true));
 }
 
 void DeviceTabVisibilityHandler::OnForeignSessionsChanged() {

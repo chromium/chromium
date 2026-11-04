@@ -41,7 +41,7 @@ class DeviceTabVisibilityHandler : public SettingsPageUIHandler {
   void HandleGetDeviceTabVisibilityList(const base::ListValue& args);
 
   // Handles the `"setDeviceTabVisibility"` message with arguments
-  // `[callback_id, session_tag, visible]`.
+  // `[session_tag, visible]`.
   void HandleSetDeviceTabVisibility(const base::ListValue& args);
 
   // Notifies the WebUI listener when synced foreign sessions or local

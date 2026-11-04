@@ -108,13 +108,6 @@ MATCHER_P(IsWebUIListResponse, list_matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(IsWebUIBoolResponse, expected_value, "") {
-  return arg->function_name() == kWebUIResponse && arg->arg1() &&
-         *arg->arg1() == base::Value(kCallbackId) && arg->arg2() &&
-         *arg->arg2() == base::Value(true) && arg->arg3() &&
-         *arg->arg3() == base::Value(expected_value);
-}
-
 MATCHER_P(IsListChangedEvent, list_matcher, "") {
   return arg->function_name() == kWebUIListenerCallback && arg->arg1() &&
          *arg->arg1() == base::Value(kListChangedEvent) && arg->arg2() &&
@@ -170,7 +163,6 @@ class DeviceTabVisibilityHandlerTest : public Test {
 
   void SendSetVisibilityMessage(std::string_view tag, bool visible) {
     base::ListValue args;
-    args.Append(kCallbackId);
     args.Append(tag);
     args.Append(visible);
     web_ui_.HandleReceivedMessage(kSetVisibilityMessage, args);
@@ -304,10 +296,8 @@ TEST_F(DeviceTabVisibilityHandlerTest, SetVisibilityUpdatesPrefAndNotifies) {
   EXPECT_THAT(web_ui()->call_data(),
               ElementsAre(IsListChangedEvent(ElementsAre(DictionaryHasValue(
                               kVisibleKey, base::Value(false)))),
-                          IsWebUIBoolResponse(true), IsWebUIBoolResponse(true),
                           IsListChangedEvent(ElementsAre(DictionaryHasValue(
                               kVisibleKey, base::Value(true)))),
-                          IsWebUIBoolResponse(true), IsWebUIBoolResponse(true),
                           IsListChangedEvent(ElementsAre(DictionaryHasValue(
                               kVisibleKey, base::Value(false))))));
 }
