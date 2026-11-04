@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
-#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
@@ -161,15 +160,13 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   scoped_refptr<ExportedCanvasResource> ProduceCanvasResource();
 
   bool IsValid() const;
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation = ImageOrientationEnum::kDefault);
+  scoped_refptr<StaticBitmapImage> Snapshot();
 
   scoped_refptr<ExportedCanvasResource> DoExternalOverdrawAndProduceResource(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   scoped_refptr<StaticBitmapImage> DoExternalOverdrawAndSnapshot(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation);
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   // Returns the ClientSharedImage backing this CanvasNon2DResourceProvider, if
   // one exists, after flushing the resource and signaling that an external

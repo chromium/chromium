@@ -2167,8 +2167,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
       snapshot = resource_provider->DoExternalOverdrawAndSnapshot(
           [&image](cc::PaintCanvas& canvas) {
             DrawImageToCanvas(image.get(), canvas);
-          },
-          ImageOrientationEnum::kDefault);
+          });
       copy_succeeded = true;
     }
   }

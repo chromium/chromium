@@ -291,8 +291,7 @@ GPUCanvasContext::PaintRenderingResultsToSnapshot(
                           ? SkColors::kBlack
                           : SkColors::kTransparent;
     return resource_provider->DoExternalOverdrawAndSnapshot(
-        [color](cc::PaintCanvas& canvas) { canvas.clear(color); },
-        ImageOrientationEnum::kDefault);
+        [color](cc::PaintCanvas& canvas) { canvas.clear(color); });
   }
 
   wgpu::Texture texture;

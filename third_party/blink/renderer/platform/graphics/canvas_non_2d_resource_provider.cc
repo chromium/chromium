@@ -600,8 +600,7 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
 
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DResourceProvider::DoExternalOverdrawAndSnapshot(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-    ImageOrientation orientation) {
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
 
   if (!IsValid()) {
@@ -612,7 +611,7 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndSnapshot(
   if (recorder_for_external_draws_->HasReleasableDrawOps()) {
     FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
   }
-  return Snapshot(orientation);
+  return Snapshot();
 }
 
 void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
@@ -666,8 +665,7 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
                    : nullptr;
 }
 
-scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
-    ImageOrientation orientation) {
+scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::Snapshot");
   if (!IsValid()) {
     return nullptr;
@@ -698,8 +696,7 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
     }
 
     DCHECK(!paint_image.IsTextureBacked());
-    return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                                  orientation);
+    return UnacceleratedStaticBitmapImage::Create(std::move(paint_image));
   }
 
   if (!cached_snapshot_) {
