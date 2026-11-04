@@ -310,10 +310,9 @@ PasswordCheckDelegate::GetCredentialsWithReusedPassword() {
   return result;
 }
 
-bool PasswordCheckDelegate::MuteInsecureCredential(
-    const api::passwords_private::PasswordUiEntry& credential) {
+bool PasswordCheckDelegate::MuteInsecureCredential(int id) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
-  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
+  const CredentialUIEntry* entry = id_generator_->TryGetKey(id);
   if (!entry) {
     return false;
   }
@@ -321,10 +320,9 @@ bool PasswordCheckDelegate::MuteInsecureCredential(
   return insecure_credentials_manager_.MuteCredential(*entry);
 }
 
-bool PasswordCheckDelegate::UnmuteInsecureCredential(
-    const api::passwords_private::PasswordUiEntry& credential) {
+bool PasswordCheckDelegate::UnmuteInsecureCredential(int id) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
-  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
+  const CredentialUIEntry* entry = id_generator_->TryGetKey(id);
   if (!entry) {
     return false;
   }

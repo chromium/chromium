@@ -617,7 +617,7 @@ TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialSuccess) {
 
   PasswordUiEntry credential =
       std::move(delegate().GetInsecureCredentials().at(0));
-  EXPECT_TRUE(delegate().MuteInsecureCredential(credential));
+  EXPECT_TRUE(delegate().MuteInsecureCredential(credential.id));
   RunUntilIdle();
   EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
@@ -626,7 +626,7 @@ TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialSuccess) {
                   .is_muted.value());
 
   // Expect another mute of the same credential to fail.
-  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential.id));
 }
 
 // Test that muting a insecure password fails if the underlying insecure
@@ -642,7 +642,7 @@ TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialStaleData) {
   store().RemoveLogin(FROM_HERE, password_manager::FromPasswordForm(form));
   RunUntilIdle();
 
-  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential.id));
 }
 
 // Test that muting a insecure password fails if the ids don't match.
@@ -655,9 +655,8 @@ TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialIdMismatch) {
   PasswordUiEntry credential =
       std::move(delegate().GetInsecureCredentials().at(0));
   EXPECT_EQ(0, credential.id);
-  credential.id = 1;
 
-  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+  EXPECT_FALSE(delegate().MuteInsecureCredential(1));
 }
 
 // Test that unmuting a muted insecure password succeeds.
@@ -669,7 +668,7 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialSuccess) {
 
   PasswordUiEntry credential =
       std::move(delegate().GetInsecureCredentials().at(0));
-  EXPECT_TRUE(delegate().UnmuteInsecureCredential(credential));
+  EXPECT_TRUE(delegate().UnmuteInsecureCredential(credential.id));
   RunUntilIdle();
   EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
@@ -678,7 +677,7 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialSuccess) {
                    .is_muted.value());
 
   // Expect another unmute of the same credential to fail.
-  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
+  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential.id));
 }
 
 // Test that unmuting a insecure password fails if the underlying insecure
@@ -694,7 +693,7 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialStaleData) {
   store().RemoveLogin(FROM_HERE, password_manager::FromPasswordForm(form));
   RunUntilIdle();
 
-  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
+  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential.id));
 }
 
 // Test that unmuting a insecure password fails if the ids don't match.
@@ -707,9 +706,8 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialIdMismatch) {
   PasswordUiEntry credential =
       std::move(delegate().GetInsecureCredentials().at(0));
   EXPECT_EQ(0, credential.id);
-  credential.id = 1;
 
-  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
+  EXPECT_FALSE(delegate().UnmuteInsecureCredential(1));
 }
 
 // Tests that we don't create an entry in the database if there is no matching

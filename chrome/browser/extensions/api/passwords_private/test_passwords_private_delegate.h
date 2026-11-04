@@ -82,12 +82,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   GetCredentialsWithReusedPassword() override;
   // Fake implementation of `MuteInsecureCredential`. This succeeds if the
   // delegate knows of a insecure credential with the same id.
-  bool MuteInsecureCredential(
-      const api::passwords_private::PasswordUiEntry& credential) override;
+  bool MuteInsecureCredential(int id) override;
   // Fake implementation of `UnmuteInsecureCredential`. This succeeds if the
   // delegate knows of a insecure credential with the same id.
-  bool UnmuteInsecureCredential(
-      const api::passwords_private::PasswordUiEntry& credential) override;
+  bool UnmuteInsecureCredential(int id) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
@@ -162,8 +160,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
  private:
   void SendSavedPasswordsList();
   void SendPasswordExceptionsList();
-  bool IsCredentialPresentInInsecureCredentialsList(
-      const api::passwords_private::PasswordUiEntry& credential);
+  bool IsCredentialPresentInInsecureCredentialsList(int id);
   // The current list of entries/exceptions. Cached here so that when new
   // observers are added, this delegate can send the current lists without
   // having to request them from |password_manager_presenter_| again.

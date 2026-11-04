@@ -723,12 +723,20 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   muteInsecureCredential(insecureCredential:
                              chrome.passwordsPrivate.PasswordUiEntry) {
-    chrome.passwordsPrivate.muteInsecureCredential(insecureCredential);
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApiPhase2')) {
+      chrome.passwordsPrivate.muteInsecureCredential(insecureCredential);
+      return;
+    }
+    this.handler.muteInsecureCredential(insecureCredential.id);
   }
 
   unmuteInsecureCredential(insecureCredential:
                                chrome.passwordsPrivate.PasswordUiEntry) {
-    chrome.passwordsPrivate.unmuteInsecureCredential(insecureCredential);
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApiPhase2')) {
+      chrome.passwordsPrivate.unmuteInsecureCredential(insecureCredential);
+      return;
+    }
+    this.handler.unmuteInsecureCredential(insecureCredential.id);
   }
 
   undoRemoveSavedPasswordOrException() {

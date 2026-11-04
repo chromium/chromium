@@ -74,15 +74,13 @@ class PasswordCheckDelegate
   std::vector<api::passwords_private::PasswordUiEntryList>
   GetCredentialsWithReusedPassword();
 
-  // Attempts to mute `credential` from the password store. Returns whether
-  // the mute succeeded.
-  bool MuteInsecureCredential(
-      const api::passwords_private::PasswordUiEntry& credential);
+  // Attempts to mute the credential with `id` from the password store. Returns
+  // whether the mute succeeded.
+  bool MuteInsecureCredential(int id);
 
-  // Attempts to unmute `credential` from the password store. Returns whether
-  // the unmute succeeded.
-  bool UnmuteInsecureCredential(
-      const api::passwords_private::PasswordUiEntry& credential);
+  // Attempts to unmute the credential with `id` from the password store.
+  // Returns whether the unmute succeeded.
+  bool UnmuteInsecureCredential(int id);
 
   // Checks that all preconditions for running a password check are fulfilled
   // and, once that is the case, launches the password check. Invokes `callback`

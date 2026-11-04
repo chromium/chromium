@@ -824,14 +824,12 @@ PasswordsPrivateDelegateImpl::GetCredentialsWithReusedPassword() {
   return password_check_delegate_.GetCredentialsWithReusedPassword();
 }
 
-bool PasswordsPrivateDelegateImpl::MuteInsecureCredential(
-    const api::passwords_private::PasswordUiEntry& credential) {
-  return password_check_delegate_.MuteInsecureCredential(credential);
+bool PasswordsPrivateDelegateImpl::MuteInsecureCredential(int id) {
+  return password_check_delegate_.MuteInsecureCredential(id);
 }
 
-bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
-    const api::passwords_private::PasswordUiEntry& credential) {
-  return password_check_delegate_.UnmuteInsecureCredential(credential);
+bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(int id) {
+  return password_check_delegate_.UnmuteInsecureCredential(id);
 }
 
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(

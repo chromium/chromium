@@ -481,6 +481,19 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   handler().RemovePasswordException(42);
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest, MuteInsecureCredential_CallsDelegate) {
+  EXPECT_CALL(mock_delegate(), MuteInsecureCredential(42));
+
+  handler().MuteInsecureCredential(42);
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       UnmuteInsecureCredential_CallsDelegate) {
+  EXPECT_CALL(mock_delegate(), UnmuteInsecureCredential(42));
+
+  handler().UnmuteInsecureCredential(42);
+}
+
 TEST_F(PasswordManagerUIHandlerUnitTest, StartBulkPasswordCheck_CallsDelegate) {
   EXPECT_CALL(mock_delegate(), StartPasswordCheck(_));
 

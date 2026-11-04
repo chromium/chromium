@@ -200,6 +200,14 @@ void PasswordManagerUIHandler::RemovePasswordException(int id) {
   passwords_private_delegate_->RemovePasswordException(id);
 }
 
+void PasswordManagerUIHandler::MuteInsecureCredential(int id) {
+  passwords_private_delegate_->MuteInsecureCredential(id);
+}
+
+void PasswordManagerUIHandler::UnmuteInsecureCredential(int id) {
+  passwords_private_delegate_->UnmuteInsecureCredential(id);
+}
+
 void PasswordManagerUIHandler::StartBulkPasswordCheck() {
   passwords_private_delegate_->StartPasswordCheck(base::DoNothing());
 }

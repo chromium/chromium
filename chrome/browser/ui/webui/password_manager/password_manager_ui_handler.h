@@ -71,6 +71,10 @@ class PasswordManagerUIHandler
 
   void RemovePasswordException(int id) override;
 
+  void MuteInsecureCredential(int id) override;
+
+  void UnmuteInsecureCredential(int id) override;
+
   void StartBulkPasswordCheck() override;
 
   void MovePasswordsToAccount(const std::vector<int>& ids) override;

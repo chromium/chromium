@@ -185,10 +185,8 @@ class PasswordsPrivateDelegateImpl
       override;
   std::vector<api::passwords_private::PasswordUiEntryList>
   GetCredentialsWithReusedPassword() override;
-  bool MuteInsecureCredential(
-      const api::passwords_private::PasswordUiEntry& credential) override;
-  bool UnmuteInsecureCredential(
-      const api::passwords_private::PasswordUiEntry& credential) override;
+  bool MuteInsecureCredential(int id) override;
+  bool UnmuteInsecureCredential(int id) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()

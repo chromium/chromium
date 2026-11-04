@@ -327,7 +327,7 @@ ResponseAction PasswordsPrivateMuteInsecureCredentialFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())
-           ->MuteInsecureCredential(parameters->credential)) {
+           ->MuteInsecureCredential(parameters->credential.id)) {
     return RespondNow(
         Error("Could not mute the insecure credential. Probably no matching "
               "password could be found."));
@@ -350,7 +350,7 @@ ResponseAction PasswordsPrivateUnmuteInsecureCredentialFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())
-           ->UnmuteInsecureCredential(parameters->credential)) {
+           ->UnmuteInsecureCredential(parameters->credential.id)) {
     return RespondNow(
         Error("Could not unmute the insecure credential. Probably no matching "
               "password could be found."));
