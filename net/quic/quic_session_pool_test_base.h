@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -321,6 +322,8 @@ class QuicSessionPoolTestBase : private QuicSessionPoolFeatureInitializer,
   const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
   const url::SchemeHostPort kDefaultDestination{
       url::kHttpsScheme, kDefaultServerHostName, kDefaultServerPort};
+
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
 
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<MockHostResolverBase> host_resolver_;
