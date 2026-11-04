@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] AudioWorkletGlobalScope exposes WorkletPerformance on performance
+  assert_equals: WorkletPerformance is exposed in AudioWorkletGlobalScope expected "function" but got "undefined"
+[FAIL] AudioWorkletGlobalScope performance attribute is [Replaceable]
+  assert_not_equals: globalThis has own property performance got disallowed value null
+[FAIL] performance.now() returns positive, monotonically non-decreasing values in AudioWorkletGlobalScope
+  assert_equals: performance.now() returns a number during module evaluation expected "number" but got "undefined"
+[FAIL] High resolution time in AudioWorkletGlobalScope has approximately the right relative magnitude
+  assert_equals: performance.now() returns a number expected "number" but got "undefined"
+[FAIL] Multiple AudioWorklet contexts and Window share the same time origin and monotonic clock
+  assert_equals: First AudioContext worklet performance.now() returns a number expected "number" but got "undefined"
+Harness: the test ran to completion.
+
