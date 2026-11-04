@@ -1,0 +1,29 @@
+Tests that Page.startScreenRecording rejects invalid parameters.
+Parameters: {"maxWidth":0}
+{
+    code : -32602
+    message : maxWidth and maxHeight must be between 1 and 32767, and their product at most 536870911
+}
+Parameters: {"maxHeight":-1}
+{
+    code : -32602
+    message : maxWidth and maxHeight must be between 1 and 32767, and their product at most 536870911
+}
+Parameters: {"maxWidth":40000}
+{
+    code : -32602
+    message : maxWidth and maxHeight must be between 1 and 32767, and their product at most 536870911
+}
+Parameters: {"maxWidth":30000,"maxHeight":30000}
+{
+    code : -32602
+    message : maxWidth and maxHeight must be between 1 and 32767, and their product at most 536870911
+}
+Parameters: {"frameRate":1001}
+{
+    code : -32602
+    message : frameRate must be at most 1000
+}
+Valid parameters:
+stream handle successfully created
+

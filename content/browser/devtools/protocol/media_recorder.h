@@ -22,8 +22,10 @@
 #include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/services/devtools_media_encoding_service/public/mojom/devtools_media_encoding_service.mojom.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video/video_frame_receiver_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -43,6 +45,8 @@ class WebContentsVideoCaptureDevice;
 
 namespace protocol {
 
+class DisplayCaptureLauncher;
+
 class CONTENT_EXPORT MediaRecorder
     : public media::AudioCapturerSource::CaptureCallback,
       public devtools_media_encoding_service::mojom::
@@ -58,6 +62,19 @@ class CONTENT_EXPORT MediaRecorder
                  int max_height,
                  int frame_rate);
 
+  // Records a display surface, for example the browser window that shows the
+  // target, with the device that getDisplayMedia() uses for `media_id`.
+  // Captures audio from `audio_source` if `audio` is true. Runs `callback`
+  // when the recording has started, or with an error. If the device fails
+  // later, the capture stops, but the recording stays active until Stop().
+  void StartDisplayCapture(const DesktopMediaID& media_id,
+                           WebContents* audio_source,
+                           bool audio,
+                           int max_width,
+                           int max_height,
+                           int frame_rate,
+                           base::OnceCallback<void(Response)> callback);
+
   void Stop(base::OnceCallback<void(std::string)> on_stop_callback);
   const std::string& GetStream() const { return stream_; }
 
@@ -65,8 +82,11 @@ class CONTENT_EXPORT MediaRecorder
                    media::mojom::VideoBufferHandlePtr buffer_handle);
   void OnFrameReadyInBuffer(media::ReadyFrameInBuffer frame);
   void OnBufferRetired(int buffer_id);
+  void OnVideoCaptureError();
 
  private:
+  // Stops capturing frames and audio. The recording stays active until Stop().
+  void StopDisplayCapture();
   void StartEncodingService(int max_width,
                             int max_height,
                             int frame_rate,
@@ -99,6 +119,9 @@ class CONTENT_EXPORT MediaRecorder
   gfx::Size last_surface_size_;
 
   std::unique_ptr<WebContentsVideoCaptureDevice> video_capturer_;
+  // Used instead of `video_capturer_` for the browser window.
+  std::unique_ptr<DisplayCaptureLauncher> display_capture_launcher_;
+  std::unique_ptr<media::VideoFrameReceiver> display_capture_receiver_;
   std::unique_ptr<base::RepeatingTimer> video_timer_;
   struct ClientBuffer : public base::RefCountedThreadSafe<ClientBuffer> {
     ClientBuffer();
