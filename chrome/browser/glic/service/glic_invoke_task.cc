@@ -340,8 +340,10 @@ void WaitForClientReadyTask::CheckState(ClientLoadState state) {
       break;
 
     case ClientLoadState::kError:
-      if (host_->client_load_error_reason() == ClientLoadErrorReason::kSignIn) {
-        // The client is waiting for the user, not broken. See SignInBehavior.
+      if (host_->client_load_error_reason() == ClientLoadErrorReason::kSignIn &&
+          host_->instance().IsShowing()) {
+        // The client is waiting for the user on a visible sign-in panel, not
+        // broken. See SignInBehavior.
         if (sign_in_behavior_ == SignInBehavior::kWaits) {
           break;
         }

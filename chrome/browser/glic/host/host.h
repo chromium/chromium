@@ -358,27 +358,27 @@ class Host : public GlicSharingManagerProvider {
   // placeholder view.
   virtual bool IsShowingNativeLoading() const;
 
-  // Why the client is in `ClientLoadState::kError`, when the host said. Hosts
-  // report a cause (`ClientLoadErrorOccurred()`) only for failures the user
-  // can see, and always before the failure bit that puts the client into
-  // `kError`, so this is set by the time `client_load_state()` reads `kError`
-  // for a visible failure, and empty for one the user never saw (a hidden
-  // panel, or `WebClientInitializeFailed()`). Cleared whenever the failure is
-  // withdrawn or the client becomes ready, so it never describes an earlier
-  // load.
+  // The reason for the current client load failure when `client_load_state()`
+  // is `ClientLoadState::kError`, or `std::nullopt` when no failure reason has
+  // been reported. Set from `ClientLoadErrorOccurred()` or
+  // `SetClientLoadFailed()` before `client_load_state()` transitions to
+  // `kError`, and cleared by `ClearClientLoadFailed()`, when the client
+  // becomes ready, or when the host hibernates, so it never describes an
+  // earlier load.
   std::optional<ClientLoadErrorReason> client_load_error_reason() const {
     return client_load_error_reason_;
   }
 
   // Called by whatever is hosting the client (the glic WebUI, or
-  // `GlicNoWebviewContentsManager`) when the client enters or leaves a state it
-  // cannot recover from without being reloaded.
+  // `GlicNoWebviewContentsManager`) when the client enters or leaves a state
+  // it cannot recover from without being reloaded.
   //
   // Hosts report failure only. Readiness is derived here from the web client
   // state machine, so a host cannot claim a client is usable when it is not,
   // and `client_load_state()` is `kError` or `kLoading` only while the client
-  // has yet to come up. `failed` decides which of the two.
-  void SetClientLoadFailed(bool failed);
+  // has yet to come up.
+  void SetClientLoadFailed(ClientLoadErrorReason error_reason);
+  void ClearClientLoadFailed();
 
   // As above, for reports coming from a WebUI page handler. Ignored unless
   // `page_handler` is the current page handler: the glic window supports
@@ -538,7 +538,8 @@ class Host : public GlicSharingManagerProvider {
   base::flat_map<mojom::AdditionalContextSource, mojom::AdditionalContextPtr>
       pending_additional_contexts_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
-  // The last value passed to `SetClientLoadFailed()`.
+  // Whether the current client load has failed; set by `SetClientLoadFailed()`
+  // and cleared by `ClearClientLoadFailed()`.
   bool client_load_failed_ = false;
   // The cause reported for the current failure, if any; see
   // `client_load_error_reason()`.

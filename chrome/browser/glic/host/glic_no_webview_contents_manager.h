@@ -310,7 +310,12 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // web client connection.
   bool HasClientLoadFailed() const;
 
-  // Reports `HasClientLoadFailed()` to the Host.
+  // Returns the active `ClientLoadErrorReason` when the client is stuck in a
+  // load failure state (`GuestState::kGuestError` maps to
+  // `ClientLoadErrorReason::kUnknown`), or `std::nullopt` otherwise.
+  std::optional<ClientLoadErrorReason> CurrentClientLoadErrorReason() const;
+
+  // Reports `CurrentClientLoadErrorReason()` to the Host.
   void UpdateClientLoadFailed();
 
   // The state of the web client, or `kUninitialized` if no web client has
@@ -373,13 +378,12 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   ObservableValue<GuestState> guest_state_{GuestState::kLoading};
   ObservableValue<bool> guest_main_page_loaded_{false};
   ObservableValue<std::optional<mojom::ErrorPanelType>> error_type_;
+  // Active failure cause corresponding to `error_type_`. If set before a Host
+  // is attached (while warming in the background), `AttachToHost()` reports it
+  // to the Host so failures during warming are not silently lost. Cleared by
+  // `ClearErrorState()`.
+  std::optional<ClientLoadErrorReason> error_reason_;
   base::CallbackListSubscription error_type_subscription_;
-
-  // A client load error that happened before a Host was attached, i.e. while
-  // the contents were warming in the background. Reported once AttachToHost()
-  // runs so that failures during warming are not silently lost. Dropped by
-  // ClearErrorState() if the error is resolved before then.
-  std::optional<ClientLoadErrorReason> pending_client_load_error_;
 
   GlicWebClientManager web_client_manager_;
   OverlayContentsManager overlay_manager_;
