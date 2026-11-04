@@ -13,10 +13,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -38,7 +38,7 @@ AccountStatus::Type ParseAccountStatusType(
   }
   if (response.user_account_type() == em::CheckUserAccountResponse::CONSUMER) {
     const std::string domain = gaia::ExtractDomainName(email);
-    if (enterprise_util::IsKnownConsumerDomain(domain)) {
+    if (!signin::AccountManagedStatusFinder::MayBeEnterpriseDomain(domain)) {
       return AccountStatus::Type::kConsumerWithConsumerDomain;
     }
     return AccountStatus::Type::kConsumerWithBusinessDomain;

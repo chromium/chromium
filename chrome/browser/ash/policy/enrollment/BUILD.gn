@@ -66,6 +66,7 @@ static_library("enrollment") {
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/policy/dev_mode",
     "//chromeos/ash/components/system",
+    "//components/signin/public/identity_manager",
   ]
 
   allow_circular_includes_from = [
