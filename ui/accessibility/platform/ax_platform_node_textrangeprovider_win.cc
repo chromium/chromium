@@ -1738,7 +1738,9 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange(
     return;
   NormalizeAsUnignoredPosition(start);
   NormalizeAsUnignoredPosition(end);
-  CHECK_LE(*start, *end, base::NotFatalUntil::M163);
+  // TODO(crbug.com/580442550): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LE(*start, *end);
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetRootDelegate(
