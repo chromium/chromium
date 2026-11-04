@@ -91,27 +91,74 @@ class WTF_EXPORT StringImpl {
   void* operator new(size_t, void* ptr) { return ptr; }
   void operator delete(StringImpl* impl, std::destroying_delete_t);
 
+  // Lightweight ALWAYS_INLINE atomic reference wrapper around StringImpl's
+  // aligned integer fields. Avoids libc++ std::atomic_ref's runtime alignment
+  // hardening check at every call site and avoids outlined atomic_ref helpers
+  // under -Oz.
+  template <typename T>
+  class AtomicRef {
+   public:
+    static_assert(static_cast<int>(std::memory_order_relaxed) ==
+                  __ATOMIC_RELAXED);
+    static_assert(static_cast<int>(std::memory_order_acquire) ==
+                  __ATOMIC_ACQUIRE);
+    static_assert(static_cast<int>(std::memory_order_release) ==
+                  __ATOMIC_RELEASE);
+    static_assert(static_cast<int>(std::memory_order_acq_rel) ==
+                  __ATOMIC_ACQ_REL);
+    static_assert(static_cast<int>(std::memory_order_seq_cst) ==
+                  __ATOMIC_SEQ_CST);
+
+    ALWAYS_INLINE explicit AtomicRef(T& ref) : ptr_(&ref) {}
+
+    ALWAYS_INLINE T load(std::memory_order order) const {
+      return __atomic_load_n(ptr_, static_cast<int>(order));
+    }
+    ALWAYS_INLINE void store(T desired, std::memory_order order) const {
+      __atomic_store_n(ptr_, desired, static_cast<int>(order));
+    }
+    ALWAYS_INLINE T fetch_add(T arg, std::memory_order order) const {
+      return __atomic_fetch_add(ptr_, arg, static_cast<int>(order));
+    }
+    ALWAYS_INLINE T fetch_sub(T arg, std::memory_order order) const {
+      return __atomic_fetch_sub(ptr_, arg, static_cast<int>(order));
+    }
+    ALWAYS_INLINE T fetch_or(T arg, std::memory_order order) const {
+      return __atomic_fetch_or(ptr_, arg, static_cast<int>(order));
+    }
+    ALWAYS_INLINE T fetch_and(T arg, std::memory_order order) const {
+      return __atomic_fetch_and(ptr_, arg, static_cast<int>(order));
+    }
+    ALWAYS_INLINE bool compare_exchange_weak(T& expected,
+                                             T desired,
+                                             std::memory_order success,
+                                             std::memory_order failure) const {
+      return __atomic_compare_exchange_n(
+          ptr_, &expected, desired,
+          /*weak=*/true, static_cast<int>(success), static_cast<int>(failure));
+    }
+
+   private:
+    T* const ptr_;
+  };
+
   // Used to construct static strings, which have a special ref_count_ that can
   // never hit zero. This means that the static string will never be destroyed.
   enum ConstructEmptyStringTag { kConstructEmptyString };
-  explicit StringImpl(ConstructEmptyStringTag)
+  consteval explicit StringImpl(ConstructEmptyStringTag)
       : length_(0),
-        hash_and_flags_(kAsciiPropertyCheckDone | kContainsOnlyAscii |
-                        kIsLowerAscii | kIs8Bit | kIsStatic) {
-    // Ensure that the hash is computed so that AtomicStringHash can call
-    // existingHash() with impunity. The empty string is special because it
-    // is never entered into AtomicString's HashKey, but still needs to
-    // compare correctly.
-    GetHash();
-  }
+        hash_and_flags_(
+            (HashString24(base::span<const uint8_t>()) << kHashShift) |
+            kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii |
+            kIs8Bit | kIsStatic) {}
 
   enum ConstructEmptyString16BitTag { kConstructEmptyString16Bit };
-  explicit StringImpl(ConstructEmptyString16BitTag)
+  consteval explicit StringImpl(ConstructEmptyString16BitTag)
       : length_(0),
-        hash_and_flags_(kAsciiPropertyCheckDone | kContainsOnlyAscii |
-                        kIsLowerAscii | kIsStatic) {
-    GetHash();
-  }
+        hash_and_flags_(
+            (HashString24(base::span<const uint8_t>()) << kHashShift) |
+            kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii |
+            kIsStatic) {}
 
   // FIXME: there has to be a less hacky way to do this.
   enum Force8Bit { kForce8BitConstructor };
@@ -133,12 +180,14 @@ class WTF_EXPORT StringImpl {
 
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-  static StringImpl* empty_;
-  static StringImpl* empty16_bit_;
+  static const StringImpl g_global_empty;
+  static const StringImpl g_global_empty16_bit;
+  static StringImpl* const empty_;
+  static StringImpl* const empty16_bit_;
 
   StringImpl(const StringImpl&) = delete;
   StringImpl& operator=(const StringImpl&) = delete;
-  ~StringImpl();
+  constexpr ~StringImpl() = default;
 
   static void InitStatics();
 
@@ -176,7 +225,7 @@ class WTF_EXPORT StringImpl {
 
   size_type length() const { return length_; }
   bool Is8Bit() const {
-    return hash_and_flags_.load(std::memory_order_relaxed) & kIs8Bit;
+    return HashAndFlagsAtomic().load(std::memory_order_relaxed) & kIs8Bit;
   }
 
   ALWAYS_INLINE base::span<const LChar> Span8() const {
@@ -213,19 +262,19 @@ class WTF_EXPORT StringImpl {
   ALWAYS_INLINE size_t GetAllocatedSize() const;
 
   bool IsAtomic() const {
-    return hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic;
+    return HashAndFlagsAtomic().load(std::memory_order_acquire) & kIsAtomic;
   }
 
   void SetIsAtomic() {
-    hash_and_flags_.fetch_or(kIsAtomic, std::memory_order_release);
+    HashAndFlagsAtomic().fetch_or(kIsAtomic, std::memory_order_release);
   }
 
   void UnsetIsAtomic() {
-    hash_and_flags_.fetch_and(~kIsAtomic, std::memory_order_release);
+    HashAndFlagsAtomic().fetch_and(~kIsAtomic, std::memory_order_release);
   }
 
   bool IsStatic() const {
-    return hash_and_flags_.load(std::memory_order_relaxed) & kIsStatic;
+    return HashAndFlagsAtomic().load(std::memory_order_relaxed) & kIsStatic;
   }
 
   bool ContainsOnlyAsciiOrEmpty() const;
@@ -259,16 +308,16 @@ class WTF_EXPORT StringImpl {
   }
 
   ALWAYS_INLINE bool HasOneRef() const {
-    return ref_count_.load(std::memory_order_acquire) == 1;
+    return RefCountAtomic().load(std::memory_order_acquire) == 1;
   }
 
   ALWAYS_INLINE void AddRef() const {
     if (!IsStatic()) {
       uint32_t previous_ref_count =
-          ref_count_.fetch_add(1, std::memory_order_relaxed);
+          RefCountAtomic().fetch_add(1, std::memory_order_relaxed);
       CHECK_NE(previous_ref_count, std::numeric_limits<uint32_t>::max());
 #if DCHECK_IS_ON()
-      ref_count_change_count_++;
+      RefCountChangeCountAtomic().fetch_add(1, std::memory_order_relaxed);
 #endif
     }
   }
@@ -300,14 +349,15 @@ class WTF_EXPORT StringImpl {
       // DestroyIfNeeded() performs the acquire load before checking flags.
       // Successful non-final decrements only need release ordering to publish
       // prior writes through the ref_count_ release sequence.
-      uint32_t current_ref = ref_count_.load(std::memory_order_relaxed);
+      AtomicRef<uint32_t> ref_count = RefCountAtomic();
+      uint32_t current_ref = ref_count.load(std::memory_order_relaxed);
 #if DCHECK_IS_ON()
       // In non-DCHECK builds, we can save a bit of time in micro-benchmarks by
       // not checking the arithmetic. We hope that checking in DCHECK builds is
       // enough to catch implementation bugs, and that implementation bugs are
       // the only way we'd experience underflow.
       DCHECK_NE(current_ref, 0u);
-      ref_count_change_count_++;
+      RefCountChangeCountAtomic().fetch_add(1, std::memory_order_relaxed);
 #endif
       // This is a fancy fetch_sub() that allows the actual decrement to 0 to
       // be delegated to the DestroyIfNeeded() function. The result of this
@@ -320,17 +370,19 @@ class WTF_EXPORT StringImpl {
           DestroyIfNeeded();
           return;
         }
-      } while (!ref_count_.compare_exchange_weak(current_ref, current_ref - 1,
-                                                 std::memory_order_release,
-                                                 std::memory_order_relaxed));
+      } while (!ref_count.compare_exchange_weak(current_ref, current_ref - 1,
+                                                std::memory_order_release,
+                                                std::memory_order_relaxed));
     }
   }
 
 #if DCHECK_IS_ON()
   wtf_size_t RefCountChangeCountForTesting() const {
-    return ref_count_change_count_;
+    return RefCountChangeCountAtomic().load(std::memory_order_relaxed);
   }
-  void ResetRefCountChangeCountForTesting() { ref_count_change_count_ = 0; }
+  void ResetRefCountChangeCountForTesting() {
+    RefCountChangeCountAtomic().store(0, std::memory_order_relaxed);
+  }
 #endif
 
   ALWAYS_INLINE void Adopted() const {}
@@ -551,14 +603,14 @@ class WTF_EXPORT StringImpl {
   void SetHashRaw(uint32_t hash_val) const {
     // Setting the hash is idempotent so fetch_or() is sufficient. DCHECK()
     // as a sanity check.
-    uint32_t previous_value = hash_and_flags_.fetch_or(
+    uint32_t previous_value = HashAndFlagsAtomic().fetch_or(
         hash_val << kHashShift, std::memory_order_relaxed);
     DCHECK(((previous_value >> kHashShift) == 0) ||
            ((previous_value >> kHashShift) == hash_val));
   }
 
   uint32_t GetHashRaw() const {
-    return hash_and_flags_.load(std::memory_order_relaxed) >> kHashShift;
+    return HashAndFlagsAtomic().load(std::memory_order_relaxed) >> kHashShift;
   }
 
   template <typename CharType>
@@ -625,13 +677,31 @@ class WTF_EXPORT StringImpl {
   }
 #endif
 
+  ALWAYS_INLINE AtomicRef<uint32_t> RefCountAtomic() const {
+    return AtomicRef<uint32_t>(const_cast<StringImpl*>(this)->ref_count_);
+  }
+  ALWAYS_INLINE AtomicRef<uint32_t> HashAndFlagsAtomic() const {
+    return AtomicRef<uint32_t>(const_cast<StringImpl*>(this)->hash_and_flags_);
+  }
 #if DCHECK_IS_ON()
-  mutable std::atomic<wtf_size_t> ref_count_change_count_{0};
+  ALWAYS_INLINE AtomicRef<wtf_size_t> RefCountChangeCountAtomic() const {
+    return AtomicRef<wtf_size_t>(
+        const_cast<StringImpl*>(this)->ref_count_change_count_);
+  }
+#endif
+
+  // Plain integer fields are used instead of std::atomic<T> so that
+  // constexpr StringImpl and StaticAsciiStringImpl instances contain no
+  // `mutable` subobjects (libc++'s std::atomic<T> has a `mutable` internal
+  // member) and are placed in read-only .rodata by the compiler. All runtime
+  // accesses go through AtomicRef.
+#if DCHECK_IS_ON()
+  wtf_size_t ref_count_change_count_{0};
 #endif
   // TODO (crbug.com/1083392): Use base::AtomicRefCount.
-  mutable std::atomic_uint32_t ref_count_{1};
+  uint32_t ref_count_{1};
   const size_type length_;
-  mutable std::atomic<uint32_t> hash_and_flags_;
+  uint32_t hash_and_flags_;
 };
 
 // The maximum length of a 16-bit string such that its StringImpl allocation
@@ -675,7 +745,7 @@ inline bool Equal(const StringImpl* a, base::span<const char> b) {
 WTF_EXPORT bool EqualNonNull(const StringImpl* a, const StringImpl* b);
 
 ALWAYS_INLINE bool StringImpl::ContainsOnlyAsciiOrEmpty() const {
-  uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
+  uint32_t flags = HashAndFlagsAtomic().load(std::memory_order_relaxed);
   if (flags & kAsciiPropertyCheckDone)
     return flags & kContainsOnlyAscii;
   return ComputeAsciiFlags() & kContainsOnlyAscii;
@@ -689,7 +759,7 @@ ALWAYS_INLINE size_t StringImpl::GetAllocatedSize() const {
 }
 
 ALWAYS_INLINE bool StringImpl::ContainsNoAsciiUpper() const {
-  uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
+  uint32_t flags = HashAndFlagsAtomic().load(std::memory_order_relaxed);
   if (flags & kAsciiPropertyCheckDone)
     return flags & kIsLowerAscii;
   return ComputeAsciiFlags() & kIsLowerAscii;

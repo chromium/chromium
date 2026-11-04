@@ -140,6 +140,7 @@ void* StringImpl::operator new(size_t size) {
 }
 
 void StringImpl::operator delete(StringImpl* impl, std::destroying_delete_t) {
+  DCHECK(!impl->IsStatic());
   size_t size = impl->GetAllocatedSize();
   impl->~StringImpl();
   // Use sized deallocation. We explicitly pass `GetAllocatedSize()` because
@@ -147,17 +148,13 @@ void StringImpl::operator delete(StringImpl* impl, std::destroying_delete_t) {
   Partitions::BufferFreeWithSize(impl, size);
 }
 
-inline StringImpl::~StringImpl() {
-  DCHECK(!IsStatic());
-}
-
 void StringImpl::DestroyIfNeeded() {
   // Pay the acquire cost only on the possible-last-reference path, before
   // checking kIsAtomic so we're sure flag writes are visible. The value may
   // be greater than 1 if the string was revived by AtomicStringTable::Add()
   // after Release() observed 1.
-  const uint32_t ref_count = ref_count_.load(std::memory_order_acquire);
-  if (hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic) {
+  const uint32_t ref_count = RefCountAtomic().load(std::memory_order_acquire);
+  if (HashAndFlagsAtomic().load(std::memory_order_acquire) & kIsAtomic) {
     if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(this)) {
       delete this;
     } else {
@@ -175,7 +172,7 @@ uint32_t StringImpl::ComputeAsciiFlags() const {
       *this, [](auto chars) { return CharacterAttributes(chars); });
   uint32_t new_flags = AsciiStringAttributesToFlags(ascii_attributes);
   const uint32_t previous_flags =
-      hash_and_flags_.fetch_or(new_flags, std::memory_order_relaxed);
+      HashAndFlagsAtomic().fetch_or(new_flags, std::memory_order_relaxed);
   static constexpr uint32_t mask =
       kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii;
   DCHECK((previous_flags & mask) == 0 || (previous_flags & mask) == new_flags);
@@ -251,22 +248,16 @@ void StringImpl::FreezeStaticStrings() {
 
 StringImpl::size_type StringImpl::highest_static_string_length_ = 0;
 
-DEFINE_GLOBAL(, StringImpl, g_global_empty);
-DEFINE_GLOBAL(, StringImpl, g_global_empty16_bit);
+constexpr StringImpl StringImpl::g_global_empty(
+    StringImpl::kConstructEmptyString);
+constexpr StringImpl StringImpl::g_global_empty16_bit(
+    StringImpl::kConstructEmptyString16Bit);
 // Callers need the global empty strings to be non-const.
-StringImpl* StringImpl::empty_ = const_cast<StringImpl*>(&g_global_empty);
-StringImpl* StringImpl::empty16_bit_ =
-    const_cast<StringImpl*>(&g_global_empty16_bit);
-void StringImpl::InitStatics() {
-  new ((void*)empty_) StringImpl(kConstructEmptyString);
-  new ((void*)empty16_bit_) StringImpl(kConstructEmptyString16Bit);
-  WTF_ANNOTATE_BENIGN_RACE(StringImpl::empty_,
-                           "Benign race on the reference counter of a static "
-                           "string created by StringImpl::empty");
-  WTF_ANNOTATE_BENIGN_RACE(StringImpl::empty16_bit_,
-                           "Benign race on the reference counter of a static "
-                           "string created by StringImpl::empty16Bit");
-}
+constinit StringImpl* const StringImpl::empty_ =
+    const_cast<StringImpl*>(&StringImpl::g_global_empty);
+constinit StringImpl* const StringImpl::empty16_bit_ =
+    const_cast<StringImpl*>(&StringImpl::g_global_empty16_bit);
+void StringImpl::InitStatics() {}
 
 StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
 #if DCHECK_IS_ON()
@@ -348,7 +339,7 @@ scoped_refptr<StringImpl> StringImpl::Create(
     // If length is 0 then `ret` is empty_ and should not have its
     // attributes calculated or changed.
     uint32_t new_flags = AsciiStringAttributesToFlags(ascii_attributes);
-    ret->hash_and_flags_.fetch_or(new_flags, std::memory_order_relaxed);
+    ret->HashAndFlagsAtomic().fetch_or(new_flags, std::memory_order_relaxed);
   }
 
   return ret;

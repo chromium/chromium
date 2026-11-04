@@ -588,8 +588,9 @@ bool AtomicStringTable::ReleaseAndRemoveIfNeeded(StringImpl* string) {
   base::AutoLock auto_lock(lock_);
   // Double check that the refcount is still 1. Because Add() could
   // have added a new reference after the load in StringImpl::Release.
-  if (string->ref_count_.fetch_sub(1, std::memory_order_acq_rel) != 1)
+  if (string->RefCountAtomic().fetch_sub(1, std::memory_order_acq_rel) != 1) {
     return false;
+  }
 
   auto iterator = table_.find(string);
   CHECK_NE(iterator, table_.end());

@@ -34,7 +34,7 @@ namespace blink {
 
 namespace internal {
 
-inline uint32_t MaskTop8Bits(uint64_t result) {
+constexpr inline uint32_t MaskTop8Bits(uint64_t result) {
   // Save 8 bits for StringImpl to use as flags.
   constexpr uint32_t kFlagCount = 8;
   // Reserving space from the high bits for flags preserves most of the hash's
@@ -57,7 +57,7 @@ inline uint32_t MaskTop8Bits(uint64_t result) {
 // The main entry point for the string hasher. Computes the hash and returns
 // only the lowest 24 bits, since that's what we have room for in StringImpl.
 template <class Reader = PlainHashReader>
-uint32_t HashString24(base::span<const uint8_t> data) {
+constexpr uint32_t HashString24(base::span<const uint8_t> data) {
   return internal::MaskTop8Bits(rapidhash<Reader>(
       data.data(),
       data.size() * Reader::kExpansionFactor / Reader::kCompressionFactor));
@@ -81,7 +81,8 @@ uint32_t HashString24(base::span<const uint8_t> data) {
 // removal and thus considered small enough to inline. The same goes if you are
 // the only user of your HashReader.
 template <class Reader = PlainHashReader>
-ALWAYS_INLINE uint32_t HashString24Inline(base::span<const uint8_t> data) {
+ALWAYS_INLINE constexpr uint32_t HashString24Inline(
+    base::span<const uint8_t> data) {
   return internal::MaskTop8Bits(rapidhash<Reader>(
       data.data(),
       data.size() * Reader::kExpansionFactor / Reader::kCompressionFactor));
