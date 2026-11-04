@@ -59,6 +59,12 @@ class SessionServiceTabGroupSyncObserver
       const std::optional<LocalTabGroupID> local_id,
       std::optional<std::string> sync_id);
 
+  // Records `sync_id` on closed TabRestoreService entries for `local_id` when
+  // the group is saved, re-saved, or migrated.
+  void UpdateClosedTabsSavedGroupId(
+      const std::optional<LocalTabGroupID>& local_id,
+      const base::Uuid& sync_id);
+
   // Profile used to instantiate and listen to the TabGroupSyncService.
   raw_ptr<Profile> profile_ = nullptr;
 

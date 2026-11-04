@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -21,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -58,11 +60,13 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -3986,13 +3990,64 @@ class TabRestoreFocusModeTest : public TabRestoreTest {
  public:
   TabRestoreFocusModeTest() {
     scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+    dependency_manager_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &TabRestoreFocusModeTest::RegisterFakeServices,
+                base::Unretained(this)));
   }
 
   TabRestoreFocusModeTest(const TabRestoreFocusModeTest&) = delete;
   TabRestoreFocusModeTest& operator=(const TabRestoreFocusModeTest&) = delete;
 
  protected:
+  void RegisterFakeServices(content::BrowserContext* context) {
+    collaboration::messaging::MessagingBackendServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  collaboration::messaging::EmptyMessagingBackendService>();
+            }));
+  }
+
+  tab_groups::TabGroupId CreateFocusedEphemeralGroup(
+      TabStripModel* tab_strip_model,
+      const std::vector<int>& indices) {
+    const tab_groups::TabGroupId group =
+        tab_strip_model->EnterFocusMode(indices);
+    EXPECT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
+    return group;
+  }
+
+  base::Uuid PromoteAndGetSavedGuid(
+      TabStripModel* tab_strip_model,
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData& visuals) {
+    tab_strip_model->ChangeTabGroupVisuals(group, visuals);
+    tab_strip_model->PromoteEphemeralTabGroup(group);
+    tab_groups::TabGroupSyncService* sync_service =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+            browser()->GetProfile());
+    EXPECT_TRUE(sync_service && sync_service->GetGroup(group).has_value());
+    return sync_service->GetGroup(group)->saved_guid();
+  }
+
+  void ExpectPromoted(const sessions::tab_restore::Tab& tab,
+                      const tab_groups::TabGroupId& group,
+                      const base::Uuid& saved_guid,
+                      const tab_groups::TabGroupVisualData& visuals) {
+    EXPECT_EQ(std::nullopt, tab.ephemeral_group);
+    EXPECT_EQ(group, tab.group);
+    ASSERT_TRUE(tab.group_visual_data.has_value());
+    EXPECT_EQ(visuals, *tab.group_visual_data);
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return tab.saved_group_id.has_value(); }));
+    EXPECT_EQ(saved_guid, tab.saved_group_id);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list;
+  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest, RestoreFocusedTabGroup) {
@@ -4034,9 +4089,20 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
-  const tab_groups::TabGroupId group = tab_strip_model->EnterFocusMode({0, 1});
+  const tab_groups::TabGroupId group =
+      tab_strip_model->EnterFocusMode({0, 1, 2});
   EXPECT_EQ(group, tab_strip_model->GetFocusedGroup());
   EXPECT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
+
+  // Close one tab in the ephemeral group before closing the window.
+  CloseTab(2);
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_FALSE(service->entries().empty());
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
+  const auto* closed_tab = static_cast<const sessions::tab_restore::Tab*>(
+      service->entries().front().get());
+  EXPECT_EQ(group, closed_tab->ephemeral_group);
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), chrome::ChromeUINewTabURLAsGURL(),
@@ -4047,6 +4113,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
   // Close the first browser while the ephemeral group is focused.
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_EQ(std::nullopt, closed_tab->ephemeral_group);
 
   // Restore the closed window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -4085,8 +4152,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
   ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
   const auto* closed_tab = static_cast<const sessions::tab_restore::Tab*>(
       service->entries().front().get());
-  EXPECT_EQ(group, closed_tab->group);
-  EXPECT_TRUE(closed_tab->is_group_ephemeral);
+  EXPECT_EQ(std::nullopt, closed_tab->group);
+  EXPECT_EQ(std::nullopt, closed_tab->group_visual_data);
+  EXPECT_EQ(std::nullopt, closed_tab->saved_group_id);
+  EXPECT_EQ(group, closed_tab->ephemeral_group);
 
   // Restoring while the ephemeral group is still open should restore the tab
   // back into the ephemeral group without saving the group to sync.
@@ -4102,13 +4171,20 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
     EXPECT_FALSE(sync_service->GetGroup(group).has_value());
   }
 
-  // Close the tab again, then exit focus mode (which closes the ephemeral
-  // group).
+  // Close the tab again, then exit focus mode (which dissolves the ephemeral
+  // group and clears `ephemeral_group` via GroupClosed).
   CloseTab(2);
   ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
+  const auto* closed_tab_before_exit =
+      static_cast<const sessions::tab_restore::Tab*>(
+          service->entries().front().get());
+  EXPECT_EQ(group, closed_tab_before_exit->ephemeral_group);
+
   tab_strip_model->ExitFocusMode();
   EXPECT_FALSE(tab_strip_model->GetFocusedGroup().has_value());
   EXPECT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+  EXPECT_EQ(std::nullopt, closed_tab_before_exit->ephemeral_group);
 
   // Restoring after the ephemeral group is closed should restore as a normal
   // ungrouped tab and not recreate the group.
@@ -4116,6 +4192,223 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
   ASSERT_EQ(3, tab_strip_model->count());
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(2).has_value());
   EXPECT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+
+  // Enter focus mode on {1, 2}, close both tabs one by one so closing the last
+  // tab dissolves the ephemeral group and clears `ephemeral_group` on both.
+  const tab_groups::TabGroupId second_group =
+      tab_strip_model->EnterFocusMode({1, 2});
+  CloseTab(2);
+  const auto* first_closed = static_cast<const sessions::tab_restore::Tab*>(
+      service->entries().front().get());
+  EXPECT_EQ(second_group, first_closed->ephemeral_group);
+  CloseTab(1);
+  EXPECT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+  EXPECT_EQ(std::nullopt, first_closed->ephemeral_group);
+  const auto* second_closed = static_cast<const sessions::tab_restore::Tab*>(
+      service->entries().front().get());
+  EXPECT_EQ(std::nullopt, second_closed->ephemeral_group);
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
+                       RestoreTabAfterEphemeralGroupPromoted) {
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_EQ(3, tab_strip_model->count());
+  const tab_groups::TabGroupId group =
+      CreateFocusedEphemeralGroup(tab_strip_model, {1, 2});
+
+  CloseTab(2);
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_FALSE(service->entries().empty());
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
+  const auto* closed_tab = static_cast<const sessions::tab_restore::Tab*>(
+      service->entries().front().get());
+  const SessionID closed_tab_id = closed_tab->id;
+  EXPECT_EQ(std::nullopt, closed_tab->group);
+  EXPECT_EQ(group, closed_tab->ephemeral_group);
+
+  const tab_groups::TabGroupVisualData promoted_visuals(
+      u"Promoted Group", tab_groups::TabGroupColorId::kBlue);
+  const base::Uuid saved_guid =
+      PromoteAndGetSavedGuid(tab_strip_model, group, promoted_visuals);
+  ExpectPromoted(*closed_tab, group, saved_guid, promoted_visuals);
+
+  CloseGroup(group);
+  ASSERT_EQ(1, tab_strip_model->count());
+  ASSERT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+
+  service->RestoreEntryById(BrowserLiveTabContext::From(browser()),
+                            closed_tab_id, WindowOpenDisposition::kUnknown);
+  ASSERT_EQ(3, tab_strip_model->count());
+  ASSERT_EQ(1u, tab_strip_model->group_model()->ListTabGroups().size());
+
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  const std::optional<tab_groups::SavedTabGroup> restored_saved_group =
+      sync_service->GetGroup(saved_guid);
+  ASSERT_TRUE(restored_saved_group.has_value());
+  ASSERT_TRUE(restored_saved_group->local_group_id().has_value());
+  const tab_groups::TabGroupId restored_group =
+      *restored_saved_group->local_group_id();
+  EXPECT_FALSE(tab_strip_model->IsEphemeralTabGroup(restored_group));
+  EXPECT_EQ(2u, tab_strip_model->group_model()
+                    ->GetTabGroup(restored_group)
+                    ->ListTabs()
+                    .length());
+  EXPECT_EQ(promoted_visuals, *tab_strip_model->group_model()
+                                   ->GetTabGroup(restored_group)
+                                   ->visual_data());
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
+                       RestoreSplitAfterEphemeralGroupPromoted) {
+  AddHTTPSSchemeTabs(browser(), 3);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_EQ(4, tab_strip_model->count());
+  const tab_groups::TabGroupId group =
+      CreateFocusedEphemeralGroup(tab_strip_model, {1, 2, 3});
+
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tab_strip_model->CloseSelectedTabs();
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_FALSE(service->entries().empty());
+  ASSERT_EQ(sessions::tab_restore::Type::SPLIT,
+            service->entries().front()->type);
+  const auto* closed_split = static_cast<const sessions::tab_restore::Split*>(
+      service->entries().front().get());
+  const SessionID closed_split_id = closed_split->id;
+  ASSERT_EQ(2u, closed_split->tabs.size());
+  for (const auto& tab : closed_split->tabs) {
+    EXPECT_EQ(std::nullopt, tab->group);
+    EXPECT_EQ(group, tab->ephemeral_group);
+  }
+
+  const tab_groups::TabGroupVisualData promoted_visuals(
+      u"Promoted Split Group", tab_groups::TabGroupColorId::kGreen);
+  const base::Uuid saved_guid =
+      PromoteAndGetSavedGuid(tab_strip_model, group, promoted_visuals);
+  for (const auto& tab : closed_split->tabs) {
+    ExpectPromoted(*tab, group, saved_guid, promoted_visuals);
+  }
+
+  CloseGroup(group);
+  ASSERT_EQ(1, tab_strip_model->count());
+  ASSERT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+
+  service->RestoreEntryById(BrowserLiveTabContext::From(browser()),
+                            closed_split_id, WindowOpenDisposition::kUnknown);
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  const std::optional<tab_groups::SavedTabGroup> restored_saved_group =
+      sync_service->GetGroup(saved_guid);
+  ASSERT_TRUE(restored_saved_group.has_value());
+  ASSERT_TRUE(restored_saved_group->local_group_id().has_value());
+  VerifySplitViewInGroup(tab_strip_model,
+                         *restored_saved_group->local_group_id(),
+                         /*expected_total_tabs=*/4,
+                         /*expected_grouped_tabs=*/3,
+                         /*expected_split_tabs=*/2);
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
+                       PRE_RestorePromotedTabAfterRestart) {
+  EnableSessionService();
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_EQ(3, tab_strip_model->count());
+  const tab_groups::TabGroupId group =
+      CreateFocusedEphemeralGroup(tab_strip_model, {1, 2});
+
+  CloseTab(2);
+  ASSERT_EQ(2, tab_strip_model->count());
+  PromoteAndGetSavedGuid(
+      tab_strip_model, group,
+      tab_groups::TabGroupVisualData(u"Promoted Group",
+                                     tab_groups::TabGroupColorId::kBlue));
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
+                       RestorePromotedTabAfterRestart) {
+  EnableSessionService();
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  RestoreMostRecentlyClosed(browser());
+  BrowserWindowInterface* restored_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(restored_browser);
+
+  TabStripModel* tab_strip_model = restored_browser->GetTabStripModel();
+  ASSERT_EQ(2, tab_strip_model->count());
+  std::optional<tab_groups::TabGroupId> group =
+      tab_strip_model->GetTabGroupForTab(1);
+  ASSERT_TRUE(group.has_value());
+
+  RestoreMostRecentlyClosed(restored_browser);
+  ASSERT_EQ(3, tab_strip_model->count());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2));
+  EXPECT_EQ(
+      2u,
+      tab_strip_model->group_model()->GetTabGroup(*group)->ListTabs().length());
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
+                       PromoteEphemeralGroupWithSyncServiceUninitialized) {
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_EQ(3, tab_strip_model->count());
+
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  ASSERT_TRUE(sync_service);
+  sync_service->SetIsInitializedForTesting(false);
+
+  const tab_groups::TabGroupId group =
+      CreateFocusedEphemeralGroup(tab_strip_model, {1, 2});
+
+  CloseTab(2);
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_FALSE(service->entries().empty());
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
+  const auto* closed_tab = static_cast<const sessions::tab_restore::Tab*>(
+      service->entries().front().get());
+  EXPECT_EQ(std::nullopt, closed_tab->group);
+  EXPECT_EQ(group, closed_tab->ephemeral_group);
+
+  const tab_groups::TabGroupVisualData promoted_visuals(
+      u"Uninitialized Sync Group", tab_groups::TabGroupColorId::kCyan);
+  tab_strip_model->ChangeTabGroupVisuals(group, promoted_visuals);
+  tab_strip_model->PromoteEphemeralTabGroup(group);
+
+  EXPECT_EQ(std::nullopt, closed_tab->ephemeral_group);
+  EXPECT_EQ(group, closed_tab->group);
+  EXPECT_FALSE(closed_tab->saved_group_id.has_value());
+  ASSERT_TRUE(closed_tab->group_visual_data.has_value());
+  EXPECT_EQ(promoted_visuals, *closed_tab->group_visual_data);
+
+  sync_service->SetIsInitializedForTesting(true);
+  ASSERT_TRUE(sync_service->GetGroup(group).has_value());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return closed_tab->saved_group_id.has_value(); }));
+  EXPECT_EQ(sync_service->GetGroup(group)->saved_guid(),
+            closed_tab->saved_group_id);
 }
 
 }  // namespace sessions

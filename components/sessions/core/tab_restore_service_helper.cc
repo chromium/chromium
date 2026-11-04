@@ -201,25 +201,42 @@ void ReconstructSplits(
   }
 }
 
-// Calls `update` on every closed tab entry that belongs to `group_id`: TAB
-// entries and the tabs inside SPLIT entries. `update` returns whether it
-// modified the tab. Returns true if any tab was modified.
-bool UpdateClosedTabsInGroup(
+// Applies `update_tab` to every closed Tab (including tabs nested in a Split,
+// Group, or Window) and `update_group` to every closed Group (including groups
+// nested in a Window). Returns true if any entry was modified.
+bool UpdateClosedEntries(
     TabRestoreService::Entries& entries,
-    const tab_groups::TabGroupId& group_id,
-    base::FunctionRef<bool(tab_restore::Tab&)> update) {
+    base::FunctionRef<bool(tab_restore::Tab&)> update_tab,
+    base::FunctionRef<bool(tab_restore::Group&)> update_group =
+        [](tab_restore::Group&) { return false; }) {
   bool modified = false;
   for (std::unique_ptr<tab_restore::Entry>& entry : entries) {
-    if (entry->type == tab_restore::Type::TAB) {
-      auto& tab = static_cast<tab_restore::Tab&>(*entry);
-      if (tab.group == group_id) {
-        modified |= update(tab);
-      }
-    } else if (entry->type == tab_restore::Type::SPLIT) {
-      for (auto& tab : static_cast<tab_restore::Split&>(*entry).tabs) {
-        if (tab->group == group_id) {
-          modified |= update(*tab);
+    switch (entry->type) {
+      case tab_restore::Type::TAB:
+        modified |= update_tab(static_cast<tab_restore::Tab&>(*entry));
+        break;
+      case tab_restore::Type::SPLIT:
+        for (auto& tab : static_cast<tab_restore::Split&>(*entry).tabs) {
+          modified |= update_tab(*tab);
         }
+        break;
+      case tab_restore::Type::GROUP: {
+        auto& group = static_cast<tab_restore::Group&>(*entry);
+        modified |= update_group(group);
+        for (auto& tab : group.tabs) {
+          modified |= update_tab(*tab);
+        }
+        break;
+      }
+      case tab_restore::Type::WINDOW: {
+        auto& window = static_cast<tab_restore::Window&>(*entry);
+        for (auto& tab : window.tabs) {
+          modified |= update_tab(*tab);
+        }
+        for (auto& [id, group] : window.tab_groups) {
+          modified |= update_group(*group);
+        }
+        break;
       }
     }
   }
@@ -360,13 +377,6 @@ std::optional<SessionID> TabRestoreServiceHelper::BrowserClosing(
     }
     tab->browser_id = context->GetSessionID().id();
 
-    if (tab->is_group_ephemeral) {
-      tab->group = std::nullopt;
-      tab->saved_group_id = std::nullopt;
-      tab->group_visual_data = std::nullopt;
-      tab->is_group_ephemeral = false;
-    }
-
     if (tab->group.has_value() &&
         !window->tab_groups.contains(tab->group.value())) {
       // Add new groups to the mapping if we haven't already.
@@ -487,6 +497,13 @@ void TabRestoreServiceHelper::CreateHistoricalSplit(
 }
 
 void TabRestoreServiceHelper::GroupClosed(const tab_groups::TabGroupId& group) {
+  UpdateClosedEntries(entries_, [&group](tab_restore::Tab& tab) {
+    if (tab.ephemeral_group == group) {
+      tab.ephemeral_group = std::nullopt;
+      return true;
+    }
+    return false;
+  });
   closing_groups_.erase(group);
 }
 
@@ -501,16 +518,15 @@ void TabRestoreServiceHelper::GroupCloseStopped(
 void TabRestoreServiceHelper::PromoteEphemeralTabGroup(
     const tab_groups::TabGroupId& group_id,
     const tab_groups::TabGroupVisualData& visual_data) {
-  const bool modified =
-      UpdateClosedTabsInGroup(entries_, group_id, [&](tab_restore::Tab& tab) {
-        if (!tab.is_group_ephemeral) {
+  if (UpdateClosedEntries(entries_, [&](tab_restore::Tab& tab) {
+        if (tab.ephemeral_group != group_id) {
           return false;
         }
-        tab.is_group_ephemeral = false;
+        tab.ephemeral_group = std::nullopt;
+        tab.group = group_id;
         tab.group_visual_data = visual_data;
         return true;
-      });
-  if (modified) {
+      })) {
     NotifyEntriesModified();
   }
 }
@@ -518,18 +534,21 @@ void TabRestoreServiceHelper::PromoteEphemeralTabGroup(
 void TabRestoreServiceHelper::UpdateSavedTabGroupId(
     const tab_groups::TabGroupId& group_id,
     const base::Uuid& saved_group_id) {
-  const bool modified =
-      UpdateClosedTabsInGroup(entries_, group_id, [&](tab_restore::Tab& tab) {
-        // An ephemeral entry is written without its group, so recording the
-        // id would only cause a no-op rewrite. The id is delivered again
-        // once the group is promoted and saved.
-        if (tab.is_group_ephemeral || tab.saved_group_id == saved_group_id) {
-          return false;
-        }
-        tab.saved_group_id = saved_group_id;
-        return true;
-      });
-  if (modified) {
+  auto update_tab = [&](tab_restore::Tab& tab) {
+    if (tab.group != group_id || tab.saved_group_id == saved_group_id) {
+      return false;
+    }
+    tab.saved_group_id = saved_group_id;
+    return true;
+  };
+  auto update_group = [&](tab_restore::Group& group) {
+    if (group.group_id != group_id || group.saved_group_id == saved_group_id) {
+      return false;
+    }
+    group.saved_group_id = saved_group_id;
+    return true;
+  };
+  if (UpdateClosedEntries(entries_, update_tab, update_group)) {
     NotifyEntriesModified();
   }
 }
@@ -1584,7 +1603,6 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
   if (context) {
     tab->browser_id = context->GetSessionID().id();
     tab->pinned = context->IsTabPinned(tab->tabstrip_index);
-    tab->group = context->GetTabGroupForTab(tab->tabstrip_index);
     tab->split_id = context->GetSplitForTab(tab->tabstrip_index);
 
     if (tab->split_id.has_value()) {
@@ -1595,24 +1613,30 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
       }
     }
 
-    if (tab->group.has_value()) {
-      tab->is_group_ephemeral =
-          context->IsEphemeralTabGroup(tab->group.value());
-      tab->saved_group_id =
-          context->GetSavedTabGroupIdForGroup(tab->group.value());
-
-      tab->group_visual_data =
-          *context->GetVisualDataForGroup(tab->group.value());
-
-      // Counted rather than derived from the group's first index, which stays
-      // correct while the group is non-contiguous, e.g. mid-drag.
-      int index_in_group = 0;
-      for (int i = 0; i < tab->tabstrip_index; ++i) {
-        if (context->GetTabGroupForTab(i) == tab->group) {
-          ++index_in_group;
+    const std::optional<tab_groups::TabGroupId> group =
+        context->GetTabGroupForTab(tab->tabstrip_index);
+    if (group.has_value()) {
+      if (context->IsEphemeralTabGroup(*group)) {
+        if (!closing_contexts_.contains(context)) {
+          tab->ephemeral_group = group;
         }
+      } else {
+        tab->group = group;
+        tab->saved_group_id = context->GetSavedTabGroupIdForGroup(*group);
+        tab->group_visual_data = *context->GetVisualDataForGroup(*group);
       }
-      tab->index_in_group = index_in_group;
+
+      if (tab->group.has_value() || tab->ephemeral_group.has_value()) {
+        // Counted rather than derived from the group's first index, which stays
+        // correct while the group is non-contiguous, e.g. mid-drag.
+        int index_in_group = 0;
+        for (int i = 0; i < tab->tabstrip_index; ++i) {
+          if (context->GetTabGroupForTab(i) == group) {
+            ++index_in_group;
+          }
+        }
+        tab->index_in_group = index_in_group;
+      }
     }
 
     tab->extra_data = context->GetExtraDataForTab(tab->tabstrip_index);
@@ -1640,10 +1664,12 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     // Restore a grouped tab into its original group, even if the group has
     // since been moved to a different context. If the original group doesn't
     // exist any more, fall back to using the tab's original browser.
-    if (tab.group.has_value()) {
+    const std::optional<tab_groups::TabGroupId> group =
+        tab.group.has_value() ? tab.group : tab.ephemeral_group;
+    if (group.has_value()) {
       // TODO: This needs to look at the saved id.
       LiveTabContext* group_context =
-          client_->FindLiveTabContextWithGroup(tab.group.value());
+          client_->FindLiveTabContextWithGroup(group.value());
       if (group_context) {
         context = group_context;
       }

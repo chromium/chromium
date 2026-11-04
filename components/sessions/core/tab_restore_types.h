@@ -148,8 +148,10 @@ struct SESSIONS_EXPORT Tab : public Entry {
   // The group metadata for the tab, if any.
   std::optional<tab_groups::TabGroupVisualData> group_visual_data;
 
-  // True if `group` was an ephemeral tab group when the tab was closed.
-  bool is_group_ephemeral = false;
+  // Ephemeral group ID for the tab, if it was in an unpromoted ephemeral
+  // group when closed. Mutually exclusive with `group`. Cleared by
+  // `GroupClosed` or promoted to `group` by `PromoteEphemeralTabGroup`.
+  std::optional<tab_groups::TabGroupId> ephemeral_group;
 };
 
 // Represents a previously open split view.

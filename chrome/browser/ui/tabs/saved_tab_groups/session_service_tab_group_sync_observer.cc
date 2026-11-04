@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -16,6 +17,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/tabs/public/tab_group.h"
 
 namespace tab_groups {
@@ -46,6 +48,7 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupAdded(
     return;
   }
 
+  UpdateClosedTabsSavedGroupId(group.local_group_id(), group.saved_guid());
   UpdateTabGroupSessionMetadata(group.local_group_id(),
                                 group.saved_guid().AsLowercaseString());
 }
@@ -65,6 +68,10 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupMigrated(
     const tab_groups::SavedTabGroup& new_group,
     const base::Uuid& old_sync_id,
     tab_groups::TriggerSource source) {
+  // Closed-tab entries still point at `old_sync_id`; move them to the new
+  // saved group so they restore into it.
+  UpdateClosedTabsSavedGroupId(new_group.local_group_id(),
+                               new_group.saved_guid());
   UpdateTabGroupSessionMetadata(new_group.local_group_id(),
                                 new_group.saved_guid().AsLowercaseString());
 }
@@ -72,6 +79,7 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupMigrated(
 void SessionServiceTabGroupSyncObserver::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<LocalTabGroupID>& local_id) {
+  UpdateClosedTabsSavedGroupId(local_id, sync_id);
   UpdateTabGroupSessionMetadata(local_id, sync_id.AsLowercaseString());
 }
 
@@ -100,6 +108,24 @@ void SessionServiceTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
 
   session_service->SetTabGroupMetadata(session_id_, local_id.value(),
                                        visual_data, std::move(sync_id));
+}
+
+void SessionServiceTabGroupSyncObserver::UpdateClosedTabsSavedGroupId(
+    const std::optional<LocalTabGroupID>& local_id,
+    const base::Uuid& sync_id) {
+  if (!local_id.has_value()) {
+    return;
+  }
+
+  CHECK(tab_strip_model_->SupportsTabGroups());
+  if (!tab_strip_model_->IsPersistableTabGroup(local_id.value())) {
+    return;
+  }
+
+  if (sessions::TabRestoreService* tab_restore_service =
+          TabRestoreServiceFactory::GetForProfile(profile_)) {
+    tab_restore_service->UpdateSavedTabGroupId(local_id.value(), sync_id);
+  }
 }
 
 }  // namespace tab_groups

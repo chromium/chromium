@@ -1042,7 +1042,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForTab(
     command_storage_manager_->ScheduleCommand(std::move(command));
   }
 
-  if (tab.group.has_value() && !tab.is_group_ephemeral) {
+  if (tab.group.has_value()) {
     base::Pickle pickle;
     WriteTokenToPickle(&pickle, tab.group.value().token());
     const tab_groups::TabGroupVisualData* visual_data =

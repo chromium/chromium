@@ -48,6 +48,23 @@ void UpdateTabGroupSessionMetadata(Profile& profile,
   session_service->SetTabGroupMetadata(session_id, group_id, visual_data);
 }
 
+void PromoteClosedTabsForGroup(Profile& profile,
+                               TabStripModel& tab_strip_model,
+                               const tab_groups::TabGroupId& group_id) {
+  if (!tab_strip_model.IsPersistableTabGroup(group_id)) {
+    return;
+  }
+  sessions::TabRestoreService* const tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(&profile);
+  if (!tab_restore_service) {
+    return;
+  }
+
+  const tab_groups::TabGroupVisualData* visual_data =
+      tab_strip_model.group_model()->GetTabGroup(group_id)->visual_data();
+  tab_restore_service->PromoteEphemeralTabGroup(group_id, *visual_data);
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(SessionServiceBrowserHelper);
@@ -206,6 +223,8 @@ void SessionServiceBrowserHelper::OnTabGroupPromoted(
   }
   UpdateTabGroupSessionMetadata(*profile_, *tab_strip_model_, session_id_,
                                 group);
+
+  PromoteClosedTabsForGroup(*profile_, *tab_strip_model_, group);
 }
 
 void SessionServiceBrowserHelper::OnTabGroupChanged(
