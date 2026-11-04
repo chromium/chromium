@@ -15,7 +15,13 @@ import type {ObjectFieldsetElement} from './object_fieldset.js';
 import {Page} from './page.js';
 
 const PROPERTY_NAMES = {
+  // <if expr="is_android or is_macosx">
+  // Android and macOS do not expose the local adapter's hardware address.
+  address: 'Address (obfuscated by the OS)',
+  // </if>
+  // <if expr="not is_android and not is_macosx">
   address: 'Address',
+  // </if>
   name: 'Name',
   systemName: 'System Name',
   floss: 'Floss',

@@ -486,6 +486,21 @@ suite('bluetooth_internals', function() {
     checkAdapterFieldSet(adapterFieldSet.value as unknown as AdapterInfo);
   });
 
+  test('AdapterPage_AddressLabel', function() {
+    const addressCell = adapterFieldSet.shadowRoot!.querySelector(
+        'fieldset [data-field="address"]')!;
+    // <if expr="is_android or is_macosx">
+    const expectedLabel = 'Address (obfuscated by the OS):';
+    // </if>
+    // <if expr="not is_android and not is_macosx">
+    const expectedLabel = 'Address:';
+    // </if>
+    assertEquals(
+        expectedLabel, addressCell.previousElementSibling!.textContent);
+    // Only the label changes: retain the reported value for diagnostics.
+    assertEquals(fakeAdapterInfo().address, addressCell.textContent);
+  });
+
   test('AdapterPage_AdapterChanged', function() {
     assertTrue(!!adapterBroker);
     const adapterInfo = adapterFieldSet.value as unknown as AdapterInfo;
