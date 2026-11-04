@@ -44,23 +44,26 @@ public class ExtensionsSigninDelegateTest {
     @Mock private Profile mProfileMock;
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsJniMock;
     @Mock private Callback<@PostSigninOperationResult Integer> mPostSigninCallbackMock;
+    @Mock private Runnable mOnFlowFinishedMock;
 
     @Captor
     private ArgumentCaptor<Callback<@WebSigninTrackerResult Integer>> mWebSigninCallbackCaptor;
+
+    private static final SigninAndHistorySyncCoordinator.Result SIGNED_IN =
+            new SigninAndHistorySyncCoordinator.Result(
+                    /* hasSignedIn= */ true, /* hasOptedInHistorySync= */ false);
 
     private ExtensionsSigninDelegate mDelegate;
 
     @Before
     public void setUp() {
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
-        when(mWebSigninTrackerBridgeFactoryMock.createWithCoreAccountId(
-                        eq(mProfileMock), any(), any()))
-                .thenReturn(mWebSigninTrackerBridgeMock);
         mDelegate = new ExtensionsSigninDelegate(mProfileMock, mWebSigninTrackerBridgeFactoryMock);
     }
 
     @Test
     public void testRunPostSigninAction_success() {
+        stubWebSigninTrackerBridgeFactory();
         mDelegate.runPostSigninAction(
                 TestAccounts.ACCOUNT1, /* delegateContext= */ null, mPostSigninCallbackMock);
 
@@ -72,6 +75,7 @@ public class ExtensionsSigninDelegateTest {
 
     @Test
     public void testRunPostSigninAction_authError() {
+        stubWebSigninTrackerBridgeFactory();
         mDelegate.runPostSigninAction(
                 TestAccounts.ACCOUNT1, /* delegateContext= */ null, mPostSigninCallbackMock);
 
@@ -86,6 +90,7 @@ public class ExtensionsSigninDelegateTest {
 
     @Test
     public void testRunPostSigninAction_otherError() {
+        stubWebSigninTrackerBridgeFactory();
         mDelegate.runPostSigninAction(
                 TestAccounts.ACCOUNT1, /* delegateContext= */ null, mPostSigninCallbackMock);
 
@@ -100,6 +105,7 @@ public class ExtensionsSigninDelegateTest {
 
     @Test
     public void testOnFlowComplete_cancelsPendingWait() {
+        stubWebSigninTrackerBridgeFactory();
         mDelegate.runPostSigninAction(
                 TestAccounts.ACCOUNT1, /* delegateContext= */ null, mPostSigninCallbackMock);
 
@@ -109,6 +115,63 @@ public class ExtensionsSigninDelegateTest {
         // A destroyed bridge doesn't report its result.
         verify(mWebSigninTrackerBridgeMock).destroy();
         verifyNoInteractions(mPostSigninCallbackMock, mSigninMetricsUtilsJniMock);
+    }
+
+    @Test
+    public void testOnFlowFinished_signedIn() {
+        mDelegate.setOnFlowFinishedCallback(mOnFlowFinishedMock);
+        stubWebSigninTrackerBridgeFactory();
+        mDelegate.runPostSigninAction(
+                TestAccounts.ACCOUNT1, /* delegateContext= */ null, mPostSigninCallbackMock);
+        triggerWebSigninCallback(WebSigninTrackerResult.SUCCESS);
+        verifyNoInteractions(mOnFlowFinishedMock);
+
+        mDelegate.onFlowComplete(SIGNED_IN);
+
+        verify(mOnFlowFinishedMock).run();
+    }
+
+    @Test
+    public void testOnFlowFinished_aborted() {
+        mDelegate.setOnFlowFinishedCallback(mOnFlowFinishedMock);
+        stubWebSigninTrackerBridgeFactory();
+        mDelegate.runPostSigninAction(
+                TestAccounts.ACCOUNT1, /* delegateContext= */ null, mPostSigninCallbackMock);
+
+        // E.g. the user dismisses the bottom sheet during the wait.
+        mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
+
+        verify(mOnFlowFinishedMock).run();
+    }
+
+    @Test
+    public void testOnFlowFinished_runsCallbackOnlyOnce() {
+        mDelegate.setOnFlowFinishedCallback(mOnFlowFinishedMock);
+        mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
+
+        // E.g. a flow started from the "add account" activity result, without callback.
+        mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
+
+        verify(mOnFlowFinishedMock).run();
+    }
+
+    @Test
+    public void testOnSigninCoordinatorDestroyed_reportsPendingCallbackAndCancelsWait() {
+        mDelegate.setOnFlowFinishedCallback(mOnFlowFinishedMock);
+        stubWebSigninTrackerBridgeFactory();
+        mDelegate.runPostSigninAction(
+                TestAccounts.ACCOUNT1, /* delegateContext= */ null, mPostSigninCallbackMock);
+
+        mDelegate.onSigninCoordinatorDestroyed();
+
+        verify(mOnFlowFinishedMock).run();
+        verify(mWebSigninTrackerBridgeMock).destroy();
+    }
+
+    private void stubWebSigninTrackerBridgeFactory() {
+        when(mWebSigninTrackerBridgeFactoryMock.createWithCoreAccountId(
+                        eq(mProfileMock), any(), any()))
+                .thenReturn(mWebSigninTrackerBridgeMock);
     }
 
     private void triggerWebSigninCallback(@WebSigninTrackerResult int result) {

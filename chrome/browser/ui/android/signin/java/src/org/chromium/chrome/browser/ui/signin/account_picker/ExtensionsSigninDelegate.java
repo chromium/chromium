@@ -23,13 +23,12 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * page) which requires the signed-in account to be available in the cookie jar. Like for web
  * sign-in, the sign-in bottom sheet is kept open with a spinner until the cookies are minted, and
  * shows an error screen if this fails.
- *
- * <p>TODO(crbug.com/539487000): Report the result of the sign-in flow to the extensions API.
  */
 @NullMarked
 public class ExtensionsSigninDelegate
         implements BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private final SigninCookieWaiter mCookieWaiter;
+    private @Nullable Runnable mOnFlowFinished;
 
     /**
      * @param profile The profile in which the sign-in happens.
@@ -41,6 +40,22 @@ public class ExtensionsSigninDelegate
         mCookieWaiter =
                 new SigninCookieWaiter(
                         profile, webSigninTrackerBridgeFactory, SigninAccessPoint.EXTENSIONS);
+    }
+
+    /** Sets the callback to run once the sign-in flow that is about to start finishes. */
+    public void setOnFlowFinishedCallback(Runnable onFlowFinished) {
+        assert mOnFlowFinished == null;
+        mOnFlowFinished = onFlowFinished;
+    }
+
+    /**
+     * Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. Releases resources
+     * and runs the pending callback, if any.
+     */
+    @Override
+    public void onSigninCoordinatorDestroyed() {
+        mCookieWaiter.cancel();
+        runOnFlowFinishedCallback();
     }
 
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
@@ -58,5 +73,13 @@ public class ExtensionsSigninDelegate
         // The flow may complete while the cookie wait is still pending, e.g. if the user dismisses
         // the bottom sheet during the wait. Its result must then be ignored.
         mCookieWaiter.cancel();
+        runOnFlowFinishedCallback();
+    }
+
+    private void runOnFlowFinishedCallback() {
+        if (mOnFlowFinished == null) return;
+        Runnable onFlowFinished = mOnFlowFinished;
+        mOnFlowFinished = null;
+        onFlowFinished.run();
     }
 }

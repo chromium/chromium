@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
@@ -67,7 +68,9 @@ void SigninUiDelegateImplAndroid::ShowSigninUI(
       ->OpenAccountPickerBottomSheetForExtensions(
           web_contents,
           /*continue_url=*/web_contents->GetLastCommittedURL(),
-          accounts.front().account_id, extension_name);
+          accounts.front().account_id, extension_name,
+          // TODO(crbug.com/539487000): Report the result to the caller.
+          base::DoNothing());
 }
 
 void SigninUiDelegateImplAndroid::ShowReauthUI(

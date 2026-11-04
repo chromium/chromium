@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.browser.ui.signin.account_picker.ExtensionsSigninDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.SigninDelegateContext;
 import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -212,7 +213,8 @@ final class SigninBridge {
                                             identityManager.findExtendedAccountInfoByEmailAddress(
                                                     assumeNonNull(addedAccountEmail)))
                                     .getId(),
-                            extensionName);
+                            extensionName,
+                            /* onFlowFinished= */ null);
                     return;
                 }
 
@@ -294,7 +296,8 @@ final class SigninBridge {
                 continueUrl,
                 new AccountPickerBottomSheetCoordinatorFactory(),
                 selectedAccountId,
-                /* extensionName= */ "");
+                /* extensionName= */ "",
+                /* onFlowFinished= */ null);
     }
 
     /** Opens account picker bottom sheet for the extensions API. */
@@ -303,13 +306,15 @@ final class SigninBridge {
             Tab tab,
             @JniType("GURL") GURL continueUrl,
             @Nullable @JniType("std::optional<CoreAccountId>") CoreAccountId selectedAccountId,
-            @JniType("std::string") String extensionName) {
+            @JniType("std::string") String extensionName,
+            @JniType("base::OnceClosure&&") Runnable onFlowFinished) {
         openAccountPickerBottomSheet(
                 tab,
                 continueUrl,
                 new AccountPickerBottomSheetCoordinatorFactory(),
                 selectedAccountId,
-                assertNonNull(extensionName));
+                assertNonNull(extensionName),
+                onFlowFinished);
     }
 
     /** Opens account picker bottom sheet. */
@@ -319,13 +324,35 @@ final class SigninBridge {
             GURL continueUrl,
             AccountPickerBottomSheetCoordinatorFactory factory,
             @Nullable CoreAccountId selectedAccountId,
-            String extensionName) {
+            String extensionName,
+            @Nullable Runnable onFlowFinished) {
+        // TODO(crbug.com/581833705): Report to the caller whether the sign-in UI could be shown.
+        if (!openAccountPickerBottomSheetInternal(
+                tab, continueUrl, factory, selectedAccountId, extensionName, onFlowFinished)) {
+            if (onFlowFinished != null) {
+                onFlowFinished.run();
+            }
+        }
+    }
+
+    /**
+     * Opens account picker bottom sheet.
+     *
+     * @return Whether the sign-in UI was shown. If false, {@code onFlowFinished} hasn't been run.
+     */
+    private static boolean openAccountPickerBottomSheetInternal(
+            Tab tab,
+            GURL continueUrl,
+            AccountPickerBottomSheetCoordinatorFactory factory,
+            @Nullable CoreAccountId selectedAccountId,
+            String extensionName,
+            @Nullable Runnable onFlowFinished) {
         ThreadUtils.assertOnUiThread();
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
             // The page is opened in the background, ignore the header. See
             // https://crbug.com/40729225#comment6 and https://crbug.com/323424409 for details.
-            return;
+            return false;
         }
         Profile profile = tab.getProfile().getOriginalProfile();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
@@ -339,7 +366,7 @@ final class SigninBridge {
         if (!signinManager.isSigninAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED, accessPoint);
-            return;
+            return false;
         }
         List<AccountInfo> accounts =
                 AccountUtils.getAccountsIfFulfilledOrEmpty(
@@ -347,7 +374,7 @@ final class SigninBridge {
         if (accounts.isEmpty()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS, accessPoint);
-            return;
+            return false;
         }
 
         final boolean isWebSignin = extensionName.isEmpty();
@@ -361,7 +388,7 @@ final class SigninBridge {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
                     SigninAccessPoint.WEB_SIGNIN);
-            return;
+            return false;
         }
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
@@ -369,11 +396,11 @@ final class SigninBridge {
             // The bottomSheetController can be null when google.com is just opened inside a
             // bottom sheet for example. In this case, it's better to disable the account picker
             // bottom sheet.
-            return;
+            return false;
         }
         final Context context = windowAndroid.getContext().get();
         if (context == null) {
-            return;
+            return false;
         }
 
         AccountPickerBottomSheetStrings strings =
@@ -403,9 +430,14 @@ final class SigninBridge {
                 coordinator.startSigninFlow(
                         config, new SigninDelegateContext(tab.getId(), continueUrl));
             } else {
+                if (onFlowFinished != null) {
+                    assert coordinator.getDelegate() instanceof ExtensionsSigninDelegate;
+                    ((ExtensionsSigninDelegate) coordinator.getDelegate())
+                            .setOnFlowFinishedCallback(onFlowFinished);
+                }
                 coordinator.startSigninFlow(config);
             }
-            return;
+            return true;
         }
 
         AccountPreviewDataService accountPreviewDataService =
@@ -425,6 +457,7 @@ final class SigninBridge {
                 /* isWebSignin= */ true,
                 SigninAccessPoint.WEB_SIGNIN,
                 selectedAccountId);
+        return true;
     }
 
     private static AccountPickerBottomSheetStrings buildAccountPickerBottomSheetStrings(

@@ -179,6 +179,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         default @Nullable Function<Bundle, DelegateContext> getDelegateContextFactory() {
             return null;
         }
+
+        /** Called when the coordinator is destroyed. */
+        default void onSigninCoordinatorDestroyed() {}
     }
 
     /**
@@ -391,6 +394,13 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         if (!mIsLegacyFlow) {
             mActivityResultTracker.unregister(this);
         }
+
+        mDelegate.onSigninCoordinatorDestroyed();
+    }
+
+    /** Returns the delegate provided to this coordinator. */
+    public Delegate getDelegate() {
+        return mDelegate;
     }
 
     /**

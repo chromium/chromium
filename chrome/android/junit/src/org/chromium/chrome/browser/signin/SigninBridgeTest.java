@@ -10,8 +10,10 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -33,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -65,6 +68,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.signin.services.WebSigninTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -74,6 +78,7 @@ import org.chromium.chrome.browser.ui.signin.DelegateContext;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.account_picker.ExtensionsSigninDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.SigninDelegateContext;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -158,9 +163,11 @@ public class SigninBridgeTest {
     @Mock private ModalDialogManager mModalDialogManagerMock;
     @Mock private WebSigninRedirectCoordinator mWebSigninRedirectCoordinatorMock;
     @Mock private AccountManagerFacade mAccountManagerFacadeMock;
+    @Mock private Runnable mOnFlowFinishedMock;
 
     private final SettableMonotonicObservableSupplier<BottomSheetSigninAndHistorySyncCoordinator>
             mWebSigninAndHistorySyncCoordinatorSupplier = ObservableSuppliers.createMonotonic();
+    private ExtensionsSigninDelegate mExtensionsSigninDelegate;
 
     @Before
     public void setUp() {
@@ -186,6 +193,11 @@ public class SigninBridgeTest {
         BottomSheetSigninAndHistorySyncCoordinatorSupplier.setInstanceForTesting(
                 mWebSigninAndHistorySyncCoordinatorSupplier);
         mWebSigninAndHistorySyncCoordinatorSupplier.set(mCoordinatorMock);
+        mExtensionsSigninDelegate =
+                spy(
+                        new ExtensionsSigninDelegate(
+                                mProfileMock, new WebSigninTrackerBridge.Factory()));
+        lenient().when(mCoordinatorMock.getDelegate()).thenReturn(mExtensionsSigninDelegate);
     }
 
     @After
@@ -205,7 +217,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mExtensionName);
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
                 .create(
                         any(),
@@ -221,6 +234,9 @@ public class SigninBridgeTest {
                         anyBoolean(),
                         anyInt(),
                         eq(TestAccounts.ACCOUNT1.getId()));
+        if (!mIsWebSignin) {
+            verify(mOnFlowFinishedMock).run();
+        }
     }
 
     @Test
@@ -235,7 +251,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mExtensionName);
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
                 .create(
                         any(),
@@ -251,6 +268,9 @@ public class SigninBridgeTest {
                         eq(mIsWebSignin),
                         eq(mSigninAccessPoint),
                         eq(TestAccounts.ACCOUNT1.getId()));
+        if (!mIsWebSignin) {
+            verify(mOnFlowFinishedMock).run();
+        }
     }
 
     @Test
@@ -262,7 +282,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mExtensionName);
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
@@ -282,6 +303,9 @@ public class SigninBridgeTest {
                         eq(mIsWebSignin),
                         eq(mSigninAccessPoint),
                         eq(TestAccounts.ACCOUNT1.getId()));
+        if (!mIsWebSignin) {
+            verify(mOnFlowFinishedMock).run();
+        }
     }
 
     @Test
@@ -293,7 +317,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mExtensionName);
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS, mSigninAccessPoint);
@@ -312,6 +337,9 @@ public class SigninBridgeTest {
                         eq(mIsWebSignin),
                         eq(mSigninAccessPoint),
                         eq(TestAccounts.ACCOUNT1.getId()));
+        if (!mIsWebSignin) {
+            verify(mOnFlowFinishedMock).run();
+        }
     }
 
     @Test
@@ -325,7 +353,12 @@ public class SigninBridgeTest {
                         SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, mContinueUrl, mAccountPickerBottomSheetCoordinatorFactoryMock, null, "");
+                mTabMock,
+                mContinueUrl,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                null,
+                "",
+                null);
 
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
@@ -364,7 +397,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT2.getId(),
-                "");
+                "",
+                null);
 
         verify(mSigninMetricsUtilsJniMock, never())
                 .logAccountConsistencyPromoAction(
@@ -403,7 +437,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT2.getId(),
-                mExtensionName);
+                mExtensionName,
+                null);
 
         verify(mSigninMetricsUtilsJniMock, never())
                 .logAccountConsistencyPromoAction(
@@ -425,7 +460,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                "");
+                "",
+                null);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
@@ -454,9 +490,18 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 TestAccounts.ACCOUNT1.getId(),
-                mExtensionName);
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
 
         verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
+        if (!mIsWebSignin) {
+            InOrder inOrder = inOrder(mExtensionsSigninDelegate, mCoordinatorMock);
+            inOrder.verify(mExtensionsSigninDelegate).setOnFlowFinishedCallback(mOnFlowFinishedMock);
+            inOrder.verify(mCoordinatorMock).startSigninFlow(any());
+            verifyNoInteractions(mOnFlowFinishedMock);
+        } else {
+            verifyNoInteractions(mExtensionsSigninDelegate);
+        }
         verifyBottomSheetStartSigninFlow(TestAccounts.ACCOUNT1.getId());
     }
 
@@ -468,7 +513,12 @@ public class SigninBridgeTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, mContinueUrl, mAccountPickerBottomSheetCoordinatorFactoryMock, null, "");
+                mTabMock,
+                mContinueUrl,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                null,
+                "",
+                null);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
@@ -497,7 +547,8 @@ public class SigninBridgeTest {
                 mContinueUrl,
                 mAccountPickerBottomSheetCoordinatorFactoryMock,
                 null,
-                mExtensionName);
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
 
         verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
         verifyBottomSheetStartSigninFlow(/* accountId= */ null);

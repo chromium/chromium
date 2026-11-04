@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_deep_link_payload.h"
@@ -50,12 +51,15 @@ class SigninBridge : public KeyedService {
       const GURL& continue_url,
       const std::optional<CoreAccountId>& account_id);
 
-  // Opens the account picker bottomsheet for extensions.
+  // Opens the account picker bottomsheet for extensions. `on_flow_finished` is
+  // run asynchronously once the sign-in flow finishes, or if the bottom sheet
+  // couldn't be shown.
   virtual void OpenAccountPickerBottomSheetForExtensions(
       content::WebContents* web_contents,
       const GURL& continue_url,
       const std::optional<CoreAccountId>& account_id,
-      const std::string& extension_name);
+      const std::string& extension_name,
+      base::OnceClosure on_flow_finished);
 
   // Opens the reauthentication flow for `account_to_reauth`, then waits for
   // cookies for `target_account_id` and redirects to `continue_url`. Pass the

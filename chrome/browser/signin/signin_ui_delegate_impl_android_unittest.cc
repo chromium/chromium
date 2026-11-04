@@ -51,7 +51,8 @@ class MockSigninBridge : public SigninBridge {
               (content::WebContents * web_contents,
                const GURL& continue_url,
                const std::optional<CoreAccountId>& account_id,
-               const std::string& extension_name),
+               const std::string& extension_name,
+               base::OnceClosure on_flow_finished),
               (override));
 
   MOCK_METHOD(void,
@@ -132,10 +133,10 @@ TEST_F(SigninUiDelegateImplAndroidTest, ShowSigninUI) {
 
   signin_ui_util::SigninUiDelegateImplAndroid delegate;
 
-  EXPECT_CALL(
-      *signin_bridge(),
-      OpenAccountPickerBottomSheetForExtensions(
-          _, GetTestUrl(), std::make_optional(account_id), kTestExtensionName));
+  EXPECT_CALL(*signin_bridge(),
+              OpenAccountPickerBottomSheetForExtensions(
+                  _, GetTestUrl(), std::make_optional(account_id),
+                  kTestExtensionName, _));
 
   delegate.ShowSigninUI(profile(), /*enable_history_sync=*/true,
                         kTestAccessPoint, kTestPromoAction, kTestExtensionName);

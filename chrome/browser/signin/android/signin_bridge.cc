@@ -6,9 +6,12 @@
 
 #include <string>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/base/signin_deep_link_payload_conversions.h"
@@ -61,14 +64,19 @@ void SigninBridge::OpenAccountPickerBottomSheetForExtensions(
     content::WebContents* web_contents,
     const GURL& continue_url,
     const std::optional<CoreAccountId>& account_id,
-    const std::string& extension_name) {
+    const std::string& extension_name,
+    base::OnceClosure on_flow_finished) {
+  on_flow_finished =
+      base::BindPostTaskToCurrentDefault(std::move(on_flow_finished));
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   if (!tab) {
+    std::move(on_flow_finished).Run();
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SigninBridge_openAccountPickerBottomSheetForExtensions(
-      env, tab->GetJavaObject(), continue_url, account_id, extension_name);
+      env, tab->GetJavaObject(), continue_url, account_id, extension_name,
+      std::move(on_flow_finished));
 }
 
 void SigninBridge::StartUpdateCredentialsFlow(
