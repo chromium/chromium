@@ -20,6 +20,12 @@ BeginFrameSourceIOS::BeginFrameSourceIOS(ui::Compositor* compositor)
 
 BeginFrameSourceIOS::~BeginFrameSourceIOS() {
   SetNeedsBeginFrame(false);
+  // Unregister from `compositor_` so that it does not hold a dangling pointer
+  // to `this`. The compositor is owned by BrowserCompositorIOS and outlives
+  // this object.
+  if (compositor_->external_begin_frame_controler_client_factory() == this) {
+    compositor_->SetExternalBeginFrameControllerClientFactory(nullptr);
+  }
 }
 
 void BeginFrameSourceIOS::OnBeginFrame(const viz::BeginFrameArgs& args) {

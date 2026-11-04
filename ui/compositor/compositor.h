@@ -592,7 +592,7 @@ class COMPOSITOR_EXPORT Compositor
   mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;
   mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
       external_begin_frame_controller_;
-  raw_ptr<ExternalBeginFrameControllerClientFactory, DanglingUntriaged>
+  raw_ptr<ExternalBeginFrameControllerClientFactory>
       external_begin_frame_controler_client_factory_;
   bool wait_for_all_frame_sinks_ = true;
 
