@@ -27,10 +27,12 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngineManager {
   static void ResetKeyboardLayoutEngine();
 
   static KeyboardLayoutEngine* GetKeyboardLayoutEngine() {
+    // CHECK-exclusion: the callers allows `GetKeyboardLayoutEngine()`
+    // to return `nullptr`.
     // Must run in a context with a KeyboardLayoutEngine.
     // Hint: Tests can use ui::ScopedKeyboardLayout to create one.
     // (production code should instead call InitializeForUI).
-    CHECK(keyboard_layout_engine_, base::NotFatalUntil::M163);
+    DCHECK(keyboard_layout_engine_);
     return keyboard_layout_engine_;
   }
 
