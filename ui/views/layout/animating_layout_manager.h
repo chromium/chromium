@@ -164,7 +164,7 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   // only be set once.
   template <class T>
   T* SetTargetLayoutManager(std::unique_ptr<T> layout_manager) {
-    DCHECK_EQ(0U, num_owned_layouts());
+    CHECK_EQ(0U, num_owned_layouts(), base::NotFatalUntil::M163);
     T* const result = AddOwnedLayout(std::move(layout_manager));
     ResetLayout();
     return result;

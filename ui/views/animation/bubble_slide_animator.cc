@@ -14,7 +14,7 @@ BubbleSlideAnimator::BubbleSlideAnimator(
     : AnimationDelegateViews(bubble_delegate),
       bubble_delegate_(bubble_delegate) {
   Widget* widget = bubble_delegate->GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M163);
   widget_observation_.Observe(widget);
 
   constexpr base::TimeDelta kDefaultBubbleSlideAnimationTime =
@@ -64,7 +64,7 @@ void BubbleSlideAnimator::UpdateTargetBounds(
     // solution than rewinding and/or changing the duration of the animation.
     target_bubble_bounds_ = CalculateTargetBounds(desired_anchor);
   } else {
-    DCHECK(!desired_anchor.IsNull());
+    CHECK(!desired_anchor.IsNull(), base::NotFatalUntil::M163);
     SnapToAnchor(desired_anchor);
   }
 }

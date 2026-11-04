@@ -276,8 +276,9 @@ void AnimationSequenceBlock::TerminateBlock() {
                       std::move(pair.second.animation_value_)),
                   duration);
         } else {
-          DCHECK(std::holds_alternative<gfx::Transform>(
-              pair.second.animation_value_));
+          CHECK(std::holds_alternative<gfx::Transform>(
+                    pair.second.animation_value_),
+                base::NotFatalUntil::M163);
           element = ui::LayerAnimationElement::CreateTransformElement(
               std::get<gfx::Transform>(std::move(pair.second.animation_value_)),
               duration);

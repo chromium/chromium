@@ -189,7 +189,7 @@ AnimatingLayoutManager::AnimationDelegate::AnimationDelegate(
       container_(new gfx::AnimationContainer()) {
   animation_->SetContainer(container_);
   View* const host_view = layout_manager->host_view();
-  DCHECK(host_view);
+  CHECK(host_view, base::NotFatalUntil::M163);
   if (host_view->GetWidget()) {
     MakeReadyForAnimation();
   } else {
@@ -234,7 +234,7 @@ void AnimatingLayoutManager::AnimationDelegate::UpdateAnimationParameters() {
 }
 
 void AnimatingLayoutManager::AnimationDelegate::Animate() {
-  DCHECK(ready_to_animate_);
+  CHECK(ready_to_animate_, base::NotFatalUntil::M163);
   Reset();
   animation_->Show();
   if (target_layout_manager_->opacity_animation_duration() >
@@ -272,7 +272,7 @@ void AnimatingLayoutManager::AnimationDelegate::MakeReadyForAnimation() {
 
 void AnimatingLayoutManager::AnimationDelegate::AnimationProgressed(
     const gfx::Animation* animation) {
-  DCHECK(animation_.get() == animation);
+  CHECK(animation_.get() == animation, base::NotFatalUntil::M163);
   double fade_in_opacity = fade_in_opacity_animation_.get()
                                ? fade_in_opacity_animation_->GetCurrentValue()
                                : 1.0;
@@ -293,7 +293,7 @@ void AnimatingLayoutManager::AnimationDelegate::AnimationEnded(
   if (resetting_animation_) {
     return;
   }
-  DCHECK(animation_.get() == animation);
+  CHECK(animation_.get() == animation, base::NotFatalUntil::M163);
   target_layout_manager_->AnimateTo(1.0, 1.0, 0.0);
 }
 
@@ -313,7 +313,7 @@ AnimatingLayoutManager& AnimatingLayoutManager::SetBoundsAnimationMode(
 
 AnimatingLayoutManager& AnimatingLayoutManager::SetAnimationDuration(
     base::TimeDelta animation_duration) {
-  DCHECK_GE(animation_duration, base::TimeDelta());
+  CHECK_GE(animation_duration, base::TimeDelta(), base::NotFatalUntil::M163);
   animation_duration_ = animation_duration;
   if (animation_delegate_) {
     animation_delegate_->UpdateAnimationParameters();
@@ -332,7 +332,7 @@ AnimatingLayoutManager& AnimatingLayoutManager::SetTweenType(
 
 AnimatingLayoutManager& AnimatingLayoutManager::SetOpacityAnimationDuration(
     base::TimeDelta animation_duration) {
-  DCHECK_GE(animation_duration, base::TimeDelta());
+  CHECK_GE(animation_duration, base::TimeDelta(), base::NotFatalUntil::M163);
   opacity_animation_duration_ = animation_duration;
   if (animation_delegate_) {
     animation_delegate_->UpdateAnimationParameters();
@@ -373,9 +373,9 @@ void AnimatingLayoutManager::ResetLayout() {
 }
 
 void AnimatingLayoutManager::FadeOut(View* child_view) {
-  DCHECK(child_view);
-  DCHECK(child_view->parent());
-  DCHECK_EQ(host_view(), child_view->parent());
+  CHECK(child_view, base::NotFatalUntil::M163);
+  CHECK(child_view->parent(), base::NotFatalUntil::M163);
+  CHECK_EQ(host_view(), child_view->parent(), base::NotFatalUntil::M163);
 
   // If the view in question is already incapable of being visible, either:
   // 1. the view wasn't capable of being visible in the first place
@@ -414,9 +414,9 @@ void AnimatingLayoutManager::FadeOut(View* child_view) {
 }
 
 void AnimatingLayoutManager::FadeIn(View* child_view) {
-  DCHECK(child_view);
-  DCHECK(child_view->parent());
-  DCHECK_EQ(host_view(), child_view->parent());
+  CHECK(child_view, base::NotFatalUntil::M163);
+  CHECK(child_view->parent(), base::NotFatalUntil::M163);
+  CHECK_EQ(host_view(), child_view->parent(), base::NotFatalUntil::M163);
 
   // If the view in question is already capable of being visible, either:
   // 1. the view is already visible so this is a no-op
@@ -566,7 +566,7 @@ int AnimatingLayoutManager::GetPreferredHeightForWidth(const View* host,
 
 std::vector<raw_ptr<View, VectorExperimental>>
 AnimatingLayoutManager::GetChildViewsInPaintOrder(const View* host) const {
-  DCHECK_EQ(host_view(), host);
+  CHECK_EQ(host_view(), host, base::NotFatalUntil::M163);
 
   if (!is_animating()) {
     return LayoutManagerBase::GetChildViewsInPaintOrder(host);
@@ -632,16 +632,16 @@ FlexRule AnimatingLayoutManager::GetDefaultFlexRule() const {
 
 gfx::AnimationContainer*
 AnimatingLayoutManager::GetAnimationContainerForTesting() {
-  DCHECK(animation_delegate_);
+  CHECK(animation_delegate_, base::NotFatalUntil::M163);
   animation_delegate_->MakeReadyForAnimation();
-  DCHECK(animation_delegate_->ready_to_animate());
+  CHECK(animation_delegate_->ready_to_animate(), base::NotFatalUntil::M163);
   return animation_delegate_->container();
 }
 
 void AnimatingLayoutManager::EnableAnimationForTesting() {
-  DCHECK(animation_delegate_);
+  CHECK(animation_delegate_, base::NotFatalUntil::M163);
   animation_delegate_->MakeReadyForAnimation();
-  DCHECK(animation_delegate_->ready_to_animate());
+  CHECK(animation_delegate_->ready_to_animate(), base::NotFatalUntil::M163);
 }
 
 ProposedLayout AnimatingLayoutManager::CalculateProposedLayout(
@@ -652,7 +652,7 @@ ProposedLayout AnimatingLayoutManager::CalculateProposedLayout(
 }
 
 void AnimatingLayoutManager::OnInstalled(View* host) {
-  DCHECK(!animation_delegate_);
+  CHECK(!animation_delegate_, base::NotFatalUntil::M163);
   animation_delegate_ = std::make_unique<AnimationDelegate>(this);
 }
 
@@ -733,7 +733,8 @@ void AnimatingLayoutManager::LayoutImpl() {
     }
 
     // Verify that the last available size has been updated.
-    DCHECK_EQ(available_size, last_available_host_size_);
+    CHECK_EQ(available_size, last_available_host_size_,
+             base::NotFatalUntil::M163);
   }
 
   ApplyLayout(current_layout_);
@@ -850,10 +851,10 @@ bool AnimatingLayoutManager::RecalculateTarget() {
 void AnimatingLayoutManager::AnimateTo(double value,
                                        double fade_in_opacity,
                                        double fade_out_opacity) {
-  DCHECK_GE(value, 0.0);
-  DCHECK_LE(value, 1.0);
-  DCHECK_GE(value, starting_offset_);
-  DCHECK_GE(value, current_offset_);
+  CHECK_GE(value, 0.0, base::NotFatalUntil::M163);
+  CHECK_LE(value, 1.0, base::NotFatalUntil::M163);
+  CHECK_GE(value, starting_offset_, base::NotFatalUntil::M163);
+  CHECK_GE(value, current_offset_, base::NotFatalUntil::M163);
   if (current_offset_ == value) {
     return;
   }
@@ -911,7 +912,8 @@ void AnimatingLayoutManager::UpdateCurrentLayout(double percent,
 
   for (const LayoutFadeInfo& fade_info : fade_infos_) {
     // This shouldn't happen but we should ensure that with a check.
-    DCHECK(host_view()->GetIndexOf(fade_info.child_view).has_value());
+    CHECK(host_view()->GetIndexOf(fade_info.child_view).has_value(),
+          base::NotFatalUntil::M163);
 
     // Views that were previously fading are animated as normal, so nothing to
     // do here.
@@ -1383,7 +1385,8 @@ gfx::Size AnimatingLayoutManager::DefaultFlexRuleImpl(
     const AnimatingLayoutManager* animating_layout,
     const View* view,
     const SizeBounds& size_bounds) {
-  DCHECK_EQ(view->GetLayoutManager(), animating_layout);
+  CHECK_EQ(view->GetLayoutManager(), animating_layout,
+           base::NotFatalUntil::M163);
 
   // This is the current preferred size, which takes animation into account.
   const gfx::Size preferred_size = animating_layout->GetPreferredSize(view);
@@ -1441,7 +1444,7 @@ gfx::Size AnimatingLayoutManager::DefaultFlexRuleImpl(
     size = gfx::Size(width,
                      target_layout->GetPreferredHeightForWidth(view, width));
   } else {
-    DCHECK(size_bounds.height().is_bounded());
+    CHECK(size_bounds.height().is_bounded(), base::NotFatalUntil::M163);
     // The height is specified and too small.  Fortunately the height of a
     // layout can't (shouldn't?) affect its width.
     size = gfx::Size(target_preferred.width(), size_bounds.height().value());

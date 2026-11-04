@@ -51,7 +51,7 @@ bool IncludeInLayout(const View* view) {
 LayoutManagerBase::~LayoutManagerBase() = default;
 
 gfx::Size LayoutManagerBase::GetPreferredSize(const View* host) const {
-  DCHECK_EQ(host_view_, host);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   if (!cached_preferred_size_) {
     cached_preferred_size_ = CalculateProposedLayout(SizeBounds()).host_size;
   }
@@ -61,7 +61,7 @@ gfx::Size LayoutManagerBase::GetPreferredSize(const View* host) const {
 gfx::Size LayoutManagerBase::GetPreferredSize(
     const View* host,
     const SizeBounds& available_size) const {
-  DCHECK_EQ(host_view_, host);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   if (available_size.width().is_bounded()) {
     return CalculateProposedLayout(available_size).host_size;
   }
@@ -70,7 +70,7 @@ gfx::Size LayoutManagerBase::GetPreferredSize(
 }
 
 gfx::Size LayoutManagerBase::GetMinimumSize(const View* host) const {
-  DCHECK_EQ(host_view_, host);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   if (!cached_minimum_size_) {
     cached_minimum_size_ = CalculateProposedLayout(SizeBounds(0, 0)).host_size;
   }
@@ -90,7 +90,7 @@ int LayoutManagerBase::GetPreferredHeightForWidth(const View* host,
 
 SizeBounds LayoutManagerBase::GetAvailableSize(const View* host,
                                                const View* view) const {
-  DCHECK_EQ(host_view_, host);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   if (!cached_layout_size_) {
     GetProposedLayout(host->size());
   }
@@ -106,7 +106,7 @@ SizeBounds LayoutManagerBase::GetAvailableSize(const View* host,
 }
 
 void LayoutManagerBase::Layout(View* host) {
-  DCHECK_EQ(host_view_, host);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   TRACE_EVENT1("ui", "LayoutManagerBase::Layout", "class",
                host->GetClassName());
   // A handful of views will cause invalidations while they are being
@@ -136,7 +136,7 @@ void LayoutManagerBase::OnViewPropertyChanged(View* observed_view,
 
 std::vector<raw_ptr<View, VectorExperimental>>
 LayoutManagerBase::GetChildViewsInPaintOrder(const View* host) const {
-  DCHECK_EQ(host_view_, host);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   return LayoutManager::GetChildViewsInPaintOrder(host);
 }
 
@@ -145,7 +145,7 @@ ProposedLayout LayoutManagerBase::GetProposedLayout(
   if (cached_layout_size_ != host_size) {
 #if (DCHECK_IS_ON())
     // This calculation must not be re-entrant.
-    DCHECK(!calculating_layout_);
+    CHECK(!calculating_layout_, base::NotFatalUntil::M163);
     base::AutoReset<bool> calculating_layout(&calculating_layout_, true);
 #endif
     cached_layout_size_ = host_size;
@@ -163,7 +163,7 @@ ProposedLayout LayoutManagerBase::GetProposedLayout(
 LayoutManagerBase::LayoutManagerBase() = default;
 
 SizeBounds LayoutManagerBase::GetAvailableHostSize() const {
-  DCHECK(host_view());
+  CHECK(host_view(), base::NotFatalUntil::M163);
   const auto* const parent = host_view()->parent();
   return parent ? parent->GetAvailableSize(host_view()) : SizeBounds();
 }
@@ -210,13 +210,15 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
   const SizeBounds new_available_size = GetAvailableHostSize();
 
   for (auto& child_layout : layout.child_layouts) {
-    DCHECK_EQ(host_view_, child_layout.child_view->parent());
+    CHECK_EQ(host_view_, child_layout.child_view->parent(),
+             base::NotFatalUntil::M163);
 
     // Since we have a non-const reference to the parent here, we can safely use
     // a non-const reference to the child.
     View* const child_view = child_layout.child_view;
     // Should not be attempting to modify a child view that has been removed.
-    DCHECK(host_view()->GetIndexOf(child_view).has_value());
+    CHECK(host_view()->GetIndexOf(child_view).has_value(),
+          base::NotFatalUntil::M163);
     if (child_view->GetVisible() != child_layout.visible) {
       SetViewVisibility(child_view, child_layout.visible);
     }
@@ -247,7 +249,7 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
 
 void LayoutManagerBase::InvalidateHost(bool mark_layouts_changed) {
   if (mark_layouts_changed) {
-    DCHECK(!suppress_invalidate_);
+    CHECK(!suppress_invalidate_, base::NotFatalUntil::M163);
     if (host_view()) {
       // This has the side-effect of also invalidating all of the layouts
       // associated with the host view, from the view's layout through its
@@ -306,10 +308,10 @@ void LayoutManagerBase::InvalidateLayout() {
 }
 
 void LayoutManagerBase::Installed(View* host_view) {
-  DCHECK(host_view);
-  DCHECK(!host_view_);
-  DCHECK(child_infos_.empty());
-  DCHECK_EQ(GetRootLayoutManager(), this);
+  CHECK(host_view, base::NotFatalUntil::M163);
+  CHECK(!host_view_, base::NotFatalUntil::M163);
+  CHECK(child_infos_.empty(), base::NotFatalUntil::M163);
+  CHECK_EQ(GetRootLayoutManager(), this, base::NotFatalUntil::M163);
 
   for (View* child : host_view->children()) {
     view_observations_.AddObservation(child);
@@ -320,9 +322,9 @@ void LayoutManagerBase::Installed(View* host_view) {
 }
 
 void LayoutManagerBase::ViewAdded(View* host, View* view) {
-  DCHECK_EQ(host_view_, host);
-  DCHECK(!child_infos_.contains(view));
-  DCHECK_EQ(GetRootLayoutManager(), this);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
+  CHECK(!child_infos_.contains(view), base::NotFatalUntil::M163);
+  CHECK_EQ(GetRootLayoutManager(), this, base::NotFatalUntil::M163);
 
   view_observations_.AddObservation(view);
 
@@ -334,9 +336,9 @@ void LayoutManagerBase::ViewAdded(View* host, View* view) {
 }
 
 void LayoutManagerBase::ViewRemoved(View* host, View* view) {
-  DCHECK_EQ(host_view_, host);
-  DCHECK(child_infos_.contains(view));
-  DCHECK_EQ(GetRootLayoutManager(), this);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
+  CHECK(child_infos_.contains(view), base::NotFatalUntil::M163);
+  CHECK_EQ(GetRootLayoutManager(), this, base::NotFatalUntil::M163);
 
   auto it = child_infos_.find(view);
   CHECK(it != child_infos_.end());
@@ -356,7 +358,7 @@ void LayoutManagerBase::ViewVisibilitySet(View* host,
                                           View* view,
                                           bool old_visibility,
                                           bool new_visibility) {
-  DCHECK_EQ(host_view_, host);
+  CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   auto it = child_infos_.find(view);
   CHECK(it != child_infos_.end());
   if (it->second.can_be_visible == new_visibility) {
@@ -373,8 +375,8 @@ void LayoutManagerBase::ViewVisibilitySet(View* host,
 
 void LayoutManagerBase::AddOwnedLayoutInternal(
     std::unique_ptr<LayoutManagerBase> owned_layout) {
-  DCHECK(owned_layout);
-  DCHECK(!owned_layout->parent_layout_);
+  CHECK(owned_layout, base::NotFatalUntil::M163);
+  CHECK(!owned_layout->parent_layout_, base::NotFatalUntil::M163);
 
   // View observations should only exist on the root.
 #if DCHECK_IS_ON()
@@ -383,7 +385,8 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
   const LayoutManagerBase* const root_layout = GetRootLayoutManager();
   std::ranges::for_each(
       owned_layout->view_observations_.sources(), [&](View* source) {
-        DCHECK(root_layout->view_observations_.IsObservingSource(source));
+        CHECK(root_layout->view_observations_.IsObservingSource(source),
+              base::NotFatalUntil::M163);
       });
 #endif
   owned_layout->view_observations_.RemoveAllObservations();

@@ -171,8 +171,9 @@ gfx::Size DialogClientView::GetMinimumSize() const {
 
 gfx::Size DialogClientView::GetMaximumSize() const {
   constexpr int kUnconstrained = 0;
-  DCHECK(gfx::Size(kUnconstrained, kUnconstrained) ==
-         button_row_container_->GetMaximumSize());
+  CHECK(gfx::Size(kUnconstrained, kUnconstrained) ==
+            button_row_container_->GetMaximumSize(),
+        base::NotFatalUntil::M163);
   gfx::Size max_size = ClientView::GetMaximumSize();
 
   // If the height is constrained, add the button row height. Leave the width as
@@ -198,7 +199,7 @@ void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
 
 void DialogClientView::UpdateWindowRoundedCorners(
     const gfx::RoundedCornersF& window_radii) {
-  DCHECK(GetWidget());
+  CHECK(GetWidget(), base::NotFatalUntil::M163);
 
   // ChromeOS has rounded windows. A dialog can use native frame i.e look like
   // a top-level window. For ChromeOS, dialogs use `FrameViewAsh`
@@ -214,7 +215,7 @@ void DialogClientView::UpdateWindowRoundedCorners(
 ProposedLayout DialogClientView::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   ProposedLayout layouts;
-  DCHECK(size_bounds.is_fully_bounded());
+  CHECK(size_bounds.is_fully_bounded(), base::NotFatalUntil::M163);
   const int container_height =
       button_row_container_->GetHeightForWidth(size_bounds.width().value());
   const int container_y = size_bounds.height().value() - container_height;
@@ -249,7 +250,7 @@ void DialogClientView::SetBackgroundColor(ui::ColorId background_color_id) {
 }
 
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+  CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE, base::NotFatalUntil::M163);
 
   // If there's no close-x (typically the case for modal dialogs) then Cancel
   // the dialog instead of closing the widget as the delegate may likely expect
@@ -418,8 +419,9 @@ void DialogClientView::ButtonPressed(ui::mojom::DialogButton type,
     return;
   }
 
-  DCHECK(type == ui::mojom::DialogButton::kOk ||
-         type == ui::mojom::DialogButton::kCancel);
+  CHECK(type == ui::mojom::DialogButton::kOk ||
+            type == ui::mojom::DialogButton::kCancel,
+        base::NotFatalUntil::M163);
   if (type == ui::mojom::DialogButton::kOk &&
       !delegate->ShouldIgnoreButtonPressedEventHandling(ok_button_, event)) {
     delegate->AcceptDialog();
@@ -589,7 +591,7 @@ void DialogClientView::UpdateButtonsFromModel() {
 }
 
 void DialogClientView::AddFillerView(size_t view_index) {
-  DCHECK_LT(view_index, kNumButtons);
+  CHECK_LT(view_index, kNumButtons, base::NotFatalUntil::M163);
   View*& filler = filler_views_[view_index];
   if (!filler) {
     filler = button_row_container_->AddChildViewAt(
@@ -599,7 +601,7 @@ void DialogClientView::AddFillerView(size_t view_index) {
 }
 
 void DialogClientView::RemoveFillerView(size_t view_index) {
-  DCHECK_LT(view_index, kNumButtons);
+  CHECK_LT(view_index, kNumButtons, base::NotFatalUntil::M163);
   View*& filler = filler_views_[view_index];
   if (filler) {
     button_row_container_->RemoveChildViewT(filler);

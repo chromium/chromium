@@ -285,17 +285,17 @@ FlexSpecification& FlexSpecification::operator=(
 FlexSpecification::~FlexSpecification() = default;
 
 FlexSpecification FlexSpecification::WithWeight(int weight) const {
-  DCHECK_GE(weight, 0);
+  CHECK_GE(weight, 0, base::NotFatalUntil::M163);
   FlexSpecification spec = *this;
   spec.weight_ = weight;
   return spec;
 }
 
 FlexSpecification FlexSpecification::WithOrder(int order) const {
-  DCHECK_GE(order, 1);
+  CHECK_GE(order, 1, base::NotFatalUntil::M163);
   // This doesn't do anything meaningful for FlexSpecifications with non-empty
   // `rules_and_predicates_`.
-  DCHECK(rules_and_predicates_.empty());
+  CHECK(rules_and_predicates_.empty(), base::NotFatalUntil::M163);
   FlexSpecification spec = *this;
   spec.order_ = order;
   return spec;

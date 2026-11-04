@@ -369,7 +369,7 @@ bool InkDropHost::AddInkDropClip(ui::Layer* ink_drop_layer) {
 
 void InkDropHost::InstallInkDropMask(ui::Layer* ink_drop_layer) {
   ink_drop_mask_ = CreateInkDropMask();
-  DCHECK(ink_drop_mask_);
+  CHECK(ink_drop_mask_, base::NotFatalUntil::M163);
   ink_drop_layer->SetMaskLayer(ink_drop_mask_->layer());
 }
 

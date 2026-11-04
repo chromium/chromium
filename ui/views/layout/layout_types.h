@@ -56,7 +56,7 @@ class VIEWS_EXPORT SizeBound {
   // Must only be invoked when there is a bound, since otherwise the value to
   // return is unknown.
   constexpr int value() const {
-    DCHECK(is_bounded());
+    CHECK(is_bounded(), base::NotFatalUntil::M163);
     return *bound_;
   }
 

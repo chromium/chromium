@@ -32,7 +32,7 @@ namespace views {
 
 ScrollAnimator::ScrollAnimator(ScrollDelegate* delegate)
     : delegate_(delegate), acceleration_(kDefaultAcceleration) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
 }
 
 ScrollAnimator::~ScrollAnimator() {

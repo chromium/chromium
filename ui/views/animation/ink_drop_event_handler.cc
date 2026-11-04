@@ -138,7 +138,7 @@ std::string_view InkDropEventHandler::GetLogContext() const {
 void InkDropEventHandler::OnViewVisibilityChanged(View* observed_view,
                                                   View* starting_view,
                                                   bool visible) {
-  DCHECK_EQ(host_view_, observed_view);
+  CHECK_EQ(host_view_, observed_view, base::NotFatalUntil::M163);
   // Removal from the closed widget follows and cleans up the ink drop.
   if (!CanUpdateInkDrop()) {
     return;
@@ -158,7 +158,7 @@ void InkDropEventHandler::OnViewVisibilityChanged(View* observed_view,
 void InkDropEventHandler::OnViewHierarchyChanged(
     View* observed_view,
     const ViewHierarchyChangedDetails& details) {
-  DCHECK_EQ(host_view_, observed_view);
+  CHECK_EQ(host_view_, observed_view, base::NotFatalUntil::M163);
   // If we're being removed hide the ink-drop so if we're highlighted now the
   // highlight won't be active if we're added back again.
   if (!details.is_add && details.child == host_view_ &&
@@ -169,19 +169,19 @@ void InkDropEventHandler::OnViewHierarchyChanged(
 }
 
 void InkDropEventHandler::OnViewBoundsChanged(View* observed_view) {
-  DCHECK_EQ(host_view_, observed_view);
+  CHECK_EQ(host_view_, observed_view, base::NotFatalUntil::M163);
   if (delegate_->HasInkDrop() && CanUpdateInkDrop()) {
     delegate_->GetInkDrop()->HostSizeChanged(host_view_->size());
   }
 }
 
 void InkDropEventHandler::OnViewFocused(View* observed_view) {
-  DCHECK_EQ(host_view_, observed_view);
+  CHECK_EQ(host_view_, observed_view, base::NotFatalUntil::M163);
   delegate_->GetInkDrop()->SetFocused(true);
 }
 
 void InkDropEventHandler::OnViewBlurred(View* observed_view) {
-  DCHECK_EQ(host_view_, observed_view);
+  CHECK_EQ(host_view_, observed_view, base::NotFatalUntil::M163);
   delegate_->GetInkDrop()->SetFocused(false);
 }
 

@@ -205,13 +205,13 @@ SizeBound FlexLayout::ChildViewSpacing::GetMaxSize(
     size_t view_index,
     int current_size,
     const SizeBound& available_space) const {
-  DCHECK_GE(available_space, 0);
+  CHECK_GE(available_space, 0, base::NotFatalUntil::M163);
 
   if (HasViewIndex(view_index)) {
     return current_size + available_space;
   }
 
-  DCHECK_EQ(0, current_size);
+  CHECK_EQ(0, current_size, base::NotFatalUntil::M163);
   // Making the child visible may result in the addition of margin space, which
   // counts against the child view's flex space allocation.
   //
@@ -234,7 +234,7 @@ int FlexLayout::ChildViewSpacing::GetTotalSizeChangeForNewSize(
 void FlexLayout::ChildViewSpacing::AddViewIndex(size_t view_index,
                                                 int* new_leading,
                                                 int* new_trailing) {
-  DCHECK(!HasViewIndex(view_index));
+  CHECK(!HasViewIndex(view_index), base::NotFatalUntil::M163);
   std::optional<size_t> prev = GetPreviousViewIndex(view_index);
   std::optional<size_t> next = GetNextViewIndex(view_index);
 
@@ -274,7 +274,7 @@ std::optional<size_t> FlexLayout::ChildViewSpacing::GetNextViewIndex(
 }
 
 int FlexLayout::ChildViewSpacing::GetAddDelta(size_t view_index) const {
-  DCHECK(!HasViewIndex(view_index));
+  CHECK(!HasViewIndex(view_index), base::NotFatalUntil::M163);
   std::optional<size_t> prev = GetPreviousViewIndex(view_index);
   std::optional<size_t> next = GetNextViewIndex(view_index);
   const int old_spacing = next ? GetLeadingSpace(*next) : GetTrailingInset();
@@ -1168,7 +1168,7 @@ bool FlexLayout::ResolveFlexibleLengths(const NormalizedSizeBounds& bounds,
     SizeBound child_size = flex_child.flex_base_content_size.main();
 
     const int weight = flex_child.flex.weight();
-    DCHECK_GT(weight, 0);
+    CHECK_GT(weight, 0, base::NotFatalUntil::M163);
     const SizeBound extra_space =
         base::ClampFloor(temp_remaining_free_space.value() * weight /
                              static_cast<float>(flex_total) +

@@ -36,12 +36,12 @@ TooltipStateManager::TooltipStateManager(std::unique_ptr<Tooltip> tooltip)
 TooltipStateManager::~TooltipStateManager() = default;
 
 void TooltipStateManager::AddObserver(wm::TooltipObserver* observer) {
-  DCHECK(tooltip_);
+  CHECK(tooltip_, base::NotFatalUntil::M163);
   tooltip_->AddObserver(observer);
 }
 
 void TooltipStateManager::RemoveObserver(wm::TooltipObserver* observer) {
-  DCHECK(tooltip_);
+  CHECK(tooltip_, base::NotFatalUntil::M163);
   tooltip_->RemoveObserver(observer);
 }
 

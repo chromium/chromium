@@ -44,7 +44,7 @@ size_t ViewModelUtils::DetermineMoveIndex(const ViewModelBase& model,
                                           int y) {
   const auto& entries = model.entries();
   const int value = primary_axis_coordinate(is_horizontal, gfx::Point(x, y));
-  DCHECK(model.GetIndexOfView(view).has_value());
+  CHECK(model.GetIndexOfView(view).has_value(), base::NotFatalUntil::M163);
 
   auto iter = entries.begin();
   for (; iter->view != view; ++iter) {

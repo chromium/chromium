@@ -47,12 +47,14 @@ void AnimationAbortHandle::AddLayer(ui::Layer* layer) {
 }
 
 void AnimationAbortHandle::OnAnimationStarted() {
-  DCHECK_EQ(animation_state_, AnimationState::kNotStarted);
+  CHECK_EQ(animation_state_, AnimationState::kNotStarted,
+           base::NotFatalUntil::M163);
   animation_state_ = AnimationState::kRunning;
 }
 
 void AnimationAbortHandle::OnAnimationEnded() {
-  DCHECK_EQ(animation_state_, AnimationState::kRunning);
+  CHECK_EQ(animation_state_, AnimationState::kRunning,
+           base::NotFatalUntil::M163);
   animation_state_ = AnimationState::kEnded;
 }
 

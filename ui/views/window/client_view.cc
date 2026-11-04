@@ -75,8 +75,9 @@ void ClientView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 void ClientView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   if (details.is_add && details.child == this) {
-    DCHECK(GetWidget());
-    DCHECK(contents_view_);  // |contents_view_| must be valid now!
+    CHECK(GetWidget(), base::NotFatalUntil::M163);
+    CHECK(contents_view_,
+          base::NotFatalUntil::M163);  // |contents_view_| must be valid now!
     // Insert |contents_view_| at index 0 so it is first in the focus chain.
     // (the OK/Cancel buttons are inserted before contents_view_)
     // TODO(weili): This seems fragile and can be refactored.

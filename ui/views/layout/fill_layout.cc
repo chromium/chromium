@@ -43,7 +43,7 @@ ProposedLayout FillLayout::CalculateProposedLayout(
   // Because we explicitly override GetPreferredSize and
   // GetPreferredHeightForWidth(), we should always call this method with well-
   // defined bounds.
-  DCHECK(size_bounds.is_fully_bounded());
+  CHECK(size_bounds.is_fully_bounded(), base::NotFatalUntil::M163);
 
   ProposedLayout layout;
   layout.host_size = host_view()->size();
@@ -61,7 +61,7 @@ ProposedLayout FillLayout::CalculateProposedLayout(
 }
 
 gfx::Size FillLayout::GetPreferredSize(const View* host) const {
-  DCHECK_EQ(host_view(), host);
+  CHECK_EQ(host_view(), host, base::NotFatalUntil::M163);
 
   gfx::Size result;
 
@@ -85,7 +85,7 @@ gfx::Size FillLayout::GetPreferredSize(const View* host) const {
 
 gfx::Size FillLayout::GetPreferredSize(const View* host,
                                        const SizeBounds& available_size) const {
-  DCHECK_EQ(host_view(), host);
+  CHECK_EQ(host_view(), host, base::NotFatalUntil::M163);
 
   gfx::Size result;
 
@@ -111,7 +111,7 @@ gfx::Size FillLayout::GetPreferredSize(const View* host,
 }
 
 gfx::Size FillLayout::GetMinimumSize(const View* host) const {
-  DCHECK_EQ(host_view(), host);
+  CHECK_EQ(host_view(), host, base::NotFatalUntil::M163);
 
   if (!minimum_size_enabled_) {
     return host->GetPreferredSize(GetContentsSizeBounds(host));
@@ -138,7 +138,7 @@ gfx::Size FillLayout::GetMinimumSize(const View* host) const {
 }
 
 int FillLayout::GetPreferredHeightForWidth(const View* host, int width) const {
-  DCHECK_EQ(host_view(), host);
+  CHECK_EQ(host_view(), host, base::NotFatalUntil::M163);
 
   const gfx::Insets insets = host->GetInsets();
   width -= insets.width();

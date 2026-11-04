@@ -57,7 +57,7 @@ void PulsingInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
 }
 
 void PulsingInkDropMask::AnimationProgressed(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &throb_animation_);
+  CHECK_EQ(animation, &throb_animation_, base::NotFatalUntil::M163);
   layer()->SchedulePaint(gfx::Rect(layer()->size()));
 
   // This is a workaround for crbug.com/935808: for scale factors >1,

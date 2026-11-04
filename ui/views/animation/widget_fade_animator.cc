@@ -23,7 +23,7 @@ void WidgetFadeAnimator::FadeIn(int slide_distance,
     return;
   }
 
-  DCHECK(widget_);
+  CHECK(widget_, base::NotFatalUntil::M163);
 
   animation_type_ = FadeType::kFadeIn;
   fade_animation_.SetDuration(fade_in_duration_);
@@ -74,7 +74,7 @@ void WidgetFadeAnimator::FadeOut(int slide_distance,
   // nothing to do. If the animation is close-on-hide, however, we should still
   // close the widget.
   if (!widget_->IsVisible()) {
-    DCHECK(!IsFadingIn());
+    CHECK(!IsFadingIn(), base::NotFatalUntil::M163);
     if (close_on_hide_) {
       widget_->Close();
     }

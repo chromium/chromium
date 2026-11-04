@@ -121,7 +121,7 @@ gfx::Vector2d GetContentsBoundsOffsetToPlaceVisibleArrow(
 }
 
 gfx::Insets GetVisibleArrowInsets(BubbleBorder::Arrow arrow, bool include_gap) {
-  DCHECK(BubbleBorder::has_arrow(arrow));
+  CHECK(BubbleBorder::has_arrow(arrow), base::NotFatalUntil::M163);
   const int arrow_size = include_gap ? BubbleBorder::kVisibleArrowGap +
                                            BubbleBorder::kVisibleArrowLength
                                      : BubbleBorder::kVisibleArrowLength;

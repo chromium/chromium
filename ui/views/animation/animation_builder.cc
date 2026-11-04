@@ -58,32 +58,32 @@ AnimationBuilder::Observer::~Observer() {
 }
 
 void AnimationBuilder::Observer::SetOnStarted(base::OnceClosure callback) {
-  DCHECK(!on_started_);
+  CHECK(!on_started_, base::NotFatalUntil::M163);
   on_started_ = std::move(callback);
 }
 
 void AnimationBuilder::Observer::SetOnEnded(base::OnceClosure callback,
                                             base::Location location) {
-  DCHECK(!on_ended_);
+  CHECK(!on_ended_, base::NotFatalUntil::M163);
   on_ended_ = std::move(callback);
   on_ended_location_ = location;
 }
 
 void AnimationBuilder::Observer::SetOnWillRepeat(
     base::RepeatingClosure callback) {
-  DCHECK(!on_will_repeat_);
+  CHECK(!on_will_repeat_, base::NotFatalUntil::M163);
   on_will_repeat_ = std::move(callback);
 }
 
 void AnimationBuilder::Observer::SetOnAborted(base::OnceClosure callback,
                                               base::Location location) {
-  DCHECK(!on_aborted_);
+  CHECK(!on_aborted_, base::NotFatalUntil::M163);
   on_aborted_ = std::move(callback);
   on_aborted_location_ = location;
 }
 
 void AnimationBuilder::Observer::SetOnScheduled(base::OnceClosure callback) {
-  DCHECK(!on_scheduled_);
+  CHECK(!on_scheduled_, base::NotFatalUntil::M163);
   on_scheduled_ = std::move(callback);
 }
 
@@ -379,7 +379,7 @@ void AnimationBuilder::TerminateSequence(base::PassKey<AnimationSequenceBlock>,
 }
 
 AnimationSequenceBlock& AnimationBuilder::GetCurrentSequence() {
-  DCHECK(current_sequence_);
+  CHECK(current_sequence_, base::NotFatalUntil::M163);
   return *current_sequence_;
 }
 

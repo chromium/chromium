@@ -701,7 +701,7 @@ void InkDropImpl::DestroyHiddenTargetedAnimations() {
 }
 
 void InkDropImpl::CreateInkDropRipple() {
-  DCHECK(!destroying_);
+  CHECK(!destroying_, base::NotFatalUntil::M163);
 
   DestroyInkDropRipple();
   ink_drop_ripple_ = ink_drop_host_->CreateInkDropRipple();
@@ -725,12 +725,12 @@ void InkDropImpl::DestroyInkDropRipple() {
 }
 
 void InkDropImpl::CreateInkDropHighlight() {
-  DCHECK(!destroying_);
+  CHECK(!destroying_, base::NotFatalUntil::M163);
 
   DestroyInkDropHighlight();
 
   highlight_ = ink_drop_host_->CreateInkDropHighlight();
-  DCHECK(highlight_);
+  CHECK(highlight_, base::NotFatalUntil::M163);
 
   // If the platform provides HC colors, we need to show them fully on hover and
   // press.
@@ -758,8 +758,8 @@ void InkDropImpl::DestroyInkDropHighlight() {
 }
 
 void InkDropImpl::AddRootLayerToHostIfNeeded() {
-  DCHECK(highlight_ || ink_drop_ripple_);
-  DCHECK(!root_layer_->children().empty());
+  CHECK(highlight_ || ink_drop_ripple_, base::NotFatalUntil::M163);
+  CHECK(!root_layer_->children().empty(), base::NotFatalUntil::M163);
   if (!root_layer_added_to_host_) {
     root_layer_added_to_host_ = true;
     ink_drop_host_->AddInkDropLayer(root_layer_.get());
@@ -778,7 +778,7 @@ void InkDropImpl::RemoveRootLayerFromHostIfNeeded() {
 
 void InkDropImpl::AnimationStarted(InkDropState ink_drop_state) {
   // AnimationStarted should only be called from |ink_drop_ripple_|.
-  DCHECK(ink_drop_ripple_);
+  CHECK(ink_drop_ripple_, base::NotFatalUntil::M163);
 
   highlight_state_->AnimationStarted(ink_drop_state);
   NotifyInkDropAnimationStarted();

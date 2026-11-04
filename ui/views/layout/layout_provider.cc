@@ -47,8 +47,8 @@ int LayoutProvider::GetControlHeightForFont(int context,
 }
 
 gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
-  DCHECK_GE(metric, VIEWS_INSETS_START);
-  DCHECK_LT(metric, VIEWS_INSETS_MAX);
+  CHECK_GE(metric, VIEWS_INSETS_START, base::NotFatalUntil::M163);
+  CHECK_LT(metric, VIEWS_INSETS_MAX, base::NotFatalUntil::M163);
   switch (metric) {
     case InsetsMetric::INSETS_DIALOG:
     case InsetsMetric::INSETS_DIALOG_SUBSECTION:
@@ -79,8 +79,8 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
 }
 
 int LayoutProvider::GetDistanceMetric(int metric) const {
-  DCHECK_GE(metric, VIEWS_DISTANCE_START);
-  DCHECK_LT(metric, VIEWS_DISTANCE_END);
+  CHECK_GE(metric, VIEWS_DISTANCE_START, base::NotFatalUntil::M163);
+  CHECK_LT(metric, VIEWS_DISTANCE_END, base::NotFatalUntil::M163);
 
   switch (static_cast<DistanceMetric>(metric)) {
     case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:

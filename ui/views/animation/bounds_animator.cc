@@ -42,8 +42,8 @@ void BoundsAnimator::AnimateViewTo(
     View* view,
     const gfx::Rect& target,
     std::unique_ptr<gfx::AnimationDelegate> delegate) {
-  DCHECK(view);
-  DCHECK_EQ(view->parent(), parent_);
+  CHECK(view, base::NotFatalUntil::M163);
+  CHECK_EQ(view->parent(), parent_, base::NotFatalUntil::M163);
 
   const bool is_animating = IsAnimating(view);
 
@@ -60,7 +60,7 @@ void BoundsAnimator::AnimateViewTo(
 
   Data existing_data;
   if (is_animating) {
-    DCHECK(data_.contains(view));
+    CHECK(data_.contains(view), base::NotFatalUntil::M163);
     const bool used_transforms = data_[view].target_transform.has_value();
     if (used_transforms) {
       // Using transforms means a view does not have the proper bounds until an
@@ -215,7 +215,8 @@ BoundsAnimator::Data::~Data() = default;
 BoundsAnimator::Data BoundsAnimator::RemoveFromMaps(View* view) {
   const auto i = data_.find(view);
   CHECK(i != data_.end());
-  DCHECK_GT(animation_to_view_.count(i->second.animation.get()), 0u);
+  CHECK_GT(animation_to_view_.count(i->second.animation.get()), 0u,
+           base::NotFatalUntil::M163);
 
   Data old_data = std::move(i->second);
   data_.erase(view);
@@ -254,15 +255,16 @@ std::unique_ptr<gfx::Animation> BoundsAnimator::ResetAnimationForView(
 
 void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
                                               AnimationEndType type) {
-  DCHECK(animation_to_view_.find(animation) != animation_to_view_.end());
+  CHECK(animation_to_view_.find(animation) != animation_to_view_.end(),
+        base::NotFatalUntil::M163);
 
   View* view = animation_to_view_[animation];
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
 
   // Notify the delegate so it has a chance to paint the final state of a
   // completed animation.
   if (type == AnimationEndType::kEnded) {
-    DCHECK_EQ(animation->GetCurrentValue(), 1.0);
+    CHECK_EQ(animation->GetCurrentValue(), 1.0, base::NotFatalUntil::M163);
     AnimationProgressed(animation);
   }
 
@@ -274,7 +276,7 @@ void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
       // Set the bounds at the end of the animation and reset the transform.
       view->SetBoundsRect(data.target_bounds);
     } else {
-      DCHECK_EQ(AnimationEndType::kCanceled, type);
+      CHECK_EQ(AnimationEndType::kCanceled, type, base::NotFatalUntil::M163);
       // Get the existing transform and apply it to the start bounds which is
       // the current bounds of the view. This will place the bounds at the place
       // where the animation stopped. See comment in AnimateViewTo() for details
@@ -291,7 +293,7 @@ void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
     if (type == AnimationEndType::kEnded) {
       data.delegate->AnimationEnded(animation);
     } else {
-      DCHECK_EQ(AnimationEndType::kCanceled, type);
+      CHECK_EQ(AnimationEndType::kCanceled, type, base::NotFatalUntil::M163);
       data.delegate->AnimationCanceled(animation);
     }
   }
@@ -300,10 +302,11 @@ void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
 }
 
 void BoundsAnimator::AnimationProgressed(const gfx::Animation* animation) {
-  DCHECK(animation_to_view_.find(animation) != animation_to_view_.end());
+  CHECK(animation_to_view_.find(animation) != animation_to_view_.end(),
+        base::NotFatalUntil::M163);
 
   View* view = animation_to_view_[animation];
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   const Data& data = data_[view];
 
   if (data.target_transform) {
@@ -361,7 +364,7 @@ void BoundsAnimator::AnimationContainerEmpty(
 
 void BoundsAnimator::OnChildViewRemoved(views::View* observed_view,
                                         views::View* removed) {
-  DCHECK_EQ(parent_, observed_view);
+  CHECK_EQ(parent_, observed_view, base::NotFatalUntil::M163);
   const auto iter = data_.find(removed);
   if (iter == data_.end()) {
     return;

@@ -1163,8 +1163,9 @@ void BubbleFrameView::OffsetArrowIfOutOfBounds(
     const gfx::Size& client_size,
     const gfx::Rect& available_bounds) {
   BubbleBorder::Arrow arrow = bubble_border_->arrow();
-  DCHECK(BubbleBorder::is_arrow_at_center(arrow) ||
-         preferred_arrow_adjustment_ == PreferredArrowAdjustment::kOffset);
+  CHECK(BubbleBorder::is_arrow_at_center(arrow) ||
+            preferred_arrow_adjustment_ == PreferredArrowAdjustment::kOffset,
+        base::NotFatalUntil::M163);
 
   gfx::Rect window_bounds(bubble_border_->GetBounds(anchor_rect, client_size));
   if (available_bounds.IsEmpty() || available_bounds.Contains(window_bounds)) {
@@ -1233,7 +1234,7 @@ gfx::Size BubbleFrameView::GetFrameSizeForClientSize(
     const gfx::Size& client_size) const {
   const int frame_width = GetFrameWidthForClientWidth(client_size.width());
   const gfx::Insets client_insets = GetClientInsetsForFrameWidth(frame_width);
-  DCHECK_GE(frame_width, client_size.width());
+  CHECK_GE(frame_width, client_size.width(), base::NotFatalUntil::M163);
   gfx::Size size(frame_width, client_size.height() + client_insets.height());
 
   // Only account for footnote_container_'s height if it's visible, because
@@ -1364,7 +1365,8 @@ gfx::Point BubbleFrameView::GetButtonAreaTopRight() const {
   }
 
   // If the buttons are positioned at the end of the title row.
-  DCHECK_EQ(GetButtonsPositioning(), ButtonsPositioning::kInTitleRow);
+  CHECK_EQ(GetButtonsPositioning(), ButtonsPositioning::kInTitleRow,
+           base::NotFatalUntil::M163);
 
   gfx::Rect inner_bounds = contents_bounds;
   inner_bounds.Inset(title_margins_);

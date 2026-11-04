@@ -251,7 +251,7 @@ bool DialogDelegate::ShouldAllowKeyEventsDuringInputProtection() const {
 }
 
 bool DialogDelegate::Cancel() {
-  DCHECK(!already_started_close_);
+  CHECK(!already_started_close_, base::NotFatalUntil::M163);
   if (HasCallback(cancel_callback_)) {
     return RunCloseCallback(cancel_callback_);
   }
@@ -259,7 +259,7 @@ bool DialogDelegate::Cancel() {
 }
 
 bool DialogDelegate::Accept() {
-  DCHECK(!already_started_close_);
+  CHECK(!already_started_close_, base::NotFatalUntil::M163);
   if (HasCallback(accept_callback_)) {
     return RunCloseCallback(accept_callback_);
   }
@@ -269,7 +269,7 @@ bool DialogDelegate::Accept() {
 bool DialogDelegate::RunCloseCallback(
     std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
         callback) {
-  DCHECK(!already_started_close_);
+  CHECK(!already_started_close_, base::NotFatalUntil::M163);
   if (std::holds_alternative<base::OnceClosure>(callback)) {
     already_started_close_ = true;
     std::get<base::OnceClosure>(std::move(callback)).Run();
@@ -447,7 +447,7 @@ views::View* DialogDelegate::GetFootnoteViewForTesting() const {
   // it to create anything other than a BubbleFrameView.
   // TODO(crbug.com/40101916): Make CreateDialogFrameView final, then
   // remove this DCHECK.
-  DCHECK(IsViewClass<BubbleFrameView>(frame));
+  CHECK(IsViewClass<BubbleFrameView>(frame), base::NotFatalUntil::M163);
   return static_cast<BubbleFrameView*>(frame)->GetFootnoteView();
 }
 
@@ -564,7 +564,8 @@ void DialogDelegate::AcceptDialog() {
   // Copy the dialog widget name onto the stack so it appears in crash dumps.
   DEBUG_ALIAS_FOR_CSTR(last_widget_name, GetWidget()->GetName().c_str(), 64);
 
-  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  CHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk),
+        base::NotFatalUntil::M163);
 
   // Widget (and maybe this delegate) may get destroyed from the Accept() call
   // below. This will detect that condition.
@@ -592,7 +593,8 @@ void DialogDelegate::CancelDialog() {
   // if the cancel button is available. Otherwise this can be reached through
   // closing the dialog via Esc.
   if (ShouldShowCloseButton()) {
-    DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kCancel));
+    CHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kCancel),
+          base::NotFatalUntil::M163);
   }
 
   // Widget (and maybe this delegate) may get destroyed from the Cancel() call

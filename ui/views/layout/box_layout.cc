@@ -95,7 +95,7 @@ BoxLayoutFlexSpecification::BoxLayoutFlexSpecification() = default;
 
 BoxLayoutFlexSpecification BoxLayoutFlexSpecification::WithWeight(
     int weight) const {
-  DCHECK_GE(weight, 0);
+  CHECK_GE(weight, 0, base::NotFatalUntil::M163);
   BoxLayoutFlexSpecification spec = *this;
   spec.weight_ = weight;
   return spec;
@@ -170,9 +170,9 @@ bool BoxLayout::GetCollapseMarginsSpacing() const {
 void BoxLayout::SetFlexForView(const View* view,
                                int flex_weight,
                                bool use_min_size) {
-  DCHECK(view);
-  DCHECK_EQ(host_view(), view->parent());
-  DCHECK_GE(flex_weight, 0);
+  CHECK(view, base::NotFatalUntil::M163);
+  CHECK_EQ(host_view(), view->parent(), base::NotFatalUntil::M163);
+  CHECK_GE(flex_weight, 0, base::NotFatalUntil::M163);
   const_cast<View*>(view)->SetProperty(kBoxLayoutFlexKey,
                                        BoxLayoutFlexSpecification()
                                            .WithWeight(flex_weight)
@@ -180,12 +180,12 @@ void BoxLayout::SetFlexForView(const View* view,
 }
 
 void BoxLayout::ClearFlexForView(const View* view) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   const_cast<View*>(view)->ClearProperty(kBoxLayoutFlexKey);
 }
 
 void BoxLayout::SetDefaultFlex(int default_flex) {
-  DCHECK_GE(default_flex, 0);
+  CHECK_GE(default_flex, 0, base::NotFatalUntil::M163);
   default_flex_ = default_flex;
 }
 
@@ -625,7 +625,7 @@ void BoxLayout::UpdateFlexLayout(const NormalizedSizeBounds& bounds,
 
   // Flex views should have grown/shrunk to consume all free space.
   if (flex_sum && main_free_space.is_bounded()) {
-    DCHECK_EQ(total_padding, main_free_space);
+    CHECK_EQ(total_padding, main_free_space, base::NotFatalUntil::M163);
   }
 }
 
@@ -646,7 +646,7 @@ int BoxLayout::GetActualMainSizeAndUpdateChildPreferredSizeIfNeeded(
   // current_padding is the extra available space distributed to
   // subviews proportional to their flex values. But if there is
   // insufficient space at this time. We should need shrink.
-  DCHECK(box_child.flex > 0 || current_padding == 0);
+  CHECK(box_child.flex > 0 || current_padding == 0, base::NotFatalUntil::M163);
   bool need_shrink = current_padding < 0 ||
                      avaible_main_size < box_child.preferred_size.main();
   if (need_shrink) {

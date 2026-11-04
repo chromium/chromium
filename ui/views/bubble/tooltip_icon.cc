@@ -165,7 +165,7 @@ void TooltipIcon::HideBubble() {
 }
 
 void TooltipIcon::OnWidgetDestroyed(Widget* widget) {
-  DCHECK(observation_.IsObservingSource(widget));
+  CHECK(observation_.IsObservingSource(widget), base::NotFatalUntil::M163);
   observation_.Reset();
 
   SetDrawAsHovered(false);

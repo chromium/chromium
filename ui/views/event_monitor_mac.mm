@@ -68,7 +68,7 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
     : types_(types),
       event_observer_(event_observer),
       objc_storage_(std::make_unique<ObjCStorage>()) {
-  DCHECK(event_observer);
+  CHECK(event_observer, base::NotFatalUntil::M163);
   NSWindow* target_window = target_native_window.GetNativeNSWindow();
 
   // Capture a WeakPtr. This allows the block to detect another event monitor

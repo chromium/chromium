@@ -120,12 +120,12 @@ void TooltipAura::AdjustToCursor(gfx::Rect* anchor_point) {
 }
 
 const gfx::RenderText* TooltipAura::GetRenderTextForTest() const {
-  DCHECK(widget_);
+  CHECK(widget_, base::NotFatalUntil::M163);
   return widget_->GetTooltipView()->render_text();
 }
 
 void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
-  DCHECK(widget_);
+  CHECK(widget_, base::NotFatalUntil::M163);
   widget_->GetTooltipView()->GetViewAccessibility().GetAccessibleNodeData(
       node_data);
 }
@@ -195,8 +195,8 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
 
 void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
                                       const ui::OwnedWindowAnchor& anchor) {
-  DCHECK(!widget_);
-  DCHECK(tooltip_window_);
+  CHECK(!widget_, base::NotFatalUntil::M163);
+  CHECK(tooltip_window_, base::NotFatalUntil::M163);
   widget_ = std::make_unique<TooltipWidget>();
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -204,7 +204,7 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
   // For aura, since we set the type to TYPE_TOOLTIP, the widget will get
   // auto-parented to the right container.
   params.context = tooltip_window_;
-  DCHECK(params.context);
+  CHECK(params.context, base::NotFatalUntil::M163);
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.accept_events = false;
   params.accept_drag_drop = false;
@@ -240,7 +240,7 @@ void TooltipAura::Update(aura::Window* window,
                          const TooltipTrigger trigger) {
   // Hide() must be called before showing the next tooltip.  See also the
   // comment in Hide().
-  DCHECK(!widget_);
+  CHECK(!widget_, base::NotFatalUntil::M163);
 
   tooltip_window_ = window;
 

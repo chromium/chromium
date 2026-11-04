@@ -56,7 +56,7 @@ constexpr int kScrollViewVerticalMargin = 2;
 
 BubbleDialogModelHost::FieldType GetFieldTypeForField(
     ui::DialogModelField* field) {
-  DCHECK(field);
+  CHECK(field, base::NotFatalUntil::M163);
   switch (field->type()) {
     case ui::DialogModelField::kParagraph:
       return BubbleDialogModelHost::FieldType::kText;
@@ -226,7 +226,7 @@ class LayoutConsensusGroup {
   gfx::Size GetMaxPreferredSize(const SizeBounds& available_size) const {
     gfx::Size size;
     for (View* child : children_) {
-      DCHECK_EQ(1u, child->children().size());
+      CHECK_EQ(1u, child->children().size(), base::NotFatalUntil::M163);
       size.SetToMax(
           child->children().front()->GetPreferredSize(available_size));
     }
@@ -237,7 +237,7 @@ class LayoutConsensusGroup {
   gfx::Size GetMaxMinimumSize() const {
     gfx::Size size;
     for (View* child : children_) {
-      DCHECK_EQ(1u, child->children().size());
+      CHECK_EQ(1u, child->children().size(), base::NotFatalUntil::M163);
       size.SetToMax(child->children().front()->GetMinimumSize());
     }
     return size;
@@ -264,7 +264,7 @@ class LayoutConsensusView : public View {
       const SizeBounds& available_size) const override {
     const gfx::Size group_preferred_size =
         group_->GetMaxPreferredSize(available_size);
-    DCHECK_EQ(1u, children().size());
+    CHECK_EQ(1u, children().size(), base::NotFatalUntil::M163);
     const gfx::Size child_preferred_size =
         children()[0]->GetPreferredSize(available_size);
     // TODO(pbos): This uses the max width, but could be configurable to use
@@ -275,7 +275,7 @@ class LayoutConsensusView : public View {
 
   gfx::Size GetMinimumSize() const override {
     const gfx::Size group_minimum_size = group_->GetMaxMinimumSize();
-    DCHECK_EQ(1u, children().size());
+    CHECK_EQ(1u, children().size(), base::NotFatalUntil::M163);
     const gfx::Size child_minimum_size = children()[0]->GetMinimumSize();
     // TODO(pbos): This uses the max width, but could be configurable to use
     // either direction.
@@ -301,7 +301,7 @@ BubbleDialogModelHost::CustomView::CustomView(std::unique_ptr<View> view,
 BubbleDialogModelHost::CustomView::~CustomView() = default;
 
 std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M163);
   return std::move(view_);
 }
 
@@ -483,7 +483,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     // TODO(pbos): Handle updating existing field.
 
     // TODO(crbug.com/40224983): Implement this for enabled items. Sorry!
-    DCHECK(!model_field->is_enabled());
+    CHECK(!model_field->is_enabled(), base::NotFatalUntil::M163);
 
     auto item = std::make_unique<LabelButton>(
         base::BindRepeating(
@@ -623,7 +623,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
   }
 
   void AddOrUpdateSeparator(ui::DialogModelField* model_field) {
-    DCHECK_EQ(ui::DialogModelField::Type::kSeparator, model_field->type());
+    CHECK_EQ(ui::DialogModelField::Type::kSeparator, model_field->type(),
+             base::NotFatalUntil::M163);
     // TODO(pbos): Support updates to the existing model.
 
     auto separator = std::make_unique<Separator>();
@@ -670,7 +671,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
 
   static std::unique_ptr<StyledLabel> CreateStyledLabelForDialogModelLabel(
       const ui::DialogModelLabel& dialog_label) {
-    DCHECK(DialogModelLabelRequiresStyledLabel(dialog_label));
+    CHECK(DialogModelLabelRequiresStyledLabel(dialog_label),
+          base::NotFatalUntil::M163);
     const std::vector<ui::DialogModelLabel::TextReplacement>& replacements =
         dialog_label.replacements();
 
@@ -691,7 +693,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
                                           : style::STYLE_PRIMARY);
 
     // Style the replacements as needed.
-    DCHECK_EQ(string_replacements.size(), offsets.size());
+    CHECK_EQ(string_replacements.size(), offsets.size(),
+             base::NotFatalUntil::M163);
     for (size_t i = 0; i < replacements.size(); ++i) {
       auto replacement = replacements[i];
       // No styling needed if replacement is neither a link nor emphasized text.
@@ -718,7 +721,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
 
   static std::unique_ptr<Label> CreateLabelForDialogModelLabel(
       const ui::DialogModelLabel& dialog_label) {
-    DCHECK(!DialogModelLabelRequiresStyledLabel(dialog_label));
+    CHECK(!DialogModelLabelRequiresStyledLabel(dialog_label),
+          base::NotFatalUntil::M163);
 
     auto text_label = std::make_unique<Label>(
         dialog_label.GetString(), style::CONTEXT_DIALOG_BODY_TEXT,
@@ -747,19 +751,22 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
 
   void AddDialogModelHostField(std::unique_ptr<View> view,
                                const DialogModelHostField& field_view_info) {
-    DCHECK_EQ(view.get(), field_view_info.field_view);
+    CHECK_EQ(view.get(), field_view_info.field_view, base::NotFatalUntil::M163);
 
     AddChildView(std::move(view));
 
-    DCHECK(field_view_info.dialog_model_field);
-    DCHECK(field_view_info.field_view);
+    CHECK(field_view_info.dialog_model_field, base::NotFatalUntil::M163);
+    CHECK(field_view_info.field_view, base::NotFatalUntil::M163);
 #if DCHECK_IS_ON()
     // Make sure none of the info is already in use.
     for (const auto& info : fields_) {
-      DCHECK_NE(info.field_view, field_view_info.field_view);
-      DCHECK_NE(info.dialog_model_field, field_view_info.dialog_model_field);
+      CHECK_NE(info.field_view, field_view_info.field_view,
+               base::NotFatalUntil::M163);
+      CHECK_NE(info.dialog_model_field, field_view_info.dialog_model_field,
+               base::NotFatalUntil::M163);
       if (info.focusable_view) {
-        DCHECK_NE(info.focusable_view, field_view_info.focusable_view);
+        CHECK_NE(info.focusable_view, field_view_info.focusable_view,
+                 base::NotFatalUntil::M163);
       }
     }
 #endif  // DCHECK_IS_ON()
@@ -941,7 +948,8 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // OnWidgetInitialized() will not work until then.
   if (ui::DialogModel::Button* extra_button =
           model_->extra_button(DialogModelHost::GetPassKey())) {
-    DCHECK(!model_->extra_link(DialogModelHost::GetPassKey()));
+    CHECK(!model_->extra_link(DialogModelHost::GetPassKey()),
+          base::NotFatalUntil::M163);
     auto builder = views::Builder<MdTextButton>()
                        .SetCallback(base::BindRepeating(
                            &BubbleDialogModelHost::OnExtraButtonPressed,
@@ -954,7 +962,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     SetExtraView(std::move(builder).Build());
   } else if (ui::DialogModelLabel::TextReplacement* extra_link =
                  model_->extra_link(DialogModelHost::GetPassKey())) {
-    DCHECK(extra_link->callback().has_value());
+    CHECK(extra_link->callback().has_value(), base::NotFatalUntil::M163);
     auto link = std::make_unique<views::Link>(extra_link->text());
     link->SetCallback(base::BindRepeating(
         &BubbleDialogModelHost::OnExtraLinkClicked, base::Unretained(this)));
@@ -1087,7 +1095,7 @@ std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
     ui::mojom::ModalType modal_type,
     bool autosize,
     bool owned_by_widget) {
-  DCHECK_NE(modal_type, ui::mojom::ModalType::kNone);
+  CHECK_NE(modal_type, ui::mojom::ModalType::kNone, base::NotFatalUntil::M163);
   return std::make_unique<BubbleDialogModelHost>(
       base::PassKey<BubbleDialogModelHost>(), std::move(model), BubbleAnchor(),
       BubbleBorder::Arrow::NONE, modal_type, autosize, owned_by_widget);
@@ -1155,8 +1163,8 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
 }
 
 void BubbleDialogModelHost::Close() {
-  DCHECK(model_);
-  DCHECK(GetWidget());
+  CHECK(model_, base::NotFatalUntil::M163);
+  CHECK(GetWidget(), base::NotFatalUntil::M163);
   GetWidget()->Close();
 
   // Synchronously destroy |model_|. Widget::Close() being asynchronous should
@@ -1286,7 +1294,7 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
       first_field = field;
       view->SetProperty(kMarginsKey, side_insets);
     } else {
-      DCHECK(last_field);
+      CHECK(last_field, base::NotFatalUntil::M163);
 
       const FieldType last_field_type = GetFieldTypeForField(last_field);
       side_insets.set_top(
