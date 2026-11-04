@@ -612,7 +612,7 @@ bool HostResolver::MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
                                              const IPAddress& ip_address) {
   return !(flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6) &&
          ip_address.IsValid() && ip_address.IsIPv4() &&
-         (source != HostResolverSource::LOCAL_ONLY);
+         !ip_address.IsLoopback() && (source != HostResolverSource::LOCAL_ONLY);
 }
 
 // static

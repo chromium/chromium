@@ -15509,6 +15509,33 @@ TEST_F(HostResolverManagerTest,
   IPv4AddressLiteralInIPv6OnlyNetworkBadAddressTest(false);
 }
 
+TEST_F(HostResolverManagerTest, IPv4LoopbackLiteralInIPv6OnlyNetwork) {
+  HostResolver::ManagerOptions options = DefaultOptions();
+  CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
+                                     /*ipv6_reachable=*/true,
+                                     /*is_async=*/false,
+                                     /*ipv4_reachable=*/false);
+  proc_->AddRule("ipv4only.arpa", ADDRESS_FAMILY_IPV6,
+                 "64:ff9b::c000:aa,64:ff9b::c000:ab");
+
+  // Loopback IPv4 literals are always locally reachable via `lo` and must never
+  // undergo NAT64 synthesis, even on IPv6-only networks or when bound to an
+  // unreachable/invalid `target_network`.
+  std::unique_ptr<HostResolver::ResolveHostRequest> request =
+      resolver_->CreateRequest(HostPortPair("127.0.0.1", 80),
+                               NetworkAnonymizationKey(), /*target_network=*/1,
+                               NetLogWithSource(), std::nullopt,
+                               resolve_context_.get());
+  EXPECT_THAT(request->Start(base::BindOnce([](int) { ADD_FAILURE(); })),
+              IsOk());
+  EXPECT_THAT(request->GetAddressResults(),
+              testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
+  EXPECT_THAT(request->GetEndpointResults(),
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(CreateExpected("127.0.0.1", 80)))));
+  EXPECT_TRUE(proc_->GetCaptureList().empty());
+}
+
 // Regression test for crbug.com/513714124.
 //
 // When a ResolveContext is deregistered, all active jobs associated with it
