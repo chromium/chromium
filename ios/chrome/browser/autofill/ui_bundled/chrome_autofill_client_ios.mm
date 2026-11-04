@@ -1006,10 +1006,9 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
 
 void ChromeAutofillClientIOS::OnActorTaskStateChange(bool is_actuating) {
   if (is_actuating) {
-    for (AutofillDriver* driver :
-         GetAutofillDriverFactory().GetExistingDrivers()) {
-      driver->GetAutofillManager().TriggerFormExtractionInAllFrames(
-          /*force=*/true, base::DoNothing());
+    if (AutofillManager* manager = GetAutofillManagerForPrimaryMainFrame()) {
+      manager->TriggerFormExtractionInAllFrames(/*force=*/true,
+                                                base::DoNothing());
     }
   }
 }

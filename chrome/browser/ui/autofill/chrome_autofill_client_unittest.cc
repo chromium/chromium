@@ -783,7 +783,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow, OpenGeminiInSidebar) {
 }
 
 // Tests that `OnActorTaskStateChange` calls `TriggerFormExtractionInAllFrames`
-// on all drivers when a new task gets assigned.
+// when a new task gets assigned.
 TEST_F(ChromeAutofillClientTestWithMockWindow,
        OnActorTaskStateChange_ReparseForms) {
   actor::ActorKeyedServiceFake* actor_service =
