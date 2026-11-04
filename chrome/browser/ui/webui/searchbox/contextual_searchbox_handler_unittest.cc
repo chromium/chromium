@@ -2725,6 +2725,20 @@ TEST_F(ContextualSearchboxHandlerTest,
   }
 }
 
+// The opt-in applies to the current model and whenever the handler re-attaches.
+TEST_F(ContextualSearchboxHandlerTest, OptInToDynamicAimFulfillment) {
+  ASSERT_TRUE(handler().input_state_model());
+  EXPECT_FALSE(
+      handler().input_state_model()->dynamic_aim_fulfillment_enabled());
+
+  handler().OptInToDynamicAimFulfillment();
+  EXPECT_TRUE(handler().input_state_model()->dynamic_aim_fulfillment_enabled());
+
+  handler().InitializeInputStateModel();
+  ASSERT_TRUE(handler().input_state_model());
+  EXPECT_TRUE(handler().input_state_model()->dynamic_aim_fulfillment_enabled());
+}
+
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   // Ensure udm param is always set as an additional param.
   SubmitQueryAndWaitForNavigation();

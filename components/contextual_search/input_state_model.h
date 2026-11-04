@@ -128,6 +128,14 @@ class InputStateModel {
   // Gets additional query params for the current state.
   std::map<std::string, std::string> GetAdditionalQueryParams();
 
+  // Turns on dynamic AIM fulfillment: `InputState::will_fulfill_in_aim` is
+  // computed instead of always true. One-way, since the model can be shared by
+  // handlers that didn't opt in, and safe to call more than once.
+  void EnableDynamicAimFulfillment();
+  bool dynamic_aim_fulfillment_enabled() const {
+    return dynamic_aim_fulfillment_enabled_;
+  }
+
   // Returns the current state.
   const InputState& GetInputState() const;
 
@@ -171,8 +179,12 @@ class InputStateModel {
   // Update the current value of `state_` based on new tool or model.
   void UpdateSelectedState(ToolMode tool, ModelMode model);
 
-  // Update the currently disabled tools, models, and inputs.
+  // Update `state_.will_fulfill_in_aim`, then the currently disabled tools,
+  // models, and inputs.
   void UpdateDisabledState();
+
+  // Updates `state_.will_fulfill_in_aim`. Called by `UpdateDisabledState()`.
+  void RecomputeRouting();
 
   //  Helper method to update `disabled_tools` based on `rule_set_`.
   void UpdateDisabledTools();
@@ -247,6 +259,9 @@ class InputStateModel {
 
   // Stores the active region crop preview, if any.
   std::optional<LensCrop> lens_crop_;
+
+  // Set by `EnableDynamicAimFulfillment()`; never cleared.
+  bool dynamic_aim_fulfillment_enabled_ = false;
 
   base::WeakPtrFactory<InputStateModel> weak_ptr_factory_{this};
 };

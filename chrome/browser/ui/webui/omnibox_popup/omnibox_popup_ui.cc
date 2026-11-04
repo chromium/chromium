@@ -511,6 +511,9 @@ void OmniboxPopupUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&OmniboxPopupUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
+  if (omnibox::IsDynamicAimFulfillmentEnabledForOmnibox()) {
+    composebox_handler_->OptInToDynamicAimFulfillment();
+  }
 
   // If presenter delegate is connected, set the delegate in the handler so the
   // handler can notify the delegate when there are embedded permissions prompt

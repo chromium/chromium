@@ -11,9 +11,11 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -2118,6 +2120,118 @@ TEST_F(InputStateModelTest, UpdatesSessionHandleCurrentUrl) {
 
 TEST_F(InputStateModelTest, WillFulfillInAimDefaultsToTrue) {
   EXPECT_TRUE(input_state_model_->GetInputState().will_fulfill_in_aim);
+}
+
+class InputStateModelDynamicAimTest : public InputStateModelTest {
+ protected:
+  void SetUp() override {
+    InputStateModelTest::SetUp();
+    config_.mutable_rule_set();
+    AddModel(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, "udm", "50");
+    AddTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, "imgn", "1");
+    AddTool(omnibox::ToolMode::TOOL_MODE_CANVAS, "udm", "50");
+    input_state_model_ = std::make_unique<InputStateModel>(
+        session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+        /*is_signed_in=*/false,
+        /*browser_identity_matches_aim_identity=*/false);
+  }
+
+  void AddModel(omnibox::ModelMode model, const char* key, const char* value) {
+    auto* config = config_.add_model_configs();
+    config->set_model(model);
+    auto* param = config->add_aim_url_params();
+    param->set_param_key(key);
+    param->set_param_value(value);
+  }
+
+  void AddTool(omnibox::ToolMode tool, const char* key, const char* value) {
+    auto* config = config_.add_tool_configs();
+    config->set_tool(tool);
+    auto* param = config->add_aim_url_params();
+    param->set_param_key(key);
+    param->set_param_value(value);
+  }
+
+  // Attaches `images` images and `tabs` tabs.
+  void SetInputs(int images, int tabs = 0) {
+    std::vector<FileInfo> files;
+    for (int i = 0; i < images; ++i) {
+      FileInfo info;
+      info.mime_type = lens::MimeType::kImage;
+      info.mime_type_string = "image/png";
+      files.push_back(std::move(info));
+    }
+    for (int i = 0; i < tabs; ++i) {
+      FileInfo info;
+      info.tab_url = GURL("https://example.com");
+      files.push_back(std::move(info));
+    }
+    ON_CALL(session_handle_, GetUploadedContextFileInfos())
+        .WillByDefault(testing::Return(files));
+    input_state_model_->OnContextChanged();
+  }
+
+  bool WillFulfillInAim() {
+    return input_state_model_->GetInputState().will_fulfill_in_aim;
+  }
+  omnibox::ModelMode ActiveModel() {
+    return input_state_model_->GetInputState().active_model;
+  }
+};
+
+TEST_F(InputStateModelDynamicAimTest, DisabledKeepsAimBehavior) {
+  EXPECT_TRUE(WillFulfillInAim());
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  SetInputs(/*images=*/1);
+  EXPECT_TRUE(WillFulfillInAim());
+}
+
+TEST_F(InputStateModelDynamicAimTest, EnableComputesWillFulfillInAim) {
+  base::MockCallback<InputStateModel::Subscriber> subscriber;
+  auto subscription = input_state_model_->Subscribe(subscriber.Get());
+  EXPECT_CALL(subscriber,
+              Run(testing::Field(&InputState::will_fulfill_in_aim, false)));
+  input_state_model_->EnableDynamicAimFulfillment();
+  EXPECT_FALSE(WillFulfillInAim());
+  // The model selection is unchanged.
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+}
+
+TEST_F(InputStateModelDynamicAimTest, ToolsRouteByTheirParams) {
+  input_state_model_->EnableDynamicAimFulfillment();
+
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  EXPECT_FALSE(WillFulfillInAim());
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_TRUE(WillFulfillInAim());
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_FALSE(WillFulfillInAim());
+}
+
+TEST_F(InputStateModelDynamicAimTest, AttachmentsRouteByMode) {
+  input_state_model_->EnableDynamicAimFulfillment();
+
+  // Default mode (single image).
+  SetInputs(/*images=*/1);
+  EXPECT_FALSE(WillFulfillInAim());
+  SetInputs(/*images=*/2);
+  EXPECT_TRUE(WillFulfillInAim());
+  SetInputs(/*images=*/1);
+  EXPECT_FALSE(WillFulfillInAim());
+
+  // Tabs always go to AIM.
+  SetInputs(/*images=*/0, /*tabs=*/1);
+  EXPECT_TRUE(WillFulfillInAim());
+}
+
+// The copy made for the next surface doesn't keep the opt-in.
+TEST_F(InputStateModelDynamicAimTest, CopyDoesNotKeepOptIn) {
+  input_state_model_->EnableDynamicAimFulfillment();
+  ASSERT_FALSE(WillFulfillInAim());
+
+  InputStateModel copy(*input_state_model_, session_handle_);
+  EXPECT_FALSE(copy.dynamic_aim_fulfillment_enabled());
+  EXPECT_TRUE(copy.GetInputState().will_fulfill_in_aim);
 }
 
 }  // namespace contextual_search

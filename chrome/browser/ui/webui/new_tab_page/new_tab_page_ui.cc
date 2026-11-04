@@ -1420,6 +1420,9 @@ void NewTabPageUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&NewTabPageUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
+  if (omnibox::IsDynamicAimFulfillmentEnabledForRealbox()) {
+    composebox_handler_->OptInToDynamicAimFulfillment();
+  }
 }
 
 void NewTabPageUI::CreateHelpBubbleHandler(

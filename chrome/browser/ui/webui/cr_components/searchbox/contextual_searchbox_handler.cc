@@ -1795,11 +1795,22 @@ ContextualSearchboxHandler::GetOrCreateInputStateModel() {
   return user_data->GetOrCreateInputStateModel(*session_handle);
 }
 
+void ContextualSearchboxHandler::OptInToDynamicAimFulfillment() {
+  opted_in_to_dynamic_aim_fulfillment_ = true;
+  if (input_state_model_) {
+    input_state_model_->EnableDynamicAimFulfillment();
+  }
+}
+
 void ContextualSearchboxHandler::InitializeInputStateModel() {
   auto* previous_model = input_state_model_.get();
   input_state_model_ = GetOrCreateInputStateModel();
   if (!input_state_model_) {
     return;
+  }
+  // The model can be created or replaced here, so apply the opt-in to it.
+  if (opted_in_to_dynamic_aim_fulfillment_) {
+    input_state_model_->EnableDynamicAimFulfillment();
   }
   input_state_model_->SetSmartTabSharingActive(IsSmartTabSharingActive());
   input_state_model_->TogglePermanentlyDisabledInputType(

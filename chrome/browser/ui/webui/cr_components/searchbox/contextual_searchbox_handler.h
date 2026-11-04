@@ -382,6 +382,10 @@ class ContextualSearchboxHandler
   void set_screenshare_delegate_for_testing(
       ContextualSearchboxScreenshareController::Delegate* screenshare_delegate);
 
+  // Turns on dynamic AIM fulfillment for each input state model this handler
+  // uses. Called by the NTP and Omnibox popup when their feature is enabled.
+  void OptInToDynamicAimFulfillment();
+
   // Map of context tokens (frontend) to tab IDs (backend);
   // used for determining which tabs to underline based on frontend changes, and
   // for sending `tabID`s to cobrowsing when going from an AIM entrypoint to
@@ -588,6 +592,9 @@ class ContextualSearchboxHandler
 
   std::unique_ptr<ContextualSearchboxTabFaviconHelper> tab_favicon_helper_;
   base::CallbackListSubscription aim_eligibility_subscription_;
+
+  // Whether `OptInToDynamicAimFulfillment()` was called.
+  bool opted_in_to_dynamic_aim_fulfillment_ = false;
 
  protected:
   std::optional<bool> smart_tab_sharing_active_for_thread_;

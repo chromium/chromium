@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/contextual_search/input_state_model_routing.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/common/input_state.h"
@@ -442,6 +443,9 @@ InputStateModel::InputStateModel(
   user_modified_tool_in_thread_ =
       new_input_state_model.user_modified_tool_in_thread_;
   lens_crop_ = new_input_state_model.lens_crop_;
+  // The copy goes to the next surface (e.g. AI Mode follow-ups) and doesn't
+  // keep the opt-in, so reset `will_fulfill_in_aim`.
+  RecomputeRouting();
 }
 
 InputStateModel::~InputStateModel() = default;
@@ -924,10 +928,41 @@ void InputStateModel::UpdateDisabledInputTypes() {
 }
 
 void InputStateModel::UpdateDisabledState() {
+  RecomputeRouting();
   RebuildAllowedInputTypes();
   UpdateDisabledTools();
   UpdateDisabledModels();
   UpdateDisabledInputTypes();
+}
+
+void InputStateModel::EnableDynamicAimFulfillment() {
+  if (dynamic_aim_fulfillment_enabled_) {
+    return;
+  }
+  dynamic_aim_fulfillment_enabled_ = true;
+  RecomputeRouting();
+  NotifySubscribers();
+}
+
+void InputStateModel::RecomputeRouting() {
+  if (!dynamic_aim_fulfillment_enabled_) {
+    state_.will_fulfill_in_aim = true;
+    return;
+  }
+  std::vector<FileInfo> file_infos;
+  size_t pending_tabs = 0;
+  if (session_handle_) {
+    file_infos = session_handle_->GetUploadedContextFileInfos();
+    pending_tabs =
+        GetPendingTabContextCount(*session_handle_, file_infos.size());
+  }
+  state_.will_fulfill_in_aim =
+      ComputeFulfillment(
+          state_, /*aim_mode_active=*/false,
+          CountAttachments(file_infos, pending_tabs),
+          EligibleAttachmentsForMode(SrpInputModeFromFeatureParams()),
+          has_valid_config_)
+          .will_fulfill_in_aim;
 }
 
 void InputStateModel::RebuildAllowedInputTypes() {
