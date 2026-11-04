@@ -105,6 +105,7 @@ if (is_android) {
       "//base:base_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [ ":jni_headers" ]

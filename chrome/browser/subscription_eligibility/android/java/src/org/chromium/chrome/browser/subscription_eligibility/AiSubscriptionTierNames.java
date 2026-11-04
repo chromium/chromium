@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.subscription_eligibility;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -34,7 +36,8 @@ public final class AiSubscriptionTierNames {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         @JniType("std::u16string")
         String getShortName(int tier);
 

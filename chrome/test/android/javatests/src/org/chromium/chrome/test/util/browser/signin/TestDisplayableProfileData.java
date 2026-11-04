@@ -40,7 +40,8 @@ public class TestDisplayableProfileData {
                 accountInfo.getFullName(),
                 accountInfo.getGivenName(),
                 /* hasDisplayableEmailAddress= */ true,
-                /* hasAiTierRing= */ false);
+                /* hasAiTierRing= */ false,
+                /* aiSubscriptionTier= */ 0);
     }
 
     private TestDisplayableProfileData() {}

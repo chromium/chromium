@@ -280,7 +280,8 @@ public class AccountMenuViewBinderTest {
                         fullName,
                         /* givenName= */ null,
                         hasDisplayableEmailAddress,
-                        /* hasAiTierRing= */ false);
+                        /* hasAiTierRing= */ false,
+                        /* aiSubscriptionTier= */ 0);
         View cardView =
                 LayoutInflater.from(mActivity).inflate(R.layout.account_menu_identity_card, null);
         PropertyModel model =

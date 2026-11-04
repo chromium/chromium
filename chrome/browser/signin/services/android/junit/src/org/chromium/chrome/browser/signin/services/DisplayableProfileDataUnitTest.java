@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -15,6 +17,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNames;
+import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNamesJni;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 
@@ -33,7 +37,46 @@ public class DisplayableProfileDataUnitTest {
                 fullName,
                 givenName,
                 /* hasDisplayableEmailAddress= */ true,
-                /* hasAiTierRing= */ false);
+                /* hasAiTierRing= */ false,
+                /* aiSubscriptionTier= */ 0);
+    }
+
+    private DisplayableProfileData createProfileDataWithAiTier(boolean hasAiTierRing, int tier) {
+        return new DisplayableProfileData(
+                ACCOUNT_ID,
+                EMAIL,
+                mMockDrawable,
+                "John Doe",
+                "John",
+                /* hasDisplayableEmailAddress= */ true,
+                hasAiTierRing,
+                tier);
+    }
+
+    @Test
+    public void testGetAiTierNames_withAiTierRing() {
+        AiSubscriptionTierNames.Natives tierNamesJni = mock(AiSubscriptionTierNames.Natives.class);
+        when(tierNamesJni.getShortName(2)).thenReturn("Tier name");
+        when(tierNamesJni.getFullName(2)).thenReturn("Full tier name");
+        AiSubscriptionTierNamesJni.setInstanceForTesting(tierNamesJni);
+
+        DisplayableProfileData profileData =
+                createProfileDataWithAiTier(/* hasAiTierRing= */ true, /* tier= */ 2);
+        assertEquals("Tier name", profileData.getAiTierPillName());
+        assertEquals("Full tier name", profileData.getAiTierFullName());
+    }
+
+    @Test
+    public void testGetAiTierPillName_withoutAiTierRing() {
+        AiSubscriptionTierNames.Natives tierNamesJni = mock(AiSubscriptionTierNames.Natives.class);
+        AiSubscriptionTierNamesJni.setInstanceForTesting(tierNamesJni);
+
+        // E.g. a badge or an identity error replaced the ring.
+        DisplayableProfileData profileData =
+                createProfileDataWithAiTier(/* hasAiTierRing= */ false, /* tier= */ 2);
+        assertEquals("", profileData.getAiTierPillName());
+        assertEquals("", profileData.getAiTierFullName());
+        verifyNoInteractions(tierNamesJni);
     }
 
     @Test

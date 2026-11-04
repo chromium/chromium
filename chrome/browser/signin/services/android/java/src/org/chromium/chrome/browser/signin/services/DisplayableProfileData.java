@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNames;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 /** Immutable holder for displayable profile data. */
@@ -22,6 +23,7 @@ public class DisplayableProfileData {
     private final @Nullable String mGivenName;
     private final boolean mHasDisplayableEmailAddress;
     private final boolean mHasAiTierRing;
+    private final int mAiSubscriptionTier;
 
     public DisplayableProfileData(
             CoreAccountId accountId,
@@ -30,7 +32,8 @@ public class DisplayableProfileData {
             @Nullable String fullName,
             @Nullable String givenName,
             boolean hasDisplayableEmailAddress,
-            boolean hasAiTierRing) {
+            boolean hasAiTierRing,
+            int aiSubscriptionTier) {
         assert accountId != null;
         assert accountEmail != null;
         assert image != null;
@@ -41,6 +44,7 @@ public class DisplayableProfileData {
         mGivenName = givenName;
         mHasDisplayableEmailAddress = hasDisplayableEmailAddress;
         mHasAiTierRing = hasAiTierRing;
+        mAiSubscriptionTier = aiSubscriptionTier;
     }
 
     /**
@@ -130,5 +134,24 @@ public class DisplayableProfileData {
      */
     public boolean hasAiTierRing() {
         return mHasAiTierRing;
+    }
+
+    /**
+     * Returns the short name of the AI subscription tier to show next to the avatar, or an empty
+     * string if there is none. The name is only shown with the AI tier ring, so a badge or an
+     * identity error hides both. Tiers without a name only get the ring.
+     */
+    public String getAiTierPillName() {
+        return mHasAiTierRing ? AiSubscriptionTierNames.getShortName(mAiSubscriptionTier) : "";
+    }
+
+    /**
+     * Returns the full name of the AI subscription tier, for accessibility, or an empty string if
+     * there is none. Like {@link #getAiTierPillName()}, it's only available with the AI tier ring.
+     * It's also empty when the tier's short name is overridden, since the full name then wouldn't
+     * match the name in the pill.
+     */
+    public String getAiTierFullName() {
+        return mHasAiTierRing ? AiSubscriptionTierNames.getFullName(mAiSubscriptionTier) : "";
     }
 }

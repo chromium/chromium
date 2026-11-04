@@ -160,7 +160,8 @@ public class SigninPromoDelegateTest {
                         "TestName LastName",
                         "TestName",
                         /* hasDisplayableEmailAddress= */ true,
-                        /* hasAiTierRing= */ false);
+                        /* hasAiTierRing= */ false,
+                        /* aiSubscriptionTier= */ 0);
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(

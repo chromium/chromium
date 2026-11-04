@@ -1700,7 +1700,8 @@ public class SigninFirstRunFragmentTest {
                         accountInfo.getFullName(),
                         accountInfo.getGivenName(),
                         /* hasDisplayableEmailAddress= */ true,
-                        /* hasAiTierRing= */ false);
+                        /* hasAiTierRing= */ false,
+                        /* aiSubscriptionTier= */ 0);
         onScrollToView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
                 .check(matches(isDisplayed()));
         if (shouldShowSubtitle) {
@@ -1804,7 +1805,8 @@ public class SigninFirstRunFragmentTest {
                         accountInfo.getFullName(),
                         accountInfo.getGivenName(),
                         accountInfo.canHaveEmailAddressDisplayed(),
-                        /* hasAiTierRing= */ false);
+                        /* hasAiTierRing= */ false,
+                        /* aiSubscriptionTier= */ 0);
         final String expectedTitle =
                 mActivityTestRule
                         .getActivity()
