@@ -1898,18 +1898,21 @@ void AutofillAgent::ScrollFieldIntoView(FieldRendererId field_id) {
   element.ScrollIntoViewIfNeeded();
 }
 
-void AutofillAgent::TriggerFormExtraction() {
+void AutofillAgent::TriggerFormExtraction(bool force) {
+  if (force) {
+    form_cache_.ClearCache();
+  }
   ExtractForms(process_forms_form_extraction_timer_, /*callback=*/{});
 }
 
 void AutofillAgent::TriggerFormExtractionWithResponse(
+    bool force,
     base::OnceCallback<void(bool)> callback) {
+  if (force) {
+    form_cache_.ClearCache();
+  }
   ExtractForms(process_forms_form_extraction_with_response_timer_,
                std::move(callback));
-}
-
-void AutofillAgent::ClearFormCache() {
-  form_cache_.ClearCache();
 }
 
 void AutofillAgent::ExtractFormWithField(

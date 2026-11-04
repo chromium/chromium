@@ -275,7 +275,8 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse) {
   WaitForFormsSeen();
   base::MockOnceCallback<void(bool)> mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
-  autofill_agent().TriggerFormExtractionWithResponse(mock_callback.Get());
+  autofill_agent().TriggerFormExtractionWithResponse(/*force=*/false,
+                                                     mock_callback.Get());
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
@@ -299,13 +300,13 @@ TEST_F(AutofillAgentTest, EnableCustomFormControlScripts) {
   EXPECT_TRUE(executor->has_manager());
 }
 
-TEST_F(AutofillAgentTest, ClearFormCache) {
+TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse_Force) {
   EXPECT_CALL(autofill_driver(), FormsSeen(SizeIs(1), _)).Times(2);
   LoadHTML(R"(<body> <input> </body>)");
   WaitForFormsSeen();
-  autofill_agent().ClearFormCache();
   base::MockOnceCallback<void(bool)> mock_callback;
-  autofill_agent().TriggerFormExtractionWithResponse(mock_callback.Get());
+  autofill_agent().TriggerFormExtractionWithResponse(/*force=*/true,
+                                                     mock_callback.Get());
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle);
 }
 
@@ -716,9 +717,11 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse_CalledTwice) {
   LoadHTML(R"(<body> <input> </body>)");
   WaitForFormsSeen();
   base::MockOnceCallback<void(bool)> mock_callback;
-  autofill_agent().TriggerFormExtractionWithResponse(mock_callback.Get());
+  autofill_agent().TriggerFormExtractionWithResponse(/*force=*/false,
+                                                     mock_callback.Get());
   EXPECT_CALL(mock_callback, Run(false));
-  autofill_agent().TriggerFormExtractionWithResponse(mock_callback.Get());
+  autofill_agent().TriggerFormExtractionWithResponse(/*force=*/false,
+                                                     mock_callback.Get());
 }
 
 // Tests that `AutofillAgent::TriggerSuggestions()` triggers

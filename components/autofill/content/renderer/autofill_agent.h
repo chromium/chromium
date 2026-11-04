@@ -193,10 +193,10 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // mojom::AutofillAgent:
   void ScrollFieldIntoView(FieldRendererId field_id) override;
-  void TriggerFormExtraction() override;
+  void TriggerFormExtraction(bool force) override;
   void TriggerFormExtractionWithResponse(
+      bool force,
       base::OnceCallback<void(bool)> callback) override;
-  void ClearFormCache() override;
   void ApplyFieldsAction(mojom::FormActionType action_type,
                          mojom::ActionPersistence action_persistence,
                          const std::vector<FormFieldData::FillData>& fields,

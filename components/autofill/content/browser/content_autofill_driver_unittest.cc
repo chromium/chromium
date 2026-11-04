@@ -186,10 +186,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // mojom::AutofillAgent:
-  MOCK_METHOD(void, ClearFormCache, (), (override));
   MOCK_METHOD(void,
               TriggerFormExtractionWithResponse,
-              (base::OnceCallback<void(bool)>),
+              (bool, base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               ExtractFormWithField,
@@ -230,7 +229,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // mojom::AutofillAgent:
-  void TriggerFormExtraction() override {}
+  void TriggerFormExtraction(bool force) override {}
 
   void ApplyFieldsAction(mojom::FormActionType action_type,
                          mojom::ActionPersistence action_persistence,
@@ -874,12 +873,8 @@ TEST_P(ContentAutofillDriverTest_TriggerFormExtractionWithResponse,
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   base::OnceCallback<void(bool)> form_extraction_finished_callback;
 
-  {
-    testing::InSequence s;
-    EXPECT_CALL(agent(), ClearFormCache).Times(should_force());
-    EXPECT_CALL(agent(), TriggerFormExtractionWithResponse)
-        .WillOnce(MoveArg<0>(&form_extraction_finished_callback));
-  }
+  EXPECT_CALL(agent(), TriggerFormExtractionWithResponse(should_force(), _))
+      .WillOnce(MoveArg<1>(&form_extraction_finished_callback));
   driver().browser_events().TriggerFormExtractionInAllFrames(
       should_force(), base::IgnoreArgs<bool>(run_loop.QuitClosure()));
   run_loop.RunUntilIdle();

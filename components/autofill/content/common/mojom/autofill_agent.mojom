@@ -18,17 +18,17 @@ interface AutofillAgent {
   // Triggers extraction of new or updated forms. This is called when a form is
   // seen in a subframe and it is not known yet which form in the parent frame
   // contains the form in the subframe.
-  TriggerFormExtraction();
+  // If `force` is true, the form cache is cleared before extracting forms so
+  // that all forms are re-extracted.
+  TriggerFormExtraction(bool force);
 
   // Triggers extraction of new or updated forms and notifies the caller when
   // it's done.
+  // If `force` is true, the form cache is cleared before extracting forms so
+  // that all forms are re-extracted.
   // If `success == false`, TriggerFormExtractionWithResponse() was triggered
   // while another TriggerFormExtractionWithResponse() was ongoing.
-  TriggerFormExtractionWithResponse() => (bool success);
-
-  // Clears the form cache in the renderer. Use this before
-  // `TriggerFormExtraction` to get a full new extraction of forms.
-  ClearFormCache();
+  TriggerFormExtractionWithResponse(bool force) => (bool success);
 
   // Fills or previews the form identified by `form` with the data of its
   // fields. `action_type` denotes if the action is a Fill or Undo.
@@ -143,9 +143,8 @@ interface AutofillAgent {
   // time, the renderer will verify that the email field's value still
   // matches the verified email address, find the associated token field,
   // and inject the token.
-  SendEmailVerificationToken(FieldRendererId email_field_id,
-                             string email,
-                             string token);
+  SendEmailVerificationToken(
+      FieldRendererId email_field_id, string email, string token);
 
   // Starts observing the visibility of the field identified by `field_id`.
   // The `observer` will be notified when the field becomes visible (e.g.,

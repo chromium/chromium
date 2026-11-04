@@ -26,12 +26,11 @@ class MockAutofillAgent : public mojom::AutofillAgent {
   void BindForTesting(content::RenderFrameHost* rfh);
   void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 
-  MOCK_METHOD(void, TriggerFormExtraction, (), (override));
+  MOCK_METHOD(void, TriggerFormExtraction, (bool), (override));
   MOCK_METHOD(void,
               TriggerFormExtractionWithResponse,
-              (base::OnceCallback<void(bool)>),
+              (bool, base::OnceCallback<void(bool)>),
               (override));
-  MOCK_METHOD(void, ClearFormCache, (), (override));
   MOCK_METHOD(
       void,
       ExtractFormWithField,

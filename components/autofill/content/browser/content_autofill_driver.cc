@@ -336,10 +336,7 @@ void ContentAutofillDriver::TriggerFormExtractionInDriverFrame(
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     return;
   }
-  if (force) {
-    GetAutofillAgent()->ClearFormCache();
-  }
-  GetAutofillAgent()->TriggerFormExtraction();
+  GetAutofillAgent()->TriggerFormExtraction(force);
 }
 
 void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
@@ -360,12 +357,9 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
           },
           std::move(form_extraction_finished_callback)));
   for (autofill::AutofillDriver* driver : drivers) {
-    auto* content_driver = static_cast<ContentAutofillDriver*>(driver);
-    if (force) {
-      content_driver->GetAutofillAgent()->ClearFormCache();
-    }
-    content_driver->GetAutofillAgent()->TriggerFormExtractionWithResponse(
-        barrier_callback);
+    static_cast<ContentAutofillDriver*>(driver)
+        ->GetAutofillAgent()
+        ->TriggerFormExtractionWithResponse(force, barrier_callback);
   }
 }
 
