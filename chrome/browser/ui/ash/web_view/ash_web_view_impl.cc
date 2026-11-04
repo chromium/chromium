@@ -107,7 +107,10 @@ const base::UnguessableToken& AshWebViewImpl::GetMediaSessionRequestId() {
 }
 
 void AshWebViewImpl::AddedToWidget() {
-  UpdateMinimizeOnBackProperty();
+  // Don't minimize the window on back gestures.
+  if (aura::Window* window = GetWidget()->GetNativeWindow()) {
+    window->SetProperty(ash::kMinimizeOnBackKey, false);
+  }
   AshWebView::AddedToWidget();
 
   // Apply rounded corners. This can't be done earlier since it
@@ -355,19 +358,8 @@ void AshWebViewImpl::UpdateCanGoBack() {
 
   can_go_back_ = can_go_back;
 
-  UpdateMinimizeOnBackProperty();
-
   for (auto& observer : observers_) {
     observer.DidChangeCanGoBack(can_go_back_);
-  }
-}
-
-void AshWebViewImpl::UpdateMinimizeOnBackProperty() {
-  const bool minimize_on_back = params_.minimize_on_back_key && !can_go_back_;
-  views::Widget* widget = GetWidget();
-  if (widget) {
-    widget->GetNativeWindow()->SetProperty(ash::kMinimizeOnBackKey,
-                                           minimize_on_back);
   }
 }
 

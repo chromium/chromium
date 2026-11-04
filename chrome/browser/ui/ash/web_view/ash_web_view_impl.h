@@ -103,10 +103,6 @@ class AshWebViewImpl : public ash::AshWebView,
 
   void UpdateCanGoBack();
 
-  // Update the window property that stores whether we can minimize on a back
-  // event.
-  void UpdateMinimizeOnBackProperty();
-
   const InitParams params_;
 
   std::unique_ptr<content::WebContents> web_contents_;
