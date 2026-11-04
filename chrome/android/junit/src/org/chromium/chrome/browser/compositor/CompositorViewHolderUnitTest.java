@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
@@ -51,6 +50,7 @@ import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -270,6 +270,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private ControlContainer mControlContainer;
     @Mock private WebContents mWebContents;
     @Mock private CompositorView.Natives mCompositorViewJni;
+    @Mock private JniUniquePtr<CompositorView.NativeCompositorView> mNativeCompositorView;
     @Mock private ResourceManager mResourceManager;
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private KeyboardVisibilityDelegate mMockKeyboard;
@@ -309,8 +310,9 @@ public class CompositorViewHolderUnitTest {
         ContentCaptureFeaturesJni.setInstanceForTesting(mContentCaptureFeaturesJni);
         InputHintCheckerJni.setInstanceForTesting(mInputHintCheckerJni);
         CompositorViewJni.setInstanceForTesting(mCompositorViewJni);
-        when(mCompositorViewJni.init(any(), any(), any())).thenReturn(1L);
-        when(mCompositorViewJni.getResourceManager(1L)).thenReturn(mResourceManager);
+        when(mCompositorViewJni.init(any(), any(), any())).thenReturn(mNativeCompositorView);
+        when(mCompositorViewJni.getResourceManager(mNativeCompositorView))
+                .thenReturn(mResourceManager);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -441,7 +443,7 @@ public class CompositorViewHolderUnitTest {
                 "Browser controls aren't fully visible.",
                 BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager));
         // ControlsResizeView is false, but it should be true when the controls are fully visible.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
 
         // Scroll to fully hidden.
@@ -456,7 +458,7 @@ public class CompositorViewHolderUnitTest {
                 "Browser controls aren't at min-height.",
                 mBrowserControlsManager.areBrowserControlsAtMinHeight());
         // ControlsResizeView is true, but it should be false when the controls are hidden.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(false));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(false));
         clearInvocations(mCompositorViewJni);
 
         // Now, scroll back to fully visible.
@@ -475,7 +477,7 @@ public class CompositorViewHolderUnitTest {
                 BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager));
         // #controlsResizeView should be flipped back to true.
         // ControlsResizeView is false, but it should be true when the controls are fully visible.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
     }
 
@@ -510,14 +512,14 @@ public class CompositorViewHolderUnitTest {
 
         // This should must not cause the controls to start resizing the view yet.
         verify(mCompositorViewJni, never())
-                .onControlsResizeViewChanged(anyLong(), any(), anyBoolean());
+                .onControlsResizeViewChanged(any(), any(), anyBoolean());
         clearInvocations(mCompositorViewJni);
 
         // Do the same but this time with the page having the view transition opt in.
         mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ true);
 
         // This should cause the controls to start resizing the view.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
     }
 
@@ -551,7 +553,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ false);
 
         // This should cause the controls to start resizing the view.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
 
         // Simulating a show-animation partially updating the controls, this shouldn't cause another
@@ -564,7 +566,7 @@ public class CompositorViewHolderUnitTest {
                 /* topControlsMinHeightOffsetY= */ 0,
                 /* bottomControlsMinHeightOffsetY= */ 0);
         verify(mCompositorViewJni, never())
-                .onControlsResizeViewChanged(anyLong(), any(), anyBoolean());
+                .onControlsResizeViewChanged(any(), any(), anyBoolean());
         clearInvocations(mCompositorViewJni);
 
         // The controls finished animating in. Since they already resized the view, this should also
@@ -578,7 +580,7 @@ public class CompositorViewHolderUnitTest {
                 /* bottomControlsMinHeightOffsetY= */ 0);
 
         verify(mCompositorViewJni, never())
-                .onControlsResizeViewChanged(anyLong(), any(), anyBoolean());
+                .onControlsResizeViewChanged(any(), any(), anyBoolean());
         clearInvocations(mCompositorViewJni);
 
         // The controls going back to hidden should resize the view as usual.
@@ -589,7 +591,7 @@ public class CompositorViewHolderUnitTest {
                 /* contentOffsetY= */ 0,
                 /* topControlsMinHeightOffsetY= */ 0,
                 /* bottomControlsMinHeightOffsetY= */ 0);
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(false));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(false));
         clearInvocations(mCompositorViewJni);
     }
 
@@ -624,7 +626,7 @@ public class CompositorViewHolderUnitTest {
 
         // This should must not cause the controls to start resizing the view yet.
         verify(mCompositorViewJni, never())
-                .onControlsResizeViewChanged(anyLong(), any(), anyBoolean());
+                .onControlsResizeViewChanged(any(), any(), anyBoolean());
         clearInvocations(mCompositorViewJni);
 
         // The controls finished animating in. Since they already resized the view, this should
@@ -637,7 +639,7 @@ public class CompositorViewHolderUnitTest {
                 /* topControlsMinHeightOffsetY= */ 0,
                 /* bottomControlsMinHeightOffsetY= */ 0);
 
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
     }
 
@@ -683,7 +685,7 @@ public class CompositorViewHolderUnitTest {
                 "Browser controls aren't fully visible.",
                 BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager));
         // ControlsResizeView is false, but it should be true when the controls are fully visible.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
 
         // Scroll all the way to the min-height.
@@ -698,7 +700,7 @@ public class CompositorViewHolderUnitTest {
                 "Browser controls aren't at min-height.",
                 mBrowserControlsManager.areBrowserControlsAtMinHeight());
         // ControlsResizeView is true but it should be false when the controls are at min-height.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(false));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(false));
         clearInvocations(mCompositorViewJni);
 
         // Now, scroll back to fully visible.
@@ -716,7 +718,7 @@ public class CompositorViewHolderUnitTest {
                 "Browser controls aren't fully visible.",
                 BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager));
         // #controlsResizeView should be flipped back to true.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
     }
 
@@ -746,7 +748,7 @@ public class CompositorViewHolderUnitTest {
                 /* topControlsMinHeightOffsetY= */ 25,
                 /* bottomControlsMinHeightOffsetY= */ 0);
         // ControlsResizeView is false but it should be true when the controls are fully visible.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(true));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
 
         // Scroll a little hide the controls partially.
@@ -760,7 +762,7 @@ public class CompositorViewHolderUnitTest {
         // ControlsResizeView is false, but it should still be true. No-op updates won't trigger a
         // changed event.
         verify(mCompositorViewJni, times(0))
-                .onControlsResizeViewChanged(anyLong(), any(), eq(true));
+                .onControlsResizeViewChanged(any(), any(), eq(true));
         clearInvocations(mCompositorViewJni);
 
         // Scroll controls all the way to the min-height.
@@ -773,7 +775,7 @@ public class CompositorViewHolderUnitTest {
                 /* bottomControlsMinHeightOffsetY= */ 0);
         // ControlsResizeView is true but it should've flipped to false since the controls are idle
         // now.
-        verify(mCompositorViewJni).onControlsResizeViewChanged(anyLong(), any(), eq(false));
+        verify(mCompositorViewJni).onControlsResizeViewChanged(any(), any(), eq(false));
         clearInvocations(mCompositorViewJni);
 
         // Scroll controls to show a little more.
@@ -787,7 +789,7 @@ public class CompositorViewHolderUnitTest {
         // ControlsResizeView is true, but it should still be false. No-op updates won't trigger a
         // changed event.
         verify(mCompositorViewJni, times(0))
-                .onControlsResizeViewChanged(anyLong(), any(), eq(false));
+                .onControlsResizeViewChanged(any(), any(), eq(false));
     }
 
     // --- controlsResizeView tests
@@ -815,7 +817,7 @@ public class CompositorViewHolderUnitTest {
         verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewJni, times(1))
                 .notifyVirtualKeyboardOverlayRect(
-                        eq(1L),
+                        eq(mNativeCompositorView),
                         eq(mWebContents),
                         eq(0),
                         eq(0), // Expected y is 0 when View is resized to 200 and keyboard is 741
@@ -835,7 +837,7 @@ public class CompositorViewHolderUnitTest {
 
         verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewJni, times(1))
-                .notifyVirtualKeyboardOverlayRect(1L, mWebContents, 0, 0, 0, 0);
+                .notifyVirtualKeyboardOverlayRect(mNativeCompositorView, mWebContents, 0, 0, 0, 0);
     }
 
     @Test
@@ -1057,7 +1059,12 @@ public class CompositorViewHolderUnitTest {
 
         verify(mCompositorViewJni, times(1))
                 .notifyVirtualKeyboardOverlayRect(
-                        1L, mWebContents, 17, 23, VIEWPORT_WIDTH, KEYBOARD_HEIGHT);
+                        mNativeCompositorView,
+                        mWebContents,
+                        17,
+                        23,
+                        VIEWPORT_WIDTH,
+                        KEYBOARD_HEIGHT);
     }
 
     // Keyboard resize tests for geometrychange event fired to JS.
@@ -1086,7 +1093,12 @@ public class CompositorViewHolderUnitTest {
         verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewJni, times(1))
                 .notifyVirtualKeyboardOverlayRect(
-                        1L, mWebContents, 0, adjustedHeight, VIEWPORT_WIDTH, KEYBOARD_HEIGHT);
+                        mNativeCompositorView,
+                        mWebContents,
+                        0,
+                        adjustedHeight,
+                        VIEWPORT_WIDTH,
+                        KEYBOARD_HEIGHT);
 
         reset(mWebContents);
         clearInvocations(mCompositorViewJni);
@@ -1102,7 +1114,7 @@ public class CompositorViewHolderUnitTest {
 
         verify(mWebContents, never()).setSize(anyInt(), anyInt());
         verify(mCompositorViewJni, times(1))
-                .notifyVirtualKeyboardOverlayRect(1L, mWebContents, 0, 0, 0, 0);
+                .notifyVirtualKeyboardOverlayRect(mNativeCompositorView, mWebContents, 0, 0, 0, 0);
     }
 
     @Test
@@ -1123,7 +1135,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.updateWebContentsSize(mTab);
         verify(mWebContents, times(1)).setSize(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
         verify(mCompositorViewJni, times(0))
-                .notifyVirtualKeyboardOverlayRect(1L, mWebContents, 0, 0, 0, 0);
+                .notifyVirtualKeyboardOverlayRect(mNativeCompositorView, mWebContents, 0, 0, 0, 0);
     }
 
     @Test
@@ -1147,7 +1159,7 @@ public class CompositorViewHolderUnitTest {
         // keyboard don't affect the WebContents' size.
         verify(mWebContents, times(1)).setSize(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
         verify(mCompositorViewJni, times(0))
-                .notifyVirtualKeyboardOverlayRect(1L, mWebContents, 0, 0, 0, 0);
+                .notifyVirtualKeyboardOverlayRect(mNativeCompositorView, mWebContents, 0, 0, 0, 0);
     }
 
     @Test
@@ -1169,7 +1181,7 @@ public class CompositorViewHolderUnitTest {
         // height.
         verify(mWebContents, times(1)).setSize(VIEWPORT_WIDTH, adjustedHeight - TOOLBAR_HEIGHT);
         verify(mCompositorViewJni, times(0))
-                .notifyVirtualKeyboardOverlayRect(1L, mWebContents, 0, 0, 0, 0);
+                .notifyVirtualKeyboardOverlayRect(mNativeCompositorView, mWebContents, 0, 0, 0, 0);
     }
 
     @Test
@@ -1212,7 +1224,7 @@ public class CompositorViewHolderUnitTest {
         // events to content if the view is detached.
         mCompositorViewHolder.updateWebContentsSize(mTab);
         verify(mCompositorViewJni, times(0))
-                .notifyVirtualKeyboardOverlayRect(1L, mWebContents, 0, 0, 0, 0);
+                .notifyVirtualKeyboardOverlayRect(mNativeCompositorView, mWebContents, 0, 0, 0, 0);
     }
 
     @Test
@@ -1384,19 +1396,19 @@ public class CompositorViewHolderUnitTest {
     public void testOnControlsOffsetChanged_NoRequestRenderIfScrolling() {
         mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
         mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
-        verify(mCompositorViewJni, never()).setNeedsComposite(anyLong());
+        verify(mCompositorViewJni, never()).setNeedsComposite(any());
         mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_UP);
 
         mCompositorViewHolder.setContentViewScrollingStateForTesting(true);
         mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
-        verify(mCompositorViewJni, never()).setNeedsComposite(anyLong());
+        verify(mCompositorViewJni, never()).setNeedsComposite(any());
         mCompositorViewHolder.setContentViewScrollingStateForTesting(false);
     }
 
     @Test
     public void testOnControlsOffsetChanged_RequestRender() {
         mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
-        verify(mCompositorViewJni, times(1)).setNeedsComposite(anyLong());
+        verify(mCompositorViewJni, times(1)).setNeedsComposite(any());
     }
 
     @Test
@@ -1880,11 +1892,11 @@ public class CompositorViewHolderUnitTest {
         // Active foreground tab is updated
         verify(mCompositorViewJni, times(1))
                 .onPhysicalBackingSizeChanged(
-                        anyLong(), eq(mWebContents), eq(width), eq(height), anyBoolean());
+                        any(), eq(mWebContents), eq(width), eq(height), anyBoolean());
         // Background captured tab is ALSO updated
         verify(mCompositorViewJni, times(1))
                 .onPhysicalBackingSizeChanged(
-                        anyLong(), eq(bgWebContents), eq(width), eq(height), anyBoolean());
+                        any(), eq(bgWebContents), eq(width), eq(height), anyBoolean());
     }
 
     @Test
@@ -1911,11 +1923,11 @@ public class CompositorViewHolderUnitTest {
         // Active foreground tab is updated
         verify(mCompositorViewJni, times(1))
                 .onPhysicalBackingSizeChanged(
-                        anyLong(), eq(mWebContents), eq(width), eq(height), anyBoolean());
+                        any(), eq(mWebContents), eq(width), eq(height), anyBoolean());
         // Background non-captured tab is NOT updated
         verify(mCompositorViewJni, never())
                 .onPhysicalBackingSizeChanged(
-                        anyLong(), eq(bgWebContents), anyInt(), anyInt(), anyBoolean());
+                        any(), eq(bgWebContents), anyInt(), anyInt(), anyBoolean());
     }
 
     @Test

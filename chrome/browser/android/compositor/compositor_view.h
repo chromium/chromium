@@ -48,7 +48,7 @@ class CompositorView : public content::CompositorClient,
   CompositorView(const CompositorView&) = delete;
   CompositorView& operator=(const CompositorView&) = delete;
 
-  void Destroy(JNIEnv* env);
+  ~CompositorView() override;
 
   ui::ResourceManager* GetResourceManager();
   base::android::ScopedJavaLocalRef<jobject> GetResourceManager(JNIEnv* env);
@@ -112,8 +112,6 @@ class CompositorView : public content::CompositorClient,
 
  private:
   friend class CompositorViewTest;
-
-  ~CompositorView() override;
 
   // content::BrowserChildProcessObserver implementation:
   void BrowserChildProcessLaunchedAndConnected(

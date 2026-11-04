@@ -28,7 +28,10 @@ import androidx.core.graphics.Insets;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ScreenStateReceiver;
@@ -69,6 +72,9 @@ import org.chromium.ui.resources.ResourceManager;
 public class CompositorView extends FrameLayout
         implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
                 WindowAndroid.SelectionHandlesObserver {
+    @JniType("::android::CompositorView")
+    interface NativeCompositorView extends JniTypeToken {}
+
     // Cache objects that should not be created every frame
     private final Rect mCacheAppRect = new Rect();
     private @Nullable Insets mCachedWindowInsets;
@@ -88,7 +94,7 @@ public class CompositorView extends FrameLayout
     // If == 0, then no.  If > 0, then yes.  We'll hide when it transitions from one to zero.
     private int mFramesUntilHideBackground;
 
-    private long mNativeCompositorView;
+    private @Nullable JniUniquePtr<NativeCompositorView> mNativeCompositorView;
     private final LayoutRenderHost mRenderHost;
     private int mPreviousWindowTop = -1;
 
@@ -146,7 +152,7 @@ public class CompositorView extends FrameLayout
 
         @Override
         public void onScreenOff(Context context, Intent intent) {
-            if (mCompositorSurfaceManager != null && !mIsInXr && mNativeCompositorView != 0) {
+            if (mCompositorSurfaceManager != null && !mIsInXr && mNativeCompositorView != null) {
                 mNeedsReset = true;
             }
         }
@@ -272,8 +278,8 @@ public class CompositorView extends FrameLayout
             if (retainHeight
                     && ChromeFeatureList.sCompositorViewShrinkWhenKeyboardHidden.isEnabled()) {
                 retainHeight =
-                        mWindowAndroid != null
-                                && mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(this);
+                    mWindowAndroid != null
+                            && mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(this);
             }
             if (retainHeight) {
                 heightMeasureSpec =
@@ -319,7 +325,8 @@ public class CompositorView extends FrameLayout
         // destroying the GLSurface in the GPU process. So we need to explicitly preserve them in
         // the GPU process during this transition.
         if (switchToSurfaceView) {
-            CompositorViewJni.get().cacheBackBufferForCurrentSurface(mNativeCompositorView);
+            CompositorViewJni.get()
+                    .cacheBackBufferForCurrentSurface(assumeNonNull(mNativeCompositorView));
         }
 
         // Trigger the creation of a new SurfaceView. CompositorSurfaceManager will handle caching
@@ -347,10 +354,10 @@ public class CompositorView extends FrameLayout
         if (mScreenStateReceiver != null) {
             mScreenStateReceiver.shutDown();
         }
-        if (mNativeCompositorView != 0) {
+        if (mNativeCompositorView != null) {
             var nativeCompositorView = mNativeCompositorView;
-            mNativeCompositorView = 0;
-            CompositorViewJni.get().destroy(nativeCompositorView);
+            mNativeCompositorView = null;
+            nativeCompositorView.destroy();
         }
     }
 
@@ -396,7 +403,7 @@ public class CompositorView extends FrameLayout
 
         // Redraw in case there are callbacks pending |mDrawingFinishedCallback|.
         updateNeedsDidSwapBuffersCallback();
-        CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
+        CompositorViewJni.get().setNeedsComposite(assumeNonNull(mNativeCompositorView));
     }
 
     /**
@@ -405,7 +412,8 @@ public class CompositorView extends FrameLayout
      * @param enabled Whether to enter or leave overlay video mode.
      */
     public void setOverlayVideoMode(boolean enabled) {
-        CompositorViewJni.get().setOverlayVideoMode(mNativeCompositorView, enabled);
+        CompositorViewJni.get()
+                .setOverlayVideoMode(assumeNonNull(mNativeCompositorView), enabled);
 
         mOverlayVideoEnabled = enabled;
         // Request the new surface, even if it's the same as the old one.  We'll get a synthetic
@@ -443,7 +451,8 @@ public class CompositorView extends FrameLayout
             setOverlayVideoMode(enabled);
         }
 
-        CompositorViewJni.get().setOverlayImmersiveArMode(mNativeCompositorView, enabled);
+        CompositorViewJni.get()
+                .setOverlayImmersiveArMode(assumeNonNull(mNativeCompositorView), enabled);
         // Entering or exiting AR mode can leave SurfaceControl in a confused state, especially if
         // the screen keyboard (IME) was activated, see https://crbug.com/40741986 and
         // https://crbug.com/40744115. Reset the surface manager at session start and exit to work
@@ -501,7 +510,7 @@ public class CompositorView extends FrameLayout
             return false;
         }
         boolean xrUsesSurfaceControl =
-                mNativeCompositorView != 0
+                mNativeCompositorView != null
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.ANDROID_XR_USES_SURFACE_CONTROL);
         return xrUsesSurfaceControl || !mIsInXr;
@@ -519,7 +528,8 @@ public class CompositorView extends FrameLayout
             // changed callback in that case, possibly before this returns.
             mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
             // Set space mode environment.
-            CompositorViewJni.get().setOverlayXrFullScreenMode(mNativeCompositorView, enabled);
+            CompositorViewJni.get()
+                    .setOverlayXrFullScreenMode(assumeNonNull(mNativeCompositorView), enabled);
         }
     }
 
@@ -588,7 +598,7 @@ public class CompositorView extends FrameLayout
             }
         }
         updateNeedsDidSwapBuffersCallback();
-        if (mNativeCompositorView != 0) {
+        if (mNativeCompositorView != null) {
             CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
         }
     }
@@ -596,7 +606,7 @@ public class CompositorView extends FrameLayout
     @SuppressWarnings("NewApi")
     @Override
     public void surfaceChanged(Surface surface, int format, int width, int height) {
-        if (mNativeCompositorView == 0) return;
+        if (mNativeCompositorView == null) return;
 
         InputTransferToken browserInputToken = null;
         if (InputUtils.isTransferInputToVizSupported() && mWindowAndroid != null) {
@@ -653,7 +663,7 @@ public class CompositorView extends FrameLayout
         Integer surfaceId =
                 CompositorViewJni.get()
                         .surfaceChanged(
-                                mNativeCompositorView,
+                                assumeNonNull(mNativeCompositorView),
                                 format,
                                 width,
                                 height,
@@ -684,7 +694,7 @@ public class CompositorView extends FrameLayout
             mIsDrawPaused = false;
             mWaitingForSwapAfterUnpause = true;
             updateNeedsDidSwapBuffersCallback();
-            if (mNativeCompositorView != 0) {
+            if (mNativeCompositorView != null) {
                 CompositorViewJni.get().setDrawPaused(mNativeCompositorView, false);
                 CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
             }
@@ -694,7 +704,7 @@ public class CompositorView extends FrameLayout
     private void resetFluidResizeState() {
         if (mIsDrawPaused) {
             mIsDrawPaused = false;
-            if (mNativeCompositorView != 0) {
+            if (mNativeCompositorView != null) {
                 CompositorViewJni.get().setDrawPaused(mNativeCompositorView, false);
             }
         }
@@ -707,7 +717,7 @@ public class CompositorView extends FrameLayout
 
     @Override
     public void surfaceCreated(Surface surface) {
-        if (mNativeCompositorView == 0) return;
+        if (mNativeCompositorView == null) return;
 
         // if a requested surface is created successfully, CompositorSurfaceManager doesn't need to
         // be reset.
@@ -715,13 +725,13 @@ public class CompositorView extends FrameLayout
         mFramesUntilHideBackground = 2;
         mHaveSwappedFramesSinceSurfaceCreated = false;
         updateNeedsDidSwapBuffersCallback();
-        CompositorViewJni.get().surfaceCreated(mNativeCompositorView);
+        CompositorViewJni.get().surfaceCreated(assumeNonNull(mNativeCompositorView));
     }
 
     @SuppressWarnings("NewApi")
     @Override
     public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed) {
-        if (mNativeCompositorView == 0) return;
+        if (mNativeCompositorView == null) return;
 
         // When we switch from Chrome to other app we can't detach child surface controls because it
         // leads to a visible hole: b/157439199. To avoid this we don't detach surfaces if the
@@ -746,7 +756,7 @@ public class CompositorView extends FrameLayout
 
     @Override
     public void unownedSurfaceDestroyed() {
-        CompositorViewJni.get().evictCachedBackBuffer(mNativeCompositorView);
+        CompositorViewJni.get().evictCachedBackBuffer(assumeNonNull(mNativeCompositorView));
     }
 
     @Override
@@ -768,13 +778,17 @@ public class CompositorView extends FrameLayout
     void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
         CompositorViewJni.get()
                 .onPhysicalBackingSizeChanged(
-                        mNativeCompositorView, webContents, width, height, shouldUseFluidResize());
+                        assumeNonNull(mNativeCompositorView),
+                        webContents,
+                        width,
+                        height,
+                        shouldUseFluidResize());
     }
 
     void onControlsResizeViewChanged(WebContents webContents, boolean controlsResizeView) {
         CompositorViewJni.get()
                 .onControlsResizeViewChanged(
-                        mNativeCompositorView, webContents, controlsResizeView);
+                        assumeNonNull(mNativeCompositorView), webContents, controlsResizeView);
     }
 
     /**
@@ -790,7 +804,7 @@ public class CompositorView extends FrameLayout
             WebContents webContents, int x, int y, int width, int height) {
         CompositorViewJni.get()
                 .notifyVirtualKeyboardOverlayRect(
-                        mNativeCompositorView, webContents, x, y, width, height);
+                        assumeNonNull(mNativeCompositorView), webContents, x, y, width, height);
     }
 
     @CalledByNative
@@ -805,7 +819,7 @@ public class CompositorView extends FrameLayout
 
     /** Request compositor view to render a frame. */
     public void requestRender() {
-        if (mNativeCompositorView != 0) {
+        if (mNativeCompositorView != null) {
             CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
         }
     }
@@ -823,7 +837,7 @@ public class CompositorView extends FrameLayout
 
     // Should be called any time the inputs used to compute `needsSwapCallback` change.
     private void updateNeedsDidSwapBuffersCallback() {
-        if (mNativeCompositorView == 0) return;
+        if (mNativeCompositorView == null) return;
         boolean needsSwapCallback;
         synchronized (mDrawingFinishedCallbackLock) {
             needsSwapCallback =
@@ -857,7 +871,8 @@ public class CompositorView extends FrameLayout
 
             // Evict the SurfaceView and the associated backbuffer now that the new SurfaceView is
             // ready.
-            CompositorViewJni.get().evictCachedBackBuffer(mNativeCompositorView);
+            CompositorViewJni.get()
+                    .evictCachedBackBuffer(assumeNonNull(mNativeCompositorView));
             mCompositorSurfaceManager.doneWithUnownedSurface();
         }
 
@@ -903,7 +918,7 @@ public class CompositorView extends FrameLayout
     public void finalizeLayers(final LayoutProvider provider) {
         TraceEvent.begin("CompositorView:finalizeLayers");
         Layout layout = provider.getActiveLayout();
-        if (layout == null || mNativeCompositorView == 0) {
+        if (layout == null || mNativeCompositorView == null) {
             TraceEvent.end("CompositorView:finalizeLayers");
             return;
         }
@@ -980,10 +995,10 @@ public class CompositorView extends FrameLayout
     }
 
     private void createCompositorSurfaceManager() {
-        if (mNativeCompositorView == 0) return;
+        if (mNativeCompositorView == null) return;
         mCompositorSurfaceManager = new CompositorSurfaceManagerImpl(this, this);
         mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
-        CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
+        CompositorViewJni.get().setNeedsComposite(assumeNonNull(mNativeCompositorView));
         mCompositorSurfaceManager.setVisibility(getVisibility());
     }
 
@@ -992,7 +1007,7 @@ public class CompositorView extends FrameLayout
      * changing to a valid tab.
      */
     public void onTabChanged() {
-        CompositorViewJni.get().onTabChanged(mNativeCompositorView);
+        CompositorViewJni.get().onTabChanged(assumeNonNull(mNativeCompositorView));
     }
 
     void setCompositorSurfaceManagerForTesting(CompositorSurfaceManager manager) {
@@ -1005,7 +1020,7 @@ public class CompositorView extends FrameLayout
 
     @NativeMethods
     interface Natives {
-        long init(
+        JniUniquePtr<NativeCompositorView> init(
                 CompositorView self,
                 WindowAndroid windowAndroid,
                 TabContentManager tabContentManager);
@@ -1014,17 +1029,15 @@ public class CompositorView extends FrameLayout
 
         boolean preferRgb565ForDisplay();
 
-        void destroy(long nativeCompositorView);
+        ResourceManager getResourceManager(JniPtr<NativeCompositorView> self);
 
-        ResourceManager getResourceManager(long nativeCompositorView);
+        void surfaceCreated(JniPtr<NativeCompositorView> self);
 
-        void surfaceCreated(long nativeCompositorView);
-
-        void surfaceDestroyed(long nativeCompositorView);
+        void surfaceDestroyed(JniPtr<NativeCompositorView> self);
 
         @JniType("std::optional<int>")
         Integer surfaceChanged(
-                long nativeCompositorView,
+                JniPtr<NativeCompositorView> self,
                 int format,
                 int width,
                 int height,
@@ -1033,49 +1046,52 @@ public class CompositorView extends FrameLayout
                 @Nullable InputTransferToken browserInputToken);
 
         void onPhysicalBackingSizeChanged(
-                long nativeCompositorView,
+                JniPtr<NativeCompositorView> self,
                 WebContents webContents,
                 int width,
                 int height,
                 boolean isFluidResize);
 
         void onControlsResizeViewChanged(
-                long nativeCompositorView, WebContents webContents, boolean controlsResizeView);
+                JniPtr<NativeCompositorView> self,
+                WebContents webContents,
+                boolean controlsResizeView);
 
         void notifyVirtualKeyboardOverlayRect(
-                long nativeCompositorView,
+                JniPtr<NativeCompositorView> self,
                 WebContents webContents,
                 int x,
                 int y,
                 int width,
                 int height);
 
-        void finalizeLayers(long nativeCompositorView);
+        void finalizeLayers(JniPtr<NativeCompositorView> self);
 
-        void setNeedsComposite(long nativeCompositorView);
+        void setNeedsComposite(JniPtr<NativeCompositorView> self);
 
-        void setDrawPaused(long nativeCompositorView, boolean paused);
+        void setDrawPaused(JniPtr<NativeCompositorView> self, boolean paused);
 
-        void setLayoutBounds(long nativeCompositorView);
+        void setLayoutBounds(JniPtr<NativeCompositorView> self);
 
-        void setOverlayVideoMode(long nativeCompositorView, boolean enabled);
+        void setOverlayVideoMode(JniPtr<NativeCompositorView> self, boolean enabled);
 
-        void setOverlayImmersiveArMode(long nativeCompositorView, boolean enabled);
+        void setOverlayImmersiveArMode(JniPtr<NativeCompositorView> self, boolean enabled);
 
-        void setOverlayXrFullScreenMode(long nativeCompositorView, boolean enabled);
+        void setOverlayXrFullScreenMode(JniPtr<NativeCompositorView> self, boolean enabled);
 
-        void setSceneLayer(long nativeCompositorView, SceneLayer sceneLayer);
+        void setSceneLayer(JniPtr<NativeCompositorView> self, SceneLayer sceneLayer);
 
-        void setCompositorWindow(long nativeCompositorView, WindowAndroid window);
+        void setCompositorWindow(JniPtr<NativeCompositorView> self, WindowAndroid window);
 
-        void cacheBackBufferForCurrentSurface(long nativeCompositorView);
+        void cacheBackBufferForCurrentSurface(JniPtr<NativeCompositorView> self);
 
-        void evictCachedBackBuffer(long nativeCompositorView);
+        void evictCachedBackBuffer(JniPtr<NativeCompositorView> self);
 
-        void onTabChanged(long nativeCompositorView);
+        void onTabChanged(JniPtr<NativeCompositorView> self);
 
-        void preserveChildSurfaceControls(long nativeCompositorView);
+        void preserveChildSurfaceControls(JniPtr<NativeCompositorView> self);
 
-        void setDidSwapBuffersCallbackEnabled(long nativeCompositorView, boolean enabled);
+        void setDidSwapBuffersCallbackEnabled(
+                JniPtr<NativeCompositorView> self, boolean enabled);
     }
 }

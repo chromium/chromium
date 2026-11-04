@@ -99,9 +99,7 @@ class CompositorViewTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    compositor_view_->Destroy(env);
-    compositor_view_ = nullptr;
+    compositor_view_.ClearAndDelete();
   }
 
  protected:
