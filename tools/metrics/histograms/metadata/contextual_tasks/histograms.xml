@@ -805,6 +805,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.PermissionChip.Click"
+    enum="ContextualTasksPermissionChipType" expires_after="2027-04-15">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks on a permission request chip or activity
+    indicator chip in the Contextual Tasks side panel toolbar (and the click is
+    accepted as current). Records the type of permission chip clicked.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.PermissionChip.Impression"
+    enum="ContextualTasksPermissionChipType" expires_after="2027-04-15">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a coalesced permission dashboard state push for an open
+    Contextual Tasks side panel has a newly visible permission request chip or
+    activity indicator chip (or changes its displayed chip type). State updates
+    within the same task turn are coalesced (so a chip shown and hidden between
+    two pushes is not recorded), and impression tracking resets when switching
+    the active task WebContents or when the side panel is closed (so a chip
+    visible on the newly active task is recorded). Records the type of
+    permission chip shown.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.RemovedContext.CountPerQuery" units="count"
     expires_after="2027-03-07">
   <owner>hujasonx@google.com</owner>
@@ -1316,6 +1343,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".OpenNewThread" summary="The user opened a new thread."/>
     <variant name=".OpenOverflowMenu"
         summary="The user opened the overflow menu."/>
+    <variant name=".OpenPageInfo"
+        summary="The user clicked the logo button to open the page info
+                 bubble."/>
     <variant name=".OpenSourcesMenu"
         summary="The user opened the sources menu."/>
     <variant name=".OpenThreadHistory"

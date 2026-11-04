@@ -5,9 +5,11 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
@@ -47,6 +49,10 @@ class ContextualTasksPermissionControllerTest
 
   ContextualTasksPermissionController* controller() {
     return controller_.get();
+  }
+
+  MockBrowserWindowInterface* mock_browser_window() {
+    return &mock_browser_window_;
   }
 
  private:
@@ -439,6 +445,154 @@ TEST_F(ContextualTasksPermissionControllerTest,
        content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(indicator_chip->IsFullyCollapsed());
+}
+
+TEST_F(ContextualTasksPermissionControllerTest,
+       RecordsPermissionChipImpressions) {
+  base::HistogramTester histogram_tester;
+  WebUIPermissionDashboard* dashboard =
+      controller()->GetLocationBarForTesting()->permission_dashboard();
+  WebUIPermissionChip* request_chip = dashboard->request_chip();
+  WebUIPermissionChip* indicator_chip = dashboard->indicator_chip();
+  dashboard->SetVisible(true);
+
+  // Showing a request chip and setting its theme in the same synchronous turn
+  // coalesces into a single impression when `PushStateToWebUINow()` runs.
+  request_chip->SetVisible(true);
+  request_chip->SetTheme(PermissionChipTheme::kLowVisibility);
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Impression",
+      ContextualTasksPermissionChipType::kQuietPermissionRequest, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    1);
+
+  // Non-type state updates while still visible do not record another
+  // impression.
+  request_chip->SetMessage(u"Use your microphone?");
+  request_chip->AnimateExpand(base::Milliseconds(350));
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    1);
+
+  // Hiding and showing a normal-visibility request chip records a new sample.
+  request_chip->SetVisible(false);
+  task_environment()->RunUntilIdle();
+  request_chip->SetVisible(true);
+  request_chip->SetTheme(PermissionChipTheme::kNormalVisibility);
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Impression",
+      ContextualTasksPermissionChipType::kPermissionRequest, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    2);
+
+  // Indicator chip impressions record each distinct indicator theme.
+  indicator_chip->SetVisible(true);
+  indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Impression",
+      ContextualTasksPermissionChipType::kInUseActivityIndicator, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    3);
+
+  // Transitioning directly from in-use to blocked records the blocked
+  // indicator.
+  indicator_chip->SetTheme(PermissionChipTheme::kBlockedActivityIndicator);
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Impression",
+      ContextualTasksPermissionChipType::kBlockedActivityIndicator, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    4);
+
+  // Switching tasks resets impression tracking so a visible chip on the new
+  // task records an impression for that task.
+  std::unique_ptr<content::WebContents> second_web_contents =
+      CreateTestWebContents();
+  controller()->RegisterWebContents(second_web_contents.get());
+  controller()->Update(second_web_contents.get());
+  dashboard->SetVisible(true);
+  indicator_chip->SetVisible(true);
+  indicator_chip->SetTheme(
+      PermissionChipTheme::kOnSystemBlockedActivityIndicator);
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Impression",
+      ContextualTasksPermissionChipType::kSystemBlockedActivityIndicator, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    5);
+
+  // When a panel controller is present and the side panel is closed, state
+  // pushes do not record impressions and reset the last-seen chip type so that
+  // re-opening the side panel records the visible chip.
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      mock_browser_window());
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(false));
+  indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    5);
+
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(true));
+  controller()->PushStateToWebUI();
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Impression",
+      ContextualTasksPermissionChipType::kInUseActivityIndicator, 2);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    6);
+
+  controller()->UnregisterWebContents(second_web_contents.get());
+}
+
+TEST_F(ContextualTasksPermissionControllerTest, RecordsPermissionChipClicks) {
+  base::HistogramTester histogram_tester;
+  WebUIPermissionDashboard* dashboard =
+      controller()->GetLocationBarForTesting()->permission_dashboard();
+  WebUIPermissionChip* request_chip = dashboard->request_chip();
+  WebUIPermissionChip* indicator_chip = dashboard->indicator_chip();
+
+  request_chip->SetVisible(true);
+  request_chip->SetTheme(PermissionChipTheme::kNormalVisibility);
+  // Even if the pressed callback hides the chip during the click, the click
+  // histogram captures the chip type at the time of the click.
+  request_chip->SetPressedCallback(
+      base::BindLambdaForTesting([request_chip](bool is_pointer_interaction) {
+        request_chip->SetVisible(false);
+      }));
+
+  const uint32_t valid_request_token = request_chip->state_token();
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
+      /*is_mouse_interaction=*/true, valid_request_token);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Click",
+      ContextualTasksPermissionChipType::kPermissionRequest, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Click", 1);
+
+  // A stale token click is dropped and does not record a click sample.
+  indicator_chip->SetVisible(true);
+  indicator_chip->SetTheme(PermissionChipTheme::kBlockedActivityIndicator);
+  indicator_chip->SetPressedCallback(
+      base::BindLambdaForTesting([](bool is_pointer_interaction) {}));
+  const uint32_t stale_indicator_token = indicator_chip->state_token() - 1;
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, stale_indicator_token);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Click", 1);
+
+  // Clicking with the current token records the indicator click.
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/false, indicator_chip->state_token());
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.PermissionChip.Click",
+      ContextualTasksPermissionChipType::kBlockedActivityIndicator, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Click", 2);
 }
 
 }  // namespace contextual_tasks

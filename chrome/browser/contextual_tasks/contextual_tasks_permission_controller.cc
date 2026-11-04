@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -21,12 +22,45 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #endif
 
 namespace contextual_tasks {
+
+#if !BUILDFLAG(IS_ANDROID)
+namespace {
+
+// Maps a toolbar chip identifier and theme to its UMA permission chip type.
+ContextualTasksPermissionChipType GetChipType(
+    toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier,
+    toolbar_ui_api::mojom::PermissionChipTheme theme) {
+  switch (chip_identifier) {
+    case toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest:
+      return theme == toolbar_ui_api::mojom::PermissionChipTheme::kLowVisibility
+                 ? ContextualTasksPermissionChipType::kQuietPermissionRequest
+                 : ContextualTasksPermissionChipType::kPermissionRequest;
+    case toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator:
+      switch (theme) {
+        case toolbar_ui_api::mojom::PermissionChipTheme::
+            kBlockedActivityIndicator:
+          return ContextualTasksPermissionChipType::kBlockedActivityIndicator;
+        case toolbar_ui_api::mojom::PermissionChipTheme::
+            kOnSystemBlockedActivityIndicator:
+          return ContextualTasksPermissionChipType::
+              kSystemBlockedActivityIndicator;
+        default:
+          return ContextualTasksPermissionChipType::kInUseActivityIndicator;
+      }
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+#endif
 
 ContextualTasksPermissionController::ContextualTasksPermissionController(
     BrowserWindowInterface* browser_window) {
@@ -90,6 +124,10 @@ void ContextualTasksPermissionController::Update(
   // Otherwise, push from the permission controller.
 #if !BUILDFLAG(IS_ANDROID)
   if (location_bar_) {
+    if (location_bar_->GetWebContents() != web_contents) {
+      last_visible_request_chip_type_.reset();
+      last_visible_indicator_chip_type_.reset();
+    }
     location_bar_->Update(web_contents);
     return;
   }
@@ -135,6 +173,7 @@ void ContextualTasksPermissionController::PushStateToWebUINow() {
   if (!location_bar_) {
     return;
   }
+  RecordChipImpressions();
   // Resolved on demand rather than cached: the toolbar WebUI is shared by all
   // tasks in the side panel and is torn down and rebuilt independently of this
   // controller, so holding a pointer to it would mean tracking its lifetime.
@@ -191,6 +230,47 @@ WebUIPermissionChip* ContextualTasksPermissionController::GetChip(
       NOTREACHED();
   }
 }
+
+void ContextualTasksPermissionController::RecordChipImpressions() {
+  if (auto* panel_controller =
+          ContextualTasksPanelController::From(location_bar_->GetBrowser());
+      panel_controller && !panel_controller->IsPanelOpenForContextualTask()) {
+    last_visible_request_chip_type_.reset();
+    last_visible_indicator_chip_type_.reset();
+    return;
+  }
+
+  toolbar_ui_api::mojom::PermissionDashboardStatePtr state = GetState();
+  if (!state) {
+    return;
+  }
+
+  if (state->request_chip && state->request_chip->is_visible) {
+    const ContextualTasksPermissionChipType chip_type = GetChipType(
+        toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
+        state->request_chip->theme);
+    if (last_visible_request_chip_type_ != chip_type) {
+      last_visible_request_chip_type_ = chip_type;
+      base::UmaHistogramEnumeration("ContextualTasks.PermissionChip.Impression",
+                                    chip_type);
+    }
+  } else {
+    last_visible_request_chip_type_.reset();
+  }
+
+  if (state->indicator_chip && state->indicator_chip->is_visible) {
+    const ContextualTasksPermissionChipType chip_type = GetChipType(
+        toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+        state->indicator_chip->theme);
+    if (last_visible_indicator_chip_type_ != chip_type) {
+      last_visible_indicator_chip_type_ = chip_type;
+      base::UmaHistogramEnumeration("ContextualTasks.PermissionChip.Impression",
+                                    chip_type);
+    }
+  } else {
+    last_visible_indicator_chip_type_.reset();
+  }
+}
 #endif
 
 void ContextualTasksPermissionController::OnChipClicked(
@@ -199,7 +279,12 @@ void ContextualTasksPermissionController::OnChipClicked(
     uint32_t state_token) {
 #if !BUILDFLAG(IS_ANDROID)
   if (WebUIPermissionChip* chip = GetChip(chip_identifier)) {
-    chip->OnClickedIfCurrent(is_mouse_interaction, state_token);
+    const ContextualTasksPermissionChipType chip_type =
+        GetChipType(chip_identifier, chip->GetState()->theme);
+    if (chip->OnClickedIfCurrent(is_mouse_interaction, state_token)) {
+      base::UmaHistogramEnumeration("ContextualTasks.PermissionChip.Click",
+                                    chip_type);
+    }
   }
 
   // Ignore the event if the chip does not exist (if dashboard is torn down

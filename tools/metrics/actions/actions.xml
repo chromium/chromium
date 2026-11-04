@@ -10591,6 +10591,9 @@ should be able to be added at any place in this file.
     <variant name=".OpenNewThread" summary="The user opened a new thread."/>
     <variant name=".OpenOverflowMenu"
         summary="The user opened the overflow menu."/>
+    <variant name=".OpenPageInfo"
+        summary="The user clicked the logo button to open the page info
+                 bubble."/>
     <variant name=".OpenSourcesMenu"
         summary="The user opened the sources menu."/>
     <variant name=".OpenThreadHistory"

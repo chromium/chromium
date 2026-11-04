@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PERMISSION_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -24,6 +25,20 @@ class WebContents;
 namespace contextual_tasks {
 
 class ContextualTasksLocationBar;
+
+// Types of permission chips shown in the Contextual Tasks side panel toolbar.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ContextualTasksPermissionChipType)
+enum class ContextualTasksPermissionChipType {
+  kPermissionRequest = 0,
+  kQuietPermissionRequest = 1,
+  kInUseActivityIndicator = 2,
+  kBlockedActivityIndicator = 3,
+  kSystemBlockedActivityIndicator = 4,
+  kMaxValue = kSystemBlockedActivityIndicator,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksPermissionChipType)
 
 // Implements the toolbar mojom interface to control
 // the dashboard and permission chip for the contextual tasks side panel.
@@ -106,7 +121,16 @@ class ContextualTasksPermissionController
   WebUIPermissionChip* GetChip(
       toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier);
 
+  // Records `ContextualTasks.PermissionChip.Impression` when a permission chip
+  // transitions to visible (or changes its displayed type) in the coalesced
+  // dashboard state.
+  void RecordChipImpressions();
+
   std::unique_ptr<ContextualTasksLocationBar> location_bar_;
+  std::optional<ContextualTasksPermissionChipType>
+      last_visible_request_chip_type_;
+  std::optional<ContextualTasksPermissionChipType>
+      last_visible_indicator_chip_type_;
 #endif
 
   // Whether a `PushStateToWebUINow()` task is already queued.

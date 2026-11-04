@@ -435,6 +435,7 @@ suite('TopToolbarTest', () => {
     test(
         'logo click does not trigger page info when flag disabled',
         async () => {
+          const metrics = fakeMetricsPrivate();
           document.body.innerHTML = window.trustedTypes!.emptyHTML;
           loadTimeData.overrideValues({
             contextualTasksSidePanelRearchitectureEnabled: false,
@@ -451,10 +452,14 @@ suite('TopToolbarTest', () => {
           logo.click();
           assertEquals(
               0, toolbarProxy.handler.getCallCount('showPageInfoBubble'));
+          assertEquals(
+              0,
+              metrics.count('ContextualTasks.WebUI.UserAction.OpenPageInfo'));
         });
 
     test(
         'logo pointer click triggers page info when flag enabled', async () => {
+          const metrics = fakeMetricsPrivate();
           document.body.innerHTML = window.trustedTypes!.emptyHTML;
           loadTimeData.overrideValues({
             contextualTasksSidePanelRearchitectureEnabled: true,
@@ -472,9 +477,17 @@ suite('TopToolbarTest', () => {
           const isPointer =
               await toolbarProxy.handler.whenCalled('showPageInfoBubble');
           assertTrue(isPointer);
+          assertEquals(
+              2,
+              metrics.count('ContextualTasks.WebUI.UserAction.OpenPageInfo'));
+          assertEquals(
+              1,
+              metrics.count(
+                  'ContextualTasks.WebUI.UserAction.OpenPageInfo', true));
         });
 
     test('logo enter key triggers page info when flag enabled', async () => {
+      const metrics = fakeMetricsPrivate();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
         contextualTasksSidePanelRearchitectureEnabled: true,
@@ -491,9 +504,12 @@ suite('TopToolbarTest', () => {
       const isPointer =
           await toolbarProxy.handler.whenCalled('showPageInfoBubble');
       assertFalse(isPointer);
+      assertEquals(
+          2, metrics.count('ContextualTasks.WebUI.UserAction.OpenPageInfo'));
     });
 
     test('logo space key triggers page info when flag enabled', async () => {
+      const metrics = fakeMetricsPrivate();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
         contextualTasksSidePanelRearchitectureEnabled: true,
@@ -511,6 +527,8 @@ suite('TopToolbarTest', () => {
       const isPointer =
           await toolbarProxy.handler.whenCalled('showPageInfoBubble');
       assertFalse(isPointer);
+      assertEquals(
+          2, metrics.count('ContextualTasks.WebUI.UserAction.OpenPageInfo'));
     });
 
     test(

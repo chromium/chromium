@@ -410,6 +410,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
     if (!this.isSidePanelRearchitectureEnabled_) {
       return;
     }
+    recordAction('ContextualTasks.WebUI.UserAction.OpenPageInfo');
     // Keyboard synthetic clicks generate PointerEvents with an empty
     // pointerType in WebUI, whereas natural pointer clicks have a valid
     // pointerType (e.g., 'mouse', 'touch', 'pen').
