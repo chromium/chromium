@@ -1268,7 +1268,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
         SCOPED_CRASH_KEY_STRING64("cc", "device_viewport",
                                   active_tree_->GetDeviceViewport().ToString());
 
-        if (base::ShouldRecordSubsampledMetric(.1)) {
+        if (base::ShouldRecordSubsampledMetric(.01)) {
           DUMP_WILL_BE_CHECK(viz_damage_rect.Contains(root_layer_damage_rect_))
               << "crbug.com/454680865: Viz damage does not contain client "
                  "damage!";
