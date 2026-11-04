@@ -102,8 +102,8 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
 
   std::unique_ptr<LoginBubbleHandler> bubble_handler_;
 
-  // The dialog shadow.
-  std::unique_ptr<SystemDecoration> shadow_;
+  // The dialog shadow and highlight border decoration.
+  std::unique_ptr<SystemDecoration> decoration_;
 
   bool is_persistent_ = false;
 
