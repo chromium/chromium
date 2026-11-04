@@ -1416,10 +1416,14 @@ TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasCell) {
   EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(0, 0));
   EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(0, 3));
   EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(9, 3));
-  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(-1, 0));
-  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, -1));
-  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(10, 0));
-  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, 4));
+  EXPECT_CHECK_DEATH(table_accessibility()->GetCellId(-1, 0),
+                     base::NotFatalUntil::M163);
+  EXPECT_CHECK_DEATH(table_accessibility()->GetCellId(0, -1),
+                     base::NotFatalUntil::M163);
+  EXPECT_CHECK_DEATH(table_accessibility()->GetCellId(10, 0),
+                     base::NotFatalUntil::M163);
+  EXPECT_CHECK_DEATH(table_accessibility()->GetCellId(0, 4),
+                     base::NotFatalUntil::M163);
 }
 
 TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {

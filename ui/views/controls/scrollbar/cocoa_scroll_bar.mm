@@ -69,7 +69,7 @@ class CocoaScrollBarThumb : public BaseScrollBarThumb {
 
 CocoaScrollBarThumb::CocoaScrollBarThumb(CocoaScrollBar* scroll_bar)
     : BaseScrollBarThumb(scroll_bar), cocoa_scroll_bar_(scroll_bar) {
-  DCHECK(scroll_bar);
+  CHECK(scroll_bar, base::NotFatalUntil::M163);
 
   // This is necessary, otherwise the thumb will be rendered below the views if
   // those views paint to their own layers.
@@ -392,7 +392,7 @@ void CocoaScrollBar::OnScrollerStyleChanged() {
 // CocoaScrollBar::ImplicitAnimationObserver:
 
 void CocoaScrollBar::OnImplicitAnimationsCompleted() {
-  DCHECK_EQ(scroller_style_, NSScrollerStyleOverlay);
+  CHECK_EQ(scroller_style_, NSScrollerStyleOverlay, base::NotFatalUntil::M163);
   ResetOverlayScrollbar();
 }
 
@@ -400,7 +400,7 @@ void CocoaScrollBar::OnImplicitAnimationsCompleted() {
 // CocoaScrollBar::AnimationDelegate:
 
 void CocoaScrollBar::AnimationProgressed(const gfx::Animation* animation) {
-  DCHECK(is_expanded_);
+  CHECK(is_expanded_, base::NotFatalUntil::M163);
   UpdateScrollbarThickness();
 }
 
@@ -449,7 +449,7 @@ ui::NativeTheme::ExtraParams CocoaScrollBar::GetPainterParams() const {
 // CocoaScrollBar, private:
 
 void CocoaScrollBar::HideScrollbar() {
-  DCHECK_EQ(scroller_style_, NSScrollerStyleOverlay);
+  CHECK_EQ(scroller_style_, NSScrollerStyleOverlay, base::NotFatalUntil::M163);
 
   // Don't disappear if the scrollbar is hovered, or pressed but not dragged.
   // This behavior matches the Cocoa scrollbars, but differs from the Blink
@@ -475,7 +475,8 @@ void CocoaScrollBar::ShowScrollbar() {
   if (is_expanded_ && !IsHoverOrPressedState() &&
       layer()->GetAnimator()->IsAnimatingProperty(
           ui::LayerAnimationElement::OPACITY)) {
-    DCHECK_EQ(scroller_style_, NSScrollerStyleOverlay);
+    CHECK_EQ(scroller_style_, NSScrollerStyleOverlay,
+             base::NotFatalUntil::M163);
     thickness_animation_.Hide();
   }
 

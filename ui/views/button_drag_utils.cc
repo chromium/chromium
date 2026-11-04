@@ -82,8 +82,8 @@ void SetURLAndDragImage(const GURL& url,
                         const gfx::ImageSkia& icon,
                         const gfx::Point* press_pt,
                         ui::OSExchangeData* data) {
-  DCHECK(url.is_valid());
-  DCHECK(data);
+  CHECK(url.is_valid(), base::NotFatalUntil::M163);
+  CHECK(data, base::NotFatalUntil::M163);
   data->SetURL(url, title);
   SetDragImage(url, title, icon, press_pt, data);
 }

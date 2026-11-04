@@ -37,8 +37,8 @@ NativeViewHost::~NativeViewHost() {
 }
 
 void NativeViewHost::Attach(gfx::NativeView native_view) {
-  DCHECK(native_view);
-  DCHECK(!native_view_);
+  CHECK(native_view, base::NotFatalUntil::M163);
+  CHECK(!native_view_, base::NotFatalUntil::M163);
   native_view_ = native_view;
   native_wrapper_->AttachNativeView();
   InvalidateLayout();
@@ -97,7 +97,7 @@ void NativeViewHost::SetLayerManagedByViews(bool managed) {
   }
 
   CHECK(!native_wrapper_);
-  DCHECK(!native_view_);
+  CHECK(!native_view_, base::NotFatalUntil::M163);
   layer_managed_by_views_ = managed;
 }
 

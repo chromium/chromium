@@ -53,7 +53,7 @@ void AnimatedImageView::SetAnimatedImage(
 
 void AnimatedImageView::Play(
     std::optional<lottie::Animation::PlaybackConfig> playback_config) {
-  DCHECK(animated_image_);
+  CHECK(animated_image_, base::NotFatalUntil::M163);
   if (state_ == State::kPlaying) {
     return;
   }
@@ -81,7 +81,7 @@ void AnimatedImageView::Stop() {
     return;
   }
 
-  DCHECK(animated_image_);
+  CHECK(animated_image_, base::NotFatalUntil::M163);
   compositor_observation_.Reset();
   previous_timestamp_ = base::TimeTicks();
 
@@ -124,7 +124,7 @@ void AnimatedImageView::OnPaint(gfx::Canvas* canvas) {
 
 void AnimatedImageView::NativeViewHierarchyChanged() {
   ui::Compositor* compositor = GetWidget()->GetCompositor();
-  DCHECK(compositor);
+  CHECK(compositor, base::NotFatalUntil::M163);
   if (!compositor_observation_.IsObservingSource(compositor)) {
     compositor_observation_.Reset();
 
@@ -184,11 +184,11 @@ void AnimatedImageView::DoPlay(
 }
 
 void AnimatedImageView::SetCompositorFromWidget() {
-  DCHECK(!compositor_observation_.IsObserving());
+  CHECK(!compositor_observation_.IsObserving(), base::NotFatalUntil::M163);
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M163);
   ui::Compositor* compositor = widget->GetCompositor();
-  DCHECK(!compositor->HasAnimationObserver(this));
+  CHECK(!compositor->HasAnimationObserver(this), base::NotFatalUntil::M163);
   compositor_observation_.Observe(compositor);
 }
 

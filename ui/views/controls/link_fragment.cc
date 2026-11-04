@@ -40,9 +40,9 @@ LinkFragment::~LinkFragment() {
 }
 
 void LinkFragment::Connect(LinkFragment* other_fragment) {
-  DCHECK(prev_fragment_ == this);
-  DCHECK(next_fragment_ == this);
-  DCHECK(other_fragment);
+  CHECK(prev_fragment_ == this, base::NotFatalUntil::M163);
+  CHECK(next_fragment_ == this, base::NotFatalUntil::M163);
+  CHECK(other_fragment, base::NotFatalUntil::M163);
 
   next_fragment_ = other_fragment->next_fragment_;
   other_fragment->next_fragment_->prev_fragment_ = this;
@@ -51,7 +51,8 @@ void LinkFragment::Connect(LinkFragment* other_fragment) {
 }
 
 void LinkFragment::Disconnect() {
-  DCHECK((prev_fragment_ != this) == (next_fragment_ != this));
+  CHECK((prev_fragment_ != this) == (next_fragment_ != this),
+        base::NotFatalUntil::M163);
   if (prev_fragment_ != this) {
     prev_fragment_->next_fragment_ = next_fragment_;
     next_fragment_->prev_fragment_ = prev_fragment_;

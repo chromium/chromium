@@ -40,7 +40,7 @@ ScrollBar::Orientation ScrollBar::GetOrientation() const {
 }
 
 void ScrollBar::SetThumb(BaseScrollBarThumb* thumb) {
-  DCHECK(!thumb_);
+  CHECK(!thumb_, base::NotFatalUntil::M163);
   thumb_ = thumb;
   AddChildViewRaw(thumb);
   thumb->set_context_menu_controller(this);

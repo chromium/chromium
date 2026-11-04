@@ -21,7 +21,7 @@ namespace views {
 namespace {
 
 void EnsureNativeViewHasNoChildWidgets(NSView* native_view) {
-  DCHECK(native_view);
+  CHECK(native_view, base::NotFatalUntil::M163);
   // Mac's NativeViewHost has no support for hosting its own child widgets.
   // This check is probably overly restrictive, since the Widget containing the
   // NativeViewHost _is_ allowed child Widgets. However, we don't know yet
@@ -105,9 +105,9 @@ uint64_t NativeViewHostMac::GetNSViewId() const {
 }
 
 void NativeViewHostMac::OnHostableViewDestroying() {
-  DCHECK(native_view_hostable_);
+  CHECK(native_view_hostable_, base::NotFatalUntil::M163);
   host_->NativeViewDestroyed();
-  DCHECK(!native_view_hostable_);
+  CHECK(!native_view_hostable_, base::NotFatalUntil::M163);
 }
 
 base::ScopedClosureRunner NativeViewHostMac::CreateVideoCaptureLock() {
@@ -121,8 +121,8 @@ base::ScopedClosureRunner NativeViewHostMac::CreateVideoCaptureLock() {
 // NativeViewHostMac, NativeViewHostWrapper implementation:
 
 void NativeViewHostMac::AttachNativeView() {
-  DCHECK(host_->native_view());
-  DCHECK(!native_view_);
+  CHECK(host_->native_view(), base::NotFatalUntil::M163);
+  CHECK(!native_view_, base::NotFatalUntil::M163);
   native_view_ = host_->native_view().GetNativeNSView();
   if ([native_view_ conformsToProtocol:@protocol(ViewsHostable)]) {
     id hostable = native_view_;
@@ -180,11 +180,11 @@ void NativeViewHostMac::NativeViewDetaching(bool destroyed) {
   // NativeViewHost::Detach().
   NSView* host_native_view = host_->native_view().GetNativeNSView();
   if (!native_view_) {
-    DCHECK(![host_native_view superview]);
+    CHECK(![host_native_view superview], base::NotFatalUntil::M163);
     return;
   }
 
-  DCHECK(native_view_ == host_native_view);
+  CHECK(native_view_ == host_native_view, base::NotFatalUntil::M163);
 
   if (native_view_hostable_) {
     native_view_hostable_->ViewsHostableDetach();
@@ -241,7 +241,7 @@ void NativeViewHostMac::RemovedFromWidget() {
 bool NativeViewHostMac::SetNativeViewCornerRadii(
     const gfx::RoundedCornersF& corner_radii) {
   ui::Layer* layer = GetUiLayer();
-  DCHECK(layer);
+  CHECK(layer, base::NotFatalUntil::M163);
   layer->SetRoundedCornerRadius(corner_radii);
   layer->SetIsFastRoundedCorner(true);
   return true;

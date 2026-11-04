@@ -32,7 +32,7 @@ DesktopDragDropClientOzoneLinux::GetLocationDelegate() {
 
 void DesktopDragDropClientOzoneLinux::OnDragLocationChanged(
     const gfx::Point& screen_point_px) {
-  DCHECK(drag_context());
+  CHECK(drag_context(), base::NotFatalUntil::M163);
 
   if (!drag_context()->widget) {
     return;
@@ -79,7 +79,7 @@ void DesktopDragDropClientOzoneLinux::OnDragOperationChanged(
 
 std::optional<gfx::AcceleratedWidget>
 DesktopDragDropClientOzoneLinux::GetDragWidget() {
-  DCHECK(drag_context());
+  CHECK(drag_context(), base::NotFatalUntil::M163);
   if (drag_context()->widget) {
     return drag_context()
         ->widget->GetNativeWindow()

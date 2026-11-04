@@ -165,7 +165,7 @@ void NativeWidgetMac::WindowDestroying() {
 }
 
 void NativeWidgetMac::WindowDestroyed() {
-  DCHECK(GetNSWindowMojo());
+  CHECK(GetNSWindowMojo(), base::NotFatalUntil::M163);
   SetFocusManager(nullptr);
   ns_window_host_.reset();
   // |OnNativeWidgetDestroyed| may delete |this| if the object does not own
@@ -347,7 +347,7 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
 
   delegate_->OnNativeWidgetCreated();
 
-  DCHECK(GetWidget()->GetRootView());
+  CHECK(GetWidget()->GetRootView(), base::NotFatalUntil::M163);
   ns_window_host_->SetRootView(GetWidget()->GetRootView());
 
   std::optional<int> corner_radius;
@@ -385,25 +385,26 @@ void NativeWidgetMac::OnWidgetInitDone() {
 
 void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
   gfx::NativeView child = GetNativeView();
-  DCHECK_NE(child, new_parent);
+  CHECK_NE(child, new_parent, base::NotFatalUntil::M163);
   if (new_parent) {
-    DCHECK([new_parent.GetNativeNSView() window]);
+    CHECK([new_parent.GetNativeNSView() window], base::NotFatalUntil::M163);
     CHECK(new_parent);
     CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
   }
 
   NativeWidgetMacNSWindowHost* child_window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeView(child);
-  DCHECK(child_window_host);
+  CHECK(child_window_host, base::NotFatalUntil::M163);
   gfx::NativeView widget_view =
       child_window_host->native_widget_mac()->GetNativeView();
-  DCHECK_EQ(child, widget_view);
+  CHECK_EQ(child, widget_view, base::NotFatalUntil::M163);
   gfx::NativeWindow widget_window =
       child_window_host->native_widget_mac()->GetNativeWindow();
-  DCHECK(
-      [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
-  DCHECK(widget_window);
-  DCHECK(![widget_window.GetNativeNSWindow() isSheet]);
+  CHECK([child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()],
+        base::NotFatalUntil::M163);
+  CHECK(widget_window, base::NotFatalUntil::M163);
+  CHECK(![widget_window.GetNativeNSWindow() isSheet],
+        base::NotFatalUntil::M163);
 
   NativeWidgetMacNSWindowHost* new_parent_window_host =
       new_parent ? NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent)
@@ -597,13 +598,15 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
   }
 
   // System modal windows not implemented (or used) on Mac.
-  DCHECK_NE(ui::mojom::ModalType::kSystem, modal_type);
+  CHECK_NE(ui::mojom::ModalType::kSystem, modal_type,
+           base::NotFatalUntil::M163);
 
   // A peculiarity of the constrained window framework is that it permits a
   // dialog of ModalType::kWindow to have a null parent window; falling back to
   // a non-modal window in this case.
-  DCHECK(ns_window_host_->parent() ||
-         modal_type == ui::mojom::ModalType::kWindow);
+  CHECK(
+      ns_window_host_->parent() || modal_type == ui::mojom::ModalType::kWindow,
+      base::NotFatalUntil::M163);
 
   // Everything happens upon show.
 }
@@ -709,7 +712,7 @@ void NativeWidgetMac::StackAbove(gfx::NativeView native_view) {
 
   if (!sibling_host) {
     // This will only work if |this| is in-process.
-    DCHECK(!ns_window_host_->application_host());
+    CHECK(!ns_window_host_->application_host(), base::NotFatalUntil::M163);
     NSInteger view_parent = native_view.GetNativeNSView().window.windowNumber;
     [GetNativeWindow().GetNativeNSWindow() orderWindow:NSWindowAbove
                                             relativeTo:view_parent];
@@ -1176,7 +1179,7 @@ base::WeakPtr<internal::NativeWidgetPrivate> NativeWidgetMac::GetWeakPtr() {
 base::CallbackListSubscription
 NativeWidgetMac::RegisterInitNativeWidgetCallback(
     const base::RepeatingCallback<void(NativeWidgetMac*)>& callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
   return g_init_native_widget_callbacks.Get().Add(callback);
 }
 
@@ -1251,8 +1254,8 @@ void NativeWidgetMac::OnDidChangeFocus(View* focused_before,
       input_method->GetTextInputClient();
   // Sanity check: For a top level widget, when focus moves away from the widget
   // (i.e. |focused_now| is nil), then the textInputClient will be cleared.
-  DCHECK(!!focused_now || !new_text_input_client ||
-         !GetWidget()->is_top_level());
+  CHECK(!!focused_now || !new_text_input_client || !GetWidget()->is_top_level(),
+        base::NotFatalUntil::M163);
   if (ns_window_host_) {
     ns_window_host_->text_input_host()->SetTextInputClient(
         new_text_input_client);
@@ -1291,7 +1294,7 @@ void NativeWidgetMac::OnFocusManagerDestroying(FocusManager* focus_manager) {
 
 ui::EventDispatchDetails NativeWidgetMac::DispatchKeyEventPostIME(
     ui::KeyEvent* key) {
-  DCHECK(focus_manager_);
+  CHECK(focus_manager_, base::NotFatalUntil::M163);
   if (!focus_manager_->OnKeyEvent(*key)) {
     key->StopPropagation();
   } else {
@@ -1422,7 +1425,8 @@ Widget::Widgets NativeWidgetPrivate::GetAllChildWidgets(
     }
 
     for (NSWindow* native_child in ns_view.window.childWindows) {
-      DCHECK(![sheet_children containsObject:native_child]);
+      CHECK(![sheet_children containsObject:native_child],
+            base::NotFatalUntil::M163);
       children.merge(
           GetAllChildWidgets(gfx::NativeView(native_child.contentView)));
     }

@@ -280,9 +280,9 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
 SkRRect FocusRing::GetRingRoundRect() const {
   const SkPath path = GetPath();
 
-  DCHECK(IsPathUsable(path));
-  DCHECK_EQ(GetFlipCanvasOnPaintForRTLUI(),
-            parent()->GetFlipCanvasOnPaintForRTLUI());
+  CHECK(IsPathUsable(path), base::NotFatalUntil::M163);
+  CHECK_EQ(GetFlipCanvasOnPaintForRTLUI(),
+           parent()->GetFlipCanvasOnPaintForRTLUI(), base::NotFatalUntil::M163);
 
   SkRect bounds;
   SkRRect rbounds;

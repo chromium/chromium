@@ -19,7 +19,7 @@ namespace views {
 FocusManagerEventHandler::FocusManagerEventHandler(Widget* widget,
                                                    aura::Window* window)
     : widget_(widget->GetWeakPtr()) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   window_observation_.Observe(window);
 }
 

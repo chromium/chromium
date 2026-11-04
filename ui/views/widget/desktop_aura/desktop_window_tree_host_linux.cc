@@ -76,13 +76,15 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
 #if BUILDFLAG(SUPPORTS_OZONE_X11)
   void OnCompositingCompleteSwapWithNewSize(ui::Compositor* compositor,
                                             const gfx::Size& size) override {
-    DCHECK(compositor_observation_.IsObservingSource(compositor));
+    CHECK(compositor_observation_.IsObservingSource(compositor),
+          base::NotFatalUntil::M163);
     callback_.Run(size);
   }
 #endif  // BUILDFLAG(SUPPORTS_OZONE_X11)
 
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {
-    DCHECK(compositor_observation_.IsObservingSource(compositor));
+    CHECK(compositor_observation_.IsObservingSource(compositor),
+          base::NotFatalUntil::M163);
     compositor_observation_.Reset();
   }
 
@@ -154,7 +156,7 @@ std::unique_ptr<FrameView> DesktopWindowTreeHostLinux::CreateFrameView() {
 gfx::Rect DesktopWindowTreeHostLinux::GetXRootWindowOuterBounds() const {
   // TODO(msisov): must be removed as soon as all X11 low-level bits are moved
   // to Ozone.
-  DCHECK(GetX11Extension());
+  CHECK(GetX11Extension(), base::NotFatalUntil::M163);
   return GetX11Extension()->GetXRootWindowOuterBounds();
 }
 
@@ -530,7 +532,7 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
   properties->wayland_app_id = params.wayland_app_id;
   properties->startup_id = params.startup_id;
 
-  DCHECK(!properties->x11_extension_delegate);
+  CHECK(!properties->x11_extension_delegate, base::NotFatalUntil::M163);
   properties->x11_extension_delegate = this;
 
   properties->prefer_dark_theme = ui::LinuxUiTheme::GetForProfile(nullptr);
@@ -581,7 +583,7 @@ void DesktopWindowTreeHostLinux::OnCompleteSwapWithNewSize(
 }
 
 void DesktopWindowTreeHostLinux::CreateNonClientEventFilter() {
-  DCHECK(!non_client_window_event_filter_);
+  CHECK(!non_client_window_event_filter_, base::NotFatalUntil::M163);
   non_client_window_event_filter_ = std::make_unique<WindowEventFilterClass>(
       this, GetWmMoveResizeHandler(*platform_window()));
 }
@@ -595,7 +597,7 @@ void DesktopWindowTreeHostLinux::OnLostMouseGrab() {
 }
 
 void DesktopWindowTreeHostLinux::EnableEventListening() {
-  DCHECK_GT(modal_dialog_counter_, 0UL);
+  CHECK_GT(modal_dialog_counter_, 0UL, base::NotFatalUntil::M163);
   if (!--modal_dialog_counter_) {
     targeter_for_modal_.reset();
   }

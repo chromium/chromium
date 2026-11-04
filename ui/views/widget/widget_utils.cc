@@ -44,8 +44,8 @@ void WidgetOpenTimer::OnWidgetDestroying(Widget* widget) {
 }
 
 void WidgetOpenTimer::Reset(Widget* widget) {
-  DCHECK(!open_timer_.has_value());
-  DCHECK(!observed_widget_.IsObservingSource(widget));
+  CHECK(!open_timer_.has_value(), base::NotFatalUntil::M163);
+  CHECK(!observed_widget_.IsObservingSource(widget), base::NotFatalUntil::M163);
   observed_widget_.Observe(widget);
   open_timer_ = base::ElapsedTimer();
 }

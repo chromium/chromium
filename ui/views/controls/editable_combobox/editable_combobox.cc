@@ -207,7 +207,7 @@ class EditableCombobox::EditableComboboxMenuModel final
 
   void SetDecorationStrategy(
       std::unique_ptr<EditableCombobox::MenuDecorationStrategy> strategy) {
-    DCHECK(strategy);
+    CHECK(strategy, base::NotFatalUntil::M163);
     decoration_strategy_ = std::move(strategy);
     UpdateItemsShown();
   }
@@ -478,7 +478,7 @@ void EditableCombobox::OnAccessibleNameChanged(const std::u16string& new_name) {
 
 void EditableCombobox::SetMenuDecorationStrategy(
     std::unique_ptr<MenuDecorationStrategy> strategy) {
-  DCHECK(menu_model_);
+  CHECK(menu_model_, base::NotFatalUntil::M163);
   menu_model_->SetDecorationStrategy(std::move(strategy));
 }
 
@@ -585,7 +585,7 @@ void EditableCombobox::OnItemSelected(size_t index) {
 }
 
 void EditableCombobox::HandleNewContent(std::u16string_view new_content) {
-  DCHECK_EQ(GetText(), new_content);
+  CHECK_EQ(GetText(), new_content, base::NotFatalUntil::M163);
   // We notify |callback_| before updating |menu_model_|'s items shown. This
   // gives the user a chance to modify the ComboboxModel beforehand if they wish
   // to do so.
@@ -676,7 +676,7 @@ std::u16string EditableCombobox::GetItemTextForTesting(size_t index) const {
 }
 
 const ui::ComboboxModel* EditableCombobox::GetComboboxModel() const {
-  DCHECK(menu_model_);
+  CHECK(menu_model_, base::NotFatalUntil::M163);
   return menu_model_->GetComboboxModel();
 }
 

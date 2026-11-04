@@ -372,7 +372,7 @@ void TabbedPaneTab::UpdatePreferredTitleWidth() {
 }
 
 void TabbedPaneTab::UpdateTitleColor() {
-  DCHECK(GetWidget());
+  CHECK(GetWidget(), base::NotFatalUntil::M163);
   title_->SetEnabledColor(GetIconTitleColor());
 }
 
@@ -400,7 +400,7 @@ void TabbedPaneTab::UpdateAccessibleSelection() {
 }
 
 ui::ImageModel TabbedPaneTab::GetImageModelForTab(ui::ColorId color_id) const {
-  DCHECK(icon_for_tab_);
+  CHECK(icon_for_tab_, base::NotFatalUntil::M163);
   return ui::ImageModel::FromVectorIcon(*icon_for_tab_, color_id,
                                         kDefaultIconSize);
 }
@@ -517,16 +517,16 @@ TabbedPaneTabStrip::Coordinates TabbedPaneTabStrip::GetIconLabelStartEndingX(
 bool TabbedPaneTabStrip::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   // Handle Ctrl+Tab and Ctrl+Shift+Tab navigation of pages.
-  DCHECK_EQ(accelerator.key_code(), ui::VKEY_TAB);
-  DCHECK(accelerator.IsCtrlDown());
+  CHECK_EQ(accelerator.key_code(), ui::VKEY_TAB, base::NotFatalUntil::M163);
+  CHECK(accelerator.IsCtrlDown(), base::NotFatalUntil::M163);
   return MoveSelectionBy(accelerator.IsShiftDown() ? -1 : 1);
 }
 
 void TabbedPaneTabStrip::OnSelectedTabChanged(TabbedPaneTab* from_tab,
                                               TabbedPaneTab* to_tab,
                                               bool animate) {
-  DCHECK(!from_tab->selected());
-  DCHECK(to_tab->selected());
+  CHECK(!from_tab->selected(), base::NotFatalUntil::M163);
+  CHECK(to_tab->selected(), base::NotFatalUntil::M163);
   if (!animate || !GetWidget()) {
     return;
   }
@@ -630,7 +630,7 @@ TabbedPaneTab* TabbedPaneTabStrip::GetSelectedTab() const {
 
 TabbedPaneTab* TabbedPaneTabStrip::GetTabAtDeltaFromSelected(int delta) const {
   const size_t selected_tab_index = GetSelectedTabIndex();
-  DCHECK_NE(kNoSelectedTab, selected_tab_index);
+  CHECK_NE(kNoSelectedTab, selected_tab_index, base::NotFatalUntil::M163);
   const size_t num_children = children().size();
   // Clamping |delta| here ensures that even a large negative |delta| will be
   // positive after the addition in the next statement.
@@ -641,7 +641,7 @@ TabbedPaneTab* TabbedPaneTabStrip::GetTabAtDeltaFromSelected(int delta) const {
 }
 
 TabbedPaneTab* TabbedPaneTabStrip::GetTabAtIndex(size_t index) const {
-  DCHECK_LT(index, children().size());
+  CHECK_LT(index, children().size(), base::NotFatalUntil::M163);
   return static_cast<TabbedPaneTab*>(children()[index]);
 }
 
@@ -800,7 +800,7 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
     max_main_axis = min_main_axis + tab->height();
   }
 
-  DCHECK_NE(min_main_axis, max_main_axis);
+  CHECK_NE(min_main_axis, max_main_axis, base::NotFatalUntil::M163);
   // Draw over the unselected border from above.
   const int kSelectedBorderThickness = is_compact_with_icon ? 8 : 2;
   const int stylized_border_thickness = is_compact_with_icon ? 4 : 2;
@@ -889,7 +889,8 @@ size_t TabbedPane::GetSelectedTabIndex() const {
 }
 
 size_t TabbedPane::GetTabCount() const {
-  DCHECK_EQ(tab_strip_->children().size(), contents_->children().size());
+  CHECK_EQ(tab_strip_->children().size(), contents_->children().size(),
+           base::NotFatalUntil::M163);
   return contents_->children().size();
 }
 
@@ -897,7 +898,7 @@ void TabbedPane::AddTabInternal(size_t index,
                                 const std::u16string& title,
                                 std::unique_ptr<View> contents,
                                 const gfx::VectorIcon* tab_icon) {
-  DCHECK_LE(index, GetTabCount());
+  CHECK_LE(index, GetTabCount(), base::NotFatalUntil::M163);
   contents->SetVisible(false);
   contents->GetViewAccessibility().SetRole(ax::mojom::Role::kTabPanel);
   if (!title.empty()) {

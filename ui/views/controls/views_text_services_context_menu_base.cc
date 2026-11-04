@@ -31,8 +31,8 @@ ViewsTextServicesContextMenuBase::ViewsTextServicesContextMenuBase(
     ui::SimpleMenuModel* menu,
     Textfield* client)
     : client_(client) {
-  DCHECK(client);
-  DCHECK(menu);
+  CHECK(client, base::NotFatalUntil::M163);
+  CHECK(menu, base::NotFatalUntil::M163);
   // Not inserted on read-only fields or if the OS/version doesn't support it.
   if (!client_->GetReadOnly() && ui::IsEmojiPanelSupported() &&
       client_->SupportsEmoji()) {

@@ -185,7 +185,8 @@ Combobox::Combobox(ui::ComboboxModel* model) {
 Combobox::~Combobox() {
   if (GetInputMethod() && selector_.get()) {
     // Combobox should have been blurred before destroy.
-    DCHECK(selector_.get() != GetInputMethod()->GetTextInputClient());
+    CHECK(selector_.get() != GetInputMethod()->GetTextInputClient(),
+          base::NotFatalUntil::M163);
   }
 }
 
@@ -243,7 +244,8 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   }
 
   if (model_) {
-    DCHECK(observation_.IsObservingSource(model_.get()));
+    CHECK(observation_.IsObservingSource(model_.get()),
+          base::NotFatalUntil::M163);
     observation_.Reset();
   }
 
@@ -534,7 +536,7 @@ bool Combobox::HandleAccessibleAction(const ui::AXActionData& action_data) {
 }
 
 void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
-  DCHECK_EQ(model_, model);
+  CHECK_EQ(model_, model, base::NotFatalUntil::M163);
 
   if (IsMenuRunning()) {
     menu_runner_.reset();

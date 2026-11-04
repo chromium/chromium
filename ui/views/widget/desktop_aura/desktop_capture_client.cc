@@ -54,8 +54,10 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
 
   // We should only ever be told to capture a child of |root_|. Otherwise
   // things are going to be really confused.
-  DCHECK(!new_capture_window || (new_capture_window->GetRootWindow() == root_));
-  DCHECK(!capture_window_ || capture_window_->GetRootWindow());
+  CHECK(!new_capture_window || (new_capture_window->GetRootWindow() == root_),
+        base::NotFatalUntil::M163);
+  CHECK(!capture_window_ || capture_window_->GetRootWindow(),
+        base::NotFatalUntil::M163);
 
   auto old_capture_window_weak = capture_window_;
   base::WeakPtr<aura::Window> new_capture_window_weak =

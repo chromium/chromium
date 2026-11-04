@@ -18,7 +18,7 @@
 namespace views {
 
 DesktopScreenWin::DesktopScreenWin() {
-  DCHECK(!display::Screen::HasScreen());
+  CHECK(!display::Screen::HasScreen(), base::NotFatalUntil::M163);
   display::Screen::SetScreenInstance(this);
 }
 
@@ -44,7 +44,7 @@ bool DesktopScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
 
 std::optional<bool> DesktopScreenWin::IsWindowOnCurrentVirtualDesktop(
     gfx::NativeWindow window) const {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   return window->GetHost()->on_current_workspace();
 }
 

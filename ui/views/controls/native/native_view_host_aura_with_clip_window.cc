@@ -309,12 +309,12 @@ void NativeViewHostAuraWithClipWindow::SetVisible(bool visible) {
 
 void NativeViewHostAuraWithClipWindow::OnWindowDestroying(
     aura::Window* window) {
-  DCHECK(window == host_->native_view());
+  CHECK(window == host_->native_view(), base::NotFatalUntil::M163);
   clipping_window_delegate_->set_native_view(nullptr);
 }
 
 void NativeViewHostAuraWithClipWindow::OnWindowDestroyed(aura::Window* window) {
-  DCHECK(window == host_->native_view());
+  CHECK(window == host_->native_view(), base::NotFatalUntil::M163);
   native_view_observation_.Reset();
   host_->NativeViewDestroyed();
 }

@@ -439,7 +439,7 @@ bool TableHeader::GetHeaderRowHasFocus() const {
 gfx::Rect TableHeader::GetActiveHeaderCellBounds() const {
   const std::optional<size_t> active_index =
       table_->GetActiveVisibleColumnIndex();
-  DCHECK(active_index.has_value());
+  CHECK(active_index.has_value(), base::NotFatalUntil::M163);
   const TableView::VisibleColumn& column =
       table_->GetVisibleColumn(active_index.value());
   return gfx::Rect(column.x, 0, column.width, height());
@@ -520,7 +520,7 @@ std::optional<size_t> TableHeader::GetResizeColumn(int x) const {
   }
 
   const std::optional<size_t> index = GetClosestVisibleColumnIndex(*table_, x);
-  DCHECK(index.has_value());
+  CHECK(index.has_value(), base::NotFatalUntil::M163);
   const TableView::VisibleColumn& column(
       table_->GetVisibleColumn(index.value()));
   if (index.value() > 0 && x >= column.x - kResizePadding &&

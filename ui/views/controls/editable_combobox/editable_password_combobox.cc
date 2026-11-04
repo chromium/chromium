@@ -77,7 +77,7 @@ class PasswordMenuDecorationStrategy
   explicit PasswordMenuDecorationStrategy(
       const EditablePasswordCombobox* parent)
       : parent_(parent) {
-    DCHECK(parent);
+    CHECK(parent, base::NotFatalUntil::M163);
   }
 
   std::u16string DecorateItemText(std::u16string text) const override {

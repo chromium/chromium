@@ -290,17 +290,17 @@ void AccessiblePaneView::OnDidChangeFocus(views::View* focused_before,
 // FocusTraversable overrides:
 
 views::FocusSearch* AccessiblePaneView::GetFocusSearch() {
-  DCHECK(pane_has_focus_);
+  CHECK(pane_has_focus_, base::NotFatalUntil::M163);
   return focus_search_.get();
 }
 
 views::FocusTraversable* AccessiblePaneView::GetFocusTraversableParent() {
-  DCHECK(pane_has_focus_);
+  CHECK(pane_has_focus_, base::NotFatalUntil::M163);
   return nullptr;
 }
 
 views::View* AccessiblePaneView::GetFocusTraversableParentView() {
-  DCHECK(pane_has_focus_);
+  CHECK(pane_has_focus_, base::NotFatalUntil::M163);
   return nullptr;
 }
 

@@ -765,7 +765,7 @@ void DesktopWindowTreeHostWin::SetOpacity(float opacity) {
 void DesktopWindowTreeHostWin::SetAspectRatio(
     const gfx::SizeF& aspect_ratio,
     const gfx::Size& excluded_margin) {
-  DCHECK(!aspect_ratio.IsEmpty());
+  CHECK(!aspect_ratio.IsEmpty(), base::NotFatalUntil::M163);
   message_handler_->SetAspectRatio(aspect_ratio.width() / aspect_ratio.height(),
                                    excluded_margin);
 }
@@ -873,8 +873,8 @@ DesktopWindowTreeHostWin::GetBoundsInAcceleratedWidgetPixelCoordinates() {
     return gfx::Rect(window_bounds.size());
   }
   const gfx::Vector2d offset = client_bounds.origin() - window_bounds.origin();
-  DCHECK_GE(offset.x(), 0);
-  DCHECK_GE(offset.y(), 0);
+  CHECK_GE(offset.x(), 0, base::NotFatalUntil::M163);
+  CHECK_GE(offset.y(), 0, base::NotFatalUntil::M163);
   return gfx::Rect(gfx::Point() + offset, client_bounds.size());
 }
 
@@ -895,7 +895,7 @@ bool DesktopWindowTreeHostWin::CaptureSystemKeyEventsImpl(
   // Only one KeyboardHook should be active at a time, otherwise there will be
   // problems with event routing (i.e. which Hook takes precedence) and
   // destruction ordering.
-  DCHECK(!keyboard_hook_);
+  CHECK(!keyboard_hook_, base::NotFatalUntil::M163);
   keyboard_hook_ = ui::KeyboardHook::CreateModifierKeyboardHook(
       std::move(dom_codes), GetAcceleratedWidget(),
       base::BindRepeating(&DesktopWindowTreeHostWin::HandleKeyEvent,

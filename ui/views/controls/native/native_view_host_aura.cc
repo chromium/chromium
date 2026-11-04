@@ -275,11 +275,11 @@ void NativeViewHostAura::SetVisible(bool visible) {
 }
 
 void NativeViewHostAura::OnWindowDestroying(aura::Window* window) {
-  DCHECK(window == host_->native_view());
+  CHECK(window == host_->native_view(), base::NotFatalUntil::M163);
 }
 
 void NativeViewHostAura::OnWindowDestroyed(aura::Window* window) {
-  DCHECK(window == host_->native_view());
+  CHECK(window == host_->native_view(), base::NotFatalUntil::M163);
   native_view_observation_.Reset();
   host_->NativeViewDestroyed();
 }

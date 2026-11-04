@@ -18,7 +18,7 @@ wm::WindowMoveResult WindowMoveClientPlatform::RunMoveLoop(
     aura::Window* source,
     const gfx::Vector2d& drag_offset,
     wm::WindowMoveSource move_source) {
-  DCHECK(host_->GetContentWindow()->Contains(source));
+  CHECK(host_->GetContentWindow()->Contains(source), base::NotFatalUntil::M163);
   auto move_loop_result = host_->RunMoveLoop(
       drag_offset,
       move_source == wm::WindowMoveSource::WINDOW_MOVE_SOURCE_MOUSE

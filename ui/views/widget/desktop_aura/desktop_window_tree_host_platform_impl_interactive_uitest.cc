@@ -180,7 +180,7 @@ class HitTestWidgetDelegate : public WidgetDelegate {
 
   // WidgetDelegate:
   std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override {
-    DCHECK(!frame_view_);
+    CHECK(!frame_view_, base::NotFatalUntil::M163);
     auto frame_view =
         std::make_unique<test::ConfigurableTestNativeFrameView>(widget);
     frame_view_ = frame_view->GetWeakPtr();
@@ -262,14 +262,14 @@ class DesktopWindowTreeHostPlatformImplTest
   }
 
   void DispatchEvent(ui::Event* event) {
-    DCHECK(host_);
+    CHECK(host_, base::NotFatalUntil::M163);
     std::unique_ptr<ui::Event> owned_event(event);
     host_->DispatchEvent(owned_event.get());
   }
 
   void GenerateAndDispatchClickMouseEvent(const gfx::Point& click_location,
                                           int flags) {
-    DCHECK(host_);
+    CHECK(host_, base::NotFatalUntil::M163);
     DispatchEvent(GenerateMouseEvent(ui::EventType::kMousePressed,
                                      click_location, flags));
     DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseReleased,

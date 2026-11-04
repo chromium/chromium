@@ -42,7 +42,7 @@ std::optional<gfx::RRectF> HighlightPathGenerator::GetRoundRectForView(
 SkPath HighlightPathGenerator::GetHighlightPath(const View* view) {
   // A rounded rectangle must be supplied if using this default implementation.
   std::optional<gfx::RRectF> round_rect = GetRoundRect(view);
-  DCHECK(round_rect);
+  CHECK(round_rect, base::NotFatalUntil::M163);
   return SkPath::RRect(SkRRect{*round_rect});
 }
 

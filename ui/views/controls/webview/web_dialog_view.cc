@@ -156,7 +156,7 @@ bool WebDialogView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     return true;
   }
 
-  DCHECK_EQ(ui::VKEY_ESCAPE, accelerator.key_code());
+  CHECK_EQ(ui::VKEY_ESCAPE, accelerator.key_code(), base::NotFatalUntil::M163);
   if (delegate_ && !delegate_->ShouldCloseDialogOnEscape()) {
     return false;
   }
@@ -424,7 +424,7 @@ bool WebDialogView::CheckMediaAccessPermission(
 
 void WebDialogView::SetWebViewCornersRadii(const gfx::RoundedCornersF& radii) {
   views::NativeViewHost* host = web_view_->holder();
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M163);
 
   host->SetNativeViewCornerRadii(radii);
 }

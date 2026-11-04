@@ -86,7 +86,7 @@ class ExitLoopOnRelease : public View {
  public:
   explicit ExitLoopOnRelease(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {
-    DCHECK(quit_closure_);
+    CHECK(quit_closure_, base::NotFatalUntil::M163);
   }
 
   ExitLoopOnRelease(const ExitLoopOnRelease&) = delete;

@@ -314,10 +314,10 @@ class DeleteEdit : public Edit {
       return false;
     }
     // Deletions with selections are marked kDoNotMerge and should not get here.
-    DCHECK(old_secondary_selections_.empty());
-    DCHECK(old_primary_selection_.is_empty());
-    DCHECK(edit->old_secondary_selections_.empty());
-    DCHECK(edit->old_primary_selection_.is_empty());
+    CHECK(old_secondary_selections_.empty(), base::NotFatalUntil::M163);
+    CHECK(old_primary_selection_.is_empty(), base::NotFatalUntil::M163);
+    CHECK(edit->old_secondary_selections_.empty(), base::NotFatalUntil::M163);
+    CHECK(edit->old_primary_selection_.is_empty(), base::NotFatalUntil::M163);
 
     if (delete_backward_) {
       // Backspace can be merged only with backspace at the same position.
@@ -365,7 +365,7 @@ gfx::Range GetFirstEmphasizedRange(const ui::CompositionText& composition) {
 // the default kill ring size of 1 (i.e. a single buffer) is assumed.
 std::u16string* GetKillBuffer() {
   static base::NoDestructor<std::u16string> kill_buffer;
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
   return kill_buffer.get();
 }
 
@@ -378,8 +378,8 @@ void SetKillBuffer(std::u16string_view buffer) {
 void SelectRangeInCompositionText(gfx::RenderText* render_text,
                                   size_t cursor,
                                   const gfx::Range& range) {
-  DCHECK(render_text);
-  DCHECK(range.IsValid());
+  CHECK(render_text, base::NotFatalUntil::M163);
+  CHECK(range.IsValid(), base::NotFatalUntil::M163);
   size_t start = range.GetMin();
   size_t end = range.GetMax();
 #if BUILDFLAG(IS_CHROMEOS)

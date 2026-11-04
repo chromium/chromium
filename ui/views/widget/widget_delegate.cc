@@ -188,7 +188,7 @@ bool WidgetDelegate::RotatePaneFocusFromView(View* focused_view,
     }
 
     views::View* pane = panes[index];
-    DCHECK(pane);
+    CHECK(pane, base::NotFatalUntil::M163);
     if (pane->GetVisible()) {
       pane->RequestFocus();
       // |pane| may be in a different widget, so don't assume its focus manager
@@ -330,7 +330,7 @@ void WidgetDelegate::DeleteDelegate() {
   // DeleteDelegate callbacks to destruct it; if it is not owned by the Widget,
   // the DeleteDelete callbacks are allowed but not required to destroy it.
   if (owned_by_widget) {
-    DCHECK(weak_this);
+    CHECK(weak_this, base::NotFatalUntil::M163);
     // TODO(kylxird): Rework this once the Widget stops being able to "own" the
     // delegate.
     delete this;
@@ -359,7 +359,7 @@ View* WidgetDelegate::GetContentsView() {
 }
 
 View* WidgetDelegate::TransferOwnershipOfContentsView() {
-  DCHECK(!contents_view_taken_);
+  CHECK(!contents_view_taken_, base::NotFatalUntil::M163);
   contents_view_taken_ = true;
   if (owned_contents_view_) {
     owned_contents_view_.release();
@@ -368,7 +368,7 @@ View* WidgetDelegate::TransferOwnershipOfContentsView() {
 }
 
 ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
-  DCHECK(client_view_factory_);
+  CHECK(client_view_factory_, base::NotFatalUntil::M163);
   return std::move(client_view_factory_)
       .Run(widget, TransferOwnershipOfContentsView())
       .release();
@@ -380,7 +380,7 @@ std::unique_ptr<FrameView> WidgetDelegate::CreateFrameView(Widget* widget) {
 }
 
 std::unique_ptr<View> WidgetDelegate::CreateOverlayView() {
-  DCHECK(overlay_view_factory_);
+  CHECK(overlay_view_factory_, base::NotFatalUntil::M163);
   return std::move(overlay_view_factory_).Run();
 }
 
@@ -389,7 +389,7 @@ bool WidgetDelegate::WidgetHasHitTestMask() const {
 }
 
 void WidgetDelegate::GetWidgetHitTestMask(SkPath* mask) const {
-  DCHECK(mask);
+  CHECK(mask, base::NotFatalUntil::M163);
 }
 
 bool WidgetDelegate::ShouldDescendIntoChildForEventHandling(
@@ -467,7 +467,7 @@ void WidgetDelegate::SetAppIcon(ui::ImageModel icon) {
 }
 
 void WidgetDelegate::SetInitiallyFocusedView(View* initially_focused_view) {
-  DCHECK(!GetWidget());
+  CHECK(!GetWidget(), base::NotFatalUntil::M163);
   if (!params_.initially_focused_view) {
     params_.initially_focused_view = std::make_unique<ViewTracker>();
   }
@@ -475,7 +475,7 @@ void WidgetDelegate::SetInitiallyFocusedView(View* initially_focused_view) {
 }
 
 void WidgetDelegate::SetModalType(ui::mojom::ModalType modal_type) {
-  DCHECK(!GetWidget());
+  CHECK(!GetWidget(), base::NotFatalUntil::M163);
   params_.modal_type = modal_type;
 }
 
@@ -527,7 +527,7 @@ void WidgetDelegate::SetHasWindowSizeControls(bool has_controls) {
 
 void WidgetDelegate::RegisterWidgetInitializedCallback(
     base::OnceClosure callback) {
-  DCHECK(widget_initialized_callbacks_);
+  CHECK(widget_initialized_callbacks_, base::NotFatalUntil::M163);
   widget_initialized_callbacks_->emplace_back(std::move(callback));
 }
 
@@ -548,29 +548,29 @@ void WidgetDelegate::RegisterDeleteDelegateCallback(
 }
 
 void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
-  DCHECK(!GetWidget());
+  CHECK(!GetWidget(), base::NotFatalUntil::M163);
   client_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetFrameViewFactory(FrameViewFactory factory) {
-  DCHECK(!GetWidget());
+  CHECK(!GetWidget(), base::NotFatalUntil::M163);
   frame_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {
-  DCHECK(!GetWidget());
+  CHECK(!GetWidget(), base::NotFatalUntil::M163);
   overlay_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetContentsViewImpl(std::unique_ptr<View> contents) {
-  DCHECK(!contents->owned_by_client());
-  DCHECK(!unowned_contents_view_);
+  CHECK(!contents->owned_by_client(), base::NotFatalUntil::M163);
+  CHECK(!unowned_contents_view_, base::NotFatalUntil::M163);
   owned_contents_view_ = std::move(contents);
   unowned_contents_view_ = owned_contents_view_.get();
 }
 
 gfx::Rect WidgetDelegate::GetDesiredWidgetBounds() {
-  DCHECK(GetWidget());
+  CHECK(GetWidget(), base::NotFatalUntil::M163);
 
   if (has_desired_bounds_delegate()) {
     const gfx::Rect desired_bounds = params_.desired_bounds_delegate.Run();

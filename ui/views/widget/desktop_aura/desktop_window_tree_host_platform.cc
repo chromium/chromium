@@ -283,7 +283,7 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
   if (properties.parent_widget) {
     window_parent_ = DesktopWindowTreeHostPlatform::GetHostForWidget(
         properties.parent_widget);
-    DCHECK(window_parent_);
+    CHECK(window_parent_, base::NotFatalUntil::M163);
     window_parent_->window_children_.insert(this);
   }
 
@@ -294,7 +294,7 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
 #endif
 
   // Set extensions delegate.
-  DCHECK(!properties.workspace_extension_delegate);
+  CHECK(!properties.workspace_extension_delegate, base::NotFatalUntil::M163);
   properties.workspace_extension_delegate = this;
 
   CreateAndSetPlatformWindow(std::move(properties));
@@ -440,7 +440,7 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
   for (DesktopWindowTreeHostPlatform* child : window_children_copy) {
     child->CloseNow();
   }
-  DCHECK(window_children_.empty());
+  CHECK(window_children_.empty(), base::NotFatalUntil::M163);
 
   // If we have a parent, remove ourselves from its children list.
   if (window_parent_) {
@@ -864,7 +864,7 @@ void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen,
   if (!base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
     // The state must change synchronously to let media react on fullscreen
     // changes.
-    DCHECK_EQ(fullscreen, IsFullscreen());
+    CHECK_EQ(fullscreen, IsFullscreen(), base::NotFatalUntil::M163);
 
     if (IsFullscreen() == fullscreen) {
       ScheduleRelayout();
@@ -1016,7 +1016,7 @@ void DesktopWindowTreeHostPlatform::OnVideoCaptureLockCreated() {
 
 void DesktopWindowTreeHostPlatform::OnVideoCaptureLockDestroyed() {
   WindowTreeHostPlatform::OnVideoCaptureLockDestroyed();
-  DCHECK_GT(video_capture_count_, 0);
+  CHECK_GT(video_capture_count_, 0, base::NotFatalUntil::M163);
   --video_capture_count_;
 
   if (IsMinimized() && video_capture_count_ == 0) {
@@ -1118,7 +1118,8 @@ void DesktopWindowTreeHostPlatform::OnCloseRequest() {
 
 void DesktopWindowTreeHostPlatform::OnAcceleratedWidgetAvailable(
     gfx::AcceleratedWidget widget) {
-  DCHECK(!std::ranges::contains(open_windows(), widget));
+  CHECK(!std::ranges::contains(open_windows(), widget),
+        base::NotFatalUntil::M163);
   open_windows().push_front(widget);
   aura::WindowTreeHostPlatform::OnAcceleratedWidgetAvailable(widget);
 }
@@ -1314,8 +1315,8 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForClipping() const {
 
 display::Display DesktopWindowTreeHostPlatform::GetDisplayNearestRootWindow()
     const {
-  DCHECK(window());
-  DCHECK(window()->IsRootWindow());
+  CHECK(window(), base::NotFatalUntil::M163);
+  CHECK(window()->IsRootWindow(), base::NotFatalUntil::M163);
   // TODO(sky): GetDisplayNearestWindow() should take a const aura::Window*.
   return display::Screen::Get()->GetDisplayNearestWindow(
       const_cast<aura::Window*>(window()));

@@ -192,7 +192,7 @@ void WebView::LoadInitialURL(const GURL& url,
           : GURL();
   content::WebContents* web_contents =
       GetWebContents(initial_url, invoke_location);
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
   web_contents->GetController().LoadURLWithParams(params);
 }
 
@@ -206,7 +206,7 @@ bool WebView::GetFastResize() const {
 
 void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
                                           const gfx::Size& max_size) {
-  DCHECK(!max_size.IsEmpty());
+  CHECK(!max_size.IsEmpty(), base::NotFatalUntil::M163);
   min_size_ = min_size;
   max_size_ = max_size;
   if (web_contents() &&
@@ -545,7 +545,7 @@ void WebView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
   // yet. If the DCHECK fires, then we would need to handle the initial main
   // frame when it its renderer frame is created.
   if (!old_host) {
-    DCHECK(!new_host->IsRenderFrameLive());
+    CHECK(!new_host->IsRenderFrameLive(), base::NotFatalUntil::M163);
     return;
   }
 
@@ -843,7 +843,7 @@ void WebView::LostMainFrame() {
 }
 
 void WebView::MaybeEnableAutoResize(content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host->IsRenderFrameLive());
+  CHECK(frame_host->IsRenderFrameLive(), base::NotFatalUntil::M163);
   if (!max_size_.IsEmpty()) {
     frame_host->GetView()->EnableAutoResize(min_size_, max_size_);
   }

@@ -216,13 +216,15 @@ void ProgressBar::SetPreferredCornerRadii(
 }
 
 void ProgressBar::AnimationProgressed(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, indeterminate_bar_animation_.get());
-  DCHECK(IsIndeterminate());
+  CHECK_EQ(animation, indeterminate_bar_animation_.get(),
+           base::NotFatalUntil::M163);
+  CHECK(IsIndeterminate(), base::NotFatalUntil::M163);
   SchedulePaint();
 }
 
 void ProgressBar::AnimationEnded(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, indeterminate_bar_animation_.get());
+  CHECK_EQ(animation, indeterminate_bar_animation_.get(),
+           base::NotFatalUntil::M163);
   // Restarts animation.
   if (IsIndeterminate()) {
     indeterminate_bar_animation_->Start();

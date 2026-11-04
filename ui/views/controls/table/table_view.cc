@@ -80,7 +80,7 @@ void GetModelIndexToRangeStart(
   for (size_t model_index = 0; model_index < row_count;) {
     GroupRange range;
     grouper->GetGroupRange(model_index, &range);
-    DCHECK_GT(range.length, 0u);
+    CHECK_GT(range.length, 0u, base::NotFatalUntil::M163);
     for (size_t i = model_index; i < model_index + range.length; ++i) {
       (*model_index_to_range_start)[i] = model_index;
     }
@@ -468,7 +468,8 @@ void TableView::SetColumnVisibility(int id, bool is_visible) {
 }
 
 void TableView::ToggleSortOrder(size_t visible_column_index) {
-  DCHECK(visible_column_index < visible_columns_.size());
+  CHECK(visible_column_index < visible_columns_.size(),
+        base::NotFatalUntil::M163);
   const ui::TableColumn& column = visible_columns_[visible_column_index].column;
   if (!column.sortable) {
     return;
@@ -549,12 +550,12 @@ TableViewObserver* TableView::GetObserver() const {
 }
 
 const TableView::VisibleColumn& TableView::GetVisibleColumn(size_t index) {
-  DCHECK(index < visible_columns_.size());
+  CHECK(index < visible_columns_.size(), base::NotFatalUntil::M163);
   return visible_columns_[index];
 }
 
 void TableView::SetVisibleColumnWidth(size_t index, int width) {
-  DCHECK(index < visible_columns_.size());
+  CHECK(index < visible_columns_.size(), base::NotFatalUntil::M163);
   if (visible_columns_[index].width == width) {
     return;
   }
@@ -605,7 +606,7 @@ void TableView::SetRowPadding(views::DistanceMetric distance_metric) {
       font_list_.GetHeight());
   const int padding =
       LayoutProvider::Get()->GetDistanceMetric(distance_metric) * 2;
-  DCHECK_GE(padding, 0);
+  CHECK_GE(padding, 0, base::NotFatalUntil::M163);
   const int new_row_height = control_height + padding;
   if (row_height_ == new_row_height) {
     return;
@@ -680,7 +681,7 @@ void TableView::SetAlternatingRowColorsEnabledForTesting(bool enabled) {
 }
 
 ax::mojom::SortDirection TableView::GetFirstSortDescriptorDirection() const {
-  DCHECK(!sort_descriptors().empty());
+  CHECK(!sort_descriptors().empty(), base::NotFatalUntil::M163);
   if (sort_descriptors()[0].ascending) {
     return ax::mojom::SortDirection::kAscending;
   }
@@ -1095,7 +1096,7 @@ bool TableView::HandleAccessibleAction(const ui::AXActionData& action_data) {
       RequestFocus();
       if (focus_on_row) {
         // If the ax focus is on a row, select this row.
-        DCHECK(ax_view);
+        CHECK(ax_view, base::NotFatalUntil::M163);
         size_t row_index =
             base::checked_cast<size_t>(ax_view->GetData().GetIntAttribute(
                 ax::mojom::IntAttribute::kTableRowIndex));
@@ -1182,7 +1183,7 @@ void TableView::OnItemsChanged(size_t start, size_t length) {
 }
 
 void TableView::OnItemsAdded(size_t start, size_t length) {
-  DCHECK_LE(start + length, GetRowCount());
+  CHECK_LE(start + length, GetRowCount(), base::NotFatalUntil::M163);
 
   for (size_t i = 0; i < length; ++i) {
     // Increment selection model counter at start.
@@ -1241,8 +1242,8 @@ void TableView::OnItemsRemoved(size_t start, size_t length) {
   // See (https://crbug.com/1173373).
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
   if (GetIsSorted()) {
-    DCHECK_EQ(GetRowCount(), view_to_model_.size());
-    DCHECK_EQ(GetRowCount(), model_to_view_.size());
+    CHECK_EQ(GetRowCount(), view_to_model_.size(), base::NotFatalUntil::M163);
+    CHECK_EQ(GetRowCount(), model_to_view_.size(), base::NotFatalUntil::M163);
   }
 
   // If the selection was empty and is no longer empty select the same visual
@@ -1530,7 +1531,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
     const size_t model_index = ViewToModel(i);
     GroupRange selected_range;
     grouper_->GetGroupRange(model_index, &selected_range);
-    DCHECK_GT(selected_range.length, 0u);
+    CHECK_GT(selected_range.length, 0u, base::NotFatalUntil::M163);
     // The order of rows in a group is consistent regardless of sort, so it's ok
     // to do this calculation.
     const size_t start = i - (model_index - selected_range.start);
@@ -1711,7 +1712,7 @@ void TableView::UpdateVisibleColumnSizes() {
       layout_width_, first_column_padding, header_->font_list(), font_list_,
       std::max(cell_margin, header_->GetCellHorizontalPadding()) * 2,
       header_->GetSortIndicatorWidth(), columns, model_);
-  DCHECK_EQ(visible_columns_.size(), sizes.size());
+  CHECK_EQ(visible_columns_.size(), sizes.size(), base::NotFatalUntil::M163);
   int x = 0;
   for (size_t i = 0; i < visible_columns_.size(); ++i) {
     visible_columns_[i].x = x;
@@ -1767,8 +1768,8 @@ gfx::Rect TableView::GetPaintIconDestBounds(const gfx::Rect& cell_bounds,
 
 TableView::PaintRegion TableView::GetPaintRegion(
     const gfx::Rect& bounds) const {
-  DCHECK(!visible_columns_.empty());
-  DCHECK(GetRowCount());
+  CHECK(!visible_columns_.empty(), base::NotFatalUntil::M163);
+  CHECK(GetRowCount(), base::NotFatalUntil::M163);
 
   PaintRegion region;
   region.min_row = static_cast<size_t>(
@@ -1827,7 +1828,7 @@ void TableView::SchedulePaintForSelection() {
 
 ui::TableColumn TableView::FindColumnByID(int id) const {
   const auto i = std::ranges::find(columns_, id, &ui::TableColumn::id);
-  DCHECK(i != columns_.cend());
+  CHECK(i != columns_.cend(), base::NotFatalUntil::M163);
   return *i;
 }
 
@@ -1984,9 +1985,9 @@ void TableView::ConfigureSelectionModelForEvent(
     const ui::LocatedEvent& event,
     ui::ListSelectionModel* model) const {
   const int view_index_int = event.y() / row_height_;
-  DCHECK_GE(view_index_int, 0);
+  CHECK_GE(view_index_int, 0, base::NotFatalUntil::M163);
   const size_t view_index = static_cast<size_t>(view_index_int);
-  DCHECK_LT(view_index, GetRowCount());
+  CHECK_LT(view_index, GetRowCount(), base::NotFatalUntil::M163);
 
   if (!selection_model_.anchor().has_value() || single_selection_ ||
       (!IsCmdOrCtrl(event) && !event.IsShiftDown())) {
@@ -2005,7 +2006,7 @@ void TableView::ConfigureSelectionModelForEvent(
     } else {
       model->set_anchor(selection_model_.anchor());
     }
-    DCHECK(model->anchor().has_value());
+    CHECK(model->anchor().has_value(), base::NotFatalUntil::M163);
     const size_t anchor_index = ModelToView(model->anchor().value());
     const auto [min, max] = std::minmax(view_index, anchor_index);
     for (size_t i = min; i <= max; ++i) {
@@ -2013,7 +2014,7 @@ void TableView::ConfigureSelectionModelForEvent(
     }
     model->set_active(ViewToModel(view_index));
   } else {
-    DCHECK(IsCmdOrCtrl(event));
+    CHECK(IsCmdOrCtrl(event), base::NotFatalUntil::M163);
     // Toggle the selection state of |view_index| and set the anchor/active to
     // it and don't change the state of any other rows.
     *model = selection_model_;
@@ -2155,7 +2156,7 @@ void TableView::UpdateVirtualAccessibilityChildrenVisibilityState() {
     }
     for (auto& ax_cell : ax_row->children()) {
       auto column_index = ax_row->GetIndexOf(ax_cell.get());
-      DCHECK(column_index.has_value());
+      CHECK(column_index.has_value(), base::NotFatalUntil::M163);
 
       gfx::Rect cell_bounds = GetCellBounds(row_index, column_index.value());
       if (!GetVisibleBounds().Intersects(cell_bounds)) {
@@ -2172,7 +2173,7 @@ void TableView::UpdateVirtualAccessibilityChildrenVisibilityState() {
 
 void TableView::SetAccessibleSelectionForIndex(size_t view_index,
                                                bool selected) const {
-  DCHECK(view_index < GetRowCount());
+  CHECK(view_index < GetRowCount(), base::NotFatalUntil::M163);
 
   AXVirtualView* ax_row = GetVirtualAccessibilityBodyRow(view_index);
   CHECK(ax_row);
@@ -2193,8 +2194,8 @@ void TableView::SetAccessibleSelectionForIndex(size_t view_index,
 void TableView::SetAccessibleSelectionForRange(size_t start_view_index,
                                                size_t end_view_index,
                                                bool selected) const {
-  DCHECK_LE(start_view_index, end_view_index);
-  DCHECK_LT(end_view_index, GetRowCount());
+  CHECK_LE(start_view_index, end_view_index, base::NotFatalUntil::M163);
+  CHECK_LT(end_view_index, GetRowCount(), base::NotFatalUntil::M163);
 
   for (size_t i = start_view_index; i <= end_view_index; ++i) {
     SetAccessibleSelectionForIndex(i, selected);
@@ -2465,7 +2466,7 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
 bool TableView::UpdateVirtualAccessibilityRowData(AXVirtualView* ax_row,
                                                   int view_index,
                                                   int model_index) {
-  DCHECK_GE(view_index, 0);
+  CHECK_GE(view_index, 0, base::NotFatalUntil::M163);
 
   int previous_view_index = ax_row->GetTableRowIndex();
   if (previous_view_index == view_index) {
@@ -2494,7 +2495,8 @@ void TableView::UpdateVirtualAccessibilityChildrenBounds() {
   // Update the bounds for the header first, if applicable.
   if (header_) {
     auto& ax_row = virtual_children[0];
-    DCHECK_EQ(ax_row->GetCachedRole(), ax::mojom::Role::kRow);
+    CHECK_EQ(ax_row->GetCachedRole(), ax::mojom::Role::kRow,
+             base::NotFatalUntil::M163);
     ax_row->SetBounds(gfx::RectF(CalculateHeaderRowAccessibilityBounds()));
 
     // Update the bounds for every child cell in this row.
@@ -2503,7 +2505,8 @@ void TableView::UpdateVirtualAccessibilityChildrenBounds() {
          visible_column_index++) {
       auto& ax_cell = ax_row->children()[visible_column_index];
 
-      DCHECK_EQ(ax_cell->GetCachedRole(), ax::mojom::Role::kColumnHeader);
+      CHECK_EQ(ax_cell->GetCachedRole(), ax::mojom::Role::kColumnHeader,
+               base::NotFatalUntil::M163);
 
       if (visible_column_index < visible_columns_.size()) {
         ax_cell->SetBounds(gfx::RectF(
@@ -2522,7 +2525,8 @@ void TableView::UpdateVirtualAccessibilityChildrenBounds() {
     }
 
     auto& ax_row = virtual_children[ax_row_index];
-    DCHECK_EQ(ax_row->GetCachedRole(), ax::mojom::Role::kRow);
+    CHECK_EQ(ax_row->GetCachedRole(), ax::mojom::Role::kRow,
+             base::NotFatalUntil::M163);
     ax_row->SetBounds(
         gfx::RectF(CalculateTableRowAccessibilityBounds(row_index)));
 
@@ -2531,7 +2535,8 @@ void TableView::UpdateVirtualAccessibilityChildrenBounds() {
          visible_column_index < ax_row->children().size();
          visible_column_index++) {
       auto& ax_cell = ax_row->children()[visible_column_index];
-      DCHECK_EQ(ax_cell->GetCachedRole(), ax::mojom::Role::kGridCell);
+      CHECK_EQ(ax_cell->GetCachedRole(), ax::mojom::Role::kGridCell,
+               base::NotFatalUntil::M163);
 
       if (visible_column_index < visible_columns_.size()) {
         ax_cell->SetBounds(gfx::RectF(CalculateTableCellAccessibilityBounds(
@@ -2587,7 +2592,7 @@ void TableView::ScheduleUpdateAccessibilityFocusIfNeeded() {
 
 void TableView::UpdateAccessibilityFocus(
     UpdateAccessibilityFocusPassKey pass_key) {
-  DCHECK(update_accessibility_focus_pending_);
+  CHECK(update_accessibility_focus_pending_, base::NotFatalUntil::M163);
   update_accessibility_focus_pending_ = false;
 
   if (!HasFocus()) {
@@ -2633,7 +2638,7 @@ void TableView::UpdateAccessibilityFocus(
 }
 
 AXVirtualView* TableView::GetVirtualAccessibilityBodyRow(size_t row) const {
-  DCHECK_LT(row, GetRowCount());
+  CHECK_LT(row, GetRowCount(), base::NotFatalUntil::M163);
   if (header_) {
     ++row;
   }
@@ -2642,8 +2647,9 @@ AXVirtualView* TableView::GetVirtualAccessibilityBodyRow(size_t row) const {
          "RebuildVirtualAccessibilityChildren()?";
 
   const auto& ax_row = GetViewAccessibility().virtual_children()[row];
-  DCHECK(ax_row);
-  DCHECK_EQ(ax_row->GetData().role, ax::mojom::Role::kRow);
+  CHECK(ax_row, base::NotFatalUntil::M163);
+  CHECK_EQ(ax_row->GetData().role, ax::mojom::Role::kRow,
+           base::NotFatalUntil::M163);
   return ax_row.get();
 }
 
@@ -2652,8 +2658,9 @@ AXVirtualView* TableView::GetVirtualAccessibilityHeaderRow() {
                     "RebuildVirtualAccessibilityChildren()?";
   // The header row is always the first virtual child.
   const auto& ax_row = GetViewAccessibility().virtual_children()[size_t{0}];
-  DCHECK(ax_row);
-  DCHECK_EQ(ax_row->GetData().role, ax::mojom::Role::kRow);
+  CHECK(ax_row, base::NotFatalUntil::M163);
+  CHECK_EQ(ax_row->GetData().role, ax::mojom::Role::kRow,
+           base::NotFatalUntil::M163);
   return ax_row.get();
 }
 
@@ -2709,15 +2716,16 @@ AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
   DCHECK(ax_row) << "|row| not found. Did you forget to call "
                     "RebuildVirtualAccessibilityChildren()?";
   const auto matches_index = [visible_column_index](const auto& ax_cell) {
-    DCHECK(ax_cell);
-    DCHECK(ax_cell->GetData().role == ax::mojom::Role::kColumnHeader ||
-           ax_cell->GetData().role == ax::mojom::Role::kGridCell);
+    CHECK(ax_cell, base::NotFatalUntil::M163);
+    CHECK(ax_cell->GetData().role == ax::mojom::Role::kColumnHeader ||
+              ax_cell->GetData().role == ax::mojom::Role::kGridCell,
+          base::NotFatalUntil::M163);
     return base::checked_cast<size_t>(ax_cell->GetData().GetIntAttribute(
                ax::mojom::IntAttribute::kTableCellColumnIndex)) ==
            visible_column_index;
   };
   const auto i = std::ranges::find_if(ax_row->children(), matches_index);
-  DCHECK(i != ax_row->children().cend())
+  CHECK(i != ax_row->children().cend(), base::NotFatalUntil::M163)
       << "|visible_column_index| not found. Did you forget to call "
       << "RebuildVirtualAccessibilityChildren()?";
   return i->get();

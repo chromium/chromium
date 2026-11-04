@@ -144,11 +144,11 @@ void Slider::SetAllowedValues(const base::flat_set<float>* allowed_values) {
   }
 #if DCHECK_IS_ON()
   // Disallow empty sliders.
-  DCHECK(allowed_values->size());
+  CHECK(allowed_values->size(), base::NotFatalUntil::M163);
   for (const float v : *allowed_values) {
     // sanity check.
-    DCHECK_GE(v, kDefaultMinValue);
-    DCHECK_LE(v, kDefaultMaxValue);
+    CHECK_GE(v, kDefaultMinValue, base::NotFatalUntil::M163);
+    CHECK_LE(v, kDefaultMaxValue, base::NotFatalUntil::M163);
   }
 #endif
   allowed_values_ = *allowed_values;
@@ -193,7 +193,7 @@ void Slider::AnimationEnded(const gfx::Animation* animation) {
     move_animation_.reset();
     return;
   }
-  DCHECK_EQ(animation, &highlight_animation_);
+  CHECK_EQ(animation, &highlight_animation_, base::NotFatalUntil::M163);
 }
 
 void Slider::SetValueInternal(float value, SliderChangeReason reason) {
@@ -232,7 +232,7 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
 
   if (accessibility_events_enabled_) {
     if (GetWidget() && GetWidget()->IsVisible() && GetVisible()) {
-      DCHECK(!pending_accessibility_value_change_);
+      CHECK(!pending_accessibility_value_change_, base::NotFatalUntil::M163);
       NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
     } else {
       pending_accessibility_value_change_ = true;
@@ -344,7 +344,7 @@ bool Slider::OnKeyPressed(const ui::KeyEvent& event) {
       const base::flat_set<float>::const_iterator lesser =
           allowed_values_.lower_bound(value_);
       // Current value must be in the list of allowed values.
-      DCHECK(lesser != allowed_values_.cend());
+      CHECK(lesser != allowed_values_.cend(), base::NotFatalUntil::M163);
       SetValueInternal(lesser == allowed_values_.cbegin()
                            ? *allowed_values_.cbegin()
                            : *std::prev(lesser),

@@ -116,9 +116,9 @@ void ConstrainScrollToBounds(View* viewport,
   const bool scrolls_with_layers =
       scroll_with_layers_enabled && viewport->layer() != nullptr;
   if (scrolls_with_layers) {
-    DCHECK(view->layer());
-    DCHECK_EQ(0, view->x());
-    DCHECK_EQ(0, view->y());
+    CHECK(view->layer(), base::NotFatalUntil::M163);
+    CHECK_EQ(0, view->x(), base::NotFatalUntil::M163);
+    CHECK_EQ(0, view->y(), base::NotFatalUntil::M163);
   }
   gfx::PointF offset = scrolls_with_layers
                            ? view->layer()->CurrentScrollOffset()
@@ -194,8 +194,8 @@ class ScrollView::Viewport : public View {
     if (scroll_view_->ScrollsWithLayers()) {
       // With layer scrolling, there's no need to "undo" the offset done in the
       // child's View::ScrollRectToVisible() before it calls this.
-      DCHECK_EQ(0, contents->x());
-      DCHECK_EQ(0, contents->y());
+      CHECK_EQ(0, contents->x(), base::NotFatalUntil::M163);
+      CHECK_EQ(0, contents->y(), base::NotFatalUntil::M163);
     } else {
       scroll_rect.Offset(-contents->x(), -contents->y());
     }
@@ -282,8 +282,8 @@ class ScrollView::Viewport : public View {
   void SetContentsViewportLayer(ui::LayerType layer_type) {
     // Only LAYER_NOT_DRAWN and LAYER_TEXTURED are allowed since
     // contents_viewport is a container view.
-    DCHECK(layer_type == ui::LAYER_TEXTURED ||
-           layer_type == ui::LAYER_NOT_DRAWN);
+    CHECK(layer_type == ui::LAYER_TEXTURED || layer_type == ui::LAYER_NOT_DRAWN,
+          base::NotFatalUntil::M163);
 
     SetPaintToLayer(layer_type);
   }
@@ -400,7 +400,7 @@ ScrollView* ScrollView::GetScrollViewForContents(View* contents) {
 
 void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
   // Protect against clients passing a contents view that has its own Layer.
-  DCHECK(!a_view || !a_view->layer());
+  CHECK(!a_view || !a_view->layer(), base::NotFatalUntil::M163);
 
   if (a_view && ScrollsWithLayers()) {
     a_view->SetPaintToLayer(layer_type_);
@@ -421,12 +421,13 @@ void ScrollView::SetContents(std::nullptr_t) {
 void ScrollView::SetContentsLayerType(ui::LayerType layer_type) {
   // This function should only be called when scroll with layers is enabled and
   // before `contents_` is set.
-  DCHECK(ScrollsWithLayers());
-  DCHECK(!contents_);
+  CHECK(ScrollsWithLayers(), base::NotFatalUntil::M163);
+  CHECK(!contents_, base::NotFatalUntil::M163);
 
   // Currently only allow LAYER_TEXTURED and LAYER_NOT_DRAWN. If other types of
   // layer are needed, consult with the owner.
-  DCHECK(layer_type == ui::LAYER_TEXTURED || layer_type == ui::LAYER_NOT_DRAWN);
+  CHECK(layer_type == ui::LAYER_TEXTURED || layer_type == ui::LAYER_NOT_DRAWN,
+        base::NotFatalUntil::M163);
 
   if (layer_type_ == layer_type) {
     return;
@@ -516,8 +517,9 @@ void ScrollView::SetVerticalScrollBarMode(
 
   // Enabling vertical scrolling is incompatible with all scrolling being
   // interpreted as horizontal.
-  DCHECK(!treat_all_scroll_events_as_horizontal_ ||
-         vertical_scroll_bar_mode == ScrollBarMode::kDisabled);
+  CHECK(!treat_all_scroll_events_as_horizontal_ ||
+            vertical_scroll_bar_mode == ScrollBarMode::kDisabled,
+        base::NotFatalUntil::M163);
 
   vertical_scroll_bar_mode_ = vertical_scroll_bar_mode;
   OnPropertyChanged(&vertical_scroll_bar_mode_, PropertyEffects::kPaint);
@@ -738,7 +740,7 @@ ScrollBar* ScrollView::SetHorizontalScrollBar(
 
 ScrollBar* ScrollView::SetVerticalScrollBar(
     std::unique_ptr<ScrollBar> vert_sb) {
-  DCHECK(vert_sb);
+  CHECK(vert_sb, base::NotFatalUntil::M163);
   vert_sb->SetVisible(vert_sb_->GetVisible());
   vert_sb->set_controller(this);
   RemoveChildViewT(vert_sb_.ExtractAsDangling());
@@ -804,7 +806,8 @@ void ScrollView::Layout(PassKey) {
       return;
     }
 #endif
-    DCHECK_EQ(horiz_sb_->OverlapsContent(), vert_sb_->OverlapsContent());
+    CHECK_EQ(horiz_sb_->OverlapsContent(), vert_sb_->OverlapsContent(),
+             base::NotFatalUntil::M163);
   }
 
   if (views::FocusRing::Get(this)) {
@@ -1083,7 +1086,7 @@ void ScrollView::OnScrollEvent(ui::ScrollEvent* event) {
   ui::ScrollInputHandler* compositor_scroller =
       GetWidget()->GetCompositor()->scroll_input_handler();
   if (compositor_scroller && scroll_synchronizer_count_ == 0) {
-    DCHECK(scroll_with_layers_enabled_);
+    CHECK(scroll_with_layers_enabled_, base::NotFatalUntil::M163);
     if (compositor_scroller->OnScrollEvent(e, contents_->layer())) {
       e.SetHandled();
       e.StopPropagation();
@@ -1709,7 +1712,7 @@ FixedRowHeightScrollHelper::FixedRowHeightScrollHelper(int top_margin,
     : VariableRowHeightScrollHelper(nullptr),
       top_margin_(top_margin),
       row_height_(row_height) {
-  DCHECK_GT(row_height, 0);
+  CHECK_GT(row_height, 0, base::NotFatalUntil::M163);
 }
 
 VariableRowHeightScrollHelper::RowInfo FixedRowHeightScrollHelper::GetRowInfo(

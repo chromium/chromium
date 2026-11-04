@@ -164,7 +164,7 @@ class ThemedVectorIconBackground : public Background {
  public:
   explicit ThemedVectorIconBackground(const ui::ThemedVectorIcon& icon)
       : icon_(icon) {
-    DCHECK(!icon_.empty());
+    CHECK(!icon_.empty(), base::NotFatalUntil::M163);
   }
 
   ThemedVectorIconBackground(const ThemedVectorIconBackground&) = delete;
@@ -185,7 +185,7 @@ class BackgroundPainter : public Background {
  public:
   explicit BackgroundPainter(std::unique_ptr<Painter> painter)
       : painter_(std::move(painter)) {
-    DCHECK(painter_);
+    CHECK(painter_, base::NotFatalUntil::M163);
   }
 
   BackgroundPainter(const BackgroundPainter&) = delete;

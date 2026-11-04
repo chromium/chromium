@@ -238,12 +238,14 @@ void Label::SetTextStyleRange(int style, const gfx::Range& range) {
   const auto details = typography_provider.GetFontDetails(text_context_, style);
   // This function is not prepared to handle style requests that vary by
   // anything other than weight.
-  DCHECK_EQ(
+  CHECK_EQ(
       details.typeface,
-      typography_provider.GetFontDetails(text_context_, text_style_).typeface);
-  DCHECK_EQ(details.size_delta,
-            typography_provider.GetFontDetails(text_context_, text_style_)
-                .size_delta);
+      typography_provider.GetFontDetails(text_context_, text_style_).typeface,
+      base::NotFatalUntil::M163);
+  CHECK_EQ(
+      details.size_delta,
+      typography_provider.GetFontDetails(text_context_, text_style_).size_delta,
+      base::NotFatalUntil::M163);
   full_text_->ApplyWeight(details.weight, range);
   ClearDisplayText();
   PreferredSizeChanged();
@@ -459,8 +461,9 @@ bool Label::GetMultiLine() const {
 }
 
 void Label::SetMultiLine(bool multi_line) {
-  DCHECK(!multi_line || (elide_behavior_ == gfx::ELIDE_TAIL ||
-                         elide_behavior_ == gfx::NO_ELIDE));
+  CHECK(!multi_line || (elide_behavior_ == gfx::ELIDE_TAIL ||
+                        elide_behavior_ == gfx::NO_ELIDE),
+        base::NotFatalUntil::M163);
   if (this->GetMultiLine() == multi_line) {
     return;
   }
@@ -562,8 +565,9 @@ gfx::ElideBehavior Label::GetElideBehavior() const {
 }
 
 void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
-  DCHECK(!GetMultiLine() || (elide_behavior == gfx::ELIDE_TAIL ||
-                             elide_behavior == gfx::NO_ELIDE));
+  CHECK(!GetMultiLine() || (elide_behavior == gfx::ELIDE_TAIL ||
+                            elide_behavior == gfx::NO_ELIDE),
+        base::NotFatalUntil::M163);
   if (elide_behavior_ == elide_behavior) {
     return;
   }
@@ -646,8 +650,8 @@ int Label::GetFixedWidth() const {
 }
 
 void Label::SizeToFit(int fixed_width) {
-  DCHECK(GetMultiLine());
-  DCHECK_EQ(0, max_width_);
+  CHECK(GetMultiLine(), base::NotFatalUntil::M163);
+  CHECK_EQ(0, max_width_, base::NotFatalUntil::M163);
   fixed_width_ = fixed_width;
   SizeToPreferredSize();
 }
@@ -657,8 +661,8 @@ int Label::GetMaximumWidth() const {
 }
 
 void Label::SetMaximumWidth(int max_width) {
-  DCHECK(GetMultiLine());
-  DCHECK_EQ(0, fixed_width_);
+  CHECK(GetMultiLine(), base::NotFatalUntil::M163);
+  CHECK_EQ(0, fixed_width_, base::NotFatalUntil::M163);
   if (max_width_ == max_width) {
     return;
   }
@@ -667,7 +671,7 @@ void Label::SetMaximumWidth(int max_width) {
 }
 
 void Label::SetMaximumWidthSingleLine(int max_width) {
-  DCHECK(!GetMultiLine());
+  CHECK(!GetMultiLine(), base::NotFatalUntil::M163);
   if (max_width_single_line_ == max_width) {
     return;
   }
@@ -724,7 +728,7 @@ bool Label::SetSelectable(bool value) {
     return true;
   }
 
-  DCHECK(!stored_selection_range_.IsValid());
+  CHECK(!stored_selection_range_.IsValid(), base::NotFatalUntil::M163);
   if (!IsSelectionSupported()) {
     return false;
   }
@@ -1002,7 +1006,7 @@ void Label::PaintText(gfx::Canvas* canvas) {
     if (view->layer()) {
       // If we aren't painted to an opaque background, we must paint to an
       // opaque layer.
-      DCHECK(view->layer()->fills_bounds_opaquely());
+      CHECK(view->layer()->fills_bounds_opaquely(), base::NotFatalUntil::M163);
       break;
     }
   }
@@ -1134,7 +1138,7 @@ bool Label::OnKeyPressed(const ui::KeyEvent& event) {
     case ui::VKEY_A:
       if (control && !alt && !GetText().empty()) {
         SelectAll();
-        DCHECK(HasSelection());
+        CHECK(HasSelection(), base::NotFatalUntil::M163);
         UpdateSelectionClipboard();
         return true;
       }
@@ -1309,7 +1313,7 @@ int Label::GetDragSelectionDelay() const {
 void Label::OnBeforePointerAction() {}
 
 void Label::OnAfterPointerAction(bool text_changed, bool selection_changed) {
-  DCHECK(!text_changed);
+  CHECK(!text_changed, base::NotFatalUntil::M163);
   if (selection_changed) {
     SchedulePaint();
   }
@@ -1350,7 +1354,7 @@ void Label::ExecuteCommand(int command_id, int event_flags) {
       break;
     case MenuCommands::kSelectAll:
       SelectAll();
-      DCHECK(HasSelection());
+      CHECK(HasSelection(), base::NotFatalUntil::M163);
       UpdateSelectionClipboard();
       break;
     default:
@@ -1455,7 +1459,7 @@ gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
   if (GetText().empty() || (w == 0 && GetMultiLine())) {
     size = gfx::Size(0, base_line_height);
   } else if (max_width_single_line_ > 0) {
-    DCHECK(!GetMultiLine());
+    CHECK(!GetMultiLine(), base::NotFatalUntil::M163);
     // Enable eliding during text width calculation. This allows the RenderText
     // to report an accurate width given the constraints and how it determines
     // to elide the text. If we simply clamp the width to the max after the

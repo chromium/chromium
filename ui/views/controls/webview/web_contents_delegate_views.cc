@@ -113,14 +113,14 @@ bool WebContentsDelegateViewsBase::MaybeProcessKeypress(
 void WebContentsDelegateViewsBase::OnAttached(content::WebContents* contents) {
   auto* const helper =
       WebContentsDelegateViewsBaseHelper::GetOrCreateForWebContents(contents);
-  DCHECK_EQ(nullptr, helper->delegate());
+  CHECK_EQ(nullptr, helper->delegate(), base::NotFatalUntil::M163);
   helper->set_delegate(weak_ptr_factory_.GetWeakPtr());
 }
 
 void WebContentsDelegateViewsBase::OnDetaching(content::WebContents* contents) {
   auto* const helper =
       WebContentsDelegateViewsBaseHelper::GetOrCreateForWebContents(contents);
-  DCHECK_EQ(this, helper->delegate());
+  CHECK_EQ(this, helper->delegate(), base::NotFatalUntil::M163);
   helper->set_delegate(nullptr);
 }
 

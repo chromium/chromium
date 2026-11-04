@@ -27,7 +27,7 @@ ViewsDelegate* views_delegate = nullptr;
 }  // namespace
 
 ViewsDelegate::ViewsDelegate() {
-  DCHECK(!views_delegate);
+  CHECK(!views_delegate, base::NotFatalUntil::M163);
   views_delegate = this;
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS)
@@ -41,7 +41,7 @@ ViewsDelegate::ViewsDelegate() {
 }
 
 ViewsDelegate::~ViewsDelegate() {
-  DCHECK_EQ(this, views_delegate);
+  CHECK_EQ(this, views_delegate, base::NotFatalUntil::M163);
   views_delegate = nullptr;
 }
 

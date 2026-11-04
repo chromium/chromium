@@ -48,7 +48,7 @@ Link::~Link() = default;
 SkColor Link::GetColor() const {
   // TODO(crbug.com/40268779): Use TypographyProvider::GetColorId().
   const ui::ColorProvider* color_provider = GetColorProvider();
-  DCHECK(color_provider);
+  CHECK(color_provider, base::NotFatalUntil::M163);
   if (!GetEnabledInViewsSubtree()) {
     return color_provider->GetColor(ui::kColorLinkForegroundDisabled);
   }

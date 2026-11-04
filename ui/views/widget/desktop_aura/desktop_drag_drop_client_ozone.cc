@@ -181,7 +181,7 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   }
   base::AutoReset<bool> drag_scoper(&g_is_dragging, true);
 
-  DCHECK(!drag_context_);
+  CHECK(!drag_context_, base::NotFatalUntil::M163);
   drag_context_ = std::make_unique<DragContext>();
 
   // This object is owned by a DesktopNativeWidgetAura that can be destroyed
@@ -262,7 +262,7 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
 #if BUILDFLAG(IS_LINUX)
 void DesktopDragDropClientOzone::UpdateDragImage(const gfx::ImageSkia& image,
                                                  const gfx::Vector2d& offset) {
-  DCHECK(drag_handler_);
+  CHECK(drag_handler_, base::NotFatalUntil::M163);
   drag_handler_->UpdateDragImage(image, offset);
 }
 #endif  // BUILDFLAG(LINUX)
@@ -304,7 +304,7 @@ void DesktopDragDropClientOzone::OnDragEnter(const gfx::PointF& location,
 
 void DesktopDragDropClientOzone::OnDragDataAvailable(
     std::unique_ptr<ui::OSExchangeData> data) {
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M163);
   data_to_drop_ = std::move(data);
   std::unique_ptr<ui::DropTargetEvent> event = UpdateTargetAndCreateDropEvent();
   if (event) {
@@ -384,7 +384,8 @@ void DesktopDragDropClientOzone::OnDragLeave() {
 }
 
 void DesktopDragDropClientOzone::OnWindowDestroyed(aura::Window* window) {
-  DCHECK(entered_window_observation_.IsObservingSource(window));
+  CHECK(entered_window_observation_.IsObservingSource(window),
+        base::NotFatalUntil::M163);
 
   entered_window_observation_.Reset();
   delegate_ = nullptr;
@@ -408,7 +409,7 @@ void DesktopDragDropClientOzone::OnDragFinished(DragOperation operation) {
 
 std::unique_ptr<ui::DropTargetEvent>
 DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent() {
-  DCHECK(data_to_drop_);
+  CHECK(data_to_drop_, base::NotFatalUntil::M163);
 
   aura::Window* window = root_window_->GetEventHandlerForPoint(
       gfx::ToFlooredPoint(drag_location_));
