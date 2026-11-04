@@ -10,6 +10,26 @@
 :host {
   display: block;
   height: 100%;
+  overflow: hidden;
+  transition: width 300ms cubic-bezier(0.2, 0.0, 0, 1.0);
+  /* The element sets this in both modes: in hybrid mode it switches between
+   * the folded rail's width and the expanded width, in full-iframe mode it
+   * mirrors the width the embedded page reports through frame-sizing (see
+   * setHostWidth_()). Transitioning the host, rather than snapping to the
+   * iframe's width, lets the rest of the NTP slide in sync with the rail.
+   * Until the first width is known the host sizes to its content. */
+  width: var(--cr-left-hand-side-width, fit-content);
+}
+
+:host([is-expanded_]) {
+  transition: width 450ms cubic-bezier(0.2, 0.0, 0, 1.0);
+}
+
+@container style(--cr-animations-disabled: 1) {
+  :host,
+  :host([is-expanded_]) {
+    transition: none;
+  }
 }
 
 #expanded,
