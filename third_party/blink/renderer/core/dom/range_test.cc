@@ -127,12 +127,9 @@ TEST_F(RangeTest, SplitTextNodeRangeOutsideText) {
       "<span id=\"outer\">0<span id=\"inner-left\">1</span>SPLITME<span "
       "id=\"inner-right\">2</span>3</span>");
 
-  Element* outer =
-      GetDocument().getElementById(AtomicString::FromUtf8("outer"));
-  Element* inner_left =
-      GetDocument().getElementById(AtomicString::FromUtf8("inner-left"));
-  Element* inner_right =
-      GetDocument().getElementById(AtomicString::FromUtf8("inner-right"));
+  Element* outer = GetElementById("outer");
+  Element* inner_left = GetElementById("inner-left");
+  Element* inner_right = GetElementById("inner-right");
   auto* old_text = To<Text>(outer->childNodes()->item(2));
 
   auto* range_outer_outside =

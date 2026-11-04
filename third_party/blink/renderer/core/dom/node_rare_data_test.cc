@@ -244,8 +244,8 @@ TEST_F(NodeRareDataTest, ReentrantEnsureDisplayLockContextPreservesFields) {
       "</div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
-  Element* input = GetDocument().getElementById(AtomicString("input"));
+  Element* host = GetElementById("host");
+  Element* input = GetElementById("input");
   HTMLSlotElement* slot = To<HTMLSlotElement>(
       host->GetShadowRoot()->getElementById(AtomicString("slot")));
   input->Focus();

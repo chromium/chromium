@@ -4969,10 +4969,8 @@ TEST_F(AdTrackerSimTest,
 
   test::RunPendingTasks();
 
-  Element* proxy_target =
-      GetDocument().getElementById(AtomicString("proxy_target"));
-  Element* getter_target =
-      GetDocument().getElementById(AtomicString("getter_target"));
+  Element* proxy_target = GetElementById("proxy_target");
+  Element* getter_target = GetElementById("getter_target");
   ASSERT_TRUE(proxy_target);
   EXPECT_EQ(GetDocument().body()->firstElementChild(), proxy_target);
   EXPECT_TRUE(getter_target);

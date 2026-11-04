@@ -29,8 +29,7 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     PageTestBase::SetUp();
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<body><canvas id='c'></canvas></body>");
-    auto* canvas_element =
-        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+    auto* canvas_element = To<HTMLCanvasElement>(GetElementById("c"));
 
     DummyExceptionStateForTesting exception_state;
     offscreen_canvas_element_ =

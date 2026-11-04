@@ -434,8 +434,8 @@ TEST_P(CSSAnimationsTest, AnimatingAncestorFlagFollowsRunningAnimations) {
     </style>
     <div id="ancestor"><div id="child"></div></div>
   )HTML");
-  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* ancestor = GetElementById("ancestor");
+  Element* child = GetElementById("child");
   EXPECT_FALSE(
       StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
 
@@ -487,7 +487,7 @@ TEST_P(CSSAnimationsTest, AnimatingAncestorFlagClearsWhenCssAnimationEnds) {
     </style>
     <div id="target"><div id="child"></div></div>
   )HTML");
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* child = GetElementById("child");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
 
@@ -511,8 +511,8 @@ TEST_P(CSSAnimationsTest, AnimatingAncestorFlagSetForNewAnimationBeforeFrame) {
   SetBodyInnerHTML(R"HTML(
     <div id="ancestor"><div id="child"></div></div>
   )HTML");
-  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* ancestor = GetElementById("ancestor");
+  Element* child = GetElementById("child");
   ASSERT_FALSE(
       StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
 
@@ -535,8 +535,8 @@ TEST_P(CSSAnimationsTest, AnimatingAncestorFlagWhileEffectStillApplies) {
   SetBodyInnerHTML(R"HTML(
     <div id="ancestor"><div id="child"></div></div>
   )HTML");
-  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* ancestor = GetElementById("ancestor");
+  Element* child = GetElementById("child");
   auto make_animation = [&](Timing::FillMode fill_mode) {
     Timing timing;
     timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
@@ -591,8 +591,8 @@ TEST_P(CSSAnimationsTest, AnimatingAncestorFlagFollowsStartDelay) {
   // frame of each animation.
   AdvanceClockSeconds(1);
   UpdateAllLifecyclePhasesForTest();
-  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* ancestor = GetElementById("ancestor");
+  Element* child = GetElementById("child");
   auto play = [&](Timing::FillMode fill_mode) {
     Timing timing;
     timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
@@ -638,12 +638,11 @@ TEST_P(CSSAnimationsTest, AnimatingAncestorFlagOnlyForAncestors) {
     </div>
     <div id="host"></div>
   )HTML");
-  Element* grandparent =
-      GetDocument().getElementById(AtomicString("grandparent"));
-  Element* parent = GetDocument().getElementById(AtomicString("parent"));
-  Element* child = GetDocument().getElementById(AtomicString("child"));
-  Element* sibling = GetDocument().getElementById(AtomicString("sibling"));
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* grandparent = GetElementById("grandparent");
+  Element* parent = GetElementById("parent");
+  Element* child = GetElementById("child");
+  Element* sibling = GetElementById("sibling");
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes("<div id='in_shadow'></div>");

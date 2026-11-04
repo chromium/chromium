@@ -414,8 +414,8 @@ class WebFrameWidgetFullscreenReenterTest : public WebFrameWidgetSimTest {
         "<!DOCTYPE html><div id='first'></div><div id='second'></div>");
     Compositor().BeginFrame();
 
-    first_ = GetDocument().getElementById(AtomicString("first"));
-    second_ = GetDocument().getElementById(AtomicString("second"));
+    first_ = GetElementById("first");
+    second_ = GetElementById("second");
     ASSERT_TRUE(first_);
     ASSERT_TRUE(second_);
 

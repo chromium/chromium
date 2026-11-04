@@ -1030,8 +1030,7 @@ TEST_F(PointerEventManagerTest,
   auto* callback = MakeGarbageCollected<CheckPointerEventListenerCallback>();
   GetDocument().addEventListener(event_type_names::kPointerdown, callback);
 
-  auto* iframe = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("child")));
+  auto* iframe = To<HTMLIFrameElement>(GetElementById("child"));
   ASSERT_TRUE(iframe);
   Document* child_document = iframe->contentDocument();
   ASSERT_TRUE(child_document);

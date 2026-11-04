@@ -1263,7 +1263,7 @@ class LangTest : public PageTestBase {
     CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
 
-    Element* element = GetDocument().getElementById(AtomicString(element_id));
+    Element* element = GetElementById(element_id);
     DCHECK(element);
 
     SelectorChecker checker(SelectorChecker::kResolvingStyle);

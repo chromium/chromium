@@ -175,8 +175,7 @@ class MediaControlsDisplayCutoutDelegateTest
   }
 
   HTMLVideoElement& GetVideoElement() {
-    return *To<HTMLVideoElement>(
-        GetDocument().getElementById(AtomicString("video")));
+    return *To<HTMLVideoElement>(GetElementById("video"));
   }
 
   Persistent<DisplayCutoutMockChromeClient> chrome_client_;

@@ -704,8 +704,7 @@ TEST_F(CanvasAccessibilityUkmMetricsValueTest,
 
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><canvas id='c_zero' width=0 height=0></canvas></body>");
-  auto* zero_canvas = To<HTMLCanvasElement>(
-      GetDocument().getElementById(AtomicString("c_zero")));
+  auto* zero_canvas = To<HTMLCanvasElement>(GetElementById("c_zero"));
   ASSERT_TRUE(zero_canvas);
   UpdateAllLifecyclePhasesForTest();
 
@@ -768,8 +767,7 @@ TEST_F(CanvasAccessibilityUkmMetricsValueTest,
 
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<body><canvas id='c_flag' width=300 height=300></canvas></body>");
-    auto* flag_canvas = To<HTMLCanvasElement>(
-        GetDocument().getElementById(AtomicString("c_flag")));
+    auto* flag_canvas = To<HTMLCanvasElement>(GetElementById("c_flag"));
     ASSERT_TRUE(flag_canvas);
     UpdateAllLifecyclePhasesForTest();
 
@@ -807,8 +805,7 @@ class CanvasAccessibilityUkmMetricsWorkerTest : public DedicatedWorkerTest {
     DedicatedWorkerTest::SetUp();
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<body><canvas id='c' width=300 height=300></canvas></body>");
-    canvas_element_ =
-        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+    canvas_element_ = To<HTMLCanvasElement>(GetElementById("c"));
     UpdateAllLifecyclePhasesForTest();
   }
 

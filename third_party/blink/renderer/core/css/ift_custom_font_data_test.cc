@@ -224,7 +224,7 @@ class IftCustomFontDataTest : public SimTest {
 
   // Returns the font of each glyph run in the shaped text of `#target`.
   HeapVector<ShapeResult::RunFontData> TargetRunFonts() {
-    Element* target = GetDocument().getElementById(AtomicString("target"));
+    Element* target = GetElementById("target");
     CHECK(target);
     const auto* layout_text = To<Text>(target->firstChild())->GetLayoutObject();
     CHECK(layout_text);

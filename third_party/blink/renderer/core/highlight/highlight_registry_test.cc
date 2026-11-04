@@ -79,8 +79,7 @@ class HighlightRegistryTest : public PageTestBase {
   // failures point at the specific element shape that regressed.
   void ExpectNonTrackable(const char* inner_html, const char* host_id) {
     GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(inner_html);
-    auto* host =
-        To<Element>(GetDocument().getElementById(AtomicString(host_id)));
+    auto* host = To<Element>(GetElementById(host_id));
     ASSERT_TRUE(host);
     auto* wrapper = host->parentElement();
     ASSERT_TRUE(wrapper);

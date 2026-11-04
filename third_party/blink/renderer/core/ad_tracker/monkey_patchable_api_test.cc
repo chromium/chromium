@@ -316,7 +316,7 @@ TEST_F(MonkeyPatchableApiTest, NoNativeBuiltinGetterExecutionDuringCheck) {
   EXPECT_FALSE(GetMonkeyPatchableApiFunctionInfo(
                    isolate, MonkeyPatchableApi::kNodeAppendChild)
                    .is_monkey_patched);
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("a")));
+  EXPECT_TRUE(GetElementById("a"));
 
   // Getter for the `apply` trap of a Proxy-wrapped function's handler.
   MainFrame().ExecuteScript(WebScriptSource(WebString::FromUtf8(
@@ -336,7 +336,7 @@ TEST_F(MonkeyPatchableApiTest, NoNativeBuiltinGetterExecutionDuringCheck) {
               WebScriptSource(WebString::FromUtf8("(function() {})")))
           .As<v8::Function>();
   EXPECT_FALSE(IsFunctionAMonkeyPatch(isolate, unrelated_func, proxied_func));
-  EXPECT_TRUE(GetDocument().getElementById(AtomicString("b")));
+  EXPECT_TRUE(GetElementById("b"));
 }
 
 // Same as above, but for native functions installed as Proxy traps.
@@ -377,8 +377,8 @@ TEST_F(MonkeyPatchableApiTest, NoNativeBuiltinProxyTrapExecutionDuringCheck) {
 
   // If `document.body.appendChild(a)` had been invoked by the Proxy `get` trap,
   // `#a` would have been moved after `#b`.
-  Element* a = GetDocument().getElementById(AtomicString("a"));
-  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
   EXPECT_EQ(a->nextElementSibling(), b);

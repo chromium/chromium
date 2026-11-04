@@ -144,8 +144,7 @@ TEST_P(HTMLCanvasElementTest, ContextCreationErrorReentrancyPreservesContext) {
   GetDocument().body()->appendChild(script);
   RunDocumentLifecycle();
 
-  auto* canvas =
-      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+  auto* canvas = To<HTMLCanvasElement>(GetElementById("c"));
   ASSERT_NE(canvas->RenderingContext(), nullptr);
 
   cc::PaintFlags fill_flags = FillFlags();
@@ -1168,27 +1167,25 @@ TEST_P(HTMLCanvasElementTest, MoveElementBetweenShadowHostAndSlotKeepsFlag) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* other = GetDocument().getElementById(AtomicString("other"));
-  auto* host1 = GetDocument().getElementById(AtomicString("host1"));
-  auto* slotted1 = GetDocument().getElementById(AtomicString("slotted1"));
-  auto* slotted_child1 =
-      GetDocument().getElementById(AtomicString("slotted_child1"));
+  auto* other = GetElementById("other");
+  auto* host1 = GetElementById("host1");
+  auto* slotted1 = GetElementById("slotted1");
+  auto* slotted_child1 = GetElementById("slotted_child1");
   auto* slot1 = host1->GetShadowRoot()->getElementById(AtomicString("slot1"));
 
-  auto* host2 = GetDocument().getElementById(AtomicString("host2"));
-  auto* slotted2 = GetDocument().getElementById(AtomicString("slotted2"));
-  auto* slotted_child2 =
-      GetDocument().getElementById(AtomicString("slotted_child2"));
+  auto* host2 = GetElementById("host2");
+  auto* slotted2 = GetElementById("slotted2");
+  auto* slotted_child2 = GetElementById("slotted_child2");
   auto* slot2 = host2->GetShadowRoot()->getElementById(AtomicString("slot2"));
 
-  auto* host3 = GetDocument().getElementById(AtomicString("host3"));
+  auto* host3 = GetElementById("host3");
   auto* slot3 = host3->GetShadowRoot()->getElementById(AtomicString("slot3"));
   auto* fallback1 =
       host3->GetShadowRoot()->getElementById(AtomicString("fallback1"));
   auto* fallback_child1 =
       host3->GetShadowRoot()->getElementById(AtomicString("fallback_child1"));
 
-  auto* host4 = GetDocument().getElementById(AtomicString("host4"));
+  auto* host4 = GetElementById("host4");
   auto* slot4 = host4->GetShadowRoot()->getElementById(AtomicString("slot4"));
   auto* fallback2 =
       host4->GetShadowRoot()->getElementById(AtomicString("fallback2"));
@@ -1289,9 +1286,8 @@ TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithoutSuggestedValueKeepsFocus) {
       "</div>");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* host = GetDocument().getElementById(AtomicString("host"));
-  auto* date =
-      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("d")));
+  auto* host = GetElementById("host");
+  auto* date = To<HTMLInputElement>(GetElementById("d"));
   auto* inside = To<HTMLSlotElement>(
       host->GetShadowRoot()->getElementById(AtomicString("inside")));
   date->Focus();
@@ -1397,9 +1393,8 @@ TEST_P(HTMLCanvasElementTest, ReentrantSlotRecalcDuringDidRecalcAssignedNodes) {
       "</div></canvas>");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* host = GetDocument().getElementById(AtomicString("host"));
-  auto* date =
-      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("d")));
+  auto* host = GetElementById("host");
+  auto* date = To<HTMLInputElement>(GetElementById("d"));
   auto* shadow_root = host->GetShadowRoot();
   auto* s1 =
       To<HTMLSlotElement>(shadow_root->getElementById(AtomicString("s1")));

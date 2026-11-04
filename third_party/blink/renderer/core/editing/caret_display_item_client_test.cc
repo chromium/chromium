@@ -695,7 +695,7 @@ TEST_P(CaretDisplayItemClientTest, BarCaretWidthRespectsTransformScale) {
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
-  auto* down = GetDocument().getElementById(AtomicString("down"));
+  auto* down = GetElementById("down");
   Selection().SetSelection(SelectionInDomTree::Builder()
                                .Collapse(Position::FirstPositionInNode(*down))
                                .Build(),
@@ -704,7 +704,7 @@ TEST_P(CaretDisplayItemClientTest, BarCaretWidthRespectsTransformScale) {
   // 1 CSS px worth of local px: 1 / 0.1.
   EXPECT_EQ(10, CaretLocalRect().Width());
 
-  auto* up = GetDocument().getElementById(AtomicString("up"));
+  auto* up = GetElementById("up");
   Selection().SetSelection(SelectionInDomTree::Builder()
                                .Collapse(Position::FirstPositionInNode(*up))
                                .Build(),
@@ -728,7 +728,7 @@ TEST_P(CaretDisplayItemClientTest, BarCaretWidthFollowsTransformChange) {
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
-  auto* editable = GetDocument().getElementById(AtomicString("editable"));
+  auto* editable = GetElementById("editable");
   Selection().SetSelection(
       SelectionInDomTree::Builder()
           .Collapse(Position::FirstPositionInNode(*editable))
@@ -767,7 +767,7 @@ TEST_P(CaretDisplayItemClientTest, BarCaretWidthFollowsTransformAnimation) {
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
-  auto* editable = GetDocument().getElementById(AtomicString("editable"));
+  auto* editable = GetElementById("editable");
   Selection().SetSelection(
       SelectionInDomTree::Builder()
           .Collapse(Position::FirstPositionInNode(*editable))
@@ -799,7 +799,7 @@ TEST_P(CaretDisplayItemClientTest, CharacterCaretShapesFollowTransformScale) {
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
-  auto* editable = GetDocument().getElementById(AtomicString("editable"));
+  auto* editable = GetElementById("editable");
   Selection().SetSelection(
       SelectionInDomTree::Builder()
           .Collapse(Position::FirstPositionInNode(*editable->firstChild()))
@@ -834,7 +834,7 @@ TEST_P(CaretDisplayItemClientTest, BarCaretWidthFollowsTransformWhenFlagOff) {
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
-  auto* down = GetDocument().getElementById(AtomicString("down"));
+  auto* down = GetElementById("down");
   Selection().SetSelection(SelectionInDomTree::Builder()
                                .Collapse(Position::FirstPositionInNode(*down))
                                .Build(),

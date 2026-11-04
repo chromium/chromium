@@ -35,20 +35,17 @@ class HTMLFormMcpToolTest : public PageTestBase {
  public:
   HTMLInputElement* GetInputElement(const char* id) {
     test::RunPendingTasks();
-    return DynamicTo<HTMLInputElement>(
-        GetDocument().getElementById(AtomicString(id)));
+    return DynamicTo<HTMLInputElement>(GetElementById(id));
   }
 
   HTMLFormElement* GetFormElement(const char* id) {
     test::RunPendingTasks();
-    return DynamicTo<HTMLFormElement>(
-        GetDocument().getElementById(AtomicString(id)));
+    return DynamicTo<HTMLFormElement>(GetElementById(id));
   }
 
   HTMLTextAreaElement* GetTextAreaElement(const char* id) {
     test::RunPendingTasks();
-    return DynamicTo<HTMLTextAreaElement>(
-        GetDocument().getElementById(AtomicString(id)));
+    return DynamicTo<HTMLTextAreaElement>(GetElementById(id));
   }
 
   // Private functions exposed via class friendship:

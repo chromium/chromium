@@ -305,7 +305,7 @@ TEST_F(PhysicalFragmentTest, CrashInScrollableOverflowCalculator) {
     <menulist id="target" style="animation-name: fuzz-reveal; animation-duration: 4s; animation-delay: -5s; animation-direction: reverse; animation-fill-mode: both; animation-timing-function: steps(1); animation-iteration-count: 1;"></menulist>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   LocalFrame::NotifyUserActivation(
       GetDocument().GetFrame(),
       mojom::blink::UserActivationNotificationType::kTest);

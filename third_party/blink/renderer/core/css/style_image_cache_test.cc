@@ -291,7 +291,7 @@ TEST_F(StyleImageCacheWithLoadingTest, DifferingCORSModesImageURLs) {
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       image_url, test::CoreTestDataPath(kTestResourceFilename), response);
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
 

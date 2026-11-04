@@ -1509,14 +1509,12 @@ TEST_F(StyleEngineTest, FocusedInvalidationSetFeature) {
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
   UpdateAllLifecyclePhases();
 
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* other = GetDocument().getElementById(AtomicString("other"));
-  Element* focusable = GetDocument().getElementById(AtomicString("focusable"));
-  Element* focusable2 =
-      GetDocument().getElementById(AtomicString("focusable2"));
-  Element* sibling = GetDocument().getElementById(AtomicString("sibling"));
-  Element* sibling_focusable =
-      GetDocument().getElementById(AtomicString("sibling_focusable"));
+  Element* outer = GetElementById("outer");
+  Element* other = GetElementById("other");
+  Element* focusable = GetElementById("focusable");
+  Element* focusable2 = GetElementById("focusable2");
+  Element* sibling = GetElementById("sibling");
+  Element* sibling_focusable = GetElementById("sibling_focusable");
   ASSERT_TRUE(outer && other && focusable && focusable2 && sibling &&
               sibling_focusable);
 
@@ -1595,8 +1593,8 @@ TEST_F(StyleEngineTest, FocusedInvalidationSetFeatureDisabled) {
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
   UpdateAllLifecyclePhases();
 
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* focusable = GetDocument().getElementById(AtomicString("focusable"));
+  Element* outer = GetElementById("outer");
+  Element* focusable = GetElementById("focusable");
   ASSERT_TRUE(outer && focusable);
   focusable->Focus();
   UpdateAllLifecyclePhases();

@@ -556,8 +556,8 @@ TEST_P(PrePaintTreeWalkTest,
     </canvas>
   )HTML");
 
-  auto* wrapper = GetDocument().getElementById(AtomicString("wrapper"));
-  auto* lock = GetDocument().getElementById(AtomicString("lock"));
+  auto* wrapper = GetElementById("wrapper");
+  auto* lock = GetElementById("lock");
   const auto* target_properties =
       GetLayoutObjectByElementId("target")->FirstFragment().PaintProperties();
   ASSERT_TRUE(target_properties);

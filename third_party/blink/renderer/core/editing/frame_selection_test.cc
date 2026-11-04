@@ -1175,7 +1175,7 @@ TEST_F(FrameSelectionTest, FocusingEditableParentKeepsEditableCaret) {
   EXPECT_TRUE(Selection().IsHidden());
 
   // TODO(editing-dev): Blink should be able to focus the inner <div>.
-  //  Element* const ce = GetDocument().getElementById(AtomicString("ce"));
+  //  Element* const ce = GetElementById("ce");
   //  ce->Focus();
   //  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   //  EXPECT_FALSE(Selection().IsHidden());
@@ -1204,7 +1204,7 @@ TEST_F(FrameSelectionTest, FocusingEditableParentKeepsEditableRange) {
   EXPECT_TRUE(Selection().IsHidden());
 
   // TODO(editing-dev): Blink should be able to focus the inner <div>.
-  //  Element* const ce = GetDocument().getElementById(AtomicString("ce"));
+  //  Element* const ce = GetElementById("ce");
   //  ce->Focus();
   //  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   //  EXPECT_FALSE(Selection().IsHidden());

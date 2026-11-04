@@ -308,14 +308,14 @@ TEST_P(XMLDocumentParserParameterizedSimTest,
   main_resource.Finish();
   test::RunPendingTasks();
 
-  Element* outer_p = GetDocument().getElementById(AtomicString("outer-p"));
+  Element* outer_p = GetElementById("outer-p");
   ASSERT_TRUE(outer_p);
   EXPECT_EQ(
       outer_p->getAttributeNS(AtomicString("http://www.w3.org/2000/xmlns/"),
                               AtomicString("ns")),
       "http://example.com/ns");
 
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  Element* inner = GetElementById("inner");
   ASSERT_TRUE(inner);
   EXPECT_EQ(inner->parentElement(), outer_p);
   EXPECT_TRUE(GetDocument().LoadEventFinished());

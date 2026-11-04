@@ -111,8 +111,7 @@ void CanvasRenderingContext2DAPITest::SetUp() {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><canvas id='c'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
-  canvas_element_ =
-      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+  canvas_element_ = To<HTMLCanvasElement>(GetElementById("c"));
 }
 
 void CanvasRenderingContext2DAPITest::TearDown() {

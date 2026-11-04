@@ -1087,7 +1087,7 @@ TEST_F(AccessibilityTest, NoDetachDuringAddChildrenViaAriaOwns) {
 
   // Remove the owner, which will trigger un-owning the target and
   // RestoreParentOrPrune logic.
-  Element* owner = GetDocument().getElementById(AtomicString("owner"));
+  Element* owner = GetElementById("owner");
   ASSERT_NE(nullptr, owner);
   owner->remove();
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);

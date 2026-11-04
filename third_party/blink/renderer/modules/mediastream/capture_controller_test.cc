@@ -1278,8 +1278,8 @@ TEST_P(CaptureControllerScrollParametersValidationTest, ValidateCoordinates) {
       MakeTrack(GetDocument().GetExecutionContext(), SurfaceType::BROWSER);
   controller->SetVideoTrack(track, "descriptor");
 
-  HTMLElement* const element = reinterpret_cast<HTMLElement*>(
-      GetDocument().getElementById(AtomicString("div")));
+  HTMLElement* const element =
+      reinterpret_cast<HTMLElement*>(GetElementById("div"));
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
   ScriptState::Scope scope(script_state);

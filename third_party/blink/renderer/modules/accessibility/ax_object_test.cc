@@ -2949,8 +2949,7 @@ TEST_F(AccessibilityTest, UnslottedIsInCanvasSubtreeWithoutCanvasTransform) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* unslotted = GetDocument()
-                        .getElementById(AtomicString("slotHost"))
+  auto* unslotted = GetElementById("slotHost")
                         ->GetShadowRoot()
                         ->getElementById(AtomicString("unslotted"));
   AXObject* ax_unslotted =
@@ -2958,7 +2957,7 @@ TEST_F(AccessibilityTest, UnslottedIsInCanvasSubtreeWithoutCanvasTransform) {
   EXPECT_FALSE(ax_unslotted->IsInCanvasSubtreeWithoutCanvasTransform());
   ax_unslotted->Detach();
 
-  auto* slotted = GetDocument().getElementById(AtomicString("slotted"));
+  auto* slotted = GetElementById("slotted");
   AXObject* ax_slotted =
       MakeGarbageCollected<AXNodeObject>(slotted, GetAXObjectCache());
   EXPECT_TRUE(ax_slotted->IsInCanvasSubtreeWithoutCanvasTransform());
