@@ -74,6 +74,7 @@
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "url/gurl.h"
 
 using blink::WebAutofillState;
 using blink::WebDocument;
@@ -208,8 +209,11 @@ bool IsAdmissibleUrl(const blink::WebURL& url) {
       url.ProtocolIs("data")) {
     return true;
   }
-  if (url.ProtocolIs("about") && GURL(url).IsAboutSrcdoc()) {
-    return true;
+  if (url.ProtocolIs("about")) {
+    GURL gurl(url);
+    if (gurl.IsAboutBlank() || gurl.IsAboutSrcdoc()) {
+      return true;
+    }
   }
   return false;
 }

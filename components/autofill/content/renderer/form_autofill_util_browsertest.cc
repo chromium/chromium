@@ -2954,7 +2954,7 @@ INSTANTIATE_TEST_SUITE_P(
                     std::pair("http://foo.com", true),
                     std::pair("about:srcdoc", true),
                     std::pair("data:text/html,blabla", true),
-                    std::pair("about:blank", false),
+                    std::pair("about:blank", true),
                     std::pair("chrome:new-tab-page", false),
                     std::pair("chrome://autofill-internals", false)));
 
