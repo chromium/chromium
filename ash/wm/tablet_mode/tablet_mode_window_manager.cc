@@ -31,9 +31,13 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/screen.h"
@@ -56,6 +60,55 @@ bool IsCarryOverCandidateForSplitView(
   return windows.size() > i && windows[i]->GetRootWindow() == root_window &&
          SplitViewController::Get(root_window)
              ->CanKeepCurrentSnapRatio(windows[i]);
+}
+
+// Returns the windows in `window_state_map` that are occluded or hidden, using
+// a synchronous snapshot of the occlusion state. Windows whose occlusion state
+// is not tracked are tracked temporarily, and the occlusion states computed for
+// the snapshot are not notified to the windows.
+base::flat_set<aura::Window*> GetOccludedOrHiddenWindows(
+    const base::flat_map<aura::Window*,
+                         raw_ptr<TabletModeWindowState, CtnExperimental>>&
+        window_state_map) {
+  auto* tracker = aura::Env::GetInstance()->GetWindowOcclusionTracker();
+
+  // Pause the occlusion tracker so that tracking, locking and unlocking below
+  // do not trigger occlusion computations and notifications.
+  aura::WindowOcclusionTracker::ScopedPause scoped_pause;
+
+  std::vector<aura::Window*> temporarily_tracked_windows;
+  std::vector<std::unique_ptr<aura::WindowOcclusionTracker::ScopedLockState>>
+      locks;
+  for (const auto& [window, state] : window_state_map) {
+    if (!tracker->IsTracking(window)) {
+      tracker->Track(window);
+      temporarily_tracked_windows.push_back(window);
+    }
+    locks.push_back(
+        std::make_unique<aura::WindowOcclusionTracker::ScopedLockState>(
+            window));
+  }
+
+  // This computes occlusion even if the tracker is paused.
+  tracker->ForceComputeOcclusion();
+
+  base::flat_set<aura::Window*> occluded_or_hidden_windows;
+  for (const auto& [window, state] : window_state_map) {
+    const aura::Window::OcclusionState occlusion_state =
+        tracker->GetComputedOcclusionState(window);
+    if (occlusion_state == aura::Window::OcclusionState::OCCLUDED ||
+        occlusion_state == aura::Window::OcclusionState::HIDDEN) {
+      occluded_or_hidden_windows.insert(window);
+    }
+  }
+
+  // Unlock before untracking because unlocking requires the window to be
+  // tracked.
+  locks.clear();
+  for (aura::Window* window : temporarily_tracked_windows) {
+    tracker->Untrack(window);
+  }
+  return occluded_or_hidden_windows;
 }
 
 // When switching to clamshell mode if all the following
@@ -218,10 +271,19 @@ void TabletModeWindowManager::Init() {
 
 void TabletModeWindowManager::Shutdown(ShutdownReason shutdown_reason) {
   WindowAndStateTypeList carryover_windows_in_splitview;
+  base::flat_set<aura::Window*> windows_to_skip_animation;
   const bool was_in_overview =
       Shell::Get()->overview_controller()->InOverviewSession();
 
   if (shutdown_reason == ShutdownReason::kExitTabletUIMode) {
+    // Windows that were not visible in tablet mode (e.g. ones behind a
+    // maximized or snapped window) should not animate when leaving tablet
+    // mode. Take the snapshot before any window state changes. Windows in
+    // overview are animated by overview, so the snapshot is not necessary.
+    if (!was_in_overview) {
+      windows_to_skip_animation = GetOccludedOrHiddenWindows(window_state_map_);
+    }
+
     // There are 4 cases when exiting tablet mode:
     // 1) overview is active but split view is inactive: keep overview active in
     //    clamshell mode.
@@ -262,7 +324,7 @@ void TabletModeWindowManager::Shutdown(ShutdownReason shutdown_reason) {
         window_util::GetTopNonFloatedWindow(), this,
         /*exiting_tablet_mode=*/true);
     ArrangeWindowsForClamshellMode(carryover_windows_in_splitview,
-                                   was_in_overview);
+                                   was_in_overview, windows_to_skip_animation);
   } else {
     CHECK_EQ(shutdown_reason, ShutdownReason::kSystemShutdown);
     while (window_state_map_.size()) {
@@ -439,7 +501,10 @@ void TabletModeWindowManager::OnWindowPropertyChanged(aura::Window* window,
   if (key == aura::client::kZOrderingKey &&
       window->GetProperty(aura::client::kZOrderingKey) !=
           ui::ZOrderLevel::kNormal) {
-    ForgetWindow(window, false /* destroyed */);
+    ForgetWindow(
+        window, /*destroyed=*/false,
+        /*animate=*/IsTrackingWindow(window) &&
+            !GetOccludedOrHiddenWindows(window_state_map_).contains(window));
   }
 }
 
@@ -703,13 +768,16 @@ void TabletModeWindowManager::ArrangeWindowsForTabletMode() {
 
 void TabletModeWindowManager::ArrangeWindowsForClamshellMode(
     WindowAndStateTypeList windows_in_splitview,
-    bool was_in_overview) {
+    bool was_in_overview,
+    const base::flat_set<aura::Window*>& windows_to_skip_animation) {
   const int divider_position = CalculateCarryOverDividerPosition(
       windows_in_splitview, /*clamshell_to_tablet=*/false);
 
   while (window_state_map_.size()) {
     aura::Window* window = window_state_map_.begin()->first;
-    ForgetWindow(window, /*destroyed=*/false, was_in_overview);
+    ForgetWindow(window, /*destroyed=*/false,
+                 /*animate=*/was_in_overview ||
+                     !windows_to_skip_animation.contains(window));
   }
 
   // Arriving here the window state has changed to its clamshell window state.
@@ -748,7 +816,7 @@ void TabletModeWindowManager::TrackWindow(aura::Window* window,
 
 void TabletModeWindowManager::ForgetWindow(aura::Window* window,
                                            bool destroyed,
-                                           bool was_in_overview) {
+                                           bool animate) {
   windows_to_track_.erase(window);
   window->RemoveObserver(this);
 
@@ -769,7 +837,7 @@ void TabletModeWindowManager::ForgetWindow(aura::Window* window,
   } else {
     // By telling the state object to revert, it will switch back the old
     // State object and destroy itself, calling WindowStateDestroyed().
-    it->second->LeaveTabletMode(WindowState::Get(it->first), was_in_overview);
+    it->second->LeaveTabletMode(WindowState::Get(it->first), animate);
     DCHECK(!IsTrackingWindow(window));
   }
 }

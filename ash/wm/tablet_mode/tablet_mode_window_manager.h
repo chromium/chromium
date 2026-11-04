@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -18,6 +17,8 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
@@ -121,7 +122,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
  private:
   using WindowToState =
-      std::map<aura::Window*, raw_ptr<TabletModeWindowState, CtnExperimental>>;
+      base::flat_map<aura::Window*,
+                     raw_ptr<TabletModeWindowState, CtnExperimental>>;
   using WindowAndStateTypeList =
       std::vector<std::pair<aura::Window*, chromeos::WindowStateType>>;
 
@@ -153,9 +155,13 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // entering clamshell mode, and if clamshell split view is enabled, these
   // windows will be carried over to clamshell split view. |was_in_overview|
   // indicates whether overview is active before entering clamshell mode.
+  // `windows_to_skip_animation` contains the windows that were not visible in
+  // tablet mode, whose bounds change should not be animated unless
+  // `was_in_overview` is true.
   void ArrangeWindowsForClamshellMode(
       WindowAndStateTypeList windows_in_splitview,
-      bool was_in_overview);
+      bool was_in_overview,
+      const base::flat_set<aura::Window*>& windows_to_skip_animation);
 
   // If the given window should be handled by us, this function will add it to
   // the list of known windows (remembering the initial show state).
@@ -166,13 +172,11 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
                    bool snap = false,
                    bool animate_bounds_on_attach = true);
 
-  // Removes a window from our tracking list. |was_in_overview| used when
-  // |destroyed| is false to help handle leaving tablet mode. If the window is
-  // going to be destroyed, do not restore its old previous window state object
-  // as it will send unnecessary window state change event.
-  void ForgetWindow(aura::Window* window,
-                    bool destroyed,
-                    bool was_in_overview = false);
+  // Removes a window from our tracking list. `animate` is used when
+  // |destroyed| is false to animate the bounds change when leaving tablet mode.
+  // If the window is going to be destroyed, do not restore its old previous
+  // window state object as it will send unnecessary window state change event.
+  void ForgetWindow(aura::Window* window, bool destroyed, bool animate = false);
 
   // Returns true when the given window should be modified in any way by us.
   bool ShouldHandleWindow(aura::Window* window);

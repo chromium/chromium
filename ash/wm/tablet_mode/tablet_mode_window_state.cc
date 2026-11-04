@@ -262,16 +262,13 @@ gfx::Rect TabletModeWindowState::GetBoundsInTabletMode(
 }
 
 void TabletModeWindowState::LeaveTabletMode(WindowState* window_state,
-                                            bool was_in_overview) {
-  // Only do bounds change animation if the window was showing in overview,
-  // or the top window or a window showing in splitview before leaving tablet
-  // mode, and the window has changed its state. Otherwise, restore its bounds
-  // immediately.
+                                            bool animate) {
+  // Only do bounds change animation if requested (e.g. the window was visible
+  // in tablet mode or showing in overview) and the window has changed its
+  // state. Otherwise, restore its bounds immediately.
   WindowState::BoundsChangeAnimationType animation_type =
-      was_in_overview || window_state->IsSnapped() ||
-              ShouldAnimateWindowForTransition(window_state->window())
-          ? WindowState::BoundsChangeAnimationType::kAnimate
-          : WindowState::BoundsChangeAnimationType::kNone;
+      animate ? WindowState::BoundsChangeAnimationType::kAnimate
+              : WindowState::BoundsChangeAnimationType::kNone;
   if (old_state_->GetType() == window_state->GetStateType() &&
       !window_state->IsNormalStateType() && !window_state->IsFloated()) {
     animation_type = WindowState::BoundsChangeAnimationType::kNone;

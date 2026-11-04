@@ -57,8 +57,9 @@ class TabletModeWindowState : public WindowState::State {
   // Returns the maximized/full screen and/or centered bounds of a window.
   static gfx::Rect GetBoundsInTabletMode(WindowState* state_object);
 
-  // Leaves the tablet mode by reverting to previous state object.
-  void LeaveTabletMode(WindowState* window_state, bool was_in_overview);
+  // Leaves the tablet mode by reverting to previous state object. Animates the
+  // bounds change if `animate` is true and the window state changes.
+  void LeaveTabletMode(WindowState* window_state, bool animate);
 
   // WindowState::State:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override;
