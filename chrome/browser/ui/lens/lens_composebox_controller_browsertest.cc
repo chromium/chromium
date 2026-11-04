@@ -192,6 +192,8 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
         /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
             contextual_tasks::kContextualTasksSidePanel,
+            contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture,
             omnibox::kAimServerEligibilityEnabled,
             lens::features::
                 kLensOverlayNonBlockingPrivacyNoticeForImageSearch});

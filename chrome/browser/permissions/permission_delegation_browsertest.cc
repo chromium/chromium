@@ -170,9 +170,16 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
 
 class ContextualTasksPermissionDelegationBrowserTest
     : public PermissionDelegationBrowserTest {
+ public:
+  ContextualTasksPermissionDelegationBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks},
+        {contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      contextual_tasks::kContextualTasks};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPermissionDelegationBrowserTest,

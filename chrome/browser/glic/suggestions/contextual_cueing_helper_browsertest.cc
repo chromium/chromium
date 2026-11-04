@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -50,6 +51,11 @@
 
 class FakeGlicNudgeDelegate : public glic::GlicSplitButtonDelegate {
  public:
+  ~FakeGlicNudgeDelegate() override {
+    if (controller_) {
+      controller_->SetHorizontalTabsDelegate(nullptr);
+    }
+  }
   void OnTriggerGlicNudgeUI(glic::NudgeParams params) override {
     last_nudge_label_ = params.label;
     if (!last_nudge_label_.empty()) {
@@ -67,6 +73,7 @@ class FakeGlicNudgeDelegate : public glic::GlicSplitButtonDelegate {
   std::string last_nudge_label_;
   bool is_showing_nudge_ = false;
   base::test::TestFuture<void> future_;
+  base::WeakPtr<glic::GlicNudgeController> controller_;
 };
 
 class ContextualCueingHelperBaseBrowserTest : public glic::GlicBrowserTest {
@@ -113,6 +120,7 @@ class ContextualCueingHelperBaseBrowserTest : public glic::GlicBrowserTest {
   }
 
   void SwapToFakeDelegate(FakeGlicNudgeDelegate& nudge_delegate) {
+    nudge_delegate.controller_ = glic_nudge_controller()->GetWeakPtr();
     glic_nudge_controller()->SetHorizontalTabsDelegate(&nudge_delegate);
   }
 

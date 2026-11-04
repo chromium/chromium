@@ -1801,7 +1801,9 @@ class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
         /*disabled_features=*/
         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
         // is enabled and then remove these two Features.
-        {omnibox::internal::kWebUIOmniboxPopup,
+        {contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture,
+         omnibox::internal::kWebUIOmniboxPopup,
          omnibox::internal::kWebUIOmniboxAimPopup,
          // kWebUILocationBar however replaces OmniboxViewViews, so almost
          // all tests here are inherently incompatible with it

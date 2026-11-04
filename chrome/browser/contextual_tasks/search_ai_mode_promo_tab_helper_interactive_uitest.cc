@@ -82,7 +82,9 @@ class SearchAiModePromoTabHelperInteractiveUiTestBase
     std::vector<base::test::FeatureRef> enabled_features = {
         switches::kEnableSearchAIModeSigninPromo,
         contextual_tasks::kContextualTasks};
-    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        contextual_tasks::kContextualTasksRearchitecture,
+        contextual_tasks::kContextualTasksSidePanelRearchitecture};
 
     if (load_original_aim_search) {
       enabled_features.push_back(

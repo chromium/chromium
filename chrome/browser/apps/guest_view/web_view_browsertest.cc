@@ -8786,7 +8786,9 @@ class ContextualTasksWebViewTest : public WebViewTest {
     scoped_feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {performance_manager::features::kTransientKeepAlivePolicy});
+        {contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture,
+         performance_manager::features::kTransientKeepAlivePolicy});
   }
 
  private:
@@ -8950,7 +8952,8 @@ class ContextualTasksChannelWebViewTest : public WebViewChannelTest {
     scoped_feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {});
+        {contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture});
   }
 
   void TearDownOnMainThread() override {
