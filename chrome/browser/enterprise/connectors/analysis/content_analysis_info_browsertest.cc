@@ -11,7 +11,7 @@
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

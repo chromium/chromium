@@ -9,7 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"

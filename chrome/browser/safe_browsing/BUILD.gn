@@ -234,6 +234,7 @@ static_library("safe_browsing") {
       "interstitials/phishy_interaction_tracker.h",
       "interstitials/test_safe_browsing_blocking_page_quiet.h",
       "interstitials/user_interaction_observer.h",
+      "navigation_observer/safe_browsing_navigation_observer_manager_factory.h",
       "network_context_service.h",
       "network_context_service_factory.h",
       "notification_content_detection/notification_content_detection_service_factory.h",
@@ -246,7 +247,6 @@ static_library("safe_browsing") {
       "ping_manager/chrome_ping_manager_factory.h",
       "realtime/chrome_enterprise_url_lookup_service_factory.h",
       "realtime/url_lookup_service_factory.h",
-      "safe_browsing_navigation_observer_manager_factory.h",
       "safe_browsing_service.h",
       "security_settings_bundle_pref_change_handler.h",
       "services_delegate.h",
@@ -293,6 +293,7 @@ static_library("safe_browsing") {
       "interstitials/phishy_interaction_tracker.cc",
       "interstitials/test_safe_browsing_blocking_page_quiet.cc",
       "interstitials/user_interaction_observer.cc",
+      "navigation_observer/safe_browsing_navigation_observer_manager_factory.cc",
       "network_context_service.cc",
       "network_context_service_factory.cc",
       "notification_content_detection/notification_content_detection_service_factory.cc",
@@ -305,7 +306,6 @@ static_library("safe_browsing") {
       "ping_manager/chrome_ping_manager_factory.cc",
       "realtime/chrome_enterprise_url_lookup_service_factory.cc",
       "realtime/url_lookup_service_factory.cc",
-      "safe_browsing_navigation_observer_manager_factory.cc",
       "safe_browsing_service.cc",
       "security_settings_bundle_pref_change_handler.cc",
       "services_delegate.cc",
@@ -1134,8 +1134,8 @@ source_set("test_support") {
 
     if (!is_android) {
       sources += [
-        "test_safe_browsing_navigation_observer_manager.cc",
-        "test_safe_browsing_navigation_observer_manager.h",
+        "navigation_observer/test_safe_browsing_navigation_observer_manager.cc",
+        "navigation_observer/test_safe_browsing_navigation_observer_manager.h",
       ]
     }
 
@@ -1392,11 +1392,11 @@ source_set("browser_tests") {
       "db/v5_local_database_browsertest.cc",
       "hashprefix_realtime/ohttp_key_service_browsertest.cc",
       "interstitials/safe_browsing_blocking_page_test.cc",
+      "navigation_observer/safe_browsing_navigation_observer_browsertest.cc",
       "notification_content_detection/notification_content_detection_service_browsertest.cc",
       "password_protection/chrome_password_protection_service_browsertest.cc",
       "password_protection/chrome_password_protection_service_sync_browsertest.cc",
       "realtime/url_lookup_service_browsertest.cc",
-      "safe_browsing_navigation_observer_browsertest.cc",
       "safe_browsing_service_browsertest.cc",
       "tailored_security/chrome_tailored_security_service_browsertest.cc",
     ]
@@ -1508,7 +1508,7 @@ if (safe_browsing_mode == 1) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "safe_browsing_navigation_observer_interactive_test.cc" ]
+    sources = [ "navigation_observer/safe_browsing_navigation_observer_interactive_test.cc" ]
     deps = [
       ":safe_browsing",
       ":test_support",

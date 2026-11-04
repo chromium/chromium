@@ -11,7 +11,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "content/public/browser/web_contents.h"

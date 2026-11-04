@@ -64,7 +64,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_unittest_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"

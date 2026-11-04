@@ -30,7 +30,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/interstitials/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/metrics_collector/safe_browsing_metrics_collector_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"

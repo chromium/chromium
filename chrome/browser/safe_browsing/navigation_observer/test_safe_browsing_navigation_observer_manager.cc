@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/navigation_observer/test_safe_browsing_navigation_observer_manager.h"
 
 #include <memory>
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer.h"
 #include "content/public/browser/security_principal.h"

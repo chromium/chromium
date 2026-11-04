@@ -30,7 +30,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"

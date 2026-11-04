@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/interstitials/chrome_controller_client.h"
 #include "chrome/browser/safe_browsing/metrics_collector/safe_browsing_metrics_collector_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "components/prefs/pref_service.h"

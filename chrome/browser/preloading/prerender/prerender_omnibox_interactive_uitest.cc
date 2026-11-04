@@ -27,7 +27,7 @@
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/navigation_observer/test_safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"

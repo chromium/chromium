@@ -35,7 +35,7 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

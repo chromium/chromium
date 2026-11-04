@@ -13,7 +13,7 @@
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/buildflags.h"

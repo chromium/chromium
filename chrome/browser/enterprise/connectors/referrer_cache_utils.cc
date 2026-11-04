@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/navigation_observer/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
