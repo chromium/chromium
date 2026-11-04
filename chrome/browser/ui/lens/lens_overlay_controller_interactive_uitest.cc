@@ -249,59 +249,39 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, EscapeKeyClose) {
 //  (3) User selects a region with text.
 //  (4) User presses CTRL+C on some text.
 //  (5) Text in region gets copied.
-// TODO(crbug.com/399520257): Fix test failure on Linux, and ASAN.
-#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER)
-// Flaky on ASAN, and on Linux.
-#define MAYBE_CopyKeyCommandCopies DISABLED_CopyKeyCommandCopies
-#else
-#define MAYBE_CopyKeyCommandCopies CopyKeyCommandCopies
-#endif
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
-                       MAYBE_CopyKeyCommandCopies) {
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, CopyKeyCommandCopies) {
   WaitForTemplateURLServiceToLoad();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDetectedTextOptionsShown);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kTextCopiedState);
 
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  auto top_left_point = base::BindLambdaForTesting([&](ui::TrackedElement* el) {
-    return gfx::Point(el->AsA<views::TrackedElementViews>()
-                          ->view()
-                          ->GetBoundsInScreen()
-                          .origin());
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto top_left_point = base::BindLambdaForTesting([browser_view]() {
+    return browser_view->GetContentsView()->GetBoundsInScreen().origin();
   });
 
-  // Path to region selection layer.
-  const DeepQuery kPathToRegionSelection{
+  const DeepQuery kPathToSelectionOverlay{
       "lens-overlay-app",
       "lens-selection-overlay",
-      "region-selection",
   };
+  StateChange detected_text_options_shown;
+  detected_text_options_shown.event = kDetectedTextOptionsShown;
+  detected_text_options_shown.where = kPathToSelectionOverlay;
+  detected_text_options_shown.test_function =
+      "(el) => el.getShowDetectedTextContextMenuOptionsForTesting()";
 
   const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
+  ui::ClipboardSequenceNumberToken initial_sequence_number;
 
   RunTestSequence(
-      OpenLensOverlay(),
+      OpenLensOverlay(), SelectRegionInLensOverlay(kOverlayId, top_left_point),
 
-      // The overlay controller is an independent floating widget associated
-      // with a tab rather than a browser window, so by convention gets its own
-      // element context.
-      InAnyContext(
-          InstrumentNonTabWebView(kOverlayId,
-                                  LensOverlayController::kOverlayId),
-          WaitForWebContentsReady(
-              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
-
-      // Wait for the webview to finish loading to prevent re-entrancy. Then
-      // click the center of the region selection layer to select a region.
-      // Flush tasks after click to prevent flakiness.
-      InSameContext(
-          WaitForShow(LensOverlayController::kOverlayId),
-          WaitForScreenshotRendered(kOverlayId),
-          EnsurePresent(kOverlayId, kPathToRegionSelection),
-          MoveMouseTo(kOverlayId, kPathToRegionSelection),
-          DragMouseTo(LensOverlayController::kOverlayId, top_left_point)),
+      // Wait for the full-image text response to be received and text in the
+      // selected region to be detected before issuing the copy accelerator.
+      InAnyContext(WaitForStateChange(kOverlayId, detected_text_options_shown)),
 
       // Clicking the overlay should have opened the side panel with the results
       // frame.
@@ -317,20 +297,27 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
       // the event right after selecting the region.
       InSameContext(
           WaitForShow(kOverlaySidePanelWebViewId),
-          FocusWebContents(kOverlaySidePanelWebViewId),
+          FocusWebContents(kOverlaySidePanelWebViewId), Do([&]() {
+            ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+            clipboard->Clear(ui::ClipboardBuffer::kCopyPaste);
+            initial_sequence_number =
+                clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+          }),
           SendAccelerator(kOverlaySidePanelWebViewId, ctrl_c_accelerator),
-          PollState(kTextCopiedState,
-                    [&]() {
-                      ui::Clipboard* clipboard =
-                          ui::Clipboard::GetForCurrentThread();
-                      std::u16string clipboard_text =
-                          ui::clipboard_test_util::ReadText(
-                              clipboard, ui::ClipboardBuffer::kCopyPaste,
-                              /* data_dst = */ nullptr);
-                      return base::EqualsASCII(clipboard_text,
-                                               "This is test text.");
-                    }),
-          WaitForState(kTextCopiedState, true)));
+          PollState(
+              kTextCopiedState,
+              [&]() {
+                return ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                           ui::ClipboardBuffer::kCopyPaste) !=
+                       initial_sequence_number;
+              }),
+          WaitForState(kTextCopiedState, true), Check([&]() {
+            ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+            std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+                clipboard, ui::ClipboardBuffer::kCopyPaste,
+                /* data_dst = */ nullptr);
+            return base::EqualsASCII(clipboard_text, "This is test text.");
+          })));
 }
 
 // This tests the following CUJ:
