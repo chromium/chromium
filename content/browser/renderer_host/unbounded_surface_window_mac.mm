@@ -481,16 +481,8 @@ void UnboundedSurfaceWindowMac::EnsureSurfaceSynchronizedForWebTest() {
 }
 
 void UnboundedSurfaceWindowMac::RouteMouseEvent(NSEvent* ns_event) {
-  blink::WebMouseEvent web_event =
-      input::WebMouseEventBuilder::Build(ns_event, window_.contentView);
-  RenderWidgetHostViewBase* target_view = GetTargetView();
-  if (!target_view || !target_view->host()) {
-    return;
-  }
-  if (!TransformEventCoordinatesToView(target_view, web_event)) {
-    return;
-  }
-  target_view->ProcessMouseEvent(web_event, ui::LatencyInfo());
+  RouteMouseEvent(
+      input::WebMouseEventBuilder::Build(ns_event, window_.contentView));
 }
 
 void UnboundedSurfaceWindowMac::RouteWheelEvent(NSEvent* ns_event) {

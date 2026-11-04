@@ -57,6 +57,14 @@ class MockRenderWidgetHostViewForCursors : public TestRenderWidgetHostView {
     current_cursor_ = cursor;
   }
 
+  void UpdateTooltip(const std::u16string& tooltip_text) override {
+    ++tooltip_update_count_;
+  }
+
+  int TakeTooltipUpdateCount() {
+    return std::exchange(tooltip_update_count_, 0);
+  }
+
   input::CursorManager* GetCursorManager() override {
     return cursor_manager_.get();
   }
@@ -65,6 +73,7 @@ class MockRenderWidgetHostViewForCursors : public TestRenderWidgetHostView {
 
  private:
   ui::Cursor current_cursor_;
+  int tooltip_update_count_ = 0;
   std::unique_ptr<input::CursorManager> cursor_manager_;
 };
 
@@ -394,6 +403,133 @@ TEST_F(CursorManagerTest,
   }
 
   EXPECT_EQ(top_view_->cursor(), kCursorHand);
+}
+
+TEST_F(CursorManagerTest, ViewUnderCursorOverride) {
+  std::unique_ptr<RenderWidgetHostImpl> widget_host(MakeNewWidgetHost());
+  auto child_view = std::make_unique<MockRenderWidgetHostViewForCursors>(
+      widget_host.get(), false);
+
+  input::CursorManager* cursor_manager = top_view_->GetCursorManager();
+  cursor_manager->UpdateCursor(top_view_.get(), kCursorHand);
+  cursor_manager->UpdateCursor(child_view.get(), kCursorCross);
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(top_view_.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorHand);
+
+  // Overriding the view under the cursor switches to `child_view` without
+  // overwriting the underlying `view_under_cursor_`.
+  cursor_manager->SetViewUnderCursorOverride(child_view.get());
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(child_view.get()));
+  EXPECT_FALSE(cursor_manager->IsViewUnderCursor(top_view_.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorCross);
+
+  cursor_manager->UpdateCursor(child_view.get(), kCursorPointer);
+  EXPECT_EQ(top_view_->cursor(), kCursorPointer);
+
+  // Clearing the override falls back to `top_view_`.
+  cursor_manager->SetViewUnderCursorOverride(nullptr);
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(top_view_.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorHand);
+
+  cursor_manager->ViewBeingDestroyed(child_view.get());
+}
+
+TEST_F(CursorManagerTest,
+       ViewUnderCursorOverride_OrderIndependentWithUpdateViewUnderCursor) {
+  std::unique_ptr<RenderWidgetHostImpl> widget_host(MakeNewWidgetHost());
+  auto child_view = std::make_unique<MockRenderWidgetHostViewForCursors>(
+      widget_host.get(), false);
+
+  input::CursorManager* cursor_manager = top_view_->GetCursorManager();
+  cursor_manager->UpdateCursor(top_view_.get(), kCursorHand);
+  cursor_manager->UpdateCursor(child_view.get(), kCursorCross);
+
+  // Simulate moving from `child_view` onto an unbounded surface owned by
+  // `child_view`.
+  cursor_manager->UpdateViewUnderCursor(child_view.get());
+  EXPECT_EQ(1, top_view_->TakeTooltipUpdateCount());
+  cursor_manager->SetViewUnderCursorOverride(child_view.get());
+  EXPECT_EQ(0, top_view_->TakeTooltipUpdateCount());
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(child_view.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorCross);
+
+  // Simulate the root window's mouse move arriving before the surface window's
+  // mouse leave: `UpdateViewUnderCursor(top_view_)` updates the underlying
+  // view, and clearing the override afterward reveals `top_view_`.
+  cursor_manager->UpdateViewUnderCursor(top_view_.get());
+  EXPECT_EQ(0, top_view_->TakeTooltipUpdateCount());
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(child_view.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorCross);
+
+  cursor_manager->SetViewUnderCursorOverride(nullptr);
+  EXPECT_EQ(1, top_view_->TakeTooltipUpdateCount());
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(top_view_.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorHand);
+
+  cursor_manager->ViewBeingDestroyed(child_view.get());
+}
+
+TEST_F(CursorManagerTest, ViewUnderCursorOverride_ViewBeingDestroyed) {
+  std::unique_ptr<RenderWidgetHostImpl> widget_host1(MakeNewWidgetHost());
+  auto child_view1 = std::make_unique<MockRenderWidgetHostViewForCursors>(
+      widget_host1.get(), false);
+  std::unique_ptr<RenderWidgetHostImpl> widget_host2(MakeNewWidgetHost());
+  auto child_view2 = std::make_unique<MockRenderWidgetHostViewForCursors>(
+      widget_host2.get(), false);
+
+  input::CursorManager* cursor_manager = top_view_->GetCursorManager();
+  cursor_manager->UpdateCursor(top_view_.get(), kCursorHand);
+  cursor_manager->UpdateCursor(child_view1.get(), kCursorCross);
+
+  cursor_manager->UpdateViewUnderCursor(child_view1.get());
+  // Set the override without a prior UpdateCursor/UpdateViewUnderCursor on
+  // `child_view2` so SetViewUnderCursorOverride registers the observation.
+  cursor_manager->SetViewUnderCursorOverride(child_view2.get());
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(child_view2.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorPointer);
+
+  // Destroying the overridden view clears the override via its observer and
+  // falls back to `child_view1`.
+  child_view2.reset();
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(child_view1.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorCross);
+
+  // If both the underlying view and the override point to the destroyed view,
+  // destroying it falls back to `top_view_`.
+  cursor_manager->SetViewUnderCursorOverride(child_view1.get());
+  cursor_manager->ViewBeingDestroyed(child_view1.get());
+  EXPECT_TRUE(cursor_manager->IsViewUnderCursor(top_view_.get()));
+  EXPECT_EQ(top_view_->cursor(), kCursorHand);
+
+  // When `top_view_` shuts down while a child view is overridden (e.g.
+  // deferred destruction under ScopedInputDispatchPin), `ViewBeingDestroyed`
+  // clears the override and unregisters all child observations so destroying
+  // the child afterward does not call back into `top_view_`.
+  cursor_manager->SetViewUnderCursorOverride(child_view1.get());
+  std::ignore = top_view_->TakeTooltipUpdateCount();
+  cursor_manager->ViewBeingDestroyed(top_view_.get());
+  child_view1.reset();
+  EXPECT_EQ(0, top_view_->TakeTooltipUpdateCount());
+}
+
+TEST_F(CursorManagerTest, ViewUnderCursorOverride_CustomCursorDisallowedScope) {
+  std::unique_ptr<RenderWidgetHostImpl> widget_host(MakeNewWidgetHost());
+  auto child_view = std::make_unique<MockRenderWidgetHostViewForCursors>(
+      widget_host.get(), false);
+
+  input::CursorManager* cursor_manager = top_view_->GetCursorManager();
+  cursor_manager->UpdateCursor(top_view_.get(), kCursorHand);
+  cursor_manager->UpdateCursor(child_view.get(), kCursorCustom);
+  cursor_manager->SetViewUnderCursorOverride(child_view.get());
+  EXPECT_EQ(top_view_->cursor(), kCursorCustom);
+
+  {
+    auto disallow_scope = cursor_manager->CreateDisallowCustomCursorScope(
+        /*max_dimension_dips=*/0);
+    EXPECT_EQ(top_view_->cursor(), kCursorPointer);
+  }
+
+  EXPECT_EQ(top_view_->cursor(), kCursorCustom);
 }
 
 }  // namespace content
