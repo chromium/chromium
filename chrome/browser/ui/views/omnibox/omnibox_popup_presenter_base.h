@@ -23,6 +23,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 class LocationBar;
 class OmniboxPopupUI;
@@ -380,9 +381,33 @@ class OmniboxPopupPresenterBase
   friend class OmniboxWebUiInteractiveTest;
   friend class OmniboxPopupPresenterBaseTest;
 
-  // Requests content creation after the next frame the browser window
-  // presents. Used by `ApplyWebUIContentCreationStrategy()`.
+  // Waits until the browser window that hosts this popup presents a frame while
+  // shown and unminimized, then calls `OnBrowserWindowPresented()`. Used by
+  // `ApplyWebUIContentCreationStrategy()`.
   void CreateWebUIContentAfterWindowPresentation();
+
+  // Observes the browser window's top-level widget for
+  // `CreateWebUIContentAfterWindowPresentation()`.
+  class BrowserWidgetObserver : public views::WidgetObserver {
+   public:
+    explicit BrowserWidgetObserver(OmniboxPopupPresenterBase& presenter);
+    ~BrowserWidgetObserver() override;
+
+    // views::WidgetObserver:
+    void OnWidgetDestroying(views::Widget* widget) override;
+    void OnWidgetVisibilityChanged(views::Widget* widget,
+                                   bool visible) override;
+    void OnWidgetShowStateChanged(views::Widget* widget) override;
+
+   private:
+    const raw_ref<OmniboxPopupPresenterBase> presenter_;
+  };
+
+  // Requests a presentation callback while the browser widget is shown and
+  // unminimized, and cancels it otherwise.
+  void UpdateBrowserWidgetPresentationRequest();
+  void OnBrowserWidgetPresented();
+  void StopObservingBrowserWidget();
 
   base::ScopedObservation<permissions::PermissionRequestManager,
                           permissions::PermissionRequestManager::Observer>
@@ -442,6 +467,10 @@ class OmniboxPopupPresenterBase
   // Whether `OnBrowserWindowPresented()` has posted the creation task.
   bool deferred_creation_scheduled_ = false;
 
+  BrowserWidgetObserver browser_widget_observer_{*this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      browser_widget_observation_{&browser_widget_observer_};
+
   // The popup widget that contains this WebView. Created, closed and owned by
   // `this`; see `ReleaseWidget()` for how it is destroyed.
   std::unique_ptr<views::Widget> widget_;
@@ -497,6 +526,10 @@ class OmniboxPopupPresenterBase
   // Weak pointer factory for callbacks related to visual state.
   base::WeakPtrFactory<OmniboxPopupPresenterBase> visual_state_weak_factory_{
       this};
+  // Vends the outstanding browser window presentation callback, if any.
+  // Invalidated to cancel it.
+  base::WeakPtrFactory<OmniboxPopupPresenterBase>
+      browser_presentation_weak_factory_{this};
   // Weak pointer factory for general callbacks.
   base::WeakPtrFactory<OmniboxPopupPresenterBase> weak_factory_{this};
 };

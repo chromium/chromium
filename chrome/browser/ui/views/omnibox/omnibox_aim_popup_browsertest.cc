@@ -62,6 +62,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -1178,12 +1179,8 @@ namespace {
 
 // Schedules a paint of `widget` and waits until it presents a frame.
 [[nodiscard]] bool PaintAndWaitForPresentation(views::Widget* widget) {
-  base::test::TestFuture<void> presented;
-  widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
-      base::IgnoreArgs<const viz::FrameTimingDetails&>(
-          presented.GetCallback()));
   widget->GetRootView()->SchedulePaint();
-  return presented.Wait();
+  return ui::WaitForNextFrameToBePresented(widget->GetCompositor());
 }
 
 }  // namespace
@@ -1234,19 +1231,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationBrowserTest,
   ASSERT_TRUE(presenter);
   EXPECT_FALSE(presenter->GetWebUIContent());
 
-  // The presenter requested its presentation callback while the window was
-  // built, so this one runs after it, for the same frame.
+  chrome::AddSelectedTabWithURL(new_browser, GURL(url::kAboutBlankURL),
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  RunScheduledLayouts();
+  EXPECT_FALSE(presenter->GetWebUIContent());
+  new_browser->GetWindow()->Show();
+  // `Show()` made the presenter request its presentation callback, so this one
+  // runs after it for the same frame.
   base::test::TestFuture<void> presented;
   browser_view->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(
           base::IgnoreArgs<const viz::FrameTimingDetails&>(
               presented.GetCallback()));
-  chrome::AddSelectedTabWithURL(new_browser, GURL(url::kAboutBlankURL),
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  RunScheduledLayouts();
-  EXPECT_FALSE(presenter->GetWebUIContent());
-  new_browser->GetWindow()->Show();
   EXPECT_FALSE(presenter->GetWebUIContent());
 
   ASSERT_TRUE(base::test::RunUntil(
@@ -1347,10 +1344,14 @@ class OmniboxAimPopupDeferCreationLateEligibilityBrowserTest
   base::CallbackListSubscription late_eligibility_services_subscription_;
 };
 
-// A presenter built after the window's first frame creates its content after
-// the next frame the window presents.
+// A presenter built after the window has already presented a frame schedules a
+// frame instead of waiting for one from an idle compositor, and creates its
+// content once it presents. Incidental paints in a browser test can supply that
+// frame too, so the regression test is the unit test
+// CreatesDeferredContentWhenWindowAlreadyPresented, where nothing else paints;
+// this one checks the path end to end.
 IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationLateEligibilityBrowserTest,
-                       CreatesContentAfterNextPresentation) {
+                       CreatesContentWhenWindowAlreadyPresented) {
   views::Widget* widget =
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
   ASSERT_TRUE(PaintAndWaitForPresentation(widget));
@@ -1362,7 +1363,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationLateEligibilityBrowserTest,
   ASSERT_TRUE(presenter);
   EXPECT_FALSE(presenter->GetWebUIContent());
 
-  ASSERT_TRUE(PaintAndWaitForPresentation(widget));
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return presenter->GetWebUIContent() != nullptr; }));
   EXPECT_FALSE(presenter->IsShown());

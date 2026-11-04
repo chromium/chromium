@@ -34,9 +34,11 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -457,6 +459,8 @@ OmniboxPopupPresenterBase::GetOrCreateWebUIContent(CreationReason reason) {
   }
   // Covers `CreateWebUIContent()`, which creates the WebContents and starts
   // its navigation.
+  // TODO(crbug.com/570224989): Record an enum histogram of `CreationReason` for
+  // presenters using the deferred creation strategy.
   TRACE_EVENT("omnibox", "OmniboxPopupPresenterBase::GetOrCreateWebUIContent",
               "prefix", GetPopupMetricPrefix(), "reason",
               CreationReasonToString(reason));
@@ -553,26 +557,18 @@ OmniboxPopupPresenterBase::CreateWebUIContent(
 }
 
 void OmniboxPopupPresenterBase::CreateWebUIContentAfterWindowPresentation() {
-  // Presenters are built with the browser window, before its first paint, so
-  // the next frame the location bar's widget presents is the window's first
-  // frame. A presenter built later, e.g. when the profile becomes eligible for
-  // AI Mode, gets the next frame instead.
   views::Widget* widget = delegate().GetLocationBarWidget();
-  ui::Compositor* compositor = widget ? widget->GetCompositor() : nullptr;
-  if (!compositor) {
+  // Key on the browser window's widget rather than the macOS immersive
+  // fullscreen overlay that may host the location bar.
+  views::Widget* browser_widget =
+      widget ? widget->GetTopLevelWidget() : nullptr;
+  if (!browser_widget) {
     // `Show()` and the other callers of `GetOrCreateWebUIContent()` still
     // create the content when they need it.
     return;
   }
-  // A successful-presentation callback is kept across failed presentations
-  // until a frame is presented (see
-  // `cc::PresentationTimeCallbackBuffer::PopPendingCallbacks()`), so it runs
-  // once the window is shown. A window that is created hidden or minimized
-  // runs it when it is first shown.
-  compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      base::IgnoreArgs<const viz::FrameTimingDetails&>(
-          base::BindOnce(&OmniboxPopupPresenterBase::OnBrowserWindowPresented,
-                         weak_factory_.GetWeakPtr())));
+  browser_widget_observation_.Observe(browser_widget);
+  UpdateBrowserWidgetPresentationRequest();
 }
 
 void OmniboxPopupPresenterBase::OnBrowserWindowPresented() {
@@ -614,6 +610,72 @@ void OmniboxPopupPresenterBase::OnOmniboxFocused() {
     return;
   }
   GetOrCreateWebUIContent(CreationReason::kOmniboxFocus);
+}
+
+OmniboxPopupPresenterBase::BrowserWidgetObserver::BrowserWidgetObserver(
+    OmniboxPopupPresenterBase& presenter)
+    : presenter_(presenter) {}
+
+OmniboxPopupPresenterBase::BrowserWidgetObserver::~BrowserWidgetObserver() =
+    default;
+
+void OmniboxPopupPresenterBase::BrowserWidgetObserver::OnWidgetDestroying(
+    views::Widget* widget) {
+  presenter_->StopObservingBrowserWidget();
+}
+
+void OmniboxPopupPresenterBase::BrowserWidgetObserver::
+    OnWidgetVisibilityChanged(views::Widget* widget, bool visible) {
+  presenter_->UpdateBrowserWidgetPresentationRequest();
+}
+
+void OmniboxPopupPresenterBase::BrowserWidgetObserver::OnWidgetShowStateChanged(
+    views::Widget* widget) {
+  presenter_->UpdateBrowserWidgetPresentationRequest();
+}
+
+void OmniboxPopupPresenterBase::UpdateBrowserWidgetPresentationRequest() {
+  views::Widget* widget = browser_widget_observation_.GetSource();
+  // On ChromeOS Ash all windows on a display share one `ui::Compositor`, so a
+  // callback requested while this window is hidden or minimized would run when
+  // another window presents a frame. `Widget::IsVisible()` also checks ancestor
+  // visibility, so a window shown on an inactive Ash desk stays false here.
+  // Activating the desk doesn't notify this widget, so such a window creates
+  // its popup content on demand unless it is later hidden or minimized and
+  // shown again.
+  // TODO(crbug.com/570224989): On Aura, also observe the native window, whose
+  // visibility changes propagate from its ancestors, to re-arm on desk
+  // activation.
+  if (!widget || !widget->IsVisible() || widget->IsMinimized()) {
+    browser_presentation_weak_factory_.InvalidateWeakPtrs();
+    return;
+  }
+  // A live weak pointer means a request is outstanding. If the compositor
+  // drops it unrun (e.g. the display is removed or the window moves to another
+  // display), the next visibility change requests another.
+  ui::Compositor* compositor = widget->GetCompositor();
+  if (browser_presentation_weak_factory_.HasWeakPtrs() || !compositor) {
+    return;
+  }
+  compositor->RequestSuccessfulPresentationTimeForNextFrame(
+      base::IgnoreArgs<const viz::FrameTimingDetails&>(
+          base::BindOnce(&OmniboxPopupPresenterBase::OnBrowserWidgetPresented,
+                         browser_presentation_weak_factory_.GetWeakPtr())));
+  // Views does not record whether a widget has already presented, so an idle
+  // compositor presents no frame for a presenter built later (e.g. when AI Mode
+  // eligibility arrives). A window still being built paints this as part of its
+  // first frame.
+  widget->GetRootView()->SchedulePaintInRect(gfx::Rect(1, 1));
+}
+
+void OmniboxPopupPresenterBase::OnBrowserWidgetPresented() {
+  StopObservingBrowserWidget();
+  OnBrowserWindowPresented();
+}
+
+void OmniboxPopupPresenterBase::StopObservingBrowserWidget() {
+  browser_widget_observation_.Reset();
+  browser_presentation_weak_factory_.InvalidateWeakPtrs();
 }
 
 bool OmniboxPopupPresenterBase::ShouldDestroyWidgetOnHide() const {
