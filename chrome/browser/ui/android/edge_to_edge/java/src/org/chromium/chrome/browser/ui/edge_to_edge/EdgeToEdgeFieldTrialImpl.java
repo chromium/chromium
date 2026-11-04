@@ -43,8 +43,13 @@ public final class EdgeToEdgeFieldTrialImpl implements EdgeToEdgeFieldTrial {
     private static final String TAG = "E2E_fieldtrial";
     private static final int DEFAULT_MIN_VERSION = 30; // VERSION_CODES.R;
 
+    // TODO(crbug.com/581524456): Clean up BOTTOM_CHIN_OEM_LIST
     private static final String BOTTOM_CHIN_OEM_LIST = "oppo,xiaomi";
     private static final String BOTTOM_CHIN_OEM_MIN_VERSIONS = "34,34";
+
+    // TODO(crbug.com/581523719): Clean up EVERYWHERE_OEM_LIST
+    private static final String EVERYWHERE_OEM_LIST = "realme";
+    private static final String EVERYWHERE_OEM_MIN_VERSIONS = "35";
 
     /** Instance for EdgeToEdgeBottomChin. */
     private static @Nullable EdgeToEdgeFieldTrialImpl sBottomChinOverrides;
@@ -68,10 +73,8 @@ public final class EdgeToEdgeFieldTrialImpl implements EdgeToEdgeFieldTrial {
     @UiThread
     static EdgeToEdgeFieldTrialImpl getEverywhereOverrides() {
         if (sEverywhereOverrides == null) {
-            String oemString = ChromeFeatureList.sEdgeToEdgeEverywhereOemList.getValue();
-            String minVersionString =
-                    ChromeFeatureList.sEdgeToEdgeEverywhereOemMinVersions.getValue();
-            sEverywhereOverrides = new EdgeToEdgeFieldTrialImpl(oemString, minVersionString);
+            sEverywhereOverrides =
+                    new EdgeToEdgeFieldTrialImpl(EVERYWHERE_OEM_LIST, EVERYWHERE_OEM_MIN_VERSIONS);
         }
         return sEverywhereOverrides;
     }

@@ -15,7 +15,6 @@ import org.robolectric.shadows.ShadowBuild;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -130,8 +129,7 @@ public class EdgeToEdgeFieldTrialUnitTest {
     @Test
     @Config(sdk = 32)
     public void override_e2eEverywhere() {
-        ChromeFeatureList.sEdgeToEdgeEverywhereOemList.setForTesting("foo,bar");
-        ChromeFeatureList.sEdgeToEdgeEverywhereOemMinVersions.setForTesting("31,32");
+        EdgeToEdgeFieldTrialImpl.setEverywhereOverridesForTesting("foo,bar", "31,32");
         var instance = EdgeToEdgeFieldTrialImpl.getEverywhereOverrides();
         assertTrue(
                 "Default have no min version override.",
@@ -153,8 +151,7 @@ public class EdgeToEdgeFieldTrialUnitTest {
     public void override_e2eEverywhereAndBottomChin() {
         EdgeToEdgeFieldTrialImpl.setBottomChinOverridesForTesting("foo", "32");
 
-        ChromeFeatureList.sEdgeToEdgeEverywhereOemList.setForTesting("foo");
-        ChromeFeatureList.sEdgeToEdgeEverywhereOemMinVersions.setForTesting("30");
+        EdgeToEdgeFieldTrialImpl.setEverywhereOverridesForTesting("foo", "30");
 
         var bottomChinOverride = EdgeToEdgeFieldTrialImpl.getBottomChinOverrides();
         var everywhereOverrides = EdgeToEdgeFieldTrialImpl.getEverywhereOverrides();
