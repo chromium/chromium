@@ -7,7 +7,7 @@
 | Android | [Link-time rewriting](#link_time-rewriting) (\*1) |
 | ChromeOS, GNU/Linux, etc. (\*2) | [Weak symbol overriding](#weak-symbol-overriding-load_time-interposition) |
 | iOS, macOS (Apple OSes) | [Malloc zone](#malloc-zone-runtime-interception) |
-| Windows | _to be written_ |
+| Windows | [Implicit linking and link order](#implicit-linking-and-link-order) |
 
 (\*1) Android P and newer versions support [malloc hooks](https://android.googlesource.com/platform/bionic/+/master/libc/malloc_hooks/README.md), but there is no way to enable it on end-user environments as it requires (a) setting a special system property, or (b) setting a special environment variable. Thus, PartitionAlloc doesn't use these malloc hooks.
 
@@ -83,3 +83,18 @@ The existing default malloc zone has already been re-registered, so the promotio
 By the way, multiple threads have already started running before the main dynamic library is loaded, as its linking dependencies create threads in their static initializers.
 
 Phase 2 is intended to [happen only once](https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_apple_default_zone.h;drc=d9b8153d34deb93f08d6a61eb12b6cd04486dbd9;l=377-385) along with Phase 1, [except for unit tests](https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_apple_default_zone.h;drc=d9b8153d34deb93f08d6a61eb12b6cd04486dbd9;l=387-404).
+
+## Implicit linking and link order
+
+On Windows, linking is performed using [implicit linking](https://learn.microsoft.com/en-us/cpp/build/linking-an-executable-to-a-dll).
+By prioritizing partition_alloc.lib over ucrt.lib during linking, `malloc` in partition_alloc.dll is invoked instead of `malloc` in ucrt.dll.
+If foo.dll does not prioritize partition_alloc.lib over ucrt.lib when linking, malloc interposition will fail.
+This means that `malloc` from partition_alloc.dll and `malloc` from ucrt.dll could potentially be used side by side within a single executable.
+
+There are two solutions to this issue:
+
+1. Ensure that partition_alloc.lib is linked before ucrt.lib across all target code.
+1. Do not deallocate memory allocated by libraries not linked with PartitionAlloc using PartitionAlloc, and vice versa.
+Memory allocated within a library that is not linked with PartitionAlloc must be freed within that same library.
+
+These considerations apply equally to both static and component builds.
