@@ -46,7 +46,7 @@
 <!-- The gap between E and G in the first track is large enough to backfill H. -->
 <div class="test-case" data-expect="e,h,g,f"
      data-description="Grid-lanes-track follows visual row order after dense backfill">
-  <div class="lanes" style="grid-lanes-pack: dense">
+  <div class="lanes" style="grid-auto-flow: dense; grid-lanes-pack: dense">
     <button id="e" style="width: 40px">E</button>
     <button id="f" style="grid-row: span 2; width: 100px">F</button>
     <button id="g" style="grid-row: span 2; width: 20px">G</button>

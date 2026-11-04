@@ -19,13 +19,13 @@
 }
 .columns {
   display: grid-lanes;
+  grid-auto-flow: dense;
   grid-lanes-pack: dense;
   fit-tolerance: 0;
   gap: 0;
   place-content: start;
   justify-items: start;
   grid-template-columns: repeat(3, 60px);
-  grid-lanes-direction: column;
   reading-flow: grid-lanes-flow;
   width: 180px;
   height: 220px;
