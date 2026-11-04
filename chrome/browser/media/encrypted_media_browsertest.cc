@@ -1138,15 +1138,9 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
                        kEmeNotSupportedError);
 }
 
-// TODO(crbug.com/40105240): Failing on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CDMCrashDuringDecode DISABLED_CDMCrashDuringDecode
-#else
-#define MAYBE_CDMCrashDuringDecode CDMCrashDuringDecode
-#endif
 // When CDM crashes, we should still get a decode error and all sessions should
 // be closed.
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_CDMCrashDuringDecode) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, CDMCrashDuringDecode) {
   TestNonPlaybackCases(media::kExternalClearKeyCrashKeySystem,
                        kEmeSessionClosedAndError);
 }
@@ -1268,13 +1262,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
                        kUnitTestSuccess);
 }
 
-// TODO(crbug.com/40601162): Times out in debug builds.
-#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MultipleCdmTypes DISABLED_MultipleCdmTypes
-#else
-#define MAYBE_MultipleCdmTypes MultipleCdmTypes
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MultipleCdmTypes) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MultipleCdmTypes) {
   base::StringPairs empty_query_params;
   RunMediaTestPage("multiple_cdm_types.html", empty_query_params,
                    media::kEndedTitle, true);

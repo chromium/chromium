@@ -38,7 +38,7 @@
       mediaKeySession = mediaKeys.createSession();
       return mediaKeySession.generateRequest(initDataType, initData);
     }).then(function() {
-      mediaKeySession.update(normalJwkSet);
+      return mediaKeySession.update(normalJwkSet);
     }).then(function() {
       return mediaKeySession;
     });
