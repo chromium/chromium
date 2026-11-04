@@ -196,6 +196,9 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::VibrationManager> receiver,
       mojo::PendingRemote<mojom::VibrationManagerListener> listener) override;
 
+  void BindHapticsService(
+      mojo::PendingReceiver<mojom::HapticsService> receiver) override;
+
   void BindHidManager(
       mojo::PendingReceiver<mojom::HidManager> receiver) override;
 

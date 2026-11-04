@@ -20,6 +20,7 @@
 #include "services/device/geolocation/geolocation_context.h"
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
+#include "services/device/haptics/haptics_manager_impl.h"
 #include "services/device/hid/hid_manager_impl.h"
 #include "services/device/power_monitor/power_monitor_message_broadcaster.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
@@ -203,6 +204,11 @@ void DeviceService::BindVibrationManager(
 #else
   VibrationManagerImpl::Create(std::move(receiver), std::move(listener));
 #endif
+}
+
+void DeviceService::BindHapticsService(
+    mojo::PendingReceiver<mojom::HapticsService> receiver) {
+  HapticsManagerImpl::Create(std::move(receiver));
 }
 
 void DeviceService::BindHidManager(

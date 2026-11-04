@@ -9,6 +9,7 @@ import "services/device/public/mojom/fingerprint.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
 import "services/device/public/mojom/geolocation_internals.mojom";
+import "services/device/public/mojom/haptics.mojom";
 import "services/device/public/mojom/hid.mojom";
 import "services/device/public/mojom/power_monitor.mojom";
 import "services/device/public/mojom/public_ip_address_geolocation_provider.mojom";
@@ -66,6 +67,13 @@ interface DeviceService {
   // Binds a VibrationManager endpoint and a VibrationManagerListener endpoint.
   BindVibrationManager(pending_receiver<VibrationManager> receiver,
                        pending_remote<VibrationManagerListener> listener);
+
+  // Binds the platform haptics backend (device::HapticsManagerImpl) to trigger
+  // semantic haptic feedback on hardware actuators. Called only by
+  // content::HapticsServiceImpl in the browser process after enforcing frame
+  // eligibility, the "haptics" Permissions Policy, and sticky user activation;
+  // the bound pipe itself is unscoped and must never be exposed to renderers.
+  BindHapticsService(pending_receiver<HapticsService> receiver);
 
   // Binds a HidManager endpoint.
   BindHidManager(pending_receiver<HidManager> receiver);

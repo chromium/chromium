@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("haptics") {
+  visibility = [
+    "//services/device:lib",
+    "//services/device:tests",
+  ]
+  sources = [
+    "haptics_manager_impl.cc",
+    "haptics_manager_impl.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//services/device/public/mojom" ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+}
