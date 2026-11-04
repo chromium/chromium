@@ -331,6 +331,7 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   // connected or the input plate was last cleared.
   bool has_known_page_state = false;
   std::vector<contextual_tasks::UrlResource> committed_url_resources;
+  bool server_supports_tabs = true;
   ContextState last_sent_context_state = ContextState::kNone;
   std::string last_sent_context_state_serialized =
       SerializeDefaultContextState();
@@ -622,6 +623,7 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   page_state.is_zero_state = false;
   page_state.has_known_page_state = false;
   page_state.committed_url_resources.clear();
+  page_state.server_supports_tabs = true;
   page_state.last_sent_context_state = ContextState::kNone;
   page_state.last_sent_context_state_serialized =
       SerializeDefaultContextState();
@@ -706,11 +708,37 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
 
   switch (search_to_client_message.event_message_case()) {
     case lens::SearchToClientMessage::kHandshakeResponse: {
-      int32_t raw_auth_index =
-          search_to_client_message.handshake_response().auth_user_index();
+      const auto& handshake_response =
+          search_to_client_message.handshake_response();
+      int32_t raw_auth_index = handshake_response.auth_user_index();
       size_t auth_user_index = static_cast<size_t>(std::max(0, raw_auth_index));
       if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
         session_handle->set_auth_user_index(auth_user_index);
+      }
+      auto& page_state = GetPrimaryPageSearchState();
+      // Before the server rolls out `HandshakeResponse.capabilities`, it sends
+      // an empty capabilities list and unconditionally enables tabs integration
+      // when `Chrome-Search-Capabilities-Version` is present, so `TABS` is
+      // assumed to be supported. Once rolled out, the side panel response
+      // always includes `LENS`, indicating the server supports capabilities and
+      // intentionally may omit `TABS`.
+      // TODO(crbug.com/533072697): Remove the interim `LENS` capability check
+      // once the server fully rolls out `HandshakeResponse.capabilities` and
+      // check `TABS` directly.
+      bool has_lens_capability = false;
+      bool has_tabs_capability = false;
+      for (int capability : handshake_response.capabilities()) {
+        has_lens_capability |=
+            capability == lens::SearchToClientMessage::HandshakeResponse::LENS;
+        has_tabs_capability |=
+            capability == lens::SearchToClientMessage::HandshakeResponse::TABS;
+      }
+      page_state.server_supports_tabs =
+          !has_lens_capability || has_tabs_capability;
+      if (!page_state.server_supports_tabs) {
+        RemoveImplicitTabContext();
+        UpdateContextLibraryInputState();
+        RefreshActiveTaskContext();
       }
       OnHandshakeComplete();
       return true;
@@ -855,10 +883,19 @@ bool ContextualTasksWebContentsUserData::HasContextLibraryTabs() {
   return !tab_context.attached.empty() || !tab_context.restored.empty();
 }
 
-bool ContextualTasksWebContentsUserData::ShouldMountContextLibrary() {
+bool ContextualTasksWebContentsUserData::CanShareTabsForCurrentPage() {
   Profile* profile =
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   if (!CanShareTabContext(profile)) {
+    return false;
+  }
+  const auto* page_state =
+      PageSearchState::GetForPage(GetWebContents().GetPrimaryPage());
+  return !page_state || page_state->server_supports_tabs;
+}
+
+bool ContextualTasksWebContentsUserData::ShouldMountContextLibrary() {
+  if (!CanShareTabsForCurrentPage()) {
     return false;
   }
   return HasContextLibraryTabs() || IsSmartTabSharingActive();
@@ -1238,8 +1275,7 @@ void ContextualTasksWebContentsUserData::
 
   if (!base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksContextLibrary) ||
-      !CanShareTabContext(
-          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()))) {
+      !CanShareTabsForCurrentPage()) {
     base::UmaHistogramEnumeration(
         "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
         ThreadContextLibraryUpdateOutcome::kFeatureDisabled);
@@ -1391,7 +1427,7 @@ bool ContextualTasksWebContentsUserData::IsSmartTabSharingEnabled() {
 }
 
 bool ContextualTasksWebContentsUserData::IsSmartTabSharingActive() {
-  if (!IsSmartTabSharingEnabled()) {
+  if (!IsSmartTabSharingEnabled() || !CanShareTabsForCurrentPage()) {
     return false;
   }
   if (subscribed_model_) {
@@ -2282,9 +2318,8 @@ void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
   SiteExclusionDetail site_exclusion_detail;
   const bool can_add_implicit_tab =
       session_handle && contextual_tasks::GetIsTabAutoSuggestionChipEnabled() &&
-      contextual_tasks::CanShareTabContext(profile) &&
-      !IsSmartTabSharingActive() && active_tab && tab_contents &&
-      session_id.is_valid() &&
+      CanShareTabsForCurrentPage() && !IsSmartTabSharingActive() &&
+      active_tab && tab_contents && session_id.is_valid() &&
       contextual_tasks::IsValidUrlForSuggestedTab(last_committed_url, profile,
                                                   site_exclusion_detail) &&
       !session_handle->IsTabDeselected(session_id, last_committed_url,

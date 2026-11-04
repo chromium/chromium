@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -55,6 +56,22 @@
 #endif
 
 namespace contextual_tasks {
+
+#if !BUILDFLAG(IS_ANDROID)
+class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
+ public:
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RefreshContext, (), (override));
+  MOCK_METHOD(void,
+              SetContextualTasksPanelController,
+              (ContextualTasksPanelController*),
+              (override));
+  MOCK_METHOD(void, AddLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void, RemoveLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void, ClearAllLocalTabUnderlines, (), (override));
+};
+#endif
 
 std::unique_ptr<KeyedService> BuildTestSigninClient(
     content::BrowserContext* context) {
@@ -1348,6 +1365,150 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
           kFeatureDisabled,
       1);
   EXPECT_TRUE(mock_handle->GetTabContextState().restored.empty());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandshakeResponseWithoutTabsCapability_DisablesTabFeatures) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksContextLibrary, {}},
+       {kContextualTasksContext,
+        {{kContextualTasksContextSmartTabSharing.name, "true"},
+         {kContextualTasksContextSmartTabSharingRearchitecture.name, "true"}}},
+       {kContextualTasksContextSmartTabSharingDefaultOnAvailability, {}}},
+      {});
+  profile_->GetPrefs()->SetBoolean(kContextualTasksShareOpenTabsEveryThread,
+                                   true);
+  base::HistogramTester histogram_tester;
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+#if !BUILDFLAG(IS_ANDROID)
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockActiveTaskContextProvider>
+      mock_active_task_context_provider;
+  ui::ScopedUnownedUserData<ActiveTaskContextProvider>
+      active_task_context_provider_registration(
+          unowned_user_data_host, mock_active_task_context_provider);
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+#endif
+
+  // Before `HandshakeResponse` disables `TABS`, Smart Tab Sharing is active by
+  // default when `CanShareTabContext(profile_)` is true.
+  EXPECT_TRUE(user_data->IsSmartTabSharingEnabled());
+  EXPECT_TRUE(user_data->IsSmartTabSharingActive());
+
+  std::vector<lens::ClientToSearchMessage> dispatched_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindRepeating(
+      [](std::vector<lens::ClientToSearchMessage>* messages,
+         const lens::ClientToSearchMessage& msg) { messages->push_back(msg); },
+      &dispatched_messages));
+
+  // Receive a `HandshakeResponse` without `LENS` (simulating a server before
+  // the `capabilities` rollout). Tab sharing should remain active as normal.
+  lens::SearchToClientMessage handshake_msg;
+  auto* resp = handshake_msg.mutable_handshake_response();
+  resp->set_auth_user_index(0);
+  std::vector<uint8_t> handshake_bytes(handshake_msg.ByteSizeLong());
+  handshake_msg.SerializeToArray(handshake_bytes.data(),
+                                 handshake_bytes.size());
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(handshake_bytes));
+  EXPECT_TRUE(user_data->IsSmartTabSharingActive());
+
+  // Receive a `HandshakeResponse` that advertises `LENS` only (omitting
+  // `TABS`).
+  dispatched_messages.clear();
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(mock_active_task_context_provider, RefreshContext()).Times(1);
+#endif
+  resp->add_capabilities(lens::SearchToClientMessage::HandshakeResponse::LENS);
+  handshake_bytes.resize(handshake_msg.ByteSizeLong());
+  handshake_msg.SerializeToArray(handshake_bytes.data(),
+                                 handshake_bytes.size());
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(handshake_bytes));
+#if !BUILDFLAG(IS_ANDROID)
+  testing::Mock::VerifyAndClearExpectations(&mock_active_task_context_provider);
+#endif
+
+  // Smart Tab Sharing should now be inactive and `CONTEXT_LIBRARY` must be
+  // unmounted.
+  EXPECT_FALSE(user_data->IsSmartTabSharingActive());
+  bool saw_context_library_unmount = false;
+  for (const auto& msg : dispatched_messages) {
+    if (msg.has_inject_chrome_input() &&
+        msg.inject_chrome_input().input_type() ==
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY) {
+      EXPECT_FALSE(msg.inject_chrome_input().is_active());
+      saw_context_library_unmount = true;
+    }
+  }
+  EXPECT_TRUE(saw_context_library_unmount);
+
+  // Attaching tab context to the session handle should not mount
+  // `CONTEXT_LIBRARY` while the page lacks the `TABS` capability.
+  dispatched_messages.clear();
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, /*tab_id=*/1,
+                                      GURL("https://example.com"), "Example");
+  EXPECT_FALSE(dispatched_messages.empty());
+  for (const auto& msg : dispatched_messages) {
+    EXPECT_FALSE(msg.has_inject_chrome_input());
+  }
+
+  // `HandleThreadContextLibraryUpdateFromAim()` should also be blocked when the
+  // server handshake omitted `TABS`.
+  lens::SearchToClientMessage::UpdateThreadContextLibrary update;
+  auto* ctx = update.add_contexts();
+  ctx->set_context_id(1);
+  ctx->set_has_chrome_tab_data(true);
+  ctx->mutable_webpage()->set_url("https://example.com");
+  ctx->mutable_webpage()->set_title("Example");
+  user_data->HandleThreadContextLibraryUpdateFromAim(update);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kFeatureDisabled,
+      1);
+  EXPECT_TRUE(mock_handle->GetTabContextState().restored.empty());
+
+  // If a subsequent `HandshakeResponse` includes `TABS`, Smart Tab Sharing and
+  // `CONTEXT_LIBRARY` mounting become active again.
+  dispatched_messages.clear();
+  resp->add_capabilities(lens::SearchToClientMessage::HandshakeResponse::TABS);
+  handshake_bytes.resize(handshake_msg.ByteSizeLong());
+  handshake_msg.SerializeToArray(handshake_bytes.data(),
+                                 handshake_bytes.size());
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(handshake_bytes));
+  EXPECT_TRUE(user_data->IsSmartTabSharingActive());
+  bool saw_context_library_mount = false;
+  for (const auto& msg : dispatched_messages) {
+    if (msg.has_inject_chrome_input() &&
+        msg.inject_chrome_input().input_type() ==
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY &&
+        msg.inject_chrome_input().is_active()) {
+      saw_context_library_mount = true;
+    }
+  }
+  EXPECT_TRUE(saw_context_library_mount);
+
+#if !BUILDFLAG(IS_ANDROID)
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+#endif
 }
 
 TEST_F(ContextualTasksWebContentsUserDataTest,
