@@ -363,6 +363,8 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
       gpu::DirectMLFeatureLevelToString(directml_feature_level));
   enumerator->AddString("dx12FeatureLevel",
                         gpu::D3DFeatureLevelToString(d3d12_feature_level));
+  enumerator->AddString("dx11FeatureLevel",
+                        gpu::D3DFeatureLevelToString(d3d11_feature_level));
   enumerator->AddString("vulkanVersion",
                         gpu::VulkanVersionToString(vulkan_version));
   enumerator->AddBool("supportsD3dSharedImages", shared_image_d3d);
