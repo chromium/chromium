@@ -8,6 +8,32 @@ import type {TabPickerAppElement} from './tab_picker_app.js';
 
 export function getHtml(this: TabPickerAppElement) {
   return html`<!--_html_template_start_-->
+    ${this.shouldShowSingleTabItem_() ? html`
+      <button id="singleTabItem" class="dropdown-item"
+          ?disabled="${this.isTabDisabled_(this.singleTab_!)}"
+          role="menuitemcheckbox"
+          aria-checked="${this.isTabSelected_(this.singleTab_!)}"
+          title="${this.singleTab_!.title}"
+          data-index="${this.singleTabIndex_}"
+          aria-label="${this.singleTab_!.title}"
+          @pointerenter="${this.onSingleTabRowPointerenter_}"
+          @pointermove="${this.onSingleTabRowPointermove_}"
+          @pointerdown="${this.onSingleTabRowPointerdown_}"
+          @pointerleave="${this.onSingleTabRowPointerleave_}"
+          @focus="${this.onSingleTabRowFocus_}"
+          @keydown="${this.onSingleTabRowKeydown_}"
+          @click="${this.onTabClick_}">
+        <cr-composebox-tab-favicon .url="${this.singleTab_!.url}"
+            .tabId="${this.singleTab_!.tabId}"
+            .isSubmitted="${this.isTabSelected_(this.singleTab_!)}">
+        </cr-composebox-tab-favicon>
+        <span class="tab-title">${this.singleTab_!.title}</span>
+        ${this.isTabSelected_(this.singleTab_!) ? html`
+          <cr-icon class="share-tabs-check" icon="cr:check">
+          </cr-icon>
+        ` : ''}
+      </button>
+    ` : ''}
     <button id="shareTabsTrigger" class="dropdown-item"
         role="${this.isStsActiveRow_() ? 'menuitemcheckbox' : 'menuitem'}"
         aria-checked="${this.isStsActiveRow_() ? 'true' : nothing}"
