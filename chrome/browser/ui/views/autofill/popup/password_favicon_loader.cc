@@ -84,14 +84,16 @@ void PasswordFaviconLoaderImpl::Load(
   if (!favicon_details.can_be_requested_from_google) {
     GURL::Replacements domain_url_replacements;
     domain_url_replacements.SetPathStr(kFaviconFilename);
+    image_fetcher::ImageFetcherParams params(kFaviconTrafficAnnotation,
+                                             kImageFetcherClientName);
+    params.set_block_local_requests(true);
     image_fetcher_->FetchImage(
         favicon_details.domain_url.ReplaceComponents(domain_url_replacements),
         base::BindOnce(
             &PasswordFaviconLoaderImpl::OnFaviconResponseFromImageFetcher,
             weak_ptr_factory_.GetWeakPtr(), favicon_details.domain_url,
             std::move(on_success), std::move(on_fail)),
-        image_fetcher::ImageFetcherParams(kFaviconTrafficAnnotation,
-                                          kImageFetcherClientName));
+        std::move(params));
     return;
   }
 

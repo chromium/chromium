@@ -342,6 +342,23 @@ TEST_P(ImageFetcherRequestOptionsTest, UnboundedAndLimitedRequestsAreSeparate) {
   EXPECT_EQ(net::OK, unbounded.Get<1>().net_error);
 }
 
+TEST_F(ImageFetcherImplTest, LocalRequestPolicySeparatesConcurrentRequests) {
+  ImageFetcherParams ordinary_params(TRAFFIC_ANNOTATION_FOR_TESTS,
+                                     kImageUmaName);
+  ImageFetcherParams restricted_params(TRAFFIC_ANNOTATION_FOR_TESTS,
+                                       kImageUmaName);
+  restricted_params.set_block_local_requests(true);
+
+  image_fetcher()->FetchImageAndData(GURL(kImageURL),
+                                     ImageDataFetcherCallback(),
+                                     ImageFetcherCallback(), ordinary_params);
+  image_fetcher()->FetchImageAndData(GURL(kImageURL),
+                                     ImageDataFetcherCallback(),
+                                     ImageFetcherCallback(), restricted_params);
+
+  EXPECT_EQ(2, test_url_loader_factory()->NumPending());
+}
+
 TEST_F(ImageFetcherImplTest, CompatibleRequestsShareDownload) {
   ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName);
   params.set_max_download_size(256);

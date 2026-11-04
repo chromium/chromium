@@ -31,6 +31,8 @@ namespace autofill {
 namespace {
 
 using ::favicon::MockLargeIconService;
+using ::testing::_;
+using ::testing::Property;
 
 MATCHER_P(ImagesAreEqual, img, "") {
   // Compare bitmaps as `AreImagesEqual()` also compare the number of
@@ -149,7 +151,12 @@ TEST_F(PasswordFaviconLoaderTest, FailsWithInvalidResponseFromFaviconService) {
 }
 
 TEST_F(PasswordFaviconLoaderTest, LoadsImagesFromImageFetcher) {
-  EXPECT_CALL(image_fetcher(), FetchImageAndData_)
+  EXPECT_CALL(
+      image_fetcher(),
+      FetchImageAndData_(
+          GURL("https://google.com/favicon.ico"), _, _,
+          Property(&image_fetcher::ImageFetcherParams::block_local_requests,
+                   true)))
       .WillOnce(MockFetchImageAndData(
           [](image_fetcher::ImageFetcherCallback* callback) {
             std::move(*callback).Run(

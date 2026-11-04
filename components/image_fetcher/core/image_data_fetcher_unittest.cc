@@ -10,6 +10,7 @@
 #include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -23,6 +24,7 @@
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -100,6 +102,10 @@ TEST_F(ImageDataFetcherTest, FetchImageData) {
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kImageURL, &pending_request));
   EXPECT_EQ(pending_request->credentials_mode,
             network::mojom::CredentialsMode::kOmit);
+  ASSERT_EQ(test_url_loader_factory_.pending_requests()->size(), 1u);
+  EXPECT_EQ(test_url_loader_factory_.GetPendingRequest(0)->options &
+                network::mojom::kURLLoadOptionBlockLocalRequest,
+            0u);
 
   auto head = network::mojom::URLResponseHead::New();
   std::string raw_header =
@@ -115,6 +121,18 @@ TEST_F(ImageDataFetcherTest, FetchImageData) {
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectBucketCount(std::string(kHistogramName), 200, 1);
+}
+
+TEST_F(ImageDataFetcherTest, BlockLocalRequestsIsOptIn) {
+  ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kTestUmaClientName);
+  params.set_block_local_requests(true);
+  image_data_fetcher_.FetchImageData(GURL(kImageURL), base::DoNothing(),
+                                     params);
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  EXPECT_NE(test_url_loader_factory_.GetPendingRequest(0)->options &
+                network::mojom::kURLLoadOptionBlockLocalRequest,
+            0u);
 }
 
 TEST_F(ImageDataFetcherTest, FetchImageDataWithDataUrl) {

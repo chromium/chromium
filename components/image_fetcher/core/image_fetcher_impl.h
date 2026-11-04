@@ -54,15 +54,17 @@ class ImageFetcherImpl : public ImageFetcher {
   ImageDecoder* GetImageDecoder() override;
 
  private:
-  // Only requests with the same URL, download limit, frame size, and selected
-  // decoder can share a download and decoded result. The selected DataDecoder
-  // must outlive ImageDecoder, per DecodeImage's contract. Store size
-  // components separately because gfx::Size does not provide an ordering.
+  // Only requests with the same URL, download limit, local request policy,
+  // frame size, and selected decoder can share a download and decoded result.
+  // The selected DataDecoder must outlive ImageDecoder, per DecodeImage's
+  // contract. Store size components separately because gfx::Size does not
+  // provide an ordering.
   struct ImageRequestKey {
     auto operator<=>(const ImageRequestKey&) const = default;
 
     GURL image_url;
     std::optional<int64_t> max_download_size;
+    bool block_local_requests = false;
     int frame_width;
     int frame_height;
     raw_ptr<data_decoder::DataDecoder> data_decoder;

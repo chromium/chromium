@@ -36,6 +36,7 @@ void ImageFetcherImpl::FetchImageAndData(
   const ImageRequestKey request_key{
       .image_url = image_url,
       .max_download_size = params.max_download_size(),
+      .block_local_requests = params.block_local_requests(),
       .frame_width = params.frame_size().width(),
       .frame_height = params.frame_size().height(),
       .data_decoder = params.data_decoder()};

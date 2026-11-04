@@ -68,6 +68,15 @@ class ImageFetcherParams {
     return max_download_bytes_;
   }
 
+  // Reject requests to local and private network addresses, including after
+  // redirects. Browser-initiated fetches do not have a document's local
+  // network access policy, so callers handling untrusted URLs can opt in.
+  void set_block_local_requests(bool block_local_requests) {
+    block_local_requests_ = block_local_requests;
+  }
+
+  bool block_local_requests() const { return block_local_requests_; }
+
   void set_frame_size(gfx::Size desired_frame_size) {
     desired_frame_size_ = desired_frame_size;
   }
@@ -140,6 +149,7 @@ class ImageFetcherParams {
   const net::NetworkTrafficAnnotationTag network_traffic_annotation_tag_;
 
   std::optional<int64_t> max_download_bytes_;
+  bool block_local_requests_ = false;
   // Only used in rare cases to keep the cache file on disk for certain period
   // of time. Image files will stay in cache at least for `expiration_interval_`
   // after last use.
