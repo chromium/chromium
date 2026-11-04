@@ -670,7 +670,8 @@ class UnexportableKeyServiceImpl::SpareKeyPool {
 UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
     UnexportableKeyTaskManager& task_manager,
     BackgroundTaskOrigin task_origin,
-    crypto::UnexportableKeyProvider::Config config)
+    crypto::UnexportableKeyProvider::Config config,
+    bool enable_spare_attestation_key_pool)
     : task_manager_(task_manager),
       task_origin_(task_origin),
       config_(config),
@@ -683,10 +684,12 @@ UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
         CreateGenerateKeyCallbackForSparePool<RefCountedUnexportableSigningKey>(
             &task_manager, task_origin));
 
-    spare_attestation_key_pool_ = std::make_unique<SpareAttestationKeyPool>(
-        config_,
-        CreateGenerateKeyCallbackForSparePool<
-            RefCountedUnexportableAttestationKey>(&task_manager, task_origin));
+    if (enable_spare_attestation_key_pool) {
+      spare_attestation_key_pool_ = std::make_unique<SpareAttestationKeyPool>(
+          config_, CreateGenerateKeyCallbackForSparePool<
+                       RefCountedUnexportableAttestationKey>(&task_manager,
+                                                             task_origin));
+    }
   }
 }
 

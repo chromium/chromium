@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -28,6 +29,7 @@
 #include "crypto/hash.h"
 #include "crypto/unexportable_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/base/features.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
@@ -70,8 +72,16 @@ std::unique_ptr<unexportable_keys::UnexportableKeyService> CreateService(
 
   if (unexportable_keys::UnexportableKeyTaskManager* task_manager =
           GetSharedTaskManagerInstance()) {
+    // Only DBSC single sign-on requests attestation keys. Check the origin
+    // first: reading a feature activates its field trial.
+    const bool enable_spare_attestation_key_pool =
+        task_origin == unexportable_keys::BackgroundTaskOrigin::
+                           kDeviceBoundSessionCredentials &&
+        base::FeatureList::IsEnabled(
+            net::features::kDeviceBoundSessionsForSingleSignOn);
     return std::make_unique<unexportable_keys::UnexportableKeyServiceImpl>(
-        *task_manager, task_origin, std::move(config));
+        *task_manager, task_origin, std::move(config),
+        enable_spare_attestation_key_pool);
   }
 
   return nullptr;

@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
 #include "components/unexportable_keys/background_task_origin.h"
@@ -11,6 +12,7 @@
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/unexportable_key.h"
+#include "net/base/features.h"
 
 namespace {
 
@@ -96,12 +98,16 @@ UnexportableKeyServiceFactory::GetShared() {
     unexportable_keys::UnexportableKeyTaskManager* task_manager =
         GetSharedTaskManagerInstance();
     if (task_manager) {
+      // Only DBSC single sign-on requests attestation keys.
       unexportable_key_service_ =
           std::make_unique<unexportable_keys::UnexportableKeyServiceImpl>(
               *task_manager,
               unexportable_keys::BackgroundTaskOrigin::
                   kDeviceBoundSessionCredentials,
-              GetConfig());
+              GetConfig(),
+              /*enable_spare_attestation_key_pool=*/
+              base::FeatureList::IsEnabled(
+                  features::kDeviceBoundSessionsForSingleSignOn));
     }
   }
 

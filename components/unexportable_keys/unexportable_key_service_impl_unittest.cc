@@ -101,7 +101,10 @@ class UnexportableKeyServiceImplTest : public testing::Test {
   void ResetService(crypto::UnexportableKeyProvider::Config config = {},
                     BackgroundTaskOrigin origin = kTaskOrigin) {
     task_manager_.emplace();
-    service_.emplace(*task_manager_, origin, std::move(config));
+    // Builds the service the way the DBSC factories do with single sign-on
+    // enabled, so the spare pool tests cover both pools.
+    service_.emplace(*task_manager_, origin, std::move(config),
+                     /*enable_spare_attestation_key_pool=*/true);
   }
 
   void DestroyService() { service_ = std::nullopt; }
@@ -2212,6 +2215,27 @@ TYPED_TEST(SpareKeyPoolTest, SpareKeyPoolBypassedForNonDbscOrigin) {
       GetSpareKeyPoolHistogramName(this->pool_type(),
                                    kSpareKeyPoolUmaRequestLatencySuffix),
       0);
+}
+
+TEST_F(UnexportableKeyServiceImplTest, SpareKeyPoolAttestationNeedsOptIn) {
+  base::test::ScopedFeatureList feature_list(
+      kEnableUnexportableKeysSpareKeyPool);
+  // Built with the default `enable_spare_attestation_key_pool`, like the DBSC
+  // factories build it when single sign-on is disabled.
+  UnexportableKeyServiceImpl key_service(task_manager(), kTaskOrigin,
+                                         /*config=*/{});
+
+  FastForwardBy(kSpareKeyPoolDelay);
+  RunBackgroundTasks();
+
+  // Only the signing pool fills.
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  "Crypto.UnexportableKeys.SparePool.Attestation."),
+              IsEmpty());
+  histogram_tester().ExpectTotalCount(
+      GetSpareKeyPoolHistogramName("Signing",
+                                   kSpareKeyPoolUmaReplenishmentLatencySuffix),
+      2);
 }
 
 }  // namespace unexportable_keys
