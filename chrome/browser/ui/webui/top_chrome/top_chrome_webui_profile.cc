@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/top_chrome_webui_profile_impl.h"
+#include "chrome/common/chrome_features.h"
 
 namespace webui {
 
@@ -34,6 +36,16 @@ void DestroyTopChromeWebUIProfile() {
 
 Profile* GetTopChromeWebUIProfile() {
   return GetTopChromeWebUIProfileInstance().get();
+}
+
+Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile) {
+  CHECK(user_profile);
+  Profile* profile =
+      base::FeatureList::IsEnabled(features::kTopChromeWebUISharedRenderer)
+          ? GetTopChromeWebUIProfile()
+          : user_profile;
+  CHECK(profile);
+  return *profile;
 }
 
 ScopedTopChromeWebUIProfileForTesting::ScopedTopChromeWebUIProfileForTesting() {

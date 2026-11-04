@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
+#include "chrome/common/chrome_features.h"
 
 // static
 InitialWebUIProfileService* InitialWebUIProfileServiceFactory::GetForProfile(
@@ -39,6 +41,13 @@ InitialWebUIProfileServiceFactory::~InitialWebUIProfileServiceFactory() =
 std::unique_ptr<KeyedService>
 InitialWebUIProfileServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // The service prewarms the toolbar WebContents in each regular profile when
+  // the profile is initialized. With kTopChromeWebUISharedRenderer, the toolbar
+  // WebContents is created in TopChromeWebUIProfile instead, so the service
+  // isn't needed.
+  if (base::FeatureList::IsEnabled(features::kTopChromeWebUISharedRenderer)) {
+    return nullptr;
+  }
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<InitialWebUIProfileService>(profile);
 }

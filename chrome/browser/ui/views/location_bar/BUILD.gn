@@ -343,6 +343,7 @@ source_set("unit_tests") {
     ":location_bar",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui/views/page_info",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/omnibox/browser",

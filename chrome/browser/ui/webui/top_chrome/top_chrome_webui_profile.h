@@ -25,6 +25,12 @@ void DestroyTopChromeWebUIProfile();
 // destroyed.
 Profile* GetTopChromeWebUIProfile();
 
+// Returns the profile to create the WebContents of a Top Chrome WebUI in for a
+// window of `user_profile`: this profile if
+// features::kTopChromeWebUISharedRenderer is enabled, or `user_profile`
+// otherwise.
+Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile);
+
 // Creates the profile for the lifetime of this object.
 class ScopedTopChromeWebUIProfileForTesting {
  public:
