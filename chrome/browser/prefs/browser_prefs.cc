@@ -1137,6 +1137,20 @@ inline constexpr char kDriveFsMirrorSyncMachineRootId[] =
 inline constexpr char kLegacyTokenHandleMap[] = "ash.token_handle_map";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 10/2026.
+inline constexpr char kMinimumAllowedChromeVersion[] = "minimum_req.version";
+inline constexpr char kLabsMediaplayerEnabled[] = "settings.labs.mediaplayer";
+inline constexpr char kAppReinstallRecommendationEnabled[] =
+    "zero_state_app_install_recommendation.enabled";
+inline constexpr char kPinUnlockFeatureNotificationShown[] =
+    "pin_unlock_feature_notification_shown";
+inline constexpr char kFingerprintUnlockFeatureNotificationShown[] =
+    "fingerprint_unlock_feature_notification_shown";
+inline constexpr char kShowArcSettingsOnSessionStart[] =
+    "start_arc_settings_on_session_start";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Deprecated 10/2026.
 inline constexpr char kDismissedHistoryEmbeddingsScopePromo[] =
     "omnibox.dismissed_history_embeddings_scope_promo";
@@ -1287,6 +1301,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 10/2026.
   registry->RegisterListPref(kAcknowledgmentSetPrefPath);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 10/2026.
+  registry->RegisterStringPref(kMinimumAllowedChromeVersion, std::string());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1712,6 +1731,16 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 10/2026.
   registry->RegisterIntegerPref(kHistorySearchSettingState, 0);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 10/2026.
+  registry->RegisterBooleanPref(kLabsMediaplayerEnabled, false);
+  registry->RegisterBooleanPref(kAppReinstallRecommendationEnabled, false);
+  registry->RegisterBooleanPref(kPinUnlockFeatureNotificationShown, false);
+  registry->RegisterBooleanPref(kFingerprintUnlockFeatureNotificationShown,
+                                false);
+  registry->RegisterBooleanPref(kShowArcSettingsOnSessionStart, false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2759,6 +2788,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kAcknowledgmentSetPrefPath);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 10/2026.
+  local_state->ClearPref(kMinimumAllowedChromeVersion);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -3176,6 +3210,15 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 10/2026.
   profile_prefs->ClearPref(kHistorySearchSettingState);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 10/2026.
+  profile_prefs->ClearPref(kLabsMediaplayerEnabled);
+  profile_prefs->ClearPref(kAppReinstallRecommendationEnabled);
+  profile_prefs->ClearPref(kPinUnlockFeatureNotificationShown);
+  profile_prefs->ClearPref(kFingerprintUnlockFeatureNotificationShown);
+  profile_prefs->ClearPref(kShowArcSettingsOnSessionStart);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

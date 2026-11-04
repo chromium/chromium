@@ -165,7 +165,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       ash::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       enterprise_management::SystemTimezoneProto::USERS_DECIDE);
-  registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
   registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
@@ -251,10 +250,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kTouchpadHapticFeedback, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
-  registry->RegisterBooleanPref(::prefs::kLabsMediaplayerEnabled, false);
   registry->RegisterBooleanPref(::ash::prefs::kLabsAdvancedFilesystemEnabled,
-                                false);
-  registry->RegisterBooleanPref(::prefs::kAppReinstallRecommendationEnabled,
                                 false);
 
   registry->RegisterIntegerPref(
@@ -514,11 +510,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ash::prefs::kHatsSlowAndLaggyDeepDiveSurveyIsSelected, false);
 
-  registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
-                                false);
-  registry->RegisterBooleanPref(
-      ::prefs::kFingerprintUnlockFeatureNotificationShown, false);
-
   // We don't sync EOL related prefs because they are device specific.
   registry->RegisterBooleanPref(ash::prefs::kEolNotificationDismissed, false);
   registry->RegisterTimePref(ash::prefs::kEndOfLifeDate, base::Time());
@@ -530,7 +521,6 @@ void Preferences::RegisterProfilePrefs(
                                 false);
 
   registry->RegisterBooleanPref(::prefs::kCastReceiverEnabled, false);
-  registry->RegisterBooleanPref(::prefs::kShowArcSettingsOnSessionStart, false);
   registry->RegisterBooleanPref(::ash::prefs::kShowSyncSettingsOnSessionStart,
                                 false);
 

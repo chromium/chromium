@@ -496,9 +496,6 @@ inline constexpr char kPrintingAPIExtensionsAllowlist[] =
 inline constexpr char kInsightsExtensionEnabled[] =
     "insights_extension_enabled";
 
-// A boolean pref which turns on the mediaplayer.
-inline constexpr char kLabsMediaplayerEnabled[] = "settings.labs.mediaplayer";
-
 // A string pref that contains version where "What's new" promo was shown.
 inline constexpr char kChromeOSReleaseNotesVersion[] =
     "settings.release_notes.version";
@@ -517,27 +514,8 @@ inline constexpr char kUnifiedDesktopEnabledByDefault[] =
 inline constexpr char kAllowExcludeDisplayInMirrorMode[] =
     "settings.display.allow_exclude_display_in_mirror_mode";
 
-// A boolean pref. Indicates if we've already shown a notification to inform the
-// current user about the quick unlock feature.
-inline constexpr char kPinUnlockFeatureNotificationShown[] =
-    "pin_unlock_feature_notification_shown";
-// A boolean pref. Indicates if we've already shown a notification to inform the
-// current user about the fingerprint unlock feature.
-inline constexpr char kFingerprintUnlockFeatureNotificationShown[] =
-    "fingerprint_unlock_feature_notification_shown";
-
 // Boolean pref indicating whether someone can cast to the device.
 inline constexpr char kCastReceiverEnabled[] = "cast_receiver.enabled";
-
-// String pref indicating what is the minimum version of Chrome required to
-// allow user sign in. If the string is empty or blank no restrictions will
-// be applied. See base::Version for exact string format.
-inline constexpr char kMinimumAllowedChromeVersion[] = "minimum_req.version";
-
-// Boolean preference that triggers chrome://settings/androidApps/details to be
-// opened on user session start.
-inline constexpr char kShowArcSettingsOnSessionStart[] =
-    "start_arc_settings_on_session_start";
 
 // Dictionary preference that maps language to default voice name preferences
 // for the users's text-to-speech settings. For example, this might map
@@ -563,11 +541,6 @@ inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 // A string pref storing the path of device wallpaper image file.
 inline constexpr char kDeviceWallpaperImageFilePath[] =
     "policy.device_wallpaper_image_file_path";
-
-// A boolean pref for enabling/disabling App reinstall recommendations in Zero
-// State Launcher by policy.
-inline constexpr char kAppReinstallRecommendationEnabled[] =
-    "zero_state_app_install_recommendation.enabled";
 
 // A boolean pref that when set to true, prevents the browser window from
 // launching at the start of the session.
