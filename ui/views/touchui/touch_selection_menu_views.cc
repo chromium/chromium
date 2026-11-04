@@ -70,8 +70,8 @@ TouchSelectionMenuViews::TouchSelectionMenuViews(
       owner_(owner),
       client_(client),
       can_paste_(can_paste) {
-  DCHECK(owner_);
-  DCHECK(client_);
+  CHECK(owner_, base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
 
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_shadow(BubbleBorder::STANDARD_SHADOW);
@@ -124,7 +124,7 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
 bool TouchSelectionMenuViews::IsMenuAvailable(
     const ui::TouchSelectionMenuClient* client,
     bool can_paste) {
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M163);
 
   const auto is_enabled = [client, can_paste](MenuCommand command) {
     return client->IsCommandIdEnabled(command.command_id, can_paste);
@@ -149,7 +149,7 @@ void TouchSelectionMenuViews::CloseMenu() {
 TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
 
 void TouchSelectionMenuViews::CreateButtons() {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
   for (const auto& command : kMenuCommands) {
     if (!client_->IsCommandIdEnabled(command.command_id, can_paste_)) {
       continue;
@@ -200,13 +200,13 @@ void TouchSelectionMenuViews::CreateSeparator() {
 }
 
 void TouchSelectionMenuViews::DisconnectOwner() {
-  DCHECK(owner_);
+  CHECK(owner_, base::NotFatalUntil::M163);
   owner_->menu_ = nullptr;
   owner_ = nullptr;
 }
 
 void TouchSelectionMenuViews::WindowClosing() {
-  DCHECK(!owner_ || owner_->menu_ == this);
+  CHECK(!owner_ || owner_->menu_ == this, base::NotFatalUntil::M163);
   BubbleDialogDelegateView::WindowClosing();
   if (owner_) {
     DisconnectOwner();

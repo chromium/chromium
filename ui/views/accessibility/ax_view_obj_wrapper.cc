@@ -115,7 +115,7 @@ std::string AXViewObjWrapper::ToString() const {
 }
 
 void AXViewObjWrapper::OnViewIsDeleting(View* observed_view) {
-  DCHECK_EQ(view_, observed_view);
+  CHECK_EQ(view_, observed_view, base::NotFatalUntil::M163);
   observation_.Reset();
   // Remove() deletes |this|, so this should be the last line in the function.
   aura_obj_cache_->Remove(observed_view);

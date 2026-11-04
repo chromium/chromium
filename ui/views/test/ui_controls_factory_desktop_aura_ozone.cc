@@ -94,7 +94,7 @@ bool SendKeyPress(gfx::NativeWindow window,
                   bool shift,
                   bool alt,
                   bool command) {
-  DCHECK(!command);  // No command key on Aura
+  CHECK(!command, base::NotFatalUntil::M163);  // No command key on Aura
   return SendKeyPressNotifyWhenDone(window, key, control, shift, alt, command,
                                     base::OnceClosure());
 }
@@ -111,7 +111,7 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
   // This doesn't time out if `window` is deleted before the key release events
   // are dispatched, so it's fine to ignore `wait_for` and always wait for key
   // release events.
-  DCHECK(!command);  // No command key on Aura
+  CHECK(!command, base::NotFatalUntil::M163);  // No command key on Aura
   return SendKeyEventsNotifyWhenDone(
       window, key, kKeyPress | kKeyRelease, std::move(closure),
       GenerateAcceleratorState(control, shift, alt, command));
@@ -122,7 +122,8 @@ bool SendKeyEvents(gfx::NativeWindow window,
                    ui::KeyboardCode key,
                    int key_event_types,
                    int accelerator_state) {
-  DCHECK(!(accelerator_state & kCommand));  // No command key on Aura
+  CHECK(!(accelerator_state & kCommand),
+        base::NotFatalUntil::M163);  // No command key on Aura
   return SendKeyEventsNotifyWhenDone(window, key, key_event_types,
                                      base::OnceClosure(), accelerator_state);
 }
@@ -133,8 +134,9 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
                                  int key_event_types,
                                  base::OnceClosure closure,
                                  int accelerator_state) {
-  DCHECK(g_ozone_ui_controls_test_helper);
-  DCHECK(!(accelerator_state & kCommand));  // No command key on Aura
+  CHECK(g_ozone_ui_controls_test_helper, base::NotFatalUntil::M163);
+  CHECK(!(accelerator_state & kCommand),
+        base::NotFatalUntil::M163);  // No command key on Aura
   aura::WindowTreeHost* host = window->GetHost();
   g_ozone_ui_controls_test_helper->SendKeyEvents(
       host->GetAcceleratedWidget(), key, key_event_types, accelerator_state,
@@ -176,7 +178,7 @@ bool SendMouseMoveNotifyWhenDone(int screen_x,
   host->ConvertPixelsToDIP(&root_current_location);
 
   auto* screen = views::test::TestDesktopScreenOzone::GetInstance();
-  DCHECK_EQ(screen, display::Screen::Get());
+  CHECK_EQ(screen, display::Screen::Get(), base::NotFatalUntil::M163);
   screen->set_cursor_screen_point(gfx::Point(screen_x, screen_y));
 
   if (root_location != root_current_location &&

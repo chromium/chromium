@@ -116,7 +116,7 @@ void EventConverterEvdevImpl::OnFileCanReadWithoutBlocking(int fd) {
   if (!IsEnabled())
     return;
 
-  DCHECK_EQ(read_size % sizeof(*inputs), 0u);
+  CHECK_EQ(read_size % sizeof(*inputs), 0u, base::NotFatalUntil::M163);
   ProcessEvents(inputs, read_size / sizeof(*inputs));
 }
 

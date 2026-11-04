@@ -155,7 +155,8 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
     const base::FilePath& path = converter->path();
 
     TRACE_EVENT1("evdev", "AttachInputDevice", "path", path.value());
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
 
     // If we have an existing device, detach it. We don't want two
     // devices with the same name open at the same time.
@@ -226,7 +227,7 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
 
 void InputDeviceFactoryEvdev::DetachInputDevice(const base::FilePath& path) {
   TRACE_EVENT1("evdev", "DetachInputDevice", "path", path.value());
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   // Remove device from map.
   std::unique_ptr<EventConverterEvdev> converter = std::move(converters_[path]);

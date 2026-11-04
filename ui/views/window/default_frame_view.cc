@@ -173,7 +173,7 @@ int DefaultFrameView::NonClientHitTest(const gfx::Point& point) {
 
 void DefaultFrameView::GetWindowMask(const gfx::Size& size,
                                      SkPath* window_mask) {
-  DCHECK(window_mask);
+  CHECK(window_mask, base::NotFatalUntil::M163);
   if (widget_->IsMaximized() || !ShouldShowTitleBarAndBorder()) {
     return;
   }
@@ -531,7 +531,7 @@ void DefaultFrameView::LayoutWindowControls() {
 }
 
 void DefaultFrameView::LayoutTitleBar() {
-  DCHECK_GE(maximum_title_bar_x_, 0);
+  CHECK_GE(maximum_title_bar_x_, 0, base::NotFatalUntil::M163);
   // The window title position is calculated based on the icon position, even
   // when there is no icon.
   gfx::Rect icon_bounds(IconBounds());

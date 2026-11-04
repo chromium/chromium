@@ -151,7 +151,7 @@ PalmFilterStroke::PalmFilterStroke(PalmFilterStroke&& other) = default;
 PalmFilterStroke::~PalmFilterStroke() {}
 
 void PalmFilterStroke::ProcessSample(const PalmFilterSample& sample) {
-  DCHECK_EQ(tracking_id_, sample.tracking_id);
+  CHECK_EQ(tracking_id_, sample.tracking_id, base::NotFatalUntil::M163);
   if (samples_seen_ == 0) {
     first_sample_time_ = sample.time;
   }

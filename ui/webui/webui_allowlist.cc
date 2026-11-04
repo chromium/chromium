@@ -49,13 +49,13 @@ WebUIAllowlist::~WebUIAllowlist() = default;
 void WebUIAllowlist::RegisterAutoGrantedPermission(const url::Origin& origin,
                                                    ContentSettingsType type,
                                                    ContentSetting setting) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  DCHECK(content::HasWebUIOrigin(origin));
+  CHECK(content::HasWebUIOrigin(origin), base::NotFatalUntil::M163);
 
   // It doesn't make sense to grant a default content setting.
-  DCHECK_NE(CONTENT_SETTING_DEFAULT, setting);
+  CHECK_NE(CONTENT_SETTING_DEFAULT, setting, base::NotFatalUntil::M163);
 
   SetContentSettingsAndNotifyProvider(
       ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
@@ -65,7 +65,7 @@ void WebUIAllowlist::RegisterAutoGrantedPermission(const url::Origin& origin,
 void WebUIAllowlist::RegisterAutoGrantedPermissions(
     const url::Origin& origin,
     std::initializer_list<ContentSettingsType> types) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   for (const ContentSettingsType& type : types)
@@ -75,10 +75,10 @@ void WebUIAllowlist::RegisterAutoGrantedPermissions(
 void WebUIAllowlist::RegisterAutoGrantedThirdPartyCookies(
     const url::Origin& top_level_origin,
     const std::vector<ContentSettingsPattern>& origin_patterns) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  DCHECK(content::HasWebUIOrigin(top_level_origin));
+  CHECK(content::HasWebUIOrigin(top_level_origin), base::NotFatalUntil::M163);
 
   const auto top_level_origin_pattern =
       ContentSettingsPattern::FromURLNoWildcard(top_level_origin.GetURL());
@@ -93,14 +93,14 @@ void WebUIAllowlist::RegisterAutoGrantedThirdPartyCookies(
 
 void WebUIAllowlist::SetWebUIAllowlistProvider(
     WebUIAllowlistProvider* provider) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   provider_ = provider;
 }
 
 void WebUIAllowlist::ResetWebUIAllowlistProvider() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   provider_ = nullptr;
@@ -124,7 +124,7 @@ void WebUIAllowlist::SetContentSettingsAndNotifyProvider(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type,
     ContentSetting setting) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   {

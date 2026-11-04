@@ -53,7 +53,8 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
   // have to check if previously the pointer type is an eraser.
   if (pointer_pen_info.penFlags & PEN_FLAG_ERASER) {
     input_type = ui::EventPointerType::kEraser;
-    DCHECK(!eraser_pointer_id_ || *eraser_pointer_id_ == mapped_pointer_id);
+    CHECK(!eraser_pointer_id_ || *eraser_pointer_id_ == mapped_pointer_id,
+          base::NotFatalUntil::M163);
     eraser_pointer_id_ = mapped_pointer_id;
   } else if (eraser_pointer_id_ && *eraser_pointer_id_ == mapped_pointer_id &&
              (message == WM_POINTERUP || message == WM_NCPOINTERUP)) {

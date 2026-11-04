@@ -16,7 +16,7 @@ StubWindow::StubWindow(PlatformWindowDelegate* delegate,
                        bool use_default_accelerated_widget,
                        const gfx::Rect& bounds)
     : bounds_(bounds) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   InitDelegate(delegate, use_default_accelerated_widget);
 }
 
@@ -26,7 +26,7 @@ StubWindow::~StubWindow() = default;
 
 void StubWindow::InitDelegate(PlatformWindowDelegate* delegate,
                               bool use_default_accelerated_widget) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   delegate_ = delegate;
   if (use_default_accelerated_widget)
     delegate_->OnAcceleratedWidgetAvailable(gfx::kNullAcceleratedWidget);
@@ -34,7 +34,7 @@ void StubWindow::InitDelegate(PlatformWindowDelegate* delegate,
 
 void StubWindow::InitDelegateWithWidget(PlatformWindowDelegate* delegate,
                                         gfx::AcceleratedWidget widget) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   delegate_ = delegate;
   delegate_->OnAcceleratedWidgetAvailable(widget);
 }
@@ -85,7 +85,8 @@ bool StubWindow::HasCapture() const {
 }
 
 void StubWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
+  CHECK_EQ(target_display_id, display::kInvalidDisplayId,
+           base::NotFatalUntil::M163);
   window_state_ = fullscreen ? ui::PlatformWindowState::kFullScreen
                              : ui::PlatformWindowState::kUnknown;
 }

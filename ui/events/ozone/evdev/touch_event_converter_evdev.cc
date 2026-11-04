@@ -651,7 +651,7 @@ EventType TouchEventConverterEvdev::GetEventTypeForTouch(
       touch.was_touching && !touch.was_delayed && !touch.was_cancelled;
 
   // Delaying an already live touch is not possible.
-  DCHECK(!touch_was_alive || !touch.delayed);
+  CHECK(!touch_was_alive || !touch.delayed, base::NotFatalUntil::M163);
 
   if ((!touch_was_alive && !touch_is_alive) || touch.was_cancelled) {
     // Ignore this touch; it was never born or has already died.

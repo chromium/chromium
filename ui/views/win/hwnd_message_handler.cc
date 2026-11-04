@@ -178,7 +178,7 @@ void MoveLoopMouseWatcher::Unhook() {
     return;
   }
 
-  DCHECK(mouse_hook_);
+  CHECK(mouse_hook_, base::NotFatalUntil::M163);
   UnhookWindowsHookEx(mouse_hook_);
   if (key_hook_) {
     UnhookWindowsHookEx(key_hook_);
@@ -192,7 +192,7 @@ void MoveLoopMouseWatcher::Unhook() {
 LRESULT CALLBACK MoveLoopMouseWatcher::MouseHook(int n_code,
                                                  WPARAM w_param,
                                                  LPARAM l_param) {
-  DCHECK(instance_);
+  CHECK(instance_, base::NotFatalUntil::M163);
   if (n_code == HC_ACTION && w_param == WM_LBUTTONUP) {
     instance_->got_mouse_up_ = true;
   }
@@ -676,7 +676,7 @@ void HWNDMessageHandler::GetWindowPlacement(
   WINDOWPLACEMENT wp;
   wp.length = sizeof(wp);
   bool succeeded = !!::GetWindowPlacement(hwnd(), &wp);
-  DCHECK(succeeded);
+  CHECK(succeeded, base::NotFatalUntil::M163);
 
   if (bounds != nullptr) {
     if (wp.showCmd == SW_SHOWNORMAL) {
@@ -684,7 +684,7 @@ void HWNDMessageHandler::GetWindowPlacement(
       // window was resized using Aero Snap feature (see comment 9 in bug
       // 36421). As a workaround, using GetWindowRect for normalized windows.
       succeeded = ::GetWindowRect(hwnd(), &wp.rcNormalPosition) != 0;
-      DCHECK(succeeded);
+      CHECK(succeeded, base::NotFatalUntil::M163);
 
       *bounds = gfx::Rect(wp.rcNormalPosition);
     } else {
@@ -693,7 +693,7 @@ void HWNDMessageHandler::GetWindowPlacement(
       succeeded =
           ::GetMonitorInfo(
               ::MonitorFromWindow(hwnd(), MONITOR_DEFAULTTONEAREST), &mi) != 0;
-      DCHECK(succeeded);
+      CHECK(succeeded, base::NotFatalUntil::M163);
 
       *bounds = gfx::Rect(wp.rcNormalPosition);
       // Convert normal position from workarea coordinates to screen
@@ -728,7 +728,7 @@ void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
     // TODO(crbug.com/40284685): allows setting NULL parent since WinAPI permits
     // it. It will require updating window styles. See
     // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setparent#remarks.
-    DCHECK(new_parent);
+    CHECK(new_parent, base::NotFatalUntil::M163);
     ::SetParent(hwnd(), new_parent);
   } else {
     ::SetWindowLongPtr(hwnd(), GWLP_HWNDPARENT,
@@ -811,7 +811,7 @@ void HWNDMessageHandler::SetRegion(HRGN region) {
 
 void HWNDMessageHandler::StackAbove(HWND other_hwnd) {
   // Windows API allows to stack behind another windows only.
-  DCHECK(other_hwnd);
+  CHECK(other_hwnd, base::NotFatalUntil::M163);
   HWND next_window = ::GetNextWindow(other_hwnd, GW_HWNDPREV);
 
   // ::SetWindowPos can trigger a nested message loop with WindowPosChanged
@@ -1119,7 +1119,7 @@ bool HWNDMessageHandler::SetTitle(const std::u16string& title) {
 }
 
 void HWNDMessageHandler::SetCursor(scoped_refptr<ui::WinCursor> cursor) {
-  DCHECK(cursor);
+  CHECK(cursor, base::NotFatalUntil::M163);
 
   TRACE_EVENT1("ui,input", "HWNDMessageHandler::SetCursor", "cursor",
                static_cast<const void*>(cursor->hcursor()));
@@ -1196,7 +1196,7 @@ void HWNDMessageHandler::SetFullscreen(bool fullscreen,
 void HWNDMessageHandler::SetAspectRatio(float aspect_ratio,
                                         const gfx::Size& excluded_margin) {
   // If the aspect ratio is not in the valid range, do nothing.
-  DCHECK_GT(aspect_ratio, 0.0f);
+  CHECK_GT(aspect_ratio, 0.0f, base::NotFatalUntil::M163);
 
   aspect_ratio_ = aspect_ratio;
   excluded_margin_dip_ = excluded_margin;
@@ -1279,7 +1279,7 @@ HWNDMessageHandler::RegisterUnadjustedMouseEvent() {
   std::unique_ptr<ScopedEnableUnadjustedMouseEventsWin> scoped_enable =
       ScopedEnableUnadjustedMouseEventsWin::StartMonitor(this);
 
-  DCHECK(using_wm_input_);
+  CHECK(using_wm_input_, base::NotFatalUntil::M163);
   return scoped_enable;
 }
 
@@ -1641,7 +1641,8 @@ void HWNDMessageHandler::InitExtras() {
   prop_window_target_ = std::make_unique<ui::ViewProp>(
       hwnd(), ui::WindowEventTarget::kWin32InputEventTarget,
       static_cast<ui::WindowEventTarget*>(this));
-  DCHECK(delegate_->GetHWNDMessageDelegateInputMethod());
+  CHECK(delegate_->GetHWNDMessageDelegateInputMethod(),
+        base::NotFatalUntil::M163);
   observation_.Observe(delegate_->GetHWNDMessageDelegateInputMethod());
 
   // The usual way for UI Automation to obtain a fragment root is through
@@ -1726,7 +1727,7 @@ void HWNDMessageHandler::PostProcessActivateMessage(
     int activation_state,
     bool minimized,
     HWND window_gaining_or_losing_activation) {
-  DCHECK(IsTopLevelWindow(hwnd()));
+  CHECK(IsTopLevelWindow(hwnd()), base::NotFatalUntil::M163);
 
   // Check if this is a legacy window created for screen readers.
   if (::IsChild(hwnd(), window_gaining_or_losing_activation) &&
@@ -1787,7 +1788,7 @@ void HWNDMessageHandler::PostProcessActivateMessage(
     }
   } else if (background_fullscreen_hack_) {
     // Restore the bounds of the window to fullscreen.
-    DCHECK(IsFullscreen());
+    CHECK(IsFullscreen(), base::NotFatalUntil::M163);
     MONITORINFO monitor_info = {sizeof(monitor_info)};
     ::GetMonitorInfo(::MonitorFromWindow(hwnd(), MONITOR_DEFAULTTOPRIMARY),
                      &monitor_info);
@@ -1900,7 +1901,7 @@ bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
   if (delegate_->GetClientAreaInsets(insets, frame_thickness)) {
     return true;
   }
-  DCHECK(insets->IsEmpty());
+  CHECK(insets->IsEmpty(), base::NotFatalUntil::M163);
 
   // Returning false causes the default handling in OnNCCalcSize() to
   // be invoked.
@@ -2281,7 +2282,7 @@ void HWNDMessageHandler::OnExitMenuLoop(BOOL is_shortcut_menu) {
   if (--menu_depth_ == 0) {
     delegate_->HandleMenuLoop(false);
   }
-  DCHECK_GE(0, menu_depth_);
+  CHECK_GE(0, menu_depth_, base::NotFatalUntil::M163);
 }
 
 void HWNDMessageHandler::OnExitSizeMove() {
@@ -2557,7 +2558,7 @@ LRESULT HWNDMessageHandler::OnInputEvent(UINT message,
     PLOG(ERROR) << "GetRawInputData() failed";
     return 0;
   }
-  DCHECK_EQ(0u, result);
+  CHECK_EQ(0u, result, base::NotFatalUntil::M163);
 
   // Retrieve the input record.
   auto buffer = std::make_unique<uint8_t[]>(size);
@@ -2568,7 +2569,7 @@ LRESULT HWNDMessageHandler::OnInputEvent(UINT message,
     PLOG(ERROR) << "GetRawInputData() failed";
     return 0;
   }
-  DCHECK_EQ(size, result);
+  CHECK_EQ(size, result, base::NotFatalUntil::M163);
 
   if (input->header.dwType == RIM_TYPEMOUSE &&
       input->data.mouse.usButtonFlags != RI_MOUSE_WHEEL) {
@@ -4083,7 +4084,7 @@ void HWNDMessageHandler::CheckAndHandleBackgroundFullscreenOnMonitor(
   FullscreenWindowMonitorMap::iterator iter =
       fullscreen_monitor_map_.Get().find(monitor);
   if (iter != fullscreen_monitor_map_.Get().end()) {
-    DCHECK(iter->second);
+    CHECK(iter->second, base::NotFatalUntil::M163);
     if (window != iter->second->hwnd()) {
       iter->second->OnBackgroundFullscreen();
     }
@@ -4091,7 +4092,7 @@ void HWNDMessageHandler::CheckAndHandleBackgroundFullscreenOnMonitor(
 }
 
 void HWNDMessageHandler::OnBackgroundFullscreen() {
-  DCHECK(IsFullscreen());
+  CHECK(IsFullscreen(), base::NotFatalUntil::M163);
   // Reduce the bounds of the window by 1px to ensure that Windows does
   // not treat this like a fullscreen window.
   MONITORINFO monitor_info = {sizeof(monitor_info)};
@@ -4210,9 +4211,9 @@ bool HWNDMessageHandler::GetMonitorAndRects(const RECT& rect,
                                             HMONITOR* monitor,
                                             gfx::Rect* monitor_rect,
                                             gfx::Rect* work_area) {
-  DCHECK(monitor);
-  DCHECK(monitor_rect);
-  DCHECK(work_area);
+  CHECK(monitor, base::NotFatalUntil::M163);
+  CHECK(monitor_rect, base::NotFatalUntil::M163);
+  CHECK(work_area, base::NotFatalUntil::M163);
   *monitor = ::MonitorFromRect(&rect, MONITOR_DEFAULTTONULL);
   if (!*monitor) {
     return false;

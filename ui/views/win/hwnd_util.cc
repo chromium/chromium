@@ -53,7 +53,7 @@ HWND HWNDForNativeWindow(const gfx::NativeWindow window) {
 
 gfx::Rect GetWindowBoundsForClientBounds(View* view,
                                          const gfx::Rect& client_bounds) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   aura::WindowTreeHost* host = view->GetWidget()->GetNativeWindow()->GetHost();
   if (host) {
     HWND hwnd = host->GetAcceleratedWidget();

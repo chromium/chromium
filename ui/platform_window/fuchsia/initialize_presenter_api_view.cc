@@ -50,15 +50,15 @@ void IgnorePresentCallsForTest() {
       base::BindRepeating([](::fuchsia::ui::views::ViewHolderToken view_holder,
                              ::fuchsia::ui::views::ViewRef view_ref)
                               -> ::fuchsia::element::ViewControllerPtr {
-        DCHECK(view_holder.value);
-        DCHECK(view_ref.reference);
+        CHECK(view_holder.value, base::NotFatalUntil::M163);
+        CHECK(view_ref.reference, base::NotFatalUntil::M163);
         DVLOG(1) << "Present call ignored for test.";
         return nullptr;
       }));
   SetFlatlandViewPresenter(base::BindRepeating(
       [](::fuchsia::ui::views::ViewportCreationToken viewport_creation_token)
           -> ::fuchsia::element::ViewControllerPtr {
-        DCHECK(viewport_creation_token.value);
+        CHECK(viewport_creation_token.value, base::NotFatalUntil::M163);
         DVLOG(1) << "Present call ignored for test.";
         return nullptr;
       }));

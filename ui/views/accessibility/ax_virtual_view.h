@@ -247,7 +247,7 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   // AXVirtualView. It is invalid to set both |parent_view_| and
   // |virtual_parent_view_|.
   void set_parent_view(ViewAccessibility* view_accessibility) {
-    DCHECK(!virtual_parent_view_);
+    CHECK(!virtual_parent_view_, base::NotFatalUntil::M163);
     parent_view_ = view_accessibility;
   }
 

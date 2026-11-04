@@ -28,7 +28,7 @@ AtomicViewAXTreeManager::AtomicViewAXTreeManager(
     ViewAXPlatformNodeDelegate* delegate,
     const ui::AXNodeData& node_data)
     : AXPlatformTreeManager(nullptr), delegate_(delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   if (!ui::IsText(node_data.role) && !node_data.IsAtomicTextField()) {
     return;
   }

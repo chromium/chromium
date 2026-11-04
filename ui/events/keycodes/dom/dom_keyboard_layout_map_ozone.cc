@@ -47,8 +47,8 @@ uint32_t DomKeyboardLayoutMapOzone::GetKeyboardLayoutCount() {
 ui::DomKey DomKeyboardLayoutMapOzone::GetDomKeyFromDomCodeForLayout(
     ui::DomCode dom_code,
     uint32_t keyboard_layout_index) {
-  DCHECK_NE(dom_code, ui::DomCode::NONE);
-  DCHECK_EQ(keyboard_layout_index, 0U);
+  CHECK_NE(dom_code, ui::DomCode::NONE, base::NotFatalUntil::M163);
+  CHECK_EQ(keyboard_layout_index, 0U, base::NotFatalUntil::M163);
 
   ui::KeyboardLayoutEngine* const keyboard_layout_engine =
       ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();

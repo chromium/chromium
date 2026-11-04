@@ -191,7 +191,7 @@ bool WinWindow::ShouldUseNativeFrame() const {
 }
 
 void WinWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
-  DCHECK(platform_cursor);
+  CHECK(platform_cursor, base::NotFatalUntil::M163);
 
   auto cursor = WinCursor::FromPlatformCursor(platform_cursor);
   ::SetCursor(cursor->hcursor());

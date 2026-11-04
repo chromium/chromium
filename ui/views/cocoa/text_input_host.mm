@@ -30,8 +30,8 @@ gfx::Rect GetFirstRectForRangeHelper(const ui::TextInputClient* client,
                                      const gfx::Range& requested_range,
                                      gfx::Range* actual_range) {
   // NSRange doesn't support reversed ranges.
-  DCHECK(!requested_range.is_reversed());
-  DCHECK(actual_range);
+  CHECK(!requested_range.is_reversed(), base::NotFatalUntil::M163);
+  CHECK(actual_range, base::NotFatalUntil::M163);
 
   // Set up default return values, to be returned in case of unusual cases.
   gfx::Rect default_rect;
@@ -57,7 +57,7 @@ gfx::Rect GetFirstRectForRangeHelper(const ui::TextInputClient* client,
     return default_rect;
   }
 
-  DCHECK(!composition_range.is_reversed());
+  CHECK(!composition_range.is_reversed(), base::NotFatalUntil::M163);
 
   const size_t from = requested_range.start() - composition_range.start();
   const size_t to = requested_range.end() - composition_range.start();
@@ -109,8 +109,8 @@ std::u16string AttributedSubstringForRangeHelper(
     const gfx::Range& requested_range,
     gfx::Range* actual_range) {
   // NSRange doesn't support reversed ranges.
-  DCHECK(!requested_range.is_reversed());
-  DCHECK(actual_range);
+  CHECK(!requested_range.is_reversed(), base::NotFatalUntil::M163);
+  CHECK(actual_range, base::NotFatalUntil::M163);
 
   std::u16string substring;
   gfx::Range text_range;

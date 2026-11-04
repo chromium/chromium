@@ -40,7 +40,7 @@ Widget* GetWidgetForWindow(aura::Window* window) {
   // we'll end up with two children in the AX node tree that have the same
   // parent.
   if (widget->GetNativeWindow() != window) {
-    DCHECK(window->IsRootWindow());
+    CHECK(window->IsRootWindow(), base::NotFatalUntil::M163);
     return nullptr;
   }
 
@@ -248,7 +248,7 @@ void AXWindowObjWrapper::OnWindowDestroyed(aura::Window* window) {
 }
 
 void AXWindowObjWrapper::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(window, window_);
+  CHECK_EQ(window, window_, base::NotFatalUntil::M163);
   window_destroying_ = true;
 }
 

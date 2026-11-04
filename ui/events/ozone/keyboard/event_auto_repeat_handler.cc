@@ -22,7 +22,7 @@ EventAutoRepeatHandler::EventAutoRepeatHandler(Delegate* delegate)
     : repeat_delay_(base::Milliseconds(kRepeatDelayMs)),
       repeat_interval_(base::Milliseconds(kRepeatIntervalMs)),
       delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 EventAutoRepeatHandler::~EventAutoRepeatHandler() {}

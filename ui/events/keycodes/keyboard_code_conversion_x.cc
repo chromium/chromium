@@ -991,7 +991,7 @@ DomCode CodeFromXEvent(const x11::Event& xev) {
     keycode = device->detail;
   } else {
     auto* key = xev.As<x11::KeyEvent>();
-    DCHECK(key);
+    CHECK(key, base::NotFatalUntil::M163);
     keycode = static_cast<uint8_t>(key->detail);
   }
   return ui::KeycodeConverter::NativeKeycodeToDomCode(keycode);

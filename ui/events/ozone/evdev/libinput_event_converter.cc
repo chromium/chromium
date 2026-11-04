@@ -77,7 +77,7 @@ LibInputEventConverter::LibInputEvent::~LibInputEvent() {
 libinput_event_pointer* LibInputEventConverter::LibInputEvent::PointerEvent()
     const {
   auto* const event = libinput_event_get_pointer_event(event_);
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   return event;
 }
 
@@ -89,7 +89,7 @@ LibInputEventConverter::LibInputDevice::LibInputDevice(
     int id,
     libinput_device* const device)
     : device_id_(id), device_(device) {
-  DCHECK(device);
+  CHECK(device, base::NotFatalUntil::M163);
 
   // |libinput_path_add_device| returns a device pointer that is is
   // derefed at the next call to |libinput_dispatch|. Add a ref here
@@ -174,7 +174,7 @@ LibInputEventConverter::LibInputContext::LibInputContext(
 
 LibInputEventConverter::LibInputContext::LibInputContext(libinput* const li)
     : li_(li) {
-  DCHECK(li_);
+  CHECK(li_, base::NotFatalUntil::M163);
   libinput_log_set_handler(li_, LogHandler);
   libinput_log_set_priority(li_, LIBINPUT_LOG_PRIORITY_DEBUG);
 }

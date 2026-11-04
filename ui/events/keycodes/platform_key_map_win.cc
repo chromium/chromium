@@ -57,9 +57,9 @@ void SetModifierState(base::span<BYTE, kKeyboardSize> keyboard_state,
   if (flags & EF_CAPS_LOCK_ON)
     keyboard_state[VK_CAPITAL] |= 0x01;
 
-  DCHECK_EQ(flags & ~(EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
-                      EF_CAPS_LOCK_ON),
-            0);
+  CHECK_EQ(flags & ~(EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
+                     EF_CAPS_LOCK_ON),
+           0, base::NotFatalUntil::M163);
 }
 
 constexpr int kControlAndAltFlags = EF_CONTROL_DOWN | EF_ALT_DOWN;

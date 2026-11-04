@@ -21,7 +21,7 @@ AXTreeSourceViews::AXTreeSourceViews(ui::AXNodeID root_id,
                                      const ui::AXTreeID& tree_id,
                                      views::AXAuraObjCache* cache)
     : root_id_(root_id), tree_id_(tree_id), cache_(cache) {
-  DCHECK_NE(tree_id_, ui::AXTreeIDUnknown());
+  CHECK_NE(tree_id_, ui::AXTreeIDUnknown(), base::NotFatalUntil::M163);
 }
 
 AXTreeSourceViews::~AXTreeSourceViews() = default;

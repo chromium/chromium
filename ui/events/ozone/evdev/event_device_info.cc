@@ -579,7 +579,7 @@ void EventDeviceInfo::SetAbsInfo(unsigned int code,
 
 void EventDeviceInfo::SetAbsMtSlots(unsigned int code,
                                     const std::vector<int32_t>& values) {
-  DCHECK_EQ(GetAbsMtSlotCount(), values.size());
+  CHECK_EQ(GetAbsMtSlotCount(), values.size(), base::NotFatalUntil::M163);
   int index = code - EVDEV_ABS_MT_FIRST;
   if (index < 0 || index >= EVDEV_ABS_MT_COUNT)
     return;
@@ -699,7 +699,7 @@ uint32_t EventDeviceInfo::GetAbsMtSlotCount() const {
 int32_t EventDeviceInfo::GetAbsMtSlotValue(unsigned int code,
                                            unsigned int slot) const {
   unsigned int index = code - EVDEV_ABS_MT_FIRST;
-  DCHECK(index < EVDEV_ABS_MT_COUNT);
+  CHECK(index < EVDEV_ABS_MT_COUNT, base::NotFatalUntil::M163);
   return slot_values_[index][slot];
 }
 

@@ -31,7 +31,7 @@ void DialogModelContextMenuController::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  DCHECK_EQ(source, host_);
+  CHECK_EQ(source, host_, base::NotFatalUntil::M163);
 
   menu_model_ = std::make_unique<ui::DialogModelMenuModelAdapter>(
       model_generator_callback_.Run());

@@ -37,7 +37,7 @@ ScopedEnableUnadjustedMouseEventsWin::~ScopedEnableUnadjustedMouseEventsWin() {
     PLOG(INFO) << "RegisterRawInputDevices() failed for RIDEV_REMOVE ";
   }
 
-  DCHECK(owner_->using_wm_input());
+  CHECK(owner_->using_wm_input(), base::NotFatalUntil::M163);
   owner_->set_using_wm_input(false);
 }
 
@@ -50,7 +50,7 @@ ScopedEnableUnadjustedMouseEventsWin::StartMonitor(HWNDMessageHandler* owner) {
     PLOG(INFO) << "RegisterRawInputDevices() failed for RIDEV_INPUTSINK ";
     return nullptr;
   }
-  DCHECK(!owner->using_wm_input());
+  CHECK(!owner->using_wm_input(), base::NotFatalUntil::M163);
   owner->set_using_wm_input(true);
   return std::make_unique<ScopedEnableUnadjustedMouseEventsWin>(owner);
 }

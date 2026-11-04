@@ -237,14 +237,14 @@ EventFactoryEvdev::EventFactoryEvdev(CursorDelegateEvdev* cursor,
                         &mouse_button_map_,
                         &pointing_stick_button_map_),
       touch_id_generator_(0) {
-  DCHECK(device_manager_);
+  CHECK(device_manager_, base::NotFatalUntil::M163);
 }
 
 EventFactoryEvdev::~EventFactoryEvdev() = default;
 
 void EventFactoryEvdev::Init() {
-  DCHECK(!initialized_);
-  DCHECK(user_input_task_runner_);
+  CHECK(!initialized_, base::NotFatalUntil::M163);
+  CHECK(user_input_task_runner_, base::NotFatalUntil::M163);
 
   StartThread();
 

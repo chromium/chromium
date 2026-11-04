@@ -46,8 +46,8 @@ uint32_t DomKeyboardLayoutMapMac::GetKeyboardLayoutCount() {
 ui::DomKey DomKeyboardLayoutMapMac::GetDomKeyFromDomCodeForLayout(
     ui::DomCode dom_code,
     uint32_t keyboard_layout_index) {
-  DCHECK_NE(dom_code, ui::DomCode::NONE);
-  DCHECK_EQ(keyboard_layout_index, 0U);
+  CHECK_NE(dom_code, ui::DomCode::NONE, base::NotFatalUntil::M163);
+  CHECK_EQ(keyboard_layout_index, 0U, base::NotFatalUntil::M163);
 
   UInt32 dead_key_state = 0;
   uint16_t key_code = ui::KeycodeConverter::DomCodeToNativeKeycode(dom_code);

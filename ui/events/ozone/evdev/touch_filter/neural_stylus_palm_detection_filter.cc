@@ -203,7 +203,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
     const size_t slot = touch.slot;
     if (!touch.was_touching) {
       // New stroke, so add the new stroke to the stroke list.
-      DCHECK_NE(tracking_id, -1);
+      CHECK_NE(tracking_id, -1, base::NotFatalUntil::M163);
       DCHECK(strokes_.count(tracking_id) == 0)
           << " Tracking id " << tracking_id;
 
@@ -220,7 +220,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
       tracking_id = tracking_ids_[slot];
     }
 
-    DCHECK_NE(tracking_id, -1);
+    CHECK_NE(tracking_id, -1, base::NotFatalUntil::M163);
 
     auto insert_result = active_tracking_ids_.insert(tracking_id);
     // New tracking_id.
@@ -443,7 +443,7 @@ void NeuralStylusPalmDetectionFilter::AppendFeatures(
     features->push_back(1.0);  // existence.
   }
   const int padding = model_->config().max_sample_count - size;
-  DCHECK_GE(padding, 0);
+  CHECK_GE(padding, 0, base::NotFatalUntil::M163);
 
   for (int i = 0; i < padding * kFeaturesPerSample; ++i) {
     features->push_back(0.0);
@@ -494,7 +494,7 @@ void NeuralStylusPalmDetectionFilter::AppendResampledFeatures(
     features->push_back(1.0);  // existence.
   }
   const int padding = model_->config().max_sample_count - sample_count;
-  DCHECK_GE(padding, 0);
+  CHECK_GE(padding, 0, base::NotFatalUntil::M163);
 
   for (int i = 0; i < padding * kFeaturesPerSample; ++i) {
     features->push_back(0.0);
@@ -612,7 +612,7 @@ bool NeuralStylusPalmDetectionFilter::
 void NeuralStylusPalmDetectionFilter::EraseOldStrokes(base::TimeTicks time) {
   const base::TimeDelta max_age = model_->config().max_dead_neighbor_time;
   for (auto it = strokes_.begin(); it != strokes_.end();) {
-    DCHECK(!it->second.samples().empty());
+    CHECK(!it->second.samples().empty(), base::NotFatalUntil::M163);
     const base::TimeTicks most_recent_sample_time =
         it->second.samples().back().time;
     const auto age = time - most_recent_sample_time;

@@ -112,7 +112,7 @@ RenderFrameObserver::~RenderFrameObserver() = default;
 
 void RenderFrameObserver::SelfOwn(
     std::unique_ptr<RenderFrameObserver> this_instance) {
-  DCHECK_EQ(this, this_instance.get());
+  CHECK_EQ(this, this_instance.get(), base::NotFatalUntil::M163);
   this_instance_ = std::move(this_instance);
 }
 

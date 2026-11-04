@@ -64,7 +64,7 @@ uint32_t DomKeyboardLayoutMapWin::GetKeyboardLayoutCount() {
     DPLOG(ERROR) << "GetKeyboardLayoutList failed: ";
     return false;
   }
-  DCHECK_EQ(keyboard_layout_count, copy_count);
+  CHECK_EQ(keyboard_layout_count, copy_count, base::NotFatalUntil::M163);
 
   // The set of layouts returned from GetKeyboardLayoutList does not follow the
   // the order of the layouts in the control panel so we use GetKeyboardLayout
@@ -81,8 +81,9 @@ uint32_t DomKeyboardLayoutMapWin::GetKeyboardLayoutCount() {
 ui::DomKey DomKeyboardLayoutMapWin::GetDomKeyFromDomCodeForLayout(
     ui::DomCode dom_code,
     uint32_t keyboard_layout_index) {
-  DCHECK_NE(dom_code, ui::DomCode::NONE);
-  DCHECK_LT(keyboard_layout_index, keyboard_layout_handles_.size());
+  CHECK_NE(dom_code, ui::DomCode::NONE, base::NotFatalUntil::M163);
+  CHECK_LT(keyboard_layout_index, keyboard_layout_handles_.size(),
+           base::NotFatalUntil::M163);
 
   HKL keyboard_layout = keyboard_layout_handles_[keyboard_layout_index];
   int32_t scan_code = ui::KeycodeConverter::DomCodeToNativeKeycode(dom_code);

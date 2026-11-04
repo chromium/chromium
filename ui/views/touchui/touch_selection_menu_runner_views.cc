@@ -18,7 +18,7 @@ namespace views {
 TouchSelectionMenuRunnerViews::TestApi::TestApi(
     TouchSelectionMenuRunnerViews* menu_runner)
     : menu_runner_(menu_runner) {
-  DCHECK(menu_runner_);
+  CHECK(menu_runner_, base::NotFatalUntil::M163);
 }
 
 TouchSelectionMenuRunnerViews::TestApi::~TestApi() = default;
@@ -78,7 +78,7 @@ void TouchSelectionMenuRunnerViews::OpenMenu(
     const gfx::Size& handle_image_size,
     aura::Window* context,
     bool can_paste) {
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M163);
   CloseMenu();
 
   if (!TouchSelectionMenuViews::IsMenuAvailable(client.get(), can_paste)) {
@@ -96,7 +96,7 @@ void TouchSelectionMenuRunnerViews::CloseMenu() {
 
   // Closing the menu sets |menu_| to nullptr and eventually deletes the object.
   menu_->CloseMenu();
-  DCHECK(!menu_);
+  CHECK(!menu_, base::NotFatalUntil::M163);
 }
 
 bool TouchSelectionMenuRunnerViews::IsRunning() const {

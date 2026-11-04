@@ -68,7 +68,7 @@ std::optional<size_t> ViewModelBase::GetIndexOfView(const View* view) const {
 ViewModelBase::ViewModelBase() = default;
 
 void ViewModelBase::AddUnsafe(View* view, size_t index) {
-  DCHECK_LE(index, entries_.size());
+  CHECK_LE(index, entries_.size(), base::NotFatalUntil::M163);
   Entry entry;
   entry.view = view;
   entries_.insert(entries_.begin() + static_cast<ptrdiff_t>(index), entry);

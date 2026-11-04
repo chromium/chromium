@@ -43,7 +43,7 @@ ui::test::EventGenerator* GetActiveGenerator();
 
 NSPoint ConvertRootPointToTarget(NSWindow* target,
                                  const gfx::Point& point_in_root) {
-  DCHECK(GetActiveGenerator());
+  CHECK(GetActiveGenerator(), base::NotFatalUntil::M163);
   gfx::Point point = point_in_root;
 
   point -= gfx::ScreenRectFromNSRect(target.frame).OffsetFromOrigin();
@@ -236,7 +236,8 @@ NSEvent* CreateMouseEventInWindow(NSWindow* window,
 
 NSEvent* CreateMouseWheelEventInWindow(NSWindow* window,
                                        const ui::MouseEvent* mouse_event) {
-  DCHECK_EQ(mouse_event->type(), ui::EventType::kMousewheel);
+  CHECK_EQ(mouse_event->type(), ui::EventType::kMousewheel,
+           base::NotFatalUntil::M163);
   const ui::MouseWheelEvent* mouse_wheel_event =
       mouse_event->AsMouseWheelEvent();
   return cocoa_test_event_utils::TestScrollEvent(
@@ -361,7 +362,7 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
     gfx::NativeWindow root_window,
     gfx::NativeWindow target_window)
     : owner_(owner) {
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = this;
   SetTargetHandler(this);
   // Install a fake "edit" menu.
@@ -423,7 +424,7 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
 }
 
 EventGeneratorDelegateMac::~EventGeneratorDelegateMac() {
-  DCHECK_EQ(instance_, this);
+  CHECK_EQ(instance_, this, base::NotFatalUntil::M163);
   instance_ = nullptr;
 }
 
@@ -508,8 +509,8 @@ void EventGeneratorDelegateMac::OnScrollEvent(ui::ScrollEvent* event) {
   // MAY_BEGIN/END comes from the EventGenerator for trackpad rests.
   if (event->momentum_phase() == ui::EventMomentumPhase::MAY_BEGIN ||
       event->momentum_phase() == ui::EventMomentumPhase::END) {
-    DCHECK_EQ(0, event->x_offset());
-    DCHECK_EQ(0, event->y_offset());
+    CHECK_EQ(0, event->x_offset(), base::NotFatalUntil::M163);
+    CHECK_EQ(0, event->y_offset(), base::NotFatalUntil::M163);
     NSEventPhase phase =
         event->momentum_phase() == ui::EventMomentumPhase::MAY_BEGIN
             ? NSEventPhaseMayBegin
@@ -529,7 +530,7 @@ void EventGeneratorDelegateMac::OnScrollEvent(ui::ScrollEvent* event) {
 
   // Treat FLING_START as the beginning of a momentum phase.
   if (event->type() == ui::EventType::kScrollFlingStart) {
-    DCHECK(in_trackpad_scroll);
+    CHECK(in_trackpad_scroll, base::NotFatalUntil::M163);
     // First end the non-momentum phase.
     NSEvent* end = cocoa_test_event_utils::TestScrollEvent(
         location, target_window_, 0, 0, true, NSEventPhaseEnded,
@@ -560,7 +561,8 @@ void EventGeneratorDelegateMac::OnScrollEvent(ui::ScrollEvent* event) {
         NSEventPhaseChanged, NSEventPhaseNone);
     EmulateSendEvent(target_window_, update);
   } else {
-    DCHECK_EQ(event->type(), ui::EventType::kScrollFlingStart);
+    CHECK_EQ(event->type(), ui::EventType::kScrollFlingStart,
+             base::NotFatalUntil::M163);
     // Mac generates a stream of events. For the purposes of testing, just
     // generate one.
     NSEvent* update = cocoa_test_event_utils::TestScrollEvent(
@@ -581,14 +583,14 @@ void EventGeneratorDelegateMac::OnScrollEvent(ui::ScrollEvent* event) {
 
 gfx::Point EventGeneratorDelegateMac::CenterOfTarget(
     const ui::EventTarget* target) const {
-  DCHECK_EQ(target, this);
+  CHECK_EQ(target, this, base::NotFatalUntil::M163);
   return CenterOfWindow(gfx::NativeWindow(target_window_));
 }
 
 gfx::Point EventGeneratorDelegateMac::CenterOfWindow(
     gfx::NativeWindow native_window) const {
   NSWindow* window = native_window.GetNativeNSWindow();
-  DCHECK_EQ(window, target_window_);
+  CHECK_EQ(window, target_window_, base::NotFatalUntil::M163);
   // Assume the window is at the top-left of the coordinate system (even if
   // AppKit has moved it into the work area) see ConvertRootPointToTarget().
   return gfx::Point(NSWidth([window frame]) / 2, NSHeight([window frame]) / 2);

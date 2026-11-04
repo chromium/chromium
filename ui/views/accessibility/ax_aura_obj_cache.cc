@@ -70,8 +70,8 @@ class AXAuraObjCache::A11yOverrideWindowObserver : public aura::WindowObserver {
  private:
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK(window);
-    DCHECK_EQ(cache_->a11y_override_window_, window);
+    CHECK(window, base::NotFatalUntil::M163);
+    CHECK_EQ(cache_->a11y_override_window_, window, base::NotFatalUntil::M163);
     cache_->a11y_override_window_ = nullptr;
     observer_.Reset();
   }
@@ -100,9 +100,10 @@ AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
     return nullptr;
   }
 
-  DCHECK(view_to_id_map_.find(view) != view_to_id_map_.end() ||
-         // This is either a new view or we're erroneously here during ~View.
-         view->life_cycle_state() == View::LifeCycleState::kAlive);
+  CHECK(view_to_id_map_.find(view) != view_to_id_map_.end() ||
+            // This is either a new view or we're erroneously here during ~View.
+            view->life_cycle_state() == View::LifeCycleState::kAlive,
+        base::NotFatalUntil::M163);
 
   return CreateInternal<AXViewObjWrapper>(view, &view_to_id_map_);
 }
@@ -407,7 +408,8 @@ AXAuraObjWrapper* AXAuraObjCache::CreateInternal(
   // Ensure this |AuraView| is not already in the cache. This must happen after
   // |GetUniqueId|, as that can alter the cache such that the |find| call above
   // may have missed.
-  DCHECK(aura_view_to_id_map->find(aura_view) == aura_view_to_id_map->end());
+  CHECK(aura_view_to_id_map->find(aura_view) == aura_view_to_id_map->end(),
+        base::NotFatalUntil::M163);
 
   (*aura_view_to_id_map)[aura_view] = id;
   cache_[id] = std::move(wrapper);

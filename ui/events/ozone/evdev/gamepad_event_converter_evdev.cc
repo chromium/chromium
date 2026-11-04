@@ -70,7 +70,7 @@ GamepadEventConverterEvdev::GamepadEventConverterEvdev(
 }
 
 GamepadEventConverterEvdev::~GamepadEventConverterEvdev() {
-  DCHECK(!IsEnabled());
+  CHECK(!IsEnabled(), base::NotFatalUntil::M163);
 }
 
 bool GamepadEventConverterEvdev::HasGamepad() const {

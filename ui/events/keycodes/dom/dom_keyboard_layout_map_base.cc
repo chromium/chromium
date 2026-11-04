@@ -42,7 +42,7 @@ base::flat_map<std::string, std::string> DomKeyboardLayoutMapBase::Generate() {
 
 void DomKeyboardLayoutMapBase::PopulateLayout(uint32_t keyboard_layout_index,
                                               ui::DomKeyboardLayout* layout) {
-  DCHECK(layout);
+  CHECK(layout, base::NotFatalUntil::M163);
 
   for (const ui::DomCode dom_code : ui::kWritingSystemKeyDomCodes) {
     ui::DomKey dom_key =

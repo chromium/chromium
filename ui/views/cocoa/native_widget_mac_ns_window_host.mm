@@ -327,14 +327,15 @@ NativeWidgetMacNSWindowHost::NativeWidgetMacNSWindowHost(NativeWidgetMac* owner)
       root_view_id_(remote_cocoa::GetNewNSViewId()),
       accessibility_focus_overrider_(this),
       text_input_host_(new TextInputHost(this)) {
-  DCHECK(GetIdToWidgetHostImplMap().find(widget_id_) ==
-         GetIdToWidgetHostImplMap().end());
+  CHECK(GetIdToWidgetHostImplMap().find(widget_id_) ==
+            GetIdToWidgetHostImplMap().end(),
+        base::NotFatalUntil::M163);
   GetIdToWidgetHostImplMap().emplace(widget_id_, this);
-  DCHECK(owner);
+  CHECK(owner, base::NotFatalUntil::M163);
 }
 
 NativeWidgetMacNSWindowHost::~NativeWidgetMacNSWindowHost() {
-  DCHECK(children_.empty());
+  CHECK(children_.empty(), base::NotFatalUntil::M163);
   native_window_mapping_.reset();
   if (application_host_) {
     remote_ns_window_remote_.reset();
@@ -354,8 +355,8 @@ NativeWidgetMacNSWindowHost::~NativeWidgetMacNSWindowHost() {
 
   // Ensure that |this| cannot be reached by its id while it is being destroyed.
   auto found = GetIdToWidgetHostImplMap().find(widget_id_);
-  DCHECK(found != GetIdToWidgetHostImplMap().end());
-  DCHECK_EQ(found->second, this);
+  CHECK(found != GetIdToWidgetHostImplMap().end(), base::NotFatalUntil::M163);
+  CHECK_EQ(found->second, this, base::NotFatalUntil::M163);
   GetIdToWidgetHostImplMap().erase(found);
 
   // Destroy the bridge first to prevent any calls back into this during
@@ -686,12 +687,13 @@ void NativeWidgetMacNSWindowHost::SetRootView(views::View* root_view) {
 
 void NativeWidgetMacNSWindowHost::CreateCompositor(
     const Widget::InitParams& params) {
-  DCHECK(!compositor_);
-  DCHECK(!layer());
-  DCHECK(ViewsDelegate::GetInstance());
+  CHECK(!compositor_, base::NotFatalUntil::M163);
+  CHECK(!layer(), base::NotFatalUntil::M163);
+  CHECK(ViewsDelegate::GetInstance(), base::NotFatalUntil::M163);
 
   // "Infer" must be handled by ViewsDelegate::OnBeforeWidgetInit().
-  DCHECK_NE(Widget::InitParams::WindowOpacity::kInferred, params.opacity);
+  CHECK_NE(Widget::InitParams::WindowOpacity::kInferred, params.opacity,
+           base::NotFatalUntil::M163);
   bool translucent =
       params.opacity == Widget::InitParams::WindowOpacity::kTranslucent;
 
@@ -705,7 +707,7 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
   // Create the compositor and attach the layer to it.
   ui::ContextFactory* context_factory =
       ViewsDelegate::GetInstance()->GetContextFactory();
-  DCHECK(context_factory);
+  CHECK(context_factory, base::NotFatalUntil::M163);
   compositor_ = std::make_unique<ui::RecyclableCompositorMac>(context_factory);
   compositor_->widget()->SetNSView(this);
   compositor_->compositor()->SetBackgroundColor(
@@ -760,7 +762,7 @@ void NativeWidgetMacNSWindowHost::DestroyCompositor() {
     // LayerOwner supports a change in ownership, e.g., to animate a closing
     // window, but that won't work as expected for the root layer in
     // NativeWidgetNSWindowBridge.
-    DCHECK_EQ(this, layer()->owner());
+    CHECK_EQ(this, layer()->owner(), base::NotFatalUntil::M163);
     layer()->CompleteAllAnimations();
   }
   DestroyLayer();
@@ -846,7 +848,7 @@ void NativeWidgetMacNSWindowHost::SetParent(
 
   if (parent_) {
     auto found = std::ranges::find(parent_->children_, this);
-    DCHECK(found != parent_->children_.end());
+    CHECK(found != parent_->children_.end(), base::NotFatalUntil::M163);
     parent_->children_.erase(found);
     parent_ = nullptr;
   }
@@ -875,7 +877,8 @@ void NativeWidgetMacNSWindowHost::SetParent(
 
 void NativeWidgetMacNSWindowHost::OnNativeViewHostAttach(const View* view,
                                                          NSView* native_view) {
-  DCHECK_EQ(0u, attached_native_view_host_views_.count(view));
+  CHECK_EQ(0u, attached_native_view_host_views_.count(view),
+           base::NotFatalUntil::M163);
   attached_native_view_host_views_[view] = native_view;
   if (Widget* widget = GetWidget()) {
     widget->ReorderNativeViews();
@@ -884,7 +887,8 @@ void NativeWidgetMacNSWindowHost::OnNativeViewHostAttach(const View* view,
 
 void NativeWidgetMacNSWindowHost::OnNativeViewHostDetach(const View* view) {
   auto it = attached_native_view_host_views_.find(view);
-  DCHECK(it != attached_native_view_host_views_.end());
+  CHECK(it != attached_native_view_host_views_.end(),
+        base::NotFatalUntil::M163);
   attached_native_view_host_views_.erase(it);
 }
 
@@ -906,7 +910,7 @@ void NativeWidgetMacNSWindowHost::ReorderChildViews() {
     if (!ns_view_id) {
       // Subviews that do not already have an id will not work if the target is
       // in a different process.
-      DCHECK(in_process_ns_window_bridge_);
+      CHECK(in_process_ns_window_bridge_, base::NotFatalUntil::M163);
       ns_view_id = remote_cocoa::GetNewNSViewId();
       temp_ids.emplace_back(ns_view_id, subview);
     }
@@ -1156,7 +1160,7 @@ void NativeWidgetMacNSWindowHost::SetLayerAndCompositorOpaque(bool opaque) {
 // NativeWidgetMacNSWindowHost, remote_cocoa::ApplicationHost::Observer:
 void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(
     remote_cocoa::ApplicationHost* host) {
-  DCHECK_EQ(host, application_host_);
+  CHECK_EQ(host, application_host_, base::NotFatalUntil::M163);
   application_host_->RemoveObserver(this);
   application_host_ = nullptr;
 
@@ -1521,7 +1525,7 @@ void NativeWidgetMacNSWindowHost::OnIsFirstResponderChanged(
 }
 
 void NativeWidgetMacNSWindowHost::OnMouseCaptureActiveChanged(bool is_active) {
-  DCHECK_NE(is_mouse_capture_active_, is_active);
+  CHECK_NE(is_mouse_capture_active_, is_active, base::NotFatalUntil::M163);
   is_mouse_capture_active_ = is_active;
   if (!is_mouse_capture_active_ && GetWidget()) {
     GetWidget()->OnMouseCaptureLost();
@@ -1777,7 +1781,7 @@ void NativeWidgetMacNSWindowHost::OnWindowWillClose() {
 void NativeWidgetMacNSWindowHost::OnWindowHasClosed() {
   // OnWindowHasClosed will be called only after all child windows have had
   // OnWindowWillClose called on them.
-  DCHECK(children_.empty());
+  CHECK(children_.empty(), base::NotFatalUntil::M163);
   native_widget_mac_->WindowDestroyed();
 }
 
@@ -1860,11 +1864,12 @@ void NativeWidgetMacNSWindowHost::DoDialogButtonAction(
   }
   views::DialogDelegate* dialog =
       root_view_->GetWidget()->widget_delegate()->AsDialogDelegate();
-  DCHECK(dialog);
+  CHECK(dialog, base::NotFatalUntil::M163);
   if (button == ui::mojom::DialogButton::kOk) {
     dialog->AcceptDialog();
   } else {
-    DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
+    CHECK_EQ(button, ui::mojom::DialogButton::kCancel,
+             base::NotFatalUntil::M163);
     dialog->CancelDialog();
   }
 }

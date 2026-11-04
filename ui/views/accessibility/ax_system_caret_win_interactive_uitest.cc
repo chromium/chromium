@@ -57,7 +57,7 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
   }
 
   void TearDown() override {
-    DCHECK(!textfield_->owned_by_client());
+    CHECK(!textfield_->owned_by_client(), base::NotFatalUntil::M163);
     textfield_ = nullptr;
     // Calling CloseNow() will destroy the Widget.
     widget_.ExtractAsDangling()->CloseNow();

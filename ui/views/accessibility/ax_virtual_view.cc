@@ -61,7 +61,7 @@ AXVirtualView::AXVirtualView() : ViewAccessibility(nullptr) {
   // duplicate.
   if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
     ax_platform_node_ = ui::AXPlatformNode::Create(*this);
-    DCHECK(ax_platform_node_);
+    CHECK(ax_platform_node_, base::NotFatalUntil::M163);
   }
   SetClassName(GetViewClassName());
 }
@@ -80,7 +80,7 @@ AXVirtualView::~AXVirtualView() {
 }
 
 void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   if (view->virtual_parent_view_ == this) {
     return;  // Already a child of this virtual view.
   }
@@ -89,7 +89,7 @@ void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
 
 void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
                                    size_t index) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   CHECK_NE(view.get(), this)
       << "You cannot add an AXVirtualView as its own child.";
   DCHECK(!view->parent_view_) << "This |view| already has a View "
@@ -97,7 +97,7 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   DCHECK(!view->virtual_parent_view_) << "This |view| already has an "
                                          "AXVirtualView parent. Call "
                                          "RemoveChildView first.";
-  DCHECK_LE(index, virtual_children_.size());
+  CHECK_LE(index, virtual_children_.size(), base::NotFatalUntil::M163);
 
   view->virtual_parent_view_ = this;
   virtual_children_.insert(
@@ -122,10 +122,10 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
 }
 
 void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   index = std::min(index, virtual_children_.size() - 1);
 
-  DCHECK_EQ(view->virtual_parent_view_, this);
+  CHECK_EQ(view->virtual_parent_view_, this, base::NotFatalUntil::M163);
   if (virtual_children_[index].get() == view) {
     return;
   }
@@ -160,7 +160,7 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveFromParentView() {
 
 std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     AXVirtualView* view) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   auto cur_index = GetIndexOf(view);
   if (!cur_index.has_value()) {
     return {};
@@ -209,7 +209,7 @@ void AXVirtualView::RemoveAllChildViews() {
 }
 
 bool AXVirtualView::Contains(const AXVirtualView* view) const {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   for (const AXVirtualView* v = view; v; v = v->virtual_parent_view_) {
     if (v == this) {
       return true;
@@ -220,7 +220,7 @@ bool AXVirtualView::Contains(const AXVirtualView* view) const {
 
 std::optional<size_t> AXVirtualView::GetIndexOf(
     const AXVirtualView* view) const {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   const auto iter = std::ranges::find(virtual_children_, view,
                                       &std::unique_ptr<AXVirtualView>::get);
   return iter != virtual_children_.end()
@@ -237,7 +237,7 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeObject() const {
   if (ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
     return ViewAccessibility::GetNativeObject();
   }
-  DCHECK(ax_platform_node_);
+  CHECK(ax_platform_node_, base::NotFatalUntil::M163);
   return ax_platform_node_->GetNativeViewAccessible();
 }
 
@@ -292,7 +292,7 @@ void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
   }
 
   if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
-    DCHECK(ax_platform_node_);
+    CHECK(ax_platform_node_, base::NotFatalUntil::M163);
     ax_platform_node_->NotifyAccessibilityEvent(event_type);
   }
 
@@ -557,7 +557,7 @@ bool AXVirtualView::HandleAccessibleAction(
 
 bool AXVirtualView::HandleAccessibleActionInOwnerView(
     const ui::AXActionData& action_data) {
-  DCHECK(GetOwnerView());
+  CHECK(GetOwnerView(), base::NotFatalUntil::M163);
   // Save the node id so that the owner view can determine which virtual view
   // is being targeted for action.
   ui::AXActionData forwarded_action_data = action_data;
@@ -589,7 +589,7 @@ View* AXVirtualView::GetOwnerView() const {
 }
 
 ViewAXPlatformNodeDelegate* AXVirtualView::GetDelegate() const {
-  DCHECK(GetOwnerView());
+  CHECK(GetOwnerView(), base::NotFatalUntil::M163);
 #if BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
   return static_cast<ViewAXPlatformNodeDelegate*>(
       &GetOwnerView()->GetViewAccessibility());

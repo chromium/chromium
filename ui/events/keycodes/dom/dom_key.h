@@ -128,14 +128,14 @@ class DomKey {
 
   // Returns a DomKey for the given Unicode character.
   constexpr static DomKey FromCharacter(uint32_t character) {
-    DCHECK(character <= 0x10FFFF);
+    CHECK(character <= 0x10FFFF, base::NotFatalUntil::M163);
     return DomKey(TYPE_UNICODE | character);
   }
 
   // Returns a dead-key DomKey for the given combining character.
   constexpr static DomKey DeadKeyFromCombiningCharacter(
       uint32_t combining_character) {
-    DCHECK(combining_character <= 0x10FFFF);
+    CHECK(combining_character <= 0x10FFFF, base::NotFatalUntil::M163);
     return DomKey(TYPE_DEAD | combining_character);
   }
 

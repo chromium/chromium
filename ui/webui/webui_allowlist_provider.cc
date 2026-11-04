@@ -10,7 +10,7 @@
 WebUIAllowlistProvider::WebUIAllowlistProvider(
     scoped_refptr<WebUIAllowlist> allowlist)
     : allowlist_(std::move(allowlist)) {
-  DCHECK(allowlist_);
+  CHECK(allowlist_, base::NotFatalUntil::M163);
   allowlist_->SetWebUIAllowlistProvider(this);
 }
 
@@ -53,7 +53,7 @@ void WebUIAllowlistProvider::ClearAllContentSettingsRules(
 }
 
 void WebUIAllowlistProvider::ShutdownOnUIThread() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   RemoveAllObservers();
   allowlist_->ResetWebUIAllowlistProvider();

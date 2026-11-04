@@ -169,7 +169,8 @@ void MaybeUpdateCachedFrameButtonImages(
       views::Button::ButtonState button_state =
           static_cast<views::Button::ButtonState>(state);
       views::Button* button = get_button(type);
-      DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
+      CHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName(),
+               base::NotFatalUntil::M163);
       static_cast<views::ImageButton*>(button)->SetImageModel(
           button_state,
           ui::ImageModel::FromImageSkia(nav_button_provider->GetImage(

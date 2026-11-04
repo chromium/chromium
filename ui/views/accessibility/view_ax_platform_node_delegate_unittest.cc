@@ -797,8 +797,9 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetNameAndDescription) {
             ax::mojom::NameFrom::kRelatedElement);
 
   // Setting the labelledby View to itself should trigger a DCHECK.
-  EXPECT_DCHECK_DEATH_WITH(button_accessibility()->SetName(*button_),
-                           "DCHECK failed: view_ != &naming_view");
+  EXPECT_CHECK_DEATH_WITH(button_accessibility()->SetName(*button_),
+                          "Check failed: view_ != &naming_view",
+                          base::NotFatalUntil::M163);
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, SetIsSelected) {

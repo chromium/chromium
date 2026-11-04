@@ -178,7 +178,7 @@ std::string TrackedElementWebUI::ToString() const {
 
 scoped_refptr<TrackedElementWebUI::HighlightHandle>
 TrackedElementWebUI::GetOrMakeHighlightHandle() {
-  DCHECK(can_highlight_);
+  CHECK(can_highlight_, base::NotFatalUntil::M163);
 
   if (highlight_handle_) {
     return highlight_handle_.get();
@@ -192,7 +192,7 @@ TrackedElementWebUI::GetOrMakeHighlightHandle() {
 }
 
 void TrackedElementWebUI::ReleaseHighlightHandle() {
-  DCHECK(highlight_handle_);
+  CHECK(highlight_handle_, base::NotFatalUntil::M163);
   highlight_handle_ = nullptr;
   handler_->SetHighlightState(*this, false,
                               base::PassKey<TrackedElementWebUI>());
@@ -210,7 +210,7 @@ void TrackedElementWebUI::AddVisibilityLock() {
 }
 
 void TrackedElementWebUI::RemoveVisibilityLock() {
-  DCHECK_GT(visibility_lock_count_, 0);
+  CHECK_GT(visibility_lock_count_, 0, base::NotFatalUntil::M163);
   --visibility_lock_count_;
   UpdateEffectiveVisibility();
 }
@@ -249,12 +249,12 @@ void TrackedElementWebUI::UpdateEffectiveVisibility(bool bounds_changed) {
 }
 
 void TrackedElementWebUI::Activate() {
-  DCHECK(visible_);
+  CHECK(visible_, base::NotFatalUntil::M163);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(this);
 }
 
 void TrackedElementWebUI::CustomEvent(ui::CustomElementEventType event_type) {
-  DCHECK(visible_);
+  CHECK(visible_, base::NotFatalUntil::M163);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this,
                                                                 event_type);
 }

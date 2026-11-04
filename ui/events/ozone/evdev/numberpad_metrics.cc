@@ -123,7 +123,7 @@ bool NumberpadMetricsDelegate::IsEnabled() const {
 
 void NumberpadMetricsDelegate::SetState(bool now_eligible, bool now_enabled) {
   // enabled must only be set if eligible is set
-  DCHECK(now_enabled ? now_eligible : true);
+  CHECK(now_enabled ? now_eligible : true, base::NotFatalUntil::M163);
   eligible_ = now_eligible;
   enabled_ = now_enabled;
 }

@@ -165,7 +165,7 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosOpen(
       property_provider_->IsDeviceIdOfType(id_, DT_POINTING_STICK);
 
   // Create & initialize GestureInterpreter.
-  DCHECK(!interpreter_);
+  CHECK(!interpreter_, base::NotFatalUntil::M163);
   interpreter_ = NewGestureInterpreter();
   GestureInterpreterSetPropProvider(
       interpreter_,
@@ -640,7 +640,8 @@ void GestureInterpreterLibevdevCros::ReleaseKeys(stime_t timestamp) {
 
 bool GestureInterpreterLibevdevCros::SetMouseButtonState(unsigned int button,
                                                          bool down) {
-  DCHECK(BTN_MOUSE <= button && button < BTN_JOYSTICK);
+  CHECK(BTN_MOUSE <= button && button < BTN_JOYSTICK,
+        base::NotFatalUntil::M163);
   int button_offset = button - BTN_MOUSE;
 
   if (mouse_button_state_.test(button_offset) == down)

@@ -29,8 +29,8 @@ float ScaleTilt(int value, int min_value, int num_values) {
 }
 
 uint8_t ToolMaskFromButtonTool(int button_tool) {
-  DCHECK_GE(button_tool, BTN_TOOL_PEN);
-  DCHECK_LE(button_tool, BTN_TOOL_LENS);
+  CHECK_GE(button_tool, BTN_TOOL_PEN, base::NotFatalUntil::M163);
+  CHECK_LE(button_tool, BTN_TOOL_LENS, base::NotFatalUntil::M163);
   return 1 << (button_tool - BTN_TOOL_PEN);
 }
 
@@ -102,7 +102,7 @@ void PenTabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
     return;
   }
 
-  DCHECK_EQ(read_size % sizeof(inputs[0]), 0u);
+  CHECK_EQ(read_size % sizeof(inputs[0]), 0u, base::NotFatalUntil::M163);
   // SAFETY: `read_size` is the number of bytes read from the file descriptor.
   // It is capped by `sizeof(inputs)`, so it cannot overflow the buffer.
   ProcessEvents(

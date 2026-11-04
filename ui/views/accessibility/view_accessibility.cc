@@ -149,8 +149,8 @@ void ViewAccessibility::AddVirtualChildViewAt(
     std::unique_ptr<AXVirtualView> virtual_view,
     size_t index) {
   CHECK(view_);
-  DCHECK(virtual_view);
-  DCHECK_LE(index, virtual_children_.size());
+  CHECK(virtual_view, base::NotFatalUntil::M163);
+  CHECK_LE(index, virtual_children_.size(), base::NotFatalUntil::M163);
 
   if (virtual_view->parent_view() == this) {
     return;
@@ -183,7 +183,7 @@ void ViewAccessibility::AddVirtualChildViewAt(
 
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
     AXVirtualView* virtual_view) {
-  DCHECK(virtual_view);
+  CHECK(virtual_view, base::NotFatalUntil::M163);
   auto cur_index = GetIndexOf(virtual_view);
   if (!cur_index.has_value()) {
     return {};
@@ -232,7 +232,7 @@ void ViewAccessibility::RemoveAllVirtualChildViews() {
 }
 
 bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
-  DCHECK(virtual_view);
+  CHECK(virtual_view, base::NotFatalUntil::M163);
   for (const auto& virtual_child : virtual_children_) {
     // AXVirtualView::Contains() also checks if the provided virtual view is the
     // same as |this|.
@@ -245,7 +245,7 @@ bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
 
 std::optional<size_t> ViewAccessibility::GetIndexOf(
     const AXVirtualView* virtual_view) const {
-  DCHECK(virtual_view);
+  CHECK(virtual_view, base::NotFatalUntil::M163);
   const auto iter = std::ranges::find(virtual_children_, virtual_view,
                                       &std::unique_ptr<AXVirtualView>::get);
   return iter != virtual_children_.end()
@@ -582,10 +582,10 @@ void ViewAccessibility::SetName(std::u16string name) {
 }
 
 void ViewAccessibility::SetName(View& naming_view) {
-  DCHECK_NE(view_, &naming_view);
+  CHECK_NE(view_, &naming_view, base::NotFatalUntil::M163);
 
   std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
-  DCHECK(!name.empty());
+  CHECK(!name.empty(), base::NotFatalUntil::M163);
   SetName(std::move(name), ax::mojom::NameFrom::kRelatedElement);
 
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
@@ -944,7 +944,7 @@ void ViewAccessibility::SetDescription(
 
 void ViewAccessibility::SetDescription(View& describing_view) {
   CHECK(view_);
-  DCHECK_NE(view_, &describing_view);
+  CHECK_NE(view_, &describing_view, base::NotFatalUntil::M163);
 
   std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
   DCHECK(!name.empty())
@@ -2056,7 +2056,7 @@ void ViewAccessibility::OnWidgetDestroyed(Widget* widget) {
 
 void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
   CHECK(widget);
-  DCHECK_EQ(widget, GetWidget());
+  CHECK_EQ(widget, GetWidget(), base::NotFatalUntil::M163);
   if (widget == old_widget) {
     return;
   }

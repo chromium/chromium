@@ -460,7 +460,7 @@ int MacKeyCodeForWindowsKeyCode(KeyboardCode keycode,
 
   // In release code, |flags| is used to lookup accelerators, so logic to handle
   // caps lock properly isn't implemented.
-  DCHECK_EQ(0u, flags & NSEventModifierFlagCapsLock);
+  CHECK_EQ(0u, flags & NSEventModifierFlagCapsLock, base::NotFatalUntil::M163);
 
   auto it = kMap.find(keycode);
   if (it == kMap.end() || it->second.mac_keycode == -1) {
@@ -904,7 +904,7 @@ UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
                                          UInt32 modifier_key_state,
                                          UInt32 keyboard_type,
                                          UInt32* dead_key_state) {
-  DCHECK(dead_key_state);
+  CHECK(dead_key_state, base::NotFatalUntil::M163);
 
   CFDataRef layout_data =
       base::apple::CFCast<CFDataRef>(TISGetInputSourceProperty(
@@ -915,7 +915,7 @@ UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
 
   const UCKeyboardLayout* keyboard_layout =
       reinterpret_cast<const UCKeyboardLayout*>(CFDataGetBytePtr(layout_data));
-  DCHECK(keyboard_layout);
+  CHECK(keyboard_layout, base::NotFatalUntil::M163);
 
   UniChar char_buffer[kUCKeyTranslateBufferLength] = {0};
   UniCharCount buffer_length = kUCKeyTranslateBufferLength;

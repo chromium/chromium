@@ -45,7 +45,7 @@ View* ViewTargeterDelegate::TargetForRect(View* root, const gfx::Rect& rect) {
   View* point_view = nullptr;
 
   View::Views children = root->GetChildrenInZOrder();
-  DCHECK_EQ(root->children().size(), children.size());
+  CHECK_EQ(root->children().size(), children.size(), base::NotFatalUntil::M163);
   for (views::View* child : std::views::reverse(children)) {
     if (!child->GetCanProcessEventsWithinSubtree()) {
       continue;

@@ -484,7 +484,7 @@ bool HWNDMessageHandlerHeadless::GetClientAreaInsets(
   if (delegate_->GetClientAreaInsets(insets, frame_thickness)) {
     return true;
   }
-  DCHECK(insets->IsEmpty());
+  CHECK(insets->IsEmpty(), base::NotFatalUntil::M163);
 
   // Returning false causes the default handling in OnNCCalcSize() to
   // be invoked.

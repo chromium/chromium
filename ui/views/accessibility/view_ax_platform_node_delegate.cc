@@ -102,7 +102,7 @@ void FireEvent(QueuedEvent event) {
 }
 
 void FlushQueue() {
-  DCHECK(g_is_queueing_events);
+  CHECK(g_is_queueing_events, base::NotFatalUntil::M163);
   g_is_queueing_events = false;
   g_is_flushing = true;
   for (QueuedEvent event : GetEventQueue()) {
@@ -144,7 +144,7 @@ ViewAXPlatformNodeDelegate::ViewAXPlatformNodeDelegate(View* view)
 
 void ViewAXPlatformNodeDelegate::Init() {
   ax_platform_node_ = ui::AXPlatformNode::Create(*this);
-  DCHECK(ax_platform_node_);
+  CHECK(ax_platform_node_, base::NotFatalUntil::M163);
 
   static bool first_time = true;
   if (first_time) {
@@ -222,7 +222,7 @@ void ViewAXPlatformNodeDelegate::NotifyTransientFocus() {
     return;
   }
 
-  DCHECK(ax_platform_node_);
+  CHECK(ax_platform_node_, base::NotFatalUntil::M163);
   if (!IsReadyToNotifyEvents()) {
     return;
   }
@@ -250,12 +250,12 @@ void ViewAXPlatformNodeDelegate::NotifyTransientFocus() {
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
-  DCHECK(ax_platform_node_);
+  CHECK(ax_platform_node_, base::NotFatalUntil::M163);
   return ax_platform_node_->GetNativeViewAccessible();
 }
 
 void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
-  DCHECK(ax_platform_node_);
+  CHECK(ax_platform_node_, base::NotFatalUntil::M163);
   Widget* const widget = view()->GetWidget();
   if (!widget || widget->IsClosed()) {
     return;
@@ -388,7 +388,8 @@ size_t ViewAXPlatformNodeDelegate::GetChildCount() const {
     // In order to support the "read title (NVDAKey+T)" and "read window
     // (NVDAKey+B)" commands in the NVDA screen reader, hide the rest of the UI
     // from the accessibility tree when a modal dialog is showing.
-    DCHECK_EQ(child_widgets_result.child_widgets.size(), 1U);
+    CHECK_EQ(child_widgets_result.child_widgets.size(), 1U,
+             base::NotFatalUntil::M163);
     return 1;
   }
 
@@ -402,7 +403,7 @@ size_t ViewAXPlatformNodeDelegate::GetChildCount() const {
     if (view_accessibility.GetIsIgnored()) {
       const auto* child_view_delegate =
           static_cast<const ViewAXPlatformNodeDelegate*>(&view_accessibility);
-      DCHECK(child_view_delegate);
+      CHECK(child_view_delegate, base::NotFatalUntil::M163);
       view_child_count += child_view_delegate->GetChildCount();
     } else {
       ++view_child_count;
@@ -454,8 +455,8 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
   // (NVDAKey+B)" commands in the NVDA screen reader. We need to hide the rest
   // of the UI, other than the dialog, from the screen reader.
   if (child_widgets_result.is_tab_modal_showing) {
-    DCHECK_EQ(index, 0u);
-    DCHECK_EQ(child_widgets.size(), 1U);
+    CHECK_EQ(index, 0u, base::NotFatalUntil::M163);
+    CHECK_EQ(child_widgets.size(), 1U, base::NotFatalUntil::M163);
     return child_widgets[0]->GetRootView()->GetNativeViewAccessible();
   }
 
@@ -464,7 +465,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
     if (view_accessibility.GetIsIgnored()) {
       auto* child_view_delegate =
           static_cast<ViewAXPlatformNodeDelegate*>(&view_accessibility);
-      DCHECK(child_view_delegate);
+      CHECK(child_view_delegate, base::NotFatalUntil::M163);
       size_t child_count = child_view_delegate->GetChildCount();
       if (index < child_count) {
         return child_view_delegate->ChildAtIndex(index);
@@ -489,7 +490,8 @@ bool ViewAXPlatformNodeDelegate::HasModalDialog() const {
 
 std::wstring ViewAXPlatformNodeDelegate::ComputeListItemNameFromContent()
     const {
-  DCHECK_EQ(GetData().role, ax::mojom::Role::kListItem);
+  CHECK_EQ(GetData().role, ax::mojom::Role::kListItem,
+           base::NotFatalUntil::M163);
 
   std::string str = "";
   // The list item name will result in the concatenation of its children's
@@ -577,7 +579,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetParent() const {
 
     auto* parent_view_delegate =
         static_cast<ViewAXPlatformNodeDelegate*>(&view_accessibility);
-    DCHECK(parent_view_delegate);
+    CHECK(parent_view_delegate, base::NotFatalUntil::M163);
     return parent_view_delegate->GetParent();
   }
 
@@ -683,9 +685,9 @@ gfx::Rect ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
 gfx::RectF ViewAXPlatformNodeDelegate::GetInlineTextRect(
     const int start_offset,
     const int end_offset) const {
-  DCHECK_GE(start_offset, 0);
-  DCHECK_GE(end_offset, 0);
-  DCHECK_LE(start_offset, end_offset);
+  CHECK_GE(start_offset, 0, base::NotFatalUntil::M163);
+  CHECK_GE(end_offset, 0, base::NotFatalUntil::M163);
+  CHECK_LE(start_offset, end_offset, base::NotFatalUntil::M163);
   base::span<const int32_t> character_offsets =
       data_.GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   if (character_offsets.empty()) {

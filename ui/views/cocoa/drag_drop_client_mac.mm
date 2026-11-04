@@ -24,7 +24,7 @@ DragDropClientMac::DragDropClientMac(
     remote_cocoa::NativeWidgetNSWindowBridge* bridge,
     View* root_view)
     : drop_helper_(root_view), bridge_(bridge) {
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M163);
 }
 
 DragDropClientMac::~DragDropClientMac() = default;
@@ -72,7 +72,7 @@ void DragDropClientMac::StartDragAndDrop(
 
   NSImage* image = gfx::NSImageFromImageSkia(provider_mac.GetDragImage());
 
-  DCHECK(!NSEqualSizes(image.size, NSZeroSize));
+  CHECK(!NSEqualSizes(image.size, NSZeroSize), base::NotFatalUntil::M163);
   NSArray<NSDraggingItem*>* drag_items = provider_mac.GetDraggingItems();
   if (!drag_items) {
     // The source of this data is ultimately the OS, and while this shouldn't be

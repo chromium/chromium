@@ -9,7 +9,7 @@ namespace ui {
 PalmDetectionFilter::PalmDetectionFilter(
     SharedPalmDetectionFilterState* shared_palm_state)
     : shared_palm_state_(shared_palm_state) {
-  DCHECK(shared_palm_state != nullptr);
+  CHECK(shared_palm_state != nullptr, base::NotFatalUntil::M163);
 }
 
 PalmDetectionFilter::~PalmDetectionFilter() {}
