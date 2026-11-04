@@ -1461,22 +1461,6 @@ void MaybeRegisterChromeFeaturePromos(
                 "customize settings in Reading Mode.")));
   }
 
-  // kIPHResumptionRailFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHResumptionRailFeature,
-          kVerticalTabStripOrganizerButtonElementId, IDS_WILDCARD,
-          IDS_RESUMPTION_RAIL_IPH_TITLE,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleTitleText(IDS_RESUMPTION_RAIL_IPH_TITLE)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetBubbleIcon(&(features::IsRoundedIconsEnabled()
-                               ? vector_icons::kLightbulb2Icon
-                               : vector_icons::kLightbulbOutlineOldIcon))
-          .SetMetadata(147, "gqueen@chromium.org",
-                       "Triggered to educate users about the Resumption Rail "
-                       "feature entrypoint.")));
-
   // kIPHSideBySidePinnableFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(

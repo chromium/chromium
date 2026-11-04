@@ -1148,12 +1148,6 @@ BASE_FEATURE(kIPHiOSPriceTrackingDesktopFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kIPHResumptionRailFeature,
-             "IPH_ResumptionRail",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kIPHSearchPromotionFeature,
              "IPH_SearchPromotionFeature",

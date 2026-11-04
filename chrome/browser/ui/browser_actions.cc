@@ -1367,21 +1367,6 @@ void BrowserActions::InitializeChromeMenuActions() {
                     controller->SetOrganizerVisible(
                         !controller->IsOrganizerPanelVisible());
                   }
-
-                  // Dismiss the IPH promo if it is currently showing, or abort
-                  // it if it is queued to show.
-                  if (auto* interface =
-                          BrowserUserEducationInterface::From(bwi)) {
-                    const base::Feature& iph_feature =
-                        feature_engagement::kIPHResumptionRailFeature;
-                    if (interface->IsFeaturePromoActive(iph_feature)) {
-                      interface->NotifyFeaturePromoFeatureUsed(
-                          iph_feature,
-                          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-                    } else if (interface->IsFeaturePromoQueued(iph_feature)) {
-                      interface->AbortFeaturePromo(iph_feature);
-                    }
-                  }
                 },
                 bwi))
             .SetActionId(kActionToggleOrganizerPanel)

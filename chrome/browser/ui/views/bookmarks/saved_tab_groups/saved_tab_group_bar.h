@@ -15,7 +15,6 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/page.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
@@ -135,9 +134,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Reorders all groups in the bookmarks to match the state of
   // `saved_tab_group_model_`.
   void SavedTabGroupReordered();
-
-  // Called when the resumption rail promo is closed.
-  void OnResumptionRailPromoClosed();
 
   // Adds the button to the child views for a new tab group at a specific index.
   // This function then verifies if the added button and overflow button should

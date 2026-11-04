@@ -661,10 +661,6 @@ DEFINE_VARIATION_PARAM(kIPHiOSPriceTrackingDesktopFeature,
                        "IPH_iOSPriceTrackingDesktop");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_IOS)
-DEFINE_VARIATION_PARAM(kIPHResumptionRailFeature, "IPH_ResumptionRail");
-#endif  // !BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_WIN)
 DEFINE_VARIATION_PARAM(kIPHSearchPromotionFeature,
                        "IPH_SearchPromotionFeature");
@@ -951,7 +947,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadingModeLineFocusFeature),
         VARIATION_ENTRY(kIPHReadingModePageActionLabelFeature),
         VARIATION_ENTRY(kIPHReadingModePresentationModeFeature),
-        VARIATION_ENTRY(kIPHResumptionRailFeature),
         VARIATION_ENTRY(kIPHSendTabToSelfTutorialFeature),
         VARIATION_ENTRY(kIPHShoppingCollectionFeature),
         VARIATION_ENTRY(kIPHSideBySidePinnableFeature),
