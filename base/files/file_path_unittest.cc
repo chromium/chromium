@@ -973,6 +973,19 @@ TEST_F(FilePathTest, EqualityTest) {
 
     EXPECT_EQ(a == b, cases[i].expected)
         << "equality i: " << i << ", a: " << a.value() << ", b: " << b.value();
+    EXPECT_EQ((a <=> b) == 0, cases[i].expected)
+        << "three-way i: " << i << ", a: " << a.value() << ", b: " << b.value();
+    if (cases[i].expected) {
+      EXPECT_FALSE(a < b) << "less i: " << i << ", a: " << a.value()
+                          << ", b: " << b.value();
+      EXPECT_FALSE(b < a) << "greater i: " << i << ", a: " << a.value()
+                          << ", b: " << b.value();
+      EXPECT_EQ(std::hash<FilePath>()(a), std::hash<FilePath>()(b))
+          << "hash i: " << i << ", a: " << a.value() << ", b: " << b.value();
+    } else {
+      EXPECT_NE(a < b, b < a) << "strict weak ordering i: " << i
+                              << ", a: " << a.value() << ", b: " << b.value();
+    }
   }
 
   for (size_t i = 0; i < std::size(cases); ++i) {
@@ -983,6 +996,14 @@ TEST_F(FilePathTest, EqualityTest) {
         << "inequality i: " << i << ", a: " << a.value()
         << ", b: " << b.value();
   }
+
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  // Leading drive letters are compared case-insensitively in operator<=>,
+  // while the remainder of the path is compared case-sensitively.
+  EXPECT_LT(FilePath(FPL("C:/foo/bar")), FilePath(FPL("d:/foo/bar")));
+  EXPECT_LT(FilePath(FPL("c:/foo/bar")), FilePath(FPL("D:/foo/bar")));
+  EXPECT_LT(FilePath(FPL("c:/Foo/bar")), FilePath(FPL("C:/foo/bar")));
+#endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 }
 
 TEST_F(FilePathTest, MacroExpansion) {

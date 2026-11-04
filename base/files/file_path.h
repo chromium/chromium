@@ -102,6 +102,7 @@
 #ifndef BASE_FILES_FILE_PATH_H_
 #define BASE_FILES_FILE_PATH_H_
 
+#include <compare>
 #include <cstddef>
 #include <iosfwd>
 #include <string>
@@ -217,8 +218,9 @@ class BASE_EXPORT FilePath {
   // case-insensitively.
   bool operator==(const FilePath& that) const;
 
-  // Required for some STL containers and operations
-  auto operator<=>(const FilePath& that) const = default;
+  // Required for some STL containers and operations. On systems which use
+  // drive letters, the drive letters are compared case-insensitively.
+  std::strong_ordering operator<=>(const FilePath& that) const;
 
   const StringType& value() const LIFETIME_BOUND { return path_; }
 
@@ -558,12 +560,16 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& out,
 namespace std {
 
 template <>
-struct hash<base::FilePath> {
+struct BASE_EXPORT hash<base::FilePath> {
   typedef base::FilePath argument_type;
   typedef std::size_t result_type;
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  result_type operator()(argument_type const& f) const;
+#else
   result_type operator()(argument_type const& f) const {
     return hash<base::FilePath::StringType>()(f.value());
   }
+#endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 };
 
 }  // namespace std

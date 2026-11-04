@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/features.h"
 #include "base/files/safe_base_name.h"
+#include "base/hash/hash.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
@@ -75,23 +76,36 @@ StringViewType::size_type FindDriveLetter(StringViewType path) {
 }
 
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
-bool EqualDriveLetterCaseInsensitive(StringViewType a, StringViewType b) {
-  StringType::size_type a_letter_pos = FindDriveLetter(a);
-  StringType::size_type b_letter_pos = FindDriveLetter(b);
+// Returns the first character of non-empty `path`, normalized to ASCII
+// lowercase if `path` begins with a drive letter specification.
+FilePath::CharType NormalizeFirstCharForDriveLetter(StringViewType path) {
+  CHECK(!path.empty());
+  return FindDriveLetter(path) != StringType::npos ? ToLowerASCII(path[0])
+                                                   : path[0];
+}
 
-  if (a_letter_pos == StringType::npos || b_letter_pos == StringType::npos) {
-    return a == b;
+std::strong_ordering CompareDriveLetterCaseInsensitive(StringViewType a,
+                                                       StringViewType b) {
+  // Normalize a leading [A-Za-z]: drive letter to ASCII lowercase so that
+  // operator== and operator<=> induce the exact same equivalence and strict
+  // total ordering (including relative ordering against non-drive-letter
+  // paths).
+  if (!a.empty() && !b.empty()) {
+    if (auto cmp = NormalizeFirstCharForDriveLetter(a) <=>
+                   NormalizeFirstCharForDriveLetter(b);
+        cmp != 0) {
+      return cmp;
+    }
+    return a.substr(1) <=> b.substr(1);
   }
+  return a <=> b;
+}
 
-  StringViewType a_letter(a.substr(0, a_letter_pos + 1));
-  StringViewType b_letter(b.substr(0, b_letter_pos + 1));
-  if (!StartsWith(a_letter, b_letter, CompareCase::INSENSITIVE_ASCII)) {
+bool EqualDriveLetterCaseInsensitive(StringViewType a, StringViewType b) {
+  if (a.size() != b.size()) {
     return false;
   }
-
-  StringViewType a_rest(a.substr(a_letter_pos + 1));
-  StringViewType b_rest(b.substr(b_letter_pos + 1));
-  return a_rest == b_rest;
+  return CompareDriveLetterCaseInsensitive(a, b) == 0;
 }
 
 // Returns true if `left` and `right` are equivalent drive letter components.
@@ -320,6 +334,14 @@ bool FilePath::operator==(const FilePath& that) const {
   return EqualDriveLetterCaseInsensitive(this->path_, that.path_);
 #else   // defined(FILE_PATH_USES_DRIVE_LETTERS)
   return path_ == that.path_;
+#endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
+}
+
+std::strong_ordering FilePath::operator<=>(const FilePath& that) const {
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  return CompareDriveLetterCaseInsensitive(this->path_, that.path_);
+#else   // defined(FILE_PATH_USES_DRIVE_LETTERS)
+  return path_ <=> that.path_;
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 }
 
@@ -1671,3 +1693,18 @@ bool FilePath::IsVirtualDocumentPath() const {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace base
+
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+namespace std {
+
+std::size_t hash<base::FilePath>::operator()(const base::FilePath& f) const {
+  base::FilePath::StringViewType value = f.value();
+  if (value.empty()) {
+    return 0;
+  }
+  return base::HashCombine(base::NormalizeFirstCharForDriveLetter(value),
+                           value.substr(1));
+}
+
+}  // namespace std
+#endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
