@@ -44,7 +44,7 @@ bool VisitedLinkCommon::IsVisited(std::string_view canonical_url) const {
   if (canonical_url.size() == 0) {
     return false;
   }
-  if (!hash_table_ || table_length_ == 0) {
+  if (hash_table_.empty()) {
     return false;
   }
   if (is_pseudo_partitioned_) {
@@ -58,7 +58,7 @@ bool VisitedLinkCommon::IsVisited(const GURL& url) const {
 }
 
 bool VisitedLinkCommon::IsVisited(const VisitedLink& link, uint64_t salt) {
-  if (!hash_table_ || table_length_ == 0) {
+  if (hash_table_.empty()) {
     return false;
   }
   if (!link.IsValid()) {
@@ -98,8 +98,9 @@ bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
     // the next position.
     collision_count++;
     cur_hash++;
-    if (cur_hash == table_length_)
+    if (cur_hash == table_length()) {
       cur_hash = 0;
+    }
     if (cur_hash == first_hash) {
       // Wrapped around and didn't find an empty space, this means we're in an
       // infinite loop because AddFingerprint didn't do its job resizing.

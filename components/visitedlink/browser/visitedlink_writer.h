@@ -335,7 +335,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Computes the table load as fraction. For example, if 1/4 of the entries are
   // full, this value will be 0.25
   float ComputeTableLoad() const {
-    return static_cast<float>(used_items_) / static_cast<float>(table_length_);
+    return static_cast<float>(used_items_) / static_cast<float>(table_length());
   }
 
   // Initializes a rebuild of the visited link database based on the browser
@@ -357,8 +357,9 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Increases or decreases the given hash value by one, wrapping around as
   // necessary. Used for probing.
   inline Hash IncrementHash(Hash hash) {
-    if (hash >= table_length_ - 1)
+    if (hash >= table_length() - 1) {
       return 0;  // Wrap around.
+    }
     return hash + 1;
   }
 

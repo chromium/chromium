@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/visitedlink/core/visited_link.h"
 
 class GURL;
@@ -108,9 +110,10 @@ class VisitedLinkCommon {
 
 #ifdef UNIT_TEST
   // Returns statistics about DB usage
-  void GetUsageStatistics(int32_t* table_size,
-                          VisitedLinkCommon::Fingerprint** fingerprints) {
-    *table_size = table_length_;
+  void GetUsageStatistics(
+      int32_t* table_size,
+      base::span<const VisitedLinkCommon::Fingerprint>* fingerprints) {
+    *table_size = table_length();
     *fingerprints = hash_table_;
   }
 #endif
@@ -119,7 +122,7 @@ class VisitedLinkCommon {
   // This structure is at the beginning of the unpartitioned shared memory so
   // that the readers can get stats on the table.
   struct SharedHeader {
-    // see goes into table_length_
+    // see table_length()
     uint32_t length;
 
     // goes into salt_
@@ -139,7 +142,7 @@ class VisitedLinkCommon {
   // table. Readers will receive their salts via the
   // VisitedLinkNavigationThrottle or via the VisitedLinkNotificationSink IPC.
   struct PartitionedSharedHeader {
-    // see goes into table_length_
+    // see table_length()
     uint32_t length;
 
     // Padding to ensure the Fingerprint table is aligned. Without this, reading
@@ -155,9 +158,10 @@ class VisitedLinkCommon {
   // function should be called instead of accessing the table directly to
   // contain endian issues.
   Fingerprint FingerprintAt(int32_t table_offset) const {
-    if (!hash_table_)
+    if (hash_table_.empty()) {
       return kNullFingerprint;
-    return UNSAFE_TODO(hash_table_[table_offset]);
+    }
+    return hash_table_[table_offset];
   }
 
   // Computes the fingerprint of the given canonical URL. It is static so the
@@ -189,17 +193,19 @@ class VisitedLinkCommon {
   }
   // Uses the current hashtable.
   Hash HashFingerprint(Fingerprint fingerprint) const {
-    return HashFingerprint(fingerprint, table_length_);
+    return HashFingerprint(fingerprint, table_length());
   }
 
-  // pointer to the first item
+  // the items of the hash table
   // May temporarily point to an old unmapped region during update.
-  raw_ptr<VisitedLinkCommon::Fingerprint,
-          DisableDanglingPtrDetection | AllowPtrArithmetic>
-      hash_table_ = nullptr;
+  base::raw_span<const VisitedLinkCommon::Fingerprint,
+                 DisableDanglingPtrDetection>
+      hash_table_;
 
   // the number of items in the hash table
-  int32_t table_length_ = 0;
+  int32_t table_length() const {
+    return base::checked_cast<int32_t>(hash_table_.size());
+  }
 
   // TODO(crbug.com/517136103): Remove salt_ once migration has landed.
   // salt used for each URL when computing the fingerprint

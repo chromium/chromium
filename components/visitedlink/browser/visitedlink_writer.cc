@@ -352,8 +352,9 @@ VisitedLinkWriter::Hash VisitedLinkWriter::TryToAddURL(const GURL& url) {
   // This can happen if we get thousands of new URLs and something causes
   // the table resizing to fail. This check prevents a hang in that case. Note
   // that this is *not* the resize limit, this is just a sanity check.
-  if (used_items_ / 8 > table_length_ / 10)
+  if (used_items_ / 8 > table_length() / 10) {
     return kNullHash;  // Table is more than 80% full.
+  }
 
   return AddFingerprint(fingerprint, true);
 }
@@ -451,7 +452,7 @@ void VisitedLinkWriter::DeleteURLs(const std::vector<GURL>& urls) {
 VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
     Fingerprint fingerprint,
     bool send_notifications) {
-  if (!hash_table_ || table_length_ == 0) {
+  if (hash_table_.empty()) {
     UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
                               AddFingerprint::kTableError);
     NOTREACHED();  // Not initialized.
@@ -513,7 +514,7 @@ void VisitedLinkWriter::DeleteFingerprintsFromCurrentTable(
 
 bool VisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint,
                                           bool update_file) {
-  if (!hash_table_ || table_length_ == 0) {
+  if (hash_table_.empty()) {
     NOTREACHED();  // Not initialized.
   }
   if (!IsVisited(fingerprint))
@@ -599,15 +600,15 @@ void VisitedLinkWriter::WriteFullTable() {
   int32_t header[4];
   header[0] = kFileSignature;
   header[1] = kFileCurrentVersion;
-  header[2] = table_length_;
+  header[2] = table_length();
   header[3] = used_items_;
   WriteToFile(scoped_file_holder_.get(), 0, header, sizeof(header));
   WriteToFile(scoped_file_holder_.get(), sizeof(header), salt_.data(),
               sizeof(salt_));
 
   // Write the hash data.
-  WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, hash_table_,
-              table_length_ * sizeof(Fingerprint));
+  WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, GetHashTable().data(),
+              table_length() * sizeof(Fingerprint));
 
   // The hash table may have shrunk, so make sure this is the end.
   PostIOTask(FROM_HERE,
@@ -720,8 +721,7 @@ void VisitedLinkWriter::OnTableLoadComplete(
          load_from_file_result->hash_table_memory.mapping.IsValid());
   salt_ = load_from_file_result->salt;
   mapped_table_memory_ = std::move(load_from_file_result->hash_table_memory);
-  hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping).data();
-  table_length_ = load_from_file_result->num_entries;
+  hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping);
   used_items_ = load_from_file_result->used_count;
 
 #ifndef NDEBUG
@@ -735,8 +735,9 @@ void VisitedLinkWriter::OnTableLoadComplete(
     // Resize the table if the table doesn't have enough capacity.
     int32_t new_used_items =
         used_items_ + static_cast<int32_t>(added_since_load_.size());
-    if (new_used_items >= table_length_)
+    if (new_used_items >= table_length()) {
       ResizeTable(NewTableSizeForCount(new_used_items));
+    }
 
     // Also add anything that was added while we were asynchronously
     // loading the table.
@@ -856,8 +857,7 @@ bool VisitedLinkWriter::CreateURLTable(int32_t num_entries) {
   if (!VisitedLinkWriter::fail_table_creation_for_testing_ &&
       CreateApartURLTable(num_entries, salt_, &table_memory)) {
     mapped_table_memory_ = std::move(table_memory);
-    hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping).data();
-    table_length_ = num_entries;
+    hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping);
     used_items_ = 0;
     return true;
   }
@@ -911,7 +911,7 @@ void VisitedLinkWriter::FreeURLTable() {
 }
 
 bool VisitedLinkWriter::ResizeTableIfNecessary() {
-  DCHECK(table_length_ > 0) << "Must have a table";
+  DCHECK(table_length() > 0) << "Must have a table";
 
   // Load limits for good performance/space. We are pretty conservative about
   // keeping the table not very full. This is because we use linear probing
@@ -922,14 +922,14 @@ bool VisitedLinkWriter::ResizeTableIfNecessary() {
 
   float load = ComputeTableLoad();
   if (load < kMaxTableLoad &&
-      (table_length_ <= kDefaultTableSize || load > kMinTableLoad)) {
+      (table_length() <= kDefaultTableSize || load > kMinTableLoad)) {
     return false;
   }
 
   // Table needs to grow or shrink.
   int32_t new_size = NewTableSizeForCount(used_items_);
   DCHECK(new_size > used_items_);
-  DCHECK(load <= kMinTableLoad || new_size > table_length_);
+  DCHECK(load <= kMinTableLoad || new_size > table_length());
   ResizeTable(new_size);
   return true;
 }
@@ -1103,11 +1103,11 @@ void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
     WriteToFile(scoped_file_holder_.get(),
                 first_hash * sizeof(Fingerprint) + kFileHeaderSize,
                 &GetHashTable()[first_hash],
-                (table_length_ - first_hash) * sizeof(Fingerprint));
+                (table_length() - first_hash) * sizeof(Fingerprint));
 
     // Now do 0->last_lash.
-    WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, hash_table_,
-                (last_hash + 1) * sizeof(Fingerprint));
+    WriteToFile(scoped_file_holder_.get(), kFileHeaderSize,
+                GetHashTable().data(), (last_hash + 1) * sizeof(Fingerprint));
   } else {
     // Normal case, just write the range.
     WriteToFile(scoped_file_holder_.get(),
@@ -1166,10 +1166,7 @@ void VisitedLinkWriter::TableBuilder::OnCompleteMainThread() {
 }
 
 base::span<VisitedLinkCommon::Fingerprint> VisitedLinkWriter::GetHashTable() {
-  base::span<Fingerprint> hash_table =
-      GetHashTableFromMapping(mapped_table_memory_.mapping);
-  DCHECK_EQ(hash_table.size(), static_cast<size_t>(table_length_));
-  return hash_table;
+  return GetHashTableFromMapping(mapped_table_memory_.mapping);
 }
 
 // static
