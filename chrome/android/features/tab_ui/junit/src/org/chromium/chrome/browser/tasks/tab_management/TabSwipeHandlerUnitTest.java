@@ -17,10 +17,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,8 +42,8 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
+import org.chromium.ui.test.util.TestHapticFeedbackView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -55,25 +53,6 @@ public class TabSwipeHandlerUnitTest {
     private static final String COMPONENT_NAME = "TestComponent";
     private static final float SWIPE_THRESHOLD = 50f;
     private static final int TAB_ID = 101;
-
-    /** Concrete view subclass to capture haptic feedback constants without Mockito spies. */
-    private static class TestHapticFeedbackView extends FrameLayout {
-        private final List<Integer> mHapticFeedbackConstants = new ArrayList<>();
-
-        TestHapticFeedbackView(Context context) {
-            super(context);
-        }
-
-        @Override
-        public boolean performHapticFeedback(int feedbackConstant) {
-            mHapticFeedbackConstants.add(feedbackConstant);
-            return true;
-        }
-
-        List<Integer> getHapticFeedbackConstants() {
-            return mHapticFeedbackConstants;
-        }
-    }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
