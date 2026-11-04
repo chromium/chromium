@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_view.h"
 
+#import "base/functional/bind.h"
+#import "base/location.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_waveform_view.h"
@@ -13,6 +17,8 @@
 
 NSString* const kTTCVoicePlateCloseButtonAccessibilityIdentifier =
     @"TTCVoicePlateCloseButtonAccessibilityIdentifier";
+NSString* const kTTCVoicePlateErrorBannerAccessibilityIdentifier =
+    @"TTCVoicePlateErrorBannerAccessibilityIdentifier";
 NSString* const kTTCVoicePlatePlayPauseButtonAccessibilityIdentifier =
     @"TTCVoicePlatePlayPauseButtonAccessibilityIdentifier";
 
@@ -36,6 +42,13 @@ constexpr CGFloat kCloseButtonBackgroundAlpha = 0.18;
 constexpr CGFloat kCloseButtonBorderAlpha = 0.35;
 constexpr CGFloat kDisabledButtonAlpha = 0.45;
 
+constexpr CGFloat kOuterStackSpacing = 8.0;
+constexpr CGFloat kErrorChipPaddingHorizontal = 12.0;
+constexpr CGFloat kErrorChipPaddingVertical = 4.0;
+constexpr CGFloat kErrorChipCornerRadius = 8.0;
+
+constexpr base::TimeDelta kErrorAutoDismissDelay = base::Seconds(4);
+
 // UI strings.
 NSString* const kCloseSessionAccessibilityLabel = @"Close session";
 NSString* const kPauseSessionAccessibilityLabel = @"Pause session";
@@ -49,9 +62,13 @@ NSString* const kStartSessionAccessibilityLabel = @"Start session";
   BOOL _isMicMuted;
 
   UIVisualEffectView* _blurEffectView;
+  UILabel* _errorLabel;
+  UIView* _errorChipContainer;
   UIButton* _playPauseButton;
   UIButton* _closeButton;
   TTCWaveformView* _waveformView;
+
+  base::OneShotTimer _errorDismissTimer;
 }
 
 #pragma mark - Initialization
@@ -60,6 +77,31 @@ NSString* const kStartSessionAccessibilityLabel = @"Start session";
   self = [super initWithFrame:frame];
   if (self) {
     _currentState = TTCSessionUIState::kIdle;
+
+    // Transient error chip floating above the voice plate controls.
+    _errorLabel = [[UILabel alloc] init];
+    _errorLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _errorLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    _errorLabel.textColor = [UIColor colorNamed:kRedColor];
+    _errorLabel.textAlignment = NSTextAlignmentCenter;
+    _errorLabel.numberOfLines = 0;
+    _errorLabel.accessibilityIdentifier =
+        kTTCVoicePlateErrorBannerAccessibilityIdentifier;
+
+    _errorChipContainer = [[UIView alloc] init];
+    _errorChipContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    _errorChipContainer.backgroundColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
+    _errorChipContainer.layer.cornerRadius = kErrorChipCornerRadius;
+    _errorChipContainer.layer.masksToBounds = YES;
+    _errorChipContainer.hidden = YES;
+    [_errorChipContainer addSubview:_errorLabel];
+    AddSameConstraintsWithInsets(
+        _errorLabel, _errorChipContainer,
+        NSDirectionalEdgeInsetsMake(
+            kErrorChipPaddingVertical, kErrorChipPaddingHorizontal,
+            kErrorChipPaddingVertical, kErrorChipPaddingHorizontal));
 
     // Left circular Session Pause/Resume button.
     _playPauseButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -135,8 +177,17 @@ NSString* const kStartSessionAccessibilityLabel = @"Start session";
     [self registerForTraitChanges:@[ [UITraitUserInterfaceStyle class] ]
                        withAction:@selector(updateBorderColors)];
 
-    [self addSubview:controlsStack];
-    AddSameConstraints(controlsStack, self);
+    // Outer vertical stack containing the error chip and the 3-element control
+    // row.
+    UIStackView* outerStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ _errorChipContainer, controlsStack ]];
+    outerStack.translatesAutoresizingMaskIntoConstraints = NO;
+    outerStack.axis = UILayoutConstraintAxisVertical;
+    outerStack.alignment = UIStackViewAlignmentCenter;
+    outerStack.spacing = kOuterStackSpacing;
+
+    [self addSubview:outerStack];
+    AddSameConstraints(outerStack, self);
 
     [self updateControlsForState:_currentState];
   }
@@ -152,6 +203,9 @@ NSString* const kStartSessionAccessibilityLabel = @"Start session";
   _currentState = state;
   if (state != TTCSessionUIState::kListening) {
     _isMicMuted = NO;
+  }
+  if (state != TTCSessionUIState::kError) {
+    [self dismissErrorBanner];
   }
   [self updateControlsForState:state];
 }
@@ -169,7 +223,15 @@ NSString* const kStartSessionAccessibilityLabel = @"Start session";
 }
 
 - (void)showErrorMessage:(NSString*)errorMessage {
-  // Implemented in follow-up error chip slice.
+  _errorLabel.text = errorMessage;
+  _errorChipContainer.hidden = NO;
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  _errorLabel.text);
+
+  __weak TTCVoicePlateView* weakSelf = self;
+  _errorDismissTimer.Start(FROM_HERE, kErrorAutoDismissDelay, base::BindOnce(^{
+                             [weakSelf dismissErrorBanner];
+                           }));
 }
 
 #pragma mark - Actions
@@ -275,6 +337,13 @@ NSString* const kStartSessionAccessibilityLabel = @"Start session";
     _closeButton.layer.borderWidth = 0.0;
     _closeButton.layer.borderColor = nil;
   }
+}
+
+// Stops the auto-dismiss timer and hides the transient error chip.
+- (void)dismissErrorBanner {
+  _errorDismissTimer.Stop();
+  _errorLabel.text = nil;
+  _errorChipContainer.hidden = YES;
 }
 
 // Refreshes CGColor border colors when the user interface style changes.

@@ -13,6 +13,7 @@
 
 // Accessibility identifiers for `TTCVoicePlateView` subviews.
 extern NSString* const kTTCVoicePlateCloseButtonAccessibilityIdentifier;
+extern NSString* const kTTCVoicePlateErrorBannerAccessibilityIdentifier;
 extern NSString* const kTTCVoicePlatePlayPauseButtonAccessibilityIdentifier;
 
 // Reusable compact voice plate capsule view conforming to
