@@ -995,6 +995,35 @@ std::optional<content::ClipboardEndpoint> GetValidURLEndpoint(
   return endpoint;
 }
 
+// The endpoint of the page shown in a `WebContents`, and the Data Controls
+// verdict for copying from that page to the OS clipboard.
+struct PageCopyToOSClipboardResult {
+  content::ClipboardEndpoint source;
+  data_controls::Verdict verdict;
+};
+
+// Returns the verdict for copying `content_size` bytes (`std::nullopt` if
+// unknown) from the primary main frame of `web_contents` to the OS clipboard.
+// Returns `std::nullopt` if that frame has no valid URL or Data Controls
+// checks don't apply to it.
+std::optional<PageCopyToOSClipboardResult> GetPageCopyToOSClipboardVerdict(
+    content::WebContents* web_contents,
+    std::optional<size_t> content_size) {
+  std::optional<content::ClipboardEndpoint> source =
+      GetValidURLEndpoint(web_contents);
+  if (!source) {
+    return std::nullopt;
+  }
+
+  data_controls::Verdict verdict =
+      data_controls::ChromeRulesServiceFactory::GetInstance()
+          ->GetForBrowserContext(source->browser_context())
+          ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source),
+                                        content_size);
+  return PageCopyToOSClipboardResult{.source = std::move(*source),
+                                     .verdict = std::move(verdict)};
+}
+
 void PasteFromGeminiIfAllowedByContentAnalysis(
     content::RenderFrameHost* destination,
     std::string data,
@@ -1268,15 +1297,11 @@ void ReplaceSameTabClipboardDataIfRequiredByPolicy(
 }
 
 bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
-  auto source = GetValidURLEndpoint(web_contents);
-  if (!source) {
-    return false;
-  }
-
-  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
-                     ->GetForBrowserContext(source->browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source));
-  return verdict.level() != data_controls::Rule::Level::kBlock;
+  std::optional<PageCopyToOSClipboardResult> copy_result =
+      GetPageCopyToOSClipboardVerdict(web_contents,
+                                      /*content_size=*/std::nullopt);
+  return copy_result &&
+         copy_result->verdict.level() != data_controls::Rule::Level::kBlock;
 }
 
 bool PrepopulateFindBarTextAllowed(
@@ -1435,16 +1460,11 @@ bool IsSearchWithAllowed(content::WebContents* web_contents) {
     return true;
   }
 
-  auto source = GetValidURLEndpoint(web_contents);
-  if (!source) {
-    return true;
-  }
-
-  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
-                     ->GetForBrowserContext(source->browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source));
-
-  return verdict.level() != data_controls::Rule::Level::kBlock;
+  std::optional<PageCopyToOSClipboardResult> copy_result =
+      GetPageCopyToOSClipboardVerdict(web_contents,
+                                      /*content_size=*/std::nullopt);
+  return !copy_result ||
+         copy_result->verdict.level() != data_controls::Rule::Level::kBlock;
 }
 
 void ShouldAllowSearchWith(content::WebContents* web_contents,
@@ -1455,16 +1475,14 @@ void ShouldAllowSearchWith(content::WebContents* web_contents,
     return;
   }
 
-  auto source = GetValidURLEndpoint(web_contents);
-  if (!source) {
+  std::optional<PageCopyToOSClipboardResult> copy_result =
+      GetPageCopyToOSClipboardVerdict(web_contents, selection_size);
+  if (!copy_result) {
     std::move(on_allowed_callback).Run();
     return;
   }
-
-  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
-                     ->GetForBrowserContext(source->browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source),
-                                                   selection_size);
+  const content::ClipboardEndpoint& source = copy_result->source;
+  data_controls::Verdict verdict = std::move(copy_result->verdict);
 
   base::UmaHistogramEnumeration("Enterprise.DataControls.SearchWith.Verdict",
                                 verdict.level());
@@ -1475,7 +1493,7 @@ void ShouldAllowSearchWith(content::WebContents* web_contents,
 
   switch (verdict.level()) {
     case data_controls::Rule::Level::kReport:
-      MaybeReportDataControlsCopy(*source, metadata, verdict);
+      MaybeReportDataControlsCopy(source, metadata, verdict);
       [[fallthrough]];
     case data_controls::Rule::Level::kNotSet:
     case data_controls::Rule::Level::kAllow:
@@ -1505,7 +1523,7 @@ void ShouldAllowSearchWith(content::WebContents* web_contents,
                                               /*bypassed=*/false);
                 }
               },
-              *source, metadata, std::move(verdict),
+              source, metadata, std::move(verdict),
               std::move(on_allowed_callback)));
       break;
     }

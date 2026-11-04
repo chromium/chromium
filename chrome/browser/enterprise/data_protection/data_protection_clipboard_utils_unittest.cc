@@ -1903,6 +1903,35 @@ TEST_F(DataProtectionClipboardDistilledURLTest, ShouldAllowSearchWith_Block) {
   EXPECT_FALSE(should_allow_search_future.IsReady());
 }
 
+TEST_F(DataProtectionClipboardDistilledURLTest,
+       ShouldAllowSearchWith_BlockedOnlyAboveSizeThreshold) {
+  base::test::ScopedFeatureList size_features;
+  size_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_higher_than": 50
+        },
+        "destinations": {
+          "os_clipboard": true
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  base::test::TestFuture<void> small_selection_future;
+  ShouldAllowSearchWith(test_web_contents_.get(), 10,
+                        small_selection_future.GetCallback());
+  EXPECT_TRUE(small_selection_future.IsReady());
+
+  base::test::TestFuture<void> large_selection_future;
+  ShouldAllowSearchWith(test_web_contents_.get(), 100,
+                        large_selection_future.GetCallback());
+  EXPECT_FALSE(large_selection_future.IsReady());
+}
+
 TEST_F(DataProtectionClipboardDistilledURLTest, CopyTextToClipboard_Allowed) {
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   CopyTextToClipboard(test_web_contents_->GetPrimaryMainFrame(), u"test text");
