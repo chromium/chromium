@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_coordinator.h"
 
+#import <optional>
+#import <utility>
+
 #import "base/check.h"
 #import "base/memory/scoped_refptr.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -14,6 +17,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/ios_chrome_remote_actor_credential_sharing_service_factory.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -26,14 +30,9 @@
 @end
 
 @implementation RemoteActorCredentialBottomSheetCoordinator {
-  // Domain for which credentials were requested.
-  NSString* _domain;
-
-  // GAIA ID of the requesting user.
-  NSString* _gaiaID;
-
-  // Task ID associated with the remote actor request.
-  NSString* _taskID;
+  // Remote actor request forwarded to the mediator on start. Reset after being
+  // moved so it is not left in a moved-from state.
+  std::optional<remote_actor::proto::RemoteActorPasswordUploadRequest> _request;
 
   // Completion block called with the result of the flow.
   RemoteActorCredentialBottomSheetCompletion _completion;
@@ -45,20 +44,17 @@
   RemoteActorCredentialBottomSheetViewController* _viewController;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                    domain:(NSString*)domain
-                                    gaiaID:(NSString*)gaiaID
-                                    taskID:(NSString*)taskID
-                                completion:
-                                    (RemoteActorCredentialBottomSheetCompletion)
-                                        completion {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                       request:(remote_actor::proto::
+                                    RemoteActorPasswordUploadRequest)request
+                    completion:
+                        (RemoteActorCredentialBottomSheetCompletion)completion {
   CHECK(completion);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _domain = [domain copy];
-    _gaiaID = [gaiaID copy];
-    _taskID = [taskID copy];
+    _request = std::move(request);
     _completion = [completion copy];
   }
   return self;
@@ -67,6 +63,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  CHECK(_request);
   ProfileIOS* profile = self.profile;
   CHECK(profile);
 
@@ -104,9 +101,8 @@
                sharingService:sharingService
         passwordManagerClient:passwordManagerClient
                 faviconLoader:faviconLoader
-                       domain:_domain
-                       gaiaID:_gaiaID
-                       taskID:_taskID];
+                      request:std::move(*_request)];
+  _request.reset();
   _mediator.delegate = self;
   [_mediator start];
 
