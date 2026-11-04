@@ -47,6 +47,13 @@ struct AttributeView {
   void Populate(rust::Str q_name_a, rust::Str attr_ns_a, rust::Str value_a);
 };
 
+struct NamespaceView {
+  blink::AtomicString q_name;
+  blink::AtomicString uri;
+
+  void Populate(rust::Str q_name_a, rust::Str uri_a);
+};
+
 }  // namespace xml_ffi
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_FFI_CALLBACKS_H_

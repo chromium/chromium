@@ -22,4 +22,10 @@ void xml_ffi::AttributeView::Populate(rust::Str q_name_a,
   this->value = RustStrToAtomicString(value_a);
 }
 
+void NamespaceView::Populate(rust::Str q_name_a, rust::Str uri_a) {
+  this->q_name =
+      q_name_a.empty() ? blink::g_xmlns_atom : RustStrToAtomicString(q_name_a);
+  this->uri = RustStrToAtomicString(uri_a);
+}
+
 }  // namespace xml_ffi

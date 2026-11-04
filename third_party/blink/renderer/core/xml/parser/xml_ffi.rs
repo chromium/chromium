@@ -18,7 +18,7 @@ use xml::{
     Encoding, ParserConfig,
 };
 
-use crate::ffi::{AttributeNameValue, AttributeView, StandaloneInfo, XmlCallbacks};
+use crate::ffi::{AttributeNameValue, AttributeView, NamespaceView, StandaloneInfo, XmlCallbacks};
 use entities::{HTML5_MAP, LAT1_MAP, SPECIAL_MAP, SYMBOL_MAP};
 use std::cell::{Cell, RefCell};
 use std::pin::Pin;
@@ -82,12 +82,12 @@ fn append_to_source(read_state: &XmlReadState, content: &[u8]) {
     buffer.extend_from_slice(content);
 }
 
-struct AttributesIterator<'a> {
-    attributes: std::slice::Iter<'a, OwnedAttribute>,
+struct AttributesIterator {
+    attributes: std::vec::IntoIter<OwnedAttribute>,
 }
 
-struct NamespacesIterator<'a> {
-    namespaces: Box<dyn Iterator<Item = (&'a str, &'a str)> + 'a>,
+struct NamespacesIterator {
+    namespaces: std::vec::IntoIter<(String, String)>,
 }
 
 fn process_next_event(read_state: &XmlReadState) {
@@ -168,12 +168,32 @@ fn process_next_event(read_state: &XmlReadState) {
                 let has_ns = name.namespace.is_some();
                 let ns: &str = &name.namespace.unwrap_or_default();
 
-                // Clone `declared_namespaces()` so the `event_reader` borrow is
-                // released before invoking the C++ `StartElementNs` callback.
-                let declared = read_state.event_reader.borrow().declared_namespaces().cloned();
-                let mut attributes = AttributesIterator { attributes: attributes.iter() };
-                let mut new_namespaces =
-                    NamespacesIterator { namespaces: Box::new(declared.iter().flatten()) };
+                // Avoids holding a borrow of `read_state` when calling back
+                // into C++ below. Since this would require cloning, also
+                // preprocess `declared_namespaces()` to reduce the number of
+                // temporary string constructions.
+                let mut namespaces = NamespacesIterator {
+                    namespaces: read_state
+                        .event_reader
+                        .borrow()
+                        .declared_namespaces()
+                        .map(|declared| {
+                            declared
+                                .iter()
+                                .map(|(prefix, uri)| {
+                                    let q_name = if prefix.is_empty() {
+                                        String::new()
+                                    } else {
+                                        ["xmlns:", prefix].concat()
+                                    };
+                                    (q_name, uri.to_owned())
+                                })
+                                .collect::<Vec<_>>()
+                                .into_iter()
+                        })
+                        .unwrap_or_default(),
+                };
+                let mut attributes = AttributesIterator { attributes: attributes.into_iter() };
                 read_state.parser_callbacks.borrow_mut().as_mut().StartElementNs(
                     local_name,
                     has_prefix,
@@ -181,7 +201,7 @@ fn process_next_event(read_state: &XmlReadState) {
                     has_ns,
                     ns,
                     &mut attributes,
-                    &mut new_namespaces,
+                    &mut namespaces,
                 );
             }
             EndElement { name } => {
@@ -302,8 +322,8 @@ fn reset_error(read_state: &XmlReadState) {
     *read_state.error_details.borrow_mut() = None;
 }
 
-fn attributes_next<'a>(
-    attributes: &mut AttributesIterator<'a>,
+fn attributes_next(
+    attributes: &mut AttributesIterator,
     mut attribute_view: Pin<&mut AttributeView>,
 ) -> bool {
     if let Some(attribute) = attributes.attributes.next() {
@@ -312,18 +332,15 @@ fn attributes_next<'a>(
         // parser, concatenate here to avoid extra string conversions and
         // allocations on the Blink C++ side.
         match &name.prefix {
-            Some(pref) => {
-                let mut q_name = String::with_capacity(pref.len() + 1 + name.local_name.len());
-                q_name.push_str(pref);
-                q_name.push(':');
-                q_name.push_str(&name.local_name);
+            Some(prefix) => {
+                let q_name = [prefix, ":", &name.local_name].concat();
                 attribute_view.as_mut().Populate(
                     &q_name,
                     name.namespace.as_deref().unwrap_or_default(),
                     &attribute.value,
                 );
             }
-            _ => {
+            None => {
                 attribute_view.as_mut().Populate(
                     &name.local_name,
                     name.namespace.as_deref().unwrap_or_default(),
@@ -338,12 +355,10 @@ fn attributes_next<'a>(
 
 fn namespaces_next(
     namespaces_iterator: &mut NamespacesIterator,
-    prefix: &mut String,
-    uri: &mut String,
+    mut namespace_view: Pin<&mut NamespaceView>,
 ) -> bool {
-    if let Some((pfx, u)) = namespaces_iterator.namespaces.next() {
-        *prefix = pfx.to_string();
-        *uri = u.to_string();
+    if let Some((q_name, uri)) = namespaces_iterator.namespaces.next() {
+        namespace_view.as_mut().Populate(&q_name, &uri);
         return true;
     }
     false
@@ -434,12 +449,15 @@ mod ffi {
 
         type AttributeView;
         fn Populate(self: Pin<&mut AttributeView>, q_name: &str, attr_ns: &str, value: &str);
+
+        type NamespaceView;
+        fn Populate(self: Pin<&mut NamespaceView>, q_name: &str, uri: &str);
     }
 
     extern "Rust" {
         type XmlReadState<'a>;
-        type AttributesIterator<'a>;
-        type NamespacesIterator<'a>;
+        type AttributesIterator;
+        type NamespacesIterator;
 
         /// # Safety
         ///
@@ -471,23 +489,14 @@ mod ffi {
             success: &mut bool,
         ) -> Vec<AttributeNameValue>;
 
-        /// # Safety
-        ///
-        /// Marked unsafe because functions with explicit lifetimes in a cxx
-        /// bridge require unsafe qualification.
-        unsafe fn attributes_next<'a>(
-            attributes: &mut AttributesIterator<'a>,
-            mut attribute_view: Pin<&mut AttributeView>,
+        fn attributes_next(
+            attributes: &mut AttributesIterator,
+            attribute_view: Pin<&mut AttributeView>,
         ) -> bool;
 
-        /// # Safety
-        ///
-        /// Marked unsafe because functions with explicit lifetimes in a cxx
-        /// bridge require unsafe qualification.
-        unsafe fn namespaces_next<'a>(
-            namespaces_iterator: &mut NamespacesIterator<'a>,
-            prefix: &mut String,
-            uri: &mut String,
+        fn namespaces_next(
+            namespaces_iterator: &mut NamespacesIterator,
+            namespace_view: Pin<&mut NamespaceView>,
         ) -> bool;
     }
 }

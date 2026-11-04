@@ -114,26 +114,19 @@ bool HandleNamespaceAttributes(
     xml_ffi::NamespacesIterator& namespaces,
     bool& encountered_namespace_reset,
     ExceptionState& exception_state) {
-  rust::String prefix;
-  rust::String uri;
-
-  while (namespaces_next(namespaces, prefix, uri)) {
-    AtomicString namespace_q_name = g_xmlns_atom;
-    if (prefix.length()) {
-      namespace_q_name = AtomicString(
-          StrCat({g_xmlns_with_colon, RustStrToWtfString(prefix)}));
-    }
+  xml_ffi::NamespaceView namespace_view;
+  while (namespaces_next(namespaces, namespace_view)) {
     std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
-        xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
+        xmlns_names::kNamespaceURI, namespace_view.q_name, exception_state);
     if (!parsed_name) {
       DCHECK(exception_state.HadException());
       return false;
     }
     if (parsed_name->LocalName() == g_xmlns_atom) {
-      encountered_namespace_reset = uri.empty();
+      encountered_namespace_reset = namespace_view.uri.empty();
     }
     prefixed_attributes.push_back(
-        Attribute(std::move(*parsed_name), RustStrToAtomicString(uri)));
+        Attribute(std::move(*parsed_name), namespace_view.uri));
   }
   return true;
 }
