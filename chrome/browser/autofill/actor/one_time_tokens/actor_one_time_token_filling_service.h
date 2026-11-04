@@ -52,6 +52,15 @@ class ActorOneTimeTokenFillingService {
   using FetchUserDataProcessingConsentCallback = base::OnceCallback<void(
       std::optional<one_time_tokens::UserDataProcessingConsentStates>)>;
 
+  // The OTP type that the model predicted for a `RetrieveOtp()` request. Only
+  // used to pick the RetrieveOtp histogram suffix; never logged as a value.
+  enum class PredictedOtpType {
+    kUnknown,
+    kSms,
+    kEmail,
+    kAuthenticatorApp,
+  };
+
   virtual ~ActorOneTimeTokenFillingService() = default;
 
   // Records the start of a sign-in flow by observing navigations.
@@ -93,6 +102,7 @@ class ActorOneTimeTokenFillingService {
   virtual bool GetLoginContextShouldUseStrongMatching() const = 0;
 
   // Asynchronously retrieves an OTP for the profile associated with the tab.
+  // `predicted_otp_type` is the OTP type the model predicted for the request.
   //
   // The `callback` will be invoked with the retrieved OTP string, or an empty
   // string if retrieval fails or no OTP is available.
@@ -101,6 +111,7 @@ class ActorOneTimeTokenFillingService {
       const url::Origin& otp_frame_origin,
       const std::vector<FieldGlobalId>& trigger_field_ids,
       bool is_login_flow,
+      PredictedOtpType predicted_otp_type,
       base::OnceCallback<
           void(base::expected<std::string,
                               one_time_tokens::OneTimeTokenRetrievalError>)>

@@ -99,6 +99,7 @@ class MockActorOneTimeTokenFillingService
        const url::Origin&,
        const std::vector<autofill::FieldGlobalId>&,
        bool,
+       autofill::ActorOneTimeTokenFillingService::PredictedOtpType,
        base::OnceCallback<
            void(base::expected<std::string,
                                one_time_tokens::OneTimeTokenRetrievalError>)>),
@@ -628,7 +629,7 @@ TEST_F(AttemptOtpFillingToolTest,
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
   SetAutofillGmailOtpFillingEnabled(prefs(), true);
@@ -703,7 +704,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringConfirmationDialog) {
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   // Never replies, so the tool keeps waiting.
   EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _));
   PageTarget target(gfx::Point(10, 10));
@@ -752,7 +753,7 @@ TEST_F(AttemptOtpFillingToolTest,
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog).Times(0);
   InvokeAndExpectCancelledDuringFillOtp();
 }
@@ -762,7 +763,7 @@ TEST_F(AttemptOtpFillingToolTest,
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _))
       .WillOnce(RunOnceCallback<1>(
           webui::mojom::GmailOtpConfirmationResult::NewResponse(
@@ -875,8 +876,13 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_InsecureContext) {
 TEST_F(AttemptOtpFillingToolTest, Invoke_HappyPath) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
-  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+  EXPECT_CALL(
+      delegate().mock_otp_service(),
+      RetrieveOtp(
+          _, _, _, _,
+          autofill::ActorOneTimeTokenFillingService::PredictedOtpType::kEmail,
+          _))
+      .WillOnce(RunOnceCallback<5>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
   PageTarget target(gfx::Point(10, 10));
@@ -945,7 +951,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorFilling) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(false));
   PageTarget target(gfx::Point(10, 10));
@@ -981,7 +987,7 @@ TEST_P(AttemptOtpFillingToolRetrieveOtpErrorTest, Invoke_RetrievalError) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>(base::unexpected(test_case.error)));
+      .WillOnce(RunOnceCallback<5>(base::unexpected(test_case.error)));
   PageTarget target(gfx::Point(10, 10));
   SetAutofillGmailOtpFillingEnabled(prefs(), true);
   {
@@ -1291,7 +1297,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
 
   // The confirmation dialog is shown. User declines it.
   webui::mojom::GmailOtpConfirmationResponsePtr response =
@@ -1358,7 +1364,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   // `TimeOfUseValidation()` is called during setup and invokes
   // `ValidateFormFillingContext()`. `Invoke()` calls it a second time during
   // OTP filling. This test specifically tests the call in `Invoke()`.
@@ -1385,7 +1391,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_DomNode_HappyPath) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
   std::string doc_token =
@@ -1407,7 +1413,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
   // ValidateFormFillingContext is called twice: once in TimeOfUseValidation,
   // once before FillOtp
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
@@ -1446,7 +1452,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
 
   // The confirmation dialog is shown. User declines it.
   webui::mojom::GmailOtpConfirmationResponsePtr response =
@@ -1484,7 +1490,7 @@ TEST_F(AttemptOtpFillingToolTest,
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
 
   // The confirmation dialog returns an error.
   EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _))
@@ -1580,7 +1586,7 @@ TEST_F(AttemptOtpFillingToolTest,
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
+      .WillOnce(RunOnceCallback<5>("123456"));
 
   // The confirmation dialog returns a null response.
   webui::mojom::GmailOtpConfirmationResultPtr response;

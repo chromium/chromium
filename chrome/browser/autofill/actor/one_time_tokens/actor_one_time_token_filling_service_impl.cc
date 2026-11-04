@@ -302,6 +302,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     const url::Origin& otp_frame_origin,
     const std::vector<FieldGlobalId>& trigger_field_ids,
     bool is_login_flow,
+    PredictedOtpType predicted_otp_type,
     base::OnceCallback<void(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
   tabs::TabInterface* tab = tab_handle.Get();
