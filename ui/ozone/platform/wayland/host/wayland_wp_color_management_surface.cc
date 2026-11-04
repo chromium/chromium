@@ -51,6 +51,9 @@ WaylandWpColorManagementSurface::~WaylandWpColorManagementSurface() = default;
 void WaylandWpColorManagementSurface::SetColorSpace(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata) {
+  color_space_ = color_space;
+  hdr_metadata_ = hdr_metadata;
+  const uint64_t sequence = ++color_space_sequence_;
   if (!color_space.IsValid()) {
     wp_color_management_surface_v1_unset_image_description(
         management_surface_.get());
@@ -60,14 +63,29 @@ void WaylandWpColorManagementSurface::SetColorSpace(
   auto* color_manager = connection_->wp_color_manager();
   CHECK(color_manager, base::NotFatalUntil::M163);
 
+  gfx::ColorSpace effective_color_space = color_space;
+  if (srgb_is_gamma22_ &&
+      color_space.GetTransferID() == gfx::ColorSpace::TransferID::SRGB &&
+      (color_manager->IsSupportedTransferFunction(
+           WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22) ||
+       color_manager->IsSupportedFeature(
+           WP_COLOR_MANAGER_V1_FEATURE_SET_TF_POWER))) {
+    effective_color_space = color_space.GetWithTransferFunction(
+        gfx::ColorSpace::TransferID::GAMMA22);
+  }
+
   color_manager->GetImageDescription(
-      color_space, hdr_metadata,
+      effective_color_space, hdr_metadata,
       base::BindOnce(&WaylandWpColorManagementSurface::OnSetColorSpace,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), sequence));
 }
 
 void WaylandWpColorManagementSurface::OnSetColorSpace(
+    uint64_t sequence,
     scoped_refptr<WaylandWpImageDescription> image_description) {
+  if (sequence != color_space_sequence_) {
+    return;
+  }
   if (!image_description) {
     LOG(ERROR) << "Failed to get image description for color space.";
     return;
@@ -85,16 +103,24 @@ void WaylandWpColorManagementSurface::OnSetColorSpace(
 
 void WaylandWpColorManagementSurface::OnImageDescription(
     scoped_refptr<WaylandWpImageDescription> image_description) {
+  bool srgb_is_gamma22 = false;
   if (!image_description) {
     LOG(ERROR) << "Failed to get image description.";
     display_color_spaces_.reset();
   } else {
+    srgb_is_gamma22 = image_description->srgb_is_gamma22();
     auto* wayland_screen =
         connection_->wayland_output_manager()->wayland_screen();
     display_color_spaces_ = wayland_screen
                                 ? image_description->AsDisplayColorSpaces(
                                       wayland_screen->GetHDRImageFormat())
                                 : image_description->AsDisplayColorSpaces();
+  }
+  if (srgb_is_gamma22_ != srgb_is_gamma22) {
+    srgb_is_gamma22_ = srgb_is_gamma22;
+    if (color_space_.GetTransferID() == gfx::ColorSpace::TransferID::SRGB) {
+      SetColorSpace(color_space_, hdr_metadata_);
+    }
   }
   OnHdrEnabledChanged(connection_->wp_color_manager()->hdr_enabled());
 }

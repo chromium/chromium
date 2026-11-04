@@ -11,11 +11,14 @@
 #include <optional>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 struct wl_resource;
 
 namespace wl {
+
+class ServerObject;
 
 // The parameters set on a wp_image_description_creator_params_v1 object.
 struct TestImageDescriptionParams {
@@ -47,8 +50,8 @@ struct TestImageDescriptionParams {
 
 // Manages the wp_color_manager_v1 global. Image descriptions created from
 // parametric creators are recorded so tests can inspect what the client sent.
-// Image descriptions for outputs and surface feedback describe an SDR sRGB
-// display.
+// Image descriptions for outputs and surface feedback describe an SDR display
+// with sRGB primaries and, by default, the sRGB transfer function.
 class TestWpColorManager : public GlobalObject {
  public:
   TestWpColorManager();
@@ -64,6 +67,23 @@ class TestWpColorManager : public GlobalObject {
   void set_supported_features(std::vector<uint32_t> features) {
     supported_features_ = std::move(features);
   }
+
+  // Sets the named transfer functions advertised to clients on bind. Must be
+  // called before the client binds the global.
+  void set_supported_tfs_named(std::vector<uint32_t> tfs) {
+    supported_tfs_named_ = std::move(tfs);
+  }
+
+  // Sets the named transfer function of the display described by output and
+  // surface feedback image descriptions. Must be called before the client
+  // requests those descriptions.
+  void set_display_tf_named(uint32_t tf) { display_tf_named_ = tf; }
+  uint32_t display_tf_named() const { return display_tf_named_; }
+
+  // Sends `preferred_changed` to all bound surface feedback objects.
+  void SendPreferredChanged();
+  void OnFeedbackCreated(ServerObject* feedback);
+  void OnFeedbackDestroyed(ServerObject* feedback);
 
   // All image descriptions created via parametric creators, in order.
   const std::vector<TestImageDescriptionParams>& created_descriptions() const {
@@ -86,10 +106,13 @@ class TestWpColorManager : public GlobalObject {
  private:
   uint32_t last_identity_ = 0;
   std::vector<uint32_t> supported_features_;
+  std::vector<uint32_t> supported_tfs_named_;
+  uint32_t display_tf_named_;
   std::vector<TestImageDescriptionParams> created_descriptions_;
   // Keyed by wl_surface resource id.
   std::map<uint32_t, std::optional<TestImageDescriptionParams>>
       surface_descriptions_;
+  std::vector<raw_ptr<ServerObject>> feedbacks_;
 };
 
 }  // namespace wl

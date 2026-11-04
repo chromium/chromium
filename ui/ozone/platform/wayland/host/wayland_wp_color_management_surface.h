@@ -7,6 +7,8 @@
 
 #include <color-management-v1-client-protocol.h>
 
+#include <cstdint>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -53,6 +55,7 @@ class WaylandWpColorManagementSurface : public WaylandWpColorManager::Observer {
   void OnColorManagerReady() override;
 
   void OnSetColorSpace(
+      uint64_t sequence,
       scoped_refptr<WaylandWpImageDescription> image_description);
 
   void OnImageDescription(
@@ -70,6 +73,10 @@ class WaylandWpColorManagementSurface : public WaylandWpColorManager::Observer {
 
   scoped_refptr<WaylandWpImageDescription> image_description_;
   scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces_;
+  gfx::ColorSpace color_space_;
+  gfx::HDRMetadata hdr_metadata_;
+  uint64_t color_space_sequence_ = 0;
+  bool srgb_is_gamma22_ = false;
 
   base::ScopedObservation<WaylandWpColorManager,
                           WaylandWpColorManager::Observer>

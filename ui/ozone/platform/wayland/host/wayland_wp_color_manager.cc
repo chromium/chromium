@@ -263,8 +263,16 @@ bool WaylandWpColorManager::PopulateDescriptionCreator(
   }
 
   // Set named transfer function if possible.
-  if (auto transfer = TransferIdToTransferFunction(color_space.GetTransferID());
-      transfer && IsSupportedTransferFunction(*transfer)) {
+  auto transfer = TransferIdToTransferFunction(color_space.GetTransferID());
+  if (transfer == WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB &&
+      !IsSupportedTransferFunction(*transfer) &&
+      IsSupportedTransferFunction(
+          WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22)) {
+    // Compositors that drop the deprecated sRGB transfer function (e.g. KWin
+    // 6.6+) display sRGB as gamma 2.2, so describe sRGB content that way.
+    transfer = WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22;
+  }
+  if (transfer && IsSupportedTransferFunction(*transfer)) {
     wp_image_description_creator_params_v1_set_tf_named(creator, *transfer);
   } else if (IsSupportedFeature(WP_COLOR_MANAGER_V1_FEATURE_SET_TF_POWER)) {
     skcms_TransferFunction fn;

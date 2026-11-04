@@ -15,10 +15,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_management_output.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_wp_color_manager.h"
@@ -326,7 +330,9 @@ TEST_F(WaylandWpColorManagerNoMasteringTest, NoMasteringRequests) {
   EXPECT_EQ(params.max_fall, 200u);
 }
 
-// SDR color spaces don't get any luminance or HDR metadata.
+// SDR color spaces don't get any luminance or HDR metadata, and keep the sRGB
+// transfer function when the display itself is described with sRGB (e.g.
+// Hyprland's default `cm_sdr_eotf` or Mutter 48-49).
 TEST_F(WaylandWpColorManagerTest, SdrColorSpace) {
   auto params =
       CreateImageDescription(gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata());
@@ -336,6 +342,125 @@ TEST_F(WaylandWpColorManagerTest, SdrColorSpace) {
   EXPECT_FALSE(params.mastering_luminance);
   EXPECT_FALSE(params.max_cll);
   EXPECT_FALSE(params.max_fall);
+
+  auto surface_params = SetRootSurfaceImageDescription(
+      gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata());
+  ASSERT_TRUE(surface_params);
+  EXPECT_EQ(surface_params->tf_named,
+            WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB);
+  EXPECT_EQ(surface_params->primaries_named,
+            WP_COLOR_MANAGER_V1_PRIMARIES_SRGB);
+}
+
+// When a surface moves between an sRGB display and a gamma 2.2 display, its
+// sRGB image description updates between sRGB and gamma 2.2 accordingly.
+TEST_F(WaylandWpColorManagerTest, PreferredChangedUpdatesSrgbSurfaceTransfer) {
+  WaylandSurface* surface = window_->root_surface();
+  const uint32_t surface_id = surface->get_surface_id();
+
+  auto params = SetRootSurfaceImageDescription(gfx::ColorSpace::CreateSRGB(),
+                                               gfx::HDRMetadata());
+  ASSERT_TRUE(params);
+  EXPECT_EQ(params->tf_named, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    server->wp_color_manager()->set_display_tf_named(
+        WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22);
+    server->wp_color_manager()->SendPreferredChanged();
+  });
+  // Roundtrips for get_preferred -> get_information -> create -> set.
+  for (int i = 0; i < 4; ++i) {
+    SyncDisplay();
+  }
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    ASSERT_TRUE(mock_surface);
+    params = server->wp_color_manager()->GetSurfaceImageDescription(
+        mock_surface->resource());
+  });
+  ASSERT_TRUE(params);
+  EXPECT_EQ(params->tf_named, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    server->wp_color_manager()->set_display_tf_named(
+        WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB);
+    server->wp_color_manager()->SendPreferredChanged();
+  });
+  for (int i = 0; i < 4; ++i) {
+    SyncDisplay();
+  }
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    ASSERT_TRUE(mock_surface);
+    params = server->wp_color_manager()->GetSurfaceImageDescription(
+        mock_surface->resource());
+  });
+  ASSERT_TRUE(params);
+  EXPECT_EQ(params->tf_named, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB);
+}
+
+class WaylandWpColorManagerNoSrgbTest : public WaylandWpColorManagerTest {
+ public:
+  WaylandWpColorManagerNoSrgbTest() {
+    // Like KWin 6.6+, don't advertise the deprecated sRGB transfer function.
+    server_.wp_color_manager()->set_supported_tfs_named(
+        {WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22,
+         WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ});
+  }
+};
+
+// Compositors that don't support the sRGB transfer function display sRGB as
+// gamma 2.2, so sRGB content must be described that way instead of failing.
+TEST_F(WaylandWpColorManagerNoSrgbTest, SrgbDescribedAsGamma22) {
+  auto params =
+      CreateImageDescription(gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata());
+  EXPECT_EQ(params.tf_named, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22);
+  EXPECT_EQ(params.primaries_named, WP_COLOR_MANAGER_V1_PRIMARIES_SRGB);
+}
+
+class WaylandWpColorManagerGamma22DisplayTest
+    : public WaylandWpColorManagerTest {
+ public:
+  WaylandWpColorManagerGamma22DisplayTest() {
+    // Like KWin, describe SDR displays with a gamma 2.2 transfer function.
+    server_.wp_color_manager()->set_display_tf_named(
+        WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22);
+  }
+};
+
+// sRGB content must be passed through to SDR gamma 2.2 displays, rather than
+// being decoded with the piece-wise sRGB curve and re-encoded as gamma 2.2,
+// which lifts dark tones (https://crbug.com/475549558). Even when the
+// compositor advertises the sRGB transfer function (e.g. Hyprland v1 or Mutter
+// 48-49, which decode it as piece-wise sRGB), surfaces whose preferred SDR
+// description was gamma 2.2 must describe sRGB buffers as gamma 2.2.
+TEST_F(WaylandWpColorManagerGamma22DisplayTest, SrgbPassedThrough) {
+  connection_->wp_color_manager()->OnHdrEnabledChanged(true);
+  SyncDisplay();
+  WaylandOutput* output =
+      connection_->wayland_output_manager()->GetPrimaryOutput();
+  ASSERT_TRUE(output);
+  ASSERT_TRUE(output->wp_color_management_output());
+  const gfx::DisplayColorSpaces* color_spaces =
+      output->wp_color_management_output()->GetDisplayColorSpaces();
+  ASSERT_TRUE(color_spaces);
+  EXPECT_EQ(color_spaces->GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
+                                              /*needs_alpha=*/false),
+            gfx::ColorSpace::CreateSRGB());
+
+  auto srgb_params = SetRootSurfaceImageDescription(
+      gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata());
+  ASSERT_TRUE(srgb_params);
+  EXPECT_EQ(srgb_params->tf_named,
+            WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22);
+  EXPECT_EQ(srgb_params->primaries_named, WP_COLOR_MANAGER_V1_PRIMARIES_SRGB);
+
+  auto p3_params = SetRootSurfaceImageDescription(
+      gfx::ColorSpace::CreateDisplayP3D65(), gfx::HDRMetadata());
+  ASSERT_TRUE(p3_params);
+  EXPECT_EQ(p3_params->tf_named, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22);
+  EXPECT_EQ(p3_params->primaries_named,
+            WP_COLOR_MANAGER_V1_PRIMARIES_DISPLAY_P3);
 }
 
 }  // namespace ui

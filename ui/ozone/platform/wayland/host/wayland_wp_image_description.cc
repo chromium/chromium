@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_wp_image_description.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
@@ -16,6 +17,12 @@
 namespace ui {
 
 namespace {
+
+// Wayland compositors decode the sRGB transfer function with a pure gamma 2.2
+// curve. When enabled, Chromium's sRGB content is displayed that way too
+// instead of being decoded with the piece-wise sRGB curve and re-encoded for
+// the compositor's preferred transfer function.
+BASE_FEATURE(kWaylandSrgbAsGamma22, base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::ColorSpace::PrimaryID ToGfxPrimaryID(
     wp_color_manager_v1_primaries primaries) {
@@ -177,7 +184,7 @@ void WaylandWpImageDescription::HandleReady() {
 }
 
 gfx::ColorSpace WaylandWpImageDescription::CreateColorSpaceFromPendingInfo(
-    bool is_hdr) const {
+    bool is_hdr) {
   std::optional<gfx::ColorSpace::PrimaryID> primaries;
   std::optional<gfx::ColorSpace::TransferID> transfer;
   const skcms_Matrix3x3* custom_primaries = nullptr;
@@ -200,6 +207,19 @@ gfx::ColorSpace WaylandWpImageDescription::CreateColorSpaceFromPendingInfo(
   if (!primaries || !transfer) {
     LOG(ERROR) << "Incomplete image description info from compositor.";
     return gfx::ColorSpace::CreateSRGB();
+  }
+
+  if (!is_hdr && transfer == gfx::ColorSpace::TransferID::GAMMA22 &&
+      base::FeatureList::IsEnabled(kWaylandSrgbAsGamma22)) {
+    // Wayland compositors decode sRGB with a pure gamma 2.2 curve, so pass
+    // sRGB content through unchanged instead of decoding it with the
+    // piece-wise sRGB curve and re-encoding it as gamma 2.2, which lifts dark
+    // tones (https://crbug.com/449423580, https://crbug.com/475549558).
+    // WaylandWpColorManagementSurface describes sRGB buffers on such surfaces
+    // as gamma 2.2 so compositors whose sRGB transfer function is piece-wise
+    // (e.g. Hyprland v1, Mutter 48-49) don't lift dark tones either.
+    transfer = gfx::ColorSpace::TransferID::SRGB;
+    srgb_is_gamma22_ = true;
   }
 
   gfx::ColorSpace color_space(

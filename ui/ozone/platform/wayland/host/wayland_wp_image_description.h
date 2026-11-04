@@ -43,6 +43,8 @@ class WaylandWpImageDescription
       std::optional<viz::SharedImageFormat> hdr_output_format =
           std::nullopt) const;
 
+  bool srgb_is_gamma22() const { return srgb_is_gamma22_; }
+
   wp_image_description_v1* object() const { return image_description_.get(); }
 
  private:
@@ -111,7 +113,7 @@ class WaylandWpImageDescription
 
   void HandleReady();
 
-  gfx::ColorSpace CreateColorSpaceFromPendingInfo(bool is_hdr) const;
+  gfx::ColorSpace CreateColorSpaceFromPendingInfo(bool is_hdr);
 
   wl::Object<wp_image_description_v1> image_description_;
   const raw_ptr<WaylandConnection> connection_;
@@ -119,6 +121,7 @@ class WaylandWpImageDescription
   gfx::ColorSpace color_space_;
   float sdr_max_luminance_nits_ = gfx::ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;
+  bool srgb_is_gamma22_ = false;
   CreationCallback creation_callback_;
 
   // Intermediate state for parsing information events.
