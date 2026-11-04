@@ -876,6 +876,67 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceRearchitectureEnabledTest,
                 ->GetContents()
                 ->GetVisibleURL(),
             third_party_url);
+  EXPECT_TRUE(controller->IsPanelOpenForContextualTask());
+  EXPECT_TRUE(controller->GetCurrentTask().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceRearchitectureEnabledTest,
+    SidePanelWebViewOpenURLFromTab_ActivatedLinkClick_KeepsSidePanelOpen) {
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  GURL initial_url("https://www.google.com/search?q=test");
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+
+  ui_service->StartTaskUiInSidePanel(browser(), tab, initial_url, nullptr);
+
+  auto* controller = ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller && controller->IsPanelOpenForContextualTask();
+  }));
+
+  content::WebContents* panel_contents = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents);
+  std::optional<ContextualTask> initial_task = controller->GetCurrentTask();
+  ASSERT_TRUE(initial_task.has_value());
+
+  auto* aim_service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile()));
+  GURL third_party_url("https://example.com/article");
+  ON_CALL(*aim_service, IsAimUrl(testing::_, testing::_))
+      .WillByDefault(testing::Return(false));
+
+  content::RenderFrameHost* panel_rfh = panel_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(panel_rfh);
+  EXPECT_TRUE(content::ExecJs(panel_rfh, "true"));
+  ASSERT_TRUE(panel_rfh->HasTransientUserActivation());
+
+  int initial_tab_count = browser()->GetTabStripModel()->count();
+
+  content::OpenURLParams params(
+      third_party_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/true);
+  params.user_gesture = true;
+  params.source_render_process_id = panel_rfh->GetProcess()->GetDeprecatedID();
+  params.source_render_frame_id = panel_rfh->GetRoutingID();
+
+  panel_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser()->GetTabStripModel()->count() == initial_tab_count + 1;
+  }));
+  EXPECT_EQ(browser()
+                ->GetTabStripModel()
+                ->GetActiveTab()
+                ->GetContents()
+                ->GetVisibleURL(),
+            third_party_url);
+  EXPECT_TRUE(controller->IsPanelOpenForContextualTask());
+  ASSERT_TRUE(controller->GetCurrentTask().has_value());
+  EXPECT_EQ(controller->GetCurrentTask()->GetTaskId(),
+            initial_task->GetTaskId());
 }
 
 class ContextualTasksUiServiceRearchitectureClobberActiveTabTest

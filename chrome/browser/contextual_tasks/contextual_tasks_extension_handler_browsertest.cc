@@ -6402,12 +6402,15 @@ IN_PROC_BROWSER_TEST_F(
   auto* user_data =
       ContextualTasksWebContentsUserData::FromWebContents(panel_contents);
   ASSERT_NE(user_data, nullptr);
+  // The panel's initial page is opened in a new foreground tab that is
+  // associated with the task, so wait for it before returning to `tab1`.
   ASSERT_TRUE(base::test::RunUntil([&] {
-    return user_data->GetSelectedTabs().size() == 1u &&
+    return !user_data->GetSelectedTabs().empty() &&
            browser()->tab_strip_model()->count() == 2;
   }));
   browser()->tab_strip_model()->ActivateTabAt(0);
   ShowSidePanel();
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
   EXPECT_FALSE(user_data->GetSelectedTabs()[0].pending_delayed_upload);
 
   lens::SearchToClientMessage msg;

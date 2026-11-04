@@ -1551,6 +1551,17 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges(
     return false;
   }
 
+  // Only apply side-panel-specific URL changes to in-place navigations inside
+  // the side panel without text-fragment citations. Navigations explicitly
+  // opening a new tab/window (e.g. via
+  // `ContextualTasksWebView::OpenURLFromTab`) or citation links must not be
+  // reloaded inside the side panel.
+  if (url_params.disposition != ui::mojom::WindowOpenDisposition::kCurrentTab ||
+      !shared_highlighting::ExtractTextFragments(url_params.url.GetRef())
+           .empty()) {
+    return false;
+  }
+
   const GURL& url = url_params.url;
 
   // Only apply to HTTP and HTTPS URLs.
@@ -2254,12 +2265,25 @@ void ContextualTasksUiService::OpenUrl(
     nav_params.opener = message_proxy_web_contents->GetPrimaryMainFrame();
   }
 
-  // Capture the active tab before navigating, since a foreground navigation
-  // activates the new tab.
+  // Capture the active tab and its current task before navigating, since a
+  // foreground navigation activates the new tab and changes the active tab's
+  // task lookup in `ContextualTasksPanelController::GetCurrentTask()`.
   TabListInterface* opener_tab_list =
       browser ? TabListInterface::From(browser) : nullptr;
   tabs::TabInterface* opener_tab =
       opener_tab_list ? opener_tab_list->GetActiveTab() : nullptr;
+  std::optional<ContextualTask> current_task;
+  if (browser) {
+    if (auto* controller = ContextualTasksPanelController::From(browser)) {
+      current_task = controller->GetCurrentTask();
+    }
+  }
+  if (opener_tab && opener_tab->GetContents() &&
+      nav_params.disposition != ui::mojom::WindowOpenDisposition::kCurrentTab) {
+    nav_params.source_contents = opener_tab->GetContents();
+    nav_params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
+    nav_params.transition = ui::PAGE_TRANSITION_LINK;
+  }
 
   // Perform the navigation
   Navigate(&nav_params);
@@ -2275,11 +2299,8 @@ void ContextualTasksUiService::OpenUrl(
 
   if (new_contents_ptr) {
     if (browser) {
-      if (auto* controller = ContextualTasksPanelController::From(browser)) {
-        if (auto current_task = controller->GetCurrentTask()) {
-          AssociateWebContentsToTask(new_contents_ptr,
-                                     current_task->GetTaskId());
-        }
+      if (current_task) {
+        AssociateWebContentsToTask(new_contents_ptr, current_task->GetTaskId());
       }
       if (opener_tab_list && opener_tab) {
         tabs::TabInterface* new_tab =
