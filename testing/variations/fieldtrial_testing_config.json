@@ -5503,8 +5503,10 @@
                     "params": {
                         "ContextualTasksEntryPoint": "toolbar-ephemeral-branded",
                         "ContextualTasksEphemeralButtonAutoDismissTimeMinutes": "120",
-                        "ContextualTasksEphemeralButtonContextMenuCloseSidePanel": "true",
+                        "ContextualTasksEphemeralButtonContextMenuOption": "close-side-panel",
                         "ContextualTasksPinnedButtonActiveIndicatorCircleHighlight": "true",
+                        "ContextualTasksPinnedButtonContextMenuCloseSidePanel": "true",
+                        "ContextualTasksPinningStringVariant": "ai-mode",
                         "ContextualTasksUnifyPinButtonLogo": "super-g",
                         "EnableCircularEphemeralButtonNextToBatterySaver": "true",
                         "overflow-items": "all-without-new-thread"
@@ -5515,14 +5517,15 @@
                         "ContextualTasksEphemeralButtonAutoDismiss",
                         "ContextualTasksEphemeralButtonContextMenu",
                         "ContextualTasksPinnedButtonActiveIndicator",
+                        "ContextualTasksPinningStringVariants",
                         "ContextualTasksPinningV2",
                         "ContextualTasksSidePanelDefaultRight",
                         "ContextualTasksUnifyPinButtonLogos",
-                        "ContextualTasksUpdatedEntryPoints",
                         "EnableContextualTasksPinButtonInToolbar",
                         "EnableContextualTasksPinButtonOnSrp"
                     ],
                     "disable_features": [
+                        "ContextualTasksEphemeralPinButtonRefactor",
                         "ContextualTasksHideMenuOnAiPage",
                         "EphemeralPinningVisibleWhenPermanentlyPinned"
                     ]
