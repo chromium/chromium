@@ -114,22 +114,6 @@ class PLATFORM_EXPORT ImageFrame final {
   // marked as done (immutable).  Returns whether the move succeeded.
   bool TakeBitmapDataIfWritable(ImageFrame*);
 
-  // Copies the pixel data at [(start_x, start_y), (end_x, start_y)) to the
-  // same X-coordinates on each subsequent row up to but not including
-  // end_y.
-  void CopyRowNTimes(int start_x, int end_x, int start_y, int end_y) {
-    DCHECK(pixel_format_ == kN32);
-    DCHECK_LT(start_x, Width());
-    DCHECK_LE(end_x, Width());
-    DCHECK_LT(start_y, Height());
-    DCHECK_LE(end_y, Height());
-    const int row_bytes = (end_x - start_x) * sizeof(PixelData);
-    const PixelData* const start_addr = GetAddr(start_x, start_y);
-    for (int dest_y = start_y + 1; dest_y < end_y; ++dest_y) {
-      UNSAFE_TODO(memcpy(GetAddr(start_x, dest_y), start_addr, row_bytes));
-    }
-  }
-
   // Allocates space for the pixel data. Must be called before any pixels are
   // written, and should only be called once. The specified color space may be
   // null if and only if color correct rendering is enabled. Returns true if the

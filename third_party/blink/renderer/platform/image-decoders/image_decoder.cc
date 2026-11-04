@@ -643,11 +643,6 @@ ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(wtf_size_t index) {
   return frame;
 }
 
-bool ImageDecoder::FrameHasAlphaAtIndex(wtf_size_t index) const {
-  return !FrameIsReceivedAtIndex(index) ||
-         frame_buffer_cache_[index].HasAlpha();
-}
-
 bool ImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   // Animated images override this method to return the status based on the data
   // received for the queried frame.
@@ -813,58 +808,6 @@ bool ImageDecoder::PostDecodeProcessing(wtf_size_t index) {
   }
 
   return true;
-}
-
-void ImageDecoder::CorrectAlphaWhenFrameBufferSawNoAlpha(wtf_size_t index) {
-  DCHECK(index < frame_buffer_cache_.size());
-  ImageFrame& buffer = frame_buffer_cache_[index];
-
-  // When this frame spans the entire image rect we can SetHasAlpha to false,
-  // since there are logically no transparent pixels outside of the frame rect.
-  if (buffer.OriginalFrameRect().Contains(gfx::Rect(Size()))) {
-    buffer.SetHasAlpha(false);
-    buffer.SetRequiredPreviousFrameIndex(kNotFound);
-  } else if (buffer.RequiredPreviousFrameIndex() != kNotFound) {
-    // When the frame rect does not span the entire image rect, and it does
-    // *not* have a required previous frame, the pixels outside of the frame
-    // rect will be fully transparent, so we shoudn't SetHasAlpha to false.
-    //
-    // It is a tricky case when the frame does have a required previous frame.
-    // The frame does not have alpha only if everywhere outside its rect
-    // doesn't have alpha.  To know whether this is true, we check the start
-    // state of the frame -- if it doesn't have alpha, we're safe.
-    //
-    // We first check that the required previous frame does not have
-    // DisposeOverWritePrevious as its disposal method - this should never
-    // happen, since the required frame should in that case be the required
-    // frame of this frame's required frame.
-    //
-    // If |prev_buffer| is DisposeNotSpecified or DisposeKeep, |buffer| has no
-    // alpha if |prev_buffer| had no alpha. Since InitFrameBuffer() already
-    // copied the alpha state, there's nothing to do here.
-    //
-    // The only remaining case is a DisposeOverwriteBgcolor frame.  If
-    // it had no alpha, and its rect is contained in the current frame's
-    // rect, we know the current frame has no alpha.
-    //
-    // For DisposeNotSpecified, DisposeKeep and DisposeOverwriteBgcolor there
-    // is one situation that is not taken into account - when |prev_buffer|
-    // *does* have alpha, but only in the frame rect of |buffer|, we can still
-    // say that this frame has no alpha. However, to determine this, we
-    // potentially need to analyze all image pixels of |prev_buffer|, which is
-    // too computationally expensive.
-    const ImageFrame* prev_buffer =
-        &frame_buffer_cache_[buffer.RequiredPreviousFrameIndex()];
-    DCHECK(prev_buffer->GetDisposalMethod() !=
-           ImageFrame::kDisposeOverwritePrevious);
-
-    if ((prev_buffer->GetDisposalMethod() ==
-         ImageFrame::kDisposeOverwriteBgcolor) &&
-        !prev_buffer->HasAlpha() &&
-        buffer.OriginalFrameRect().Contains(prev_buffer->OriginalFrameRect())) {
-      buffer.SetHasAlpha(false);
-    }
-  }
 }
 
 bool ImageDecoder::InitFrameBuffer(wtf_size_t frame_index) {
