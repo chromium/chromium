@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -60,23 +61,7 @@ public class NewTabPageTestUtils {
      * @return the NTP Station hopped on at.
      */
     public static CtaPageStation waitForNtpLoaded(final Tab tab) {
-        ChromeTabbedActivity activity =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            WindowAndroid windowAndroid = tab.getWindowAndroid();
-                            assertNotNull("Tab is not attached to a window", windowAndroid);
-                            Activity tabActivity = windowAndroid.getActivity().get();
-                            assertTrue(
-                                    "Tab is not in a ChromeTabbedActivity: " + tabActivity,
-                                    tabActivity instanceof ChromeTabbedActivity);
-                            ChromeTabbedActivity cta = (ChromeTabbedActivity) tabActivity;
-                            // The NTP Stations follow the Activity's current tab, not |tab|.
-                            assertEquals(
-                                    "Tab is not the Activity's current tab",
-                                    tab,
-                                    cta.getActivityTab());
-                            return cta;
-                        });
+        ChromeTabbedActivity activity = getActivityOfCurrentTab(tab);
 
         if (tab.isIncognito()) {
             return noopTo().hopOnTo(
@@ -102,6 +87,37 @@ public class NewTabPageTestUtils {
         return trip.hopOnTo(
                 activity,
                 RegularNewTabPageStation.newBuilder().withTabAlreadySelected(tab).build());
+    }
+
+    /**
+     * Like {@link #waitForNtpLoaded(Tab)}, but expects the regular native NTP even when the WebUI
+     * NTP override is enabled, e.g. after loading {@code chrome-native://newtab/}.
+     */
+    public static RegularNewTabPageStation waitForNativeNtpLoaded(final Tab tab) {
+        assertFalse("Tab is incognito", tab.isIncognito());
+        ChromeTabbedActivity activity = getActivityOfCurrentTab(tab);
+        return noopTo().hopOnTo(
+                        activity,
+                        RegularNewTabPageStation.newNativeNtpBuilder()
+                                .withTabAlreadySelected(tab)
+                                .build());
+    }
+
+    private static ChromeTabbedActivity getActivityOfCurrentTab(Tab tab) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WindowAndroid windowAndroid = tab.getWindowAndroid();
+                    assertNotNull("Tab is not attached to a window", windowAndroid);
+                    Activity tabActivity = windowAndroid.getActivity().get();
+                    assertTrue(
+                            "Tab is not in a ChromeTabbedActivity: " + tabActivity,
+                            tabActivity instanceof ChromeTabbedActivity);
+                    ChromeTabbedActivity cta = (ChromeTabbedActivity) tabActivity;
+                    // The NTP Stations follow the Activity's current tab, not |tab|.
+                    assertEquals(
+                            "Tab is not the Activity's current tab", tab, cta.getActivityTab());
+                    return cta;
+                });
     }
 
     public static List<SiteSuggestion> createFakeSiteSuggestions() {

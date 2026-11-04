@@ -42,13 +42,13 @@ public class RegularNewTabPageStation extends CtaPageStation {
     public ViewElement<View> logoElement;
     public Element<NewTabPage> nativePageElement;
 
-    public RegularNewTabPageStation(Config config) {
+    public RegularNewTabPageStation(Config config, boolean nativeNtp) {
         super(
                 config.withIncognito(false)
                         .withExpectedUrlSubstring(
-                                UrlOverrideUtils.isWebUiNtpOverrideEnabled()
-                                        ? UrlConstantResolver.getOriginalNtpUrl()
-                                        : UrlConstantResolver.getOriginalNativeNtpUrl()));
+                                nativeNtp
+                                        ? UrlConstantResolver.getOriginalNativeNtpUrl()
+                                        : UrlConstantResolver.getOriginalNtpUrl()));
 
         declareElementFactory(
                 mActivityElement,
@@ -60,7 +60,7 @@ public class RegularNewTabPageStation extends CtaPageStation {
                     }
                 });
 
-        if (!UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
+        if (nativeNtp) {
             logoElement = declareView(withId(R.id.search_provider_logo));
             // Scoped to the NTP's own fakebox class: R.id.search_box is also used by the Hub
             // toolbar (and by bookmarks and settings search boxes), and an unscoped matcher
@@ -86,7 +86,14 @@ public class RegularNewTabPageStation extends CtaPageStation {
     }
 
     public static Builder<RegularNewTabPageStation> newBuilder() {
-        return new Builder<>(RegularNewTabPageStation::new);
+        return new Builder<>(
+                c ->
+                        new RegularNewTabPageStation(
+                                c, /* nativeNtp= */ !UrlOverrideUtils.isWebUiNtpOverrideEnabled()));
+    }
+
+    public static Builder<RegularNewTabPageStation> newNativeNtpBuilder() {
+        return new Builder<>(c -> new RegularNewTabPageStation(c, /* nativeNtp= */ true));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
