@@ -12,7 +12,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace apps {
 class AppRegistryCache;

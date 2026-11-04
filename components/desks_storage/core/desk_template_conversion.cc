@@ -28,6 +28,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -402,36 +403,43 @@ bool IsValidWindowOpenDisposition(const std::string& disposition) {
   return kValidWindowOpenDispositions.contains(disposition);
 }
 
-// Returns a casted WindowOpenDisposition to be set in the app restore data.
+// Returns a casted ui::mojom::WindowOpenDisposition to be set in the app
+// restore data.
 int32_t StringToWindowOpenDisposition(const std::string& disposition) {
   if (disposition == kWindowOpenDispositionUnknown) {
-    return static_cast<int32_t>(WindowOpenDisposition::kUnknown);
+    return static_cast<int32_t>(ui::mojom::WindowOpenDisposition::kUnknown);
   } else if (disposition == kWindowOpenDispositionCurrentTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::kCurrentTab);
+    return static_cast<int32_t>(ui::mojom::WindowOpenDisposition::kCurrentTab);
   } else if (disposition == kWindowOpenDispositionSingletonTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::kSingletonTab);
+    return static_cast<int32_t>(
+        ui::mojom::WindowOpenDisposition::kSingletonTab);
   } else if (disposition == kWindowOpenDispositionNewForegroundTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::kNewForegroundTab);
+    return static_cast<int32_t>(
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   } else if (disposition == kWindowOpenDispositionNewBackgroundTab) {
-    return static_cast<int32_t>(WindowOpenDisposition::kNewBackgroundTab);
+    return static_cast<int32_t>(
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   } else if (disposition == kWindowOpenDispositionNewPopup) {
-    return static_cast<int32_t>(WindowOpenDisposition::kNewPopup);
+    return static_cast<int32_t>(ui::mojom::WindowOpenDisposition::kNewPopup);
   } else if (disposition == kWindowOpenDispositionNewWindow) {
-    return static_cast<int32_t>(WindowOpenDisposition::kNewWindow);
+    return static_cast<int32_t>(ui::mojom::WindowOpenDisposition::kNewWindow);
   } else if (disposition == kWindowOpenDispositionSaveToDisk) {
-    return static_cast<int32_t>(WindowOpenDisposition::kSaveToDisk);
+    return static_cast<int32_t>(ui::mojom::WindowOpenDisposition::kSaveToDisk);
   } else if (disposition == kWindowOpenDispositionOffTheRecord) {
-    return static_cast<int32_t>(WindowOpenDisposition::kOffTheRecord);
+    return static_cast<int32_t>(
+        ui::mojom::WindowOpenDisposition::kOffTheRecord);
   } else if (disposition == kWindowOpenDispositionIgnoreAction) {
-    return static_cast<int32_t>(WindowOpenDisposition::kIgnoreAction);
+    return static_cast<int32_t>(
+        ui::mojom::WindowOpenDisposition::kIgnoreAction);
   } else if (disposition == kWindowOpenDispositionNewPictureInPicture) {
-    return static_cast<int32_t>(WindowOpenDisposition::kNewPictureInPicture);
+    return static_cast<int32_t>(
+        ui::mojom::WindowOpenDisposition::kNewPictureInPicture);
 
     // Dcheck that the disposition is valid, we should never get here unless
     // the disposition is invalid.
   } else {
     DCHECK(IsValidWindowOpenDisposition(disposition));
-    return static_cast<int32_t>(WindowOpenDisposition::kUnknown);
+    return static_cast<int32_t>(ui::mojom::WindowOpenDisposition::kUnknown);
   }
 }
 
@@ -797,36 +805,37 @@ std::string UiWindowStateToString(
   }
 }
 
-// Returns a string WindowOpenDisposition when given a value of the
-// WindowOpenDisposition passed into this function.  Assumes the caller
-// casts the disposition from a int32_t.
-std::string WindowOpenDispositionToString(WindowOpenDisposition disposition) {
+// Returns a string ui::mojom::WindowOpenDisposition when given a value of the
+// ui::mojom::WindowOpenDisposition passed into this function.  Assumes the
+// caller casts the disposition from a int32_t.
+std::string WindowOpenDispositionToString(
+    ui::mojom::WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::kUnknown:
+    case ui::mojom::WindowOpenDisposition::kUnknown:
       return kWindowOpenDispositionUnknown;
-    case WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
       return kWindowOpenDispositionCurrentTab;
-    case WindowOpenDisposition::kSingletonTab:
+    case ui::mojom::WindowOpenDisposition::kSingletonTab:
       return kWindowOpenDispositionSingletonTab;
-    case WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
       return kWindowOpenDispositionNewForegroundTab;
-    case WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
       return kWindowOpenDispositionNewBackgroundTab;
-    case WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
       return kWindowOpenDispositionNewPopup;
-    case WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
       return kWindowOpenDispositionNewWindow;
-    case WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
       return kWindowOpenDispositionSaveToDisk;
-    case WindowOpenDisposition::kSwitchToTab:
+    case ui::mojom::WindowOpenDisposition::kSwitchToTab:
       return kWindowOpenDispositionSwitchToTab;
-    case WindowOpenDisposition::kOffTheRecord:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord:
       return kWindowOpenDispositionOffTheRecord;
-    case WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
       return kWindowOpenDispositionIgnoreAction;
-    case WindowOpenDisposition::kNewPictureInPicture:
+    case ui::mojom::WindowOpenDisposition::kNewPictureInPicture:
       return kWindowOpenDispositionNewPictureInPicture;
-    case WindowOpenDisposition::kNewSplitView:
+    case ui::mojom::WindowOpenDisposition::kNewSplitView:
       return kWindowOpenDispositionUnknown;
   }
 }
@@ -999,8 +1008,8 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
   }
 
   if (app->disposition.has_value()) {
-    WindowOpenDisposition disposition =
-        static_cast<WindowOpenDisposition>(app->disposition.value());
+    ui::mojom::WindowOpenDisposition disposition =
+        static_cast<ui::mojom::WindowOpenDisposition>(app->disposition.value());
     app_data.Set(kWindowOpenDisposition,
                  WindowOpenDispositionToString(disposition));
   }
@@ -1118,39 +1127,39 @@ apps::LaunchContainer ToLaunchContainer(SyncLaunchContainer container) {
   }
 }
 
-// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
-// This value is cast to int32_t by the caller to be assigned to the
-// `disposition` field in AppRestoreData.
-WindowOpenDisposition ToBaseWindowOpenDisposition(
+// Convert sync proto ui::mojom::WindowOpenDisposition to base's
+// WindowOpenDisposition. This value is cast to int32_t by the caller to be
+// assigned to the `disposition` field in AppRestoreData.
+ui::mojom::WindowOpenDisposition ToBaseWindowOpenDisposition(
     SyncWindowOpenDisposition disposition) {
   switch (disposition) {
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN:
-      return WindowOpenDisposition::kUnknown;
+      return ui::mojom::WindowOpenDisposition::kUnknown;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB:
-      return WindowOpenDisposition::kCurrentTab;
+      return ui::mojom::WindowOpenDisposition::kCurrentTab;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB:
-      return WindowOpenDisposition::kSingletonTab;
+      return ui::mojom::WindowOpenDisposition::kSingletonTab;
     case sync_pb::
         WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB:
-      return WindowOpenDisposition::kNewForegroundTab;
+      return ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     case sync_pb::
         WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB:
-      return WindowOpenDisposition::kNewBackgroundTab;
+      return ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP:
-      return WindowOpenDisposition::kNewPopup;
+      return ui::mojom::WindowOpenDisposition::kNewPopup;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW:
-      return WindowOpenDisposition::kNewWindow;
+      return ui::mojom::WindowOpenDisposition::kNewWindow;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK:
-      return WindowOpenDisposition::kSaveToDisk;
+      return ui::mojom::WindowOpenDisposition::kSaveToDisk;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD:
-      return WindowOpenDisposition::kOffTheRecord;
+      return ui::mojom::WindowOpenDisposition::kOffTheRecord;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION:
-      return WindowOpenDisposition::kIgnoreAction;
+      return ui::mojom::WindowOpenDisposition::kIgnoreAction;
     case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB:
-      return WindowOpenDisposition::kSwitchToTab;
+      return ui::mojom::WindowOpenDisposition::kSwitchToTab;
     case sync_pb::
         WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE:
-      return WindowOpenDisposition::kNewPictureInPicture;
+      return ui::mojom::WindowOpenDisposition::kNewPictureInPicture;
   }
 }
 
@@ -1344,44 +1353,44 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
   return app_launch_info;
 }
 
-// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
-// This value is cast to int32_t by the caller to be assigned to the
-// `disposition` field in AppRestoreData.
+// Convert sync proto ui::mojom::WindowOpenDisposition to base's
+// WindowOpenDisposition. This value is cast to int32_t by the caller to be
+// assigned to the `disposition` field in AppRestoreData.
 SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::kUnknown:
+    case ui::mojom::WindowOpenDisposition::kUnknown:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN;
-    case WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB;
-    case WindowOpenDisposition::kSingletonTab:
+    case ui::mojom::WindowOpenDisposition::kSingletonTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB;
-    case WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB;
-    case WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB;
-    case WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP;
-    case WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW;
-    case WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK;
-    case WindowOpenDisposition::kOffTheRecord:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD;
-    case WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION;
-    case WindowOpenDisposition::kSwitchToTab:
+    case ui::mojom::WindowOpenDisposition::kSwitchToTab:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB;
-    case WindowOpenDisposition::kNewPictureInPicture:
+    case ui::mojom::WindowOpenDisposition::kNewPictureInPicture:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE;
-    case WindowOpenDisposition::kNewSplitView:
+    case ui::mojom::WindowOpenDisposition::kNewSplitView:
       return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN;
   }
 }
@@ -1630,8 +1639,8 @@ void FillAppWithWindowOpenDisposition(
     const app_restore::AppRestoreData* app_restore_data,
     WorkspaceDeskSpecifics_App* out_app) {
   if (app_restore_data->disposition.has_value()) {
-    out_app->set_disposition(
-        FromBaseWindowOpenDisposition(static_cast<WindowOpenDisposition>(
+    out_app->set_disposition(FromBaseWindowOpenDisposition(
+        static_cast<ui::mojom::WindowOpenDisposition>(
             app_restore_data->disposition.value())));
   }
 }

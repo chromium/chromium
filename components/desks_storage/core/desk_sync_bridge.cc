@@ -43,7 +43,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace desks_storage {
 

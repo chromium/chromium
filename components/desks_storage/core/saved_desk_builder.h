@@ -19,9 +19,9 @@
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -86,7 +86,7 @@ class SavedDeskGenericAppBuilder {
   SavedDeskGenericAppBuilder& SetLaunchContainer(
       apps::LaunchContainer container);
   SavedDeskGenericAppBuilder& SetWindowOpenDisposition(
-      WindowOpenDisposition disposition);
+      ui::mojom::WindowOpenDisposition disposition);
   SavedDeskGenericAppBuilder& SetName(std::string name);
   SavedDeskGenericAppBuilder& SetSnapPercentage(int percentage);
   SavedDeskGenericAppBuilder& SetEventFlag(int32_t event_flag);
@@ -107,7 +107,7 @@ class SavedDeskGenericAppBuilder {
   std::optional<int> window_id_;
   std::optional<int64_t> display_id_;
   std::optional<apps::LaunchContainer> launch_conatiner_;
-  std::optional<WindowOpenDisposition> disposition_;
+  std::optional<ui::mojom::WindowOpenDisposition> disposition_;
   std::optional<std::string> name_;
   std::optional<int> snap_percentage_;
   std::optional<int32_t> event_flag_;

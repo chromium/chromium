@@ -12,6 +12,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace desks_storage {
@@ -98,7 +99,7 @@ SavedDeskGenericAppBuilder& SavedDeskGenericAppBuilder::SetLaunchContainer(
 
 SavedDeskGenericAppBuilder&
 SavedDeskGenericAppBuilder::SetWindowOpenDisposition(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   disposition_ = disposition;
   return *this;
 }
