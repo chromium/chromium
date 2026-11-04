@@ -193,10 +193,9 @@ void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
   // "OnWidgetDestroying" notifications (this can at least happen when we close
   // a window with a notification open). Handle this gracefully.
   if (close_action_) {
-    // TODO(crbug.com/578002539): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK(close_action_ == CLOSE_DISMISS_USER_ACTION ||
-           close_action_ == CLOSE_DISMISS_DEACTIVATION);
+    CHECK(close_action_ == CLOSE_DISMISS_USER_ACTION ||
+              close_action_ == CLOSE_DISMISS_DEACTIVATION,
+          base::NotFatalUntil::M162);
     return;
   }
 

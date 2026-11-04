@@ -69,10 +69,6 @@ class ControlledHomeDialogController
   static void ClearProfileSetForTesting();
 
  private:
-  // Checks whether `extension` corresponds to this bubble's extension and,
-  // if so, closes the bubble.
-  void HandleExtensionUnloadOrUninstall(const extensions::Extension* extension);
-
   // The corresponding `Profile`.
   raw_ptr<Profile> const profile_;
   // The original web contents that triggered the dialog.

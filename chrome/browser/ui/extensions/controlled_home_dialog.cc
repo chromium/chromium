@@ -41,20 +41,32 @@ class ControlledHomeDialogDelegate
   }
 
   void OnDialogAccepted() {
-    controller_->OnBubbleClosed(
+    HandleDialogClose(
         ControlledHomeDialogControllerInterface::CloseAction::CLOSE_EXECUTE);
   }
   void OnDialogCancelled() {
-    controller_->OnBubbleClosed(ControlledHomeDialogControllerInterface::
-                                    CloseAction::CLOSE_DISMISS_USER_ACTION);
+    HandleDialogClose(ControlledHomeDialogControllerInterface::CloseAction::
+                          CLOSE_DISMISS_USER_ACTION);
   }
   void OnLearnMoreClicked() {
-    controller_->OnBubbleClosed(
+    if (!controller_) {
+      return;
+    }
+
+    // Closing the dialog can destroy `this` and synchronously trigger
+    // `OnDialogClosed()`, so stop observing the registry, take ownership of
+    // `controller_` on the stack, and close the dialog before notifying the
+    // controller.
+    extension_registry_observation_.Reset();
+    std::unique_ptr<ControlledHomeDialogControllerInterface> controller =
+        std::move(controller_);
+    CloseDialog();
+    controller->OnBubbleClosed(
         ControlledHomeDialogControllerInterface::CloseAction::CLOSE_LEARN_MORE);
   }
   void OnDialogClosed() {
-    controller_->OnBubbleClosed(ControlledHomeDialogControllerInterface::
-                                    CloseAction::CLOSE_DISMISS_DEACTIVATION);
+    HandleDialogClose(ControlledHomeDialogControllerInterface::CloseAction::
+                          CLOSE_DISMISS_DEACTIVATION);
   }
 
   ControlledHomeDialogControllerInterface* controller() {
@@ -62,6 +74,21 @@ class ControlledHomeDialogDelegate
   }
 
  private:
+  void HandleDialogClose(
+      ControlledHomeDialogControllerInterface::CloseAction action) {
+    if (!controller_) {
+      return;
+    }
+
+    // Reset the observation before notifying the controller so that disabling
+    // the extension on `CLOSE_EXECUTE` does not re-entrantly trigger
+    // `OnExtensionUnloaded()` -> `CloseDialog()` -> `OnDialogClosed()`.
+    extension_registry_observation_.Reset();
+    std::unique_ptr<ControlledHomeDialogControllerInterface> controller =
+        std::move(controller_);
+    controller->OnBubbleClosed(action);
+  }
+
   void CloseDialog() { dialog_model()->host()->Close(); }
 
   // ExtensionRegistryObserver:
@@ -69,7 +96,7 @@ class ControlledHomeDialogDelegate
       content::BrowserContext* browser_context,
       const extensions::Extension* extension,
       extensions::UnloadedExtensionReason reason) override {
-    if (extension->id() != controller_->GetAnchorActionId()) {
+    if (!controller_ || extension->id() != controller_->GetAnchorActionId()) {
       return;
     }
 
@@ -78,7 +105,7 @@ class ControlledHomeDialogDelegate
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override {
-    if (extension->id() != controller_->GetAnchorActionId()) {
+    if (!controller_ || extension->id() != controller_->GetAnchorActionId()) {
       return;
     }
 
@@ -104,7 +131,9 @@ class ControlledHomeDialogDelegate
 
 namespace extensions {
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogActionButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogCancelButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogLearnMoreLinkElementId);
 
 void ShowControlledHomeDialog(
     Profile* profile,
@@ -142,13 +171,16 @@ void ShowControlledHomeDialog(
         ui::DialogModelMenuItem::Params().SetIsEnabled(false));
 
   } else {
-    dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
-        IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_LEARN_MORE_LINK,
-        ui::DialogModelLabel::CreateLink(
-            IDS_LEARN_MORE,
-            base::BindRepeating(
-                &ControlledHomeDialogDelegate::OnLearnMoreClicked,
-                base::Unretained(dialog_delegate)))));
+    dialog_builder.AddParagraph(
+        ui::DialogModelLabel::CreateWithReplacement(
+            IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_LEARN_MORE_LINK,
+            ui::DialogModelLabel::CreateLink(
+                IDS_LEARN_MORE,
+                base::BindRepeating(
+                    &ControlledHomeDialogDelegate::OnLearnMoreClicked,
+                    base::Unretained(dialog_delegate)))),
+        /*header=*/std::u16string(),
+        /*id=*/kControlledHomeDialogLearnMoreLinkElementId);
   }
 
   std::u16string ok_button_text = dialog_controller->GetActionButtonText();
@@ -156,7 +188,9 @@ void ShowControlledHomeDialog(
     dialog_builder.AddOkButton(
         base::BindOnce(&ControlledHomeDialogDelegate::OnDialogAccepted,
                        base::Unretained(dialog_delegate)),
-        ui::DialogModel::Button::Params().SetLabel(ok_button_text));
+        ui::DialogModel::Button::Params()
+            .SetLabel(ok_button_text)
+            .SetId(kControlledHomeDialogActionButtonElementId));
   }
 
   ShowDialog(parent, dialog_controller->GetAnchorActionId(),

@@ -15,7 +15,9 @@ class Profile;
 
 namespace extensions {
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogActionButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogCancelButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogLearnMoreLinkElementId);
 
 // Shows a dialog to notify the user when an extension has changed the home
 // page.
