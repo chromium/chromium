@@ -585,6 +585,41 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </token>
 </histogram>
 
+<histogram name="Omnibox.AgenticUpdateSuggestion.{Metric}" enum="Boolean"
+    expires_after="2027-11-01">
+  <owner>wenhuc@google.com</owner>
+  <owner>niharm@google.com</owner>
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation from the omnibox or a WebUI searchbox (e.g. the NTP
+    Realbox), {Metric}
+
+    An agentic update suggestion is an AI Mode thread suggestion that the server
+    annotates with an update from an agent the user set up (suggest subtype
+    SUBTYPE_PERSONAL_UPDATE_AIM_THREAD_EXPLICIT).
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explicitly (e.g. by clicking on some non-Omnibox browser UI).
+  </summary>
+  <token key="Metric">
+    <variant name="Precision"
+        summary="this metric is recorded if at least one agentic update
+                 suggestion was shown during the Omnibox session. It records
+                 whether the user selected an agentic update suggestion.
+                 (Precision = Usage / Recall)"/>
+    <variant name="Recall"
+        summary="this metric records whether at least one agentic update
+                 suggestion was shown during the Omnibox session. (Recall =
+                 Usage / Precision)"/>
+    <variant name="Usage"
+        summary="this metric records whether the user selected an agentic
+                 update suggestion. (Usage = Precision * Recall)"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.AimEligibility.CountryCodeEmpty" enum="Boolean"
     expires_after="2027-04-18">
   <owner>mahmadi@chromium.org</owner>

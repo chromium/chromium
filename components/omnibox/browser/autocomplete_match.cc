@@ -1850,6 +1850,11 @@ bool AutocompleteMatch::IsThreadsHistorySuggestion() const {
       omnibox::SuggestSubtype::SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT);
 }
 
+bool AutocompleteMatch::IsAgenticUpdateSuggestion() const {
+  return subtypes.contains(
+      omnibox::SuggestSubtype::SUBTYPE_PERSONAL_UPDATE_AIM_THREAD_EXPLICIT);
+}
+
 bool AutocompleteMatch::IsToolbelt() const {
   return type == omnibox::AutocompleteMatchType::kNullResultMessage &&
          !actions.empty() && omnibox_feature_configs::Toolbelt::Get().enabled;

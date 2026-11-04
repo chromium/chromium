@@ -86,6 +86,10 @@ class OmniboxMetricsProviderTest : public testing::Test {
     metrics_provider_->RecordContextualSearchPrecisionRecallUsage(log);
   }
 
+  void RecordAgenticUpdatePrecisionRecallUsage(const OmniboxLog& log) {
+    metrics_provider_->RecordAgenticUpdatePrecisionRecallUsage(log);
+  }
+
   void RecordLogAndVerifyScoringSignals(
       const OmniboxLog& log,
       OmniboxScoringSignals& expected_scoring_signals) {
@@ -563,6 +567,71 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchMetrics) {
         entry,
         ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixLensActionShownName,
         true);
+  }
+}
+
+TEST_F(OmniboxMetricsProviderTest, RecordAgenticUpdateMetrics) {
+  AutocompleteMatch agentic_update_match =
+      BuildMatch(omnibox::AutocompleteMatchType::kSearchSuggestPersonalized);
+  agentic_update_match.subtypes.insert(
+      omnibox::SUBTYPE_PERSONAL_UPDATE_AIM_THREAD_EXPLICIT);
+
+  AutocompleteResult result;
+  result.AppendMatches(
+      {BuildMatch(omnibox::AutocompleteMatchType::kSearchSuggest),
+       agentic_update_match});
+
+  // No agentic update suggestion shown in the session.
+  {
+    base::HistogramTester histogram_tester;
+
+    RecordAgenticUpdatePrecisionRecallUsage(
+        BuildOmniboxLog(result, /*selected_index=*/0, SessionData()));
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AgenticUpdateSuggestion.Precision", /*expected_count=*/0);
+    histogram_tester.ExpectUniqueSample(
+        "Omnibox.AgenticUpdateSuggestion.Recall", false,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Omnibox.AgenticUpdateSuggestion.Usage",
+                                        false, /*expected_bucket_count=*/1);
+  }
+
+  SessionData session;
+  session.agentic_update_suggestions_shown_in_session = true;
+
+  // Agentic update suggestion shown, but another suggestion selected.
+  {
+    base::HistogramTester histogram_tester;
+
+    RecordAgenticUpdatePrecisionRecallUsage(
+        BuildOmniboxLog(result, /*selected_index=*/0, session));
+
+    histogram_tester.ExpectUniqueSample(
+        "Omnibox.AgenticUpdateSuggestion.Precision", false,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Omnibox.AgenticUpdateSuggestion.Recall", true,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Omnibox.AgenticUpdateSuggestion.Usage",
+                                        false, /*expected_bucket_count=*/1);
+  }
+
+  // Agentic update suggestion shown and selected.
+  {
+    base::HistogramTester histogram_tester;
+
+    RecordAgenticUpdatePrecisionRecallUsage(
+        BuildOmniboxLog(result, /*selected_index=*/1, session));
+
+    histogram_tester.ExpectUniqueSample(
+        "Omnibox.AgenticUpdateSuggestion.Precision", true,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Omnibox.AgenticUpdateSuggestion.Recall", true,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Omnibox.AgenticUpdateSuggestion.Usage",
+                                        true, /*expected_bucket_count=*/1);
   }
 }
 

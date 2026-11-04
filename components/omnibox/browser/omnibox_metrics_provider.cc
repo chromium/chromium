@@ -264,6 +264,7 @@ void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
     RecordMetrics(*log);
     RecordZeroPrefixPrecisionRecallUsage(*log);
     RecordContextualSearchPrecisionRecallUsage(*log);
+    RecordAgenticUpdatePrecisionRecallUsage(*log);
   }
 }
 
@@ -620,4 +621,26 @@ void OmniboxMetricsProvider::RecordContextualSearchPrecisionRecallUsage(
   }
   base::UmaHistogramBoolean("Omnibox.LensAction.Recall", lens_action_shown);
   base::UmaHistogramBoolean("Omnibox.LensAction.Usage", lens_action_selected);
+}
+
+void OmniboxMetricsProvider::RecordAgenticUpdatePrecisionRecallUsage(
+    const OmniboxLog& log) {
+  if (log.selection.line < 0 || log.selection.line >= log.result->size() ||
+      !log.session) {
+    return;
+  }
+
+  bool agentic_update_selected =
+      log.result->match_at(log.selection.line).IsAgenticUpdateSuggestion();
+  bool agentic_update_shown =
+      log.session->agentic_update_suggestions_shown_in_session;
+
+  if (agentic_update_shown) {
+    base::UmaHistogramBoolean("Omnibox.AgenticUpdateSuggestion.Precision",
+                              agentic_update_selected);
+  }
+  base::UmaHistogramBoolean("Omnibox.AgenticUpdateSuggestion.Recall",
+                            agentic_update_shown);
+  base::UmaHistogramBoolean("Omnibox.AgenticUpdateSuggestion.Usage",
+                            agentic_update_selected);
 }

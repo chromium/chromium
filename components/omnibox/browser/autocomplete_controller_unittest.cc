@@ -319,6 +319,48 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionZeroPrefixThenTyped) {
   }
 }
 
+TEST_F(AutocompleteControllerTest, UpdateShownInSessionAgenticUpdate) {
+  AutocompleteInput zero_prefix_input(
+      u"", 0u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  zero_prefix_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  controller_.input_ = zero_prefix_input;
+
+  // A zero-prefix suggestion without an agentic update.
+  std::vector<AutocompleteMatch> matches;
+  matches.push_back(CreateZeroPrefixSearchMatch(u"abc"));
+  SetAutocompleteMatches(matches);
+  UpdateShownInSession();
+
+  ASSERT_FALSE(controller_.internal_result_.match_at(0)
+                   ->session->agentic_update_suggestions_shown_in_session);
+
+  // Showing an agentic update suggestion marks every match in the session.
+  AutocompleteMatch agentic_update_match =
+      CreateZeroPrefixSearchMatch(u"flights to tokyo");
+  agentic_update_match.subtypes.insert(
+      omnibox::SUBTYPE_PERSONAL_UPDATE_AIM_THREAD_EXPLICIT);
+  matches.push_back(agentic_update_match);
+  SetAutocompleteMatches(matches);
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    EXPECT_TRUE(controller_.internal_result_.match_at(i)
+                    ->session->agentic_update_suggestions_shown_in_session);
+  }
+
+  // The session keeps the flag after the agentic update suggestion is gone,
+  // e.g. once the user starts typing.
+  AutocompleteInput typed_input(u"abc", 3u, metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+  controller_.input_ = typed_input;
+  SetAutocompleteMatches({CreateSearchMatch(u"abc")});
+  UpdateShownInSession();
+
+  EXPECT_TRUE(controller_.internal_result_.match_at(0)
+                  ->session->agentic_update_suggestions_shown_in_session);
+}
+
 TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage) {
   base::HistogramTester histogram_tester;
   std::vector<AutocompleteMatch> matches;

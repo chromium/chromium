@@ -70,6 +70,9 @@ class OmniboxMetricsProvider : public metrics::MetricsProvider {
   // Records contextual search suggestion precision/recall/usage metrics.
   void RecordContextualSearchPrecisionRecallUsage(const OmniboxLog& log);
 
+  // Records agentic update suggestion precision/recall/usage metrics.
+  void RecordAgenticUpdatePrecisionRecallUsage(const OmniboxLog& log);
+
   // Subscription for receiving Omnibox event callbacks.
   const base::CallbackListSubscription subscription_;
 

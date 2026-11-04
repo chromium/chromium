@@ -365,6 +365,10 @@ class AutocompleteResult {
           break;
       }
     }
+
+    if (match.IsAgenticUpdateSuggestion()) {
+      session_.agentic_update_suggestions_shown_in_session |= true;
+    }
   }
 
   // Clears this result set - i.e., `matches_` and `suggestion_groups_map_`.

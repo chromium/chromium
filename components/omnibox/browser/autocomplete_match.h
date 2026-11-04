@@ -132,6 +132,9 @@ struct SessionData {
   // Whether the "Ask Google Lens about this page" action was shown at least
   // once in the session.
   bool lens_action_shown_in_session = false;
+
+  // Whether at least one agentic update suggestion was shown in the session.
+  bool agentic_update_suggestions_shown_in_session = false;
 };
 
 enum class IphType {
@@ -571,6 +574,10 @@ struct AutocompleteMatch {
 
   // Checks if this match is an  Aim threads history suggestion.
   bool IsThreadsHistorySuggestion() const;
+
+  // Checks if this match is an AI Mode thread suggestion that carries an
+  // agentic update from the server.
+  bool IsAgenticUpdateSuggestion() const;
 
   // Checks if this match is a specialized toolbelt match with actions on
   // a button row.
