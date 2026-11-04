@@ -13,7 +13,6 @@
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
@@ -64,7 +63,7 @@ void DataProtectionUIController::ContentsViewDataProtectionController::
   }
 
   enterprise_data_protection::DataProtectionNavigationController* controller =
-      tab->GetTabFeatures()->data_protection_controller();
+      enterprise_data_protection::DataProtectionNavigationController::From(tab);
 
   contents_container_view_->ApplyWatermarkSettings(
       controller->watermark_text(), enterprise_watermark::GetFillColor(prefs_),
@@ -124,7 +123,7 @@ bool DataProtectionUIController::ContentsViewDataProtectionController::
       contents_container_view_->contents_view()->web_contents());
 
   enterprise_data_protection::DataProtectionNavigationController* controller =
-      tab->GetTabFeatures()->data_protection_controller();
+      enterprise_data_protection::DataProtectionNavigationController::From(tab);
 
   return controller->screenshot_allowed();
 }

@@ -18,10 +18,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
-#endif
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
@@ -29,6 +26,14 @@
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 namespace enterprise_data_protection {
+
+DEFINE_USER_DATA(DataProtectionNavigationController);
+
+// static
+DataProtectionNavigationController* DataProtectionNavigationController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 // static
 DataProtectionNavigationController*
@@ -40,10 +45,10 @@ DataProtectionNavigationController::FromWebContents(
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab || !tab->GetTabFeatures()) {
+  if (!tab) {
     return nullptr;
   }
-  return tab->GetTabFeatures()->data_protection_controller();
+  return From(tab);
 #else
   return nullptr;
 #endif
@@ -61,7 +66,9 @@ bool IsScreenShareBlocked(content::WebContents* web_contents) {
 
 DataProtectionNavigationController::DataProtectionNavigationController(
     tabs::TabInterface* tab_interface)
-    : tab_interface_(tab_interface) {
+    : tab_interface_(tab_interface),
+      scoped_unowned_user_data_(tab_interface->GetUnownedUserDataHost(),
+                                *this) {
   Observe(tab_interface->GetContents());
   tab_subscriptions_.push_back(
       tab_interface_->RegisterWillDiscardContents(base::BindRepeating(

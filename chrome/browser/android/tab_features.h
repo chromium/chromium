@@ -208,11 +208,6 @@ class TabFeatures {
   TabFeatures(content::WebContents* web_contents, Profile* profile);
   ~TabFeatures();
 
-  enterprise_data_protection::DataProtectionNavigationController*
-  data_protection_controller() {
-    return data_protection_tab_controller_.get();
-  }
-
   tasks::TaskTabHelper* task_tab_helper() { return task_tab_helper_.get(); }
 
   SupervisedUserNavigationObserver* supervised_user_navigation_observer() {

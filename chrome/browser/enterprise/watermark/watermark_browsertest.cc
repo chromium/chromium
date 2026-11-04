@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -378,10 +377,8 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
                    ->has_text_for_testing());
 
   base::test::TestFuture<void> future;
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->data_protection_controller()
+  enterprise_data_protection::DataProtectionNavigationController::From(
+      browser()->GetActiveTabInterface())
       ->SetCallbackForTesting(future.GetCallback());
   // Navigate to a page that should show a watermark.  The watermark should
   // show even while the page loads.
@@ -558,10 +555,8 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
                    ->has_text_for_testing());
 
   base::test::TestFuture<void> future;
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->data_protection_controller()
+  enterprise_data_protection::DataProtectionNavigationController::From(
+      browser()->GetActiveTabInterface())
       ->SetCallbackForTesting(future.GetCallback());
 
   // Wait for the navigation to partially complete. The load is not complete but

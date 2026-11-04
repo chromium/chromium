@@ -845,8 +845,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   tab_dialog_manager_ = std::make_unique<TabDialogManager>(&tab);
 
-  data_protection_tab_controller_ = std::make_unique<
-      enterprise_data_protection::DataProtectionNavigationController>(&tab);
+  data_protection_tab_controller_ =
+      GetUserDataFactory()
+          .CreateInstance<
+              enterprise_data_protection::DataProtectionNavigationController>(
+              tab, &tab);
 
   enterprise_proxy_tab_helper_ =
       GetUserDataFactory()

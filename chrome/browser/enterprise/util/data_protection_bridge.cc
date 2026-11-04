@@ -7,7 +7,6 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
@@ -117,7 +116,7 @@ static bool JNI_DataProtectionBridge_IsScreenshotAllowed(TabAndroid* tab) {
   }
 
   enterprise_data_protection::DataProtectionNavigationController* controller =
-      tab->GetTabFeatures()->data_protection_controller();
+      enterprise_data_protection::DataProtectionNavigationController::From(tab);
   if (!controller) {
     return true;
   }
@@ -132,7 +131,7 @@ static void JNI_DataProtectionBridge_RegisterScreenshotSubscriptionCallback(
     return;
   }
   enterprise_data_protection::DataProtectionNavigationController* controller =
-      tab->GetTabFeatures()->data_protection_controller();
+      enterprise_data_protection::DataProtectionNavigationController::From(tab);
   if (!controller) {
     return;
   }
@@ -146,7 +145,7 @@ static void JNI_DataProtectionBridge_ClearScreenshotSubscriptionCallback(
     return;
   }
   enterprise_data_protection::DataProtectionNavigationController* controller =
-      tab->GetTabFeatures()->data_protection_controller();
+      enterprise_data_protection::DataProtectionNavigationController::From(tab);
 
   if (!controller) {
     return;

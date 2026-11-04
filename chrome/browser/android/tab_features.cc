@@ -390,8 +390,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
           *tab, tab);
 
   if (ShouldCreateDataProtectionController(profile)) {
-    data_protection_tab_controller_ = std::make_unique<
-        enterprise_data_protection::DataProtectionNavigationController>(tab);
+    data_protection_tab_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<
+                enterprise_data_protection::DataProtectionNavigationController>(
+                *tab, tab);
   }
 
   enterprise_proxy_tab_helper_ =

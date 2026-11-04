@@ -114,6 +114,7 @@ source_set("enterprise") {
     "//extensions/buildflags",
     "//services/data_decoder/public/cpp",
     "//ui/base/idle",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 
