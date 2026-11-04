@@ -410,7 +410,8 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
 }
 
 // Tests that when the forced device switcher flag is set to `AndroidPhone`, the
-// Android Switcher promo is presented without recording segmentation metrics.
+// Android Switcher promo is presented and `kAndroidSwitcher` with success
+// latency is recorded.
 TEST_F(DefaultBrowserScreenCoordinatorTest,
        PresentsAndroidSwitcherPromoWhenForcedDeviceSwitcherFlagSet) {
   EnableVariation(
@@ -427,8 +428,33 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
   EXPECT_TRUE([navigation_controller_.topViewController
       isMemberOfClass:[DefaultBrowserAndroidSwitcherScreenViewController
                           class]]);
-  histogram_tester_.ExpectTotalCount(
-      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher,
+      /*is_success=*/true);
+}
+
+// Tests that when the forced device switcher flag is set to a non-Android
+// segment, the standard promo is presented and `kNotAndroidSwitcher` with
+// success latency is recorded.
+TEST_F(
+    DefaultBrowserScreenCoordinatorTest,
+    PresentsStandardPromoWhenForcedDeviceSwitcherFlagSetToNonAndroidSegment) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSegmentationSignal);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "force-device-switcher-experience",
+      segmentation_platform::DeviceSwitcherModel::kDesktopLabel);
+  SignIn();
+
+  [coordinator_ start];
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kNotAndroidSwitcher,
+      /*is_success=*/true);
 }
 
 // Tests that the animated Default Browser promo takes precedence when both the

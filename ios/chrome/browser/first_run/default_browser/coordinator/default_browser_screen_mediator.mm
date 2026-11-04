@@ -267,6 +267,18 @@ void RecordDeviceSwitcherSignalMetrics(
 
 #pragma mark - Private
 
+// Completes signal evaluation and records metrics for a forced device switcher
+// segment.
+- (void)completeForcedDeviceSwitcherEvaluation:(BOOL)isAndroidSwitcher {
+  _evaluationStartTime = base::TimeTicks::Now();
+  first_run::DefaultBrowserPromoSegmentationResult result =
+      isAndroidSwitcher
+          ? first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher
+          : first_run::DefaultBrowserPromoSegmentationResult::
+                kNotAndroidSwitcher;
+  [self completeSignalEvaluationWithResult:result];
+}
+
 // Queries the segmentation platform device switcher classification result and
 // notifies `delegate` whether to present the Android switcher promo.
 - (void)evaluateSegmentationSignal {
@@ -276,7 +288,7 @@ void RecordDeviceSwitcherSignalMetrics(
     BOOL isAndroidSwitcher =
         forcedSegment ==
         segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel;
-    [self notifyEvaluationFinishedWithAndroidSwitcherPromo:isAndroidSwitcher];
+    [self completeForcedDeviceSwitcherEvaluation:isAndroidSwitcher];
     return;
   }
 
