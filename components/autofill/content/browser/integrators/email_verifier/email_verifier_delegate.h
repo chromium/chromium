@@ -187,7 +187,6 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
       gfx::RectF email_field_bounds,
       std::u16string email,
       std::string nonce,
-      bool already_allowed,
       std::optional<content::webid::EmailVerifier::Result> result,
       blink::mojom::EmailVerificationRequestResult status,
       base::TimeDelta is_verifiable_duration);

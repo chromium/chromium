@@ -299,6 +299,21 @@ class EmailVerifierDelegateTestBase
     return result;
   }
 
+  // Stores a prior permission decision in prefs, as if the user had accepted
+  // the permission prompt for `email` with `issuer_site` as the issuer.
+  void SetEmailVerificationAllowed(const std::string& email,
+                                   std::optional<std::string> issuer_site) {
+    ScopedDictPrefUpdate update(client().GetPrefs(),
+                                prefs::kAutofillEmailVerificationState);
+    base::DictValue email_dict;
+    email_dict.Set("allowed", true);
+    if (issuer_site) {
+      email_dict.Set("issuer_site", *issuer_site);
+    }
+    email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+    update->Set(email, std::move(email_dict));
+  }
+
   void TriggerDefaultFormFill(const FormStructure& form) {
     AutofillProfile profile = test::GetFullProfile();
     base::flat_set<FieldGlobalId> filled_field_ids = {
@@ -1148,14 +1163,7 @@ TEST_F(EmailVerifierDelegateTest, ClearsNotSignedInStrikesWhenAlreadyAllowed) {
   FieldGlobalId field_id = form->field(0)->global_id();
   std::string email = "johndoe@hades.com";
 
-  PrefService* prefs = client().GetPrefs();
-  ASSERT_TRUE(prefs);
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-  base::DictValue email_dict;
-  email_dict.Set("allowed", true);
-  email_dict.Set("issuer_site", "https://example.com");
-  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set(email, std::move(email_dict));
+  SetEmailVerificationAllowed(email, "https://example.com");
 
   client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
   EmailVerificationNotSignedInStrikeDatabase not_signed_in_strike_db(
@@ -1201,14 +1209,7 @@ TEST_F(EmailVerifierDelegateTest,
   FormStructure* form = SetUpValidForm();
   std::string email = "johndoe@hades.com";
 
-  PrefService* prefs = client().GetPrefs();
-  ASSERT_TRUE(prefs);
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-  base::DictValue email_dict;
-  email_dict.Set("allowed", true);
-  email_dict.Set("issuer_site", "https://example.com");
-  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set(email, std::move(email_dict));
+  SetEmailVerificationAllowed(email, "https://example.com");
 
   EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
       .WillOnce(RunOnceCallback<2>(
@@ -2096,14 +2097,7 @@ TEST_F(EmailVerifierDelegateTest,
   std::string normalized_email = "mixedcase@example.com";
   std::string raw_email = "MixedCase@Example.COM";
 
-  PrefService* prefs = client().GetPrefs();
-  ASSERT_TRUE(prefs);
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-  base::DictValue email_dict;
-  email_dict.Set("allowed", true);
-  email_dict.Set("issuer_site", "https://example.com");
-  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set(normalized_email, std::move(email_dict));
+  SetEmailVerificationAllowed(normalized_email, "https://example.com");
 
   EXPECT_CALL(email_verifier(), CheckIfVerifiable(raw_email, _, _))
       .WillOnce(RunOnceCallback<2>(
@@ -2284,14 +2278,7 @@ TEST_F(EmailVerifierDelegateTest,
   FieldGlobalId field_id = form->field(0)->global_id();
   std::string email = "johndoe@hades.com";
 
-  PrefService* prefs = client().GetPrefs();
-  ASSERT_TRUE(prefs);
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-  base::DictValue email_dict;
-  email_dict.Set("allowed", true);
-  email_dict.Set("issuer_site", "https://example.com");
-  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set(email, std::move(email_dict));
+  SetEmailVerificationAllowed(email, "https://example.com");
 
   EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
       .WillOnce([this](const std::string& email_arg,
@@ -2333,13 +2320,7 @@ TEST_F(EmailVerifierDelegateTest,
   std::string email = "johndoe@hades.com";
 
   // Mark email as already allowed in prefs.
-  PrefService* prefs = client().GetPrefs();
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-  base::DictValue email_dict;
-  email_dict.Set("allowed", true);
-  email_dict.Set("issuer_site", "https://example.com");
-  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set(email, std::move(email_dict));
+  SetEmailVerificationAllowed(email, "https://example.com");
 
   EXPECT_CALL(driver(), GetNonceForEmailVerification(field_id, _))
       .WillOnce(RunOnceCallback<1>("test_nonce"));
@@ -2374,6 +2355,127 @@ TEST_F(EmailVerifierDelegateTest,
           base::Milliseconds(200)));
 
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+
+  TriggerDefaultFormFill(*form);
+}
+
+// Verifies that a prior permission is bound to the issuer site the user
+// approved: if the issuer resolved for the email has changed since, the
+// permission prompt is shown again (naming the new issuer) instead of silently
+// verifying with the new issuer.
+TEST_F(EmailVerifierDelegateTest, AlreadyAllowedForDifferentIssuerShowsPopup) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://other.com");
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce([this](const std::string& email_arg,
+                       base::OnceClosure on_dns_resolved,
+                       EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast).Times(0);
+  EXPECT_CALL(client(),
+              ShowEmailVerificationPopup(
+                  _, url::Origin::Create(GURL("https://example.com")), _, _))
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+
+  TriggerDefaultFormFill(*form);
+}
+
+// Verifies that a prior permission without a stored issuer site is not treated
+// as a grant for any issuer, and the permission prompt is shown.
+TEST_F(EmailVerifierDelegateTest, AlreadyAllowedWithoutIssuerSiteShowsPopup) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, /*issuer_site=*/std::nullopt);
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce([this](const std::string& email_arg,
+                       base::OnceClosure on_dns_resolved,
+                       EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+
+  TriggerDefaultFormFill(*form);
+}
+
+// Verifies that accepting the permission prompt for a new issuer replaces the
+// stored issuer site, so subsequent runs are bound to the new issuer.
+TEST_F(EmailVerifierDelegateTest,
+       AcceptingPromptForNewIssuerUpdatesStoredIssuerSite) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://other.com");
+
+  SetUpVerificationExpectations(*form, email);
+  TriggerDefaultFormFill(*form);
+  popup_shown_run_loop_.Run();
+
+  const base::DictValue* email_data =
+      client()
+          .GetPrefs()
+          ->GetDict(prefs::kAutofillEmailVerificationState)
+          .FindDict(email);
+  ASSERT_TRUE(email_data);
+  EXPECT_EQ(email_data->FindBool("allowed"), true);
+  const std::string* issuer_site = email_data->FindString("issuer_site");
+  ASSERT_TRUE(issuer_site);
+  EXPECT_EQ(*issuer_site, "https://example.com");
+}
+
+// Verifies that the permission is bound to the issuer's site rather than its
+// exact origin, so a different origin on the same site does not re-prompt.
+TEST_F(EmailVerifierDelegateTest,
+       AlreadyAllowedForSameSiteDifferentOriginSkipsPopup) {
+  FormStructure* form = SetUpValidForm();
+  FieldGlobalId field_id = form->field(0)->global_id();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://example.com");
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce([](const std::string& email_arg,
+                   base::OnceClosure on_dns_resolved,
+                   EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        EmailVerifier::Result result;
+        result.email = email_arg;
+        result.issuer_origin =
+            url::Origin::Create(GURL("https://login.example.com"));
+        std::move(callback).Run(
+            std::move(result),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          std::optional<std::string>("test_token"),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
+  EXPECT_CALL(driver(),
+              SendEmailVerificationToken(field_id, email, "test_token"));
 
   TriggerDefaultFormFill(*form);
 }
@@ -2508,14 +2610,7 @@ TEST_F(EmailVerifierDelegateTest, CancelVerificationInFlight) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   FormStructure* form = SetUpValidForm();
 
-  PrefService* prefs = client().GetPrefs();
-  ASSERT_TRUE(prefs);
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-  base::DictValue email_dict;
-  email_dict.Set("allowed", true);
-  email_dict.Set("issuer_site", "https://example.com");
-  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set("johndoe@hades.com", std::move(email_dict));
+  SetEmailVerificationAllowed("johndoe@hades.com", "https://example.com");
 
   EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
       .WillOnce(RunOnceCallback<2>(
@@ -2581,14 +2676,7 @@ TEST_F(EmailVerifierDelegateTest,
   FormStructure* form = SetUpValidForm();
   FieldGlobalId field_id = form->field(0)->global_id();
 
-  PrefService* prefs = client().GetPrefs();
-  ASSERT_TRUE(prefs);
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
-  base::DictValue email_dict;
-  email_dict.Set("allowed", true);
-  email_dict.Set("issuer_site", "https://example.com");
-  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set("johndoe@hades.com", std::move(email_dict));
+  SetEmailVerificationAllowed("johndoe@hades.com", "https://example.com");
 
   EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
       .WillRepeatedly([this](const std::string& email_arg, base::OnceClosure,

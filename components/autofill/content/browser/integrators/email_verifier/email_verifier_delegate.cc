@@ -127,6 +127,31 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
   return content::webid::EmailVerifier::GetOrCreateForFrame(rfh);
 }
 
+// Returns whether the user previously allowed `normalized_email` to be verified
+// by the issuer at `issuer_origin`. The stored decision is only valid for the
+// issuer site that was shown in the permission prompt, so a change of issuer
+// (e.g. via the email domain's DNS record) requires a new prompt.
+bool IsEmailVerificationAllowedForIssuer(const PrefService* prefs,
+                                         std::string_view normalized_email,
+                                         const url::Origin& issuer_origin) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutoGrantEmailVerificationPermissionForTesting)) {
+    return true;
+  }
+  if (!prefs) {
+    return false;
+  }
+  const base::DictValue* email_data =
+      prefs->GetDict(prefs::kAutofillEmailVerificationState)
+          .FindDict(normalized_email);
+  if (!email_data || !email_data->FindBool("allowed").value_or(false)) {
+    return false;
+  }
+  const std::string* issuer_site = email_data->FindString("issuer_site");
+  return issuer_site &&
+         *issuer_site == net::SchemefulSite(issuer_origin).Serialize();
+}
+
 // Returns a human-readable description of `result` for
 // chrome://autofill-internals.
 std::string_view FlowResultToString(EvpAutofillFlowResult result) {
@@ -352,7 +377,6 @@ void EmailVerifierDelegate::OnIsVerifiable(
     gfx::RectF email_field_bounds,
     std::u16string email,
     std::string nonce,
-    bool already_allowed,
     std::optional<content::webid::EmailVerifier::Result> result,
     blink::mojom::EmailVerificationRequestResult status,
     base::TimeDelta is_verifiable_duration) {
@@ -397,7 +421,9 @@ void EmailVerifierDelegate::OnIsVerifiable(
     return;
   }
 
-  if (already_allowed) {
+  if (IsEmailVerificationAllowedForIssuer(manager->client().GetPrefs(),
+                                          normalized_email,
+                                          result->issuer_origin)) {
     if (EmailVerificationNotSignedInStrikeDatabase* not_signed_in_strike_db =
             GetEmailVerificationNotSignedInStrikeDatabase()) {
       // Clear past not-signed-in strikes since the email is already permitted
@@ -848,15 +874,6 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
     return;
   }
 
-  const base::DictValue& state =
-      prefs->GetDict(prefs::kAutofillEmailVerificationState);
-  const base::DictValue* email_data = state.FindDict(normalized_email);
-  const bool auto_grant = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kAutoGrantEmailVerificationPermissionForTesting);
-  const bool already_allowed =
-      auto_grant ||
-      (email_data && email_data->FindBool("allowed").value_or(false));
-
   // TODO(crbug.com/555673135): Check if the on_dns_resolved callback is still
   // needed in EmailVerifier::CheckIfVerifiable now that in-element indicators
   // are removed.
@@ -865,7 +882,7 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
       base::BindOnce(&EmailVerifierDelegate::OnIsVerifiable,
                      weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
                      email_field_id, request_id, email_field_bounds,
-                     email_value, nonce, already_allowed));
+                     email_value, nonce));
 }
 
 }  // namespace autofill
