@@ -210,8 +210,10 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
     int drop_count;
   };
 
-  // Updates the render count for the last rendered frame based on the number
-  // of missing intervals between Render() calls.
+  // Accounts for missed intervals or systematic sub-interval differences
+  // between Render() calls: updates the render count for the last rendered
+  // frame if full intervals were skipped, or updates |render_interval_| if the
+  // observed interval systematically differs from the declared interval.
   void AccountForMissedIntervals(base::TimeTicks deadline_min,
                                  base::TimeTicks deadline_max);
 
@@ -300,9 +302,19 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
   // Callback used to convert media timestamps into wall clock timestamps.
   const TimeSource::WallClockTimeCB wall_clock_time_cb_;
 
-  // The last |deadline_max| provided to Render(), used to predict whether
-  // frames were rendered over cadence between Render() calls.
+  // The last |deadline_min| and |deadline_max| provided to Render(), used to
+  // measure the actual render interval and predict whether frames were rendered
+  // over cadence between Render() calls.
+  base::TimeTicks last_deadline_min_;
   base::TimeTicks last_deadline_max_;
+
+  // The average of the actual interval between |deadline_min| values passed to
+  // consecutive Render() calls, the last declared |deadline_max - deadline_min|
+  // interval, and whether the average is currently overriding the declared
+  // interval.
+  base::MovingAverageDeviation<base::TimeDelta> render_interval_calculator_;
+  base::TimeDelta last_declared_interval_;
+  bool using_avg_render_interval_ = false;
 
   // The average of the duration of all frames in |frame_queue_| as measured in
   // wall clock (not media) time at the time of the last Render().

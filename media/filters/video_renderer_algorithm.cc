@@ -38,6 +38,7 @@ VideoRendererAlgorithm::VideoRendererAlgorithm(
       cadence_estimator_(
           base::Seconds(kMinimumAcceptableTimeBetweenGlitchesSecs)),
       wall_clock_time_cb_(wall_clock_time_cb),
+      render_interval_calculator_(kMovingAverageSamples),
       frame_duration_calculator_(kMovingAverageSamples),
       frame_dropping_disabled_(false) {
   DCHECK(wall_clock_time_cb_);
@@ -67,6 +68,7 @@ scoped_refptr<VideoFrame> VideoRendererAlgorithm::Render(
   // to Render().  If so, we assume the last frame provided was rendered during
   // those intervals and adjust its render count appropriately.
   AccountForMissedIntervals(deadline_min, deadline_max);
+  deadline_max = deadline_min + render_interval_;
 
   // Step 3: Update the wall clock timestamps and frame duration estimates for
   // all frames currently in the |frame_queue_|.
@@ -79,11 +81,17 @@ scoped_refptr<VideoFrame> VideoRendererAlgorithm::Render(
     UpdateEffectiveFramesQueued();
 
     // If time stops, we should reset the |first_frame_| marker.
-    if (!was_time_moving_)
+    if (!was_time_moving_) {
       first_frame_ = true;
+      last_deadline_min_ = base::TimeTicks();
+      last_declared_interval_ = base::TimeDelta();
+      render_interval_calculator_.Reset();
+      using_avg_render_interval_ = false;
+    }
     return ready_frame.frame;
   }
 
+  last_deadline_min_ = deadline_min;
   last_deadline_max_ = deadline_max;
   base::TimeDelta selected_frame_drift, cadence_frame_drift;
 
@@ -234,8 +242,10 @@ scoped_refptr<VideoFrame> VideoRendererAlgorithm::Render(
 size_t VideoRendererAlgorithm::RemoveExpiredFrames(base::TimeTicks deadline) {
   // Update |last_deadline_max_| if it's no longer accurate; this should always
   // be done or EffectiveFramesQueued() may never expire the last frame.
-  if (deadline > last_deadline_max_)
+  if (deadline > last_deadline_max_) {
+    last_deadline_min_ = base::TimeTicks();
     last_deadline_max_ = deadline;
+  }
 
   if (frame_queue_.empty())
     return 0;
@@ -304,7 +314,11 @@ void VideoRendererAlgorithm::Reset(ResetFlag reset_flag) {
   cadence_estimator_.Reset();
   if (reset_flag != ResetFlag::kPreserveNextFrameEstimates) {
     average_frame_duration_ = base::TimeDelta();
+    last_deadline_min_ = base::TimeTicks();
     last_deadline_max_ = base::TimeTicks();
+    last_declared_interval_ = base::TimeDelta();
+    render_interval_calculator_.Reset();
+    using_avg_render_interval_ = false;
     frame_duration_calculator_.Reset();
   }
   first_frame_ = true;
@@ -429,15 +443,74 @@ void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
 void VideoRendererAlgorithm::AccountForMissedIntervals(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max) {
-  if (last_deadline_max_.is_null() || deadline_min <= last_deadline_max_ ||
-      !have_rendered_frames_ || !was_time_moving_ ||
-      render_interval_.is_zero()) {
+  if (last_deadline_max_.is_null() || !have_rendered_frames_ ||
+      !was_time_moving_ || render_interval_.is_zero()) {
+    if (!render_interval_.is_zero()) {
+      last_declared_interval_ = render_interval_;
+    }
     return;
   }
 
   DCHECK_GT(render_interval_, base::TimeDelta());
+  constexpr base::TimeDelta kMinRenderIntervalDifference =
+      base::Microseconds(100);
+  // If the declared interval itself changed (e.g., display refresh rate or VRR
+  // change), reset the calculator so stale samples from the previous rate don't
+  // override the new declared interval.
+  const bool declared_interval_changed =
+      (render_interval_ - last_declared_interval_).magnitude() >
+      kMinRenderIntervalDifference;
+  if (declared_interval_changed) {
+    last_declared_interval_ = render_interval_;
+    render_interval_calculator_.Reset();
+    using_avg_render_interval_ = false;
+  }
+
+  const base::TimeDelta current_interval =
+      using_avg_render_interval_ ? render_interval_calculator_.Mean()
+                                 : render_interval_;
   const int64_t render_cycle_count =
-      (deadline_min - last_deadline_max_).IntDiv(render_interval_);
+      deadline_min > last_deadline_max_
+          ? (deadline_min - last_deadline_max_).IntDiv(current_interval)
+          : 0;
+
+  // If no intervals were missed and the declared interval didn't just change,
+  // record the actual interval between Render() calls. When intervals are
+  // missed (e.g., during 250ms background rendering ticks), skip sampling so
+  // the moving average isn't skewed.
+  if (!declared_interval_changed && !render_cycle_count &&
+      !last_deadline_min_.is_null() && deadline_min > last_deadline_min_) {
+    render_interval_calculator_.AddSample(deadline_min - last_deadline_min_);
+  }
+
+  // If the actual cadence of Render() calls systematically differs from the
+  // declared interval, prefer the observed average interval.
+  constexpr size_t kMinRenderIntervalSamples = 4;
+  if (render_interval_calculator_.Count() >= kMinRenderIntervalSamples) {
+    const base::TimeDelta avg_render_interval =
+        render_interval_calculator_.Mean();
+    const base::TimeDelta deviation = render_interval_calculator_.Deviation();
+    const base::TimeDelta diff =
+        (avg_render_interval - render_interval_).magnitude();
+    // Normal VSync jitter causes individual intervals to fluctuate around the
+    // declared interval, but over 4+ samples the average stays within ~0.5x of
+    // the sample deviation. If the average differs by more than `0.6 *
+    // deviation` (and at least 100us), the actual Render() cadence is
+    // systematically different from the declared interval (e.g., 8ms timer
+    // ticks on a 144Hz / 6.943ms display), so use the observed average instead.
+    // Once active, only switch back to the declared interval if the difference
+    // drops below half the threshold to avoid flipping back and forth.
+    const base::TimeDelta threshold =
+        std::max(deviation * 0.6, kMinRenderIntervalDifference);
+    if (diff > threshold) {
+      using_avg_render_interval_ = true;
+    } else if (diff < threshold * 0.5) {
+      using_avg_render_interval_ = false;
+    }
+    if (using_avg_render_interval_) {
+      render_interval_ = avg_render_interval;
+    }
+  }
 
   // In the ideal case this value will be zero.
   if (!render_cycle_count)

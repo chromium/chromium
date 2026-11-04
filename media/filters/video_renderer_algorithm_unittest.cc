@@ -1710,4 +1710,183 @@ TEST_F(VideoRendererAlgorithmTest, WallClockDurationMetadataSet) {
   }
 }
 
+// Verifies that when the declared deadline interval (deadline_max -
+// deadline_min) systematically differs from the actual Render() invocation
+// cadence, VideoRendererAlgorithm adapts to the actual cadence without dropping
+// or skipping frames. Regression test for b/574079200.
+TEST_F(VideoRendererAlgorithmTest, MismatchedRenderInterval) {
+  constexpr base::TimeDelta kDeclaredInterval = base::Microseconds(6943);
+  TickGenerator frame_tg(base::TimeTicks(), 60);
+  TickGenerator display_tg(tick_clock_->NowTicks(), 125);  // 8ms actual step.
+  time_source_.StartTicking();
+
+  int next_frame_to_enqueue = 0;
+  int expected_rendered_frame_index = 0;
+  scoped_refptr<VideoFrame> last_rendered_frame;
+
+  const base::TimeTicks start_time = tick_clock_->NowTicks();
+  int render_calls = 0;
+  while (tick_clock_->NowTicks() - start_time < minimum_glitch_time()) {
+    while (EffectiveFramesQueued() < 3 ||
+           frame_tg.current() - time_source_.CurrentMediaTime() <
+               base::TimeTicks()) {
+      algorithm_.EnqueueFrame(
+          CreateFrame(frame_tg.interval(next_frame_to_enqueue++)));
+      frame_tg.step();
+    }
+
+    size_t frames_dropped = 0;
+    const base::TimeTicks deadline_min = display_tg.current();
+    const base::TimeTicks deadline_max = deadline_min + kDeclaredInterval;
+    display_tg.step();
+
+    scoped_refptr<VideoFrame> frame =
+        algorithm_.Render(deadline_min, deadline_max, &frames_dropped);
+    ASSERT_TRUE(frame);
+    ASSERT_EQ(0u, frames_dropped);
+
+    if (!last_rendered_frame) {
+      EXPECT_EQ(frame_tg.interval(0), frame->timestamp());
+    } else if (frame != last_rendered_frame) {
+      ++expected_rendered_frame_index;
+      ASSERT_EQ(frame_tg.interval(expected_rendered_frame_index),
+                frame->timestamp());
+    }
+    last_rendered_frame = frame;
+
+    if (++render_calls >= 5) {
+      EXPECT_EQ(display_tg.interval(1), algorithm_.render_interval());
+      EXPECT_FALSE(is_using_cadence());
+    }
+
+    tick_clock_->Advance(display_tg.current() - tick_clock_->NowTicks());
+  }
+
+  // Also verify that if the actual invocation cadence supports cadence-based
+  // rendering (e.g. 60fps into 120Hz actual, with 6.943ms declared), the actual
+  // [2] cadence is detected and used without drops.
+  time_source_.StopTicking();
+  algorithm_.Reset();
+  time_source_.SetMediaTime(base::TimeDelta());
+
+  TickGenerator frame_tg_120(base::TimeTicks(), 60);
+  TickGenerator display_tg_120(tick_clock_->NowTicks(), 120);
+  time_source_.StartTicking();
+
+  const base::TimeTicks start_time_120 = tick_clock_->NowTicks();
+  render_calls = 0;
+  while (tick_clock_->NowTicks() - start_time_120 < minimum_glitch_time()) {
+    while (EffectiveFramesQueued() < 3 ||
+           frame_tg_120.current() - time_source_.CurrentMediaTime() <
+               base::TimeTicks()) {
+      algorithm_.EnqueueFrame(
+          CreateFrame(frame_tg_120.current() - base::TimeTicks()));
+      frame_tg_120.step();
+    }
+
+    size_t frames_dropped = 0;
+    const base::TimeTicks deadline_min = display_tg_120.current();
+    const base::TimeTicks deadline_max = deadline_min + kDeclaredInterval;
+    display_tg_120.step();
+
+    scoped_refptr<VideoFrame> frame =
+        algorithm_.Render(deadline_min, deadline_max, &frames_dropped);
+    ASSERT_TRUE(frame);
+    ASSERT_EQ(0u, frames_dropped);
+
+    if (++render_calls >= 20) {
+      EXPECT_TRUE(is_using_cadence());
+      EXPECT_EQ(2.0, CadenceValue());
+    }
+
+    tick_clock_->Advance(display_tg_120.current() - tick_clock_->NowTicks());
+  }
+
+  // Verify that large intervals (such as 250ms background rendering ticks) are
+  // ignored by the interval calculator and do not skew render_interval().
+  const base::TimeDelta expected_interval = algorithm_.render_interval();
+  for (int i = 0; i < 10; ++i) {
+    tick_clock_->Advance(base::Milliseconds(250));
+    display_tg_120.Reset(tick_clock_->NowTicks());
+    while (EffectiveFramesQueued() < 3 ||
+           frame_tg_120.current() - time_source_.CurrentMediaTime() <
+               base::TimeTicks()) {
+      algorithm_.EnqueueFrame(
+          CreateFrame(frame_tg_120.current() - base::TimeTicks()));
+      frame_tg_120.step();
+    }
+    size_t frames_dropped = 0;
+    const base::TimeTicks deadline_min = display_tg_120.current();
+    const base::TimeTicks deadline_max = deadline_min + kDeclaredInterval;
+    scoped_refptr<VideoFrame> frame =
+        algorithm_.Render(deadline_min, deadline_max, &frames_dropped);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(expected_interval, algorithm_.render_interval());
+  }
+
+  // Verify that if the declared interval changes (e.g., moving to a 60Hz
+  // display), the override is reset immediately rather than staying latched to
+  // the previous average.
+  tick_clock_->Advance(base::Microseconds(8333));
+  TickGenerator display_tg_60(tick_clock_->NowTicks(), 60);
+  for (int i = 0; i < 10; ++i) {
+    const base::TimeTicks deadline_min = display_tg_60.current();
+    const base::TimeTicks deadline_max = display_tg_60.step();
+    tick_clock_->Advance(deadline_min - tick_clock_->NowTicks());
+    while (EffectiveFramesQueued() < 3 ||
+           frame_tg_120.current() - time_source_.CurrentMediaTime() <
+               base::TimeTicks()) {
+      algorithm_.EnqueueFrame(
+          CreateFrame(frame_tg_120.current() - base::TimeTicks()));
+      frame_tg_120.step();
+    }
+    size_t frames_dropped = 0;
+    scoped_refptr<VideoFrame> frame =
+        algorithm_.Render(deadline_min, deadline_max, &frames_dropped);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(deadline_max - deadline_min, algorithm_.render_interval());
+    EXPECT_EQ(1.0, CadenceValue());
+  }
+
+  // Verify that when declared_interval (20ms) > avg_render_interval (8ms) and a
+  // single actual interval is missed (+16ms), render_cycle_count uses the
+  // active avg_render_interval so the missed gap isn't sampled.
+  constexpr base::TimeDelta kDeclared50Hz = base::Milliseconds(20);
+  TickGenerator display_tg_125(display_tg_60.current(), 125);
+  for (int i = 0; i < 6; ++i) {
+    const base::TimeTicks deadline_min = display_tg_125.current();
+    const base::TimeTicks deadline_max = deadline_min + kDeclared50Hz;
+    display_tg_125.step();
+    tick_clock_->Advance(deadline_min - tick_clock_->NowTicks());
+    while (EffectiveFramesQueued() < 3 ||
+           frame_tg_120.current() - time_source_.CurrentMediaTime() <
+               base::TimeTicks()) {
+      algorithm_.EnqueueFrame(
+          CreateFrame(frame_tg_120.current() - base::TimeTicks()));
+      frame_tg_120.step();
+    }
+    size_t frames_dropped = 0;
+    ASSERT_TRUE(algorithm_.Render(deadline_min, deadline_max, &frames_dropped));
+  }
+  ASSERT_EQ(base::Milliseconds(8), algorithm_.render_interval());
+
+  // Skip one 8ms tick (advancing by 16ms total since last deadline_min).
+  display_tg_125.step();
+  const base::TimeTicks missed_deadline_min = display_tg_125.current();
+  const base::TimeTicks missed_deadline_max =
+      missed_deadline_min + kDeclared50Hz;
+  tick_clock_->Advance(missed_deadline_min - tick_clock_->NowTicks());
+  while (EffectiveFramesQueued() < 3 ||
+         frame_tg_120.current() - time_source_.CurrentMediaTime() <
+             base::TimeTicks()) {
+    algorithm_.EnqueueFrame(
+        CreateFrame(frame_tg_120.current() - base::TimeTicks()));
+    frame_tg_120.step();
+  }
+  size_t frames_dropped = 0;
+  ASSERT_TRUE(algorithm_.Render(missed_deadline_min, missed_deadline_max,
+                                &frames_dropped));
+  EXPECT_EQ(base::Milliseconds(8), algorithm_.render_interval());
+}
+
 }  // namespace media
