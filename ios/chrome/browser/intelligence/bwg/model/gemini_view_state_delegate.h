@@ -59,6 +59,12 @@ typedef NS_ENUM(NSInteger, GeminiCancelType);
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID
                                      error:(NSError*)error;
 
+// Called when the page context attachment state in the input plate changes.
+- (void)inputPlateDidChangePageContextAttachment:(BOOL)isAttached;
+
+// Called when the Nano Banana attachment selection in the input plate changes.
+- (void)inputPlateDidChangeNanoBananaAttachment:(BOOL)isSelected;
+
 // Called when a request to detach a tab with the given ID is made.
 - (void)didRequestToDetachTabWithID:(NSString*)tabID;
 

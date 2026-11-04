@@ -1655,8 +1655,22 @@ TEST_F(GeminiContainerMediatorTest,
 
   AppendActiveWebState();
   [mediator_ connect];
-  EXPECT_EQ(2, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(1, fake_container_handler.setMediumDetentHeightCallCount);
   EXPECT_EQ(std::optional<NSInteger>(kExpectedMediumDetentHeight),
+            fake_container_handler.mediumDetentHeight);
+
+  // Changing page context or Nano Banana attachment in zero state updates
+  // `mediumDetentHeight` from the consumer's `contentHeight`.
+  consumer.contentHeight = 420.2;
+  [mediator_ inputPlateDidChangePageContextAttachment:YES];
+  EXPECT_EQ(2, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(std::optional<NSInteger>(421),
+            fake_container_handler.mediumDetentHeight);
+
+  consumer.contentHeight = 450.6;
+  [mediator_ inputPlateDidChangeNanoBananaAttachment:YES];
+  EXPECT_EQ(3, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(std::optional<NSInteger>(451),
             fake_container_handler.mediumDetentHeight);
 
   // Transitioning out of zero state resets `mediumDetentHeight` to
@@ -1665,7 +1679,15 @@ TEST_F(GeminiContainerMediatorTest,
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
                       sessionID:nil
                  conversationID:nil];
-  EXPECT_EQ(3, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(4, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
+
+  // Attachment changes when not in zero state do not update
+  // `mediumDetentHeight`.
+  consumer.contentHeight = 480.0;
+  [mediator_ inputPlateDidChangePageContextAttachment:NO];
+  [mediator_ inputPlateDidChangeNanoBananaAttachment:NO];
+  EXPECT_EQ(4, fake_container_handler.setMediumDetentHeightCallCount);
   EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
 }
 

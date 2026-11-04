@@ -201,6 +201,12 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID
                                      error:(NSError*)error;
 
+// Called when the page context attachment state in the input plate changes.
+- (void)inputPlateDidChangePageContextAttachment:(BOOL)isAttached;
+
+// Called when the Nano Banana attachment selection in the input plate changes.
+- (void)inputPlateDidChangeNanoBananaAttachment:(BOOL)isSelected;
+
 #pragma mark - Chat Message Interception
 
 // Called on the main thread when the user submits a chat message, before it is
