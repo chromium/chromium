@@ -236,8 +236,7 @@ source_set("test_support") {
 }
 
 # Foundational cert-verification browser-test base classes, used across many
-# directories. Kept in a dedicated target so consumers can depend on it without
-# pulling all of //chrome/test:test_support_ui.
+# directories.
 source_set("cert_verifier_test_support") {
   testonly = true
 
@@ -257,7 +256,10 @@ source_set("cert_verifier_test_support") {
       "cert_verifier_browser_test.cc",
       "cert_verifier_browser_test.h",
     ]
-    public_deps += [ "//chrome/test:test_support_ui" ]
+    public_deps += [
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:platform_browser_test",
+    ]
   }
 }
 

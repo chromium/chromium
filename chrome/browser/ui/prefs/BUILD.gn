@@ -98,7 +98,7 @@ if (!is_android || enable_desktop_android_extensions) {
     if (enable_desktop_android_extensions) {
       deps += [ "//chrome/test:test_support_ui_android" ]
     } else {
-      deps += [ "//chrome/test:test_support_ui" ]
+      deps += [ "//chrome/test/base:platform_browser_test" ]
     }
   }
 }

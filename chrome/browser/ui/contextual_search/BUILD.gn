@@ -103,7 +103,6 @@ if (!is_android) {
     deps = [
       ":contextual_search",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//components/lens",
       "//components/optimization_guide/content/browser",
       "//content/test:test_support",

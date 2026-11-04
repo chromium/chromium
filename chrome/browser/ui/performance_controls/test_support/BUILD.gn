@@ -24,11 +24,14 @@ if (!is_android) {
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/interaction",
       "//components/performance_manager",
       "//components/prefs",
+      "//content/test:test_support",
       "//net:test_support",
       "//ui/base:test_support",
+      "//ui/base/interaction:test_support",
     ]
   }
 }
