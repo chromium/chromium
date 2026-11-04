@@ -170,16 +170,14 @@ declare_args() {
       !is_component_build && is_linux && build_with_chromium
 
   # Whether FUZZ_TESTs should be registered as gtests in Chromium's mainstream
-  # test suites. This will cause the to run for 1 second in normal testing
-  # environments such as CI. Within Chromium, we want to do this only on
-  # platforms where we have ClusterFuzz support (Windows, Mac, Linux) because
-  # we want ClusterFuzz to find the majority of problems rather than CI.
+  # test suites. This will cause them to run for 1 second in normal testing
+  # environments such as CI.
   # This gn arg is typically respected by general-purpose test suite
   # initialization code; targets created specifically for fuzztests alone
   # would not normally be disabled by a setting of 'false' here.
   register_fuzztests_in_test_suites =
-      is_linux || is_mac || is_win || use_libfuzzer || use_centipede ||
-      use_external_fuzzing_engine
+      is_linux || is_mac || is_win || is_chromeos || use_libfuzzer ||
+      use_centipede || use_external_fuzzing_engine
 }
 
 declare_args() {
