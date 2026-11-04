@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -57,8 +58,19 @@ class ProcessManagementTest : public ExtensionBrowserTest {
     // TODO(crbug.com/40142347): Remove this once Extensions are
     // supported with BackForwardCache.
     disabled_feature_list_.InitWithFeatures(
-        {}, {features::kBackForwardCache,
-             features::kProcessPerSiteUpToMainFrameThreshold});
+        {}, {
+                features::kBackForwardCache,
+                features::kProcessPerSiteUpToMainFrameThreshold,
+#if !BUILDFLAG(IS_ANDROID)
+                // TODO(crbug.com/531575122): Remove this once the organizer
+                // panel is also created in TopChromeWebUIProfile. With
+                // kTopChromeWebUISharedRenderer, only the WebUI toolbar is,
+                // so the organizer panel no longer shares its renderer
+                // process, which adds a renderer process at startup that
+                // ExtensionAndWebProcessOverflow uses to set the process limit.
+                features::kTopChromeWebUISharedRenderer,
+#endif  // !BUILDFLAG(IS_ANDROID)
+            });
   }
 
  private:
