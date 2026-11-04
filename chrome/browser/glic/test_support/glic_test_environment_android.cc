@@ -21,6 +21,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+namespace glic {
+class GlicTestEnvironmentAndroid;
+}
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/glic/android/test_support_jni_headers/GlicTestEnvironmentAndroid_jni.h"
@@ -85,8 +90,9 @@ class GlicTestEnvironmentAndroid {
   std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 
-static int64_t JNI_GlicTestEnvironmentAndroid_Init() {
-  return reinterpret_cast<int64_t>(new GlicTestEnvironmentAndroid());
+static jni_zero::JniRawPtr<GlicTestEnvironmentAndroid>
+JNI_GlicTestEnvironmentAndroid_Init() {
+  return jni_zero::MakeRaw(new GlicTestEnvironmentAndroid());
 }
 
 DEFINE_JNI(GlicTestEnvironmentAndroid)

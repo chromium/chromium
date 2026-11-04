@@ -9,7 +9,10 @@ import android.content.pm.ActivityInfo;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.Nullable;
@@ -19,7 +22,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** Java wrapper for C++ GlicTestEnvironment. */
 @JNINamespace("glic")
 public class GlicTestEnvironmentAndroid {
-    private final long mNativeGlicTestEnvironmentAndroid;
+    private final JniRawPtr<NativeGlicTestEnvironmentAndroid> mNativeGlicTestEnvironmentAndroid;
 
     public GlicTestEnvironmentAndroid() {
         mNativeGlicTestEnvironmentAndroid = GlicTestEnvironmentAndroidJni.get().init();
@@ -43,6 +46,7 @@ public class GlicTestEnvironmentAndroid {
 
     public void destroy() {
         GlicTestEnvironmentAndroidJni.get().destroy(mNativeGlicTestEnvironmentAndroid);
+        mNativeGlicTestEnvironmentAndroid.release();
     }
 
     public String getURL(String path) {
@@ -54,23 +58,27 @@ public class GlicTestEnvironmentAndroid {
                 .isWebClientConnected(mNativeGlicTestEnvironmentAndroid);
     }
 
-    public WebContents getGuestWebContents() {
+    public @Nullable WebContents getGuestWebContents() {
         return GlicTestEnvironmentAndroidJni.get()
                 .getGuestWebContents(mNativeGlicTestEnvironmentAndroid);
     }
 
+    @JniType("::glic::GlicTestEnvironmentAndroid")
+    interface NativeGlicTestEnvironmentAndroid extends JniTypeToken {}
+
     @NativeMethods
     interface Natives {
-        long init();
+        JniRawPtr<NativeGlicTestEnvironmentAndroid> init();
 
-        void destroy(long nativeGlicTestEnvironmentAndroid);
+        void destroy(JniPtr<NativeGlicTestEnvironmentAndroid> self);
 
         @JniType("std::string")
-        String getURL(long nativeGlicTestEnvironmentAndroid, @JniType("std::string") String path);
+        String getURL(
+                JniPtr<NativeGlicTestEnvironmentAndroid> self, @JniType("std::string") String path);
 
-        boolean isWebClientConnected(long nativeGlicTestEnvironmentAndroid);
+        boolean isWebClientConnected(JniPtr<NativeGlicTestEnvironmentAndroid> self);
 
         @JniType("content::WebContents*")
-        WebContents getGuestWebContents(long nativeGlicTestEnvironmentAndroid);
+        @Nullable WebContents getGuestWebContents(JniPtr<NativeGlicTestEnvironmentAndroid> self);
     }
 }
