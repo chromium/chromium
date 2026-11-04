@@ -14,6 +14,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -42,7 +43,6 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
-#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -51,7 +51,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #endif
 
@@ -253,12 +252,6 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
     user_data->UpdateExtensionFrameBound(
         this, /*is_page_bound=*/true,
-        base::BindRepeating(
-            &ContextualTasksExtensionHandler::SendSearchMessageToBoundPage,
-            weak_ptr_factory_.GetWeakPtr()),
-        base::BindRepeating(
-            &ContextualTasksExtensionHandler::OnHandshakeComplete,
-            weak_ptr_factory_.GetWeakPtr()),
         base::BindRepeating(&ContextualTasksExtensionHandler::OnLensCropUpdated,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -290,58 +283,18 @@ void ContextualTasksExtensionHandler::SetTaskId(const base::Uuid& uuid) {
 void ContextualTasksExtensionHandler::OnWebviewMessage(
     const std::vector<uint8_t>& message,
     const std::optional<std::string>& document_id) {
-  if (!contextual_tasks_page_.is_bound()) {
-    return;
-  }
-  constexpr size_t kMaxWebviewMessageBytes = 1024 * 1024;
-  if (message.size() > kMaxWebviewMessageBytes) {
-    return;
-  }
-
-  // Try parsing SearchToClientMessage first via
-  // ContextualTasksWebContentsUserData.
-  if (auto* user_data = GetOrCreateWebContentsUserData()) {
-    if (user_data->OnSearchMessageReceived(message, this)) {
-      return;
-    }
-  }
-
-  // Fall back to legacy AimToClientMessage.
-  lens::AimToClientMessage aim_to_client_message;
-  if (!aim_to_client_message.ParseFromArray(message.data(), message.size())) {
-    return;
-  }
-
-  if (aim_to_client_message.has_handshake_response()) {
-    OnHandshakeComplete();
-    RecordTimeToHandshakeComplete();
-  } else if (aim_to_client_message.has_open_link_in_side_panel_mode()) {
-    if (auto* user_data = GetOrCreateWebContentsUserData()) {
-      user_data->HandleOpenLinkInSidePanelMode(
-          aim_to_client_message.open_link_in_side_panel_mode().url());
-    }
-  }
-}
-
-void ContextualTasksExtensionHandler::RecordTimeToHandshakeComplete() {
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* wc =
-          content::WebContents::FromRenderFrameHost(&render_frame_host())) {
-    if (auto* browser = webui::GetBrowserWindowInterface(wc)) {
-      if (auto* panel_controller =
-              contextual_tasks::ContextualTasksPanelController::From(browser)) {
-        panel_controller->RecordTimeToHandshakeComplete(wc);
-      }
-    }
-  }
-#endif
+  // Only implemented on `ContextualTasksExtensionServiceWorkerHandler`.
+  DLOG(WARNING)
+      << "Unexpected call to ContextualTasksExtensionHandler::OnWebviewMessage";
 }
 
 void ContextualTasksExtensionHandler::GetHandshakeMessage(
     const std::optional<std::string>& document_id,
     GetHandshakeMessageCallback callback) {
-  std::move(callback).Run(
-      mojo_base::ProtoWrapper(contextual_tasks::GetHandshakeMessageProto()));
+  // Only implemented on `ContextualTasksExtensionServiceWorkerHandler`.
+  DLOG(WARNING) << "Unexpected call to "
+                   "ContextualTasksExtensionHandler::GetHandshakeMessage";
+  std::move(callback).Run(mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
 }
 
 void ContextualTasksExtensionHandler::GetLensCropPreview(
@@ -742,20 +695,6 @@ void ContextualTasksExtensionHandler::PostAimMessage(
     std::vector<uint8_t> serialized_message(size);
     message.SerializeToArray(serialized_message.data(), size);
     contextual_tasks_page_->PostAimMessage(std::move(serialized_message));
-  }
-}
-
-void ContextualTasksExtensionHandler::SendSearchMessageToBoundPage(
-    const lens::ClientToSearchMessage& message) {
-  if (contextual_tasks_page_.is_bound()) {
-    contextual_tasks_page_->PostSearchMessage(mojo_base::ProtoWrapper(message),
-                                              std::nullopt);
-  }
-}
-
-void ContextualTasksExtensionHandler::OnHandshakeComplete() {
-  if (contextual_tasks_page_.is_bound()) {
-    contextual_tasks_page_->OnHandshakeComplete();
   }
 }
 

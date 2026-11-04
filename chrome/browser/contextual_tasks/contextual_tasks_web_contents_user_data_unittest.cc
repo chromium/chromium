@@ -395,99 +395,6 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
 }
 
 TEST_F(ContextualTasksWebContentsUserDataTest,
-       MultipleExtensionFrames_PerFrameHandshakeAndTargetFrameRouting) {
-  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
-  auto* user_data =
-      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
-  ASSERT_TRUE(user_data);
-
-  const int kFrame1Id = 1;
-  const int kFrame2Id = 2;
-  const void* frame1_id = &kFrame1Id;
-  const void* frame2_id = &kFrame2Id;
-
-  int frame1_handshakes = 0;
-  int frame2_handshakes = 0;
-  std::vector<lens::ClientToSearchMessage> frame1_messages;
-  std::vector<lens::ClientToSearchMessage> frame2_messages;
-
-  user_data->RegisterExtensionFrame(frame1_id);
-  user_data->UpdateExtensionFrameBound(
-      frame1_id, /*is_page_bound=*/true,
-      base::BindRepeating(
-          [](std::vector<lens::ClientToSearchMessage>* msgs,
-             const lens::ClientToSearchMessage& msg) { msgs->push_back(msg); },
-          &frame1_messages),
-      base::BindRepeating([](int* count) { ++(*count); }, &frame1_handshakes),
-      base::DoNothing());
-
-  user_data->RegisterExtensionFrame(frame2_id);
-  user_data->UpdateExtensionFrameBound(
-      frame2_id, /*is_page_bound=*/true,
-      base::BindRepeating(
-          [](std::vector<lens::ClientToSearchMessage>* msgs,
-             const lens::ClientToSearchMessage& msg) { msgs->push_back(msg); },
-          &frame2_messages),
-      base::BindRepeating([](int* count) { ++(*count); }, &frame2_handshakes),
-      base::DoNothing());
-
-  // Before any handshake completes, outbound messages fall back to frame1
-  // (the first bound frame).
-  user_data->PostSearchMessage(CreateInjectChromeInputMessage(
-      lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY,
-      /*is_active=*/true));
-  EXPECT_EQ(frame1_messages.size(), 1u);
-  EXPECT_EQ(frame2_messages.size(), 0u);
-
-  // Handshake response from frame1 should only notify frame1's handshake
-  // callback, leaving frame2 free to complete its own handshake.
-  lens::SearchToClientMessage handshake_msg;
-  handshake_msg.mutable_handshake_response()->set_auth_user_index(0);
-  std::vector<uint8_t> handshake_bytes(handshake_msg.ByteSizeLong());
-  handshake_msg.SerializeToArray(handshake_bytes.data(),
-                                 handshake_bytes.size());
-
-  EXPECT_TRUE(user_data->OnSearchMessageReceived(handshake_bytes, frame1_id));
-  EXPECT_EQ(frame1_handshakes, 1);
-  EXPECT_EQ(frame2_handshakes, 0);
-
-  // Now frame2 (e.g. context_library.html) completes its handshake. Only
-  // frame2's handshake callback should fire, and frame2 becomes the active
-  // target frame for outbound messages even while frame1 (e.g. tab_picker.html)
-  // is still registered at index 0.
-  EXPECT_TRUE(user_data->OnSearchMessageReceived(handshake_bytes, frame2_id));
-  EXPECT_EQ(frame1_handshakes, 1);
-  EXPECT_EQ(frame2_handshakes, 1);
-
-  frame1_messages.clear();
-  frame2_messages.clear();
-  user_data->PostSearchMessage(CreateInjectChromeInputMessage(
-      lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP,
-      /*is_active=*/true));
-  EXPECT_EQ(frame1_messages.size(), 0u);
-  EXPECT_EQ(frame2_messages.size(), 1u);
-
-  // If frame2 (e.g. tab_picker.html opened after context_library.html) is
-  // unregistered while frame1 (e.g. context_library.html) remains bound and
-  // handshake-complete, `UnregisterExtensionFrame` immediately re-sends
-  // `OnContextStateChanged` through frame1 so Search's
-  // `ChromePostMessageService.activeChromeWindow` switches back to frame1.
-  frame1_messages.clear();
-  frame2_messages.clear();
-  user_data->UnregisterExtensionFrame(frame2_id);
-  ASSERT_EQ(frame1_messages.size(), 1u);
-  EXPECT_TRUE(frame1_messages[0].has_on_context_state_changed());
-  EXPECT_EQ(frame2_messages.size(), 0u);
-
-  frame1_messages.clear();
-  user_data->PostSearchMessage(CreateInjectChromeInputMessage(
-      lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP,
-      /*is_active=*/false));
-  EXPECT_EQ(frame1_messages.size(), 1u);
-  EXPECT_EQ(frame2_messages.size(), 0u);
-}
-
-TEST_F(ContextualTasksWebContentsUserDataTest,
        OnSuggestInputsChanged_DisabledByDefault) {
   auto session_handle = std::make_unique<testing::NiceMock<
       contextual_search::MockContextualSearchSessionHandle>>();
@@ -1361,12 +1268,10 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   constexpr int kFrameId = 1;
   user_data->RegisterExtensionFrame(&kFrameId);
   user_data->UpdateExtensionFrameBound(
-      &kFrameId, /*is_page_bound=*/true, base::DoNothing(), base::DoNothing(),
-      base::DoNothing(),
-      base::BindLambdaForTesting(
-          [&tab_context_updated_notifications]() {
-            ++tab_context_updated_notifications;
-          }));
+      &kFrameId, /*is_page_bound=*/true, base::DoNothing(),
+      base::BindLambdaForTesting([&tab_context_updated_notifications]() {
+        ++tab_context_updated_notifications;
+      }));
 
   EXPECT_TRUE(user_data->IsSmartTabSharingEnabled());
   EXPECT_FALSE(user_data->IsSmartTabSharingActive());
