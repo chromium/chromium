@@ -297,6 +297,8 @@ void SourceBufferStream::Append(const BufferQueue& buffers) {
     last_appended_buffer_is_keyframe_ = buffers.back()->is_key_frame();
     last_appended_buffer_decode_timestamp_ =
         buffers.back()->GetDecodeTimestamp();
+    last_appended_gop_keyframe_timestamp_ =
+        (*range_for_next_append_)->GetLastGOPKeyframeTimestamp();
     highest_timestamp_in_append_sequence_ =
         (*range_for_next_append_)->GetEndTimestamp();
     highest_buffered_end_time_in_append_sequence_ =
@@ -359,6 +361,8 @@ void SourceBufferStream::Append(const BufferQueue& buffers) {
         buffers_for_new_range->back()->is_key_frame();
     last_appended_buffer_decode_timestamp_ =
         buffers_for_new_range->back()->GetDecodeTimestamp();
+    last_appended_gop_keyframe_timestamp_ =
+        (*range_for_next_append_)->GetLastGOPKeyframeTimestamp();
     highest_timestamp_in_append_sequence_ =
         (*range_for_next_append_)->GetEndTimestamp();
     highest_buffered_end_time_in_append_sequence_ =
@@ -630,6 +634,7 @@ void SourceBufferStream::ResetLastAppendedState() {
   last_appended_buffer_duration_ = kNoTimestamp;
   last_appended_buffer_is_keyframe_ = false;
   last_appended_buffer_decode_timestamp_ = kNoDecodeTimestamp;
+  last_appended_gop_keyframe_timestamp_ = kNoTimestamp;
   highest_timestamp_in_append_sequence_ = kNoTimestamp;
   highest_buffered_end_time_in_append_sequence_ = kNoTimestamp;
 }
@@ -1009,10 +1014,12 @@ size_t SourceBufferStream::FreeBuffers(size_t total_bytes_to_free,
     base::TimeDelta end_timestamp = buffers.back()->timestamp();
     if (range_for_next_append_ != ranges_.end() &&
         current_range == range_for_next_append_->get() &&
+        buffers.front()->timestamp() == last_appended_gop_keyframe_timestamp_ &&
         end_timestamp == last_appended_buffer_timestamp_ &&
         buffers.back()->GetDecodeTimestamp() ==
             last_appended_buffer_decode_timestamp_) {
       DCHECK(last_appended_buffer_timestamp_ != kNoTimestamp);
+      DCHECK(last_appended_gop_keyframe_timestamp_ != kNoTimestamp);
       DCHECK(!new_range_for_append);
 
       // Create a new range containing these buffers.

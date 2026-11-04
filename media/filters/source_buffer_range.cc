@@ -29,7 +29,7 @@ SourceBufferRange::SourceBufferRange(
   DVLOG(3) << __func__;
   DCHECK(interbuffer_distance_cb_);
   CHECK(!new_buffers.empty());
-  DCHECK(new_buffers.front()->is_key_frame());
+  CHECK(new_buffers.front()->is_key_frame());
   AppendBuffersToEnd(new_buffers, range_start_pts_);
 }
 
@@ -107,8 +107,12 @@ void SourceBufferRange::AppendBuffersToEnd(
   DVLOG(1) << __func__;
   DVLOG(4) << ToStringForDebugging();
 
-  CHECK(buffers_.empty() ||
-        CanAppendBuffersToEnd(new_buffers, new_buffers_group_start_pts));
+  if (buffers_.empty()) {
+    CHECK(!new_buffers.empty());
+    CHECK(new_buffers.front()->is_key_frame());
+  } else {
+    CHECK(CanAppendBuffersToEnd(new_buffers, new_buffers_group_start_pts));
+  }
 
   DCHECK(new_buffers_group_start_pts == kNoTimestamp ||
          new_buffers.front()->is_key_frame())
@@ -373,7 +377,7 @@ size_t SourceBufferRange::DeleteGOPFromBack(BufferQueue* deleted_buffers) {
 
   // Remove the last GOP's keyframe from the |keyframe_map_|.
   KeyframeMap::const_iterator back = keyframe_map_.end();
-  DCHECK_GT(keyframe_map_.size(), 0u);
+  CHECK(!keyframe_map_.empty());
   --back;
 
   // The index of the first buffer in the last GOP is equal to the new size of
@@ -452,6 +456,7 @@ bool SourceBufferRange::FirstGOPEarlierThanMediaTime(
   DVLOG(1) << __func__;
   DVLOG(4) << ToStringForDebugging();
 
+  CHECK(!keyframe_map_.empty());
   if (keyframe_map_.size() == 1u)
     return (GetBufferedEndTimestamp() <= media_time);
 
@@ -468,6 +473,7 @@ bool SourceBufferRange::FirstGOPContainsNextBufferPosition() const {
     return false;
 
   // If there is only one GOP, it must contain the next buffer position.
+  CHECK(!keyframe_map_.empty());
   if (keyframe_map_.size() == 1u)
     return true;
 
@@ -484,6 +490,7 @@ bool SourceBufferRange::LastGOPContainsNextBufferPosition() const {
     return false;
 
   // If there is only one GOP, it must contain the next buffer position.
+  CHECK(!keyframe_map_.empty());
   if (keyframe_map_.size() == 1u)
     return true;
 
@@ -524,6 +531,14 @@ base::TimeDelta SourceBufferRange::GetEndTimestamp() const {
 
   DCHECK(!buffers_.empty());
   return highest_frame_->timestamp();
+}
+
+base::TimeDelta SourceBufferRange::GetLastGOPKeyframeTimestamp() const {
+  DVLOG(1) << __func__;
+  DVLOG(4) << ToStringForDebugging();
+
+  CHECK(!keyframe_map_.empty());
+  return keyframe_map_.rbegin()->first;
 }
 
 base::TimeDelta SourceBufferRange::GetBufferedEndTimestamp() const {
