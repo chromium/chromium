@@ -129,6 +129,9 @@ void FedCmModalDialogView::ClosePopupWindow() {
   content::WebContents* popup = popup_window_;
   popup_window_ = nullptr;
   popup->Close();
+  // `this` may be deleted now: closing the pop-up can destroy the
+  // `FedCmAccountSelectionView` that owns this object. Do not access members
+  // after this point.
 
   UMA_HISTOGRAM_ENUMERATION(
       "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
