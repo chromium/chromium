@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.LocaleList;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
@@ -952,12 +952,15 @@ public class BookmarkUtils {
     }
 
     /**
-     * @param context The current context.
-     * @return Whether the bookmark activity should be shown as a floating dialog.
+     * Returns whether the bookmark activity should be shown as a floating dialog, i.e. the desktop
+     * dialog is enabled or its {@code Theme.Chromium.DialogWhenLarge} window floats ({@code
+     * values-large}, {@link Configuration#SCREENLAYOUT_SIZE_LARGE}) rather than filling the window.
      */
     public static boolean isBookmarkDialog(Context context) {
         return isDesktopBookmarksDialogEnabled()
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+                || context.getResources()
+                        .getConfiguration()
+                        .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     /**

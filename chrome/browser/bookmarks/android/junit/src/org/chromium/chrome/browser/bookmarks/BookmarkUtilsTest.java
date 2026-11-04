@@ -37,6 +37,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -71,6 +72,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -726,6 +728,22 @@ public class BookmarkUtilsTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
     public void testIsDesktopBookmarksDialogEnabled_featureDisabled() {
         assertFalse(BookmarkUtils.isDesktopBookmarksDialogEnabled());
+    }
+
+    @Test
+    @Config(qualifiers = "sw800dp-large")
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testIsBookmarkDialog_tabletWidth() {
+        assertTrue(BookmarkUtils.isBookmarkDialog(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "sw800dp-normal")
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testIsBookmarkDialog_splitScreenMultiWindow() {
+        // Split-screen multi-window pins smallestScreenWidthDp >= 600dp with normal screenLayout.
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        assertFalse(BookmarkUtils.isBookmarkDialog(mActivity));
     }
 
     @Test
