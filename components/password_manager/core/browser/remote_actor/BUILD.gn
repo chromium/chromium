@@ -9,6 +9,8 @@ assert(!is_android)
 # not used on Android.
 source_set("remote_actor") {
   sources = [
+    "remote_actor_config.cc",
+    "remote_actor_config.h",
     "remote_actor_credential_permission_client.cc",
     "remote_actor_credential_permission_client.h",
     "remote_actor_credential_sharing_controller.cc",
@@ -31,6 +33,7 @@ source_set("remote_actor") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sync",
+    "//components/password_manager/core/common/remote_actor",
     "//components/signin/public/base",
     "//components/sync/base",
     "//components/sync/protocol",
@@ -58,6 +61,7 @@ source_set("remote_actor") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "remote_actor_config_unittest.cc",
     "remote_actor_credential_permission_client_unittest.cc",
     "remote_actor_credential_sharing_controller_unittest.cc",
     "remote_actor_credential_sharing_service_impl_unittest.cc",
@@ -78,6 +82,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/password_manager/core/browser/remote_actor/protos",
     "//components/password_manager/core/browser/sync",
+    "//components/password_manager/core/common/remote_actor",
     "//components/password_manager/core/common/remote_actor:features",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings",
