@@ -46,7 +46,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   const gfx::HDRMetadata hdr_metadata_;
   viz::ReleaseCallback release_callback_;
   bool resource_is_lost_ = false;
-  const SkAlphaType alpha_type_;
 
   // SyncToken to wait on at destruction.
   gpu::SyncToken destruction_sync_token_;
@@ -84,8 +83,7 @@ ExternalCanvasResource::ExternalCanvasResource(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       resource_source_(resource_source),
       hdr_metadata_(hdr_metadata),
-      release_callback_(std::move(out_callback)),
-      alpha_type_(kPremul_SkAlphaType) {
+      release_callback_(std::move(out_callback)) {
   CHECK(GetSharedImage());
   SetReleaseSyncToken(sync_token);
 }
@@ -183,7 +181,7 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     scoped_refptr<StaticBitmapImage> image =
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
             resource_->GetSharedImage(), resource_->sync_token(),
-            external_resource->alpha_type_, resource_->GetHdrMetadata(),
+            kPremul_SkAlphaType, resource_->GetHdrMetadata(),
             external_resource->context_provider_wrapper_, owning_thread_ref_,
             owning_thread_task_runner_, std::move(release_callback));
     return image;
