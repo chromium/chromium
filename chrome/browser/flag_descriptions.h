@@ -8391,6 +8391,11 @@ inline constexpr char kEnableArmHwdrmDescription[] =
 
 // Linux -----------------------------------------------------------------------
 
+inline constexpr char kMiddleClickAutoscrollName[] = "Middle-click autoscroll";
+inline constexpr char kMiddleClickAutoscrollDescription[] =
+    "Enables autoscrolling when pressing the middle mouse button on a "
+    "scrollable page.";
+
 inline constexpr char kPulseaudioLoopbackForCastName[] =
     "Linux System Audio Loopback for Cast (pulseaudio)";
 inline constexpr char kPulseaudioLoopbackForCastDescription[] =

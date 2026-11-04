@@ -10010,6 +10010,7 @@ from previous Chrome versions.
   <int value="-1496051102" label="PageInfoV2Desktop:disabled"/>
   <int value="-1495973732"
       label="ResamplingScrollEventsExperimentalPrediction:disabled"/>
+  <int value="-1495884578" label="MiddleClickAutoscroll:disabled"/>
   <int value="-1495145881" label="ReaderModeDevEntryPoint:enabled"/>
   <int value="-1494697633" label="EnterpriseBadgingForNtpFooter:enabled"/>
   <int value="-1493620195"
@@ -20908,6 +20909,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentVerticalMarginLimitToNonTouchOnly:disabled"/>
   <int value="1758331078" label="FileSystemProviderContentCache:disabled"/>
   <int value="1758688616" label="OmniboxModernizeVisualUpdate:disabled"/>
+  <int value="1759049936" label="MiddleClickAutoscroll:enabled"/>
   <int value="1759193892" label="SafetyCheckExtensions:disabled"/>
   <int value="1759323272" label="DefaultCalculatorWebApp:disabled"/>
   <int value="1759976458" label="DevToolsWebMCPSupport:enabled"/>

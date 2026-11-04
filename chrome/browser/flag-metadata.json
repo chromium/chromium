@@ -7070,6 +7070,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "middle-click-autoscroll",
+    "owners": [ "input-dev@chromium.org" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "migrate-account-manager-delegate",
     "owners": ["mlbipin@google.com", "chrome-signin-mobile-team@google.com"],
     "expiry_milestone": 160

@@ -14488,11 +14488,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChroMenuSearchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChroMenuSearch)},
 
-    // Add new entries above this line.
-    // NOTE: Adding a new flag requires adding a corresponding entry to enum
-    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-    // Histograms" in tools/metrics/histograms/README.md (run the
-    // AboutFlagsHistogramTest unit test to verify this process).
+#if BUILDFLAG(IS_LINUX)
+    {"middle-click-autoscroll", flag_descriptions::kMiddleClickAutoscrollName,
+     flag_descriptions::kMiddleClickAutoscrollDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(blink::features::kMiddleClickAutoscroll)},
+#endif  // BUILDFLAG(IS_LINUX)
+        // Add new entries above this line.
+        // NOTE: Adding a new flag requires adding a corresponding entry to enum
+        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+        // Histograms" in tools/metrics/histograms/README.md (run the
+        // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

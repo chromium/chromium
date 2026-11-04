@@ -1928,6 +1928,10 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
 #if BUILDFLAG(IS_WIN)
   RuntimeEnabledFeatures::SetMiddleClickAutoscrollEnabled(true);
+#elif BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kMiddleClickAutoscroll)) {
+    RuntimeEnabledFeatures::SetMiddleClickAutoscrollEnabled(true);
+  }
 #endif
 
   RuntimeEnabledFeatures::SetTranslateServiceEnabled(
@@ -4148,7 +4152,6 @@ void WebViewImpl::OutermostMainFrameScrollOffsetChanged() {
     SetDeviceEmulationTransform(device_emulation_transform);
   }
 }
-
 
 void WebViewImpl::SetBackgroundColorOverrideForFullscreenController(
     std::optional<SkColor> optional_color) {

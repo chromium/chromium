@@ -132,6 +132,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
@@ -2901,8 +2902,9 @@ TEST_F(WebViewTest, SetEditableSelectionOffsetsKeepsComposition) {
 
 TEST_F(WebViewTest, IsSelectionAnchorFirst) {
   // TODO(xidachen): crbug.com/1150389, Make this test work with the feature.
-  if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled())
+  if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
     return;
+  }
   RegisterMockedHttpURLLoad("input_field_populated.html");
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "input_field_populated.html");
@@ -4007,8 +4009,9 @@ bool WebViewTest::SimulateGestureAtElement(
     WebInputEvent::Type type,
     Element* element,
     WebPointerProperties::PointerType primary_pointer_type) {
-  if (!element || !element->GetLayoutObject())
+  if (!element || !element->GetLayoutObject()) {
     return false;
+  }
 
   DCHECK(web_view_helper_.GetWebView());
   element->scrollIntoViewIfNeeded();
@@ -5173,6 +5176,114 @@ TEST_F(MiddleClickWebViewTest, MiddleClickAutoscrollCursor) {
   web_view_helper_.Reset();
 }
 
+TEST_F(MiddleClickWebViewTest,
+       MiddleClickAutoscrollPreservesEditablePasteOnUnix) {
+  ScopedMiddleClickAutoscrollForTest middle_click_autoscroll(true);
+
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  web_view->MainFrameWidget()->Resize(gfx::Size(400, 400));
+
+  web_view->GetPage()->GetSettings().SetEditingBehaviorType(
+      mojom::EditingBehavior::kEditingUnixBehavior);
+  web_view->GetPage()->GetSettings().SetMiddleClickPasteAllowed(true);
+
+  LocalFrame* local_frame =
+      To<WebLocalFrameImpl>(web_view->MainFrame())->GetFrame();
+  PageTestBase::MockClipboardHostProvider mock_clip_host_provider(
+      local_frame->GetBrowserInterfaceBroker());
+
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<!DOCTYPE html>"
+      "<style>"
+      "  body { margin: 0; width: 1000px; height: 2000px; }"
+      "  input, textarea, div, a {"
+      "    box-sizing: border-box;"
+      "    margin: 0;"
+      "  }"
+      "</style>"
+      "<input id='input' value='hello' style='display:block; width:200px; "
+      "height:40px;'>"
+      "<textarea id='textarea' style='display:block; width:200px; "
+      "height:40px;'>world</textarea>"
+      "<div id='editable' contenteditable='true' style='width:200px; "
+      "height:40px;'>edit</div>"
+      "<div id='plain' style='width:200px; height:100px;'>plain</div>",
+      url_test_helpers::ToKURL("http://example.com/"));
+
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  MiddleClickAutoscrollWebFrameWidget* widget =
+      static_cast<MiddleClickAutoscrollWebFrameWidget*>(
+          web_view_helper_.GetMainFrameWidget());
+
+  auto middle_click = [&](int x, int y) {
+    WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown,
+                             WebInputEvent::kNoModifiers,
+                             WebInputEvent::GetStaticTimeStampForTests());
+    mouse_down.button = WebMouseEvent::Button::kMiddle;
+    mouse_down.SetPositionInWidget(x, y);
+    mouse_down.click_count = 1;
+    web_view->MainFrameWidget()->HandleInputEvent(
+        WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
+
+    WebMouseEvent mouse_up(WebInputEvent::Type::kMouseUp,
+                           WebInputEvent::kNoModifiers,
+                           WebInputEvent::GetStaticTimeStampForTests());
+    mouse_up.button = WebMouseEvent::Button::kMiddle;
+    mouse_up.SetPositionInWidget(x, y);
+    mouse_up.click_count = 1;
+    web_view->MainFrameWidget()->HandleInputEvent(
+        WebCoalescedInputEvent(mouse_up, ui::LatencyInfo()));
+  };
+
+  // Clicking an <input> should not start autoscroll.
+  middle_click(20, 20);
+  EXPECT_FALSE(web_view->GetPage()
+                   ->GetAutoscrollController()
+                   .MiddleClickAutoscrollInProgress());
+
+  // Clicking a <textarea> should not start autoscroll.
+  middle_click(20, 60);
+  EXPECT_FALSE(web_view->GetPage()
+                   ->GetAutoscrollController()
+                   .MiddleClickAutoscrollInProgress());
+
+  // Clicking a contenteditable element should not start autoscroll.
+  middle_click(20, 100);
+  EXPECT_FALSE(web_view->GetPage()
+                   ->GetAutoscrollController()
+                   .MiddleClickAutoscrollInProgress());
+
+  // Clicking plain non-editable scrollable content should start autoscroll.
+  middle_click(20, 140);
+  EXPECT_TRUE(web_view->GetPage()
+                  ->GetAutoscrollController()
+                  .MiddleClickAutoscrollInProgress());
+  EXPECT_EQ(MiddlePanningCursor().type(), widget->GetLastCursorType());
+
+  // Stop autoscroll before tearing down helper.
+  web_view->GetPage()->GetAutoscrollController().StopAutoscroll();
+  web_view_helper_.Reset();
+}
+
+#if BUILDFLAG(IS_LINUX)
+TEST_F(MiddleClickWebViewTest, MiddleClickAutoscrollFeatureFlagOnLinux) {
+  RuntimeEnabledFeatures::Backup backup;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kMiddleClickAutoscroll);
+
+  frame_test_helpers::WebViewHelper helper;
+  WebViewImpl* web_view = helper.Initialize();
+  web_pref::WebPreferences prefs;
+  WebView::ApplyWebPreferences(prefs, web_view);
+  EXPECT_TRUE(RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled());
+  helper.Reset();
+  backup.Restore();
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 TEST_F(WebViewTest, ShowPressOnTransformedLink) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize();
@@ -5836,8 +5947,9 @@ class TouchEventConsumersWebFrameWidgetHost
       mojom::blink::TouchEventConsumersPtr consumers) override {
     // Only count the times the state changes.
     bool state = consumers->has_touch_event_handlers;
-    if (state != has_touch_event_handler_)
+    if (state != has_touch_event_handler_) {
       has_touch_event_handler_count_[state]++;
+    }
     has_touch_event_handler_ = state;
   }
 
@@ -7785,8 +7897,9 @@ TEST_F(WebViewTest, SetHistoryLengthAndOffset) {
 // PopupWidgetImpl should inherit emulation params from the parent.
 TEST_F(WebViewTest, EmulatingPopupRect) {
   // Some platforms don't support PagePopups so just return.
-  if (!RuntimeEnabledFeatures::PagePopupEnabled())
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
     return;
+  }
   WebViewImpl* web_view = web_view_helper_.Initialize();
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
