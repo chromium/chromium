@@ -243,6 +243,11 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 }
 
 - (void)stop {
+  _dismissing = YES;
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:nil];
+  _navigationController = nil;
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator = nil;
