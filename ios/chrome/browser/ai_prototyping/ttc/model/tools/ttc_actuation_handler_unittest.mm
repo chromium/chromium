@@ -460,7 +460,8 @@ TEST_F(TtcActuationHandlerTest, TestProcessToolCallSuccess) {
   handler->Disconnect();
 }
 
-// Tests that `ProcessToolCall` returns `kToolUnknown` for an unknown tool name.
+// Tests that `ProcessToolCall` returns `kToolUnknown` and populates the
+// validation error message for an unknown tool name.
 TEST_F(TtcActuationHandlerTest, TestProcessToolCallUnknownTool) {
   std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
 
@@ -472,11 +473,12 @@ TEST_F(TtcActuationHandlerTest, TestProcessToolCallUnknownTool) {
   ASSERT_FALSE(response.Ok());
   EXPECT_EQ(actor::mojom::ActionResultCode::kToolUnknown,
             response.error().code);
+  EXPECT_EQ(response.error().message, ttc::kErrorMessageUnknownTool);
   handler->Disconnect();
 }
 
-// Tests that `ProcessToolCall` returns `kArgumentsInvalid` for invalid
-// arguments.
+// Tests that `ProcessToolCall` returns `kArgumentsInvalid` and populates the
+// validation error message for invalid arguments.
 TEST_F(TtcActuationHandlerTest, TestProcessToolCallInvalidArguments) {
   std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
 
@@ -489,6 +491,26 @@ TEST_F(TtcActuationHandlerTest, TestProcessToolCallInvalidArguments) {
   ASSERT_FALSE(response.Ok());
   EXPECT_EQ(actor::mojom::ActionResultCode::kArgumentsInvalid,
             response.error().code);
+  EXPECT_EQ(response.error().message, ttc::kErrorMessageInvalidArguments);
+  handler->Disconnect();
+}
+
+// Tests that `ProcessToolCall` forwards the underlying tool execution error
+// message when `ActorService::PerformActions` fails.
+TEST_F(TtcActuationHandlerTest,
+       ProcessToolCallExecutionFailureForwardsErrorMessage) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler->ProcessToolCall(
+      ttc::ToolRequest{ttc::kToolGoBack, base::DictValue()},
+      GetActiveWebState(), future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kHistoryNoBackEntries);
+  EXPECT_EQ(response.error().message, "Cannot go back.");
   handler->Disconnect();
 }
 

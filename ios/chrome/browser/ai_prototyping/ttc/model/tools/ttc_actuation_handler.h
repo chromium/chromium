@@ -108,7 +108,7 @@ class TtcActuationHandler {
 
   // Logs an `ActuationDispatchRejected` error entry to `journal_` (using
   // `reason` if non-empty, or `base::ToString(code)` otherwise) and invokes
-  // `callback` with `code`.
+  // `callback` with `code` and `reason`.
   void FailWithError(ActuationCallback callback,
                      actor::mojom::ActionResultCode code,
                      std::string_view reason = {});
