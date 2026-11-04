@@ -888,9 +888,23 @@ void ContextualTasksWebContentsUserData::RenderFrameDeleted(
 
 void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
     std::string_view query_text) {
+  if (submit_pending_) {
+    return;
+  }
+
+  auto post_empty_response = [this]() {
+    if (!GetPrimaryPageSearchState().is_handshake_complete) {
+      return;
+    }
+    lens::ClientToSearchMessage response_message;
+    response_message.mutable_on_submit_query_response();
+    PostSearchMessage(response_message);
+  };
+
   content::WebContents* web_contents = &GetWebContents();
   // Require a recent user interaction on the page before attaching context.
-  if (!web_contents->HasRecentInteraction() || submit_pending_) {
+  if (!web_contents->HasRecentInteraction()) {
+    post_empty_response();
     return;
   }
 
@@ -898,6 +912,7 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
   base::TimeTicks last_interaction =
       web_contents->GetLastInteractionTimeTicks();
   if (last_interaction <= last_handled_submit_interaction_time_) {
+    post_empty_response();
     return;
   }
   last_handled_submit_interaction_time_ = last_interaction;
@@ -910,9 +925,7 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
     LogOptOutMidThread(false);
   }
   if (!session_handle) {
-    lens::ClientToSearchMessage response_message;
-    response_message.mutable_on_submit_query_response();
-    PostSearchMessage(response_message);
+    post_empty_response();
     return;
   }
 
