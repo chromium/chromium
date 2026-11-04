@@ -11,27 +11,24 @@
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_ui_constants.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 class AgeMismatchSignoutCoordinatorTest : public PlatformTest {
  public:
   AgeMismatchSignoutCoordinatorTest()
       : PlatformTest(),
         profile_(TestProfileIOS::Builder().Build()),
-        browser_(std::make_unique<TestBrowser>(profile_.get())) {
-    mock_identity_ = OCMProtocolMock(@protocol(SystemIdentity));
-    OCMStub([mock_identity_ userFullName]).andReturn(@"Test Name");
-    OCMStub([mock_identity_ userEmail]).andReturn(@"test@example.com");
-  }
+        browser_(std::make_unique<TestBrowser>(profile_.get())),
+        identity_([FakeSystemIdentity fakeIdentity1]) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  id<SystemIdentity> mock_identity_;
+  id<SystemIdentity> identity_;
 };
 
 TEST_F(AgeMismatchSignoutCoordinatorTest, TapPrimaryAction) {
@@ -41,7 +38,7 @@ TEST_F(AgeMismatchSignoutCoordinatorTest, TapPrimaryAction) {
       [[AgeMismatchSignoutCoordinator alloc]
           initWithBaseViewController:nil
                              browser:browser_.get()
-                            identity:mock_identity_
+                            identity:identity_
                                 mode:AgeMismatchPromptMode::kStandard];
 
   [coordinator start];
@@ -78,7 +75,7 @@ TEST_F(AgeMismatchSignoutCoordinatorTest, TapSecondaryAction) {
       [[AgeMismatchSignoutCoordinator alloc]
           initWithBaseViewController:nil
                              browser:browser_.get()
-                            identity:mock_identity_
+                            identity:identity_
                                 mode:AgeMismatchPromptMode::kStandard];
 
   [coordinator start];
