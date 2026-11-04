@@ -5,18 +5,26 @@
 #include "content/browser/service_worker/embedded_worker_instance.h"
 
 #include <stdint.h>
+
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
+#include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/test/embedded_worker_instance_test_harness.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +39,36 @@ namespace {
 
 using RegistrationAndVersionPair =
     EmbeddedWorkerTestHelper::RegistrationAndVersionPair;
+
+class EmbeddedWorkerMockRenderProcessHostFactory
+    : public MockRenderProcessHostFactory {
+ public:
+  explicit EmbeddedWorkerMockRenderProcessHostFactory(
+      EmbeddedWorkerTestHelper* helper)
+      : helper_(helper) {}
+
+  MockRenderProcessHost* last_created_host() const {
+    return last_created_host_;
+  }
+
+ protected:
+  std::unique_ptr<MockRenderProcessHost> BuildRenderProcessHost(
+      BrowserContext* browser_context,
+      SiteInstance* site_instance) override {
+    auto host = MockRenderProcessHostFactory::BuildRenderProcessHost(
+        browser_context, site_instance);
+    host->OverrideBinderForTesting(
+        blink::mojom::EmbeddedWorkerInstanceClient::Name_,
+        base::BindRepeating(&EmbeddedWorkerTestHelper::OnInstanceClientRequest,
+                            base::Unretained(helper_)));
+    last_created_host_ = host.get();
+    return host;
+  }
+
+ private:
+  const raw_ptr<EmbeddedWorkerTestHelper> helper_;
+  raw_ptr<MockRenderProcessHost> last_created_host_ = nullptr;
+};
 
 }  // namespace
 
@@ -507,6 +545,48 @@ TEST_F(EmbeddedWorkerInstanceTest, HasFetchHandler) {
   EXPECT_EQ(blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
             fetch_handler_type_);
   worker2->Stop();
+}
+
+TEST_F(EmbeddedWorkerInstanceTest,
+       DestroyWorkerWhileRunningDefersHandleDestruction) {
+  const GURL scope("http://example.com/");
+  const GURL url("http://example.com/worker.js");
+
+  // Exercise the real AllocateWorkerProcess / ReleaseWorkerProcess path so
+  // worker refcounts on MockRenderProcessHost are updated.
+  helper_->context_wrapper()->process_manager()->SetProcessIdForTest(
+      ChildProcessId());
+  ServiceWorkerContextWrapperTestApi(helper_->context_wrapper())
+      .set_storage_partition(static_cast<StoragePartitionImpl*>(
+          helper_->browser_context()->GetDefaultStoragePartition()));
+  EmbeddedWorkerMockRenderProcessHostFactory factory(helper_.get());
+  RenderProcessHostImpl::set_render_process_host_factory_for_testing(&factory);
+  base::ScopedClosureRunner reset_factory(base::BindOnce(
+      &RenderProcessHostImpl::set_render_process_host_factory_for_testing,
+      nullptr));
+
+  RegistrationAndVersionPair pair =
+      helper_->PrepareRegistrationAndVersion(scope, url);
+  auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
+
+  helper_->StartWorker(worker.get(), helper_->CreateStartParams(pair.second));
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, worker->status());
+  MockRenderProcessHost* rph = factory.last_created_host();
+  ASSERT_NE(nullptr, rph);
+  EXPECT_EQ(rph->GetID(), worker->process_id());
+  EXPECT_EQ(1u, rph->GetWorkerRefCount());
+
+  // Destroying the worker while it is running defers process handle destruction
+  // via DeleteSoon so worker refcount is not decremented synchronously.
+  worker.reset();
+  EXPECT_EQ(1u, rph->GetWorkerRefCount());
+
+  base::test::TestFuture<void> future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(0u, rph->GetWorkerRefCount());
 }
 
 }  // namespace content
