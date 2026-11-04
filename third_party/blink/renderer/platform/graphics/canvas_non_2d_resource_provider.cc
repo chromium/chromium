@@ -485,17 +485,8 @@ CanvasNon2DResourceProvider::BeginExternalOverwrite(
 
   EnsureResourceReadyForDraw();
 
-  // NOTE: Performing a raster access here ensures that any pending
-  // acquire_sync_token() is waited on and that a new release sync token is
-  // generated on the raster interface.
-  auto client_si = resource_->GetSharedImage();
-  auto access = client_si->BeginRasterAccess(
-      RasterInterface(), resource_->acquire_sync_token(), /*readonly=*/false);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  resource_->SetReleaseSyncToken(sync_token);
-  client_si->UpdateDestructionSyncToken(sync_token);
-  internal_access_sync_token = resource_->sync_token();
-  return client_si;
+  internal_access_sync_token = resource_->acquire_sync_token();
+  return resource_->GetSharedImage();
 }
 
 void CanvasNon2DResourceProvider::EndExternalWrite(
