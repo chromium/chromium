@@ -1117,7 +1117,8 @@ public class AutofillProfilesFragmentTest {
                     // settings activity/page's content).
                     Criteria.checkThat(
                             KeyboardVisibilityDelegate.getInstance()
-                                    .isKeyboardShowing(activity.findViewById(android.R.id.content)),
+                                    .isKeyboardObscuring(
+                                            activity.findViewById(android.R.id.content)),
                             Matchers.is(keyboardVisible));
                 });
     }

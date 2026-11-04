@@ -632,7 +632,7 @@ public class TabGridDialogMediatorUnitTest {
         // elapses the keyboard is actually showing.
         keyboardVisibilityListener.keyboardObscuringChanged(false);
         assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
-        when(mKeyboardVisibilityDelegate.isKeyboardShowing(any())).thenReturn(true);
+        when(mKeyboardVisibilityDelegate.isKeyboardObscuring(any())).thenReturn(true);
         idlePastKeyboardShowSettleWindow();
 
         assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
@@ -650,7 +650,7 @@ public class TabGridDialogMediatorUnitTest {
         assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
         verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
 
-        when(mKeyboardVisibilityDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mKeyboardVisibilityDelegate.isKeyboardObscuring(any())).thenReturn(false);
         idlePastKeyboardShowSettleWindow();
 
         assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));

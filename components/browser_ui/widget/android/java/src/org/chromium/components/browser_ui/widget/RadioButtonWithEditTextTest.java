@@ -356,7 +356,7 @@ public class RadioButtonWithEditTextTest {
                 () -> {
                     Criteria.checkThat(
                             "Keyboard visibility does not consist with test setting.",
-                            KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(mEditText),
+                            KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(mEditText),
                             Matchers.is(isVisible));
                 });
     }

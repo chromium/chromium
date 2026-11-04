@@ -427,7 +427,7 @@ public class ManualFillingControllerTest {
         ManualFillingComponentBridgeJni.setInstanceForTesting(mManualFillingComponentBridgeJniMock);
 
         when(mMockWindow.getKeyboardDelegate()).thenReturn(mMockKeyboardDelegate);
-        when(mMockKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mMockKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
         when(mMockWindow.getInsetObserver()).thenReturn(mInsetObserver);
         simulateLayoutSizeChange(
                 2.f, 80, 128, /* keyboardShown= */ false, VirtualKeyboardMode.RESIZES_VISUAL);
@@ -483,14 +483,14 @@ public class ManualFillingControllerTest {
 
         // 2. Open the keyboard: supplier must become true!
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
-        when(mMockKeyboardDelegate.isKeyboardShowing(any())).thenReturn(true);
+        when(mMockKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(true);
         simulateLayoutSizeChange(
                 2.f, 180, 128, /* keyboardShown= */ true, VirtualKeyboardMode.RESIZES_VISUAL);
         assertTrue(mController.getIsAccessoryRequestedSupplier().get());
 
         // 3. Close the keyboard: supplier must become false!
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(false);
-        when(mMockKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mMockKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
         simulateLayoutSizeChange(
                 2.f, 180, 128, /* keyboardShown= */ false, VirtualKeyboardMode.RESIZES_VISUAL);
         assertFalse(mController.getIsAccessoryRequestedSupplier().get());

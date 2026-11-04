@@ -185,7 +185,7 @@ public class ManualFillingTestHelper {
                             if (chromeKeyboard.isSoftKeyboardShowing(view)) {
                                 chromeKeyboard.hideSoftKeyboardOnly(view);
                             }
-                        } else if (keyboard != null && keyboard.isKeyboardShowing(view)) {
+                        } else if (keyboard != null && keyboard.isKeyboardObscuring(view)) {
                             keyboard.hideKeyboard(view);
                         }
                     });
@@ -312,7 +312,7 @@ public class ManualFillingTestHelper {
                     if (keyboard instanceof ChromeKeyboardVisibilityDelegate chromeKeyboard) {
                         return !chromeKeyboard.isSoftKeyboardShowing(view);
                     }
-                    return keyboard != null && !keyboard.isKeyboardShowing(view);
+                    return keyboard != null && !keyboard.isKeyboardObscuring(view);
                 });
     }
 
@@ -332,7 +332,7 @@ public class ManualFillingTestHelper {
                     boolean isKeyboardShowing =
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(
+                                    .isKeyboardObscuring(
                                             mActivityTestRule
                                                     .getActivity()
                                                     .getTabsViewForTesting());

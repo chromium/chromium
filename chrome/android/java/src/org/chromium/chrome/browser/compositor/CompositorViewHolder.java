@@ -525,7 +525,7 @@ public class CompositorViewHolder extends FrameLayout
         // [1] -
         // https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_FULLSCREEN
         if (mShowingFullscreen
-                && KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this)) {
+                && KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this)) {
             getWindowVisibleDisplayFrame(mCacheRect);
 
             // On certain devices, getWindowVisibleDisplayFrame is larger than the screen size, so
@@ -1151,7 +1151,7 @@ public class CompositorViewHolder extends FrameLayout
         // desktop window resizing). During active virtual keyboard transitions, width is invariant
         // (w == oldw) and either isKeyboardShowing() or webContentsHeightInset is non-zero.
         if (w != oldw
-                || (!KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this)
+                || (!KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this)
                         && (mApplicationBottomInsetSupplier == null
                                 || mApplicationBottomInsetSupplier.getInsets()
                                                 .webContentsHeightInset
@@ -1289,7 +1289,7 @@ public class CompositorViewHolder extends FrameLayout
                     mDeferredWebContentsHeightInsetUpdate != null
                             || rawWebContentsHeightInset != mAppliedWebContentsHeightInset;
             boolean keyboardVisible =
-                    KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
+                    KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this);
 
             if (!keyboardCompensationActive
                     && !keyboardInsetTransitionInProgress
@@ -1306,7 +1306,7 @@ public class CompositorViewHolder extends FrameLayout
                 && virtualKeyboardModeInsetsWebContentsHeight()
                 && mApplicationBottomInsetSupplier != null) {
             boolean keyboardVisible =
-                    KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
+                    KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this);
 
             if (keyboardVisible) {
                 // Clamp transient height increases caused by browser controls hiding before the
@@ -1965,7 +1965,7 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mIsKeyboardShowing = KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
+        mIsKeyboardShowing = KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this);
     }
 
     @Override
@@ -2088,7 +2088,7 @@ public class CompositorViewHolder extends FrameLayout
         if (hasFocus()) {
             KeyboardVisibilityDelegate keyboardVisibilityDelegate =
                     KeyboardVisibilityDelegate.getInstance();
-            wasVisible = keyboardVisibilityDelegate.isKeyboardShowing(this);
+            wasVisible = keyboardVisibilityDelegate.isKeyboardObscuring(this);
             if (wasVisible) {
                 keyboardVisibilityDelegate.hideKeyboard(this);
             }

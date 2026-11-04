@@ -522,7 +522,7 @@ public class LocationBarTest {
     @MediumTest
     public void testFocusLogic_keyboardVisibility() {
         startActivityNormally();
-        assertFalse(mKeyboardDelegate.isKeyboardShowing(mUrlBar));
+        assertFalse(mKeyboardDelegate.isKeyboardObscuring(mUrlBar));
 
         mOmnibox.requestFocus();
         mOmnibox.waitAnimationsComplete();

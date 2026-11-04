@@ -114,19 +114,19 @@ public class CompositorViewUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.COMPOSITOR_VIEW_SHRINK_WHEN_KEYBOARD_HIDDEN)
     public void testOnMeasure_shrinksWhenKeyboardHidden() {
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
 
         // Warm-up measure because mPreviousWindowTop starts at -1.
         measure(1080, 1704);
         mCompositorView.forceLayout();
 
         // The layout expands while the keyboard is showing (e.g. the bottom inset is dropped).
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(true);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(true);
         measure(1080, 1848);
         assertEquals(1848, mCompositorView.getMeasuredHeight());
 
         // Shrinks back down when requested once the keyboard is hidden.
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
         mCompositorView.forceLayout();
         measure(1080, 1704);
         assertEquals(1704, mCompositorView.getMeasuredHeight());
@@ -135,13 +135,13 @@ public class CompositorViewUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.COMPOSITOR_VIEW_SHRINK_WHEN_KEYBOARD_HIDDEN)
     public void testOnMeasure_retainsHeightWhileKeyboardShowing() {
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
 
         // Warm-up measure.
         measure(1080, 1704);
 
         // Keyboard shows; height should be retained (legacy optimization).
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(true);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(true);
         mCompositorView.forceLayout();
         measure(1080, 1000);
         assertEquals(1704, mCompositorView.getMeasuredHeight());
@@ -153,7 +153,7 @@ public class CompositorViewUnitTest {
         assertEquals(1848, mCompositorView.getMeasuredHeight());
 
         // Keyboard hides; height shrinks back to requested size from the larger retained height.
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
         mCompositorView.forceLayout();
         measure(1080, 1704);
         assertEquals(1704, mCompositorView.getMeasuredHeight());
@@ -162,7 +162,7 @@ public class CompositorViewUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.COMPOSITOR_VIEW_SHRINK_WHEN_KEYBOARD_HIDDEN)
     public void testOnMeasure_legacyRetainsHeightWhenFlagDisabled() {
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
 
         // Warm-up measure.
         measure(1080, 1704);

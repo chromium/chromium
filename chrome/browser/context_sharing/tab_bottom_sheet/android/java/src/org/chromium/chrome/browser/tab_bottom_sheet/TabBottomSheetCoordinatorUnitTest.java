@@ -348,7 +348,7 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testCorrectFullHeightRatio_WithoutKeyboard() {
-        when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(false);
+        when(mKeyboardDelegate.isKeyboardObscuring(eq(mView))).thenReturn(false);
         simulateShowSuccessAndGetObserver();
         verify(mMockBottomSheetController)
                 .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
@@ -383,7 +383,7 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testCorrectFullHeightRatio_WithKeyboard() {
-        when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(true);
+        when(mKeyboardDelegate.isKeyboardObscuring(eq(mView))).thenReturn(true);
         simulateShowSuccessAndGetObserver();
         verify(mMockBottomSheetController)
                 .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));

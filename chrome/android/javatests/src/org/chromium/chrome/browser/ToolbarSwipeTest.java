@@ -83,7 +83,7 @@ public class ToolbarSwipeTest {
                         mActivityTestRule.getKeyboardDelegate().hideKeyboard(urlBar);
                     });
             CriteriaHelper.pollUiThread(
-                    () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar),
+                    () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar),
                     "Keyboard should be hidden after test teardown");
         }
     }
@@ -235,12 +235,12 @@ public class ToolbarSwipeTest {
                     urlBar.requestFocus();
                 });
         CriteriaHelper.pollUiThread(
-                () -> mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar),
+                () -> mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar),
                 "Keyboard should be shown after focusing UrlBar");
 
         ThreadUtils.runOnUiThreadBlocking(urlBar::clearFocus);
         CriteriaHelper.pollUiThread(
-                () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar),
+                () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar),
                 "Keyboard should be hidden after clearing UrlBar focus");
 
         ChromeTabUtils.newTabFromMenu(
@@ -248,7 +248,7 @@ public class ToolbarSwipeTest {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
         CriteriaHelper.pollUiThread(
-                () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar),
+                () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar),
                 "Keyboard should be hidden before starting swipe");
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -276,7 +276,7 @@ public class ToolbarSwipeTest {
                 () -> {
                     assertFalse(
                             "Keyboard should be hidden while swiping",
-                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar));
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar));
                     swipeHandler.onSwipeFinished();
                 });
 
@@ -288,7 +288,7 @@ public class ToolbarSwipeTest {
                 "Layout not requesting Tab Android view be attached");
 
         CriteriaHelper.pollUiThread(
-                () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar),
+                () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar),
                 "Keyboard should not be shown");
     }
 

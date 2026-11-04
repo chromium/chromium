@@ -203,7 +203,7 @@ public class TabGridDialogView extends FrameLayout {
                 () -> {
                     assumeNonNull(mParent);
                     // Skip updating the parent view size caused by keyboard showing.
-                    if (!KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this)) {
+                    if (!KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this)) {
                         mParentWidth = mParent.getWidth();
                         mParentHeight = mParent.getHeight();
                         updateDialogWithOrientation(getOrientation());

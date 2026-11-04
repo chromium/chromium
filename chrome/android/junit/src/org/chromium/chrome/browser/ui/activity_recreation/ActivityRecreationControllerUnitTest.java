@@ -152,7 +152,7 @@ public class ActivityRecreationControllerUnitTest {
     public void testSaveUiState_keyboardVisibleOnWebContentsFocus() {
         Bundle bundle = new Bundle();
         doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
+        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardObscuring(any());
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle);
 
@@ -160,7 +160,7 @@ public class ActivityRecreationControllerUnitTest {
         Assert.assertNotNull("UI state should be saved", uiState);
         assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
         verify(mWebContents).isFocusedElementEditable();
-        verify(mKeyboardVisibilityDelegate).isKeyboardShowing(mContentView);
+        verify(mKeyboardVisibilityDelegate).isKeyboardObscuring(mContentView);
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ActivityRecreationControllerUnitTest {
         Bundle bundle1 = new Bundle();
         Bundle bundle2 = new Bundle();
         doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
+        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardObscuring(any());
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle1);
 
@@ -178,7 +178,7 @@ public class ActivityRecreationControllerUnitTest {
 
         // Simulate a second invocation of Activity#onSaveInstanceState.
         doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
+        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardObscuring(any());
         mActivityRecreationController.saveUiState(bundle2);
 
         uiState = bundle2.getParcelable(ACTIVITY_RECREATION_UI_STATE);
@@ -186,7 +186,7 @@ public class ActivityRecreationControllerUnitTest {
         assertTrue("Soft keyboard should be shown", uiState.mIsKeyboardShown);
 
         verify(mWebContents).isFocusedElementEditable();
-        verify(mKeyboardVisibilityDelegate).isKeyboardShowing(mContentView);
+        verify(mKeyboardVisibilityDelegate).isKeyboardObscuring(mContentView);
     }
 
     @Test
@@ -205,7 +205,7 @@ public class ActivityRecreationControllerUnitTest {
         Bundle bundle = new Bundle();
         doReturn(false).when(mToolbarManager).isUrlBarFocused();
         doReturn(false).when(mWebContents).isFocusedElementEditable();
-        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any());
+        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardObscuring(any());
         doReturn(false).when(mLayoutManager).isLayoutVisible(LayoutType.HUB);
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle);

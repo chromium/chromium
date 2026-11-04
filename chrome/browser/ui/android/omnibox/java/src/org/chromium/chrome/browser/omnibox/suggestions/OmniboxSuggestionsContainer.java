@@ -147,7 +147,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
 
     private boolean shouldRoundBottomCorners() {
         return getMeasuredHeight() < mOmniboxAlignment.height
-                || !KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
+                || !KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(this);
     }
 
     private void maybeUpdateLayoutParams(int topMargin) {

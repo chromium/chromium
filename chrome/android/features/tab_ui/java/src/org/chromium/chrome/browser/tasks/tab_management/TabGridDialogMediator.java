@@ -1061,7 +1061,7 @@ public class TabGridDialogMediator
     private void onDeferredKeyboardHidden() {
         if (!mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED)) return;
         View decorView = mActivity.getWindow().getDecorView();
-        if (KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(decorView)) return;
+        if (KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(decorView)) return;
         onKeyboardHidden();
     }
 

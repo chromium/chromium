@@ -52,7 +52,7 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
     }
 
     @Override
-    public boolean isKeyboardShowing(View view) {
+    public boolean isKeyboardObscuring(View view) {
         var manualFillingComponent = mManualFillingComponentSupplier.get();
         return isSoftKeyboardShowing(view)
                 || (manualFillingComponent != null

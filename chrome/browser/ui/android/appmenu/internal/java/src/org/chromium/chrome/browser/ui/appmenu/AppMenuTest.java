@@ -137,7 +137,7 @@ public class AppMenuTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> sActivity.setContentView(R.layout.test_app_menu_activity_layout));
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
-        when(mKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        when(mKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
         when(mMockAppMenuHandler.getAppMenu()).thenReturn(mMockAppMenu);
         when(mMockAppMenuHandler.showAppMenu(any(), anyBoolean()))
                 .thenAnswer(
@@ -1342,7 +1342,7 @@ public class AppMenuTest {
     @Test
     @MediumTest
     public void testAppMenu_keyboardVisible() throws Exception {
-        doReturn(true).when(mKeyboardDelegate).isKeyboardShowing(any());
+        doReturn(true).when(mKeyboardDelegate).isKeyboardObscuring(any());
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
 
         verify(mKeyboardDelegate, timeout(500))
@@ -1366,7 +1366,7 @@ public class AppMenuTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.getAppMenu().dismiss());
         mMenuObserver.menuHiddenCallback.waitForCallback(0);
 
-        doReturn(true).when(mKeyboardDelegate).isKeyboardShowing(any());
+        doReturn(true).when(mKeyboardDelegate).isKeyboardObscuring(any());
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
 
         verify(mKeyboardDelegate, timeout(500))
@@ -1386,7 +1386,7 @@ public class AppMenuTest {
     @Test
     @MediumTest
     public void testAppMenu_keyboardVisible_secondRequestReplacesFirst() throws Exception {
-        doReturn(true).when(mKeyboardDelegate).isKeyboardShowing(any());
+        doReturn(true).when(mKeyboardDelegate).isKeyboardObscuring(any());
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
 

@@ -64,7 +64,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
         Activity activity = getActivity();
         if (activity == null) return;
         View content = getContentView(activity);
-        mIsKeyboardShowing = isKeyboardShowing(content);
+        mIsKeyboardShowing = isKeyboardObscuring(content);
         content.addOnLayoutChangeListener(this);
 
         mKeyboardInsetSupplier.addSyncObserverAndPostIfNonNull(mOnKeyboardInsetChanged);
@@ -93,7 +93,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
             int oldBottom) {
         Activity activity = getActivity();
         if (activity == null) return;
-        updateKeyboardShowing(isKeyboardShowing(getContentView(activity)));
+        updateKeyboardShowing(isKeyboardObscuring(getContentView(activity)));
     }
 
     private void onKeyboardInsetChanged(int inset) {
@@ -103,7 +103,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
         }
         Activity activity = getActivity();
         if (activity == null) return;
-        updateKeyboardShowing(isKeyboardShowing(getContentView(activity)));
+        updateKeyboardShowing(isKeyboardObscuring(getContentView(activity)));
     }
 
     private void updateKeyboardShowing(boolean isShowing) {

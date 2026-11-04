@@ -382,7 +382,7 @@ public class AppHeaderCoordinatorBrowserTest {
                     boolean isKeyboardShowing =
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(activity.getTabsViewForTesting());
+                                    .isKeyboardObscuring(activity.getTabsViewForTesting());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
                 },
                 KEYBOARD_TIMEOUT,
@@ -453,7 +453,7 @@ public class AppHeaderCoordinatorBrowserTest {
                     boolean isKeyboardShowing =
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(activity.getTabsViewForTesting());
+                                    .isKeyboardObscuring(activity.getTabsViewForTesting());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
                 },
                 KEYBOARD_TIMEOUT,
@@ -514,7 +514,7 @@ public class AppHeaderCoordinatorBrowserTest {
                     boolean isKeyboardShowing =
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(activity.getTabsViewForTesting());
+                                    .isKeyboardObscuring(activity.getTabsViewForTesting());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
                 },
                 KEYBOARD_TIMEOUT,

@@ -670,7 +670,7 @@ public class TabBottomSheetCoordinator {
         if (keyboardDelegate == null) {
             return false;
         }
-        return keyboardDelegate.isKeyboardShowing(mCoBrowseViews.getView());
+        return keyboardDelegate.isKeyboardObscuring(mCoBrowseViews.getView());
     }
 
     private void updateContentHeight() {

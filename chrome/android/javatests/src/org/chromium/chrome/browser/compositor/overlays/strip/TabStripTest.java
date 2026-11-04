@@ -1677,7 +1677,7 @@ public class TabStripTest {
                     Criteria.checkThat(
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(
+                                    .isKeyboardObscuring(
                                             mActivityTestRule.getActivityTab().getView()),
                             Matchers.is(expectsShown));
                 });

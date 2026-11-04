@@ -531,7 +531,7 @@ public class MiniOriginBarController implements Observer {
     }
 
     private boolean isKeyboardShowing() {
-        return mKeyboardVisibilityDelegate.isKeyboardShowing(mControlContainer.getView());
+        return mKeyboardVisibilityDelegate.isKeyboardObscuring(mControlContainer.getView());
     }
 
     private void updateAnimationProgress(float minimizationProgress) {
@@ -651,7 +651,7 @@ public class MiniOriginBarController implements Observer {
             ViewUtils.setAncestorsShouldClipChildren(mContainerView, false, View.NO_ID);
             ViewUtils.setAncestorsShouldClipToPadding(mContainerView, false, View.NO_ID);
             mFinalKeyboardHeight =
-                    mKeyboardVisibilityDelegate.isKeyboardShowing(mContainerView)
+                    mKeyboardVisibilityDelegate.isKeyboardObscuring(mContainerView)
                             ? bounds.getUpperBound().bottom
                             : 0;
         }

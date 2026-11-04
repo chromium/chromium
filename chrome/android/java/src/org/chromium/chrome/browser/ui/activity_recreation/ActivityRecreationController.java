@@ -233,7 +233,7 @@ public class ActivityRecreationController {
             return false;
         }
 
-        return KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(containerView);
+        return KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(containerView);
     }
 
     private static void restoreUiStateOnLayoutDoneShowing(

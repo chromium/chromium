@@ -594,7 +594,7 @@ public class CustomTabBottomBarDelegate
     private void onViewportInsetChange(ViewportInsets insets) {
         if (mBottomBarView == null) return;
         boolean isKeyboardShowing =
-                mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(mBottomBarView);
+                mWindowAndroid.getKeyboardDelegate().isKeyboardObscuring(mBottomBarView);
 
         hideBottomBar(insets.viewVisibleHeightInset > 0 || isKeyboardShowing);
     }

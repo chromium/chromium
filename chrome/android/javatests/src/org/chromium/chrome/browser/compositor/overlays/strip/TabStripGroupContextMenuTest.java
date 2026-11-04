@@ -739,7 +739,7 @@ public class TabStripGroupContextMenuTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         mActivityTestRule.getActivity().hasWindowFocus()
-                                && !delegate.isKeyboardShowing(
+                                && !delegate.isKeyboardObscuring(
                                         mActivityTestRule
                                                 .getActivity()
                                                 .getCompositorViewHolderForTesting()));

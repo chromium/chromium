@@ -115,7 +115,7 @@ public class VirtualKeyboardResizeTest {
                     boolean isKeyboardShowing =
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(
+                                    .isKeyboardObscuring(
                                             mActivityTestRule
                                                     .getActivity()
                                                     .getTabsViewForTesting());

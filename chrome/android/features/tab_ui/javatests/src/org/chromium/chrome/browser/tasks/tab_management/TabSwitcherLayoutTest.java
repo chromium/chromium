@@ -488,7 +488,7 @@ public class TabSwitcherLayoutTest {
         // Wait until the keyboard is showing.
         KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
-                () -> delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
+                () -> delegate.isKeyboardObscuring(cta.getCompositorViewHolderForTesting()));
 
         // Change the title.
         editGroupVisualDataDialogTitle(cta, "Test");
@@ -534,7 +534,7 @@ public class TabSwitcherLayoutTest {
         // Wait until the keyboard is showing.
         KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
-                () -> delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
+                () -> delegate.isKeyboardObscuring(cta.getCompositorViewHolderForTesting()));
 
         // Change the title.
         editGroupVisualDataDialogTitle(cta, "Test");
@@ -1288,7 +1288,7 @@ public class TabSwitcherLayoutTest {
         // Wait until the keyboard is showing.
         KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
-                () -> delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
+                () -> delegate.isKeyboardObscuring(cta.getCompositorViewHolderForTesting()));
         // Dismiss the tab group visual data dialog.
         dismissAllModalDialogs();
         // Verify that the modal dialog is now hidden.
@@ -1303,7 +1303,7 @@ public class TabSwitcherLayoutTest {
         // Wait until the keyboard is hidden to make sure the edit has taken effect.
         KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
-                () -> !delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
+                () -> !delegate.isKeyboardObscuring(cta.getCompositorViewHolderForTesting()));
     }
 
     private void verifyFirstCardTitle(String title) {

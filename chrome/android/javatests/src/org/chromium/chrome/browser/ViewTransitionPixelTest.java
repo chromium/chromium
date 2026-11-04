@@ -128,7 +128,7 @@ public class ViewTransitionPixelTest {
                     boolean isKeyboardShowing =
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(
+                                    .isKeyboardObscuring(
                                             mActivityTestRule
                                                     .getActivity()
                                                     .getTabsViewForTesting());

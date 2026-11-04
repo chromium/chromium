@@ -174,7 +174,7 @@ public class BottomSheetControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertFalse(
-                                keyboardDelegate.isKeyboardShowing(
+                                keyboardDelegate.isKeyboardObscuring(
                                         mActivity.getTabsViewForTesting())));
         BottomSheetTestSupport.waitForContentChange(mSheetController, mLowPriorityContent);
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);

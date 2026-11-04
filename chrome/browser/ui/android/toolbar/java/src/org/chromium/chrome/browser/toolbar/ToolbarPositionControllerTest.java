@@ -362,7 +362,7 @@ public class ToolbarPositionControllerTest {
         }
 
         @Override
-        public boolean isKeyboardShowing(View view) {
+        public boolean isKeyboardObscuring(View view) {
             return mIsShowing;
         }
     }

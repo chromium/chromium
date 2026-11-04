@@ -643,7 +643,7 @@ public class FindTest {
                     Criteria.checkThat(
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(getFindQueryText()),
+                                    .isKeyboardObscuring(getFindQueryText()),
                             Matchers.is(imePresent));
                 });
     }

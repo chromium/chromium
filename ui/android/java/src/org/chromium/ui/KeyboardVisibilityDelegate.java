@@ -122,7 +122,7 @@ public class KeyboardVisibilityDelegate {
      * @param view A {@link View}.
      * @return Whether or not the software keyboard is visible.
      */
-    public boolean isKeyboardShowing(View view) {
+    public boolean isKeyboardObscuring(View view) {
         return KeyboardUtils.isAndroidSoftKeyboardObscuring(view);
     }
 
@@ -141,7 +141,7 @@ public class KeyboardVisibilityDelegate {
     /**
      * Adds a listener that is updated of keyboard visibility changes. This works as a best guess.
      *
-     * @see org.chromium.ui.KeyboardVisibilityDelegate#isKeyboardShowing(Context, View)
+     * @see #isKeyboardObscuring(View)
      */
     public void addKeyboardVisibilityListener(KeyboardVisibilityListener listener) {
         if (mKeyboardVisibilityListeners.isEmpty()) {

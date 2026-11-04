@@ -278,8 +278,8 @@ public class CompositorView extends FrameLayout
             if (retainHeight
                     && ChromeFeatureList.sCompositorViewShrinkWhenKeyboardHidden.isEnabled()) {
                 retainHeight =
-                    mWindowAndroid != null
-                            && mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(this);
+                        mWindowAndroid != null
+                                && mWindowAndroid.getKeyboardDelegate().isKeyboardObscuring(this);
             }
             if (retainHeight) {
                 heightMeasureSpec =

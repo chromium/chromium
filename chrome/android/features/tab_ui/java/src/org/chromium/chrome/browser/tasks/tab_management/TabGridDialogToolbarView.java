@@ -61,7 +61,7 @@ public class TabGridDialogToolbarView extends FrameLayout {
                 if (hasWindowFocus()) {
                     mNeedsKeyboardShow = false;
                     KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
-                    if (!delegate.isKeyboardShowing(mTitleTextView)) {
+                    if (!delegate.isKeyboardObscuring(mTitleTextView)) {
                         delegate.showKeyboard(mTitleTextView);
                     }
                 } else {

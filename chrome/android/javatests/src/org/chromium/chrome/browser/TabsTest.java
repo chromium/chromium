@@ -288,7 +288,7 @@ public class TabsTest {
                     boolean isKeyboardShowing =
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(
+                                    .isKeyboardObscuring(
                                             mActivityTestRule
                                                     .getActivity()
                                                     .getTabsViewForTesting());
@@ -710,7 +710,7 @@ public class TabsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean keyboardVisible =
-                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar);
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar);
                     Criteria.checkThat(keyboardVisible, Matchers.is(true));
                 });
 
@@ -730,7 +730,7 @@ public class TabsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean keyboardVisible =
-                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar);
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar);
                     Criteria.checkThat(keyboardVisible, Matchers.is(true));
                 });
 
@@ -744,7 +744,7 @@ public class TabsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean keyboardVisible =
-                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar);
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar);
                     Criteria.checkThat(keyboardVisible, Matchers.is(false));
                 });
     }

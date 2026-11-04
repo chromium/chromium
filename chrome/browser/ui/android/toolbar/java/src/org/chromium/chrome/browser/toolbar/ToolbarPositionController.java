@@ -575,7 +575,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean isPictureInPictureShowing = mIsPictureInPictureShowingSupplier.get();
         boolean isFormFieldFocusedWithKeyboardVisible =
                 mIsFormFieldFocusedSupplier.get()
-                        && mKeyboardVisibilityDelegate.isKeyboardShowing(
+                        && mKeyboardVisibilityDelegate.isKeyboardObscuring(
                                 mControlContainer.getView());
         boolean isBrowserControlsHidden =
                 mBrowserControlsSizer.getBrowserControlHiddenRatio() == 1.0f;

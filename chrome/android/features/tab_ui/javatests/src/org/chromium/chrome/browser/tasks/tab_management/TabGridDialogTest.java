@@ -2123,7 +2123,7 @@ public class TabGridDialogTest {
                 () ->
                         cta.getWindowAndroid()
                                 .getKeyboardDelegate()
-                                .isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
+                                .isKeyboardObscuring(cta.getCompositorViewHolderForTesting()));
     }
 
     private void openDialogToolbarMenuAndVerify(ChromeTabbedActivity cta) {
@@ -2456,7 +2456,7 @@ public class TabGridDialogTest {
                     KeyboardVisibilityDelegate delegate =
                             cta.getWindowAndroid().getKeyboardDelegate();
                     boolean keyboardVisible =
-                            delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting());
+                            delegate.isKeyboardObscuring(cta.getCompositorViewHolderForTesting());
                     boolean isFocused = titleTextView != null && titleTextView.isFocused();
                     Criteria.checkThat(
                             "Title text focus mismatch", isFocused, Matchers.is(shouldFocus));
