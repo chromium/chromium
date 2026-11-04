@@ -631,7 +631,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         try {
             context.startService(intent);
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Unable to start service for update: " + e);
+            Log.e(TAG, "Unable to start service for update", e);
         }
     }
 
@@ -647,7 +647,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         try {
             context.startService(new Intent(context, MediaCaptureNotificationService.class));
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Unable to start service for clear: " + e);
+            Log.e(TAG, "Unable to start service for clear", e);
         }
     }
 

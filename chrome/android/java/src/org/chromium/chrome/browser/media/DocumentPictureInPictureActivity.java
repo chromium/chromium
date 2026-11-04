@@ -903,10 +903,9 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         if (!initialOpenerOriginStr.equals(currentOpenerOriginStr)) {
             Log.e(
                     TAG,
-                    "Opener origin mismatch! Initial: "
-                            + initialOpenerOriginStr
-                            + ", Current: "
-                            + currentOpenerOriginStr);
+                    "Opener origin mismatch! Initial: %s, Current: %s",
+                    initialOpenerOriginStr,
+                    currentOpenerOriginStr);
             return false;
         }
         return true;

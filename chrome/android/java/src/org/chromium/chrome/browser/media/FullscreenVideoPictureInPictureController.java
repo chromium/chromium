@@ -315,9 +315,7 @@ public class FullscreenVideoPictureInPictureController {
     public void attemptPictureInPicture() {
         // If there are already callbacks registered, then do nothing.
         final boolean allowed = canDoPictureInPicture();
-        Log.i(
-                TAG,
-                "Attempted picture-in-picture with result: " + (allowed ? "success" : "failure"));
+        Log.i(TAG, "Attempted picture-in-picture with result: %s", allowed ? "success" : "failure");
 
         if (!allowed) return;
 
@@ -531,7 +529,7 @@ public class FullscreenVideoPictureInPictureController {
      * It's okay if we're not currently in Picture in Picture mode.
      */
     private void onExitedPictureInPicture(@MetricsEndReason int reason) {
-        Log.i(TAG, "Exited picture in picture with reason: " + reason);
+        Log.i(TAG, "Exited picture in picture with reason: %d", reason);
 
         // Any pending dismiss is no longer pending.
         mDismissPending = true;
@@ -670,7 +668,7 @@ public class FullscreenVideoPictureInPictureController {
     private void dismissActivityIfNeeded(Activity activity, @MetricsEndReason int reason) {
         // Something interesting happened -- make sure we've updated our preference for auto-PiP
         // with the framework, if applicable.
-        Log.i(TAG, "Dismiss activity with reason " + reason);
+        Log.i(TAG, "Dismiss activity with reason %d", reason);
         updateAutoPictureInPictureStatusIfNeeded();
         mDismissPending = false;
 
@@ -889,7 +887,7 @@ public class FullscreenVideoPictureInPictureController {
 
         @Override
         public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {
-            Log.i(TAG, "Effective video fullscreen change: " + isFullscreen);
+            Log.i(TAG, "Effective video fullscreen change: %s", isFullscreen);
             if (isFullscreen) {
                 updateAutoPictureInPictureStatusIfNeeded();
                 // Also post a delayed handler to update the status again, once things have had some
