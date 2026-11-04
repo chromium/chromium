@@ -5,6 +5,7 @@
 import json
 import os
 import posixpath
+import re
 import stat
 import subprocess
 import sys
@@ -185,17 +186,15 @@ def GetLatestFullPathChromium(binary_name, platform):
 
 
 def GetLatestFullPathPerfetto(binary_name, platform):
-  path_wildcard = '*/%s/%s' % (
-    PLATFORM_TO_PERFETTO_FOLDER[platform],
-    binary_name,
-  )
+  path_wildcard = f'*/{PLATFORM_TO_PERFETTO_FOLDER[platform]}/{binary_name}'
   path_list = cloud_storage.ListFiles(
     PERFETTO_BINARY_BUCKET, path_wildcard, sort_by='time'
   )
-  # Filter out the "latest" tag to only include actual versions.
-  path_list = [p for p in path_list if not p.startswith('/latest/')]
+  # Only include paths with a 40-character git commit hash (excluding
+  # moving refs like "latest" / "latest-tagged" and version tags like "v59.1").
+  path_list = [p for p in path_list if re.match(r'^/[0-9a-f]{40}/', p)]
   if not path_list:
-    raise RuntimeError('No pre-built binary found for platform %s.' % platform)
+    raise RuntimeError(f'No pre-built binary found for platform {platform}.')
   return PERFETTO_BINARY_BUCKET + path_list[-1]
 
 

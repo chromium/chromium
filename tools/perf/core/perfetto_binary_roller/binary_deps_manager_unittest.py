@@ -88,6 +88,29 @@ class BinaryDepsManagerTests(unittest.TestCase):
       publicly_readable=True,
     )
 
+  def testGetLatestFullPathPerfetto(self):
+    with mock.patch(CLOUD_STORAGE + '.ListFiles') as list_files_patch:
+      list_files_patch.return_value = [
+        '/6c2950fee6d95466d66c8ccfcef2c308497c3d99/mac-arm64/bin',
+        '/d64dfb7175a5e91d2d6308d4aefaf671da641cf3/mac-arm64/bin',
+        '/v59.0/mac-arm64/bin',
+        '/v59.1/mac-arm64/bin',
+        '/latest/mac-arm64/bin',
+        '/latest-tagged/mac-arm64/bin',
+      ]
+      latest_path = binary_deps_manager.GetLatestFullPathPerfetto(
+        'bin', 'mac_arm64'
+      )
+
+    list_files_patch.assert_called_once_with(
+      'perfetto-luci-artifacts', '*/mac-arm64/bin', sort_by='time'
+    )
+    self.assertEqual(
+      latest_path,
+      'perfetto-luci-artifacts/'
+      'd64dfb7175a5e91d2d6308d4aefaf671da641cf3/mac-arm64/bin',
+    )
+
   def testSwitchBinaryToNewFullPath(self):
     self.writeConfig(
       {'dep': {'testos': {'full_remote_path': 'bucket/old/path/to/bin'}}}
