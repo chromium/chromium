@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_policies.h"
 #include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
-#include "chrome/browser/ash/app_mode/kiosk_troubleshooting_controller_ash.h"
+#include "chrome/browser/ash/app_mode/kiosk_troubleshooting_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
@@ -167,7 +167,7 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
           std::move(shutdown_kiosk_browser_session_callback)),
       kiosk_policies_(profile->GetPrefs()) {
   kiosk_troubleshooting_controller_ =
-      std::make_unique<ash::KioskTroubleshootingControllerAsh>(
+      std::make_unique<KioskTroubleshootingController>(
           profile->GetPrefs(),
           base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
                          weak_ptr_factory_.GetWeakPtr()));
