@@ -79,19 +79,15 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 
-    browser_ =
-        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
-
-    OverlayPresenter::FromBrowser(browser_, OverlayModality::kInfobarBanner)
+    OverlayPresenter::FromBrowser(browser(), OverlayModality::kInfobarBanner)
         ->SetPresentationContext(&overlay_presentation_context_);
 
     // Add initial web state
     auto web_state = std::make_unique<web::FakeWebState>();
-    test_web_state_ = web_state.get();
-    test_web_state_->SetNavigationManager(
+    web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    InfoBarManagerImpl::CreateForWebState(test_web_state_);
-    browser_->GetWebStateList()->InsertWebState(
+    InfoBarManagerImpl::CreateForWebState(web_state.get());
+    browser()->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
 
@@ -99,14 +95,14 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
 
     promo_commands_handler_ =
         OCMStrictProtocolMock(@protocol(DefaultBrowserPromoNonModalCommands));
-    [browser_->GetCommandDispatcher()
+    [browser()->GetCommandDispatcher()
         startDispatchingToTarget:promo_commands_handler_
                      forProtocol:@protocol(
                                      DefaultBrowserPromoNonModalCommands)];
 
     pip_commands_handler_ =
         OCMStrictProtocolMock(@protocol(PictureInPictureCommands));
-    [browser_->GetCommandDispatcher()
+    [browser()->GetCommandDispatcher()
         startDispatchingToTarget:pip_commands_handler_
                      forProtocol:@protocol(PictureInPictureCommands)];
 
@@ -131,8 +127,17 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
 
   void TearDown() override {
     ClearDefaultBrowserPromoData();
-    OverlayPresenter::FromBrowser(browser_, OverlayModality::kInfobarBanner)
+    OverlayPresenter::FromBrowser(browser(), OverlayModality::kInfobarBanner)
         ->SetPresentationContext(nullptr);
+  }
+
+  Browser* browser() {
+    return scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+  }
+
+  web::FakeWebState* test_web_state() {
+    return static_cast<web::FakeWebState*>(
+        browser()->GetWebStateList()->GetActiveWebState());
   }
 
   base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
@@ -144,8 +149,6 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<web::FakeWebState, DanglingUntriaged> test_web_state_;
-  raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   id promo_commands_handler_;
@@ -174,9 +177,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // First advance the timer by a small delay. This should not trigger the
   // promo.
@@ -211,9 +214,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserEnteredAppViaFirstPartyScheme];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // First advance the timer by a small delay. This should not trigger the
   // promo.
@@ -247,9 +250,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserFinishedActivityFlow];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-share delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -279,9 +282,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -320,9 +323,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -397,9 +400,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -461,14 +464,13 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Switch to a new tab.
   auto web_state = std::make_unique<web::FakeWebState>();
-  test_web_state_ = web_state.get();
-  browser_->GetWebStateList()->InsertWebState(
+  browser()->GetWebStateList()->InsertWebState(
       std::move(web_state),
       WebStateList::InsertionParams::Automatic().Activate());
 
@@ -493,20 +495,20 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   InfobarType type = InfobarType::kInfobarTypePasswordSave;
 
   std::unique_ptr<InfoBarIOS> added_infobar =
       std::make_unique<FakeInfobarIOS>(type, u"");
   InfoBarIOS* infobar = added_infobar.get();
-  InfoBarManagerImpl::FromWebState(test_web_state_)
+  InfoBarManagerImpl::FromWebState(test_web_state())
       ->AddInfoBar(std::move(added_infobar));
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      test_web_state_, OverlayModality::kInfobarBanner);
+      test_web_state(), OverlayModality::kInfobarBanner);
 
   // Showing a message will also dismiss any existing promos.
   [[promo_commands_handler_ expect]
@@ -540,9 +542,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -602,9 +604,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -700,9 +702,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -745,9 +747,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
   [[promo_commands_handler_ expect]
@@ -800,9 +802,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should not trigger the
   // promo.
@@ -831,9 +833,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest, NoPromoIfDefault) {
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer and the mock handler should not have any interactions.
   task_env_.FastForwardBy(base::Seconds(60));
@@ -861,17 +863,17 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   // Switch to a new tab before loading a page. This will prevent the promo from
   // showing.
   auto web_state = std::make_unique<web::FakeWebState>();
-  browser_->GetWebStateList()->InsertWebState(
+  browser()->GetWebStateList()->InsertWebState(
       std::move(web_state),
       WebStateList::InsertionParams::Automatic().Activate());
 
   // Activate the first page again.
-  browser_->GetWebStateList()->ActivateWebStateAt(0);
+  browser()->GetWebStateList()->ActivateWebStateAt(0);
 
   // Finish loading the page.
-  test_web_state_->SetLoading(true);
-  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  test_web_state_->SetLoading(false);
+  test_web_state()->SetLoading(true);
+  test_web_state()->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state()->SetLoading(false);
 
   // Advance the timer and the mock handler should not have any interactions and
   // there should be no DCHECK.
@@ -898,7 +900,7 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   [scheduler_ logUserPastedInOmnibox];
 
   // Background the app before page is finished loading.
-  test_web_state_->SetLoading(true);
+  test_web_state()->SetLoading(true);
   [[promo_commands_handler_ expect]
       dismissDefaultBrowserNonModalPromoAnimated:NO];
   [scheduler_ sceneState:nil
