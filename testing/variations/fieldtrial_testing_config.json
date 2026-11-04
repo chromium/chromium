@@ -9278,25 +9278,6 @@
             ]
         }
     ],
-    "GpuPersistentCacheAsyncInitializeStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GpuPersistentCacheAsyncInitialize"
-                    ]
-                }
-            ]
-        }
-    ],
     "GpuPersistentCacheMetadata": [
         {
             "platforms": [
@@ -9353,21 +9334,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GreyImageCIFilter"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GtkPrefetchNavButtonIconsStudy": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GtkPrefetchNavButtonIcons"
                     ]
                 }
             ]
@@ -13390,26 +13356,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OptimizeAssociateWindowsAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OptimizeVariationsIpcStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizeVariationsIpc"
                     ]
                 }
             ]
