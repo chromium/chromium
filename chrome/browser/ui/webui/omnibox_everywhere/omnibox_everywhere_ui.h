@@ -105,6 +105,14 @@ class OmniboxEverywhereUI
     return "OmniboxEverywhere";
   }
 
+  // Returns whether AI Mode (Fusebox) is eligible for `profile` via
+  // `AimEligibilityService`.
+  static bool IsFuseboxEligible(Profile* profile);
+
+  // Returns whether AI Mode (Fusebox) is both eligible and enabled via the
+  // Omnibox Everywhere "Show AI Mode" preference for `profile`.
+  static bool IsFuseboxEnabled(Profile* profile);
+
   // most_visited::mojom::MostVisitedPageHandlerFactory:
   void BindInterface(
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandlerFactory>

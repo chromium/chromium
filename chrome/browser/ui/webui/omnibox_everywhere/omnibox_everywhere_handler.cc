@@ -58,25 +58,6 @@ namespace {
 constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
 constexpr char kVoiceSearchQueryParameterValue[] = "1";
 
-bool IsFuseboxEligible(Profile* profile) {
-  if (!profile) {
-    return false;
-  }
-  auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_eligibility_service &&
-         aim_eligibility_service->IsFuseboxEligible();
-}
-
-bool IsFuseboxEnabled(Profile* profile) {
-  if (!IsFuseboxEligible(profile)) {
-    return false;
-  }
-  return !profile || !profile->GetPrefs() ||
-         profile->GetPrefs()->GetBoolean(
-             omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode);
-}
-
 omnibox_everywhere::FreStage MojoFreStageToFreStage(
     searchbox::mojom::FreStage stage) {
   switch (stage) {
@@ -285,7 +266,7 @@ void OmniboxEverywhereHandler::SubmitQuery(const std::string& query_text,
                                            bool meta_key,
                                            bool shift_key,
                                            bool is_voice_search) {
-  if (!is_voice_search) {
+  if (!is_voice_search && OmniboxEverywhereUI::IsFuseboxEnabled(profile_)) {
     ContextualSearchboxHandler::SubmitQuery(query_text, mouse_button, alt_key,
                                             ctrl_key, meta_key, shift_key,
                                             is_voice_search);
@@ -295,8 +276,9 @@ void OmniboxEverywhereHandler::SubmitQuery(const std::string& query_text,
   // In classic Omnibox mode, unlike Composebox mode (which handles contextual
   // file/tab attachments via ComposeboxEverywhereHandler and routes through
   // ComposeboxQueryController), there are no contextual attachments. Voice
-  // searches from classic Omnibox mode should navigate directly to the user's
-  // default search provider rather than being routed to AI Mode (udm=50).
+  // searches from classic Omnibox mode, and typed queries when AI Mode is
+  // unavailable, should navigate directly to the user's default search provider
+  // rather than being routed to AI Mode (udm=50).
   //
   // Unlike the New Tab Page, which can perform a client-side navigation inside
   // its own tab, Omnibox Everywhere runs in a standalone popup window. We must
@@ -317,7 +299,8 @@ void OmniboxEverywhereHandler::SubmitQuery(const std::string& query_text,
 
   TemplateURLRef::SearchTermsArgs search_terms_args(
       base::UTF8ToUTF16(query_text));
-  if (search::DefaultSearchProviderIsGoogle(template_url_service)) {
+  if (is_voice_search &&
+      search::DefaultSearchProviderIsGoogle(template_url_service)) {
     search_terms_args.additional_query_params = base::StrCat(
         {kVoiceSearchQueryParameterKey, "=", kVoiceSearchQueryParameterValue});
   }
@@ -350,7 +333,8 @@ void OmniboxEverywhereHandler::ActivateKeyword(
 void OmniboxEverywhereHandler::OnAiModeEligibilityOrPrefChanged() {
   InitializeInputStateModel();
   if (page()) {
-    page()->UpdateAimPopupEligibility(IsFuseboxEnabled(profile_));
+    page()->UpdateAimPopupEligibility(
+        OmniboxEverywhereUI::IsFuseboxEnabled(profile_));
   }
 }
 

@@ -34,6 +34,7 @@ if (is_win || is_mac) {
       "//components/bookmarks/test",
       "//components/omnibox/browser",
       "//components/prefs",
+      "//components/search",
       "//components/search_engines",
       "//content/test:test_support",
       "//mojo/public/cpp/bindings",

@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
@@ -38,6 +39,7 @@
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -56,6 +58,12 @@ namespace {
 
 constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
 constexpr char kVoiceSearchQueryParameterValue[] = "1";
+// Used by these tests as a proxy for "the query was routed to AI Mode". It is
+// emitted by `ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl()`,
+// which `ContextualSearchboxHandler::SubmitQuery()` calls to send a query to
+// AI Mode.
+constexpr char kAiModeQuerySubmittedHistogram[] =
+    "ContextualSearch.SmartTabSharing.ThreadWithTabsSubmitted";
 
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
  public:
@@ -89,6 +97,27 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
  private:
   bool is_fusebox_eligible_;
   base::RepeatingClosureList callback_list_;
+};
+
+// An AimEligibilityService that computes AI Mode eligibility from the real
+// default search engine. Only the server and feature/policy inputs are fixed,
+// so eligibility follows `IsAimAllowedByDse()`.
+class DseDrivenAimEligibilityService : public ChromeAimEligibilityService {
+ public:
+  DseDrivenAimEligibilityService(Profile* profile,
+                                 TemplateURLService* template_url_service)
+      : ChromeAimEligibilityService(*profile->GetPrefs(),
+                                    template_url_service,
+                                    // Null, so no server request is sent.
+                                    /*url_loader_factory=*/nullptr,
+                                    /*identity_manager=*/nullptr,
+                                    /*configuration=*/{}) {}
+
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
+  bool IsServerEligibilityEnabled() const override { return false; }
+  bool IsAimAllowedByFeatureAndPolicy() const override { return true; }
 };
 
 class MockOmniboxEverywhereService : public OmniboxEverywhereService {
@@ -301,6 +330,71 @@ TEST_F(OmniboxEverywhereHandlerTest,
   std::string voice_param;
   EXPECT_FALSE(net::GetValueForKeyInQuery(
       captured_url, kVoiceSearchQueryParameterKey, &voice_param));
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       SubmitQueryRoutesToAiModeOnlyWhenAvailable) {
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::make_unique<DseDrivenAimEligibilityService>(
+            Profile::FromBrowserContext(context), template_url_service());
+      }));
+  profile()->GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode, true);
+  ASSERT_TRUE(search::DefaultSearchProviderIsGoogle(template_url_service()));
+  base::HistogramTester histogram_tester;
+
+  // 1. With Google DSE and the pref enabled, a typed query goes to AI Mode.
+  EXPECT_CALL(*mock_service_,
+              OpenUrl(testing::_, testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  handler_->SubmitQuery("weather today", /*mouse_button=*/0, /*alt_key=*/false,
+                        /*ctrl_key=*/false, /*meta_key=*/false,
+                        /*shift_key=*/false, /*is_voice_search=*/false);
+  histogram_tester.ExpectTotalCount(kAiModeQuerySubmittedHistogram, 1);
+  testing::Mock::VerifyAndClearExpectations(mock_service_.get());
+
+  // 2. With the "Show AI Mode" pref off, the query goes to the DSE instead.
+  profile()->GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode, false);
+  EXPECT_CALL(*mock_service_,
+              OpenUrl(testing::_, testing::_, testing::_, testing::_))
+      .Times(1);
+  handler_->SubmitQuery("weather today", /*mouse_button=*/0, /*alt_key=*/false,
+                        /*ctrl_key=*/false, /*meta_key=*/false,
+                        /*shift_key=*/false, /*is_voice_search=*/false);
+  histogram_tester.ExpectTotalCount(kAiModeQuerySubmittedHistogram, 1);
+  testing::Mock::VerifyAndClearExpectations(mock_service_.get());
+
+  // 3. With the pref re-enabled but a non-Google DSE, the query goes to that
+  // engine instead of AI Mode.
+  profile()->GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode, true);
+  TemplateURLData data;
+  data.SetShortName(u"example");
+  data.SetKeyword(u"example");
+  data.SetURL("https://example.com/search?q={searchTerms}");
+  template_url_service()->SetUserSelectedDefaultSearchProvider(
+      template_url_service()->Add(std::make_unique<TemplateURL>(data)));
+
+  GURL captured_url;
+  EXPECT_CALL(*mock_service_,
+              OpenUrl(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce([&](const GURL& url, WindowOpenDisposition, ui::PageTransition,
+                    base::OnceCallback<void(content::NavigationHandle&)>) {
+        captured_url = url;
+      });
+  handler_->SubmitQuery("weather today", /*mouse_button=*/0, /*alt_key=*/false,
+                        /*ctrl_key=*/false, /*meta_key=*/false,
+                        /*shift_key=*/false, /*is_voice_search=*/false);
+
+  ASSERT_TRUE(captured_url.is_valid());
+  EXPECT_EQ("example.com", captured_url.GetHost());
+  std::string udm_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(captured_url, "udm", &udm_param));
+  histogram_tester.ExpectTotalCount(kAiModeQuerySubmittedHistogram, 1);
 }
 
 TEST_F(OmniboxEverywhereHandlerTest, OpenProfilePickerCallsService) {
