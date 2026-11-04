@@ -899,12 +899,34 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.Accept.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2027-04-11">
+  <owner>erikchen@chromium.org</owner>
+  <owner>wry@chromium.org</owner>
+  <summary>
+    Records the invocation source used to trigger the opening of the glic panel
+    that led to the user accepting the Trust-First Onboarding. Recorded when the
+    user accepts the Trust-First Onboarding.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.Dismissed.FlowSource" enum="GlicOptInFlowSource"
     expires_after="2027-05-18">
   <owner>sauski@google.com</owner>
   <owner>perrier@chromium.org</owner>
   <summary>
     Records the onboarding flow source where the user dismissed Glic opt-in.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.Dismissed.InvocationSource"
+    enum="GlicInvocationSource" expires_after="2027-04-11">
+  <owner>erikchen@chromium.org</owner>
+  <owner>wry@chromium.org</owner>
+  <summary>
+    Records the invocation source used to trigger the opening of the glic panel
+    that led to the user dismissing the Trust-First Onboarding. Recorded when
+    the user dismisses the Trust-First Onboarding.
   </summary>
 </histogram>
 
@@ -965,6 +987,38 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <owner>perrier@chromium.org</owner>
   <summary>
     Records the onboarding flow source where the user was shown the Glic opt-in.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.Shown.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2027-04-11">
+  <owner>erikchen@chromium.org</owner>
+  <owner>wry@chromium.org</owner>
+  <summary>
+    Records the invocation source used to trigger the opening of the glic panel
+    when the Trust-First Onboarding is shown. Recorded when the Trust-First
+    Onboarding is shown.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.TotalTime.Accepted.Onboarding" units="ms"
+    expires_after="2027-04-11">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    Records the time elapsed from when the Trust-First Onboarding flow (side
+    panel) is first shown until the user accepts it (starts chat).
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.TotalTime.Dismissed.Onboarding" units="ms"
+    expires_after="2027-04-11">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    Records the time elapsed from when the Trust-First Onboarding flow (side
+    panel) is first shown until it is dismissed by the user (e.g. closing the
+    side panel).
   </summary>
 </histogram>
 
@@ -2210,70 +2264,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <summary>
     Records the GlicExperimentalTriggeringState of the user when an experimental
     actuation request is received. Scope: {GlicProvider}.
-  </summary>
-  <token key="GlicProvider" variants="GlicProvider"/>
-</histogram>
-
-<histogram name="Glic{GlicProvider}.Fre.Accept.InvocationSource"
-    enum="GlicInvocationSource" expires_after="2027-04-11">
-  <owner>erikchen@chromium.org</owner>
-  <owner>wry@chromium.org</owner>
-  <summary>
-    Records the invocation source used to trigger the opening of the glic panel
-    that led to the user accepting the Trust-First Onboarding. Recorded when the
-    user accepts the Trust-First Onboarding. For Gemini Enterprise, this is the
-    Gemini Enterprise FRE. Scope: {GlicProvider}.
-  </summary>
-  <token key="GlicProvider" variants="GlicProvider"/>
-</histogram>
-
-<histogram name="Glic{GlicProvider}.Fre.Dismissed.InvocationSource"
-    enum="GlicInvocationSource" expires_after="2027-04-11">
-  <owner>erikchen@chromium.org</owner>
-  <owner>wry@chromium.org</owner>
-  <summary>
-    Records the invocation source used to trigger the opening of the glic panel
-    that led to the user dismissing the Trust-First Onboarding. Recorded when
-    the user dismisses the Trust-First Onboarding. For Gemini Enterprise, this
-    is the Gemini Enterprise FRE. Scope: {GlicProvider}.
-  </summary>
-  <token key="GlicProvider" variants="GlicProvider"/>
-</histogram>
-
-<histogram name="Glic{GlicProvider}.Fre.Shown.InvocationSource"
-    enum="GlicInvocationSource" expires_after="2027-04-11">
-  <owner>erikchen@chromium.org</owner>
-  <owner>wry@chromium.org</owner>
-  <summary>
-    Records the invocation source used to trigger the opening of the glic panel
-    when the Trust-First Onboarding is shown. Recorded when the Trust-First
-    Onboarding is shown. For Gemini Enterprise, this is the Gemini Enterprise
-    FRE. Scope: {GlicProvider}.
-  </summary>
-  <token key="GlicProvider" variants="GlicProvider"/>
-</histogram>
-
-<histogram name="Glic{GlicProvider}.Fre.TotalTime.Accepted.Onboarding"
-    units="ms" expires_after="2027-04-11">
-  <owner>tommasin@chromium.org</owner>
-  <owner>zalmashni@google.com</owner>
-  <summary>
-    Records the time elapsed from when the Trust-First Onboarding flow (side
-    panel) is first shown until the user accepts it (starts chat). For Gemini
-    Enterprise, this is the Gemini Enterprise FRE. Scope: {GlicProvider}.
-  </summary>
-  <token key="GlicProvider" variants="GlicProvider"/>
-</histogram>
-
-<histogram name="Glic{GlicProvider}.Fre.TotalTime.Dismissed.Onboarding"
-    units="ms" expires_after="2027-04-11">
-  <owner>tommasin@chromium.org</owner>
-  <owner>zalmashni@google.com</owner>
-  <summary>
-    Records the time elapsed from when the Trust-First Onboarding flow (side
-    panel) is first shown until it is dismissed by the user (e.g. closing the
-    side panel). For Gemini Enterprise, this is the Gemini Enterprise FRE.
-    Scope: {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>

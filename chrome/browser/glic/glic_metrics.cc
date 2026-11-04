@@ -21,7 +21,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/common/chrome_features.h"
@@ -149,26 +148,18 @@ void GlicMetrics::RecordGlicProfilePreferences() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-void GlicMetrics::RecordFreAcceptHistograms() {
-  GlicMetricReporter reporter(profile_);
-  reporter.RecordEnumeration("Fre.Accept.InvocationSource", invocation_source_);
-
-  if (!onboarding_shown_time_.is_null()) {
-    reporter.RecordLongTimes("Fre.TotalTime.Accepted.Onboarding",
-                             base::TimeTicks::Now() - onboarding_shown_time_);
-    onboarding_shown_time_ = base::TimeTicks();
-  }
-}
-
 void GlicMetrics::OnTrustFirstOnboardingAccept() {
   OnFreAccepted();
   OnOptInAccepted(OptInFlow::kGlicFre);
-  RecordFreAcceptHistograms();
-}
+  base::UmaHistogramEnumeration("Glic.Fre.Accept.InvocationSource",
+                                invocation_source_);
 
-void GlicMetrics::OnGeicOnboardingAccept() {
-  OnOptInAccepted(OptInFlow::kGlicFre);
-  RecordFreAcceptHistograms();
+  if (!onboarding_shown_time_.is_null()) {
+    base::UmaHistogramLongTimes(
+        "Glic.Fre.TotalTime.Accepted.Onboarding",
+        base::TimeTicks::Now() - onboarding_shown_time_);
+    onboarding_shown_time_ = base::TimeTicks();
+  }
 }
 
 void GlicMetrics::OnInstanceOpened() {
@@ -178,9 +169,8 @@ void GlicMetrics::OnInstanceOpened() {
 
   if (!enabling_->HasConsented()) {
     OnOptInShown(OptInFlow::kGlicFre);
-    GlicMetricReporter reporter(profile_);
-    reporter.RecordEnumeration("Fre.Shown.InvocationSource",
-                               invocation_source_);
+    base::UmaHistogramEnumeration("Glic.Fre.Shown.InvocationSource",
+                                  invocation_source_);
     onboarding_shown_time_ = base::TimeTicks::Now();
   }
 }
@@ -191,11 +181,10 @@ void GlicMetrics::OnInstanceClosed() {
   }
 
   OnOptInDismissed(OptInFlow::kGlicFre);
-  GlicMetricReporter reporter(profile_);
-  reporter.RecordEnumeration("Fre.Dismissed.InvocationSource",
-                             invocation_source_);
-  reporter.RecordLongTimes("Fre.TotalTime.Dismissed.Onboarding",
-                           base::TimeTicks::Now() - onboarding_shown_time_);
+  base::UmaHistogramEnumeration("Glic.Fre.Dismissed.InvocationSource",
+                                invocation_source_);
+  base::UmaHistogramLongTimes("Glic.Fre.TotalTime.Dismissed.Onboarding",
+                              base::TimeTicks::Now() - onboarding_shown_time_);
   onboarding_shown_time_ = base::TimeTicks();
 }
 

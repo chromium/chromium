@@ -136,10 +136,9 @@ class GeminiEnterpriseGlicFreStore final : public GlicFreStore {
   }
 
   void CompleteOnboarding(Profile* profile) const override {
-    if (auto* glic_service = GlicKeyedService::Get(profile)) {
-      glic_service->metrics()->OnGeicOnboardingAccept();
-    }
-    // The OS launcher and IPH side effects don't apply.
+    // The consumer onboarding side effects (metrics, OS launcher, IPH) don't
+    // apply.
+    // TODO(b/576047042): Add GEiC onboarding metrics.
     SetStatus(profile, prefs::FreStatus::kCompleted);
   }
 
