@@ -232,17 +232,22 @@ TEST_F(PageContentExtractionTabStripModelObserverTest,
   EXPECT_TRUE(GetCachedContentForTab(window3_tab_id).has_value());
 
   // Replacing/discarding a tab's `WebContents` with a new `SessionID` should
-  // evict the old `SessionID`.
+  // migrate the cached entry from the old `SessionID` to the new `SessionID`.
   std::unique_ptr<content::WebContents> replacement_contents =
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  content::WebContents* raw_replacement = replacement_contents.get();
   window1.tab_strip_model()->DiscardWebContents(
       contents1, std::move(replacement_contents));
-  EXPECT_FALSE(GetCachedContentForTab(window1_tab_id).has_value());
-
   const int64_t replacement_tab_id =
-      service_->CacheContentForTab(raw_replacement, "win1_replaced");
-  ASSERT_TRUE(GetCachedContentForTab(replacement_tab_id).has_value());
+      sessions::SessionTabHelper::IdForTab(
+          window1.tab_strip_model()->GetWebContentsAt(0))
+          .id();
+  ASSERT_NE(replacement_tab_id, window1_tab_id);
+  EXPECT_FALSE(GetCachedContentForTab(window1_tab_id).has_value());
+  std::optional<optimization_guide::proto::PageContext> migrated =
+      GetCachedContentForTab(replacement_tab_id);
+  ASSERT_TRUE(migrated.has_value());
+  EXPECT_EQ(migrated->annotated_page_content().main_frame_data().title(),
+            "win1");
 
   // Closing all tabs in the last remaining `TYPE_NORMAL` `window1` for the
   // profile while a non-tabbed auxiliary window (such as DevTools) remains open

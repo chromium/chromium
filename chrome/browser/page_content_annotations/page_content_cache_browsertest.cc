@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -33,9 +34,11 @@
 #include "components/page_content_annotations/core/page_content_cache_handler.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -332,8 +335,23 @@ IN_PROC_BROWSER_TEST_F(PageContentCacheBrowserTest,
   EXPECT_FALSE(GetCachedPageContentForTab(tab0_id).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentCacheBrowserTest,
-                       ReplaceWebContentsEvictsOldTabId) {
+class PageContentCacheDiscardBrowserTest
+    : public PageContentCacheBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PageContentCacheDiscardBrowserTest() {
+    web_contents_discard_feature_list_.InitWithFeatureState(
+        ::features::kWebContentsDiscard, IsWebContentsDiscardEnabled());
+  }
+
+  bool IsWebContentsDiscardEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList web_contents_discard_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PageContentCacheDiscardBrowserTest,
+                       PreserveCacheOnTabDiscard) {
   ASSERT_TRUE(GetExtractionService());
   PageContentCache* cache = GetPageContentCache();
   ASSERT_TRUE(cache);
@@ -356,16 +374,40 @@ IN_PROC_BROWSER_TEST_F(PageContentCacheBrowserTest,
   cache_observer.WaitForPopulated(tab0_id);
   ASSERT_TRUE(GetCachedPageContentForTab(tab0_id).has_value());
 
-  // Discard/replace tab 0's `WebContents` (which assigns a new `SessionID` to
-  // the replacement `WebContents`) and verify the old `SessionID` is evicted.
-  std::unique_ptr<content::WebContents> new_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->GetProfile()));
-  browser()->GetTabStripModel()->DiscardWebContents(wc0,
-                                                    std::move(new_contents));
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list);
+  content::WebContents* new_wc0 =
+      tab_list->DiscardTab(tab_list->GetTab(0)->GetHandle());
+  ASSERT_TRUE(new_wc0);
+  EXPECT_TRUE(new_wc0->WasDiscarded());
+  const int64_t new_tab0_id =
+      sessions::SessionTabHelper::IdForTab(new_wc0).id();
+  if (IsWebContentsDiscardEnabled()) {
+    // In-place discard preserves the existing `WebContents` and `SessionID`.
+    EXPECT_EQ(new_wc0, wc0);
+    EXPECT_EQ(new_tab0_id, tab0_id);
+  } else {
+    // Replacing the `WebContents` assigns a new `SessionID` and migrates the
+    // cached entry.
+    EXPECT_NE(new_wc0, wc0);
+    ASSERT_NE(new_tab0_id, tab0_id);
+    EXPECT_FALSE(GetCachedPageContentForTab(tab0_id).has_value());
+  }
 
-  cache_observer.WaitForRemoved(tab0_id);
-  EXPECT_FALSE(GetCachedPageContentForTab(tab0_id).has_value());
+  std::optional<optimization_guide::proto::PageContext> cached =
+      GetCachedPageContentForTab(new_tab0_id);
+  ASSERT_TRUE(cached.has_value());
+  EXPECT_EQ(cached->url(), url1.spec());
+
+  // Close the discarded tab 0 and verify the entry is evicted.
+  browser()->GetTabStripModel()->CloseWebContentsAt(0,
+                                                    TabCloseTypes::CLOSE_NONE);
+  cache_observer.WaitForRemoved(new_tab0_id);
+  EXPECT_FALSE(GetCachedPageContentForTab(new_tab0_id).has_value());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageContentCacheDiscardBrowserTest,
+                         testing::Bool());
 
 }  // namespace page_content_annotations

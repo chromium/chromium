@@ -249,9 +249,9 @@ class PageContentExtractionService : public KeyedService,
   void OnTabCloseUndone(int64_t tab_id);
 
   // Migrates any cached page content from `old_tab_id` to `new_tab_id`. Both
-  // tab IDs must be positive. This should only be called during session restore
-  // on platforms where restored tabs are assigned a new tab ID instead of
-  // preserving their pre-restore ID.
+  // tab IDs must be positive. This should only be called when an existing tab
+  // is assigned a new tab ID (e.g., during session restore or when discarding
+  // a tab by replacing its `WebContents`).
   void UpdateTabId(int64_t old_tab_id, int64_t new_tab_id);
 
   // Called when the visibility of a WebContents changes.

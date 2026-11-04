@@ -74,14 +74,20 @@ void PageContentExtractionTabStripModelObserver::OnTabStripModelChanged(
       // a tab by swapping out its `WebContents` via `DiscardWebContents()`,
       // which assigns a new `SessionID` to `new_contents`. (With
       // `kWebContentsDiscard` enabled, the `WebContents` and its `SessionID`
-      // are preserved in place.) Evict the old `SessionID` so its entry is not
-      // orphaned.
-      // TODO(b/579119200): Use `UpdateTabId()` to transfer the cached
-      // entry from `old_contents` to `new_contents` instead of evicting it.
-      if (content::WebContents* old_contents =
-              change.GetReplace()->old_contents) {
-        EvictFromCache(old_contents);
-      }
+      // are preserved in place.) Migrate any cached entry from `old_contents`
+      // to `new_contents`.
+      // TODO(b/550510181): Content is only flushed to `PageContentCache` on
+      // `Visibility::HIDDEN`, and `TabFeatures::WillDiscardContents()` resets
+      // `AnnotatedPageContentRequest` before `kReplaced` fires. Flush any
+      // in-memory content for occluded or visible tabs before discard.
+      const TabStripModelChange::Replace* replace = change.GetReplace();
+      SessionID old_tab_id =
+          sessions::SessionTabHelper::IdForTab(replace->old_contents);
+      SessionID new_tab_id =
+          sessions::SessionTabHelper::IdForTab(replace->new_contents);
+      CHECK(old_tab_id.is_valid());
+      CHECK(new_tab_id.is_valid());
+      service_->UpdateTabId(old_tab_id.id(), new_tab_id.id());
       break;
     }
     case TabStripModelChange::kInserted:

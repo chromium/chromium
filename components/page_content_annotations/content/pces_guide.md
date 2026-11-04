@@ -35,8 +35,9 @@ required.
     `PageSettledMonitor`), ensuring you capture a complete, high-quality
     representation of the page.
 3.  **Tab lifecycle integration**: Automatically cleans up cached data when
-    tabs are closed or discarded, and, if 'on hidden' triggering is enabled,
-    schedules extractions when visible tabs transition to the background.
+    tabs are closed, preserves on-disk cached data across tab discards, and, if
+    'on hidden' triggering is enabled, schedules extractions when visible tabs
+    transition to the background.
 
 ## API comparison: PCES vs. `GetAIPageContent()`
 
