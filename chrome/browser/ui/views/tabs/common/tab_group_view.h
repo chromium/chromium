@@ -83,6 +83,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   void ShiftGroupPrevious() override;
   void ShiftGroupNext() override;
   bool IsGroupFocused() const override;
+  bool ShouldUseFocusedHeaderStyle() const override;
   bool IsUnfocusButtonFocused() const override;
   bool CanShowEditorBubbleButton() const override;
   HorizontalTabClosingHelper* GetTabClosingHelper() const override;
@@ -112,6 +113,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   const tab_groups::TabGroupVisualData& tab_group_visual_data() const {
     return tab_group_visual_data_;
   }
+  bool is_ephemeral() const { return is_ephemeral_; }
 
   TabGroupUnfocusButton* unfocus_header() { return unfocus_header_; }
   const TabGroupUnfocusButton* unfocus_header() const {

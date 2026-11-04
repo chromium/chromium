@@ -70,7 +70,13 @@ class TabGroupHeaderView : public views::FlexLayoutView,
     virtual void ShiftGroupPrevious() = 0;
     virtual void ShiftGroupNext() = 0;
 
+    // Whether the group is focused in the model.
     virtual bool IsGroupFocused() const = 0;
+    // Whether the header should use the focused chip style (taller chip,
+    // focused insets, always-visible editor button, no collapse icon). True
+    // for focused groups and for ephemeral groups, which keep the focused
+    // style while they animate out of focus.
+    virtual bool ShouldUseFocusedHeaderStyle() const = 0;
     virtual bool IsUnfocusButtonFocused() const = 0;
     virtual bool CanShowEditorBubbleButton() const = 0;
     virtual HorizontalTabClosingHelper* GetTabClosingHelper() const = 0;
@@ -125,9 +131,11 @@ class TabGroupHeaderView : public views::FlexLayoutView,
 
   // Sets the focus transition progress, from 0.0 (unfocused appearance) to
   // 1.0 (focused appearance), which drives the chip's corner radii and
-  // horizontal insets. `nullopt` restores the resting appearance for the
-  // delegate's current focused state.
-  void SetFocusAnimationProgress(std::optional<float> progress);
+  // horizontal insets, and `content_opacity` in [0, 1], which scales the
+  // foreground alpha for ephemeral headers. `nullopt` restores the resting
+  // appearance for the delegate's current focused state.
+  void SetFocusAnimationProgress(std::optional<float> progress,
+                                 float content_opacity = 1.0f);
 
   tab_groups::TabGroupId group() const;
 
@@ -156,6 +164,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   gfx::Insets ApplyTitleVisualCenteringOffset(gfx::Insets insets) const;
   gfx::Insets GetTargetHeaderInsets() const;
   gfx::Insets GetHeaderInsets() const;
+  // Whether the delegate's group is an ephemeral (non-group focus) group.
+  bool IsEphemeralGroup() const;
   void UpdateBackground();
 
   SkColor GetBackgroundColor() const;
@@ -168,6 +178,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   bool needs_attention_ = false;
   bool is_shared_ = false;
   std::optional<float> focus_animation_progress_;
+  float focus_content_opacity_ = 1.0f;
 
   // The sync icon that is displayed in the tab group header of saved groups in
   // the tabstrip.

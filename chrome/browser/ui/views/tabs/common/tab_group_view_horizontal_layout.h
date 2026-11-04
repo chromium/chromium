@@ -30,6 +30,25 @@ class TabGroupViewHorizontalLayout : public TabGroupView::LayoutManager {
   // views::LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+ private:
+  // Geometry of the header area for the group's current focus progress: the
+  // Unfocus button, the gap after it, and the header chip, laid out in that
+  // order along the x-axis. Ephemeral groups collapse the whole area to zero
+  // width as they dissolve.
+  struct HeaderLayoutInfo {
+    int unfocus_width = 0;
+    int gap = 0;
+    int header_width = 0;
+    int header_height = 0;
+    // Overlap between the header area and the first tab.
+    int overlap = 0;
+
+    int header_x() const { return unfocus_width + gap; }
+    int total_width() const { return header_x() + header_width; }
+    bool has_header() const { return total_width() > 0; }
+  };
+  HeaderLayoutInfo ComputeHeaderInfo() const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_VIEW_HORIZONTAL_LAYOUT_H_

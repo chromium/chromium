@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -270,7 +271,7 @@ TabGroupHeaderView::TabGroupHeaderView(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kPreferred));
-    collapse_icon_->SetVisible(!delegate_->IsGroupFocused());
+    collapse_icon_->SetVisible(!delegate_->ShouldUseFocusedHeaderStyle());
   }
 
   sync_icon_->SetProperty(views::kMarginsKey,
@@ -331,7 +332,7 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
                              sync_icon_width_with_margin;
   label_width = std::min(label_width, text_max_width);
 
-  const int chip_height = delegate_->IsGroupFocused()
+  const int chip_height = delegate_->ShouldUseFocusedHeaderStyle()
                               ? TabGroupStyle::GetFocusedChipHeight()
                               : TabGroupStyle::GetEmptyChipSize();
   size.set_width(std::max(chip_height, non_label_width + label_width));
@@ -623,7 +624,7 @@ void TabGroupHeaderView::OnDataChanged(
   tab_group_visual_data_ = tab_group_data.visual_data;
   is_shared_ = tab_group_data.is_sharing_group;
 
-  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+  if (IsEphemeralGroup()) {
     OnTabCountChanged();
   } else {
     group_header_label_->SetText(tab_group_visual_data_.title());
@@ -643,7 +644,7 @@ void TabGroupHeaderView::OnDataChanged(
 }
 
 void TabGroupHeaderView::OnTabCountChanged() {
-  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+  if (IsEphemeralGroup()) {
     const int tab_count = delegate_->GetTabGroup().tab_count();
     group_header_label_->SetText(l10n_util::GetPluralStringFUTF16(
         IDS_TAB_GROUP_HEADER_EPHEMERAL_TAB_COUNT, tab_count));
@@ -652,13 +653,21 @@ void TabGroupHeaderView::OnTabCountChanged() {
 }
 
 void TabGroupHeaderView::SetFocusAnimationProgress(
-    std::optional<float> progress) {
-  if (focus_animation_progress_ == progress) {
+    std::optional<float> progress,
+    float content_opacity) {
+  if (focus_animation_progress_ == progress &&
+      focus_content_opacity_ == content_opacity) {
     return;
   }
+  const bool opacity_changed = focus_content_opacity_ != content_opacity;
   focus_animation_progress_ = progress;
+  focus_content_opacity_ = content_opacity;
   SetInteriorMargin(GetHeaderInsets());
-  UpdateBackground();
+  if (opacity_changed) {
+    UpdateColors();
+  } else {
+    UpdateBackground();
+  }
 }
 
 void TabGroupHeaderView::UpdateIsCollapsed() {
@@ -712,7 +721,7 @@ SkColor TabGroupHeaderView::GetBackgroundColor() const {
     return SK_ColorBLACK;
   }
   const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
-  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+  if (IsEphemeralGroup()) {
     const SkColor normal_bg = GetColorProvider()->GetColor(
         frame_active ? ui::kColorSysOnHeaderDivider
                      : ui::kColorSysOnHeaderDividerInactive);
@@ -731,11 +740,17 @@ SkColor TabGroupHeaderView::GetForegroundColor() const {
   if (!GetColorProvider()) {
     return SK_ColorBLACK;
   }
-  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+  if (IsEphemeralGroup()) {
     const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
-    return GetColorProvider()->GetColor(
+    const SkColor fg_color = GetColorProvider()->GetColor(
         frame_active ? ui::kColorSysOnSurfacePrimary
                      : ui::kColorSysOnSurfacePrimaryInactive);
+    if (focus_content_opacity_ >= 1.0f) {
+      return fg_color;
+    }
+    return SkColorSetA(fg_color,
+                       base::ClampRound<U8CPU>(SkColorGetA(fg_color) *
+                                               focus_content_opacity_));
   }
   return color_utils::GetColorWithMaxContrast(GetBackgroundColor());
 }
@@ -775,7 +790,7 @@ void TabGroupHeaderView::UpdateColors() {
 
   // Update collapse icon.
   if (collapse_icon_) {
-    collapse_icon_->SetVisible(!delegate_->IsGroupFocused());
+    collapse_icon_->SetVisible(!delegate_->ShouldUseFocusedHeaderStyle());
     collapse_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         tab_group_visual_data_.is_collapsed()
             ? features::IsRoundedIconsEnabled()
@@ -795,9 +810,10 @@ void TabGroupHeaderView::UpdateBackground() {
     return;
   }
   SetBackground(views::CreateRoundedRectBackground(
-      GetBackgroundColor(), TabGroupStyle::GetHeaderCornerRadii(
-                                orientation_, delegate_->IsGroupFocused(),
-                                focus_animation_progress_)));
+      GetBackgroundColor(),
+      TabGroupStyle::GetHeaderCornerRadii(
+          orientation_, delegate_->ShouldUseFocusedHeaderStyle(),
+          focus_animation_progress_)));
 }
 
 void TabGroupHeaderView::UpdateEditorBubbleButtonVisibility(
@@ -810,7 +826,7 @@ void TabGroupHeaderView::UpdateEditorBubbleButtonVisibility(
   const bool is_hovered_or_focused =
       hovered.value_or(IsMouseHovered()) ||
       (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView()));
-  const bool is_focused = delegate_->IsGroupFocused();
+  const bool is_focused = delegate_->ShouldUseFocusedHeaderStyle();
   editor_bubble_button_->SetBorder(
       is_focused ? views::CreateEmptyBorder(gfx::Insets())
                  : std::unique_ptr<views::Border>(
@@ -870,7 +886,7 @@ void TabGroupHeaderView::ShowEditorBubble() {
 }
 
 int TabGroupHeaderView::GetCornerRadius() const {
-  return delegate_->IsGroupFocused()
+  return delegate_->ShouldUseFocusedHeaderStyle()
              ? TabGroupStyle::GetFocusedChipCornerRadius(orientation_)
              : TabGroupStyle::GetChipCornerRadius(orientation_);
 }
@@ -894,14 +910,16 @@ gfx::Insets TabGroupHeaderView::ApplyTitleVisualCenteringOffset(
 gfx::Insets TabGroupHeaderView::GetTargetHeaderInsets() const {
   return ApplyTitleVisualCenteringOffset(
       orientation_ == TabStripOrientation::kHorizontal &&
-              delegate_->IsGroupFocused()
+              delegate_->ShouldUseFocusedHeaderStyle()
           ? TabGroupStyle::GetInsetsForFocusedHeaderChip()
           : gfx::Insets::VH(0, GetHorizontalInset()));
 }
 
 gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
+  // Ephemeral headers keep their focused insets and collapse in width instead
+  // (see the group layouts), so only persistent headers interpolate.
   if (orientation_ == TabStripOrientation::kHorizontal &&
-      focus_animation_progress_.has_value()) {
+      focus_animation_progress_.has_value() && !IsEphemeralGroup()) {
     const float p = *focus_animation_progress_;
     const gfx::Insets unfocused = ApplyTitleVisualCenteringOffset(
         gfx::Insets::VH(0, GetHorizontalInset()));
@@ -916,6 +934,10 @@ gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
                                           focused.right()));
   }
   return GetTargetHeaderInsets();
+}
+
+bool TabGroupHeaderView::IsEphemeralGroup() const {
+  return delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral();
 }
 
 BEGIN_METADATA(TabGroupHeaderView)

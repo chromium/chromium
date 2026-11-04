@@ -601,14 +601,17 @@ void TabGroupView::ShiftGroupNext() {
 }
 
 bool TabGroupView::IsGroupFocused() const {
-  if (is_ephemeral_) {
-    return true;
-  }
   if (!collection_node_ || !collection_node_->GetController()) {
     return false;
   }
   return collection_node_->GetController()->GetFocusedGroup() ==
          GetTabGroup().id();
+}
+
+bool TabGroupView::ShouldUseFocusedHeaderStyle() const {
+  // Ephemeral groups only exist focused, or briefly while animating out of
+  // focus, so their headers keep the focused style for their whole lifetime.
+  return is_ephemeral_ || IsGroupFocused();
 }
 
 float TabGroupView::GetFocusProgress() const {

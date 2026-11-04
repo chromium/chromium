@@ -55,6 +55,11 @@ class MockDelegate : public TabGroupHeaderView::Delegate,
         .WillByDefault(testing::Return(true));
     ON_CALL(*this, GetTabGroupData)
         .WillByDefault(testing::ReturnRef(default_tab_group_data_));
+    // Mirror `TabGroupView` for persistent groups: the focused header style
+    // follows the focused state.
+    ON_CALL(*this, ShouldUseFocusedHeaderStyle).WillByDefault([this]() {
+      return IsGroupFocused();
+    });
   }
   MOCK_METHOD(void,
               ToggleCollapsedState,
@@ -88,6 +93,7 @@ class MockDelegate : public TabGroupHeaderView::Delegate,
   MOCK_METHOD(void, ShiftGroupPrevious, (), (override));
   MOCK_METHOD(void, ShiftGroupNext, (), (override));
   MOCK_METHOD(bool, IsGroupFocused, (), (const, override));
+  MOCK_METHOD(bool, ShouldUseFocusedHeaderStyle, (), (const, override));
   MOCK_METHOD(bool, IsUnfocusButtonFocused, (), (const, override));
   MOCK_METHOD(bool, CanShowEditorBubbleButton, (), (const, override));
   MOCK_METHOD(HorizontalTabClosingHelper*,
@@ -1566,3 +1572,60 @@ TEST_F(TabGroupHeaderViewTest,
   EXPECT_EQ(header->GetInteriorMargin(), focused_insets);
 }
 #endif
+
+// For ephemeral groups, `content_opacity` scales the alpha of both the title
+// label and the editor bubble button icon, while persistent group headers stay
+// opaque.
+TEST_F(TabGroupHeaderViewTest, EphemeralHeaderFocusContentOpacity) {
+  const tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+  mock_tab_group.SetIsEphemeral(true);
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+
+  MockDelegate delegate;
+  ON_CALL(delegate, IsValid()).WillByDefault(testing::Return(true));
+  ON_CALL(delegate, GetTabGroup())
+      .WillByDefault(testing::ReturnRef(mock_tab_group));
+  ON_CALL(delegate, GetTabGroupData()).WillByDefault(testing::ReturnRef(data));
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data));
+  header->OnDataChanged(data);
+
+  const auto get_editor_icon_alpha = [&]() {
+    return SkColorGetA(header->editor_bubble_button()
+                           ->GetImageModel(views::Button::STATE_NORMAL)
+                           ->GetVectorIcon()
+                           .color()
+                           .ResolveToSkColor(header->GetColorProvider()));
+  };
+
+  header->SetFocusAnimationProgress(1.0f, 1.0f);
+  EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
+            SK_AlphaOPAQUE);
+  EXPECT_EQ(get_editor_icon_alpha(), SK_AlphaOPAQUE);
+
+  header->SetFocusAnimationProgress(0.5f, 0.0f);
+  EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
+            0u);
+  EXPECT_EQ(get_editor_icon_alpha(), 0u);
+
+  header->SetFocusAnimationProgress(0.5f, 0.5f);
+  EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
+            128u);
+  EXPECT_EQ(get_editor_icon_alpha(), 128u);
+
+  // Persistent group headers ignore `content_opacity`.
+  mock_tab_group.SetIsEphemeral(false);
+  header->OnDataChanged(data);
+  header->SetFocusAnimationProgress(0.5f, 0.0f);
+  EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
+            SK_AlphaOPAQUE);
+  EXPECT_EQ(get_editor_icon_alpha(), SK_AlphaOPAQUE);
+}
