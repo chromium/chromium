@@ -671,9 +671,20 @@ void ReadAnythingAppModel::UpdateDistillationForDocsIfNeeded() {
   }
 }
 
+void ReadAnythingAppModel::ResetReadabilityState() {
+  readability_title_.clear();
+  readability_content_html_.clear();
+  set_requires_readability_distillation(false);
+  set_readability_content_drawn(false);
+  set_is_readability_mapping_in_progress(false);
+  set_should_extract_anchors_from_tree_for_readability(false);
+  set_should_map_rendered_text_to_tree_for_readability(false);
+  ResetAXTreeAnchors();
+}
+
 void ReadAnythingAppModel::FallbackToScreen2x() {
   set_next_distillation_method(DistillationMethod::kScreen2x);
-  set_requires_readability_distillation(false);
+  ResetReadabilityState();
   set_requires_distillation(true);
 }
 

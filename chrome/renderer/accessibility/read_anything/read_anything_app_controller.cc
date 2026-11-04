@@ -612,23 +612,10 @@ void ReadAnythingAppController::PrepareForNewContentDistillation() {
   rendered_text_blocks_ready_recorded_ = false;
   active_tree_changed_start_time_ = base::TimeTicks::Now();
 
-  model_.set_requires_readability_distillation(false);
-  model_.set_readability_distillation_complete_for_current_tree(false);
-  model_.set_readability_content_drawn(false);
-
   // TODO: crbug.com/526701545: Show Loading screen when re-distilling.
 
-  // Clear any stale distillation content.
-  readability_title_.clear();
-  readability_content_html_.clear();
-
-  // Reset anchor and mapping state for the new distillation. Since no
-  // readability distillation is displayed yet, the mapping algorithm is not
-  // yet in progress.
-  model_.set_should_extract_anchors_from_tree_for_readability(false);
-  model_.set_should_map_rendered_text_to_tree_for_readability(false);
-  model_.ResetAXTreeAnchors();
-  model_.set_is_readability_mapping_in_progress(false);
+  model_.ResetReadabilityState();
+  model_.set_readability_distillation_complete_for_current_tree(false);
   model_.set_has_logged_early_selection(false);
 }
 
@@ -1963,7 +1950,7 @@ void ReadAnythingAppController::OnGetPresentationState(
   // while reading mode was hidden.
   bool has_distilled_readability_content =
       model_.is_readability_next_distillation_method() &&
-      !readability_content_html_.empty();
+      !model_.readability_content_html().empty();
   if (is_opening && !has_logged_distillation_status_ &&
       has_distilled_readability_content) {
     RecordDistillationStatus(
@@ -2352,8 +2339,6 @@ void ReadAnythingAppController::OnNoTextContent() {
     // Fall back to Screen2x if the drawn Readability content has no text. When
     // the current method is Screen2x, this is an empty selection instead.
     if (model_.is_readability_current_distillation_method()) {
-      model_.set_readability_content_drawn(false);
-      model_.set_is_readability_mapping_in_progress(false);
       model_.FallbackToScreen2x();
       DistillNewTree();
     }
@@ -3055,11 +3040,11 @@ void ReadAnythingAppController::OnTreeRemoved(ui::AXTree* tree) {
 }
 
 std::string ReadAnythingAppController::GetReadabilityTitle() const {
-  return readability_title_;
+  return model_.readability_title();
 }
 
 std::string ReadAnythingAppController::GetReadabilityContentHtml() const {
-  return readability_content_html_;
+  return model_.readability_content_html();
 }
 
 v8::Local<v8::Value> ReadAnythingAppController::GetReadabilityAnchors() const {
@@ -3119,14 +3104,12 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
     return;
   }
 
-  readability_title_ = title;
-  readability_content_html_ = content;
+  model_.set_readability_title(title);
+  model_.set_readability_content_html(content);
 
   // If readability distillation returns empty content, consider distillation as
   // failure and default to Screen2X distillation.
-  if (readability_content_html_.empty()) {
-    model_.set_readability_content_drawn(false);
-
+  if (model_.readability_content_html().empty()) {
     // Immediately attempt distillation. If there's not yet an active tree,
     // distillation will be attempted after the event processes. However,
     // attempting distillation immediately will allow distillation failures

@@ -371,6 +371,10 @@ class ReadAnythingAppModel {
     return next_distillation_method() == DistillationMethod::kReadability;
   }
 
+  // Invalidates state from an active or in-progress Readability run so stale
+  // Readability state doesn't carry over into a new distillation or Screen2x.
+  void ResetReadabilityState();
+
   // Switches the next distillation method from Readability to Screen2x. Clears
   // Readability-only state (e.g. a pending Readability re-distillation request)
   // so it cannot be dispatched to the Screen2x distiller, and marks that a
@@ -410,6 +414,18 @@ class ReadAnythingAppModel {
   bool readability_content_drawn() const { return readability_content_drawn_; }
   void set_readability_content_drawn(bool content_drawn) {
     readability_content_drawn_ = content_drawn;
+  }
+
+  const std::string& readability_title() const { return readability_title_; }
+  void set_readability_title(std::string title) {
+    readability_title_ = std::move(title);
+  }
+
+  const std::string& readability_content_html() const {
+    return readability_content_html_;
+  }
+  void set_readability_content_html(std::string content_html) {
+    readability_content_html_ = std::move(content_html);
   }
 
   read_anything::mojom::LetterSpacing letter_spacing() const {
@@ -1262,6 +1278,10 @@ class ReadAnythingAppModel {
 
   // When readability has content and has been drawn.
   bool readability_content_drawn_ = false;
+
+  // The distilled title and HTML content results of Readability distillation.
+  std::string readability_title_;
+  std::string readability_content_html_;
 
   // Track the URL of the last successfully distilled page on the active tree.
   GURL last_readability_distilled_url_;

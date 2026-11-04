@@ -1828,11 +1828,30 @@ class ReadAnythingAppModelReadabilityTest : public ReadAnythingAppModelTest {
 
 TEST_F(ReadAnythingAppModelReadabilityTest,
        FallbackToScreen2x_ClearsReadabilityStateAndRequiresDistillation) {
+  ui::AXNodeData link = test::LinkNode(2, "https://www.google.com");
+  ui::AXNodeData root =
+      test::ContainerNode(1, ax::mojom::Role::kRootWebArea, {link.id});
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = root.id;
+  update.nodes = {root, link};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
   model().set_next_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
   model().set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
+  model().set_readability_title("Title");
+  model().set_readability_content_html("<p>Content</p>");
   model().set_requires_readability_distillation(true);
+  model().set_readability_content_drawn(true);
+  model().set_is_readability_mapping_in_progress(true);
+  model().set_should_extract_anchors_from_tree_for_readability(true);
+  ASSERT_TRUE(model().ProcessAXTreeAnchors());
+  ASSERT_FALSE(model().ax_tree_anchors().empty());
+  model().set_should_extract_anchors_from_tree_for_readability(true);
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
   model().set_requires_distillation(false);
 
   model().FallbackToScreen2x();
@@ -1840,7 +1859,14 @@ TEST_F(ReadAnythingAppModelReadabilityTest,
   EXPECT_EQ(model().next_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kScreen2x);
   EXPECT_FALSE(model().is_readability_next_distillation_method());
+  EXPECT_TRUE(model().readability_title().empty());
+  EXPECT_TRUE(model().readability_content_html().empty());
   EXPECT_FALSE(model().requires_readability_distillation());
+  EXPECT_FALSE(model().readability_content_drawn());
+  EXPECT_FALSE(model().is_readability_mapping_in_progress());
+  EXPECT_FALSE(model().should_extract_anchors_from_tree_for_readability());
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+  EXPECT_TRUE(model().ax_tree_anchors().empty());
   EXPECT_TRUE(model().requires_distillation());
   // The current content method is left untouched; callers decide whether to
   // update it.
