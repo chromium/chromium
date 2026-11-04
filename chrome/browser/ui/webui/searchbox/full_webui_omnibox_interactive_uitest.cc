@@ -94,6 +94,7 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -138,6 +139,10 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -147,6 +152,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -6109,6 +6115,122 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxViewsToolbarInteractiveTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FullWebUIOmniboxViewsToolbarInteractiveTest,
+                         testing::Values(false),
+                         [](const testing::TestParamInfo<bool>&) {
+                           return "WebUIToolbarDisabled";
+                         });
+
+// Tests dropping text, a link or a bookmark on the unfocused native omnibox
+// (`OmniboxViewViews`). Runs only with the Views toolbar: with the WebUI
+// toolbar, drops are handled by `WebUIReadOnlyOmnibox::OnDropText()` and
+// friends instead.
+class FullWebUIOmniboxDropInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ protected:
+  // Opens a tab with the omnibox unfocused, and waits for the WebUI popup to
+  // be ready, so that a drop takes the steady-state path where the native
+  // textfield can't take focus, rather than the startup handoff in
+  // `LocationBarView::OnFullWebUiOmniboxReady()`.
+  auto OpenTabWithUnfocusedOmnibox() {
+    return Steps(WaitForBrowserActive(),
+                 AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+                 WaitForWebContentsReady(kTab1), WaitForPopupHandlerReady(),
+                 WaitForPopupTransitionLockout(),
+                 WaitForPopupState(OmniboxPopupState::kNone),
+                 CheckEditModelFocus(false));
+  }
+
+  // Drops `data` on the native omnibox through the `views::View` drag and drop
+  // entry points, like `views::DropHelper` does.
+  void DropOnNativeOmnibox(const ui::OSExchangeData& data) {
+    views::View* omnibox_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->GetLocationBarView()
+                                    ->omnibox_view();
+    ASSERT_TRUE(omnibox_view->CanDrop(data));
+    const ui::DropTargetEvent event(
+        data, gfx::PointF(), gfx::PointF(),
+        ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK);
+    omnibox_view->OnDragEntered(event);
+    EXPECT_NE(ui::DragDropTypes::DRAG_NONE, omnibox_view->OnDragUpdated(event));
+    views::View::DropCallback drop_callback =
+        omnibox_view->GetDropCallback(event);
+    ASSERT_TRUE(drop_callback);
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_callback)
+        .Run(event, output_drag_op, /*drag_image_layer_owner=*/nullptr);
+    EXPECT_EQ(ui::mojom::DragOperation::kCopy, output_drag_op);
+  }
+
+  // Waits for the drop to have opened and focused the popup, with `text` as
+  // the user's input, all selected. Like the classic omnibox, a drop on the
+  // unfocused omnibox doesn't query autocomplete or navigate.
+  auto WaitForDroppedTextInFocusedPopup(const std::string& text) {
+    return Steps(
+        WaitForPopupState(OmniboxPopupState::kFull), WaitForPopupReady(),
+        WaitForWebUIInputValue(text),
+        InAnyContext(CheckWebUIInputSelection(0, text.length())),
+        CheckUserInputInProgress(true),
+        InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                     "(el) => el.dropdownIsVisible", false)),
+        CheckResult(
+            [this]() {
+              return browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->IsLoading();
+            },
+            false, "CheckActiveTabNotLoading"));
+  }
+};
+
+// Verifies that dropping selected text (e.g. from a page) on the unfocused
+// omnibox opens and focuses the popup with the dropped text.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDropInteractiveTest,
+                       DropTextOnUnfocusedOmniboxOpensPopup) {
+  RunTestSequence(OpenTabWithUnfocusedOmnibox(), Do([this]() {
+                    ui::OSExchangeData data;
+                    data.SetString(u"reddit.com");
+                    DropOnNativeOmnibox(data);
+                  }),
+                  WaitForDroppedTextInFocusedPopup("reddit.com"));
+}
+
+// Verifies that dropping a link on the unfocused omnibox opens and focuses the
+// popup with the link's URL.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDropInteractiveTest,
+                       DropLinkOnUnfocusedOmniboxOpensPopup) {
+  const GURL url("https://link.example/");
+  RunTestSequence(OpenTabWithUnfocusedOmnibox(), Do([this, url]() {
+                    ui::OSExchangeData data;
+                    data.SetURL(url, u"Link");
+                    DropOnNativeOmnibox(data);
+                  }),
+                  WaitForDroppedTextInFocusedPopup(url.spec()));
+}
+
+// Verifies that dropping a bookmark (e.g. from the bookmarks bar) on the
+// unfocused omnibox opens and focuses the popup with the bookmark's URL.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDropInteractiveTest,
+                       DropBookmarkOnUnfocusedOmniboxOpensPopup) {
+  auto* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  const GURL url("https://bookmark.example/");
+  const bookmarks::BookmarkNode* node =
+      model->AddNewURL(model->bookmark_bar_node(), 0, u"Bookmark", url);
+  RunTestSequence(OpenTabWithUnfocusedOmnibox(), Do([this, node]() {
+                    // Write the data like
+                    // `BookmarkBarView::WriteDragDataForView()`.
+                    ui::OSExchangeData data;
+                    bookmarks::BookmarkNodeData(node).Write(
+                        browser()->GetProfile()->GetPath(), &data);
+                    DropOnNativeOmnibox(data);
+                  }),
+                  WaitForDroppedTextInFocusedPopup(url.spec()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxDropInteractiveTest,
                          testing::Values(false),
                          [](const testing::TestParamInfo<bool>&) {
                            return "WebUIToolbarDisabled";

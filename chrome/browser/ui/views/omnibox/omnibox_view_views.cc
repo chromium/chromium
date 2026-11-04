@@ -2669,10 +2669,24 @@ void OmniboxViewViews::PerformDrop(
   }
 
   SetUserText(text);
-  if (!HasFocus()) {
-    RequestFocus();
+  if (IsFullWebUIOmniboxReady()) {
+    // Once the Full WebUI omnibox is ready, the native textfield can't take
+    // focus (see `LocationBarView::UpdateFocusBehavior()`), so
+    // `RequestFocus()` would do nothing and leave the dropped text unfocused
+    // in the native view, with the popup closed. Focus the location bar like a
+    // non-user-initiated `FocusLocation()` instead, which opens and focuses the
+    // WebUI popup without querying zero-prefix suggestions. Opening the popup
+    // hands off the dropped text with the native selection, so select it
+    // first.
+    SelectAll(false);
+    location_bar_view_->FocusLocation(/*is_user_initiated=*/false,
+                                      /*clear_focus_if_failed=*/false);
+  } else {
+    if (!HasFocus()) {
+      RequestFocus();
+    }
+    SelectAll(false);
   }
-  SelectAll(false);
   output_drag_op = DragOperation::kCopy;
 }
 
