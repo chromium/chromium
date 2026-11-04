@@ -334,7 +334,7 @@ TEST_F(FontDescriptionTest, AllFeaturesHash) {
   key_a = font_description.GetHash();
   EXPECT_EQ(key_a, key_b);
 
-  font_description.SetFontSmoothing(kAntialiased);
+  font_description.SetFontSmoothing(FontSmoothingMode::kAntialiased);
   key_b = font_description.GetHash();
   EXPECT_NE(key_a, key_b);
   key_a = font_description.GetHash();

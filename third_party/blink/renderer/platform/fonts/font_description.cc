@@ -100,7 +100,7 @@ FontDescription::FontDescription() {
   fields_.historical_ligatures_state_ = kNormalLigaturesState;
   fields_.contextual_ligatures_state_ = kNormalLigaturesState;
   fields_.keyword_size_ = 0;
-  fields_.font_smoothing_ = kAutoSmoothing;
+  fields_.font_smoothing_ = static_cast<uint32_t>(FontSmoothingMode::kAuto);
   fields_.text_rendering_ = kAutoTextRendering;
   fields_.synthetic_bold_ = false;
   fields_.synthetic_italic_ = false;

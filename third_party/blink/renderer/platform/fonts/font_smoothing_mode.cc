@@ -10,13 +10,13 @@ namespace blink {
 
 String ToString(FontSmoothingMode mode) {
   switch (mode) {
-    case kAutoSmoothing:
+    case FontSmoothingMode::kAuto:
       return "Auto";
-    case kNoSmoothing:
+    case FontSmoothingMode::kNone:
       return "None";
-    case kAntialiased:
+    case FontSmoothingMode::kAntialiased:
       return "Antialiased";
-    case kSubpixelAntialiased:
+    case FontSmoothingMode::kSubpixelAntialiased:
       return "SubpixelAntialiased";
   }
   return "Unknown";

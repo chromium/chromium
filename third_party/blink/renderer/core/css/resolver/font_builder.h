@@ -144,7 +144,9 @@ class CORE_EXPORT FontBuilder {
   static OpticalSizing InitialFontOpticalSizing() {
     return OpticalSizing::kAuto;
   }
-  static FontSmoothingMode InitialFontSmoothing() { return kAutoSmoothing; }
+  static FontSmoothingMode InitialFontSmoothing() {
+    return FontSmoothingMode::kAuto;
+  }
 
   static constexpr FontSelectionValue InitialStretch() {
     return kNormalWidthValue;

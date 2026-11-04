@@ -217,16 +217,16 @@ SkFont FontPlatformData::CreateSkFont(
 
   if (font_description) {
     switch (font_description->FontSmoothing()) {
-      case kAntialiased:
+      case FontSmoothingMode::kAntialiased:
         should_smooth_fonts = false;
         break;
-      case kSubpixelAntialiased:
+      case FontSmoothingMode::kSubpixelAntialiased:
         break;
-      case kNoSmoothing:
+      case FontSmoothingMode::kNone:
         should_antialias = false;
         should_smooth_fonts = false;
         break;
-      case kAutoSmoothing:
+      case FontSmoothingMode::kAuto:
         // For the AutoSmooth case, don't do anything! Keep the default
         // settings.
         break;
@@ -266,9 +266,10 @@ SkFont FontPlatformData::CreateSkFont(
   // webkit-font-smoothing:antialiased or text-rendering:geometricPrecision is
   // used.  See crbug.com/152304
   if (font_description &&
-      (font_description->FontSmoothing() == kAntialiased ||
-       font_description->TextRendering() == kGeometricPrecision))
+      (font_description->FontSmoothing() == FontSmoothingMode::kAntialiased ||
+       font_description->TextRendering() == kGeometricPrecision)) {
     skfont.setHinting(SkFontHinting::kNone);
+  }
   return skfont;
 }
 

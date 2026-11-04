@@ -31,9 +31,9 @@
 
 namespace blink {
 
-enum FontSmoothingMode {
-  kAutoSmoothing,
-  kNoSmoothing,
+enum class FontSmoothingMode {
+  kAuto,
+  kNone,
   kAntialiased,
   kSubpixelAntialiased
 };

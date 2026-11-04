@@ -207,10 +207,10 @@ static void FontOpticalSizingValue(FontBuilder& b) {
 }
 
 static void FontFontSmoothingBase(FontDescription& d) {
-  d.SetFontSmoothing(kAntialiased);
+  d.SetFontSmoothing(FontSmoothingMode::kAntialiased);
 }
 static void FontFontSmoothingValue(FontBuilder& b) {
-  b.SetFontSmoothing(kSubpixelAntialiased);
+  b.SetFontSmoothing(FontSmoothingMode::kSubpixelAntialiased);
 }
 
 static void FontSizeBase(FontDescription& d) {

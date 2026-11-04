@@ -408,7 +408,7 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetKeywordSize(wtf_size_t s) { fields_.keyword_size_ = s; }
   void SetFontSmoothing(FontSmoothingMode smoothing) {
-    fields_.font_smoothing_ = smoothing;
+    fields_.font_smoothing_ = static_cast<uint32_t>(smoothing);
   }
   void SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
     fields_.font_optical_sizing_ = static_cast<uint32_t>(font_optical_sizing);

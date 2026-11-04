@@ -936,16 +936,16 @@ template <>
 inline CSSIdentifierValue::CSSIdentifierValue(FontSmoothingMode smoothing)
     : CSSValue(kIdentifierClass) {
   switch (smoothing) {
-    case kAutoSmoothing:
+    case FontSmoothingMode::kAuto:
       value_id_ = CSSValueID::kAuto;
       return;
-    case kNoSmoothing:
+    case FontSmoothingMode::kNone:
       value_id_ = CSSValueID::kNone;
       return;
-    case kAntialiased:
+    case FontSmoothingMode::kAntialiased:
       value_id_ = CSSValueID::kAntialiased;
       return;
-    case kSubpixelAntialiased:
+    case FontSmoothingMode::kSubpixelAntialiased:
       value_id_ = CSSValueID::kSubpixelAntialiased;
       return;
   }
@@ -957,13 +957,13 @@ template <>
 inline FontSmoothingMode CSSIdentifierValue::ConvertTo() const {
   switch (value_id_) {
     case CSSValueID::kAuto:
-      return kAutoSmoothing;
+      return FontSmoothingMode::kAuto;
     case CSSValueID::kNone:
-      return kNoSmoothing;
+      return FontSmoothingMode::kNone;
     case CSSValueID::kAntialiased:
-      return kAntialiased;
+      return FontSmoothingMode::kAntialiased;
     case CSSValueID::kSubpixelAntialiased:
-      return kSubpixelAntialiased;
+      return FontSmoothingMode::kSubpixelAntialiased;
     default:
       break;
   }
