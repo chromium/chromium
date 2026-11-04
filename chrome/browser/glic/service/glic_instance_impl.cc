@@ -1628,6 +1628,11 @@ void GlicInstanceImpl::ClientReadyToShow(
   instance_metrics_.OnClientReady();
 }
 
+void GlicInstanceImpl::ContentsCreated() {
+  // Offscreen rendering must follow the new contents, e.g. after a reload.
+  offscreen_rendering_controller_.UpdateState();
+}
+
 void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
   TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::WebUiStateChanged",
                       perfetto::Flow::FromPointer(this), "state", state);

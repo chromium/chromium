@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/service/glic_offscreen_rendering_controller.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/features.h"
@@ -39,37 +40,31 @@ void GlicOffscreenRenderingController::UpdateState() {
   const bool should_render_offscreen =
       !delegate_->HasActiveEmbedder() &&
       (is_hidden_initializing_ || delegate_->IsActuating());
-
-  if (should_render_offscreen == is_active_) {
-    return;
-  }
-
   if (!should_render_offscreen) {
     Stop();
     return;
   }
 
-  // TODO(b/572001459): Re-attach offscreen rendering when the host contents
-  // are recreated (e.g. Host::Reload()) while offscreen rendering is active.
-  delegate_->EnsureHostAwake();
-  if (content::WebContents* contents =
-          delegate_->GetOffscreenRenderingContents()) {
+  content::WebContents* contents = delegate_->GetOffscreenRenderingContents();
+  if (contents == attached_contents_.get()) {
+    return;
+  }
+
+  // The old contents are already detached when the host destroyed them.
+  CHECK(!attached_contents_);
+  if (contents) {
     actor::StartOffscreenRenderingForWebContents(contents);
-    is_active_ = true;
+    attached_contents_ = contents->GetWeakPtr();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void GlicOffscreenRenderingController::Stop() {
 #if BUILDFLAG(IS_ANDROID)
-  if (!is_active_) {
-    return;
-  }
-  if (content::WebContents* contents =
-          delegate_->GetOffscreenRenderingContents()) {
+  if (content::WebContents* contents = attached_contents_.get()) {
     actor::StopOffscreenRenderingForWebContents(contents);
   }
-  is_active_ = false;
+  attached_contents_.reset();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

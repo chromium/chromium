@@ -232,6 +232,7 @@ void Host::Awaken() {
   contents_->AttachToHost(this);
   UpdateVisibility();
   UpdateNativeLoadingState();
+  observers_.Notify(&Observer::ContentsCreated);
 }
 
 void Host::OnActiveWebContentsChanged(content::WebContents* new_contents) {

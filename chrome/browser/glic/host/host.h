@@ -159,6 +159,11 @@ class Host : public GlicSharingManagerProvider {
     // Called when the active WebContents in the host changes (e.g. in
     // NoWebview mode when swapping between the overlay WebUI and guest).
     virtual void ActiveWebContentsChanged(content::WebContents* new_contents) {}
+    // Called after the host creates new contents, e.g. when it awakens from
+    // hibernation or reloads.
+    // TODO(b/580924044): Consolidate Host::EmbedderDelegate::OnReload() and
+    // OnInstanceWillAwaken() with ContentsCreated().
+    virtual void ContentsCreated() {}
 
     // Called when the WebUI state changes in the glic WebUI.
     // If the glic WebUI is destroyed, the webUI state is returned to
