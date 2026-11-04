@@ -16,8 +16,12 @@ namespace password_manager::features {
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kRemoteActorCredentialSharing);
 
+BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorConfigsJson);
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kRemoteActorCredentialSharingActorNameForTesting);
+BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kRemoteActorCredentialSharingAllowedHostActorForTesting);
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kRemoteActorCredentialSharingAllowedHostForTesting);
 BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorOAuthClientId);
