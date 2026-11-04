@@ -338,6 +338,14 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
       old_style->IsScrollContainer() != new_style->IsScrollContainer()) {
     return true;
   }
+  // Only the first body element may propagate its overflow to the viewport, in
+  // which case it is not a scroll container. See also
+  // StyleEngine::ViewportDefiningElementDidChange().
+  if (!old_style->ScrollMarkerGroupNone() &&
+      old_style->IsSecondaryBodyElement() !=
+          new_style->IsSecondaryBodyElement()) {
+    return true;
+  }
   if (old_style->EffectiveOverscrollContainerType() !=
       new_style->EffectiveOverscrollContainerType()) {
     return true;

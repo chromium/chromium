@@ -4360,6 +4360,15 @@ void StyleEngine::ViewportDefiningElementDidChange() {
 
   LayoutObject* layout_object = body->GetLayoutObject();
   if (layout_object && layout_object->IsLayoutBlock()) {
+    if (!layout_object->Style().ScrollMarkerGroupNone()) {
+      // The body box is a scroll container only if its overflow is not
+      // propagated to the viewport (see LayoutBlock::RespectsCSSOverflow()).
+      // When that changes, the ::scroll-marker pseudo-elements inside it move
+      // between its ::scroll-marker-group and the root's. The body style did
+      // not change, so reattach it to detach the markers from their old group.
+      body->SetNeedsReattachLayoutTree();
+      return;
+    }
     // When the overflow style for documentElement changes to or from visible,
     // it changes whether the body element's box should have scrollable overflow
     // on its own box or propagated to the viewport. If the body style did not
