@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("safeint_config") {
+  include_dirs = [ "src" ]
+  visibility = [ ":*" ]
+}
+
+source_set("safeint") {
+  public = [ "src/SafeInt.hpp" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":safeint_config" ]
+
+  # Chromium code should use //base/numerics instead.
+  visibility = [ "//third_party/litert:*" ]
+}

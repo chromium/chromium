@@ -1,0 +1,19 @@
+Name: SafeInt
+Short Name: safeint
+URL: https://github.com/dcleblanc/safeint
+Version: N/A
+Revision: 72f0745e26091af6d1186fd91426377f16688ba7
+Update Mechanism: Autoroll
+License: MIT
+License File: src/LICENSE
+Security Critical: yes
+Shipped: yes
+CPEPrefix: unknown
+
+Description:
+SafeInt is a header-only class library for C++ that manages integer overflows.
+It is used by LiteRT (//third_party/litert) for shape inference and model
+verification. Chromium code should use //base/numerics instead.
+
+Local Modifications:
+None

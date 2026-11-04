@@ -270,6 +270,7 @@ per-file third_party/re2/src=*
 per-file third_party/readability/src=*
 per-file third_party/requests/src=*
 per-file third_party/ruy/src=*
+per-file third_party/safeint/src=*
 per-file third_party/search_engines_data/resources=*
 per-file third_party/search_engines_data/resources_internal=*
 per-file third_party/securemessage/src=*
