@@ -4,15 +4,22 @@
 
 package org.chromium.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.media.MediaFormat;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,131 +27,146 @@ import java.nio.ByteOrder;
 @JNINamespace("media")
 @NullMarked
 class HdrMetadata {
+    @JniType("::media::JniHdrMetadata")
+    interface NativeJniHdrMetadata extends JniTypeToken {}
+
     private static final int MAX_CHROMATICITY = 50000; // Defined in CTA-861.3.
 
-    private long mNativeJniHdrMetadata;
+    private @Nullable JniRawPtr<NativeJniHdrMetadata> mNativeJniHdrMetadata;
     private final Object mLock = new Object();
 
     @CalledByNative
-    private static HdrMetadata create(long nativeRef) {
+    static HdrMetadata create(JniRawPtr<NativeJniHdrMetadata> nativeRef) {
         return new HdrMetadata(nativeRef);
     }
 
     @VisibleForTesting
     HdrMetadata() {
         // Used for testing only.
-        mNativeJniHdrMetadata = 0;
+        mNativeJniHdrMetadata = null;
     }
 
-    private HdrMetadata(long nativeRef) {
-        assert nativeRef != 0;
+    private HdrMetadata(JniRawPtr<NativeJniHdrMetadata> nativeRef) {
+        assert nativeRef != null;
         mNativeJniHdrMetadata = nativeRef;
     }
 
     @CalledByNative
-    private void close() {
+    void close() {
         synchronized (mLock) {
-            mNativeJniHdrMetadata = 0;
+            if (mNativeJniHdrMetadata != null) {
+                mNativeJniHdrMetadata.release();
+                mNativeJniHdrMetadata = null;
+            }
         }
     }
 
     public void addMetadataToFormat(MediaFormat format) {
         synchronized (mLock) {
-            assert mNativeJniHdrMetadata != 0;
+            assert mNativeJniHdrMetadata != null;
+            JniPtr<NativeJniHdrMetadata> nativeMetadata = assumeNonNull(mNativeJniHdrMetadata);
 
             ByteBuffer hdrStaticInfo = ByteBuffer.wrap(new byte[25]);
             hdrStaticInfo.order(ByteOrder.LITTLE_ENDIAN);
             hdrStaticInfo.put((byte) 0); // Type.
-            hdrStaticInfo.putShort((short) ((primaryRChromaticityX() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) ((primaryRChromaticityY() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) ((primaryGChromaticityX() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) ((primaryGChromaticityY() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) ((primaryBChromaticityX() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) ((primaryBChromaticityY() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) ((whitePointChromaticityX() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) ((whitePointChromaticityY() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) (maxColorVolumeLuminance() + 0.5f));
-            hdrStaticInfo.putShort((short) (minColorVolumeLuminance() + 0.5f));
-            hdrStaticInfo.putShort((short) maxContentLuminance());
-            hdrStaticInfo.putShort((short) maxFrameAverageLuminance());
+            hdrStaticInfo.putShort(
+                    (short) ((primaryRChromaticityX(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort(
+                    (short) ((primaryRChromaticityY(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort(
+                    (short) ((primaryGChromaticityX(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort(
+                    (short) ((primaryGChromaticityY(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort(
+                    (short) ((primaryBChromaticityX(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort(
+                    (short) ((primaryBChromaticityY(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort(
+                    (short) ((whitePointChromaticityX(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort(
+                    (short) ((whitePointChromaticityY(nativeMetadata) * MAX_CHROMATICITY) + 0.5f));
+            hdrStaticInfo.putShort((short) (maxColorVolumeLuminance(nativeMetadata) + 0.5f));
+            hdrStaticInfo.putShort((short) (minColorVolumeLuminance(nativeMetadata) + 0.5f));
+            hdrStaticInfo.putShort((short) maxContentLuminance(nativeMetadata));
+            hdrStaticInfo.putShort((short) maxFrameAverageLuminance(nativeMetadata));
 
             hdrStaticInfo.rewind();
             format.setByteBuffer(MediaFormat.KEY_HDR_STATIC_INFO, hdrStaticInfo);
         }
     }
 
-    private float primaryRChromaticityX() {
-        return HdrMetadataJni.get().primaryRChromaticityX(mNativeJniHdrMetadata);
+    private float primaryRChromaticityX(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().primaryRChromaticityX(nativeMetadata);
     }
 
-    private float primaryRChromaticityY() {
-        return HdrMetadataJni.get().primaryRChromaticityY(mNativeJniHdrMetadata);
+    private float primaryRChromaticityY(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().primaryRChromaticityY(nativeMetadata);
     }
 
-    private float primaryGChromaticityX() {
-        return HdrMetadataJni.get().primaryGChromaticityX(mNativeJniHdrMetadata);
+    private float primaryGChromaticityX(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().primaryGChromaticityX(nativeMetadata);
     }
 
-    private float primaryGChromaticityY() {
-        return HdrMetadataJni.get().primaryGChromaticityY(mNativeJniHdrMetadata);
+    private float primaryGChromaticityY(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().primaryGChromaticityY(nativeMetadata);
     }
 
-    private float primaryBChromaticityX() {
-        return HdrMetadataJni.get().primaryBChromaticityX(mNativeJniHdrMetadata);
+    private float primaryBChromaticityX(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().primaryBChromaticityX(nativeMetadata);
     }
 
-    private float primaryBChromaticityY() {
-        return HdrMetadataJni.get().primaryBChromaticityY(mNativeJniHdrMetadata);
+    private float primaryBChromaticityY(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().primaryBChromaticityY(nativeMetadata);
     }
 
-    private float whitePointChromaticityX() {
-        return HdrMetadataJni.get().whitePointChromaticityX(mNativeJniHdrMetadata);
+    private float whitePointChromaticityX(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().whitePointChromaticityX(nativeMetadata);
     }
 
-    private float whitePointChromaticityY() {
-        return HdrMetadataJni.get().whitePointChromaticityY(mNativeJniHdrMetadata);
+    private float whitePointChromaticityY(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().whitePointChromaticityY(nativeMetadata);
     }
 
-    private float maxColorVolumeLuminance() {
-        return HdrMetadataJni.get().maxColorVolumeLuminance(mNativeJniHdrMetadata);
+    private float maxColorVolumeLuminance(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().maxColorVolumeLuminance(nativeMetadata);
     }
 
-    private float minColorVolumeLuminance() {
-        return HdrMetadataJni.get().minColorVolumeLuminance(mNativeJniHdrMetadata);
+    private float minColorVolumeLuminance(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().minColorVolumeLuminance(nativeMetadata);
     }
 
-    private int maxContentLuminance() {
-        return HdrMetadataJni.get().maxContentLuminance(mNativeJniHdrMetadata);
+    private int maxContentLuminance(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().maxContentLuminance(nativeMetadata);
     }
 
-    private int maxFrameAverageLuminance() {
-        return HdrMetadataJni.get().maxFrameAverageLuminance(mNativeJniHdrMetadata);
+    private int maxFrameAverageLuminance(JniPtr<NativeJniHdrMetadata> nativeMetadata) {
+        return HdrMetadataJni.get().maxFrameAverageLuminance(nativeMetadata);
     }
 
     @NativeMethods
     interface Natives {
-        float primaryRChromaticityX(long nativeJniHdrMetadata);
+        float primaryRChromaticityX(JniPtr<NativeJniHdrMetadata> self);
 
-        float primaryRChromaticityY(long nativeJniHdrMetadata);
+        float primaryRChromaticityY(JniPtr<NativeJniHdrMetadata> self);
 
-        float primaryGChromaticityX(long nativeJniHdrMetadata);
+        float primaryGChromaticityX(JniPtr<NativeJniHdrMetadata> self);
 
-        float primaryGChromaticityY(long nativeJniHdrMetadata);
+        float primaryGChromaticityY(JniPtr<NativeJniHdrMetadata> self);
 
-        float primaryBChromaticityX(long nativeJniHdrMetadata);
+        float primaryBChromaticityX(JniPtr<NativeJniHdrMetadata> self);
 
-        float primaryBChromaticityY(long nativeJniHdrMetadata);
+        float primaryBChromaticityY(JniPtr<NativeJniHdrMetadata> self);
 
-        float whitePointChromaticityX(long nativeJniHdrMetadata);
+        float whitePointChromaticityX(JniPtr<NativeJniHdrMetadata> self);
 
-        float whitePointChromaticityY(long nativeJniHdrMetadata);
+        float whitePointChromaticityY(JniPtr<NativeJniHdrMetadata> self);
 
-        float maxColorVolumeLuminance(long nativeJniHdrMetadata);
+        float maxColorVolumeLuminance(JniPtr<NativeJniHdrMetadata> self);
 
-        float minColorVolumeLuminance(long nativeJniHdrMetadata);
+        float minColorVolumeLuminance(JniPtr<NativeJniHdrMetadata> self);
 
-        int maxContentLuminance(long nativeJniHdrMetadata);
+        int maxContentLuminance(JniPtr<NativeJniHdrMetadata> self);
 
-        int maxFrameAverageLuminance(long nativeJniHdrMetadata);
+        int maxFrameAverageLuminance(JniPtr<NativeJniHdrMetadata> self);
     }
 }

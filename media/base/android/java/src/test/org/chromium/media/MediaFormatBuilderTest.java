@@ -11,11 +11,14 @@ import static org.junit.Assert.assertTrue;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.media.HdrMetadata.NativeJniHdrMetadata;
 
 import java.nio.ByteBuffer;
 
@@ -64,6 +67,68 @@ public class MediaFormatBuilderTest {
         @Override
         public void addMetadataToFormat(MediaFormat format) {
             was_called = true;
+        }
+    }
+
+    private static class FakeHdrMetadataNatives implements HdrMetadata.Natives {
+        @Override
+        public float primaryRChromaticityX(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.68f;
+        }
+
+        @Override
+        public float primaryRChromaticityY(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.32f;
+        }
+
+        @Override
+        public float primaryGChromaticityX(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.265f;
+        }
+
+        @Override
+        public float primaryGChromaticityY(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.69f;
+        }
+
+        @Override
+        public float primaryBChromaticityX(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.15f;
+        }
+
+        @Override
+        public float primaryBChromaticityY(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.06f;
+        }
+
+        @Override
+        public float whitePointChromaticityX(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.3127f;
+        }
+
+        @Override
+        public float whitePointChromaticityY(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.329f;
+        }
+
+        @Override
+        public float maxColorVolumeLuminance(JniPtr<NativeJniHdrMetadata> self) {
+            return 1000.0f;
+        }
+
+        @Override
+        public float minColorVolumeLuminance(JniPtr<NativeJniHdrMetadata> self) {
+            return 0.05f;
+        }
+
+        @Override
+        public int maxContentLuminance(JniPtr<NativeJniHdrMetadata> self) {
+            return 1000;
+        }
+
+        @Override
+        public int maxFrameAverageLuminance(JniPtr<NativeJniHdrMetadata> self) {
+            return 400;
         }
     }
 
@@ -147,6 +212,18 @@ public class MediaFormatBuilderTest {
                         false,
                         VIDEO_PROFILE);
         assertTrue(hdrMetadata.was_called);
+    }
+
+    @Test
+    public void testHdrMetadataLifecycleAndAddMetadata() {
+        HdrMetadataJni.setInstanceForTesting(new FakeHdrMetadataNatives());
+        JniRawPtr<NativeJniHdrMetadata> nativePtr = JniRawPtr.createForTesting(1L);
+        HdrMetadata hdrMetadata = HdrMetadata.create(nativePtr);
+        MediaFormat format = new MediaFormat();
+        hdrMetadata.addMetadataToFormat(format);
+        hdrMetadata.close();
+        assertTrue(format.containsKey(MediaFormat.KEY_HDR_STATIC_INFO));
+        assertEquals(25, format.getByteBuffer(MediaFormat.KEY_HDR_STATIC_INFO).remaining());
     }
 
     @Test

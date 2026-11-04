@@ -4,6 +4,7 @@
 
 #include "media/base/android/jni_hdr_metadata.h"
 
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/hdr_metadata.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -21,7 +22,7 @@ constexpr skhdr::MasteringDisplayColorVolume kDefaultMDCV;
 JniHdrMetadata::JniHdrMetadata(const gfx::HDRMetadata& hdr_metadata)
     : hdr_metadata_(hdr_metadata) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  jobject_ = Java_HdrMetadata_create(env, reinterpret_cast<int64_t>(this));
+  jobject_ = Java_HdrMetadata_create(env, jni_zero::MakeRaw(this));
   base::android::CheckException(env);
 }
 
