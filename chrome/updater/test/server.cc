@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -90,6 +91,10 @@ ScopedServer::ScopedServer(scoped_refptr<IntegrationTestCommands> commands)
 }
 
 ScopedServer::~ScopedServer() {
+  // Stop the server: `HandleRequest` must not run during the checks below or
+  // after the members it uses are destroyed.
+  test_server_handle_ = net::test_server::EmbeddedTestServerHandle();
+  base::AutoLock lock(lock_);
   for (const auto& request_matcher_group : request_matcher_groups_) {
     // Probes each matcher with an empty request to collect failure messages.
     std::vector<std::string> unmet_reasons;
@@ -107,6 +112,7 @@ ScopedServer::~ScopedServer() {
 void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,
                               const std::string& response_body,
                               net::HttpStatusCode http_status_code) {
+  base::AutoLock lock(lock_);
   request_matcher_groups_.push_back(std::move(request_matcher_group));
   responses_.emplace_back(
       http_status_code,
@@ -119,8 +125,19 @@ void ScopedServer::ExpectOnce(
     request::MatcherGroup request_matcher_group,
     base::RepeatingCallback<std::string(bool)> response_body_provider,
     net::HttpStatusCode http_status_code) {
+  base::AutoLock lock(lock_);
   request_matcher_groups_.push_back(std::move(request_matcher_group));
   responses_.emplace_back(http_status_code, response_body_provider);
+}
+
+void ScopedServer::set_download_delay(base::TimeDelta delay) {
+  base::AutoLock lock(lock_);
+  download_delay_ = delay;
+}
+
+void ScopedServer::set_gzip_response(bool gzip_response) {
+  base::AutoLock lock(lock_);
+  gzip_response_ = gzip_response;
 }
 
 std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
@@ -129,6 +146,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
   VLOG(0) << "Handle request at path:" << request.relative_url;
   VLOG(3) << DebugStringForReq(request);
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  base::AutoLock lock(lock_);
   if (request_matcher_groups_.empty()) {
     VLOG(0) << "Unexpected request.";
     ADD_FAILURE() << "Unexpected " << DebugStringForReq(request);
