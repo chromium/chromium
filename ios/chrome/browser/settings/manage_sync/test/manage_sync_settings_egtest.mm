@@ -146,8 +146,9 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector
-            (FLAKY_testPersonalizeGoogleServicesSettingsDismissedOnSignOut)]) {
+  if ([self isRunningTest:
+                @selector(
+                    testPersonalizeGoogleServicesSettingsDismissedOnSignOut)]) {
     config.additional_args.push_back(
         std::string("--") + switches::kSearchEngineChoiceCountry + "=BE");
   }
@@ -181,8 +182,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that unified account settings row is showing.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testShowingUnifiedAccountSettings {
+- (void)testShowingUnifiedAccountSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -225,8 +225,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the unsynced data dialog shows when there are unsynced passwords. Also
 // verifies that the user is still signed in when the dialog Cancel button is
 // tapped.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords {
+- (void)testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -261,10 +260,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // entries. Also verifies that the user is still signed in when the dialog
 // Cancel button is tapped.
 - (void)testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry {
-  // TODO(crbug.com/41494658): Test fails on iPhone device and simulator.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
-  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -303,9 +298,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
 // verifies that the user still signed in when the dialog Cancel button is
 // tapped.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)
-    FLAKY_testCancelSigningOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks {
+- (void)testCancelSigningOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -337,9 +330,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
 // verifies that the user is signed out when the dialog Delete and Sign Out
 // button is tapped.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)
-    FLAKY_testDeleteAndSignOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks {
+- (void)testDeleteAndSignOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -408,8 +399,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that data type settings do not carry over from one user to another.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testDataTypeSettingsDoNotCarryOverDifferentAccounts {
+- (void)testDataTypeSettingsDoNotCarryOverDifferentAccounts {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -446,8 +436,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that removing account from device clears the data type settings.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testDataTypeSettingsAreClearedOnAccountRemoval {
+- (void)testDataTypeSettingsAreClearedOnAccountRemoval {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -488,8 +477,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings is reflecting the SyncTypesListDisabled
 // policy.
-// TODO(crbug.com/512421615): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithSyncTypesListDisabled {
+- (void)testAccountSettingsWithSyncTypesListDisabled {
   base::ListValue list;
   list.Append("passwords");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
@@ -509,8 +497,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings is disabling the types that were affected by the
 // SyncTypesListDisabled policy when the policy is lifted.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithSyncTypesListDisabledLifted {
+- (void)testAccountSettingsWithSyncTypesListDisabledLifted {
   // Apply policy.
   base::ListValue list;
   list.Append("passwords");
@@ -557,8 +544,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the account settings is disabling the types that were affected by the
 // SyncTypesListDisabled policy when the policy is apllied on a signed-in
 // account.
-// TODO(crbug.com/512422367): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithSyncTypesListDisabledAppliedDynamically {
+- (void)testAccountSettingsWithSyncTypesListDisabledAppliedDynamically {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -592,8 +578,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests the account settings is reflecting the SyncDisabled policy.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithSyncDisabled {
+- (void)testAccountSettingsWithSyncDisabled {
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -635,8 +620,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings is disabling the types that were affected by the
 // SyncDisabled policy when the policy is lifted.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithSyncDisabledLifted {
+- (void)testAccountSettingsWithSyncDisabledLifted {
   // Apply policy.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -668,8 +652,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings is disabling the types that were affected by the
 // SyncDisabled policy when the policy is apllied on a signed-in account.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithSyncDisabledAppliedDynamically {
+- (void)testAccountSettingsWithSyncDisabledAppliedDynamically {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -700,8 +683,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings is with a user actionable error; enter
 // passphrase error.
-// TODO(crbug.com/512422367): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithError {
+- (void)testAccountSettingsWithError {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -736,8 +718,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the "History and Tabs" toggle manages both types. When both types
 // are disabled by policy their toggle should be off.
-// TODO(crbug.com/512422367): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithHistoryAndTabsDisabledByPolicy {
+- (void)testAccountSettingsWithHistoryAndTabsDisabledByPolicy {
   base::ListValue list;
   list.Append("typedUrls");
   list.Append("tabs");
@@ -761,8 +742,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the "History and Tabs" toggle manages both types. When History
 // is only disabled by policy their toggle should be active.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithHistoryDisabledByPolicy {
+- (void)testAccountSettingsWithHistoryDisabledByPolicy {
   base::ListValue list;
   list.Append("typedUrls");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
@@ -785,8 +765,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the "History and Tabs" toggle manages both types. When Tabs
 // is only disabled by policy their toggle should be active.
-// TODO(crbug.com/512420798): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithTabsDisabledByPolicy {
+- (void)testAccountSettingsWithTabsDisabledByPolicy {
   base::ListValue list;
   list.Append("tabs");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
@@ -808,8 +787,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests closing the account settings with a remote signout.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithRemoteSignout {
+- (void)testAccountSettingsWithRemoteSignout {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -829,8 +807,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload button description in the account settings
 // contains the correct string for passwords.
-// TODO(crbug.com/512424244): Test is flaky.
-- (void)FLAKY_testBulkUploadDescriptionTextForPasswords {
+- (void)testBulkUploadDescriptionTextForPasswords {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password1", @"user1", @"https://example1.com");
@@ -856,8 +833,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload button description in the account settings
 // contains the correct string for bookmarks.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testBulkUploadDescriptionTextForBookmarks {
+- (void)testBulkUploadDescriptionTextForBookmarks {
   // Add local data.
   SaveBookmark(@"foo", @"https://www.foo.com");
   SaveBookmark(@"bar", @"https://www.bar.com");
@@ -881,8 +857,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload button description in the account settings
 // contains the correct string for reading list.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testBulkUploadDescriptionTextForReadingList {
+- (void)testBulkUploadDescriptionTextForReadingList {
   // Add local data.
   reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
       GURL("https://example.com"), nil);
@@ -1360,8 +1335,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Before crbug.com/40265120, the autofill and payments toggles used to be
 // coupled. This test verifies they no longer are.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testDeCouplingOfAddressAndPaymentToggles {
+- (void)testDeCouplingOfAddressAndPaymentToggles {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1383,8 +1357,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings and the user actionable error view are dismissed
 // on account removal.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsWithErrorDismissed {
+- (void)testAccountSettingsWithErrorDismissed {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1414,8 +1387,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests the passphrase error view is dismissed when "Cancel" button is pressed.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testErrorViewFromAccountSettingsDismissed {
+- (void)testErrorViewFromAccountSettingsDismissed {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1447,8 +1419,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings and the encryption view are dismissed
 // on account removal.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testAccountSettingsAndEncryptionDismissed {
+- (void)testAccountSettingsAndEncryptionDismissed {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1485,8 +1456,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the custom passphrase is remembered per account, kept across signout,
 // and cleared when account is removed from device.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testRememberCustomPassphraseAfterSignout {
+- (void)testRememberCustomPassphraseAfterSignout {
   // Enable custom passphrase.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -1561,8 +1531,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Test that the Personalize Google Services page is dismissed when the user
 // signs out.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testPersonalizeGoogleServicesSettingsDismissedOnSignOut {
+- (void)testPersonalizeGoogleServicesSettingsDismissedOnSignOut {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1599,8 +1568,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Test switching account from the account menu.
-// TODO(crbug.com/512422367): Test is flaky.
-- (void)FLAKY_testSwitchAccountFromAccountMenu {
+- (void)testSwitchAccountFromAccountMenu {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1633,8 +1601,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Test signing out from the account menu.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testSignOutFromAccountFromAccountMenu {
+- (void)testSignOutFromAccountFromAccountMenu {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1680,8 +1647,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testManageAccountsRemoveManagedAccount {
+- (void)testManageAccountsRemoveManagedAccount {
   FakeSystemIdentity* managedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey
@@ -1709,8 +1675,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests switching to a managed account from sync settings.
-// TODO(crbug.com/512422445): Test is flaky.
-- (void)FLAKY_testSwitchToManagedAccountFromAccountMenu {
+- (void)testSwitchToManagedAccountFromAccountMenu {
   FakeSystemIdentity* managedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
   FakeSystemIdentity* personalIdentity = [FakeSystemIdentity fakeIdentity1];
