@@ -105,6 +105,13 @@ class ReadAloudPlaybackController
   // preserving cached Opus segments in PrefetchManager.
   void ExecuteSeek(const TimelinePosition& target);
 
+  // Applies `pending_word_seek_` against the freshly set timeline, if any. The
+  // pending seek could not be validated when received, so it is silently
+  // dropped if it no longer resolves (e.g. the re-distilled text differs).
+  // A target that still resolves against different text may land on a
+  // different word.
+  void MaybeApplyPendingWordSeek();
+
   // Invoked by `prefetch_manager_` when an in-flight synthesis request is
   // dispatched.
   void OnPrefetchSynthesisRequest(uint32_t chunk_index,
@@ -219,6 +226,10 @@ class ReadAloudPlaybackController
   // added to its media time to get the overall elapsed audio playback time
   // along the timeline (reported to the UI progress bar).
   base::TimeDelta seek_base_;
+  // `SeekToWord()` target (chunk index, character offset) received while
+  // there is no text, e.g. when restoring the position after a voice change.
+  // Applied by `SetTextContent()` before playback starts.
+  std::optional<std::pair<uint32_t, uint32_t>> pending_word_seek_;
   // Last (elapsed, duration) sent by ReportProgress(), used to suppress
   // duplicate reports. Empty until the first report of a session.
   std::optional<std::pair<base::TimeDelta, base::TimeDelta>>

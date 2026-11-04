@@ -2922,6 +2922,77 @@ public class ReadAloudControllerUnitTest {
         verify(mNativeBridgeNatives, times(2)).play(any(), eq(mWebContents));
     }
 
+    /** Starts a native playback reading "bar": chunk 1, offset 4 of "Hello world Foo bar". */
+    private void startNativePlaybackReadingWord() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        mController.onVoicesAvailable(
+                new String[] {"voiceA", "voiceB"},
+                new String[] {"Ruby", "River"},
+                new String[] {"en", "en"},
+                new String[] {"US", "US"},
+                new int[] {PlaybackVoice.Pitch.MID, PlaybackVoice.Pitch.MID},
+                new int[] {PlaybackVoice.Tone.WARM, PlaybackVoice.Tone.CALM});
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        mController.onTextChunked(new String[] {"Hello world", "Foo bar"});
+        mController.onWordHighlightUpdated(
+                /* absoluteStartIndex= */ 16, /* absoluteEndIndex= */ 19);
+        mController.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
+        verify(mNativeBridgeNatives).play(any(), eq(mWebContents));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testSetVoice_nativeEnabled_resumesFromCurrentWord() {
+        startNativePlaybackReadingWord();
+
+        MockPrefServiceHelper.setVoices(mReadAloudPrefsNatives, Map.of("en", "voiceB"));
+        mController.setVoiceOverrideAndApplyToPlayback(new PlaybackVoice("en", "voiceB", ""));
+        resolvePromises();
+
+        // The new session resumes from the same word instead of the beginning.
+        verify(mNativeBridgeNatives, times(2)).play(any(), eq(mWebContents));
+        verify(mNativeBridgeNatives).seekToWord(any(), eq(1), eq(4));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testPreviewThenCloseVoiceMenu_nativeEnabled_resumesFromCurrentWord() {
+        startNativePlaybackReadingWord();
+
+        // Previewing stops the tab playback; selecting a voice must not restart it yet.
+        mController.previewVoice(new PlaybackVoice("en", "voiceB", ""));
+        resolvePromises();
+        MockPrefServiceHelper.setVoices(mReadAloudPrefsNatives, Map.of("en", "voiceB"));
+        mController.setVoiceOverrideAndApplyToPlayback(new PlaybackVoice("en", "voiceB", ""));
+        resolvePromises();
+        verify(mNativeBridgeNatives, times(1)).play(any(), eq(mWebContents));
+        verify(mNativeBridgeNatives, never()).seekToWord(any(), anyInt(), anyInt());
+
+        // Closing the menu restores the tab playback from the same word.
+        mController.onVoiceMenuClosed();
+        resolvePromises();
+        verify(mNativeBridgeNatives, times(2)).play(any(), eq(mWebContents));
+        verify(mNativeBridgeNatives).seekToWord(any(), eq(1), eq(4));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testSetPlaybackMode_nativeEnabled_restartsFromBeginning() {
+        startNativePlaybackReadingWord();
+
+        mController.setPlaybackModeAndApplyToPlayback(PlaybackMode.OVERVIEW);
+        resolvePromises();
+
+        // A playback mode change restarts without restoring the position.
+        verify(mNativeBridgeNatives, times(2)).play(any(), eq(mWebContents));
+        verify(mNativeBridgeNatives, never()).seekToWord(any(), anyInt(), anyInt());
+    }
+
     @Test
     @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testOnVoicesAvailable_populatesCatalogAndUpdatesVoiceMenu_nativeEnabled() {

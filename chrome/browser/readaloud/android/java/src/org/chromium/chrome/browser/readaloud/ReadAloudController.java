@@ -345,6 +345,8 @@ public class ReadAloudController
         // Value of dateModified tag or 0
         private final long mDateModified;
         private final PlaybackData mData;
+        // Word to resume from if the saved playback was a NativePlayback. Always null for legacy.
+        private final NativePlayback.@Nullable WordPosition mNativeWordPosition;
 
         /**
          * Constructor.
@@ -391,6 +393,15 @@ public class ReadAloudController
             } else {
                 mPlaying = data == null ? true : data.state() != PAUSED && data.state() != STOPPED;
             }
+
+            // Only capture from the current playback, not from state re-wrapped from another
+            // activity (see onTabSelected()).
+            boolean isCurrentPlaybackData = data != null && data == mCurrentPlaybackData;
+            if (isCurrentPlaybackData && mPlayback instanceof NativePlayback nativePlayback) {
+                mNativeWordPosition = nativePlayback.getCurrentWordPosition();
+            } else {
+                mNativeWordPosition = null;
+            }
         }
 
         Tab getTab() {
@@ -431,7 +442,16 @@ public class ReadAloudController
                                     mPlayerCoordinator.playbackReady(playback, PAUSED);
                                 }
 
+                                // Native only: mNativeWordPosition is always null for legacy.
+                                // The seek is queued before the text: distillation is async,
+                                // and the utility holds seeks received before the text.
                                 if (restorePlaybackPosition
+                                        && mNativeWordPosition != null
+                                        && playback instanceof NativePlayback nativePlayback) {
+                                    nativePlayback.resumeFromWord(mNativeWordPosition);
+                                }
+                                if (restorePlaybackPosition
+                                        && !(playback instanceof NativePlayback)
                                         && (mParagraphIndex != 0 || mOffsetNanos != 0)) {
                                     playback.seekToParagraph(
                                             mParagraphIndex, /* offsetNanos= */ mOffsetNanos);

@@ -623,7 +623,7 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentGapsAreValid) {
 }
 
 TEST_F(ReadAloudPlaybackControllerTest,
-       SeekToWordEmptyTextReportsBadMessageOnZeroOffset) {
+       SeekToWordAfterEmptyTextIsHeldWithoutBadMessage) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   read_aloud::mojom::TextSegmentPtr seg = read_aloud::mojom::TextSegment::New();
@@ -634,11 +634,11 @@ TEST_F(ReadAloudPlaybackControllerTest,
   controller_remote_->SetTextContent(std::move(segments));
   controller_remote_.FlushForTesting();
 
-  // Seeking to chunk 0 when the timeline has 0 chunks reports a BadMessage.
-  mojo::test::BadMessageObserver bad_message_observer;
+  // With no text to validate against, the seek is held instead of being
+  // reported as a bad message.
   controller_remote_->SeekToWord(0, 0);
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "ReadAloudPlaybackController: Invalid segment_index in SeekToWord");
+  controller_remote_.FlushForTesting();
+  EXPECT_TRUE(controller_remote_.is_connected());
 }
 
 TEST_F(ReadAloudPlaybackControllerTest,
@@ -2193,6 +2193,95 @@ TEST_F(ReadAloudPlaybackControllerTest,
                                     PlaybackTimeline::kEstimatedDurationPerChar,
                                 testing::_)));
   mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekToWordBeforeTextContentIsAppliedWhenTextArrives) {
+  CreateSession();
+  controller_remote_->SeekToWord(/*segment_index=*/2, /*character_offset=*/4);
+  FlushAll();
+  EXPECT_TRUE(controller_remote_.is_connected());
+  mock_client_->ClearProgressHistory();
+
+  SetSingleTextSegment(RepeatedSentences(5));
+  FlushAll();
+
+  // The deferred seek lands on "two" in chunk 2 instead of the beginning.
+  EXPECT_THAT(mock_client_->progress_history(),
+              testing::ElementsAre(
+                  testing::Pair((2 * kSentenceLength + 4) *
+                                    PlaybackTimeline::kEstimatedDurationPerChar,
+                                testing::_)));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekToWordBeforeTextContentStartsSynthesisAtTarget) {
+  CreateSession();
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  std::vector<std::u16string> requested_chunks;
+  mock_client_->set_synthesis_handler(base::BindRepeating(
+      [](std::vector<std::u16string>* out_chunks,
+         std::vector<read_aloud::mojom::ReadAloudPlaybackControllerClient::
+                         RequestSpeechSynthesisCallback>* out_callbacks,
+         const std::u16string& text_chunk, read_aloud::mojom::Speaker, uint64_t,
+         read_aloud::mojom::ReadAloudPlaybackControllerClient::
+             RequestSpeechSynthesisCallback callback) {
+        out_chunks->push_back(text_chunk);
+        out_callbacks->push_back(std::move(callback));
+      },
+      &requested_chunks, &held_synthesis_callbacks_));
+
+  // Mirrors restoring a playback: Play() and the seek arrive before the text.
+  controller_remote_->Play();
+  controller_remote_->SeekToWord(/*segment_index=*/2, /*character_offset=*/0);
+  FlushAll();
+  EXPECT_TRUE(requested_chunks.empty());
+
+  SetSingleTextSegment(
+      u"Sentence zero is quite long indeed. "
+      u"Sentence one is quite long indeed. "
+      u"Sentence two is quite long indeed. "
+      u"Sentence three is quite long indeed.");
+  FlushAll();
+
+  // Synthesis starts at the target chunk; earlier chunks are never requested.
+  ASSERT_FALSE(requested_chunks.empty());
+  EXPECT_EQ(requested_chunks.front(), u"Sentence two is quite long indeed.");
+  EXPECT_THAT(
+      requested_chunks,
+      testing::Not(testing::Contains(u"Sentence zero is quite long indeed.")));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       PendingSeekToWordOutOfRangeIsDroppedWithoutBadMessage) {
+  CreateSession();
+  controller_remote_->SeekToWord(/*segment_index=*/99, /*character_offset=*/0);
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  SetSingleTextSegment(RepeatedSentences(2));
+  FlushAll();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::TimeDelta(), testing::_)));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekToTimeBeforeTextContentClearsPendingSeekToWord) {
+  CreateSession();
+  controller_remote_->SeekToWord(/*segment_index=*/2, /*character_offset=*/4);
+  controller_remote_->SeekToTime(base::TimeDelta());
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  SetSingleTextSegment(RepeatedSentences(5));
+  FlushAll();
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::TimeDelta(), testing::_)));
 }
 
 TEST_F(ReadAloudPlaybackControllerTest,

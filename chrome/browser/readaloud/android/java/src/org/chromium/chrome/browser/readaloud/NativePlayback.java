@@ -38,6 +38,17 @@ import org.chromium.content_public.browser.WebContents;
  */
 @NullMarked
 class NativePlayback implements Playback {
+    /** A word position in the native timeline: chunk index and character offset in the chunk. */
+    static final class WordPosition {
+        public final int chunkIndex;
+        public final int charOffset;
+
+        WordPosition(int chunkIndex, int charOffset) {
+            this.chunkIndex = chunkIndex;
+            this.charOffset = charOffset;
+        }
+    }
+
     private final ObserverList<PlaybackListener> mListeners = new ObserverList<>();
     private final NativeMetadata mMetadata;
     private final @Nullable WebContents mWebContents;
@@ -49,6 +60,8 @@ class NativePlayback implements Playback {
     private long mTotalDurationNanos;
     private int mPhraseAbsoluteStartIndex;
     private int mPhraseAbsoluteEndIndex;
+    // True once mPhraseAbsoluteStartIndex/EndIndex hold a word from the current text content.
+    private boolean mHasCurrentWordPosition;
     // False once the native service reports that the current content can't be highlighted
     // (e.g. an overview, whose text isn't on the page).
     private boolean mHighlightingSupported = true;
@@ -159,6 +172,8 @@ class NativePlayback implements Playback {
      */
     void onTextChunked(@Nullable String @Nullable [] chunks) {
         ThreadUtils.assertOnUiThread();
+        // Highlight offsets from previous text content no longer apply.
+        mHasCurrentWordPosition = false;
         if (chunks == null || chunks.length == 0) {
             mMetadata.setFullText("");
             mMetadata.setParagraphs(null);
@@ -251,6 +266,7 @@ class NativePlayback implements Playback {
         }
         mPhraseAbsoluteStartIndex = absoluteStartIndex;
         mPhraseAbsoluteEndIndex = absoluteEndIndex;
+        mHasCurrentWordPosition = true;
         for (PlaybackListener listener : mListeners) {
             listener.onPhraseChanged(mPhraseTiming);
         }
@@ -271,6 +287,36 @@ class NativePlayback implements Playback {
     void initializeSession() {
         ThreadUtils.assertOnUiThread();
         mNativeBridge.initializeSession(mWebContents);
+    }
+
+    /**
+     * Returns the position of the word currently being read, or null if it is unknown (no word
+     * highlight received yet, or highlighting is unsupported, e.g. for an overview).
+     */
+    @Nullable WordPosition getCurrentWordPosition() {
+        ThreadUtils.assertOnUiThread();
+        if (!mHighlightingSupported || !mHasCurrentWordPosition) {
+            return null;
+        }
+        // Highlight offsets are in full text space, where chunks are joined by a separator. Map
+        // the start of the word back to the chunk that contains it.
+        Playback.PlaybackTextPart[] paragraphs = mMetadata.paragraphs();
+        for (int i = paragraphs.length - 1; i >= 0; --i) {
+            Playback.PlaybackTextPart part = paragraphs[i];
+            if (part.getLength() > 0 && part.getOffset() <= mPhraseAbsoluteStartIndex) {
+                return new WordPosition(i, mPhraseAbsoluteStartIndex - part.getOffset());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Starts playback from {@code position} instead of the beginning. Safe to call before the text
+     * content is loaded: the native service keeps the request and applies it before synthesizing.
+     */
+    void resumeFromWord(WordPosition position) {
+        ThreadUtils.assertOnUiThread();
+        mNativeBridge.seekToWord(position.chunkIndex, position.charOffset);
     }
 
     @Override
@@ -321,7 +367,10 @@ class NativePlayback implements Playback {
     @Override
     public void seekToParagraph(int paragraphIndex, long offsetNanos) {
         ThreadUtils.assertOnUiThread();
-        // TODO(b/522834235): Implement paragraph seeking in the native service.
+        // No-op: the native service has no paragraph model. paragraphIndex() is always 0 and
+        // positionInParagraphNanos() is the absolute time, so this request can't be honored.
+        // Restoring a position goes through resumeFromWord() instead.
+        // TODO(b/522838540): Rename or remove when the legacy Playback interface is cleaned up.
     }
 
     @Override
