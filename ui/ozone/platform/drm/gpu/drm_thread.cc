@@ -331,12 +331,17 @@ void DrmThread::GetHardwareCapabilities(
     gfx::AcceleratedWidget widget,
     HardwareCapabilitiesCallback receive_callback) {
   TRACE_EVENT0("drm,hwoverlays", "DrmThread::GetHardwareCapabilities");
-  CHECK(screen_manager_->GetWindow(widget), base::NotFatalUntil::M163);
-  CHECK(device_manager_->GetDrmDevice(widget), base::NotFatalUntil::M163);
-  HardwareDisplayController* hdc =
-      screen_manager_->GetWindow(widget)->GetController();
-  HardwareDisplayPlaneManager* plane_manager =
-      device_manager_->GetDrmDevice(widget)->plane_manager();
+  DrmWindow* window = screen_manager_->GetWindow(widget);
+  scoped_refptr<ui::DrmDevice> drm_device =
+      device_manager_->GetDrmDevice(widget);
+  if (!window || !drm_device) {
+    HardwareCapabilities hardware_capabilities;
+    hardware_capabilities.is_valid = false;
+    std::move(receive_callback).Run(hardware_capabilities);
+    return;
+  }
+  HardwareDisplayController* hdc = window->GetController();
+  HardwareDisplayPlaneManager* plane_manager = drm_device->plane_manager();
 
   if (!hdc || !plane_manager) {
     HardwareCapabilities hardware_capabilities;

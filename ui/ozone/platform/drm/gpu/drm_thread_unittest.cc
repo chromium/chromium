@@ -120,4 +120,31 @@ TEST_F(DrmThreadTest, CheckOverlayCapabilitiesDestroyedWindow) {
   }
 }
 
+// Verifies that we gracefully handle the case where GetHardwareCapabilities()
+// is called on a destroyed window.
+TEST_F(DrmThreadTest, GetHardwareCapabilitiesDestroyedWindow) {
+  gfx::AcceleratedWidget widget = 5;
+  constexpr gfx::Rect bounds(10, 10);
+  AddGraphicsDevice();
+  drm_device_->CreateWindow(widget, bounds);
+  drm_device_->DestroyWindow(widget);
+  drm_device_.FlushForTesting();
+  bool called = false;
+  HardwareCapabilities result;
+  result.is_valid = true;
+  drm_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DrmThread::GetHardwareCapabilities,
+                                base::Unretained(&drm_thread_), widget,
+                                base::BindRepeating(
+                                    [](bool* called, HardwareCapabilities* out,
+                                       HardwareCapabilities capabilities) {
+                                      *called = true;
+                                      *out = std::move(capabilities);
+                                    },
+                                    &called, &result)));
+  drm_thread_.FlushForTesting();
+  EXPECT_TRUE(called);
+  EXPECT_FALSE(result.is_valid);
+}
+
 }  // namespace ui

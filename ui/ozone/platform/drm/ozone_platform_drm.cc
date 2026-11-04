@@ -68,7 +68,10 @@ namespace {
 
 class OzonePlatformDrm : public OzonePlatform {
  public:
-  OzonePlatformDrm() = default;
+  OzonePlatformDrm() {
+    platform_properties_.wait_for_root_compositor_frame_sink_destruction =
+        false;
+  }
   ~OzonePlatformDrm() override = default;
 
   // OzonePlatform:
@@ -273,6 +276,10 @@ class OzonePlatformDrm : public OzonePlatform {
         std::move(user_input_task_runner));
   }
 
+  const PlatformProperties& GetPlatformProperties() override {
+    return platform_properties_;
+  }
+
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
     CHECK(has_initialized_ui() || has_initialized_gpu(),
           base::NotFatalUntil::M163);
@@ -359,6 +366,7 @@ class OzonePlatformDrm : public OzonePlatform {
   std::unique_ptr<DrmCursor> cursor_;
   std::unique_ptr<EventFactoryEvdev> event_factory_ozone_;
   std::unique_ptr<DrmDisplayHostManager> display_manager_;
+  PlatformProperties platform_properties_;
   PlatformRuntimeProperties host_properties_;
 
   base::WeakPtrFactory<OzonePlatformDrm> weak_factory_{this};

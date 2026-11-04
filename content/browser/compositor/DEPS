@@ -1,5 +1,6 @@
 include_rules = [
  "+components/viz/common",
  "+components/viz/host",
+ "+ui/ozone/public/ozone_platform.h",
  "+ui/platform_window",
 ]

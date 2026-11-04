@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -61,12 +62,22 @@
 #include "ui/display/mac/display_link_mac.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(IS_OZONE)
+
 namespace content {
 namespace {
 
 // The client id for the browser process. It must not conflict with any
 // child process client id.
 constexpr uint32_t kBrowserClientId = 0u;
+
+#if BUILDFLAG(IS_OZONE)
+// TODO(b/581771255): Kill switch, remove once M159 hits Stable.
+BASE_FEATURE(kSkipWaitForRootCompositorFrameSinkDestruction,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_OZONE)
 
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
@@ -466,6 +477,15 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   // CompositorFrameSink.
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params), !using_direct_composition);
+#elif BUILDFLAG(IS_OZONE)
+  const bool wait_on_destruction =
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .wait_for_root_compositor_frame_sink_destruction ||
+      !base::FeatureList::IsEnabled(
+          kSkipWaitForRootCompositorFrameSinkDestruction);
+  GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
+      std::move(root_params), wait_on_destruction);
 #else
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params));

@@ -164,6 +164,14 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // TODO(https://crbug.com/500609035): Remove when active gpu device info is
     // passed to media.
     bool webgpu_on_vulkan_via_gl_interop = false;
+
+    // Whether the browser must wait synchronously for the GPU/Viz root
+    // CompositorFrameSink (and its viz::Display) to be destroyed before
+    // destroying the PlatformWindow. Platforms with surfaceless DMA-BUF
+    // presentation (such as Ozone-DRM) do not bind an OS window to an
+    // EGL/Vulkan surface and handle asynchronous window removal on the GPU
+    // side.
+    bool wait_for_root_compositor_frame_sink_destruction = true;
   };
 
   // Groups platform properties that can only be known at run time.
