@@ -473,13 +473,12 @@ suite('OrganizerPanelAppTest', () => {
         assertEquals(lastSection.$.header.$.menuButton, getDeepActiveElement());
 
         // When not in tray view (without close button): Tab forwards
-        // focus-after-list without preventDefault, and expandButton has
-        // tabindex=-1 so focus is not trapped within the header.
+        // focus-after-list without preventDefault, and menuButton follows
+        // expandButton in DOM order so focus is not trapped within the header.
         app.inTrayView = false;
         await microtasksFinished();
 
         lastSection.$.header.focusMenuButton();
-        lastSection.$.header.$.menuButton.dispatchEvent(new Event('focus'));
         await microtasksFinished();
 
         const withoutCloseEvent = new KeyboardEvent('keydown', {
@@ -491,11 +490,10 @@ suite('OrganizerPanelAppTest', () => {
         lastSection.$.header.$.menuButton.dispatchEvent(withoutCloseEvent);
         await microtasksFinished();
         assertFalse(withoutCloseEvent.defaultPrevented);
-        assertEquals(-1, lastSection.$.header.$.expandButton.tabIndex);
-        assertEquals(
-            '-1',
-            lastSection.$.header.$.expandButton.$.icon.getAttribute(
-                'tabindex'));
+        assertTrue(Boolean(
+            lastSection.$.header.$.expandButton.compareDocumentPosition(
+                lastSection.$.header.$.menuButton) &
+            Node.DOCUMENT_POSITION_FOLLOWING));
 
         // When in tray view (with close button): Tab focuses close
         // button and prevents default.

@@ -12,6 +12,7 @@
   border-radius: 8px;
   display: flex;
   height: 38px;
+  position: relative;
 }
 
 :host(:not([disabled]):hover),
@@ -39,6 +40,7 @@
   font-weight: 500;
   height: 100%;
   line-height: 18px;
+  min-width: 0;
   padding-block: 0;
   padding-inline-end: 4px;
   padding-inline-start: 8px;
@@ -56,20 +58,16 @@
   outline: none;
 }
 
+:host([expanded]:not([disabled])) #expandButton::part(icon) {
+  margin-inline-start: 32px;
+}
+
 #expandButton[disabled]::part(icon) {
   display: none;
 }
 
-#headerContent {
-  align-items: center;
-  display: flex;
-  height: 100%;
-  justify-content: space-between;
-  width: 100%;
-}
-
 #headerTitle {
-  flex: 1;
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -84,6 +82,8 @@
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-size: 32px;
   display: none;
+  inset-inline-end: 36px;
+  position: absolute;
 }
 
 :host([expanded]:not([disabled])) #menuButton {

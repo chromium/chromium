@@ -97,8 +97,15 @@ suite('OrganizerListSectionHeaderTest', () => {
 
   test('shows menu button only when expanded and enabled', async () => {
     const menuButton = header.$.menuButton;
+    const expandIcon = header.$.expandButton.$.icon;
 
     assertTrue(isVisible(menuButton));
+    assertTrue(
+        header.$.headerTitle.getBoundingClientRect().right <=
+        menuButton.getBoundingClientRect().left);
+    assertEquals(
+        menuButton.getBoundingClientRect().right,
+        expandIcon.getBoundingClientRect().left);
 
     header.expanded = false;
     await microtasksFinished();
