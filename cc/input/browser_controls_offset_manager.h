@@ -133,10 +133,10 @@ class CC_EXPORT BrowserControlsOffsetManager
   bool top_min_height_change_in_progress_;
   bool bottom_min_height_change_in_progress_;
 
-  // Minimum and maximum values |top_controls_min_height_offset_| can take
+  // Minimum and maximum values TopControlsMinHeightOffset() can take
   // during the current min-height change animation.
   std::optional<std::pair<float, float>> top_min_height_offset_animation_range_;
-  // Minimum and maximum values |bottom_controls_min_height_offset_| can take
+  // Minimum and maximum values BottomControlsMinHeightOffset() can take
   // during the current min-height change animation.
   std::optional<std::pair<float, float>>
       bottom_min_height_offset_animation_range_;

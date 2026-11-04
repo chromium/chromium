@@ -169,6 +169,18 @@ class CC_EXPORT BrowserControlsOffsetManagerInterface {
                                              BrowserControlsState current,
                                              bool animate) = 0;
 
+  BrowserControlsOffsetManagerClient& client() const { return *client_; }
+
+  BrowserControlsState permitted_state() const { return permitted_state_; }
+
+  void set_top_controls_min_height_offset(float offset) {
+    top_controls_min_height_offset_ = offset;
+  }
+  void set_bottom_controls_min_height_offset(float offset) {
+    bottom_controls_min_height_offset_ = offset;
+  }
+
+ private:
   // The client manages the lifecycle of this.
   raw_ptr<BrowserControlsOffsetManagerClient> client_;
 
