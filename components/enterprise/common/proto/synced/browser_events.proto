@@ -447,6 +447,39 @@ message UrlInfo {
   string request_http_method = 8;
 }
 
+// Metadata about a Google Drive classification label applied to a file.
+// Next ID: 3.
+message GoogleLabel {
+  // The unique identifier (GUID) of the Google Drive label.
+  string id = 1
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  message Attributes {
+    // Selected field or choice IDs for a label attribute.
+    repeated string attribute_selections = 1
+        // copybara:datapol_begin
+        // [
+        //   (datapol.semantic_type) = ST_STRUCTURED_ADMIN_SETTING
+        // ]
+        // copybara:datapol_end
+        ;
+  }
+
+  // Map from label field ID to its attributes.
+  map<string, Attributes> attributes = 2
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_STRUCTURED_ADMIN_SETTING
+      // ]
+      // copybara:datapol_end
+      ;
+}
+
 // A message for reporting password reuse events.
 // Next ID: 18.
 message SafeBrowsingPasswordReuseEvent {
@@ -774,7 +807,7 @@ message SafeBrowsingInterstitialEvent {
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 40.
+// Next ID: 42.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -926,6 +959,16 @@ message DlpSensitiveDataEvent {
       // ]
       // copybara:datapol_end
       ;
+
+  // The Google Drive classification labels for the file associated with the
+  // URL in the request. Only present when the URL refers to a Google Drive
+  // file.
+  repeated GoogleLabel google_labels = 40;
+
+  // The Google Drive classification labels for the file associated with the
+  // URL of the copied text in the request for paste event only. Only present
+  // when the URL of the copied text refers to a Google Drive file.
+  repeated GoogleLabel source_google_labels = 41;
 }
 
 // Event where a large file could not be scanned for analysis e.g. malware or
@@ -1371,7 +1414,7 @@ message BrowserCrashEvent {
   repeated SecurityAgent security_agents = 7;
 }
 
-// Next ID: 16.
+// Next ID: 17.
 message UrlFilteringInterstitialEvent {
   // Top level URL that triggers this interstitial.
   string url = 1;
@@ -1449,6 +1492,11 @@ message UrlFilteringInterstitialEvent {
       // [(datapol.semantic_type) = ST_USER_CONTENT]
       // copybara:datapol_end
       ;
+
+  // The Google Drive classification labels for the file associated with the
+  // URL that triggered the event. Only present when the URL refers to a Google
+  // Drive file.
+  repeated GoogleLabel google_labels = 16;
 }
 
 // Next ID: 5
