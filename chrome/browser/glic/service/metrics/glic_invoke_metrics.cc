@@ -95,6 +95,7 @@ glic::GlicCuiOutcome MapInvokeErrorToCuiOutcome(GlicInvokeError error) {
     case GlicInvokeError::kInstanceDestroyedSignedOut:
     case GlicInvokeError::kInstanceDestroyedShutdown:
     case GlicInvokeError::kPanelClosed:
+    case GlicInvokeError::kSignInRequired:
       return glic::GlicCuiOutcome::kAbandoned;
     default:
       return glic::GlicCuiOutcome::kFailed;

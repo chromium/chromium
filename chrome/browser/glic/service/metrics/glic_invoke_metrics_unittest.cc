@@ -431,6 +431,7 @@ TEST_F(GlicInvokeMetricsCuiTrackerTest, ErrorsResolveTheMappedOutcome) {
       {GlicInvokeError::kTabClosed, GlicCuiOutcome::kAbandoned},
       {GlicInvokeError::kInstanceDestroyedBlankInstanceClosed,
        GlicCuiOutcome::kAbandoned},
+      {GlicInvokeError::kSignInRequired, GlicCuiOutcome::kAbandoned},
       {GlicInvokeError::kClientLoadError, GlicCuiOutcome::kFailed},
       {GlicInvokeError::kProfileNotEnabled, GlicCuiOutcome::kFailed},
   };
