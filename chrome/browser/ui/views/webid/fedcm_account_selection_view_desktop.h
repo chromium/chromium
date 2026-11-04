@@ -430,10 +430,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // the background, becomes foregrounded.
   void BackgroundTaskTabForegrounded(tabs::TabInterface* tab);
 
-  // Runs `notify_callback` while guarding against `this` being deleted, e.g. by
+  // Runs `callback` while guarding against `this` being deleted, e.g. by
   // a delegate method or by closing the pop-up window. Returns false if `this`
   // got deleted. In that case, the caller must early return.
-  [[nodiscard]] bool NotifyDelegate(base::FunctionRef<void()> notify_callback);
+  [[nodiscard]] bool RunAndCheckAlive(base::FunctionRef<void()> callback);
 
   // Shows the verifying sheet.
   void ShowVerifyingSheet(const IdentityRequestAccountPtr& account);

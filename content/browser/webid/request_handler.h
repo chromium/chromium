@@ -451,14 +451,15 @@ class CONTENT_EXPORT RequestHandler
 
   blink::mojom::RpMode GetRpMode() const { return req_->rp_mode(); }
 
-  // Runs `show_dialog_callback`, a call to the dialog controller. Returns true
+  // Runs `callback`, a call to the dialog controller. Returns true
   // if it returned true, the `RequestHandler` was not destroyed, and its
   // request did not complete. Dialog calls may destroy this `RequestHandler`:
   // showing a FedCM UI may cause the tab to drop fullscreen or lose focus,
   // during which the frame may be detached, and closing the pop-up may
   // activate another tab, which can close a window that hosts the RP's frame.
   // If this returns false, the caller must return early.
-  [[nodiscard]] bool ShowDialog(base::FunctionRef<bool()> show_dialog_callback);
+  [[nodiscard]] bool RunDialogCallAndCheckAlive(
+      base::FunctionRef<bool()> callback);
 
   // If the client metadata has not been received yet the UI may not be able to
   // show a correct title, so we need to indicate that in the RelyingPartyData.

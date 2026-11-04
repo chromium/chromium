@@ -443,7 +443,7 @@ bool RequestHandler::RequestToken(scoped_refptr<Request> req,
             ? FormatOriginForDisplay(url::Origin::Create(req_->idp_order()[0]))
             : "";
     blink::mojom::RpContext rp_context = req_->rp_context();
-    if (!ShowDialog([&]() {
+    if (!RunDialogCallAndCheckAlive([&]() {
           return GetDialogController()->ShowLoadingDialog(
               CreateRpData(/*client_metadata_received=*/false), idp_for_display,
               rp_context, req_->rp_mode(),
@@ -1025,7 +1025,7 @@ void RequestHandler::MaybeShowAccountsDialog() {
   if (identity_selection_type_ != kExplicit) {
     OnAccountSelected(accounts_[0]->identity_provider->idp_metadata.config_url,
                       accounts_[0]->id, /*is_sign_in=*/true);
-    shown = ShowDialog([&]() {
+    shown = RunDialogCallAndCheckAlive([&]() {
       return GetDialogController()->ShowVerifyingDialog(
           CreateRpData(/*client_metadata_received=*/true), auto_reauthn.idp,
           accounts_[0], SignInMode::kAuto, req_->rp_mode(),
@@ -1033,7 +1033,7 @@ void RequestHandler::MaybeShowAccountsDialog() {
                          weak_ptr_factory_.GetWeakPtr()));
     });
   } else {
-    shown = ShowDialog([&]() {
+    shown = RunDialogCallAndCheckAlive([&]() {
       return GetDialogController()->ShowAccountsDialog(
           CreateRpData(/*client_metadata_received=*/true),
           idp_data_for_display_, accounts_, filtered_accounts_, req_->rp_mode(),
@@ -1128,7 +1128,7 @@ void RequestHandler::NotifyAutofillSuggestionAccepted(
   // before we can call ShowAccountsDialog() to create the internal state
   // necessary in the dialog controller. We should probably be able to create
   // the internal state on demand in case it isn't available.
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         return GetDialogController()->ShowLoadingDialog(
             CreateRpData(/*client_metadata_received=*/true),
             FormatOriginForDisplay(url::Origin::Create(idp)),
@@ -1155,7 +1155,7 @@ void RequestHandler::NotifyAutofillSuggestionAccepted(
   for (const auto& account : selected) {
     account->display_priority = IdentityRequestAccount::DisplayPriority::kNew;
   }
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         return GetDialogController()->ShowAccountsDialog(
             CreateRpData(/*client_metadata_received=*/true),
             idp_data_for_display_, selected, filtered_accounts_,
@@ -1266,7 +1266,7 @@ void RequestHandler::ShowSingleIdpFailureDialog() {
                    !idp_info->provider->domain_hint.empty() ||
                    !idp_info->metadata.requested_label.empty();
 
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         return GetDialogController()->ShowFailureDialog(
             CreateRpData(/*client_metadata_received=*/true),
             FormatOriginForDisplay(idp_origin), idp_info->rp_context,
@@ -1555,7 +1555,7 @@ void RequestHandler::ShowModalDialog(DialogType dialog_type,
   };
 
   WebContents* web_contents = nullptr;
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         web_contents = GetDialogController()->ShowModalDialog(
             url_to_show, req_->rp_mode(),
             base::BindOnce(&RequestHandler::OnDialogDismissed,
@@ -1725,7 +1725,7 @@ void RequestHandler::ShowErrorDialog(const GURL& idp_config_url,
   token_error_ = token_error;
 
   // TODO(crbug.com/40282657): Refactor IdentityCredentialTokenError
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         return GetDialogController()->ShowErrorDialog(
             CreateRpData(/*client_metadata_received=*/true),
             FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
@@ -2124,13 +2124,13 @@ IdentityRequestDialogController* RequestHandler::GetDialogController() {
   return request_service_->GetOrCreateDialogController();
 }
 
-bool RequestHandler::ShowDialog(
-    base::FunctionRef<bool()> show_dialog_callback) {
+bool RequestHandler::RunDialogCallAndCheckAlive(
+    base::FunctionRef<bool()> callback) {
   // Showing a FedCM UI may cause the tab to drop fullscreen or lose focus,
   // during which the frame may be detached and this RequestHandler destroyed.
   // Check that the RequestHandler is still alive before returning true.
   base::WeakPtr<RequestHandler> weak_this = weak_ptr_factory_.GetWeakPtr();
-  if (!show_dialog_callback()) {
+  if (!callback()) {
     return false;
   }
   return weak_this != nullptr;
@@ -2142,7 +2142,7 @@ base::WeakPtr<RequestHandler> RequestHandler::GetWeakPtr() {
 
 void RequestHandler::OnClose() {
   CHECK(request_service_->GetDialogController());
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         request_service_->GetDialogController()->CloseModalDialog();
         return true;
       })) {
@@ -2190,7 +2190,7 @@ bool RequestHandler::OnResolve(GURL idp_config_url,
     return false;
   }
 
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         controller->CloseModalDialog();
         return true;
       })) {
@@ -2357,7 +2357,7 @@ void RequestHandler::OnNativeAppResult(
 }
 
 void RequestHandler::OnNativeAppLoginFinished(const GURL& idp_config_url) {
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         GetDialogController()->CloseModalDialog();
         return true;
       })) {
@@ -2436,7 +2436,7 @@ void RequestHandler::ClickErrorDialogGotItForDevtools() {
 void RequestHandler::ClickErrorDialogMoreDetailsForDevtools() {
   CHECK(token_error_ && token_error_->url.is_valid(),
         base::NotFatalUntil::M163);
-  if (!ShowDialog([&]() {
+  if (!RunDialogCallAndCheckAlive([&]() {
         ShowModalDialog(DialogType::kErrorUrlPopup, config_url_,
                         token_error_->url);
         return true;
