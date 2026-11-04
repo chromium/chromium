@@ -144,7 +144,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
-                            ProfileDataCache.createWithoutBadge(
+                            ProfileDataCache.create(
                                     sActivity, mIdentityManager, R.dimen.user_picture_size);
                 });
         CriteriaHelper.pollUiThread(

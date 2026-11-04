@@ -376,7 +376,7 @@ final class SigninButtonMediator
                             aiTierRingThicknessPx);
         } else {
             mProfileDataCache =
-                    ProfileDataCache.createWithoutBadge(
+                    ProfileDataCache.create(
                             mContext, mIdentityManager, R.dimen.toolbar_identity_disc_size);
         }
         mProfileDataCache.addObserver(this);

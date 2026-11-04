@@ -83,7 +83,7 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                         .withYPosition(R.dimen.enterprise_signals_disclaimer_badge_y_position)
                         .build(context);
         mProfileDataCache =
-                ProfileDataCache.createWithoutBadge(
+                ProfileDataCache.create(
                         context,
                         identityManager,
                         R.dimen.enterprise_signals_disclaimer_profile_picture_size);

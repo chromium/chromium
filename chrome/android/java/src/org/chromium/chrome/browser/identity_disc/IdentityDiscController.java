@@ -285,7 +285,7 @@ public class IdentityDiscController
                             aiTierRingThicknessPx);
         } else {
             mProfileDataCache =
-                    ProfileDataCache.createWithoutBadge(
+                    ProfileDataCache.create(
                             mContext, identityManager, R.dimen.toolbar_identity_disc_size);
         }
         mProfileDataCache.addObserver(this);

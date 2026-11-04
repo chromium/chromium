@@ -422,7 +422,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             ringThickness);
         } else {
             profileDataCache =
-                    ProfileDataCache.createWithoutBadge(
+                    ProfileDataCache.create(
                             getContext(), identityManager, R.dimen.account_management_picture_size);
         }
         centralAccountCardPreference.initialize(

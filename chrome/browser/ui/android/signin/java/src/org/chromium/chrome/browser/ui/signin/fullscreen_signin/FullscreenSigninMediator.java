@@ -437,7 +437,7 @@ class FullscreenSigninMediator
         // A separate cache is used because scaling a 110dp image back down to 40dp for the
         // "Continue" button would make the child account badge nearly invisible.
         mSigninAnimationProfileDataCache =
-                ProfileDataCache.createWithoutBadge(
+                ProfileDataCache.create(
                         mContext, identityManager, R.dimen.fullscreen_signin_logo_default_height);
         mSigninAnimationProfileDataCache.addObserver(mSigninAnimationObserver);
         updateSelectedAccountData();

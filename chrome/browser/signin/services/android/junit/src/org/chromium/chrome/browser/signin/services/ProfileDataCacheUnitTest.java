@@ -1187,7 +1187,7 @@ public class ProfileDataCacheUnitTest {
     @Test
     public void testPlaceholderImageMatchesImageSize() {
         mProfileDataCache =
-                ProfileDataCache.createWithoutBadge(
+                ProfileDataCache.create(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager(),
                         R.dimen.user_picture_size);

@@ -54,7 +54,7 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
                         IdentityServicesProvider.get()
                                 .getIdentityManager(profile.getOriginalProfile()));
         mProfileDataCache =
-                ProfileDataCache.createWithoutBadge(
+                ProfileDataCache.create(
                         context, mIdentityManager, R.dimen.contact_picker_icon_size);
     }
 

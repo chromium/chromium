@@ -299,7 +299,7 @@ public class AccountMenuMediator
     private void addIdentityCard(IdentityManager identityManager, AccountInfo accountInfo) {
         if (mProfileDataCache == null) {
             mProfileDataCache =
-                    ProfileDataCache.createWithoutBadge(
+                    ProfileDataCache.create(
                             mContext, identityManager, R.dimen.account_menu_avatar_size);
             mProfileDataCache.addObserver(this);
         }
