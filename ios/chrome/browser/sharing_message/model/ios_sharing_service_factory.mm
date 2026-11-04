@@ -73,8 +73,7 @@ IOSSharingServiceFactory::IOSSharingServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-
+    ProfileIOS& profile) const {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
@@ -85,13 +84,13 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
   auto sync_prefs = std::make_unique<SharingSyncPreference>(
-      profile->GetPrefs(), device_info_sync_service);
+      profile.GetPrefs(), device_info_sync_service);
 
   instance_id::InstanceIDProfileService* instance_id_service =
       IOSChromeInstanceIDProfileServiceFactory::GetForProfile(profile);
   auto sharing_device_registration =
       std::make_unique<IOSSharingDeviceRegistrationImpl>(
-          profile->GetPrefs(), sync_prefs.get(), instance_id_service->driver(),
+          profile.GetPrefs(), sync_prefs.get(), instance_id_service->driver(),
           sync_service);
 
   SharingMessageBridge* message_bridge =
@@ -106,7 +105,7 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   auto channel_sender = std::make_unique<SharingChannelSender>(
       message_bridge, gcm_driver, device_info_tracker,
       local_device_info_provider, sync_service,
-      ios::sync_start_util::GetFlareForSyncableService(profile));
+      ios::sync_start_util::GetFlareForSyncableService(&profile));
   SharingChannelSender* channel_sender_ptr = channel_sender.get();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =

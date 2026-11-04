@@ -28,9 +28,9 @@ SessionRestorationServiceFactory::SessionRestorationServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SessionRestorationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<SessionRestorationServiceImpl>(
-      kSaveDelay, IsPinnedTabsEnabled(), profile->GetStatePath(),
+      kSaveDelay, IsPinnedTabsEnabled(), profile.GetStatePath(),
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));

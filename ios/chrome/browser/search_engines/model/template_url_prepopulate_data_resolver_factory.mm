@@ -28,9 +28,9 @@ TemplateURLPrepopulateDataResolverFactory::
 
 std::unique_ptr<KeyedService>
 TemplateURLPrepopulateDataResolverFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<TemplateURLPrepopulateData::Resolver>(
-      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(profile.GetPrefs()),
       CHECK_DEREF(
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)));
 }

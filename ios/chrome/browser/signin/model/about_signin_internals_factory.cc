@@ -27,7 +27,7 @@ AboutSigninInternalsFactory::AboutSigninInternalsFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AboutSigninInternalsFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   std::unique_ptr<AboutSigninInternals> service(new AboutSigninInternals(
       IdentityManagerFactory::GetForProfile(profile),
       SigninErrorControllerFactory::GetForProfile(profile),

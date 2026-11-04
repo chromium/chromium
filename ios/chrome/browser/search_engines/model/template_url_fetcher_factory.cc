@@ -21,7 +21,7 @@ TemplateURLFetcherFactory::TemplateURLFetcherFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-TemplateURLFetcherFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+TemplateURLFetcherFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<TemplateURLFetcher>(
       TemplateURLServiceFactory::GetForProfile(profile));
 }

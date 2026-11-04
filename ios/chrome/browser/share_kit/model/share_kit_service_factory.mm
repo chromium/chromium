@@ -31,8 +31,8 @@ ShareKitServiceFactory::ShareKitServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  CHECK(!profile.IsOffTheRecord());
 
   collaboration::CollaborationService* collaboration_service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);

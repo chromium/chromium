@@ -19,8 +19,7 @@ IOSSharingMessageBridgeFactory::IOSSharingMessageBridgeFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSSharingMessageBridgeFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-
+    ProfileIOS& profile) const {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SHARING_MESSAGE,
