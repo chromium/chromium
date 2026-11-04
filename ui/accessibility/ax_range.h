@@ -129,10 +129,10 @@ class AXRange final {
   //   nullopt - If positions are not comparable (see AXPosition::CompareTo).
   static std::optional<int> CompareEndpoints(const AXPositionType* first,
                                              const AXPositionType* second) {
-    // TODO(crbug.com/580191612): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
+    // TODO(crbug.com/579995794, crbug.com/580191612): CHECK-exclusion: Convert
+    // to a CHECK once we are confident it won't be triggered.
     DCHECK(first->IsValid());
-    CHECK(second->IsValid(), base::NotFatalUntil::M163);
+    DCHECK(second->IsValid());
     std::optional<int> tree_position_comparison =
         first->AsTreePosition()->CompareTo(*second->AsTreePosition());
 
