@@ -121,8 +121,12 @@ void PassageEmbedderDelegate::OnTimeout() {
   VLOG(1) << "[PermissionsAIv4] PassageEmbedderDelegate::OnTimeout";
   PermissionUmaUtil::RecordPassageEmbeddingsCalculationTimeout(
       /*timeout=*/true);
-  if (fallback_callback_) {
-    std::move(fallback_callback_).Run();
+  // Drop the job and the callbacks, so that a late result can't run either
+  // callback after the fallback.
+  base::OnceClosure fallback_callback = std::move(fallback_callback_);
+  Reset();
+  if (fallback_callback) {
+    std::move(fallback_callback).Run();
   }
 }
 
@@ -132,9 +136,6 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
     std::vector<passage_embeddings::Embedding> embeddings,
     uint64_t job_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
-  timeout_timer_.Stop();
-  PermissionUmaUtil::RecordPassageEmbeddingsCalculationTimeout(
-      /*timeout=*/false);
   bool succeeded =
       status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
 
@@ -145,20 +146,42 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
   VLOG(1) << "[PermissionsAIv4]: TextEmbedding computed with "
           << (succeeded ? "" : "no ") << "success.";
 
-  if (!succeeded || passages.empty()) {
-    if (passage_embeddings_job_ && passage_embeddings_job_->id() == job_id) {
-      passage_embeddings_job_.reset();
+  // The result can belong to a job that no longer has a request waiting for
+  // it. That happens when Reset() or OnTimeout() dropped the job, or when a
+  // newer request replaced it (the TryCancel branch in
+  // CreatePassageEmbeddingsFromRenderedText()). Cancelling can deliver
+  // kCanceled. We check `job_id` before touching the timer or callbacks.
+  if (passage_embeddings_job_ && passage_embeddings_job_->id() != job_id) {
+    // A newer request replaced this job. Leave that request's timer and
+    // callbacks alone.
+    if (succeeded && !passages.empty()) {
+      PermissionUmaUtil::RecordFinishedPassageEmbeddingsJobOutdated(
+          PredictionModelType::kOnDeviceAiV4Model, /*outdated=*/true);
     }
-    return std::move(fallback_callback_).Run();
+    return;
+  }
+  PermissionUmaUtil::RecordPassageEmbeddingsCalculationTimeout(
+      /*timeout=*/false);
+  timeout_timer_.Stop();
+
+  if (!succeeded || passages.empty()) {
+    passage_embeddings_job_.reset();
+    // The fallback callback is gone if the request already finished, e.g.
+    // after Reset() or OnTimeout().
+    if (fallback_callback_) {
+      std::move(fallback_callback_).Run();
+    }
+    return;
   }
 
-  bool is_outdated_job =
-      !passage_embeddings_job_ || passage_embeddings_job_->id() != job_id;
+  bool is_outdated_job = !passage_embeddings_job_;
   PermissionUmaUtil::RecordFinishedPassageEmbeddingsJobOutdated(
       PredictionModelType::kOnDeviceAiV4Model, is_outdated_job);
   if (is_outdated_job) {
-    // If the job ID is different, a new permission request has started
-    // in the meantime and the request that started this call is stale.
+    // Reset() and OnTimeout() drop the job, so no request is waiting for this
+    // result. The job is also unset if the embedder replied synchronously from
+    // ComputePassagesEmbeddings(); that result is dropped and the timeout
+    // falls back.
     return;
   }
   passage_embeddings_job_.reset();
@@ -167,6 +190,9 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
     std::move(fallback_callback_).Run();
     return;
   }
+
+  // An older job that fails after this success must not run the fallback.
+  fallback_callback_.Reset();
 
   if (embeddings.size() == 1) {
     std::move(on_passage_embeddings_computed_).Run(embeddings[0].GetData());
