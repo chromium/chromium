@@ -677,4 +677,52 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         isTabletOrLandscape = containerViewModel.get(IS_TABLET_OR_LANDSCAPE);
         assertFalse(isTabletOrLandscape);
     }
+
+    @Test
+    public void testGetTabGridDialogAnimationSourceView_UnknownGroup_ReturnsNull() {
+        Token unknownGroupId = new Token(123L, 456L);
+        doReturn(Collections.emptyList()).when(mTabModel).getTabsInGroup(unknownGroupId);
+
+        assertNull(mCoordinator.getTabGridDialogAnimationSourceView(unknownGroupId));
+    }
+
+    @Test
+    public void testGetTabGridDialogAnimationSourceView_NoViewHolder_ReturnsNull() {
+        // The recycler view has not been laid out, so no view holder exists for the card.
+        setUpTabInGroup(new Token(1L, 2L));
+
+        assertNull(mCoordinator.getTabGridDialogAnimationSourceView(new Token(1L, 2L)));
+    }
+
+    @Test
+    public void testGetTabGridDialogAnimationSourceView_ViewHolderExists_ReturnsView() {
+        mIsVisibleSupplier.set(true);
+        Token tabGroupId = new Token(1L, 2L);
+        setUpTabInGroup(tabGroupId);
+
+        TabListRecyclerView recyclerView = mActivity.findViewById(R.id.tab_list_recycler_view);
+        // Manually size the view so that the children get added this is to work around robolectric
+        // view testing limitations.
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 100, 1000);
+        assertEquals(1, recyclerView.getChildCount());
+        assertNotNull(mCoordinator.getTabGridDialogAnimationSourceView(tabGroupId));
+
+        mIsVisibleSupplier.set(false);
+    }
+
+    private void setUpTabInGroup(Token tabGroupId) {
+        MockTab tab = MockTab.createAndInitialize(/* id= */ 1, mProfile);
+        tab.setIsInitialized(true);
+        mTabModel.addTab(
+                tab,
+                /* index= */ 0,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        tab.setTabGroupId(tabGroupId);
+        doReturn(true).when(mTabModel).isTabInTabGroup(tab);
+        doReturn(List.of(tab)).when(mTabModel).getTabsInGroup(tabGroupId);
+        doReturn(List.of(tab)).when(mTabModel).getRelatedTabList(1);
+        mCoordinator.resetWithListOfTabs(List.of(tab));
+    }
 }

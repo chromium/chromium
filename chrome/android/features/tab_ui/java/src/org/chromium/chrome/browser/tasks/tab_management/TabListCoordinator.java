@@ -1079,6 +1079,11 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         return mMediator.getIndexForTabIdWithRelatedTabs(tabId);
     }
 
+    /** Maps a tab group ID to an index in the model list. */
+    int getIndexFromTabGroupId(Token tabGroupId) {
+        return mMediator.getIndexFromTabGroupId(tabGroupId);
+    }
+
     /**
      * This is used to handle a long press event coming from the ItemTouchHelper, and allows us to
      * trigger an external drag start by using the initial touch point position.

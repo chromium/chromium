@@ -7732,6 +7732,35 @@ public class TabListMediatorUnitTest {
         assertNull(mMediator.getModelFromTabId(99999));
     }
 
+    @Test
+    public void testGetIndexFromTabGroupId_GroupCardPresent() {
+        initAndAssertAllProperties();
+        PropertyModel groupCardModel = mModelList.get(1).model;
+        groupCardModel.set(CARD_TYPE, TAB_GROUP);
+        groupCardModel.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+
+        assertEquals(1, mMediator.getIndexFromTabGroupId(TAB_GROUP_ID));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testGetIndexFromTabGroupId_FallsBackToFirstTabInGroup() {
+        initAndAssertAllProperties();
+        // No group card exists, but the group's first tab is shown as a representative tab card.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
+
+        assertEquals(1, mMediator.getIndexFromTabGroupId(TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testGetIndexFromTabGroupId_NotFound() {
+        initAndAssertAllProperties();
+
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX,
+                mMediator.getIndexFromTabGroupId(new Token(12345L, 6789L)));
+    }
+
     // TabListDataProvider consumer tests.
 
     @Test
