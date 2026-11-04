@@ -47,6 +47,9 @@ luci.bucket(
                 # NOTE: Please get explicit approval from Chrome resource owners
                 # before adding projects here, as Chromium's machine resources
                 # are primarily for Chromium.
+                # BoringSSL may trigger Chromium builds on a limited set of
+                # builders by opt-in only.
+                "boringssl-scoped@luci-project-accounts.iam.gserviceaccount.com",
                 # Dawn traffic into Chromium is contained within GPU-specific
                 # pools.
                 "dawn-scoped@luci-project-accounts.iam.gserviceaccount.com",
