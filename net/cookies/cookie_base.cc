@@ -217,6 +217,16 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
     }
   }
 
+  // Don't include cookies for requests that have an invalid host.
+  if (!cookie_util::IsCookieUrlHostValid(url)) {
+    if (base::FeatureList::IsEnabled(features::kCookieRequireCompliantHost)) {
+      status.AddExclusionReason(
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST);
+    } else {
+      status.AddWarningReason(
+          CookieInclusionStatus::WarningReason::WARN_INVALID_HOST);
+    }
+  }
   // Don't include cookies for requests that don't apply to the cookie domain.
   if (!IsDomainMatch(url.host())) {
     status.AddExclusionReason(
@@ -317,6 +327,15 @@ CookieAccessResult CookieBase::IsSetPermittedInContext(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_NONCOOKIEABLE_SCHEME);
   }
 
+  if (!cookie_util::IsCookieUrlHostValid(source_url)) {
+    if (base::FeatureList::IsEnabled(features::kCookieRequireCompliantHost)) {
+      access_result.status.AddExclusionReason(
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST);
+    } else {
+      access_result.status.AddWarningReason(
+          CookieInclusionStatus::WarningReason::WARN_INVALID_HOST);
+    }
+  }
   if (!IsDomainMatch(source_url.host())) {
     access_result.status.AddExclusionReason(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH);

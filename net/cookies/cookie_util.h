@@ -119,6 +119,13 @@ NET_EXPORT std::optional<std::string> GetCookieDomainWithString(
     std::string_view domain_string,
     CookieInclusionStatus& status);
 
+// Returns true if `url`'s host is valid for setting or retrieving cookies per
+// rfc6265bis §5.1.2. For HTTP/HTTPS/WS/WSS URLs with non-IP hosts, requires a
+// DNS-compliant canonicalized host (via `net::IsCanonicalizedHostCompliant()`).
+// Non-web schemes (e.g. `file://`, `chrome-extension://`) and IP literals are
+// considered valid.
+NET_EXPORT bool IsCookieUrlHostValid(const GURL& url);
+
 // Returns true if a domain string represents a host-only cookie,
 // i.e. it doesn't begin with a leading '.' character.
 NET_EXPORT bool DomainIsHostOnly(std::string_view domain_string);

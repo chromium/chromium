@@ -5390,6 +5390,8 @@ enum WebFeature {
   kBeforeUnloadDialogBlockedUnloadWithSameSiteFormEdit = 6071,
   kBeforeUnloadDialogBlockedUnloadWithCrossSiteFormEdit = 6072,
   kHTMLMediaElementMutedAttributeWouldMute = 6073,
+  kCookieReadInvalidHost = 6074,
+  kCookieWriteInvalidHost = 6075,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

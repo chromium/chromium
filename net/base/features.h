@@ -374,6 +374,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
 // When enabled, cookies with a non-ASCII domain attribute will be rejected.
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainRejectNonASCII);
 
+// When enabled, HTTP/HTTPS/WS/WSS URLs with non-IP hosts must have a
+// DNS-compliant canonicalized host (via net::IsCanonicalizedHostCompliant())
+// to set or retrieve cookies.
+NET_EXPORT BASE_DECLARE_FEATURE(kCookieRequireCompliantHost);
+
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 
 // Whether ALPS parsing is on for any type of frame.

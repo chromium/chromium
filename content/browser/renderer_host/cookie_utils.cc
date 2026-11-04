@@ -286,6 +286,7 @@ void EmitCookieWarningsAndMetrics(
   bool cookie_has_not_been_refreshed_in_351_to_400_days = false;
 
   bool cookie_has_domain_non_ascii = false;
+  bool cookie_has_invalid_host = false;
 
   bool cookie_set_has_empty_name = false;
   bool cookie_set_has_empty_name_and_ambiguous_value = false;
@@ -352,6 +353,13 @@ void EmitCookieWarningsAndMetrics(
             net::CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII) ||
         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                       EXCLUDE_DOMAIN_NON_ASCII);
+
+    cookie_has_invalid_host =
+        cookie_has_invalid_host ||
+        status.HasWarningReason(
+            net::CookieInclusionStatus::WarningReason::WARN_INVALID_HOST) ||
+        status.HasExclusionReason(
+            net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST);
 
     bool is_partitioned_cookie =
         (cookie->cookie_or_line->is_cookie() &&
@@ -504,6 +512,13 @@ void EmitCookieWarningsAndMetrics(
   if (cookie_has_domain_non_ascii) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kCookieDomainNonASCII);
+  }
+
+  if (cookie_has_invalid_host) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, cookie_details->type == CookieAccessDetails::Type::kRead
+                 ? blink::mojom::WebFeature::kCookieReadInvalidHost
+                 : blink::mojom::WebFeature::kCookieWriteInvalidHost);
   }
 
   if (cookie_set_has_empty_name) {

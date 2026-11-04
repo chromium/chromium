@@ -4,6 +4,7 @@
 
 #include "net/cookies/canonical_cookie.h"
 
+#include <initializer_list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -2123,6 +2124,199 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
                                  /*delegate_treats_url_as_trustworthy=*/false})
           .status.HasExactlyExclusionReasonsForTesting(
               {CookieInclusionStatus::ExclusionReason::EXCLUDE_HTTP_ONLY}));
+}
+
+TEST(CanonicalCookieTest, IncludeForRequestURL_InvalidHostExcluded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCookieRequireCompliantHost);
+
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  auto domain_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "session=secret123; Domain=.example.com",
+      base::Time::Now(), CookieSourceType::kOther,
+      /*server_time=*/std::nullopt);
+  ASSERT_TRUE(domain_cookie);
+
+  struct TestCase {
+    std::string_view url;
+    testing::Matcher<CookieInclusionStatus> status_matcher;
+  };
+
+  for (
+      const TestCase& test_case : std::initializer_list<TestCase>{
+          {"http://x.example.com/", IsInclude()},
+          {"http://a!b.example.com/",
+           HasExactlyExclusionReasonsForTesting(
+               {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST})},
+          {"http://" + std::string(64, 'a') + ".example.com/",
+           HasExactlyExclusionReasonsForTesting(
+               {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST})},
+      }) {
+    EXPECT_THAT(domain_cookie
+                    ->IncludeForRequestURL(
+                        GURL(test_case.url), options,
+                        CookieAccessParams{
+                            net::CookieAccessSemantics::UNKNOWN,
+                            net::CookieScopeSemantics::UNKNOWN,
+                            /*delegate_treats_url_as_trustworthy=*/false})
+                    .status,
+                test_case.status_matcher);
+  }
+}
+
+TEST(CanonicalCookieTest, IncludeForRequestURL_InvalidHostAndDomain) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCookieRequireCompliantHost);
+  // When both the request host is invalid and the cookie domain does not match,
+  // both exclusion reasons should be recorded independently.
+  auto host_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "host_only=1", base::Time::Now(),
+      CookieSourceType::kOther, /*server_time=*/std::nullopt);
+  ASSERT_TRUE(host_cookie);
+  EXPECT_THAT(
+      host_cookie
+          ->IncludeForRequestURL(
+              GURL("http://a!b.example.com/"),
+              CookieOptions::MakeAllInclusive(),
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 net::CookieScopeSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status,
+      HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+           CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST}));
+}
+
+TEST(CanonicalCookieTest,
+     IncludeForRequestURL_InvalidHostWarnsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCookieRequireCompliantHost);
+
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  auto domain_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "session=secret123; Domain=.example.com",
+      base::Time::Now(), CookieSourceType::kOther,
+      /*server_time=*/std::nullopt);
+  ASSERT_TRUE(domain_cookie);
+
+  CookieAccessResult access_result = domain_cookie->IncludeForRequestURL(
+      GURL("http://a!b.example.com/"), options,
+      CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/false});
+  EXPECT_TRUE(access_result.status.IsInclude());
+  EXPECT_TRUE(access_result.status.HasWarningReason(
+      CookieInclusionStatus::WarningReason::WARN_INVALID_HOST));
+
+  // When both the request host is invalid and the cookie domain does not match,
+  // both EXCLUDE_DOMAIN_MISMATCH and WARN_INVALID_HOST are recorded.
+  auto host_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "host_only=1", base::Time::Now(),
+      CookieSourceType::kOther, /*server_time=*/std::nullopt);
+  ASSERT_TRUE(host_cookie);
+  CookieAccessResult mismatch_result = host_cookie->IncludeForRequestURL(
+      GURL("http://a!b.example.com/"), options,
+      CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/false});
+  EXPECT_TRUE(mismatch_result.status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
+  EXPECT_TRUE(mismatch_result.status.HasWarningReason(
+      CookieInclusionStatus::WarningReason::WARN_INVALID_HOST));
+}
+
+TEST(CanonicalCookieTest, IsSetPermittedInContext_InvalidHostRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCookieRequireCompliantHost);
+
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  CookieAccessParams params{net::CookieAccessSemantics::UNKNOWN,
+                            net::CookieScopeSemantics::UNKNOWN,
+                            /*delegate_treats_url_as_trustworthy=*/false};
+
+  auto domain_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "session=1; Domain=.example.com",
+      base::Time::Now(), CookieSourceType::kOther,
+      /*server_time=*/std::nullopt);
+  ASSERT_TRUE(domain_cookie);
+
+  EXPECT_TRUE(
+      domain_cookie
+          ->IsSetPermittedInContext(GURL("http://x.example.com/"), options,
+                                    params, kCookieableSchemes,
+                                    /*cookie_access_result=*/std::nullopt)
+          .status.IsInclude());
+  EXPECT_TRUE(
+      domain_cookie
+          ->IsSetPermittedInContext(GURL("http://a!b.example.com/"), options,
+                                    params, kCookieableSchemes,
+                                    /*cookie_access_result=*/std::nullopt)
+          .status.HasExactlyExclusionReasonsForTesting(
+              {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST}));
+}
+
+TEST(CanonicalCookieTest, IsSetPermittedInContext_InvalidHostAndDomain) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCookieRequireCompliantHost);
+  // When both the source URL host is invalid and the
+  // cookie domain does not match, both exclusion reasons
+  // should be recorded independently.
+  auto host_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "host_only=1", base::Time::Now(),
+      CookieSourceType::kOther,
+      /*server_time=*/std::nullopt);
+  ASSERT_TRUE(host_cookie);
+  EXPECT_TRUE(
+      host_cookie
+          ->IsSetPermittedInContext(
+              GURL("http://a!b.example.com/"),
+              CookieOptions::MakeAllInclusive(),
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 net::CookieScopeSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false},
+              kCookieableSchemes,
+              /*cookie_access_result=*/std::nullopt)
+          .status.HasExactlyExclusionReasonsForTesting(
+              {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+               CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST}));
+}
+
+TEST(CanonicalCookieTest,
+     IsSetPermittedInContext_InvalidHostWarnsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCookieRequireCompliantHost);
+
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  CookieAccessParams params{net::CookieAccessSemantics::UNKNOWN,
+                            net::CookieScopeSemantics::UNKNOWN,
+                            /*delegate_treats_url_as_trustworthy=*/false};
+
+  auto domain_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "session=1; Domain=.example.com",
+      base::Time::Now(), CookieSourceType::kOther,
+      /*server_time=*/std::nullopt);
+  ASSERT_TRUE(domain_cookie);
+
+  CookieAccessResult access_result = domain_cookie->IsSetPermittedInContext(
+      GURL("http://a!b.example.com/"), options, params, kCookieableSchemes,
+      /*cookie_access_result=*/std::nullopt);
+  EXPECT_TRUE(access_result.status.IsInclude());
+  EXPECT_TRUE(access_result.status.HasWarningReason(
+      CookieInclusionStatus::WarningReason::WARN_INVALID_HOST));
+
+  // When both the source URL host is invalid and the cookie domain does not
+  // match, both EXCLUDE_DOMAIN_MISMATCH and WARN_INVALID_HOST are recorded.
+  auto host_cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://x.example.com/"), "host_only=1", base::Time::Now(),
+      CookieSourceType::kOther, /*server_time=*/std::nullopt);
+  ASSERT_TRUE(host_cookie);
+  CookieAccessResult mismatch_result = host_cookie->IsSetPermittedInContext(
+      GURL("http://a!b.example.com/"), options, params, kCookieableSchemes,
+      /*cookie_access_result=*/std::nullopt);
+  EXPECT_TRUE(mismatch_result.status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
+  EXPECT_TRUE(mismatch_result.status.HasWarningReason(
+      CookieInclusionStatus::WarningReason::WARN_INVALID_HOST));
 }
 
 struct IncludeForRequestURLTestCase {
@@ -5063,7 +5257,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
            EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE}));
 
   // Check that the RFC6265bis attribute value size limits apply to the Domain
-  // attribute value.
+  // attribute value (with kCookieRequireCompliantHost disabled by default so
+  // the 253-byte DNS hostname cap only warns with WARN_INVALID_HOST).
   std::string max_domain(ParsedCookie::kMaxCookieAttributeValueSize, 'd');
   max_domain.replace(ParsedCookie::kMaxCookieAttributeValueSize - 4, 4, ".com");
   std::string too_long_domain = "x" + max_domain;

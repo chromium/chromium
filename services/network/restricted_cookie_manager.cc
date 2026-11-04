@@ -609,7 +609,10 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   for (const auto& cookie_and_access_result : excluded_cookies) {
     if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
         !cookie_and_access_result.access_result.status
-             .ExcludedByUserPreferencesOrTPCD()) {
+             .ExcludedByUserPreferencesOrTPCD() &&
+        !cookie_and_access_result.access_result.status.HasExclusionReason(
+            net::CookieInclusionStatus::ExclusionReason::
+                EXCLUDE_INVALID_HOST)) {
       continue;
     }
 
@@ -870,7 +873,9 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
              net::CookieInclusionStatus::ExclusionReason::
                  EXCLUDE_THIRD_PARTY_PHASEOUT));
 
-  if (access_result.status.IsInclude() || access_result.status.ShouldWarn()) {
+  if (access_result.status.IsInclude() || access_result.status.ShouldWarn() ||
+      access_result.status.HasExclusionReason(
+          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST)) {
     if (cookie_observer_) {
       std::vector<mojom::CookieOrLineWithAccessResultPtr> notify;
       notify.push_back(mojom::CookieOrLineWithAccessResult::New(

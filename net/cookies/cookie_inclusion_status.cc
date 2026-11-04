@@ -180,6 +180,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {ExclusionReason::EXCLUDE_INVALID_PATH, "EXCLUDE_INVALID_PATH"},
       {ExclusionReason::EXCLUDE_AMBIGUOUS_SERIALIZATION,
        "EXCLUDE_AMBIGUOUS_SERIALIZATION"},
+      {ExclusionReason::EXCLUDE_INVALID_HOST, "EXCLUDE_INVALID_HOST"},
   };
   static_assert(
       std::size(exclusion_reasons) == ExclusionReasonBitset::kValueCount,
@@ -222,6 +223,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
        "WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME"},
       {WarningReason::WARN_SHADOWING_DOMAIN, "WARN_SHADOWING_DOMAIN"},
       {WarningReason::WARN_THIRD_PARTY_PHASEOUT, "WARN_THIRD_PARTY_PHASEOUT"},
+      {WarningReason::WARN_INVALID_HOST, "WARN_INVALID_HOST"},
   };
   static_assert(std::size(warning_reasons) == WarningReasonBitset::kValueCount,
                 "Please ensure all WarningReason variants are enumerated in "

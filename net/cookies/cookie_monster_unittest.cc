@@ -8883,4 +8883,99 @@ TEST_F(CookieMonsterTest, RejectsHiddenHostHttpPrefix) {
            EXCLUDE_AMBIGUOUS_SERIALIZATION}));
 }
 
+TEST_F(CookieMonsterTest, InvalidHostDoesNotReceiveDomainCookies) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCookieRequireCompliantHost);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+
+  // Set a domain cookie on x.example.com for .example.com.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), GURL("http://x.example.com/"),
+      "session=secret123; Domain=.example.com; HttpOnly", options));
+  EXPECT_EQ(
+      "session=secret123",
+      GetCookiesWithOptions(cm.get(), GURL("http://x.example.com/"), options));
+
+  // Non-compliant subdomain hosts (e.g., '!' or >63-byte labels) must NOT
+  // receive the .example.com cookie and must record EXCLUDE_INVALID_HOST.
+  for (const GURL& invalid_url :
+       {GURL("http://a!b.example.com/"),
+        GURL("http://" + std::string(64, 'a') + ".example.com/")}) {
+    SCOPED_TRACE(invalid_url.spec());
+    EXPECT_EQ("", GetCookiesWithOptions(cm.get(), invalid_url, options));
+
+    CookieAccessResultList excluded = GetExcludedCookiesForURL(
+        cm.get(), invalid_url, CookiePartitionKeyCollection());
+    ASSERT_EQ(1u, excluded.size());
+    EXPECT_TRUE(
+        excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+            {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST}));
+  }
+}
+
+TEST_F(CookieMonsterTest, InvalidHostDoesNotSetCookies) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCookieRequireCompliantHost);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  // Setting cookies from a non-compliant HTTP host must also be rejected.
+  EXPECT_FALSE(CreateAndSetCookie(cm.get(), GURL("http://a!b.example.com/"),
+                                  "evil=1; Domain=.example.com", options));
+  EXPECT_EQ("", GetCookiesWithOptions(cm.get(), GURL("http://x.example.com/"),
+                                      options));
+}
+
+TEST_F(CookieMonsterTest, InvalidHostWarnsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCookieRequireCompliantHost);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), GURL("http://x.example.com/"),
+      "session=secret123; Domain=.example.com; HttpOnly", options));
+
+  base::test::TestFuture<const CookieAccessResultList&,
+                         const CookieAccessResultList&>
+      get_future;
+  cm->GetCookieListWithOptionsAsync(GURL("http://a!b.example.com/"), options,
+                                    CookiePartitionKeyCollection(),
+                                    get_future.GetCallback());
+  const CookieAccessResultList& included = get_future.Get<0>();
+  ASSERT_EQ(1u, included.size());
+  EXPECT_EQ("session", included[0].cookie.Name());
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WarningReason::WARN_INVALID_HOST));
+}
+
+TEST_F(CookieMonsterTest, ValidHostCheckPreservesNonWebAndIPv6Urls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCookieRequireCompliantHost);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+  base::test::TestFuture<bool> scheme_future;
+  cm->SetCookieableSchemes(
+      {"http", "https", "ws", "wss", "file", "chrome-extension", "custom"},
+      scheme_future.GetCallback());
+  ASSERT_TRUE(scheme_future.Get());
+
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  for (const GURL& valid_edge_url : {
+           GURL("file:///tmp/index.html"),
+           GURL("http://[::1]/"),
+           GURL("chrome-extension://abcdefghijklmnopabcdefghijklmnop/bg.html"),
+           GURL("custom://a!b.custom.host/"),
+       }) {
+    SCOPED_TRACE(valid_edge_url.spec());
+    EXPECT_TRUE(
+        CreateAndSetCookie(cm.get(), valid_edge_url, "edge=ok", options));
+    EXPECT_EQ("edge=ok",
+              GetCookiesWithOptions(cm.get(), valid_edge_url, options));
+  }
+}
+
 }  // namespace net

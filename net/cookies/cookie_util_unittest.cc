@@ -5,6 +5,7 @@
 #include "net/cookies/cookie_util.h"
 
 #include <algorithm>
+#include <initializer_list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -297,6 +298,47 @@ TEST(CookieUtilTest, GetCookieDomainWithString_TrailingDots) {
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com../"),
                                                       "foo.com..", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+}
+
+TEST(CookieUtilTest, IsCookieUrlHostValid) {
+  struct TestCase {
+    std::string_view url;
+    bool expected_result;
+  };
+
+  for (const TestCase& test_case : std::initializer_list<TestCase>{
+           // Invalid hosts.
+           {"http://a!b.example.com:8080/", false},
+           {"https://a!b.example.com/", false},
+           {"ws://a!b.example.com/", false},
+           {"wss://a$b.example.com/", false},
+           {"http://example._com/", false},
+           {"http://_intranet/", false},
+           {"http://foo.com../", false},
+           {"http://" + std::string(64, 'a') + ".example.com/", false},
+
+           // Valid hosts.
+           {"http://" + std::string(63, 'a') + ".example.com/", true},
+           {"http://example.com/", true},
+           {"https://x.example.com:8080/", true},
+           {"http://example.com./", true},
+           {"http://_foo.example.com/", true},
+           {"http://127.0.0.1:8080/", true},
+           {"http://[::1]:8080/", true},
+           {"https://[2001:db8::1]/", true},
+           {"file:///C:/bar.html", true},
+           {"file://server/share/file.html", true},
+           {"file://my%20server/share/file.html", true},
+           {"chrome-extension://abcdefghijklmnopabcdefghijklmnop/index.html",
+            true},
+           {"foo://LOCALhost", true},
+           {"git://HOST", true},
+           {"custom://a!b.example.com/", true},
+       }) {
+    SCOPED_TRACE(test_case.url);
+    EXPECT_EQ(cookie_util::IsCookieUrlHostValid(GURL(test_case.url)),
+              test_case.expected_result);
+  }
 }
 
 // A "normal" URL does not match with a cookie containing two trailing dots (or

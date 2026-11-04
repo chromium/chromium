@@ -143,6 +143,10 @@ class UseCounterTrackingContentBrowserClient
     } else if (feature ==
                blink::mojom::WebFeature::kCookieInsecureAndSameSiteNone) {
       ++cookie_same_site_none_insecure_;
+    } else if (feature == blink::mojom::WebFeature::kCookieReadInvalidHost) {
+      ++cookie_read_invalid_host_;
+    } else if (feature == blink::mojom::WebFeature::kCookieWriteInvalidHost) {
+      ++cookie_write_invalid_host_;
     }
   }
 
@@ -153,11 +157,15 @@ class UseCounterTrackingContentBrowserClient
   int cookie_same_site_none_insecure() const {
     return cookie_same_site_none_insecure_;
   }
+  int cookie_read_invalid_host() const { return cookie_read_invalid_host_; }
+  int cookie_write_invalid_host() const { return cookie_write_invalid_host_; }
 
  private:
   int cookie_set_has_empty_name_ = 0;
   int cookie_set_has_empty_name_and_ambiguous_value_ = 0;
   int cookie_same_site_none_insecure_ = 0;
+  int cookie_read_invalid_host_ = 0;
+  int cookie_write_invalid_host_ = 0;
 };
 
 }  // namespace
@@ -722,6 +730,77 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTestAllowingNamelessAmbiguous,
   EXPECT_EQ(
       content_browser_client.cookie_set_has_empty_name_and_ambiguous_value(),
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, InvalidHostCookieMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  UseCounterTrackingContentBrowserClient content_browser_client;
+
+  GURL valid_url =
+      embedded_test_server()->GetURL("valid.a.test", "/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), valid_url));
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  GURL invalid_url("http://a!b.a.test:8080/");
+  auto cookie = net::CanonicalCookie::CreateForTesting(
+      GURL("http://valid.a.test/"), "a=1; Domain=.a.test", base::Time::Now(),
+      net::CookieSourceType::kOther);
+  ASSERT_TRUE(cookie);
+  auto notify_access = [&](network::mojom::CookieAccessDetails::Type type,
+                           net::CookieInclusionStatus status) {
+    std::vector<network::mojom::CookieOrLineWithAccessResultPtr> cookie_list;
+    cookie_list.push_back(network::mojom::CookieOrLineWithAccessResult::New(
+        network::mojom::CookieOrLine::NewCookie(*cookie),
+        net::CookieAccessResult(status)));
+    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector;
+    details_vector.push_back(network::mojom::CookieAccessDetails::New(
+        type, invalid_url, url::Origin::Create(invalid_url),
+        url::Origin::Create(invalid_url),
+        net::SiteForCookies::FromUrl(invalid_url), std::move(cookie_list),
+        /*devtools_request_id=*/std::nullopt, /*is_ad_tagged=*/false,
+        net::CookieSettingOverrides()));
+    rfh->NotifyCookiesAccessed(std::move(details_vector),
+                               CookieAccessDetails::Source::kNavigation);
+  };
+
+  // WARN_INVALID_HOST on kRead logs kCookieReadInvalidHost.
+  notify_access(
+      network::mojom::CookieAccessDetails::Type::kRead,
+      net::CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{},
+          /*warnings=*/{
+              net::CookieInclusionStatus::WarningReason::WARN_INVALID_HOST}));
+  EXPECT_EQ(content_browser_client.cookie_read_invalid_host(), 1);
+  EXPECT_EQ(content_browser_client.cookie_write_invalid_host(), 0);
+
+  // WARN_INVALID_HOST on kChange logs kCookieWriteInvalidHost.
+  notify_access(
+      network::mojom::CookieAccessDetails::Type::kChange,
+      net::CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{},
+          /*warnings=*/{
+              net::CookieInclusionStatus::WarningReason::WARN_INVALID_HOST}));
+  EXPECT_EQ(content_browser_client.cookie_read_invalid_host(), 1);
+  EXPECT_EQ(content_browser_client.cookie_write_invalid_host(), 1);
+
+  // EXCLUDE_INVALID_HOST on kRead and kChange also logs the respective
+  // UseCounters.
+  notify_access(network::mojom::CookieAccessDetails::Type::kRead,
+                net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                    /*exclusions=*/{net::CookieInclusionStatus::
+                                        ExclusionReason::EXCLUDE_INVALID_HOST},
+                    /*warnings=*/{}));
+  EXPECT_EQ(content_browser_client.cookie_read_invalid_host(), 2);
+  EXPECT_EQ(content_browser_client.cookie_write_invalid_host(), 1);
+
+  notify_access(network::mojom::CookieAccessDetails::Type::kChange,
+                net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                    /*exclusions=*/{net::CookieInclusionStatus::
+                                        ExclusionReason::EXCLUDE_INVALID_HOST},
+                    /*warnings=*/{}));
+  EXPECT_EQ(content_browser_client.cookie_read_invalid_host(), 2);
+  EXPECT_EQ(content_browser_client.cookie_write_invalid_host(), 2);
 }
 
 class CookieStoreContentBrowserClient

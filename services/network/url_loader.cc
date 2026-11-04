@@ -175,7 +175,9 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_PORT_MISMATCH) ||
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
-                                       EXCLUDE_SCHEME_MISMATCH);
+                                       EXCLUDE_SCHEME_MISMATCH) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_HOST);
 }
 
 scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>

@@ -347,6 +347,15 @@ constexpr CookiePrefixData kPrefixes[] = {
 
 }  // namespace
 
+bool IsCookieUrlHostValid(const GURL& url) {
+  const bool is_webby_scheme =
+      url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS();
+  if (!is_webby_scheme || url.HostIsIPAddress()) {
+    return true;
+  }
+  return IsCanonicalizedHostCompliant(url.host());
+}
+
 bool DomainIsHostOnly(std::string_view domain_string) {
   return (domain_string.empty() || domain_string[0] != '.');
 }

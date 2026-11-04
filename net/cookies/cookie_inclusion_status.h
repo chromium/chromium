@@ -113,8 +113,10 @@ class NET_EXPORT CookieInclusionStatus {
     // equals sign, such as a cookie line "=Foo=Bar", which is serialized as
     // "Foo=Bar" and could shadow a cookie named "Foo".
     EXCLUDE_AMBIGUOUS_SERIALIZATION,
+    // Cookie was accessed from or set by a URL with an invalid host name.
+    EXCLUDE_INVALID_HOST,
     // This should be kept last.
-    MAX_EXCLUSION_REASON = EXCLUDE_AMBIGUOUS_SERIALIZATION
+    MAX_EXCLUSION_REASON = EXCLUDE_INVALID_HOST
   };
 
   // Reason to warn about a cookie. Any information contained in
@@ -183,9 +185,11 @@ class NET_EXPORT CookieInclusionStatus {
 
     // This cookie will be blocked for third-party cookie phaseout.
     WARN_THIRD_PARTY_PHASEOUT,
+    // Cookie was accessed from or set by a URL with an invalid host name.
+    WARN_INVALID_HOST,
 
     // This should be kept last.
-    MAX_WARNING_REASON = WARN_THIRD_PARTY_PHASEOUT
+    MAX_WARNING_REASON = WARN_INVALID_HOST
   };
 
   // Types of reasons why a cookie should-have-been-blocked by 3pcd got
