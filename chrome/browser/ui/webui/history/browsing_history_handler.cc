@@ -576,7 +576,10 @@ void BrowsingHistoryHandler::SendHistoryQuery(
   history::QueryOptions options;
   options.max_count = max_count;
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
-  options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
+  // `BrowsingHistoryService` has more elaborate deduplication logic. Using the
+  // DB-level deduplication would also drop some data, like the visit IDs of
+  // the merged visits.
+  options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
   options.include_actor_visits = include_actor_visits;
   options.include_user_visits = include_user_visits;
   std::string text_query;

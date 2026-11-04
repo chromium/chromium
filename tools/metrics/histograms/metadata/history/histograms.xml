@@ -126,16 +126,38 @@ chromium-metrics-reviews@google.com.
     units="visits" expires_after="2027-04-04">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
+  <owner>azamatmz@google.com</owner>
   <component>1456716</component>
   <summary>
     Recorded whenever history data is queried for display on chrome://history
     (i.e. when the page is opened, when the user scrolls to the bottom of the
     available list, and when the user changes the search terms). Records the
-    number of duplicate visits removed from each query on the client side. If
-    kBrowsingHistorySimilarVisitsGrouping experimentis enabled, duplicate visits
-    are those that have the same host and title whithin the same day. If the
-    experiment is disabled, duplicate visits are those that have the same URL
-    whithin the same day.
+    number of visits merged into other entries, counted in C++ after the
+    database query. Visits are merged if they have the same URL (and app, on
+    Android) on the same day, or the same host and title (and app, on Android)
+    if kBrowsingHistorySimilarVisitsGrouping is enabled. Actor and user visits
+    are not merged together (except on iOS). Unlike
+    History.BrowsingHistoryResult.DuplicateVisitsCount2, the query removes some
+    duplicates in the database (QueryOptions::REMOVE_*), and those are not
+    counted. Recorded on Android and iOS only since M159; see
+    History.BrowsingHistoryResult.DuplicateVisitsCount2 for Desktop.
+  </summary>
+</histogram>
+
+<histogram name="History.BrowsingHistoryResult.DuplicateVisitsCount2"
+    units="visits" expires_after="2027-04-04">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>azamatmz@google.com</owner>
+  <component>1456716</component>
+  <summary>
+    Recorded on Desktop each time BrowsingHistoryService returns a batch of
+    results to chrome://history (on open, when scrolling to the end of the list
+    or when the list doesn't fill the window, or on a new search). Records the
+    number of visits merged into other entries, counted in C++ after the
+    database query. Visits are merged if they have the same URL on the same day,
+    or the same host and title if kBrowsingHistorySimilarVisitsGrouping is
+    enabled. Actor and user visits are not merged together.
   </summary>
 </histogram>
 
