@@ -19,6 +19,11 @@
 
 namespace {
 
+bool RevealLockRequiresKey(NSWindow* child) {
+  return [base::apple::ObjCCast<NativeWidgetMacNSWindow>(child)
+      immersiveRevealLockRequiresKey];
+}
+
 void CloseNSPopovers(NSWindow* parent_window) {
   // Close any NSPopover that may be open.
   Class popover_class = NSClassFromString(@"_NSPopoverWindow");
@@ -463,6 +468,9 @@ void ImmersiveModeControllerCocoa::ObserveChildWindows(NSWindow* window) {
   widget_window.childWindowRemovedHandler = ^(NSWindow* child) {
     OnChildWindowRemoved(child);
   };
+  widget_window.childWindowKeyChangedHandler = ^(NSWindow* child) {
+    OnChildWindowKeyChanged(child);
+  };
 }
 
 void ImmersiveModeControllerCocoa::StopObservingChildWindows(NSWindow* window) {
@@ -470,6 +478,7 @@ void ImmersiveModeControllerCocoa::StopObservingChildWindows(NSWindow* window) {
       base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
   widget_window.childWindowAddedHandler = nil;
   widget_window.childWindowRemovedHandler = nil;
+  widget_window.childWindowKeyChangedHandler = nil;
 }
 
 bool ImmersiveModeControllerCocoa::ShouldObserveChildWindow(NSWindow* child) {
@@ -495,9 +504,14 @@ void ImmersiveModeControllerCocoa::OnChildWindowAdded(NSWindow* child) {
   if (((NativeWidgetMacNSWindow*)child).isShufflingForOrdering) {
     return;
   }
-  // TODO(kerenzhu): the sole purpose of `window_lock_received_` is to
-  // verify that we don't lock twice for a single window.
-  // We can remove it once this is verified.
+  // Some windows only keep the toolbar revealed while they are key. See
+  // `OnChildWindowKeyChanged()`.
+  if (RevealLockRequiresKey(child) && !child.keyWindow) {
+    return;
+  }
+  // Tracks which windows hold a reveal lock. Key-only windows use it to know
+  // whether they currently hold one, and the CHECK below catches a window
+  // locking twice.
   CHECK(!window_lock_received_.contains(child));
   window_lock_received_.insert(child);
   RevealLock();
@@ -514,9 +528,27 @@ void ImmersiveModeControllerCocoa::OnChildWindowRemoved(NSWindow* child) {
   if (((NativeWidgetMacNSWindow*)child).isShufflingForOrdering) {
     return;
   }
+  // A window that only locks while key holds no lock while it isn't key.
+  if (RevealLockRequiresKey(child) && !window_lock_received_.contains(child)) {
+    return;
+  }
   CHECK(window_lock_received_.contains(child));
   window_lock_received_.erase(child);
   RevealUnlock();
+}
+
+void ImmersiveModeControllerCocoa::OnChildWindowKeyChanged(NSWindow* child) {
+  if (!RevealLockRequiresKey(child)) {
+    return;
+  }
+  const bool has_lock = window_lock_received_.contains(child);
+  if (child.keyWindow && !has_lock) {
+    window_lock_received_.insert(child);
+    RevealLock();
+  } else if (!child.keyWindow && has_lock) {
+    window_lock_received_.erase(child);
+    RevealUnlock();
+  }
 }
 
 void ImmersiveModeControllerCocoa::RevealLock() {

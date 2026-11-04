@@ -33,6 +33,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -82,6 +84,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -3165,6 +3168,60 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       ClickWebPageBody(kTab1), WaitForPopupDismissed(),
       StopRecordingBrowserPaintAsActive(),
       Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }));
+}
+
+// Verifies that, with "Always Show Toolbar in Full Screen" turned off, the
+// toolbar hides after the omnibox is blurred with a draft, even though the
+// popup stays open for the draft, and that the popup leaves the screen with
+// the toolbar. Refocusing the omnibox reveals both again.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       BlurWithDraftInFullscreenLetsToolbarAutohide) {
+  // The test profile is discarded afterwards, so the pref isn't restored.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowFullscreenToolbar,
+                                                  false);
+  ImmersiveModeController* immersive_controller =
+      ImmersiveModeController::From(browser());
+  // Whether the popup is entirely above the top of the screen.
+  auto is_popup_offscreen = [this]() {
+    views::Widget* popup_widget = GetPopupWidget(browser());
+    if (!popup_widget) {
+      return false;
+    }
+    const gfx::Rect display_bounds =
+        display::Screen::Get()
+            ->GetDisplayNearestWindow(browser()->GetWindow()->GetNativeWindow())
+            .bounds();
+    return popup_widget->GetWindowBoundsInScreen().bottom() <=
+           display_bounds.y();
+  };
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupTransitionLockout(),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupReady(), WaitForPopupActive(), InputWebUIText("test draft"),
+      WaitForWebUIInputValue("test draft"), ClickWebPageBody(kTab1),
+      WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull), CheckUserInputInProgress(true),
+      PollUntil(
+          [immersive_controller]() {
+            return !immersive_controller->IsRevealed();
+          },
+          "WaitForToolbarHidden"),
+      PollUntil(is_popup_offscreen, "WaitForPopupOffscreen"),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupActive(), WaitForWebUIInputValue("test draft"),
+      PollUntil(
+          [immersive_controller]() {
+            return immersive_controller->IsRevealed();
+          },
+          "WaitForToolbarRevealed"),
+      PollUntil([is_popup_offscreen]() { return !is_popup_offscreen(); },
+                "WaitForPopupOnscreen"));
 }
 #endif  // BUILDFLAG(IS_MAC)
 

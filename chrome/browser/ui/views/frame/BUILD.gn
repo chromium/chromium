@@ -2493,6 +2493,8 @@ source_set("interactive_ui_tests") {
       ":immersive_mode_controller_mac",
       "//chrome/browser/ui:browser_commands_mac",
       "//chrome/browser/ui/views:find_bar_views",
+      "//components/remote_cocoa/app_shim",
+      "//components/remote_cocoa/common:mojo",
     ]
   }
 

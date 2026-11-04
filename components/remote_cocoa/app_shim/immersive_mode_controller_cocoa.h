@@ -107,6 +107,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
   // Called when a child window is removed from the observed windows.
   virtual void OnChildWindowRemoved(NSWindow* child);
 
+  // Called when a child window of the observed windows becomes or resigns key.
+  // Only windows that keep the toolbar revealed while key take or release a
+  // reveal lock here.
+  void OnChildWindowKeyChanged(NSWindow* child);
+
   // Start observing child windows of `window`.
   void ObserveChildWindows(NSWindow* window);
 
