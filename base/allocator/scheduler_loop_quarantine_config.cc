@@ -68,6 +68,7 @@ constexpr char kKeyPauseInBetweenTasks[] = "pause-in-between-tasks";
 constexpr char kKeyExcludeNonIpcTasks[] = "exclude-non-ipc-tasks";
 constexpr char kKeyBranchCapacityInBytes[] = "branch-capacity-in-bytes";
 constexpr char kKeyMaxQuarantineSize[] = "max-quarantine-size";
+constexpr char kKeyZapMax[] = "zap-max";
 constexpr char kKeyPurgeHeadroomPercent[] = "purge-headroom-percent";
 
 struct Match {
@@ -220,6 +221,11 @@ GetSchedulerLoopQuarantineConfiguration(
       config_entry->FindInt(kKeyMaxQuarantineSize).value_or(-1);
   if (0 < max_quarantine_size) {
     config.max_quarantine_size = static_cast<size_t>(max_quarantine_size);
+  }
+
+  int zap_max = config_entry->FindInt(kKeyZapMax).value_or(-1);
+  if (0 < zap_max) {
+    config.zap_max = static_cast<size_t>(zap_max);
   }
 
   int purge_headroom_percent =

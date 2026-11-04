@@ -187,21 +187,9 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     queue->Queue(slot_start);
     return;
   } else {
-#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-    {
-      // We assume below that the slot was zapped when entering the quarantine.
-      // Check that assumption.
-      unsigned char* object = slot_start.Tag().ToObject();
-      auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, root);
-      const size_t usable_size = root->GetSlotUsableSize(slot_span);
-      for (size_t i = 0; i < usable_size; ++i) {
-        PA_UNSAFE_TODO(PA_DCHECK(object[i] == internal::kFreedByte));
-      }
-    }
-#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-    // `Quarantine()` already zapped the entire usable slot with `kFreedByte`
-    // (`0xcd`), so poisoning the first cacheline again with `0xbadbad00` when
-    // inserting into the `ThreadCache` freelist is redundant.
+    // `Quarantine()` already zapped the slot with `kFreedByte` (`0xcd`), so
+    // poisoning the first cacheline again with `0xbadbad00` when inserting
+    // into the `ThreadCache` freelist is redundant.
     std::optional<size_t> slot_size_opt =
         tcache->MaybePutInCache<allow_clear_bucket, /*poison=*/false>(
             slot_start, bucket_index);
@@ -281,6 +269,7 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Configure(
 
   root_ = &root;
   enable_quarantine_ = config.enable_quarantine;
+  zap_max_ = config.zap_max;
   leak_on_destruction_ = config.leak_on_destruction;
   purge_headroom_percent_ = static_cast<uint8_t>(
       std::min(config.purge_headroom_percent, kMaxPurgeHeadroomPercent));
@@ -467,7 +456,8 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
 
   internal::SecureMemset(
       slot_start.ToObject(), internal::kFreedByte,
-      allocator_root_->GetSlotUsableSize(size_details, slot_span));
+      std::min(allocator_root_->GetSlotUsableSize(size_details, slot_span),
+               zap_max_));
 }
 
 template <bool thread_bound, QuarantineTarget quarantine_target>

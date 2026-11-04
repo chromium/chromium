@@ -83,14 +83,14 @@ constexpr inline uintptr_t kTombstoneMask = ~kTombstone;
 // `thread_cache_internal.h` includes `partition_tls.h`).
 // `kThreadCacheStorageSize` must therefore match `sizeof(ThreadCache)` for the
 // active build configuration:
-// - Base size (1384 B on 64-bit, 792 B on 32-bit): `ThreadCache` fields,
+// - Base size (1392 B on 64-bit, 792 B on 32-bit): `ThreadCache` fields,
 //   `buckets_` (72 * 16 B on 64-bit, 80 * 8 B on 32-bit), and embedded
-//   `SchedulerLoopQuarantineBranch` (160 B on 64-bit, 104 B on 32-bit; 32-bit
+//   `SchedulerLoopQuarantineBranch` (168 B on 64-bit, 104 B on 32-bit; 32-bit
 //   x86 POSIX uses 4-byte `uint64_t` struct alignment and is 4-8 B smaller).
 // - `ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE` (+8 B on 64-bit): PI futex
 //   fields in `SpinningMutex` inside `SchedulerLoopQuarantineBranch::lock_`.
-// - `DCHECKS_ARE_ON` (+8 B): `SchedulerLoopQuarantineBranch::being_destructed_`
-//   (and `ThreadCache::is_in_thread_cache_` on 32-bit).
+// - `DCHECKS_ARE_ON` (+8 B on 32-bit): `ThreadCache::is_in_thread_cache_`
+//   (fits in existing padding after `thread_id_` on 64-bit).
 // - `EXPENSIVE_DCHECKS_ARE_ON` / `ENABLE_PARTITION_LOCK_REENTRANCY_CHECK`
 //   (+8 B on 64-bit): `Lock::owning_thread_ref_` inside
 //   `SchedulerLoopQuarantineBranch::lock_` (fits in existing padding on
@@ -102,8 +102,7 @@ constexpr inline uintptr_t kTombstoneMask = ~kTombstone;
 // `sizeof(ThreadCache)` triggers a compile-time failure pointing here.
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 constexpr inline size_t kThreadCacheStorageSize =
-    1384 + (PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) ? 8 : 0) +
-    (PA_BUILDFLAG(DCHECKS_ARE_ON) ? 8 : 0) +
+    1392 + (PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) ? 8 : 0) +
     ((PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
       PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK))
          ? 8

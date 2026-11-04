@@ -319,6 +319,51 @@ TEST(SchedulerLoopQuarantineConfigTest, PurgeHeadroomPercent) {
   EXPECT_EQ(0u, config.purge_headroom_percent);
 }
 
+constexpr char kZapMaxConfigJSON[] = R"({
+  "browser": {
+    "main": {
+      "enable-quarantine": true,
+      "zap-max": 64
+    },
+    "io": {
+      "enable-quarantine": true,
+      "zap-max": 0
+    },
+    "*": {
+      "enable-quarantine": true,
+      "zap-max": -1
+    },
+  },
+})";
+
+TEST(SchedulerLoopQuarantineConfigTest, ZapMax) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kPartitionAllocSchedulerLoopQuarantine,
+      {{base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
+        kZapMaxConfigJSON}});
+
+  partition_alloc::internal::SchedulerLoopQuarantineConfig config;
+
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kMain);
+  EXPECT_EQ(64u, config.zap_max);
+
+  // Zero and negative values are ignored.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kIO);
+  EXPECT_EQ(partition_alloc::BucketIndexLookup::kMaxBucketSize, config.zap_max);
+
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
+  EXPECT_EQ(partition_alloc::BucketIndexLookup::kMaxBucketSize, config.zap_max);
+
+  // Defaults to `BucketIndexLookup::kMaxBucketSize`.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kGlobal);
+  EXPECT_EQ(partition_alloc::BucketIndexLookup::kMaxBucketSize, config.zap_max);
+}
+
 constexpr char kInvalidTestingConfigJSON[] = "nyan";
 
 TEST(SchedulerLoopQuarantineConfigTest, InvalidConfig) {

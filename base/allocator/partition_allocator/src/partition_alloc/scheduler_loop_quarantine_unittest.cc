@@ -298,6 +298,31 @@ TYPED_TEST(SchedulerLoopQuarantineTest, TooLargeAllocation) {
   ASSERT_TRUE(this->GetQuarantineBranch()->IsQuarantinedForTesting(object));
 }
 
+TYPED_TEST(SchedulerLoopQuarantineTest, ZapMax) {
+  constexpr size_t kZapMax = 8;
+  constexpr size_t kObjectSize = 64;
+  constexpr unsigned char kInitialByte = 0xab;
+  static_assert(kInitialByte != internal::kFreedByte);
+
+  QuarantineConfig config = this->GetConfig();
+  config.zap_max = kZapMax;
+  this->GetQuarantineBranch()->Configure(*this->GetQuarantineRoot(), config);
+
+  auto& object = *static_cast<std::array<unsigned char, kObjectSize>*>(
+      this->GetPartitionRoot()->Alloc(kObjectSize));
+  object.fill(kInitialByte);
+
+  this->Quarantine(&object);
+  ASSERT_TRUE(this->GetQuarantineBranch()->IsQuarantinedForTesting(&object));
+
+  for (size_t i = 0; i < kZapMax; ++i) {
+    EXPECT_EQ(internal::kFreedByte, object[i]);
+  }
+  for (size_t i = kZapMax; i < kObjectSize; ++i) {
+    EXPECT_EQ(kInitialByte, object[i]);
+  }
+}
+
 TYPED_TEST(SchedulerLoopQuarantineTest, ScopedOptOut) {
   if (!this->GetQuarantineBranch()->kThreadBound) {
     // Supported only on lock-less mode.

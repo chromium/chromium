@@ -99,6 +99,9 @@ struct SchedulerLoopQuarantineConfig {
   // Accepts allocations up to this bucket size. If the given number does not
   // match bucket size, it is rounded up to next bucket size.
   size_t max_quarantine_size = BucketIndexLookup::kMaxBucketSize;
+  // Upper bound for the zapped region in bytes. If an object's usable size
+  // exceeds this value, only the first `zap_max` bytes are zapped.
+  size_t zap_max = BucketIndexLookup::kMaxBucketSize;
   // When the branch is full, dequarantine enough entries to free up this
   // percentage of the capacity (in addition to the space needed by the
   // incoming entry), instead of just enough to fit the incoming entry. This
@@ -350,12 +353,16 @@ class SchedulerLoopQuarantineBranch {
   bool enable_task_controlled_purge_ = false;
   bool pause_in_between_tasks_ = false;
   bool exclude_non_ipc_tasks_ = false;
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  std::atomic_bool being_destructed_ = false;
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   int task_nesting_depth_ = 0;
   bool is_outermost_task_mojo_ipc_ = false;
   // See `SchedulerLoopQuarantineConfig::purge_headroom_percent`.
   uint8_t purge_headroom_percent_ = 0;
 
   uint16_t largest_bucket_index_ = BucketIndexLookup::kNumBuckets - 1;
+  size_t zap_max_ = BucketIndexLookup::kMaxBucketSize;
 
   // When non-zero, this branch temporarily stops accepting incoming quarantine
   // requests.
@@ -396,11 +403,6 @@ class SchedulerLoopQuarantineBranch {
     size_t dequarantined_size_in_bytes = 0;
   };
   UnpublishedStats unpublished_stats_ PA_GUARDED_BY(lock_);
-
-  // Debug and testing data.
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  std::atomic_bool being_destructed_ = false;
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 };
 
 using SanitizedObjectSchedulerLoopQuarantineBranch =
