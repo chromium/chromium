@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,6 +61,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/navigation_handle.h"
@@ -70,6 +72,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
@@ -122,10 +125,12 @@ constexpr char kCanShowAvatarForProfile[] = "canShowAvatarForProfile";
 //
 // If provider is null, such as during background prewarming when the actual
 // browser window view is not yet created, it directly populates default
-// dictionary values.
+// dictionary values, except that it reads the profile's home button pref and
+// current touch mode.
 // TODO(crbug.com/530370659): Replaced with mojom struct for type safety.
 void PopulateInitialState(base::DictValue& dict,
-                          WebUIToolbarUI::DependencyProvider* provider) {
+                          WebUIToolbarUI::DependencyProvider* provider,
+                          Profile* profile) {
   dict.Set(
       kInitialWebUISurfaceSyncEnabled,
       base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync));
@@ -138,10 +143,13 @@ void PopulateInitialState(base::DictValue& dict,
     dict.Set(kReloadCanShowMenu, false);
     dict.Set(kBackButtonEnabled, false);
     dict.Set(kForwardButtonEnabled, false);
-    dict.Set(kHomeButtonShouldBeShown, false);
+    // A prewarmed toolbar then shows the home button and the touch layout from
+    // its first frame, rather than after its window sends the toolbar state.
+    dict.Set(kHomeButtonShouldBeShown,
+             profile->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
     dict.Set(kBatterySaverButtonVisible, false);
     dict.Set(kLayoutConstantsVersion, 0);
-    dict.Set(kTouchUi, false);
+    dict.Set(kTouchUi, ui::TouchUiController::Get()->touch_ui());
     return;
   }
 
@@ -497,27 +505,27 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(content::RenderFrameHost* rfh) {
   //
   // During Pre-Navigate prewarming, the window View does not exist yet when the
   // page starts loading in the background, so the UserData is missing. In this
-  // case, we instantiate a local FallbackDependencyProvider to inject a safe,
-  // default-valued initial state.
+  // case, PopulateInitialState() injects a mostly default-valued initial state
+  // that reads only the profile's home button pref and the current touch mode.
   //
   // Otherwise (normal load or Renderer-Only prewarming), we retrieve the actual
   // window View's provider from UserData.
   auto* user_data = WebUIToolbarUIDependencyProviderUserData::FromWebContents(
       web_ui()->GetWebContents());
   base::DictValue values;
+  Profile* user_profile = GetUserProfile();
   if (user_data) {
     auto* provider_user_data = user_data->provider();
-    PopulateInitialState(values, provider_user_data);
+    PopulateInitialState(values, provider_user_data, user_profile);
     values.Set(kIsFallbackPrewarming, false);
   } else {
-    PopulateInitialState(values, nullptr);
+    PopulateInitialState(values, nullptr, user_profile);
     values.Set(kIsFallbackPrewarming, true);
   }
   // These depend on the profile of the window, so they are set for each frame
   // instead of in the WebUIDataSource, which is shared by the toolbars in the
   // same BrowserContext. With features::kTopChromeWebUISharedRenderer, those
   // toolbars can be for windows of different profiles.
-  Profile* user_profile = GetUserProfile();
   values.Set(kIsProfileEligibleForGlic,
              glic::GlicEnabling::IsProfileEligible(user_profile));
   values.Set(kCanShowAvatarForProfile,

@@ -106,6 +106,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/util",
     "//components/omnibox/browser:vector_icons",
+    "//components/prefs",
     "//components/user_education/webui",
     "//ui/base",
   ]

@@ -1810,6 +1810,39 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarPrewarmSandboxBrowserTest,
                          /*expected_back_enabled=*/false);
 }
 
+// Verifies that a toolbar prewarmed before its window exists takes the home
+// button and touch layout from the profile pref and the touch mode.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarPrewarmSandboxBrowserTest,
+                       InitialStateReadsHomeButtonPrefAndTouchUi) {
+  // Both default to false, the values prewarming used to hardcode.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui(true);
+  LifecycleTestSetup setup(browser());
+
+  content::TestNavigationObserver observer(
+      (GURL(chrome::kChromeUIWebUIToolbarURL)));
+  observer.StartWatchingNewWebContents();
+  auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
+  observer.Wait();
+
+  content::WebContents* contents = manager->GetToolbarContentsForTesting();
+  ASSERT_TRUE(contents);
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      content::EvalJs(contents, "chrome.getVariableValue('initialState')")
+          .ExtractString(),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+  EXPECT_THAT(dict->FindBool("isFallbackPrewarming"), testing::Optional(true));
+  EXPECT_THAT(dict->FindBool("homeButtonShouldBeShown"),
+              testing::Optional(true));
+  EXPECT_THAT(dict->FindBool("touchUi"), testing::Optional(true));
+  // No window has sent state yet, so this comes from the initial state.
+  EXPECT_EQ(true,
+            content::EvalJs(contents,
+                            "document.querySelector('toolbar-app').shadowRoot."
+                            "querySelector('#reload').touchUi"));
+}
+
 class WebUIToolbarLifecyclePrewarmedBrowserTest
     : public WebUIToolbarLifecycleBrowserTest {
  public:
