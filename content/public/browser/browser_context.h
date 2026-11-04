@@ -417,6 +417,14 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void SetSitesForEmbedderShard(
       const base::flat_set<net::SchemefulSite>& sites);
 
+  // Returns true if SetSitesForEmbedderShard() can currently be called on this
+  // BrowserContext. This both checks that the current state is valid (i.e.,
+  // that shards have not already been configured and no RenderProcessHost in
+  // this BrowserContext has been used yet) and that shards are actually
+  // supported (i.e., that we're not in single-process mode and that conflicting
+  // features aren't enabled).
+  bool CanSetSitesForEmbedderShard() const;
+
   //////////////////////////////////////////////////////////////////////////////
   // The //content embedder can override the methods below to change or extend
   // how the //content layer interacts with a BrowserContext.

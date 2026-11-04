@@ -167,6 +167,10 @@ class CONTENT_EXPORT BrowserContextImpl {
   void SetSitesForEmbedderShard(
       const base::flat_set<net::SchemefulSite>& sites);
 
+  // Implements BrowserContext::CanSetSitesForEmbedderShard(). See the comments
+  // there.
+  bool CanSetSitesForEmbedderShard() const;
+
   // Returns the shard that `site` belongs to in this BrowserContext, i.e.
   // SiteShard::kEmbedderSites if `site` was passed to
   // SetSitesForEmbedderShard(), or SiteShard::kDefault otherwise.
