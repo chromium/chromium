@@ -1558,6 +1558,30 @@ std::optional<uint32_t> GetFontBulletCodePoint(uint32_t code_point,
   return std::nullopt;
 }
 
+// Returns the code point of `text` if it is a single non-whitespace character.
+std::optional<base_icu::UChar32> GetSingleCharacter(std::string_view text) {
+  size_t char_index = 0;
+  base_icu::UChar32 code_point;
+  if (!base::ReadUnicodeCharacter(text, &char_index, &code_point) ||
+      char_index + 1 != text.size() || base::IsUnicodeWhitespace(code_point)) {
+    return std::nullopt;
+  }
+  return code_point;
+}
+
+// Returns the code point of `text` if it is a single character followed by
+// item text on the same line.
+std::optional<base_icu::UChar32> GetStandaloneMarkerCharacter(
+    std::string_view text,
+    const TextRunContext& run_context) {
+  const std::optional<base_icu::UChar32> code_point = GetSingleCharacter(text);
+  if (!code_point.has_value() ||
+      !IsStandaloneMarkerFollowedByText(run_context)) {
+    return std::nullopt;
+  }
+  return code_point;
+}
+
 // Returns the parent list level for a marker at `run_x`, or nullptr if there is
 // no shallower list level.
 //
@@ -1607,16 +1631,11 @@ ListMarkerForm ClassifyNestedOnlyMarker(std::string_view text,
 
   // Word's remaining nested markers are standalone single non-whitespace
   // characters. Combined "o text" is never accepted because 'o' is also a word.
-  size_t i = 0;
-  base_icu::UChar32 code_point;
-  const bool is_standalone_char =
-      base::ReadUnicodeCharacter(text, &i, &code_point) &&
-      i + 1 == text.size() && !base::IsUnicodeWhitespace(code_point);
-  const bool is_standalone_bullet =
-      is_standalone_char &&
-      GetFontBulletCodePoint(code_point, run_context.run->style.font_name)
-          .has_value();
-  if (is_standalone_bullet && IsStandaloneMarkerFollowedByText(run_context)) {
+  const std::optional<base_icu::UChar32> code_point =
+      GetStandaloneMarkerCharacter(text, run_context);
+  if (code_point.has_value() &&
+      GetFontBulletCodePoint(*code_point, run_context.run->style.font_name)
+          .has_value()) {
     return ListMarkerForm::kStandalone;
   }
   return ListMarkerForm::kNone;
