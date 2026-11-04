@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -145,15 +147,18 @@ void OmniboxPopupFullPresenter::Show() {
         app_menu_control_observation_.Observe(
             browser_view->toolbar_button_provider()->GetAppMenuControl());
       }
-      auto* elements = BrowserElementsViews::From(browser_view->browser());
-      if (views::View* strip =
-              elements
-                  ? elements->RetrieveView(kVerticalTabStripRegionRetrievalId)
-                  : nullptr;
-          strip && !vertical_tab_strip_observation_.IsObserving()) {
-        vertical_tab_strip_observation_.Observe(strip);
+      if (auto* elements =
+              BrowserElementsViews::From(browser_view->browser())) {
+        for (views::View* view :
+             {elements->RetrieveView(kVerticalTabStripRegionRetrievalId),
+              elements->GetView(OrganizerTrayView::kTrayElementId,
+                                /*require_visible=*/false)}) {
+          if (view && !occluding_view_observations_.IsObservingSource(view)) {
+            occluding_view_observations_.AddObservation(view);
+          }
+        }
       }
-      UpdateVerticalTabStripOcclusion();
+      UpdatePopupOcclusion();
     }
   }
 }
@@ -172,8 +177,8 @@ void OmniboxPopupFullPresenter::Hide() {
     content->CancelPendingContextMenuRequest();
   }
   app_menu_control_observation_.Reset();
-  vertical_tab_strip_observation_.Reset();
-  UpdateVerticalTabStripOcclusion();
+  occluding_view_observations_.RemoveAllObservations();
+  UpdatePopupOcclusion();
 
   event_monitor_.reset();
   forward_events_timer_.Stop();
@@ -409,7 +414,7 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
       -(shadow_in_webui ? shadow_margin : results_frame->GetInsets()));
   GetWidget()->SetBounds(widget_bounds);
 
-  UpdateVerticalTabStripOcclusion();
+  UpdatePopupOcclusion();
 }
 
 void OmniboxPopupFullPresenter::NotifyEscapeKeyPressed() {
@@ -882,13 +887,16 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
         event_screen_point.y() < top_container_bounds.bottom();
   }
 
-  // Treat vertical tabs, outside the top container, like horizontal tabs.
-  // Otherwise clicking a tab blurs the omnibox before the tab switch saves its
-  // state. See crbug.com/580059964.
-  if (views::View* strip = vertical_tab_strip_observation_.GetSource();
-      strip && strip->IsDrawn() &&
-      strip->GetBoundsInScreen().Contains(event_screen_point)) {
-    contains_top_container = true;
+  // Treat vertical tabs and the organizer tray, outside the top container,
+  // like horizontal tabs. Otherwise clicking a tab blurs the omnibox before
+  // the tab switch saves its state (see crbug.com/580059964), and clicking
+  // the tray focuses the web contents and closes the tray.
+  for (views::View* view : occluding_view_observations_.sources()) {
+    if (view->IsDrawn() &&
+        view->GetBoundsInScreen().Contains(event_screen_point)) {
+      contains_top_container = true;
+      break;
+    }
   }
 
   bool contains_popup = false;
@@ -972,33 +980,41 @@ void OmniboxPopupFullPresenter::OnViewVisibilityChanged(
     views::View* observed_view,
     views::View* starting_view,
     bool visible) {
-  UpdateVerticalTabStripOcclusion();
+  UpdatePopupOcclusion();
 }
 
 void OmniboxPopupFullPresenter::OnViewBoundsChanged(
     views::View* observed_view) {
-  UpdateVerticalTabStripOcclusion();
+  UpdatePopupOcclusion();
 }
 
 void OmniboxPopupFullPresenter::OnViewIsDeleting(views::View* observed_view) {
-  vertical_tab_strip_observation_.Reset();
+  occluding_view_observations_.RemoveObservation(observed_view);
+  UpdatePopupOcclusion();
 }
 
-void OmniboxPopupFullPresenter::UpdateVerticalTabStripOcclusion() {
-#if defined(USE_AURA)
+void OmniboxPopupFullPresenter::UpdatePopupOcclusion() {
   // `GetLayer()` is null if the native window is already closing.
   ui::Layer* layer = GetWidget() ? GetWidget()->GetLayer() : nullptr;
   if (!layer) {
     return;
   }
   gfx::Rect clip;
-  views::View* strip = vertical_tab_strip_observation_.GetSource();
   // Only clip while the popup is collapsed. Once suggestions open, the strip
-  // collapses and the popup should paint in full.
-  if (strip && strip->IsDrawn() && IsPopupCollapsed()) {
+  // collapses and the popup should paint in full. The widget comparison skips
+  // macOS immersive fullscreen, where the location bar sits in an overlay
+  // widget above the strip and tray.
+  if (IsPopupCollapsed()) {
     const gfx::Rect popup_bounds = GetWidget()->GetWindowBoundsInScreen();
-    gfx::Rect covered = strip->GetBoundsInScreen();
-    covered.Intersect(popup_bounds);
+    views::Widget* location_bar_widget = delegate().GetLocationBarWidget();
+    gfx::Rect covered;
+    for (views::View* view : occluding_view_observations_.sources()) {
+      if (view->IsDrawn() && view->GetWidget() == location_bar_widget) {
+        gfx::Rect intersection = view->GetBoundsInScreen();
+        intersection.Intersect(popup_bounds);
+        covered.Union(intersection);
+      }
+    }
     if (!covered.IsEmpty()) {
       // `clip` is the uncovered portion of the popup.
       clip = gfx::Rect(popup_bounds.size());
@@ -1013,9 +1029,10 @@ void OmniboxPopupFullPresenter::UpdateVerticalTabStripOcclusion() {
       }
     }
   }
-  // Ensure events in the covered part reach the strip.
+  // Ensure events in the covered part reach the view beneath (via
+  // `aura::WindowTargeter::GetHitTestRects()` on Aura and
+  // `ResultsViewTargeterDelegate::TargetForRect()` on macOS).
   layer->SetClipRect(clip);
-#endif  // USE_AURA
 }
 
 void OmniboxPopupFullPresenter::KeepBrowserPaintingAsActiveAcrossHandoff() {

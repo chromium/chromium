@@ -10,6 +10,8 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/callback_list.h"
+#include "base/i18n/base_i18n_switches.h"
+#include "base/i18n/rtl.h"
 #include "base/json/string_escape.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -35,6 +37,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -52,10 +55,13 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -65,6 +71,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu_mixin.h"
@@ -77,6 +84,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -148,6 +157,7 @@
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -7361,3 +7371,209 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
       InAnyContext(WaitForElementToRender(kPopupWebView, kContextButton)),
       InAnyContext(WaitForStateChange(kPopupWebView, style_applied)));
 }
+
+class FullWebUIOmniboxOrganizerTrayInteractiveTest
+    : public FullWebUIOmniboxInteractiveTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  FullWebUIOmniboxOrganizerTrayInteractiveTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{organizer_panel::kOrganizerPanel,
+                              omnibox::internal::kWebUIOmniboxPopup,
+                              omnibox::internal::kWebUIOmniboxFullPopup},
+        /*disabled_features=*/{features::kWebUIToolbar,
+                               features::kWebUILocationBar});
+  }
+  ~FullWebUIOmniboxOrganizerTrayInteractiveTest() override = default;
+
+  bool IsRtl() const { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FullWebUIOmniboxInteractiveTestBase::SetUpCommandLine(command_line);
+    if (IsRtl()) {
+      command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                      switches::kForceDirectionRTL);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    FullWebUIOmniboxInteractiveTestBase::SetUpOnMainThread();
+    tabs::VerticalTabStripStateController::From(browser())
+        ->SetVerticalTabsEnabled(false);
+    browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1200, 800));
+  }
+
+ protected:
+  views::View* GetOrganizerTrayView() {
+    return BrowserElementsViews::From(browser())->GetView(
+        OrganizerTrayView::kTrayElementId);
+  }
+
+  // Returns the part of the popup widget that `OrganizerTrayView` covers.
+  gfx::Rect GetTrayPopupOverlapInScreen() {
+    views::Widget* popup_widget = GetPopupWidget(browser());
+    views::View* tray = GetOrganizerTrayView();
+    CHECK(popup_widget);
+    CHECK(tray);
+    return gfx::IntersectRects(tray->GetBoundsInScreen(),
+                               popup_widget->GetWindowBoundsInScreen());
+  }
+
+  bool IsOrganizerTrayOpen() {
+    views::View* tray = GetOrganizerTrayView();
+    return OrganizerPanelController::From(browser())
+               ->IsOrganizerPanelVisible() &&
+           tray && tray->GetVisible();
+  }
+
+  // Opens the Organizer Tray and waits for its WebUI to load.
+  auto OpenOrganizerTray(ui::ElementIdentifier organizer_web_view) {
+    return Steps(
+        Do([this]() { chrome::ShowTabSearch(browser()); }),
+        WaitForShow(OrganizerTrayView::kTrayElementId),
+        WaitForShow(OrganizerPanelView::kWebViewElementId),
+        InstrumentNonTabWebView(organizer_web_view,
+                                OrganizerPanelView::kWebViewElementId),
+        WaitForWebContentsReady(organizer_web_view,
+                                GURL(chrome::kChromeUIOrganizerPanelURL)));
+  }
+
+  // Waits until the tray has finished animating open over the collapsed popup
+  // and the popup widget has a clip.
+  auto WaitForCollapsedPopupClippedByTray() {
+    return PollUntil(
+        [this]() {
+          auto* popup_widget = GetPopupWidget(browser());
+          auto* tray = GetOrganizerTrayView();
+          if (!popup_widget || !popup_widget->GetLayer() || !tray ||
+              !IsOrganizerTrayOpen() ||
+              BrowserAnimationController::From(browser())->IsAnimating(
+                  OrganizerPanelAnimations::kOrganizerPanel)) {
+            return false;
+          }
+          return !GetTrayPopupOverlapInScreen().IsEmpty() &&
+                 !popup_widget->GetLayer()->clip_rect().IsEmpty();
+        },
+        "WaitForCollapsedPopupClippedByTray");
+  }
+
+  // Checks that the popup clip keeps only the part the tray does not cover,
+  // on the trailing side.
+  auto CheckPopupClipExcludesTray() {
+    return CheckResult(
+        [this]() {
+          views::Widget* popup_widget = GetPopupWidget(browser());
+          const gfx::Rect popup_bounds =
+              popup_widget->GetWindowBoundsInScreen();
+          const int covered_width = GetTrayPopupOverlapInScreen().width();
+          const int visible_width = popup_bounds.width() - covered_width;
+          const gfx::Rect expected_clip(IsRtl() ? 0 : covered_width, 0,
+                                        visible_width, popup_bounds.height());
+          return popup_widget->GetLayer()->clip_rect() == expected_clip;
+        },
+        true, "CheckPopupClipExcludesTray");
+  }
+
+  // Counts `mousedown` events that reach `organizer_web_view`.
+  auto StartCountingMousedowns(ui::ElementIdentifier organizer_web_view) {
+    return ExecuteJsAt(organizer_web_view, {"body"}, R"((el) => {
+      window.__mousedownCount = 0;
+      window.addEventListener('mousedown', () => {
+        window.__mousedownCount++;
+      }, true);
+    })");
+  }
+
+  auto WaitForMousedownCount(ui::ElementIdentifier organizer_web_view,
+                             int count) {
+    return WaitForJsConditionAt(
+        organizer_web_view, {"body"},
+        base::StringPrintf("(el) => window.__mousedownCount === %d", count));
+  }
+
+  // Clicks the center of the region where the tray overlaps the popup widget.
+  auto ClickTrayOverPopup() {
+    return Steps(
+        MoveMouseTo(OrganizerTrayView::kTrayElementId,
+                    base::BindLambdaForTesting([this](ui::TrackedElement*) {
+                      const gfx::Rect overlap = GetTrayPopupOverlapInScreen();
+                      CHECK(!overlap.IsEmpty());
+                      return overlap.CenterPoint();
+                    })),
+        ClickMouse());
+  }
+
+  // Clicks the tray body 40 DIPs below `top_container`.
+  auto ClickTrayBelowTopContainer() {
+    return Steps(
+        MoveMouseTo(OrganizerTrayView::kTrayElementId,
+                    base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                      const gfx::Rect tray_bounds = el->GetScreenBounds();
+                      const int top_container_bottom =
+                          BrowserView::GetBrowserViewForBrowser(browser())
+                              ->top_container()
+                              ->GetBoundsInScreen()
+                              .bottom();
+                      const gfx::Point point(tray_bounds.CenterPoint().x(),
+                                             top_container_bottom + 40);
+                      CHECK(tray_bounds.Contains(point));
+                      return point;
+                    })),
+        ClickMouse());
+  }
+
+  // Checks that a click left the tray open and the omnibox unfocused, with the
+  // popup still collapsed rather than closed.
+  auto CheckTrayOpenAndOmniboxUnfocused() {
+    return Steps(CheckResult([this]() { return IsOrganizerTrayOpen(); }, true,
+                             "CheckTrayOpen"),
+                 CheckPopupState(OmniboxPopupState::kFull),
+                 CheckVisibleOmniboxUnfocused());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that when an uncommitted draft keeps the collapsed Full WebUI
+// omnibox popup open and `OrganizerTrayView` opens over the leading side of
+// `top_container`, the popup widget clips out the region covered by
+// `OrganizerTrayView` and clicks in both the overlapping top region and the
+// tray body below `top_container` reach `OrganizerTrayView` without closing it.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxOrganizerTrayInteractiveTest,
+                       OrganizerTrayClipsCollapsedDraftPopupAndReceivesClicks) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOrganizerWebView);
+
+  RunTestSequence(
+      // Leave an uncommitted draft in the omnibox with the dropdown open.
+      FocusOmniboxOnInitialNtp(kTab1), InputWebUIText("draft query"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      CheckResult(
+          [this]() {
+            return GetOmniboxControllerForTest()->edit_model()->HasDraft();
+          },
+          true, "CheckHasDraft"),
+
+      // Opening the tray blurs the omnibox and collapses the popup to one row.
+      OpenOrganizerTray(kOrganizerWebView), WaitForVisibleOmniboxUnfocused(),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForCollapsedPopupClippedByTray(),
+      CheckPopupState(OmniboxPopupState::kFull), CheckPopupClipExcludesTray(),
+
+      // Clicks over the clipped popup and below `top_container` both reach the
+      // tray without closing it.
+      StartCountingMousedowns(kOrganizerWebView), ClickTrayOverPopup(),
+      WaitForMousedownCount(kOrganizerWebView, 1),
+      CheckTrayOpenAndOmniboxUnfocused(), ClickTrayBelowTopContainer(),
+      WaitForMousedownCount(kOrganizerWebView, 2),
+      CheckTrayOpenAndOmniboxUnfocused());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxOrganizerTrayInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "RTL" : "LTR";
+                         });

@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
@@ -164,9 +165,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // below the location bar.
   bool IsPopupCollapsed() const;
 
-  // Clips the part of the popup that the expanded vertical tab strip covers,
-  // which also sends events there to the strip. Aura only.
-  void UpdateVerticalTabStripOcclusion();
+  // Clips the part of the collapsed popup that the expanded vertical tab strip
+  // or the organizer tray covers, which also sends events there to the view
+  // beneath.
+  void UpdatePopupOcclusion();
 
   // Returns the browser window's widget. In macOS immersive fullscreen this is
   // not the location bar's widget, which is then a non-activatable overlay.
@@ -206,10 +208,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       browser_focus_manager_observation_{this};
   base::ScopedObservation<AppMenuControl, AppMenuButtonObserver>
       app_menu_control_observation_{this};
-  // Observes the vertical tab strip while the popup is shown. See
-  // `UpdateVerticalTabStripOcclusion()`.
-  base::ScopedObservation<views::View, views::ViewObserver>
-      vertical_tab_strip_observation_{this};
+  // Observes the vertical tab strip and the organizer tray while the popup is
+  // shown. See `UpdatePopupOcclusion()`.
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      occluding_view_observations_{this};
 
   // Used to determine where a click event happened to decide if the popup
   // should be deactivated.
