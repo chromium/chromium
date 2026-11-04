@@ -1287,8 +1287,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
 // Test that a PDF embed lower in a webpage will not trigger a page scroll to
 // it on load. Regression test for https://crbug.com/429553604.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EmbedPdfBottomOfViewport) {
-  ASSERT_TRUE(LoadPdfInFirstChild(embedded_test_server()->GetURL(
-      "/pdf/pdf_embed_bottom_of_viewport.html")));
+  // Don't wait for hit test data, which this test doesn't need. The PDF content
+  // frame is out of view, and with `features::kPdfOpaqueOrigin`, it is
+  // cross-origin to the embedder, so its rendering may be throttled, and it may
+  // never produce hit test data.
+  pdf_extension_test_util::EnsurePDFHasLoadedOptions options;
+  options.wait_for_hit_test_data = false;
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("/pdf/pdf_embed_bottom_of_viewport.html"),
+      options));
 
   EXPECT_EQ(0,
             content::EvalJs(GetActiveWebContents(), "document.body.scrollTop"));

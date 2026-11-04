@@ -123,10 +123,11 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdfInNewTab(
 }
 
 testing::AssertionResult PDFExtensionTestBase::LoadPdfInFirstChild(
-    const GURL& url) {
+    const GURL& url,
+    const pdf_extension_test_util::EnsurePDFHasLoadedOptions& options) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   return EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
-      GetActiveWebContents());
+      GetActiveWebContents(), options);
 }
 
 testing::AssertionResult PDFExtensionTestBase::LoadPdfAllowMultipleFrames(
@@ -296,11 +297,13 @@ PDFExtensionTestBase::EnsureFullPagePDFHasLoadedWithValidFrameTree(
 
 testing::AssertionResult
 PDFExtensionTestBase::EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
-    content::WebContents* contents) {
+    content::WebContents* contents,
+    const pdf_extension_test_util::EnsurePDFHasLoadedOptions& options) {
   testing::AssertionResult result =
       UseOopif() ? GetTestMimeHandlerStreamManager(contents)
-                       ->WaitUntilPdfLoadedInFirstChild()
-                 : pdf_extension_test_util::EnsurePDFHasLoaded(contents);
+                       ->WaitUntilPdfLoadedInFirstChild(options)
+                 : pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
+                       contents, options);
 
   ValidateFrameTree(contents);
 
