@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -298,11 +297,9 @@ void TokenHandleStore::ReplyToTokenHandleCheck(
                                kTokenHandleStatusInvalid);
   }
 
-  if (auto it = pending_checks_.find(account_id); it != pending_checks_.end()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(it->second)));
-    pending_checks_.erase(it);
-  }
+  // Make sure that we delete pending checks before calling any
+  // `TokenValidationCallback` callback.
+  pending_checks_.erase(account_id);
 
   std::vector<TokenValidationCallback> callbacks =
       std::exchange(pending_callbacks_[account_id], {});
