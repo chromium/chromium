@@ -3238,30 +3238,30 @@ TEST_F(CacheStorageIndexMigrationTest, BucketMigration) {
 }
 
 TEST_F(CacheStorageIndexMigrationTest, InvalidBucketId) {
-  DoTest(
-      "content/test/data/cache_storage/invalid_bucket_id/",
-      base::BindLambdaForTesting(
-          [this](const proto::CacheStorageIndex& original_index,
-                 const proto::CacheStorageIndex& upgraded_index,
-                 int64_t bucket_usage) {
-            EXPECT_EQ(original_index.storage_key(),
-                      upgraded_index.storage_key());
-            EXPECT_EQ(original_index.bucket_is_default(),
-                      upgraded_index.bucket_is_default());
+  DoTest("content/test/data/cache_storage/invalid_bucket_id/",
+         base::BindLambdaForTesting(
+             [this](const proto::CacheStorageIndex& original_index,
+                    const proto::CacheStorageIndex& upgraded_index,
+                    int64_t bucket_usage) {
+               EXPECT_EQ(original_index.storage_key(),
+                         upgraded_index.storage_key());
+               EXPECT_EQ(original_index.bucket_is_default(),
+                         upgraded_index.bucket_is_default());
 
-            EXPECT_EQ(original_index.bucket_id(), 999);
-            EXPECT_GT(original_index.bucket_id(), upgraded_index.bucket_id());
+               EXPECT_EQ(original_index.bucket_id(), 999);
+               EXPECT_GT(original_index.bucket_id(),
+                         upgraded_index.bucket_id());
 
-            std::optional<blink::StorageKey> result =
-                blink::StorageKey::Deserialize(upgraded_index.storage_key());
-            ASSERT_TRUE(result.has_value());
-            EXPECT_EQ(this->storage_key1_, result.value());
+               std::optional<blink::StorageKey> result =
+                   blink::StorageKey::Deserialize(upgraded_index.storage_key());
+               ASSERT_TRUE(result.has_value());
+               EXPECT_EQ(this->storage_key1_, result.value());
 
-            storage::BucketLocator bucket_locator = storage::BucketLocator(
-                storage::BucketId(upgraded_index.bucket_id()), result.value(),
-                upgraded_index.bucket_is_default());
-            EXPECT_EQ(this->bucket_locator1_, bucket_locator);
-          }));
+               storage::BucketLocator bucket_locator = storage::BucketLocator(
+                   storage::BucketId(upgraded_index.bucket_id()),
+                   result.value(), upgraded_index.bucket_is_default());
+               EXPECT_EQ(this->bucket_locator1_, bucket_locator);
+             }));
 }
 
 INSTANTIATE_TEST_SUITE_P(CacheStorageManagerTests,
