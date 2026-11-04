@@ -16,8 +16,8 @@ MediaResourceShim::MediaResourceShim(
     std::vector<mojo::PendingRemote<mojom::DemuxerStream>> streams,
     base::OnceClosure demuxer_ready_cb)
     : demuxer_ready_cb_(std::move(demuxer_ready_cb)), streams_ready_(0) {
-  DCHECK(!streams.empty());
-  DCHECK(demuxer_ready_cb_);
+  CHECK(!streams.empty(), base::NotFatalUntil::M163);
+  CHECK(demuxer_ready_cb_, base::NotFatalUntil::M163);
 
   for (auto& s : streams) {
     streams_.emplace_back(std::make_unique<MojoDemuxerStreamAdapter>(
@@ -29,7 +29,7 @@ MediaResourceShim::MediaResourceShim(
 MediaResourceShim::~MediaResourceShim() = default;
 
 std::vector<raw_ptr<DemuxerStream>> MediaResourceShim::GetAllStreams() {
-  DCHECK(!demuxer_ready_cb_);
+  CHECK(!demuxer_ready_cb_, base::NotFatalUntil::M163);
   std::vector<raw_ptr<DemuxerStream>> result;
   for (auto& stream : streams_) {
     result.push_back(stream.get());

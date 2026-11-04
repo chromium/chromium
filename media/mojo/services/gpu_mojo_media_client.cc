@@ -38,7 +38,7 @@ gpu::CommandBufferStub* GetCommandBufferStub(
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
     base::UnguessableToken channel_token,
     int32_t route_id) {
-  DCHECK(gpu_task_runner->BelongsToCurrentThread());
+  CHECK(gpu_task_runner->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   if (!media_gpu_channel_manager)
     return nullptr;
 
@@ -109,11 +109,12 @@ GpuMojoMediaClientTraits::GpuMojoMediaClientTraits(
 
 std::unique_ptr<GpuMojoMediaClient> GpuMojoMediaClient::Create(
     GpuMojoMediaClientTraits& traits) {
-  DCHECK(!traits.gpu_task_runner ||
-         traits.gpu_task_runner->BelongsToCurrentThread());
+  CHECK(!traits.gpu_task_runner ||
+            traits.gpu_task_runner->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
 
   auto client = CreateGpuMediaService(traits);
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M163);
   return client;
 }
 

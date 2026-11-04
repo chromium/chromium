@@ -27,7 +27,7 @@ void MojoVideoEncodeAcceleratorProviderFactory::BindReceiver(
     mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProviderFactory>
         receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M163);
   receiver_.Bind(std::move(receiver));
 }
 

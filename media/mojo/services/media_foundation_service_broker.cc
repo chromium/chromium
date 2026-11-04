@@ -68,7 +68,7 @@ void MediaFoundationServiceBroker::OnGpuInfoUpdate(
 
 void MediaFoundationServiceBroker::TerminateService() {
   DVLOG(1) << __func__;
-  DCHECK(media_foundation_service_);
+  CHECK(media_foundation_service_, base::NotFatalUntil::M163);
   media_foundation_service_.reset();
 }
 

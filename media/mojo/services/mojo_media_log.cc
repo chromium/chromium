@@ -28,7 +28,7 @@ MojoMediaLog::~MojoMediaLog() {
 
 void MojoMediaLog::AddLogRecordLocked(std::unique_ptr<MediaLogRecord> event) {
   DVLOG(2) << __func__;
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
 
   // Don't post unless we need to.  Otherwise, we can order a log entry after
   // our own destruction.  While safe, this loses the message.  This can happen,

@@ -40,7 +40,7 @@ MojoDemuxerStreamAdapter::~MojoDemuxerStreamAdapter() {
 void MojoDemuxerStreamAdapter::Read(uint32_t count, ReadCB read_cb) {
   DVLOG(3) << __func__;
   // We shouldn't be holding on to a previous callback if a new Read() came in.
-  DCHECK(!read_cb_);
+  CHECK(!read_cb_, base::NotFatalUntil::M163);
 
   read_cb_ = std::move(read_cb);
   demuxer_stream_->Read(count,
@@ -49,12 +49,12 @@ void MojoDemuxerStreamAdapter::Read(uint32_t count, ReadCB read_cb) {
 }
 
 AudioDecoderConfig MojoDemuxerStreamAdapter::audio_decoder_config() {
-  DCHECK_EQ(type_, AUDIO);
+  CHECK_EQ(type_, AUDIO, base::NotFatalUntil::M163);
   return audio_config_;
 }
 
 VideoDecoderConfig MojoDemuxerStreamAdapter::video_decoder_config() {
-  DCHECK_EQ(type_, VIDEO);
+  CHECK_EQ(type_, VIDEO, base::NotFatalUntil::M163);
   return video_config_;
 }
 
@@ -77,8 +77,8 @@ void MojoDemuxerStreamAdapter::OnStreamReady(
     const std::optional<AudioDecoderConfig>& audio_config,
     const std::optional<VideoDecoderConfig>& video_config) {
   DVLOG(1) << __func__;
-  DCHECK_EQ(UNKNOWN, type_);
-  DCHECK(consumer_handle.is_valid());
+  CHECK_EQ(UNKNOWN, type_, base::NotFatalUntil::M163);
+  CHECK(consumer_handle.is_valid(), base::NotFatalUntil::M163);
 
   type_ = type;
 
@@ -98,8 +98,8 @@ void MojoDemuxerStreamAdapter::OnBufferReady(
   DVLOG(3) << __func__
            << ": status=" << ::media::DemuxerStream::GetStatusName(status)
            << ", batch_buffers.size=" << batch_buffers.size();
-  DCHECK(read_cb_);
-  DCHECK_NE(type_, UNKNOWN);
+  CHECK(read_cb_, base::NotFatalUntil::M163);
+  CHECK_NE(type_, UNKNOWN, base::NotFatalUntil::M163);
 
   if (status == kConfigChanged) {
     if (!UpdateConfig(std::move(audio_config), std::move(video_config))) {
@@ -115,8 +115,8 @@ void MojoDemuxerStreamAdapter::OnBufferReady(
     return;
   }
 
-  DCHECK_EQ(status, kOk);
-  DCHECK_GT(batch_buffers.size(), 0u);
+  CHECK_EQ(status, kOk, base::NotFatalUntil::M163);
+  CHECK_GT(batch_buffers.size(), 0u, base::NotFatalUntil::M163);
 
   status_ = status;
   actual_read_count_ = batch_buffers.size();
@@ -161,7 +161,7 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
     return;
   }
 
-  DCHECK_EQ(buffer_queue_.size(), actual_read_count_);
+  CHECK_EQ(buffer_queue_.size(), actual_read_count_, base::NotFatalUntil::M163);
   actual_read_count_ = 0;
   DemuxerStream::DecoderBufferVector buffer_queue;
   buffer_queue_.swap(buffer_queue);
@@ -171,7 +171,7 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
 bool MojoDemuxerStreamAdapter::UpdateConfig(
     const std::optional<AudioDecoderConfig>& audio_config,
     const std::optional<VideoDecoderConfig>& video_config) {
-  DCHECK_NE(type_, Type::UNKNOWN);
+  CHECK_NE(type_, Type::UNKNOWN, base::NotFatalUntil::M163);
   std::string old_decoder_config_str;
 
   switch (type_) {

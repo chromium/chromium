@@ -97,7 +97,8 @@ void PlaybackEventsRecorder::OnEnded() {
 }
 
 void PlaybackEventsRecorder::OnBuffering() {
-  DCHECK(buffering_state_ == BufferingState::kBuffered);
+  CHECK(buffering_state_ == BufferingState::kBuffered,
+        base::NotFatalUntil::M163);
 
   buffering_start_time_ = base::TimeTicks::Now();
   buffering_state_ = BufferingState::kBuffering;

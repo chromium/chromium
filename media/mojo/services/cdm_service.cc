@@ -69,7 +69,8 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
     auto mojo_cdm_service =
         std::make_unique<MojoCdmService>(&cdm_service_context_);
     auto* raw_mojo_cdm_service = mojo_cdm_service.get();
-    DCHECK(!pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+    CHECK(!pending_mojo_cdm_services_.count(raw_mojo_cdm_service),
+          base::NotFatalUntil::M163);
     pending_mojo_cdm_services_[raw_mojo_cdm_service] =
         std::move(mojo_cdm_service);
     raw_mojo_cdm_service->Initialize(
@@ -105,10 +106,11 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
                                CreateCdmCallback callback,
                                mojom::CdmContextPtr cdm_context,
                                CreateCdmStatus status) {
-    DCHECK(raw_mojo_cdm_service);
+    CHECK(raw_mojo_cdm_service, base::NotFatalUntil::M163);
 
     // Remove pending MojoCdmService from the mapping in all cases.
-    DCHECK(pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+    CHECK(pending_mojo_cdm_services_.count(raw_mojo_cdm_service),
+          base::NotFatalUntil::M163);
     auto mojo_cdm_service =
         std::move(pending_mojo_cdm_services_[raw_mojo_cdm_service]);
     pending_mojo_cdm_services_.erase(raw_mojo_cdm_service);
@@ -150,7 +152,7 @@ CdmService::CdmService(std::unique_ptr<Client> client,
                        mojo::PendingReceiver<mojom::CdmService> receiver)
     : receiver_(this, std::move(receiver)), client_(std::move(client)) {
   DVLOG(1) << __func__;
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
 }
 
 CdmService::~CdmService() {

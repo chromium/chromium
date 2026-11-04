@@ -24,7 +24,7 @@ void MediaDrmSupportService::IsKeySystemSupported(
     const std::string& key_system,
     bool is_secure,
     IsKeySystemSupportedCallback callback) {
-  DCHECK(!key_system.empty());
+  CHECK(!key_system.empty(), base::NotFatalUntil::M163);
   DVLOG(1) << __func__ << " key_system: " << key_system;
 
   auto security_level =

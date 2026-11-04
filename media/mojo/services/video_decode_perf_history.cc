@@ -60,7 +60,7 @@ base::FieldTrialParams VideoDecodePerfHistory::GetFieldTrialParams() {
 
   const bool result = base::GetFieldTrialParamsByFeature(
       kMediaCapabilitiesWithParameters, &actual_trial_params);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M163);
 
   return actual_trial_params;
 }
@@ -69,7 +69,7 @@ VideoDecodePerfHistory::VideoDecodePerfHistory(
     std::unique_ptr<VideoDecodeStatsDB> db)
     : db_(std::move(db)), db_init_status_(UNINITIALIZED) {
   DVLOG(2) << __func__;
-  DCHECK(db_);
+  CHECK(db_, base::NotFatalUntil::M163);
 }
 
 VideoDecodePerfHistory::~VideoDecodePerfHistory() {
@@ -94,7 +94,7 @@ void VideoDecodePerfHistory::InitDatabase() {
   // DB should be initialized only once! We hand out references to the
   // initialized DB via GetVideoDecodeStatsDB(). Dependents expect DB to remain
   // initialized during their lifetime.
-  DCHECK_EQ(db_init_status_, UNINITIALIZED);
+  CHECK_EQ(db_init_status_, UNINITIALIZED, base::NotFatalUntil::M163);
 
   db_->Initialize(base::BindOnce(&VideoDecodePerfHistory::OnDatabaseInit,
                                  weak_ptr_factory_.GetWeakPtr()));
@@ -104,7 +104,7 @@ void VideoDecodePerfHistory::InitDatabase() {
 void VideoDecodePerfHistory::OnDatabaseInit(bool success) {
   DVLOG(2) << __func__ << " " << success;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(db_init_status_, PENDING);
+  CHECK_EQ(db_init_status_, PENDING, base::NotFatalUntil::M163);
 
   db_init_status_ = success ? COMPLETE : FAILED;
 
@@ -121,9 +121,11 @@ void VideoDecodePerfHistory::GetPerfInfo(mojom::PredictionFeaturesPtr features,
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK_NE(features->profile, VIDEO_CODEC_PROFILE_UNKNOWN);
-  DCHECK_GT(features->frames_per_sec, 0);
-  DCHECK(features->video_size.width() > 0 && features->video_size.height() > 0);
+  CHECK_NE(features->profile, VIDEO_CODEC_PROFILE_UNKNOWN,
+           base::NotFatalUntil::M163);
+  CHECK_GT(features->frames_per_sec, 0, base::NotFatalUntil::M163);
+  CHECK(features->video_size.width() > 0 && features->video_size.height() > 0,
+        base::NotFatalUntil::M163);
 
   if (db_init_status_ == FAILED) {
     // Optimistically claim perf is both smooth and power efficient.
@@ -193,8 +195,8 @@ void VideoDecodePerfHistory::OnGotStatsForRequest(
     bool database_success,
     std::unique_ptr<VideoDecodeStatsDB::DecodeStatsEntry> stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(got_info_cb);
-  DCHECK_EQ(db_init_status_, COMPLETE);
+  CHECK(got_info_cb, base::NotFatalUntil::M163);
+  CHECK_EQ(db_init_status_, COMPLETE, base::NotFatalUntil::M163);
 
   bool is_power_efficient = false;
   bool is_smooth = false;
@@ -204,7 +206,7 @@ void VideoDecodePerfHistory::OnGotStatsForRequest(
   AssessStats(video_key, stats.get(), &is_smooth, &is_power_efficient);
 
   if (stats && stats->frames_decoded) {
-    DCHECK(database_success);
+    CHECK(database_success, base::NotFatalUntil::M163);
     percent_dropped =
         static_cast<double>(stats->frames_dropped) / stats->frames_decoded;
     percent_power_efficient =
@@ -290,7 +292,7 @@ void VideoDecodePerfHistory::OnGotStatsForSave(
     bool success,
     std::unique_ptr<VideoDecodeStatsDB::DecodeStatsEntry> past_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(db_init_status_, COMPLETE);
+  CHECK_EQ(db_init_status_, COMPLETE, base::NotFatalUntil::M163);
 
   if (!success) {
     DVLOG(3) << __func__ << " FAILED! Aborting save.";
@@ -414,7 +416,7 @@ void VideoDecodePerfHistory::OnClearedHistory(base::OnceClosure clear_done_cb) {
 
 void VideoDecodePerfHistory::GetVideoDecodeStatsDB(GetCB get_db_cb) {
   DVLOG(3) << __func__;
-  DCHECK(get_db_cb);
+  CHECK(get_db_cb, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (db_init_status_ == FAILED) {

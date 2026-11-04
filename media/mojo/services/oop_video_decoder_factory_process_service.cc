@@ -37,7 +37,7 @@ void OOPVideoDecoderFactoryProcessService::InitializeVideoDecoderFactory(
   }
 
   // The browser process ensures this is called only once.
-  DCHECK(!factory_);
+  CHECK(!factory_, base::NotFatalUntil::M163);
   factory_ = std::make_unique<OOPVideoDecoderFactoryService>(
       gpu_feature_info, GetSharedImageInterface());
 

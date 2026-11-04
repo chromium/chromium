@@ -37,9 +37,9 @@ class MojoCdmBuffer final : public cdm::Buffer {
                 RecycleRegionCB recycle_region_cb)
       : mapped_region_(std::move(mapped_region)),
         recycle_region_cb_(std::move(recycle_region_cb)) {
-    DCHECK(mapped_region_);
-    DCHECK(mapped_region_->IsValid());
-    DCHECK(recycle_region_cb_);
+    CHECK(mapped_region_, base::NotFatalUntil::M163);
+    CHECK(mapped_region_->IsValid(), base::NotFatalUntil::M163);
+    CHECK(recycle_region_cb_, base::NotFatalUntil::M163);
     // cdm::Buffer interface limits capacity to uint32.
     CHECK_LE(mapped_region_->region.GetSize(),
              std::numeric_limits<uint32_t>::max());
@@ -66,7 +66,7 @@ class MojoCdmBuffer final : public cdm::Buffer {
   }
 
   void SetSize(uint32_t size) final {
-    DCHECK_LE(size, Capacity());
+    CHECK_LE(size, Capacity(), base::NotFatalUntil::M163);
     size_ = size > Capacity() ? 0 : size;
   }
 
@@ -80,7 +80,7 @@ class MojoCdmBuffer final : public cdm::Buffer {
  private:
   ~MojoCdmBuffer() final {
     // Verify that the buffer has been returned so it can be reused.
-    DCHECK(!mapped_region_);
+    CHECK(!mapped_region_, base::NotFatalUntil::M163);
   }
 
   std::unique_ptr<base::MappedReadOnlyRegion> mapped_region_;
@@ -103,15 +103,15 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
   // VideoFrameImpl implementation.
   scoped_refptr<media::VideoFrame> TransformToVideoFrame(
       gfx::Size natural_size) final {
-    DCHECK(FrameBuffer());
+    CHECK(FrameBuffer(), base::NotFatalUntil::M163);
 
     MojoCdmBuffer* buffer = static_cast<MojoCdmBuffer*>(FrameBuffer());
     const gfx::Size frame_size(Size().width, Size().height);
 
     std::unique_ptr<base::MappedReadOnlyRegion> mapped_region =
         buffer->TakeRegion();
-    DCHECK(mapped_region);
-    DCHECK(mapped_region->region.IsValid());
+    CHECK(mapped_region, base::NotFatalUntil::M163);
+    CHECK(mapped_region->region.IsValid(), base::NotFatalUntil::M163);
 
     // Clear FrameBuffer so that MojoCdmVideoFrame no longer has a reference
     // to it (memory will be transferred to media::VideoFrame).
@@ -164,7 +164,7 @@ MojoCdmAllocator::~MojoCdmAllocator() = default;
 // If not, a new buffer is created using AllocateNewRegion(). The caller is
 // responsible for calling Destroy() on the buffer when it is no longer needed.
 cdm::Buffer* MojoCdmAllocator::CreateCdmBuffer(size_t capacity) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   if (!capacity)
     return nullptr;
@@ -194,7 +194,7 @@ cdm::Buffer* MojoCdmAllocator::CreateCdmBuffer(size_t capacity) {
 
 // Creates a new MojoCdmVideoFrame on every request.
 std::unique_ptr<VideoFrameImpl> MojoCdmAllocator::CreateCdmVideoFrame() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   return std::make_unique<MojoCdmVideoFrame>(
       base::BindOnce(&MojoCdmAllocator::AddRegionToAvailableMap,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -202,7 +202,7 @@ std::unique_ptr<VideoFrameImpl> MojoCdmAllocator::CreateCdmVideoFrame() {
 
 std::unique_ptr<base::MappedReadOnlyRegion> MojoCdmAllocator::AllocateNewRegion(
     size_t capacity) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   // Always pad new allocated buffer so that we don't need to reallocate
   // buffers frequently if requested sizes fluctuate slightly.
@@ -229,8 +229,8 @@ std::unique_ptr<base::MappedReadOnlyRegion> MojoCdmAllocator::AllocateNewRegion(
 
 void MojoCdmAllocator::AddRegionToAvailableMap(
     std::unique_ptr<base::MappedReadOnlyRegion> mapped_region) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(mapped_region);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(mapped_region, base::NotFatalUntil::M163);
   size_t capacity = mapped_region->region.GetSize();
   available_regions_.insert({capacity, std::move(mapped_region)});
 }

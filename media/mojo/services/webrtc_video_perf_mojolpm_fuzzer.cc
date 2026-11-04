@@ -42,7 +42,7 @@ struct InitGlobals {
     // The call to CommandLine::Init is needed so that TestTimeouts::Initialize
     // does not fail.
     bool success = base::CommandLine::Init(0, nullptr);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M163);
     // TaskEnvironment requires TestTimeouts initialization to watch for
     // problematic long-running tasks.
     TestTimeouts::Initialize();

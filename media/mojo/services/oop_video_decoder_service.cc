@@ -98,15 +98,15 @@ void OOPVideoDecoderService::Construct(
     return;
   }
 
-  DCHECK(!video_decoder_client_receiver_.is_bound());
-  DCHECK(!video_decoder_client_remote_.is_bound());
+  CHECK(!video_decoder_client_receiver_.is_bound(), base::NotFatalUntil::M163);
+  CHECK(!video_decoder_client_remote_.is_bound(), base::NotFatalUntil::M163);
   video_decoder_client_remote_.Bind(std::move(video_decoder_client_remote));
 
-  DCHECK(!media_log_receiver_.is_bound());
-  DCHECK(!media_log_remote_.is_bound());
+  CHECK(!media_log_receiver_.is_bound(), base::NotFatalUntil::M163);
+  CHECK(!media_log_remote_.is_bound(), base::NotFatalUntil::M163);
   media_log_remote_.Bind(std::move(media_log_remote));
 
-  DCHECK(!video_frame_handle_releaser_);
+  CHECK(!video_frame_handle_releaser_, base::NotFatalUntil::M163);
   mojo::Remote<mojom::VideoFrameHandleReleaser> dst_releaser_remote;
 
   dst_video_decoder_remote_->Construct(
@@ -149,7 +149,7 @@ void OOPVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   }
 
   // The |config| should have been validated at deserialization time.
-  DCHECK(config.IsValidConfig());
+  CHECK(config.IsValidConfig(), base::NotFatalUntil::M163);
   if (config.is_encrypted()) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (!cdm_id_) {
@@ -263,8 +263,8 @@ void OOPVideoDecoderService::OnVideoFrameDecoded(
     bool can_read_without_stalling,
     const std::optional<base::UnguessableToken>& release_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(video_decoder_client_remote_.is_bound());
-  DCHECK(release_token.has_value());
+  CHECK(video_decoder_client_remote_.is_bound(), base::NotFatalUntil::M163);
+  CHECK(release_token.has_value(), base::NotFatalUntil::M163);
 
   // The mojo traits have been coded assuming these conditions.
   CHECK(!frame->metadata().end_of_stream);
@@ -277,7 +277,7 @@ void OOPVideoDecoderService::OnVideoFrameDecoded(
 
 void OOPVideoDecoderService::OnWaiting(WaitingReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(video_decoder_client_remote_.is_bound());
+  CHECK(video_decoder_client_remote_.is_bound(), base::NotFatalUntil::M163);
   video_decoder_client_remote_->OnWaiting(reason);
 }
 
@@ -288,7 +288,7 @@ void OOPVideoDecoderService::RequestOverlayInfo() {
 
 void OOPVideoDecoderService::AddLogRecord(const MediaLogRecord& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(media_log_remote_.is_bound());
+  CHECK(media_log_remote_.is_bound(), base::NotFatalUntil::M163);
   media_log_remote_->AddLogRecord(event);
 }
 

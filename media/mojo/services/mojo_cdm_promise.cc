@@ -31,7 +31,7 @@ static mojom::CdmPromiseResultPtr GetRejectResult(
 template <typename F, typename... T>
 MojoCdmPromise<F, T...>::MojoCdmPromise(CallbackType callback)
     : callback_(std::move(callback)) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M163);
 }
 
 template <typename F, typename... T>
@@ -39,7 +39,7 @@ MojoCdmPromise<F, T...>::~MojoCdmPromise() {
   if (IsPromiseSettled())
     return;
 
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M163);
   RejectPromiseOnDestruction();
 }
 

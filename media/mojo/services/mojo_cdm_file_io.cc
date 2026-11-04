@@ -65,9 +65,9 @@ MojoCdmFileIO::MojoCdmFileIO(Delegate* delegate,
       client_(client),
       cdm_storage_(std::move(cdm_storage)) {
   DVLOG(1) << __func__;
-  DCHECK(delegate_);
-  DCHECK(client_);
-  DCHECK(cdm_storage_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK(cdm_storage_, base::NotFatalUntil::M163);
 }
 
 MojoCdmFileIO::~MojoCdmFileIO() {
@@ -170,7 +170,7 @@ void MojoCdmFileIO::Read() {
 void MojoCdmFileIO::OnFileRead(FileStatus status,
                                const std::vector<uint8_t>& data) {
   DVLOG(3) << __func__ << " file: " << file_name_;
-  DCHECK_EQ(State::kReading, state_);
+  CHECK_EQ(State::kReading, state_, base::NotFatalUntil::M163);
 
   // This logs the end of the async Read() request, and separately logs
   // how long the client takes in OnReadComplete().
@@ -238,7 +238,7 @@ void MojoCdmFileIO::Write(const uint8_t* data, uint32_t data_size) {
 
 void MojoCdmFileIO::OnFileWritten(FileStatus status) {
   DVLOG(3) << __func__ << " file: " << file_name_;
-  DCHECK_EQ(State::kWriting, state_);
+  CHECK_EQ(State::kWriting, state_, base::NotFatalUntil::M163);
 
   // This logs the end of the async Write() request, and separately logs
   // how long the client takes in OnWriteComplete().

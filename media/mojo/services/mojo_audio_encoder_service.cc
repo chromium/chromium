@@ -18,7 +18,7 @@ namespace media {
 MojoAudioEncoderService::MojoAudioEncoderService(
     std::unique_ptr<media::AudioEncoder> encoder)
     : encoder_(std::move(encoder)) {
-  DCHECK(encoder_);
+  CHECK(encoder_, base::NotFatalUntil::M163);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 

@@ -43,7 +43,7 @@ scoped_refptr<media::CommandBufferHelper> GetCommandBufferHelper(
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
     base::UnguessableToken channel_token,
     int32_t route_id) {
-  DCHECK(gpu_task_runner->BelongsToCurrentThread());
+  CHECK(gpu_task_runner->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   if (!media_gpu_channel_manager) {
     return nullptr;
   }
@@ -76,7 +76,7 @@ void MojoVideoEncodeAcceleratorProvider::Create(
     scoped_refptr<base::SequencedTaskRunner> runner,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
-  DCHECK(runner);
+  CHECK(runner, base::NotFatalUntil::M163);
   runner->PostTask(
       FROM_HERE, base::BindOnce(BindVEAProvider, std::move(receiver),
                                 std::move(create_vea_callback), gpu_preferences,

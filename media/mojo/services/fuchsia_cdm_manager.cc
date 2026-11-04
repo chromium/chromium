@@ -119,7 +119,8 @@ void ApplyCdmStorageQuota(base::FilePath cdm_data_path,
     base::DeletePathRecursively(directory_info.path);
     affected_origin_directories.insert(directory_info.path.DirName());
 
-    DCHECK_GE(directories_size_bytes, directory_info.size_bytes);
+    CHECK_GE(directories_size_bytes, directory_info.size_bytes,
+             base::NotFatalUntil::M163);
     directories_size_bytes -= directory_info.size_bytes;
   }
 
@@ -302,7 +303,7 @@ FuchsiaCdmManager::FuchsiaCdmManager(
     ApplyCdmStorageQuota(cdm_data_path_, *cdm_data_quota_bytes_);
   }
 
-  DCHECK(!g_fuchsia_cdm_manager_instance);
+  CHECK(!g_fuchsia_cdm_manager_instance, base::NotFatalUntil::M163);
   g_fuchsia_cdm_manager_instance = this;
   if (base::FeatureList::IsEnabled(kFuchsiaCdmStoragePathMigration)) {
     DLOG(WARNING) << "Fuchsia CDM storage path migration is ENABLED.";
@@ -312,7 +313,7 @@ FuchsiaCdmManager::FuchsiaCdmManager(
 }
 
 FuchsiaCdmManager::~FuchsiaCdmManager() {
-  DCHECK_EQ(g_fuchsia_cdm_manager_instance, this);
+  CHECK_EQ(g_fuchsia_cdm_manager_instance, this, base::NotFatalUntil::M163);
   g_fuchsia_cdm_manager_instance = nullptr;
 }
 

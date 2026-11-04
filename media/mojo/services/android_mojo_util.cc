@@ -12,7 +12,7 @@ namespace android_mojo_util {
 
 std::unique_ptr<ProvisionFetcher> CreateProvisionFetcher(
     media::mojom::FrameInterfaceFactory* frame_interfaces) {
-  DCHECK(frame_interfaces);
+  CHECK(frame_interfaces, base::NotFatalUntil::M163);
   mojo::PendingRemote<mojom::ProvisionFetcher> provision_fetcher;
   frame_interfaces->CreateProvisionFetcher(
       provision_fetcher.InitWithNewPipeAndPassReceiver());
@@ -21,7 +21,7 @@ std::unique_ptr<ProvisionFetcher> CreateProvisionFetcher(
 
 std::unique_ptr<MediaDrmStorage> CreateMediaDrmStorage(
     media::mojom::FrameInterfaceFactory* frame_interfaces) {
-  DCHECK(frame_interfaces);
+  CHECK(frame_interfaces, base::NotFatalUntil::M163);
   mojo::PendingRemote<mojom::MediaDrmStorage> media_drm_storage;
   frame_interfaces->BindEmbedderReceiver(mojo::GenericPendingReceiver(
       media_drm_storage.InitWithNewPipeAndPassReceiver()));

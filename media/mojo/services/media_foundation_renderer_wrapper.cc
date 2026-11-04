@@ -48,7 +48,7 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
                                    std::move(renderer_extension_receiver)),
       site_mute_observer_(this) {
   DVLOG_FUNC(1);
-  DCHECK(frame_interfaces_);
+  CHECK(frame_interfaces_, base::NotFatalUntil::M163);
 
   renderer_ = std::make_unique<MediaFoundationRenderer>(
       task_runner,
@@ -202,7 +202,7 @@ void MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered(
     const std::optional<base::UnguessableToken>& token) {
   std::string error;
   if (token) {
-    DCHECK(dcomp_surface_token_.is_empty());
+    CHECK(dcomp_surface_token_.is_empty(), base::NotFatalUntil::M163);
     dcomp_surface_token_ = token.value();
   } else {
     error = "dcomp surface handle registration failed";

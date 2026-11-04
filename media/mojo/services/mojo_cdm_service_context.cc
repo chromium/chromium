@@ -30,7 +30,7 @@ MojoCdmServiceContext::~MojoCdmServiceContext() = default;
 
 base::UnguessableToken MojoCdmServiceContext::RegisterCdm(
     MojoCdmService* cdm_service) {
-  DCHECK(cdm_service);
+  CHECK(cdm_service, base::NotFatalUntil::M163);
   base::UnguessableToken cdm_id = GetNextCdmId();
   base::AutoLock guard(cdm_services_lock_);
   cdm_services_[cdm_id] = cdm_service;
@@ -42,14 +42,14 @@ void MojoCdmServiceContext::UnregisterCdm(
     const base::UnguessableToken& cdm_id) {
   DVLOG(1) << __func__ << ": cdm_id = " << cdm_id;
   base::AutoLock guard(cdm_services_lock_);
-  DCHECK(cdm_services_.count(cdm_id));
+  CHECK(cdm_services_.count(cdm_id), base::NotFatalUntil::M163);
   cdm_services_.erase(cdm_id);
 }
 
 #if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 base::UnguessableToken MojoCdmServiceContext::RegisterRemoteCdmContext(
     chromeos::RemoteCdmContext* remote_context) {
-  DCHECK(remote_context);
+  CHECK(remote_context, base::NotFatalUntil::M163);
   base::UnguessableToken cdm_id = GetNextCdmId();
   remote_cdm_contexts_[cdm_id] = remote_context;
   DVLOG(1) << __func__ << ": RemoteCdmContext registered with CDM ID "
@@ -60,7 +60,7 @@ base::UnguessableToken MojoCdmServiceContext::RegisterRemoteCdmContext(
 void MojoCdmServiceContext::UnregisterRemoteCdmContext(
     const base::UnguessableToken& cdm_id) {
   DVLOG(1) << __func__ << ": cdm_id = " << cdm_id;
-  DCHECK(remote_cdm_contexts_.count(cdm_id));
+  CHECK(remote_cdm_contexts_.count(cdm_id), base::NotFatalUntil::M163);
   remote_cdm_contexts_.erase(cdm_id);
 }
 #endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)

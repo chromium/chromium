@@ -20,7 +20,7 @@ VideoDecodeStatsRecorder::VideoDecodeStatsRecorder(
       source_id_(source_id),
       is_top_frame_(is_top_frame),
       player_id_(player_id) {
-  DCHECK(save_cb_);
+  CHECK(save_cb_, base::NotFatalUntil::M163);
 }
 
 VideoDecodeStatsRecorder::~VideoDecodeStatsRecorder() {
@@ -30,9 +30,11 @@ VideoDecodeStatsRecorder::~VideoDecodeStatsRecorder() {
 
 void VideoDecodeStatsRecorder::StartNewRecord(
     mojom::PredictionFeaturesPtr features) {
-  DCHECK_NE(features->profile, VIDEO_CODEC_PROFILE_UNKNOWN);
-  DCHECK_GT(features->frames_per_sec, 0);
-  DCHECK(features->video_size.width() > 0 && features->video_size.height() > 0);
+  CHECK_NE(features->profile, VIDEO_CODEC_PROFILE_UNKNOWN,
+           base::NotFatalUntil::M163);
+  CHECK_GT(features->frames_per_sec, 0, base::NotFatalUntil::M163);
+  CHECK(features->video_size.width() > 0 && features->video_size.height() > 0,
+        base::NotFatalUntil::M163);
 
   // DO THIS FIRST! Finalize existing stats with the current state.
   FinalizeRecord();
@@ -55,13 +57,18 @@ void VideoDecodeStatsRecorder::UpdateRecord(
            << " dropped:" << targets->frames_dropped;
 
   // Dropped can never exceed decoded.
-  DCHECK_LE(targets->frames_dropped, targets->frames_decoded);
+  CHECK_LE(targets->frames_dropped, targets->frames_decoded,
+           base::NotFatalUntil::M163);
   // Power efficient frames can never exceed decoded frames.
-  DCHECK_LE(targets->frames_power_efficient, targets->frames_decoded);
+  CHECK_LE(targets->frames_power_efficient, targets->frames_decoded,
+           base::NotFatalUntil::M163);
   // Should never go backwards.
-  DCHECK_GE(targets->frames_decoded, targets_.frames_decoded);
-  DCHECK_GE(targets->frames_dropped, targets_.frames_dropped);
-  DCHECK_GE(targets->frames_power_efficient, targets_.frames_power_efficient);
+  CHECK_GE(targets->frames_decoded, targets_.frames_decoded,
+           base::NotFatalUntil::M163);
+  CHECK_GE(targets->frames_dropped, targets_.frames_dropped,
+           base::NotFatalUntil::M163);
+  CHECK_GE(targets->frames_power_efficient, targets_.frames_power_efficient,
+           base::NotFatalUntil::M163);
 
   targets_ = *targets;
 }

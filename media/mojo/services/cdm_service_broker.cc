@@ -36,7 +36,7 @@ CdmServiceBroker::CdmServiceBroker(
     mojo::PendingReceiver<mojom::CdmServiceBroker> receiver)
     : client_(std::move(client)), receiver_(this, std::move(receiver)) {
   DVLOG(1) << __func__;
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
 }
 
 CdmServiceBroker::~CdmServiceBroker() = default;
@@ -58,7 +58,7 @@ void CdmServiceBroker::GetService(
 #endif  // BUILDFLAG(IS_MAC)
       cdm_path);
 
-  DCHECK(!cdm_service_);
+  CHECK(!cdm_service_, base::NotFatalUntil::M163);
   cdm_service_ = std::make_unique<CdmService>(std::move(client_),
                                               std::move(service_receiver));
   DVLOG(1) << __func__ << ": success=" << success;
@@ -81,7 +81,7 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
 #endif  // BUILDFLAG(IS_MAC)
     const base::FilePath& cdm_path) {
   DVLOG(1) << __func__ << ": cdm_path = " << cdm_path.value();
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
 
 #if BUILDFLAG(IS_MAC)
   std::vector<std::unique_ptr<sandbox::SeatbeltExtension>> extensions;
@@ -141,7 +141,7 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
 
 void CdmServiceBroker::TerminateService() {
   DVLOG(1) << __func__;
-  DCHECK(cdm_service_);
+  CHECK(cdm_service_, base::NotFatalUntil::M163);
   cdm_service_.reset();
 }
 

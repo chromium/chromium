@@ -144,8 +144,8 @@ MojoVideoDecoderService::MojoVideoDecoderService(
       oop_video_decoder_pending_remote_(
           std::move(oop_video_decoder_pending_remote)) {
   DVLOG(1) << __func__;
-  DCHECK(mojo_media_client_);
-  DCHECK(mojo_cdm_service_context_);
+  CHECK(mojo_media_client_, base::NotFatalUntil::M163);
+  CHECK(mojo_cdm_service_context_, base::NotFatalUntil::M163);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -181,8 +181,9 @@ void MojoVideoDecoderService::GetSupportedConfigs(
   TRACE_EVENT0("media", "MojoVideoDecoderService::GetSupportedConfigs");
 
   auto configs = mojo_media_client_->GetSupportedVideoDecoderConfigs();
-  DCHECK(std::all_of(configs.begin(), configs.end(),
-                     [](const auto& config) { return config.IsValid(); }));
+  CHECK(std::all_of(configs.begin(), configs.end(),
+                    [](const auto& config) { return config.IsValid(); }),
+        base::NotFatalUntil::M163);
 
   std::move(callback).Run(std::move(configs),
                           mojo_media_client_->GetDecoderImplementationType());
@@ -259,8 +260,8 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   DVLOG(1) << __func__ << " config = " << config.AsHumanReadableString()
            << ", cdm_id = "
            << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id));
-  DCHECK(!init_cb_);
-  DCHECK(callback);
+  CHECK(!init_cb_, base::NotFatalUntil::M163);
+  CHECK(callback, base::NotFatalUntil::M163);
 
   if (!config.IsValidConfig()) {
     CHECK(mojo::IsInMessageDispatch());
@@ -296,7 +297,7 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   // general we don't support resetting CDM in the media pipeline.
   if (cdm_id) {
     if (!cdm_id_) {
-      DCHECK(!cdm_context_ref_);
+      CHECK(!cdm_context_ref_, base::NotFatalUntil::M163);
       cdm_id_ = cdm_id;
       cdm_context_ref_ =
           mojo_cdm_service_context_->GetCdmContextRef(cdm_id.value());
@@ -340,7 +341,7 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
 
 void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
                                      DecodeCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M163);
 
   if (buffer->is_eos()) {
     DVLOG(3) << __func__ << " EOS";
@@ -406,8 +407,8 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
 void MojoVideoDecoderService::Reset(ResetCallback callback) {
   DVLOG(2) << __func__;
   TRACE_EVENT_BEGIN("media", kResetTraceName, GetTracingTrack(this));
-  DCHECK(callback);
-  DCHECK(!reset_cb_);
+  CHECK(callback, base::NotFatalUntil::M163);
+  CHECK(!reset_cb_, base::NotFatalUntil::M163);
 
   reset_cb_ = std::move(callback);
 
@@ -423,8 +424,8 @@ void MojoVideoDecoderService::Reset(ResetCallback callback) {
 
 void MojoVideoDecoderService::OnDecoderInitialized(DecoderStatus status) {
   DVLOG(1) << __func__;
-  DCHECK(!status.is_ok() || decoder_);
-  DCHECK(init_cb_);
+  CHECK(!status.is_ok() || decoder_, base::NotFatalUntil::M163);
+  CHECK(init_cb_, base::NotFatalUntil::M163);
   TRACE_EVENT_END("media", GetTracingTrack(this), "success", status.code());
 
   if (!status.is_ok()) {
@@ -511,22 +512,22 @@ void MojoVideoDecoderService::OnDecoderDecoded(
 
 void MojoVideoDecoderService::OnDecoderReset() {
   DVLOG(2) << __func__;
-  DCHECK(reset_cb_);
+  CHECK(reset_cb_, base::NotFatalUntil::M163);
   TRACE_EVENT_END("media", GetTracingTrack(this));
   std::move(reset_cb_).Run();
 }
 
 void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
   DVLOG(3) << __func__ << " pts=" << frame->timestamp().InMilliseconds();
-  DCHECK(client_);
-  DCHECK(decoder_);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK(decoder_, base::NotFatalUntil::M163);
   TRACE_EVENT1("media", "MojoVideoDecoderService::OnDecoderOutput",
                "video_frame", frame->AsHumanReadableString());
 
   // All MojoVideoDecoder-based decoders are hardware decoders. If you're the
   // first to implement an out-of-process decoder that is not power efficient,
   // you can remove this DCHECK.
-  DCHECK(frame->metadata().power_efficient);
+  CHECK(frame->metadata().power_efficient, base::NotFatalUntil::M163);
 
   std::optional<base::UnguessableToken> release_token;
   if ((decoder_->FramesHoldExternalResources() ||
@@ -547,7 +548,7 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
 
 void MojoVideoDecoderService::OnDecoderWaiting(WaitingReason reason) {
   DVLOG(3) << __func__;
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
   TRACE_EVENT1("media", "MojoVideoDecoderService::OnDecoderWaiting", "reason",
                static_cast<int>(reason));
   client_->OnWaiting(reason);
@@ -556,9 +557,9 @@ void MojoVideoDecoderService::OnDecoderWaiting(WaitingReason reason) {
 void MojoVideoDecoderService::OnOverlayInfoChanged(
     const OverlayInfo& overlay_info) {
   DVLOG(2) << __func__;
-  DCHECK(client_);
-  DCHECK(decoder_);
-  DCHECK(provide_overlay_info_cb_);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK(decoder_, base::NotFatalUntil::M163);
+  CHECK(provide_overlay_info_cb_, base::NotFatalUntil::M163);
   TRACE_EVENT0("media", "MojoVideoDecoderService::OnOverlayInfoChanged");
   provide_overlay_info_cb_.Run(overlay_info);
 }
@@ -566,9 +567,9 @@ void MojoVideoDecoderService::OnOverlayInfoChanged(
 void MojoVideoDecoderService::OnDecoderRequestedOverlayInfo(
     ProvideOverlayInfoCB provide_overlay_info_cb) {
   DVLOG(2) << __func__;
-  DCHECK(client_);
-  DCHECK(decoder_);
-  DCHECK(!provide_overlay_info_cb_);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK(decoder_, base::NotFatalUntil::M163);
+  CHECK(!provide_overlay_info_cb_, base::NotFatalUntil::M163);
   TRACE_EVENT0("media",
                "MojoVideoDecoderService::OnDecoderRequestedOverlayInfo");
 

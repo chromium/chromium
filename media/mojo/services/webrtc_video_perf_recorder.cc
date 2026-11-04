@@ -36,7 +36,7 @@ void WebrtcVideoPerfRecorder::Create(
 WebrtcVideoPerfRecorder::WebrtcVideoPerfRecorder(
     WebrtcVideoPerfHistory::SaveCallback save_cb)
     : save_cb_(std::move(save_cb)) {
-  DCHECK(save_cb_);
+  CHECK(save_cb_, base::NotFatalUntil::M163);
 }
 
 WebrtcVideoPerfRecorder::~WebrtcVideoPerfRecorder() {

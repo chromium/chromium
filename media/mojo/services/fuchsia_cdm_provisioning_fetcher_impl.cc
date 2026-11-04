@@ -16,7 +16,7 @@ FuchsiaCdmProvisioningFetcherImpl::FuchsiaCdmProvisioningFetcherImpl(
     CreateFetcherCB create_fetcher_callback)
     : create_fetcher_callback_(std::move(create_fetcher_callback)),
       binding_(this) {
-  DCHECK(create_fetcher_callback_);
+  CHECK(create_fetcher_callback_, base::NotFatalUntil::M163);
 }
 
 FuchsiaCdmProvisioningFetcherImpl::~FuchsiaCdmProvisioningFetcherImpl() =
@@ -87,7 +87,7 @@ void FuchsiaCdmProvisioningFetcherImpl::OnRetrieveComplete(
 }
 
 void FuchsiaCdmProvisioningFetcherImpl::OnError(zx_status_t status) {
-  DCHECK(error_callback_);
+  CHECK(error_callback_, base::NotFatalUntil::M163);
 
   binding_.Close(status);
   std::move(error_callback_).Run();

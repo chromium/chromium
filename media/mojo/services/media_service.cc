@@ -17,7 +17,7 @@ MediaService::MediaService(std::unique_ptr<MojoMediaClient> mojo_media_client,
                            mojo::PendingReceiver<mojom::MediaService> receiver)
     : receiver_(this, std::move(receiver)),
       mojo_media_client_(std::move(mojo_media_client)) {
-  DCHECK(mojo_media_client_);
+  CHECK(mojo_media_client_, base::NotFatalUntil::M163);
   mojo_media_client_->Initialize();
 }
 

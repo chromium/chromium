@@ -37,7 +37,7 @@ using NewSessionMojoCdmPromise =
 MojoCdmService::MojoCdmService(MojoCdmServiceContext* context)
     : context_(context) {
   DVLOG(1) << __func__;
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M163);
 }
 
 MojoCdmService::~MojoCdmService() {

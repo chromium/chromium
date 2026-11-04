@@ -40,7 +40,8 @@ class FrameResourceReleaserImpl final : public mojom::FrameResourceReleaser {
   explicit FrameResourceReleaserImpl(scoped_refptr<VideoFrame> frame)
       : frame_(std::move(frame)) {
     DVLOG(3) << __func__;
-    DCHECK_EQ(VideoFrame::STORAGE_SHMEM, frame_->storage_type());
+    CHECK_EQ(VideoFrame::STORAGE_SHMEM, frame_->storage_type(),
+             base::NotFatalUntil::M163);
   }
 
   FrameResourceReleaserImpl(const FrameResourceReleaserImpl&) = delete;
@@ -273,7 +274,7 @@ class MojoDecryptorService::Stream {
                       Status status,
                       scoped_refptr<VideoFrame> frame) {
     if (!frame) {
-      DCHECK_NE(status, Status::kSuccess);
+      CHECK_NE(status, Status::kSuccess, base::NotFatalUntil::M163);
       std::move(callback).Run(status, nullptr, mojo::NullRemote());
       return;
     }
@@ -304,7 +305,7 @@ MojoDecryptorService::MojoDecryptorService(
     std::unique_ptr<CdmContextRef> cdm_context_ref)
     : decryptor_(decryptor), cdm_context_ref_(std::move(cdm_context_ref)) {
   DVLOG(1) << __func__;
-  DCHECK(decryptor_);
+  CHECK(decryptor_, base::NotFatalUntil::M163);
 }
 
 MojoDecryptorService::~MojoDecryptorService() {

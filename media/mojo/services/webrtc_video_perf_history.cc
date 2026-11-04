@@ -182,7 +182,7 @@ WebrtcVideoPerfHistory::WebrtcVideoPerfHistory(
     std::unique_ptr<WebrtcVideoStatsDB> db)
     : db_(std::move(db)) {
   DVLOG(2) << __func__;
-  DCHECK(db_);
+  CHECK(db_, base::NotFatalUntil::M163);
 }
 
 WebrtcVideoPerfHistory::~WebrtcVideoPerfHistory() {
@@ -207,7 +207,7 @@ void WebrtcVideoPerfHistory::InitDatabase() {
   // DB should be initialized only once! We hand out references to the
   // initialized DB via GetWebrtcVideoStatsDB(). Dependents expect DB to remain
   // initialized during their lifetime.
-  DCHECK_EQ(db_init_status_, UNINITIALIZED);
+  CHECK_EQ(db_init_status_, UNINITIALIZED, base::NotFatalUntil::M163);
 
   db_init_status_ = PENDING;
   db_->Initialize(base::BindOnce(&WebrtcVideoPerfHistory::OnDatabaseInit,
@@ -217,7 +217,7 @@ void WebrtcVideoPerfHistory::InitDatabase() {
 void WebrtcVideoPerfHistory::OnDatabaseInit(bool success) {
   DVLOG(2) << __func__ << " " << success;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(db_init_status_, PENDING);
+  CHECK_EQ(db_init_status_, PENDING, base::NotFatalUntil::M163);
 
   db_init_status_ = success ? COMPLETE : FAILED;
 
@@ -299,8 +299,8 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
     bool database_success,
     std::optional<WebrtcVideoStatsDB::VideoStatsCollection> stats_collection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(got_info_cb);
-  DCHECK_EQ(db_init_status_, COMPLETE);
+  CHECK(got_info_cb, base::NotFatalUntil::M163);
+  CHECK_EQ(db_init_status_, COMPLETE, base::NotFatalUntil::M163);
 
   // Be optimistic if there's no data.
   bool is_smooth = true;
@@ -371,7 +371,7 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
       previous_entry = it;
     }
 
-    DCHECK(specific_key_index);
+    CHECK(specific_key_index, base::NotFatalUntil::M163);
     if (smooth_per_pixel[*specific_key_index].has_value()) {
       is_smooth = smooth_per_pixel[*specific_key_index].value();
     }
@@ -478,7 +478,7 @@ void WebrtcVideoPerfHistory::OnGotStatsForSave(
     bool success,
     std::optional<WebrtcVideoStatsDB::VideoStatsEntry> past_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(db_init_status_, COMPLETE);
+  CHECK_EQ(db_init_status_, COMPLETE, base::NotFatalUntil::M163);
 
   if (!success) {
     DVLOG(3) << __func__ << " FAILED! Aborting save.";
@@ -542,7 +542,7 @@ void WebrtcVideoPerfHistory::OnClearedHistory(base::OnceClosure clear_done_cb) {
 
 void WebrtcVideoPerfHistory::GetWebrtcVideoStatsDB(GetCB get_db_cb) {
   DVLOG(3) << __func__;
-  DCHECK(get_db_cb);
+  CHECK(get_db_cb, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (db_init_status_ == FAILED) {

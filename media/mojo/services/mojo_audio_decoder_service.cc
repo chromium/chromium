@@ -36,7 +36,7 @@ MojoAudioDecoderService::MojoAudioDecoderService(
     : mojo_media_client_(mojo_media_client),
       mojo_cdm_service_context_(mojo_cdm_service_context),
       task_runner_(std::move(task_runner)) {
-  DCHECK(mojo_cdm_service_context_);
+  CHECK(mojo_cdm_service_context_, base::NotFatalUntil::M163);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -90,7 +90,7 @@ void MojoAudioDecoderService::Initialize(
   // general we don't support resetting CDM in the media pipeline.
   if (cdm_id) {
     if (!cdm_id_) {
-      DCHECK(!cdm_context_ref_);
+      CHECK(!cdm_context_ref_, base::NotFatalUntil::M163);
       cdm_id_ = cdm_id;
       cdm_context_ref_ =
           mojo_cdm_service_context_->GetCdmContextRef(cdm_id.value());

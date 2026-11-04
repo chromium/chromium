@@ -28,13 +28,13 @@ static void RecordWatchTimeInternal(
     std::string_view key,
     base::TimeDelta value,
     base::TimeDelta minimum = kMinimumElapsedWatchTime) {
-  DCHECK(!key.empty());
+  CHECK(!key.empty(), base::NotFatalUntil::M163);
   base::UmaHistogramCustomTimes(key, value, minimum, base::Hours(10), 50);
 }
 
 static void RecordMeanTimeBetweenRebuffers(std::string_view key,
                                            base::TimeDelta value) {
-  DCHECK(!key.empty());
+  CHECK(!key.empty(), base::NotFatalUntil::M163);
 
   // There are a maximum of 5 underflow events possible in a given 7s watch time
   // period, so the minimum value is 1.4s.
@@ -43,13 +43,13 @@ static void RecordMeanTimeBetweenRebuffers(std::string_view key,
 
 static void RecordDiscardedWatchTime(std::string_view key,
                                      base::TimeDelta value) {
-  DCHECK(!key.empty());
+  CHECK(!key.empty(), base::NotFatalUntil::M163);
   base::UmaHistogramCustomTimes(key, value, base::TimeDelta(),
                                 kMinimumElapsedWatchTime, 50);
 }
 
 static void RecordRebuffersCount(std::string_view key, int underflow_count) {
-  DCHECK(!key.empty());
+  CHECK(!key.empty(), base::NotFatalUntil::M163);
   base::UmaHistogramCounts100(key, underflow_count);
 }
 
@@ -289,7 +289,8 @@ void WatchTimeRecorder::UpdateSecondaryProperties(
 }
 
 void WatchTimeRecorder::SetAutoplayInitiated(bool value) {
-  DCHECK(!autoplay_initiated_.has_value() || value == autoplay_initiated_);
+  CHECK(!autoplay_initiated_.has_value() || value == autoplay_initiated_,
+        base::NotFatalUntil::M163);
   autoplay_initiated_ = value;
 }
 
@@ -353,7 +354,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
 
     bool recorded_all_metric = false;
     for (auto& kv : ukm_record.aggregate_watch_time_info) {
-      DCHECK_GE(kv.second, base::TimeDelta());
+      CHECK_GE(kv.second, base::TimeDelta(), base::NotFatalUntil::M163);
 
       if (kv.first == WatchTimeKey::kAudioAll ||
           kv.first == WatchTimeKey::kAudioBackgroundAll ||
@@ -363,7 +364,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
           kv.first == WatchTimeKey::kVideoAll ||
           kv.first == WatchTimeKey::kVideoBackgroundAll) {
         // Only one of these keys should be present.
-        DCHECK(!recorded_all_metric);
+        CHECK(!recorded_all_metric, base::NotFatalUntil::M163);
         recorded_all_metric = true;
 
         builder.SetWatchTime(kv.second.InMilliseconds());

@@ -46,7 +46,7 @@ MojoRendererService::MojoRendererService(
       playback_rate_(0),
       renderer_(std::move(renderer)) {
   DVLOG(1) << __func__;
-  DCHECK(renderer_);
+  CHECK(renderer_, base::NotFatalUntil::M163);
 
   weak_this_ = weak_factory_.GetWeakPtr();
 }
@@ -68,7 +68,7 @@ void MojoRendererService::Initialize(
   client_.Bind(std::move(client));
   state_ = STATE_INITIALIZING;
 
-  DCHECK(streams.has_value());
+  CHECK(streams.has_value(), base::NotFatalUntil::M163);
   media_resource_ = std::make_unique<MediaResourceShim>(
       std::move(*streams),
       base::BindOnce(&MojoRendererService::OnAllStreamsReady, weak_this_,
@@ -77,7 +77,8 @@ void MojoRendererService::Initialize(
 
 void MojoRendererService::Flush(FlushCallback callback) {
   DVLOG(2) << __func__;
-  DCHECK(state_ == STATE_PLAYING || state_ == STATE_ERROR);
+  CHECK(state_ == STATE_PLAYING || state_ == STATE_ERROR,
+        base::NotFatalUntil::M163);
 
   if (state_ == STATE_ERROR) {
     std::move(callback).Run();
@@ -98,7 +99,8 @@ void MojoRendererService::StartPlayingFrom(base::TimeDelta time_delta) {
 
 void MojoRendererService::SetPlaybackRate(double playback_rate) {
   DVLOG(2) << __func__ << ": " << playback_rate;
-  DCHECK(state_ == STATE_PLAYING || state_ == STATE_ERROR);
+  CHECK(state_ == STATE_PLAYING || state_ == STATE_ERROR,
+        base::NotFatalUntil::M163);
   playback_rate_ = playback_rate;
   renderer_->SetPlaybackRate(playback_rate);
 }
@@ -140,7 +142,7 @@ void MojoRendererService::SetCdm(
   // |renderer_|.
   cdm_context_ref_ = std::move(cdm_context_ref);
   auto* cdm_context = cdm_context_ref_->GetCdmContext();
-  DCHECK(cdm_context);
+  CHECK(cdm_context, base::NotFatalUntil::M163);
 
   renderer_->SetCdm(cdm_context,
                     base::BindOnce(&MojoRendererService::OnCdmAttached,
@@ -220,7 +222,7 @@ void MojoRendererService::OnVideoFrameRateChange(std::optional<int> fps) {
 
 void MojoRendererService::OnAllStreamsReady(
     base::OnceCallback<void(bool)> callback) {
-  DCHECK_EQ(state_, STATE_INITIALIZING);
+  CHECK_EQ(state_, STATE_INITIALIZING, base::NotFatalUntil::M163);
 
   renderer_->Initialize(
       media_resource_.get(), this,
@@ -232,7 +234,7 @@ void MojoRendererService::OnRendererInitializeDone(
     base::OnceCallback<void(bool)> callback,
     PipelineStatus status) {
   DVLOG(1) << __func__;
-  DCHECK_EQ(state_, STATE_INITIALIZING);
+  CHECK_EQ(state_, STATE_INITIALIZING, base::NotFatalUntil::M163);
 
   if (status != PIPELINE_OK) {
     state_ = STATE_ERROR;
@@ -279,7 +281,8 @@ void MojoRendererService::SchedulePeriodicMediaTimeUpdates() {
 
 void MojoRendererService::OnFlushCompleted(FlushCallback callback) {
   DVLOG(1) << __func__;
-  DCHECK(state_ == STATE_FLUSHING || state_ == STATE_ERROR);
+  CHECK(state_ == STATE_FLUSHING || state_ == STATE_ERROR,
+        base::NotFatalUntil::M163);
 
   if (state_ == STATE_FLUSHING)
     state_ = STATE_PLAYING;
