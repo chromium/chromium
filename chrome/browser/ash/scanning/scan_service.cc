@@ -512,9 +512,10 @@ void ScanService::OnPageReceived(
     if (!page_index_to_replace.has_value()) {
       scanned_images_.push_back(std::move(scanned_image));
     } else {
-      CHECK(page_index_to_replace.value() >= 0 &&
-                page_index_to_replace.value() < scanned_images_.size(),
-            base::NotFatalUntil::M160);
+      // TODO(crbug.com/578890935): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(page_index_to_replace.value() >= 0 &&
+             page_index_to_replace.value() < scanned_images_.size());
       scanned_images_[page_index_to_replace.value()] = std::move(scanned_image);
     }
 
