@@ -112,7 +112,7 @@ source_set("platform_browser_tests") {
     "//net:test_support",
   ]
   if (!is_android) {
-    public_deps += [ "//chrome/test:test_support_ui" ]
+    public_deps += [ "//chrome/test/base:in_process_browser_test" ]
     deps += [
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",

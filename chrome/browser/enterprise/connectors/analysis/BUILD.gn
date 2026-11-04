@@ -159,7 +159,6 @@ if (!is_android && enterprise_cloud_content_analysis) {
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/enterprise/test:test_support",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//components/enterprise/connectors/core:content_analysis_browser_test_base",
       "//content/test:test_support",
       "//testing/gmock",
