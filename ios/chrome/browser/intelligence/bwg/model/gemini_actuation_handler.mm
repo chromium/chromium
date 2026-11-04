@@ -13,7 +13,6 @@
 #import "base/base64.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -31,10 +30,16 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
-namespace {
+@interface GeminiActuationHandler () <ActorTaskUpdatesObserver>
 
-// Callback type invoked when an actuation request completes.
-using ActuationCallback = base::OnceCallback<void(GeminiActuationResponse*)>;
+// Forgets `taskID` if `response` says it went away, so that follow-up requests
+// are rejected.
+- (void)forgetTaskIfWentAway:(actor::ActorTaskId)taskID
+                withResponse:(GeminiActuationResponse*)response;
+
+@end
+
+namespace {
 
 // The MIME type for PNG screenshots.
 constexpr char kPNGMimeType[] = "image/png";
@@ -94,14 +99,6 @@ GeminiActuationResponse* MakeTabWentAwayResponse() {
   return [[GeminiActuationResponse alloc]
       initWithResultCode:actor::mojom::ActionResultCode::kTabWentAway
             errorMessage:"The actuated tab is no longer available."];
-}
-
-// Returned when a request arrives while another one is pending for the task.
-GeminiActuationResponse* MakeRequestInProgressResponse() {
-  return [[GeminiActuationResponse alloc]
-      initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
-            errorMessage:"An actuation request is already in progress for "
-                         "this task."];
 }
 
 // Returned when the yield reason is not supported yet.
@@ -246,6 +243,27 @@ optimization_guide::proto::ActionsResult ActionsResultFromPerformActionsResult(
   return actionsResult;
 }
 
+// Returns the response for the `result` of an act.
+GeminiActuationResponse* MakePerformActionsResponse(
+    const actor::PerformActionsResult& result) {
+  actor::mojom::ActionResultCode result_code;
+  optimization_guide::proto::ActionsResult actions_result =
+      ActionsResultFromPerformActionsResult(result, result_code);
+  return [[GeminiActuationResponse alloc]
+           initWithResultCode:result_code
+                 userResponse:nil
+      serializedActionsResult:SerializeProtoToNSData(actions_result)];
+}
+
+// Returns the response for the `result` of a confirmation interrupt.
+GeminiActuationResponse* MakeConfirmationResultResponse(
+    const actor::ActorTaskResult<actor::InterruptTaskResult>& result) {
+  if (!result.has_value()) {
+    return MakeErrorResponse(result.error());
+  }
+  return MakeConfirmationResponse(result.value());
+}
+
 // Injects the current tab and window ID into the given action depending on its
 // case.
 // LINT.IfChange(InjectDataIntoAction)
@@ -328,10 +346,22 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
   return actions;
 }
 
-}  // namespace
+// Answers `completion_block` with `response`, forgetting the task on `handler`
+// if it went away. Not a method of `handler`, as `handler` is nil when
+// `disconnect` stopped the task: the posted `kTaskWentAway` reply runs after
+// the handler is deallocated. The cleanup is then skipped, but the SDK still
+// gets its answer.
+void AnswerRequest(GeminiActuationHandler* handler,
+                   actor::ActorTaskId task_id,
+                   void (^completion_block)(GeminiActuationResponse*),
+                   GeminiActuationResponse* response) {
+  [handler forgetTaskIfWentAway:task_id withResponse:response];
+  if (completion_block) {
+    completion_block(response);
+  }
+}
 
-@interface GeminiActuationHandler () <ActorTaskUpdatesObserver>
-@end
+}  // namespace
 
 @implementation GeminiActuationHandler {
   // The ActorService to use for actuating tasks.
@@ -347,9 +377,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 
   // Map from task IDs to WebState IDs.
   std::map<actor::ActorTaskId, web::WebStateID> _taskToWebStateIDMap;
-
-  // Active callbacks awaiting completion, keyed by task ID.
-  std::map<actor::ActorTaskId, ActuationCallback> _activeCallbacks;
 }
 
 #pragma mark - Public
@@ -378,15 +405,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     _actorService = nullptr;
   }
   _webStateList = nullptr;
-  std::map<actor::ActorTaskId, ActuationCallback> callbacks =
-      std::exchange(_activeCallbacks, {});
-  for (auto& [taskID, callback] : callbacks) {
-    if (callback) {
-      std::move(callback).Run([[GeminiActuationResponse alloc]
-          initWithResultCode:actor::mojom::ActionResultCode::kExecutorDestroyed
-                errorMessage:"Session disconnected."]);
-    }
-  }
   _taskToWebStateIDMap.clear();
 }
 
@@ -513,10 +531,10 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 
 #pragma mark - ActorTaskUpdatesObserver
 
-// Aborts any pending request callback when a task stops externally.
+// Forgets tasks stopped elsewhere, so that follow-up requests are rejected.
 - (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
                     finalState:(actor::ActorTaskState)finalState {
-  [self resolveRequestForTaskID:taskID withResponse:MakeTaskWentAwayResponse()];
+  _taskToWebStateIDMap.erase(taskID);
 }
 
 #pragma mark - Private
@@ -549,20 +567,12 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     return;
   }
 
-  if (_activeCallbacks.find(taskID) != _activeCallbacks.end()) {
-    // TODO(crbug.com/556739755): Add monitoring for concurrent actuation
-    // requests.
-    if (completionBlock) {
-      completionBlock(MakeRequestInProgressResponse());
-    }
-    return;
-  }
-
-  _activeCallbacks[taskID] = base::BindOnce(completionBlock);
-
+  // TODO(crbug.com/568339898): Reject requests sent while the previous reply's
+  // tab observation runs, once `ActorTask` covers it.
   __weak GeminiActuationHandler* weakSelf = self;
   auto actionsCallback = base::BindOnce(^(actor::PerformActionsResult result) {
-    [weakSelf handlePerformActionsResult:result taskID:taskID];
+    AnswerRequest(weakSelf, taskID, completionBlock,
+                  MakePerformActionsResponse(result));
   });
 
   _actorService->PerformActions(taskID, std::move(*actions),
@@ -570,8 +580,8 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                                 std::move(actionsCallback));
 }
 
-// Interrupts the task to prompt the user with `yieldAction.messageToUser` and
-// holds `completionBlock` until the user answers the prompt.
+// Asks the user to confirm `yieldAction.messageToUser` and answers with their
+// choice.
 - (void)handleConfirmationYieldWithTaskID:(actor::ActorTaskId)taskID
                               yieldAction:(GeminiYieldAction*)yieldAction
                           completionBlock:(void (^)(GeminiActuationResponse*))
@@ -594,59 +604,27 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     return;
   }
 
-  // Replacing a pending callback would drop it unanswered.
-  // TODO(crbug.com/556739755): Add monitoring for concurrent actuation
-  // requests.
-  if (_activeCallbacks.contains(taskID)) {
-    completionBlock(MakeRequestInProgressResponse());
-    return;
-  }
-
-  // Held before `InterruptTask` so concurrent requests are rejected while the
-  // user is prompted.
-  _activeCallbacks[taskID] = base::BindOnce(completionBlock);
-
   actor::ConfirmationInterrupt confirmation;
   confirmation.title = kConfirmationTitle;
   confirmation.subtitle = base::SysNSStringToUTF8(yieldAction.messageToUser);
   confirmation.button_text = kConfirmationButtonText;
+  // TODO(crbug.com/568339898): Reject requests sent while the previous reply's
+  // tab observation runs, once `ActorTask` owns observations.
   __weak GeminiActuationHandler* weakSelf = self;
   _actorService->InterruptTask(
       taskID, std::move(confirmation),
       base::BindOnce(
           ^(actor::ActorTaskResult<actor::InterruptTaskResult> result) {
-            [weakSelf handleConfirmationResult:result forTaskID:taskID];
+            AnswerRequest(weakSelf, taskID, completionBlock,
+                          MakeConfirmationResultResponse(result));
           }));
 }
 
-// Answers the pending confirmation for `taskID` with `result`.
-- (void)handleConfirmationResult:
-            (const actor::ActorTaskResult<actor::InterruptTaskResult>&)result
-                       forTaskID:(actor::ActorTaskId)taskID {
-  if (!result.has_value()) {
-    [self resolveRequestForTaskID:taskID
-                     withResponse:MakeErrorResponse(result.error())];
-    return;
-  }
-  [self resolveRequestForTaskID:taskID
-                   withResponse:MakeConfirmationResponse(result.value())];
-}
-
-// Answers the pending request for `taskID` with `response`, if any. A
-// `kTaskWentAway` response also forgets the task, so that follow-up requests,
-// including from the callback, get `kTaskWentAway`.
-- (void)resolveRequestForTaskID:(actor::ActorTaskId)taskID
-                   withResponse:(GeminiActuationResponse*)response {
+- (void)forgetTaskIfWentAway:(actor::ActorTaskId)taskID
+                withResponse:(GeminiActuationResponse*)response {
   if (response.resultCode == actor::mojom::ActionResultCode::kTaskWentAway) {
     _taskToWebStateIDMap.erase(taskID);
   }
-  auto it = _activeCallbacks.find(taskID);
-  if (it == _activeCallbacks.end()) {
-    return;
-  }
-  ActuationCallback callback = std::move(it->second);
-  _activeCallbacks.erase(it);
-  std::move(callback).Run(response);
 }
 
 // Stops the task and invokes `completionBlock`.
@@ -665,21 +643,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                    userResponse:nil
         serializedActionsResult:nil]);
   }
-}
-
-// Handles the results of action execution for `taskID`, populates the
-// GeminiActuationResponse, and invokes the active callback.
-- (void)handlePerformActionsResult:(const actor::PerformActionsResult&)result
-                            taskID:(actor::ActorTaskId)taskID {
-  actor::mojom::ActionResultCode resultCode;
-  optimization_guide::proto::ActionsResult actionsResult =
-      ActionsResultFromPerformActionsResult(result, resultCode);
-  NSData* data = SerializeProtoToNSData(actionsResult);
-  GeminiActuationResponse* response =
-      [[GeminiActuationResponse alloc] initWithResultCode:resultCode
-                                             userResponse:nil
-                                  serializedActionsResult:data];
-  [self resolveRequestForTaskID:taskID withResponse:response];
 }
 
 // TODO(crbug.com/559608376): Query the active WebStateID directly from

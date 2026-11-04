@@ -29,7 +29,9 @@ class WebStateList;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Disconnects active request callbacks, failing them with `kExecutorDestroyed`.
+// Stops the tasks created by this handler. Their pending requests are answered
+// asynchronously with `kTaskWentAway`, or dropped if `ActorService` shuts down
+// first (crbug.com/568342921).
 - (void)disconnect;
 
 @end
