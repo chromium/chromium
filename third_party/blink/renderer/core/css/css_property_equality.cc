@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/link_parameter_list.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
@@ -234,6 +235,13 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
                                           const ComputedStyle& b) {
   if (property.IsCSSCustomProperty()) {
     const AtomicString& name = property.CustomPropertyName();
+    const CSSVariableData* a_data = a.GetVariableData(name);
+    const CSSVariableData* b_data = b.GetVariableData(name);
+    const bool a_tainted = a_data && a_data->IsAttrTainted();
+    const bool b_tainted = b_data && b_data->IsAttrTainted();
+    if (a_tainted != b_tainted) {
+      return false;
+    }
     return base::ValuesEquivalent(a.GetVariableValue(name),
                                   b.GetVariableValue(name));
   }
