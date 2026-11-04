@@ -169,14 +169,6 @@ std::string DriverVendorStringFromVendorId(uint32_t vendor_id) {
   }
 }
 
-// Marks the primary GPU as active and all secondary GPUs as inactive.
-void MarkPrimaryGpuActive(GPUInfo* gpu_info) {
-  gpu_info->gpu.active = true;
-  for (auto& secondary_gpu : gpu_info->secondary_gpus) {
-    secondary_gpu.active = false;
-  }
-}
-
 // Shader models reported to the GPU.D3DShaderModel histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

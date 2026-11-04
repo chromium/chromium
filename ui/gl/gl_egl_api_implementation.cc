@@ -116,7 +116,11 @@ void TraceEGLApi::SetDisabledExtensions(
 }
 
 bool GetGLWindowSystemBindingInfoEGL(GLWindowSystemBindingInfo* info) {
-  EGLDisplay display = eglGetCurrentDisplay();
+  return GetGLWindowSystemBindingInfoEGL(eglGetCurrentDisplay(), info);
+}
+
+bool GetGLWindowSystemBindingInfoEGL(EGLDisplay display,
+                                     GLWindowSystemBindingInfo* info) {
   const char* vendor = eglQueryString(display, EGL_VENDOR);
   const char* version = eglQueryString(display, EGL_VERSION);
   const char* extensions = eglQueryString(display, EGL_EXTENSIONS);

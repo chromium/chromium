@@ -20,7 +20,11 @@ struct GLWindowSystemBindingInfo;
 
 GL_EXPORT void InitializeStaticGLBindingsEGL();
 GL_EXPORT void ClearBindingsEGL();
+// Queries the window system binding info of the current EGL display.
 GL_EXPORT bool GetGLWindowSystemBindingInfoEGL(GLWindowSystemBindingInfo* info);
+// Same as above, but for |display|, which doesn't need a current context.
+GL_EXPORT bool GetGLWindowSystemBindingInfoEGL(EGLDisplay display,
+                                               GLWindowSystemBindingInfo* info);
 GL_EXPORT void SetDisabledExtensionsEGL(const std::string& disabled_extensions);
 GL_EXPORT bool InitializeExtensionSettingsOneOffEGL(GLDisplayEGL* display);
 

@@ -135,7 +135,9 @@ void GLDisplayEGL::WaitForMetalSharedEvent(id<MTLSharedEvent> shared_event,
 }
 
 id<MTLDevice> GLDisplayEGL::GetMetalDevice() const {
-  if (GetANGLEImplementation() != ANGLEImplementation::kMetal) {
+  if (GetANGLEImplementation() != ANGLEImplementation::kMetal ||
+      display_ == EGL_NO_DISPLAY ||
+      !g_driver_egl.client_ext.b_EGL_EXT_device_query) {
     return nil;
   }
   EGLAttrib angle_device_attrib = 0;

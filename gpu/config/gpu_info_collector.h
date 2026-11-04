@@ -92,6 +92,9 @@ GPU_CONFIG_EXPORT bool CollectGraphicsInfoGL(GPUInfo* gpu_info,
 // identify the active GPU based on GL strings.
 GPU_CONFIG_EXPORT void IdentifyActiveGPU(GPUInfo* gpu_info);
 
+// Marks the primary GPU as active and all secondary GPUs as inactive.
+void MarkPrimaryGpuActive(GPUInfo* gpu_info);
+
 // Helper function to convert data from ANGLE's system info gathering library
 // into a GPUInfo
 void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,

@@ -6,11 +6,16 @@
 
 #import <Metal/Metal.h>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
+#include "ui/gfx/extension_set.h"
 #include "ui/gl/gl_display.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gl_version_info.h"
 
 namespace gpu {
 
@@ -77,6 +82,88 @@ bool IsLowPowerGpu(const GPUInfo::GPUDevice& gpu) {
 bool IsHighPerformanceGpu(const GPUInfo::GPUDevice& gpu) {
   return !gpu.IsSoftwareRenderer() && !IsLowPowerGpu(gpu);
 }
+
+// Marks the GPU whose IORegistry entry ID is |registry_id| as active, and all
+// others as inactive. On macOS, GPUDevice::system_device_id is the IORegistry
+// entry ID, which is also what MTLDevice.registryID returns.
+bool IdentifyActiveGPUWithRegistryID(GPUInfo* gpu_info, uint64_t registry_id) {
+  if (!registry_id) {
+    return false;
+  }
+  GPUInfo::GPUDevice* active_gpu = nullptr;
+  if (gpu_info->gpu.system_device_id == registry_id) {
+    active_gpu = &gpu_info->gpu;
+  }
+  for (auto& secondary_gpu : gpu_info->secondary_gpus) {
+    if (!active_gpu && secondary_gpu.system_device_id == registry_id) {
+      active_gpu = &secondary_gpu;
+    }
+  }
+  if (!active_gpu) {
+    return false;
+  }
+  gpu_info->gpu.active = false;
+  for (auto& secondary_gpu : gpu_info->secondary_gpus) {
+    secondary_gpu.active = false;
+  }
+  active_gpu->active = true;
+  return true;
+}
+
+// Collects context graphics info from ANGLE's Metal device and EGL display,
+// without creating a GL context. Returns false, without guaranteeing which
+// fields were set, if the Metal device or the GL strings aren't available.
+bool CollectMetalGraphicsInfo(GPUInfo* gpu_info, gl::GLDisplay* display) {
+  TRACE_EVENT0("gpu", "gpu_info_collector::CollectMetalGraphicsInfo");
+  gl::GLDisplayEGL* egl_display =
+      display ? display->GetAs<gl::GLDisplayEGL>() : nullptr;
+  if (!egl_display) {
+    return false;
+  }
+  // Returns nil unless ANGLE runs on Metal.
+  id<MTLDevice> metal_device = egl_display->GetMetalDevice();
+  if (!metal_device) {
+    return false;
+  }
+
+  if (!CollectGraphicsInfoFromANGLEDisplay(gpu_info, display) ||
+      gpu_info->gl_renderer.empty() || gpu_info->gl_version.empty()) {
+    return false;
+  }
+
+  // ANGLE's GL_SHADING_LANGUAGE_VERSION is
+  // "OpenGL ES GLSL ES 3.00 (ANGLE <version>)" for the ES 3.0 context created
+  // in CollectGraphicsInfoGL().
+  const std::string glsl_version = "3.00";
+  gpu_info->pixel_shader_version = glsl_version;
+  gpu_info->vertex_shader_version = glsl_version;
+
+  // ANGLE's Metal device is the GPU that's actually in use.
+  if (!IdentifyActiveGPUWithRegistryID(gpu_info, metal_device.registryID)) {
+    MarkPrimaryGpuActive(gpu_info);
+  }
+
+  GPUInfo::GPUDevice& active_gpu = gpu_info->active_gpu();
+
+  // Unlike on Windows, where the basic info collection sets each GPU's
+  // device_string, nothing else sets the GPU strings on macOS. Set the active
+  // GPU's from the GL strings. They're needed to identify GPUs without a PCI
+  // device ID (e.g. Apple Silicon).
+  active_gpu.vendor_string = gpu_info->gl_vendor;
+  active_gpu.device_string = gpu_info->gl_renderer;
+
+  // As in CollectGraphicsInfoGL(), derive the driver vendor and version from
+  // ANGLE's GL strings if they're not known yet.
+  gl::GLVersionInfo gl_info(gpu_info->gl_version.c_str(),
+                            gpu_info->gl_renderer.c_str(), gfx::ExtensionSet());
+  if (!gl_info.driver_vendor.empty() && active_gpu.driver_vendor.empty()) {
+    active_gpu.driver_vendor = gl_info.driver_vendor;
+  }
+  if (!gl_info.driver_version.empty() && active_gpu.driver_version.empty()) {
+    active_gpu.driver_version = gl_info.driver_version;
+  }
+  return true;
+}
 }  // namespace
 
 bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
@@ -86,6 +173,11 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
 
   RecordHistograms();
 
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
+      base::FeatureList::IsEnabled(features::kGpuInitOptimization) &&
+      CollectMetalGraphicsInfo(gpu_info, gl::GetDefaultDisplayEGL())) {
+    return true;
+  }
   return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL());
 }
 
