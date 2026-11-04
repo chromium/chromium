@@ -819,11 +819,10 @@ void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
           : nullptr;
 
   DomWindow()->GetContentSecurityPolicy()->ReportViolation(
-      violation->directive, directive_type, violation->console_message,
-      violation->blocked_url, violation->report_endpoints,
+      directive_type, violation->blocked_url, violation->report_endpoints,
       violation->use_reporting_api, violation->header, violation->type,
       ContentSecurityPolicyViolationType::kURLViolation, source_location,
-      context_frame, nullptr /* Element */);
+      context_frame, /*element=*/nullptr);
 }
 
 void LocalFrameMojoHandler::DidUpdateFramePolicy(

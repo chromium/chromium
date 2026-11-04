@@ -367,18 +367,16 @@ class CORE_EXPORT ContentSecurityPolicy final
   // reported on the issue. This is useful to provide a link from the
   // JavaScript TypeError to the inspector issue in the DevTools front-end.
   void ReportViolation(
-      const String& directive_text,
       CSPDirectiveName effective_type,
-      const String& console_message,
       const KURL& blocked_url,
       const Vector<String>& report_endpoints,
       bool use_reporting_api,
       const String& header,
       network::mojom::ContentSecurityPolicyType,
       ContentSecurityPolicyViolationType,
-      SourceLocation*,
-      LocalFrame* = nullptr,
-      Element* = nullptr,
+      SourceLocation* source_location,
+      LocalFrame* context_frame = nullptr,
+      Element* element = nullptr,
       const String& source = g_empty_string,
       const String& source_prefix = g_empty_string,
       std::optional<base::UnguessableToken> issue_id = std::nullopt,

@@ -1996,9 +1996,9 @@ TEST_F(ContentSecurityPolicyTest, ReportViolationBypassingScheme) {
   // example.test. The report should be dropped.
   execution_context->SetURL(KURL("https://example.test"));
   policy->ReportViolation(
-      "script-src 'none'", CSPDirectiveName::ScriptSrc, "Blocked", KURL(),
-      Vector<String>(), false, "script-src 'none'",
-      ContentSecurityPolicyType::kEnforce,
+      CSPDirectiveName::ScriptSrc, /*blocked_url=*/KURL(),
+      /*report_endpoints=*/Vector<String>(), /*use_reporting_api=*/false,
+      /*header=*/"script-src 'none'", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicyViolationType::kInlineViolation, source_location);
 
   EXPECT_EQ(0u, policy->violation_reports_sent_.size());
@@ -2007,9 +2007,9 @@ TEST_F(ContentSecurityPolicyTest, ReportViolationBypassingScheme) {
   // chrome-extension itself. Now the report should be sent.
   execution_context->SetURL(KURL("chrome-extension://abcdefg"));
   policy->ReportViolation(
-      "script-src 'none'", CSPDirectiveName::ScriptSrc, "Blocked", KURL(),
-      Vector<String>(), false, "script-src 'none'",
-      ContentSecurityPolicyType::kEnforce,
+      CSPDirectiveName::ScriptSrc, /*blocked_url=*/KURL(),
+      /*report_endpoints=*/Vector<String>(), /*use_reporting_api=*/false,
+      /*header=*/"script-src 'none'", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicyViolationType::kInlineViolation, source_location);
   EXPECT_EQ(1u, policy->violation_reports_sent_.size());
 
