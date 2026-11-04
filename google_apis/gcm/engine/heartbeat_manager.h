@@ -71,9 +71,6 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
   // pending.
   base::TimeTicks GetNextHeartbeatTime() const;
 
-  // Updates the timer used for scheduling heartbeats.
-  void UpdateHeartbeatTimer(std::unique_ptr<base::RetainingOneShotTimer> timer);
-
   // base::PowerSuspendObserver override.
   void OnSuspend() override;
   void OnResume() override;

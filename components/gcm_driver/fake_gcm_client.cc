@@ -194,9 +194,6 @@ GCMClient::GCMStatistics FakeGCMClient::GetStatistics() const {
   return statistics;
 }
 
-void FakeGCMClient::UpdateHeartbeatTimer(
-    std::unique_ptr<base::RetainingOneShotTimer> timer) {}
-
 void FakeGCMClient::AddInstanceIDData(const std::string& app_id,
                                       const std::string& instance_id,
                                       const std::string& extra_data) {

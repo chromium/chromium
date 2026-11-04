@@ -121,20 +121,6 @@ base::TimeTicks HeartbeatManager::GetNextHeartbeatTime() const {
     return base::TimeTicks();
 }
 
-void HeartbeatManager::UpdateHeartbeatTimer(
-    std::unique_ptr<base::RetainingOneShotTimer> timer) {
-  bool was_running = heartbeat_timer_->IsRunning();
-  base::TimeDelta remaining_delay =
-      heartbeat_timer_->desired_run_time() - base::TimeTicks::Now();
-  base::RepeatingClosure timer_task = heartbeat_timer_->user_task();
-
-  heartbeat_timer_->Stop();
-  heartbeat_timer_ = std::move(timer);
-
-  if (was_running)
-    heartbeat_timer_->Start(FROM_HERE, remaining_delay, timer_task);
-}
-
 void HeartbeatManager::OnSuspend() {
   // The system is going to sleep. Record the time, so on resume we know how
   // much time the machine was suspended.

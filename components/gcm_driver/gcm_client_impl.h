@@ -121,8 +121,6 @@ class GCMClientImpl : public GCMClient,
   void SetRecording(bool recording) override;
   void ClearActivityLogs() override;
   GCMStatistics GetStatistics() const override;
-  void UpdateHeartbeatTimer(
-      std::unique_ptr<base::RetainingOneShotTimer> timer) override;
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id,
                          const std::string& extra_data) override;
@@ -179,8 +177,6 @@ class GCMClientImpl : public GCMClient,
   void OnMessageSentToMCS(const std::string& app_id,
                           const std::string& message_id,
                           MCSClient::MessageSendStatus status);
-  // Receives information about mcs_client_ errors.
-  void OnMCSError();
 
   // Runs after GCM Store load is done to trigger continuation of the
   // initialization.

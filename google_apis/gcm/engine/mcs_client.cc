@@ -181,14 +181,12 @@ MCSClient::MCSClient(const std::string& version_string,
 MCSClient::~MCSClient() = default;
 
 void MCSClient::Initialize(
-    const ErrorCallback& error_callback,
     const OnMessageReceivedCallback& message_received_callback,
     const OnMessageSentCallback& message_sent_callback,
     std::unique_ptr<GCMStore::LoadResult> load_result) {
   DCHECK_EQ(state_, UNINITIALIZED);
 
   state_ = LOADED;
-  mcs_error_callback_ = error_callback;
   message_received_callback_ = message_received_callback;
   message_sent_callback_ = message_sent_callback;
 
@@ -231,8 +229,6 @@ void MCSClient::Initialize(
     uint64_t timestamp = 0;
     if (!base::StringToUint64(iter->first, &timestamp)) {
       LOG(ERROR) << "Invalid restored message.";
-      // TODO(fgorski): Error: data unreadable
-      mcs_error_callback_.Run();
       return;
     }
 
@@ -368,11 +364,6 @@ void MCSClient::SendMessage(const MCSMessage& message) {
   NotifyMessageSendStatus(message.GetProtobuf(), QUEUED);
 
   MaybeSendMessage();
-}
-
-void MCSClient::UpdateHeartbeatTimer(
-    std::unique_ptr<base::RetainingOneShotTimer> timer) {
-  heartbeat_manager_.UpdateHeartbeatTimer(std::move(timer));
 }
 
 void MCSClient::ResetStateAndBuildLoginRequest(
@@ -646,7 +637,6 @@ void MCSClient::HandlePacketFromWire(
         LOG(ERROR) << "Failed to log in to GCM, resetting connection.";
         connection_factory_->SignalConnectionReset(
             ConnectionFactory::LOGIN_FAILURE);
-        mcs_error_callback_.Run();
         return;
       }
 

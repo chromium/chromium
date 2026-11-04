@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "components/fcm/engine/fcm_stats_recorder_impl.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -79,8 +78,6 @@ class FakeGCMClient : public GCMClient {
   void SetRecording(bool recording) override;
   void ClearActivityLogs() override;
   GCMStatistics GetStatistics() const override;
-  void UpdateHeartbeatTimer(
-      std::unique_ptr<base::RetainingOneShotTimer> timer) override;
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id,
                          const std::string& extra_data) override;

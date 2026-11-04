@@ -371,8 +371,6 @@ void GCMClientImpl::InitializeMCSClient() {
       gcm_store_.get(), io_task_runner_, &recorder_);
 
   mcs_client_->Initialize(
-      base::BindRepeating(&GCMClientImpl::OnMCSError,
-                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&GCMClientImpl::OnMessageReceivedFromMCS,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&GCMClientImpl::OnMessageSentToMCS,
@@ -429,13 +427,6 @@ void GCMClientImpl::ResetStore() {
   // Destroy the GCM store to start over.
   gcm_store_->Destroy(base::BindOnce(&GCMClientImpl::ResetStoreCallback,
                                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GCMClientImpl::UpdateHeartbeatTimer(
-    std::unique_ptr<base::RetainingOneShotTimer> timer) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(mcs_client_);
-  mcs_client_->UpdateHeartbeatTimer(std::move(timer));
 }
 
 void GCMClientImpl::AddInstanceIDData(const std::string& app_id,
@@ -1134,11 +1125,6 @@ void GCMClientImpl::OnMessageSentToMCS(const std::string& app_id,
   } else {
     delegate_->OnSendFinished(app_id, message_id, ToGCMClientResult(status));
   }
-}
-
-void GCMClientImpl::OnMCSError() {
-  // TODO(fgorski): For now it replaces the initialization method. Long term it
-  // should have an error or status passed in.
 }
 
 void GCMClientImpl::HandleIncomingMessage(const gcm::MCSMessage& message) {

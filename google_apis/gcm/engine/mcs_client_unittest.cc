@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/timer/timer.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/engine/fake_connection_factory.h"
@@ -128,7 +127,6 @@ class MCSClientTest : public testing::Test {
   FakeConnectionFactory* connection_factory() {
     return &connection_factory_;
   }
-  bool init_success() const { return init_success_; }
   uint64_t restored_android_id() const { return restored_android_id_; }
   uint64_t restored_security_token() const { return restored_security_token_; }
   MCSMessage* received_message() const { return received_message_.get(); }
@@ -145,7 +143,6 @@ class MCSClientTest : public testing::Test {
   void PumpLoop();
 
  private:
-  void ErrorCallback();
   void MessageReceivedCallback(const MCSMessage& message);
   void MessageSentCallback(const std::string& app_id,
                            const std::string& message_id,
@@ -160,7 +157,6 @@ class MCSClientTest : public testing::Test {
 
   FakeConnectionFactory connection_factory_;
   std::unique_ptr<TestMCSClient> mcs_client_;
-  bool init_success_;
   uint64_t restored_android_id_;
   uint64_t restored_security_token_;
   std::unique_ptr<MCSMessage> received_message_;
@@ -172,7 +168,6 @@ class MCSClientTest : public testing::Test {
 
 MCSClientTest::MCSClientTest()
     : run_loop_(new base::RunLoop()),
-      init_success_(true),
       restored_android_id_(0),
       restored_security_token_(0),
       message_send_status_(MCSClient::SENT) {
@@ -209,8 +204,6 @@ void MCSClientTest::InitializeClient() {
       GCMStore::CREATE_IF_MISSING,
       base::BindOnce(
           &MCSClient::Initialize, base::Unretained(mcs_client_.get()),
-          base::BindRepeating(&MCSClientTest::ErrorCallback,
-                              base::Unretained(this)),
           base::BindRepeating(&MCSClientTest::MessageReceivedCallback,
                               base::Unretained(this)),
           base::BindRepeating(&MCSClientTest::MessageSentCallback,
@@ -229,8 +222,6 @@ void MCSClientTest::LoginClient(
   GetFakeHandler()->ExpectOutgoingMessage(
       MCSMessage(kLoginRequestTag, std::move(login_request)));
   mcs_client_->Login(kAndroidId, kSecurityToken);
-  run_loop_->Run();
-  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void MCSClientTest::StoreCredentials() {
@@ -257,14 +248,11 @@ void MCSClientTest::PumpLoop() {
   run_loop_ = std::make_unique<base::RunLoop>();
 }
 
-void MCSClientTest::ErrorCallback() {
-  init_success_ = false;
-  DVLOG(1) << "Error callback invoked, killing loop.";
-  run_loop_->Quit();
-}
-
 void MCSClientTest::MessageReceivedCallback(const MCSMessage& message) {
   received_message_ = std::make_unique<MCSMessage>(message);
+  if (message.tag() == kLoginResponseTag) {
+    return;
+  }
   DVLOG(1) << "Message received callback invoked, killing loop.";
   run_loop_->Quit();
 }
@@ -287,7 +275,7 @@ void MCSClientTest::SetDeviceCredentialsCallback(bool success) {
 TEST_F(MCSClientTest, InitializeNew) {
   BuildMCSClient();
   InitializeClient();
-  EXPECT_TRUE(init_success());
+  EXPECT_EQ(MCSClient::LOADED, mcs_client()->state());
 }
 
 // Initialize a new client, shut it down, then restart the client. Should
@@ -301,7 +289,7 @@ TEST_F(MCSClientTest, InitializeExisting) {
   StoreCredentials();
   BuildMCSClient();
   InitializeClient();
-  EXPECT_TRUE(init_success());
+  EXPECT_EQ(MCSClient::LOADED, mcs_client()->state());
 }
 
 // Log in successfully to the MCS endpoint.
@@ -309,8 +297,9 @@ TEST_F(MCSClientTest, LoginSuccess) {
   BuildMCSClient();
   InitializeClient();
   LoginClient(std::vector<std::string>());
+  PumpLoop();
   EXPECT_TRUE(connection_factory()->IsEndpointReachable());
-  EXPECT_TRUE(init_success());
+  EXPECT_EQ(MCSClient::CONNECTED, mcs_client()->state());
   ASSERT_TRUE(received_message());
   EXPECT_EQ(kLoginResponseTag, received_message()->tag());
 }
@@ -324,7 +313,7 @@ TEST_F(MCSClientTest, FailLogin) {
   connection_factory()->set_delay_reconnect(true);
   LoginClient(std::vector<std::string>());
   EXPECT_FALSE(connection_factory()->IsEndpointReachable());
-  EXPECT_FALSE(init_success());
+  EXPECT_EQ(MCSClient::UNINITIALIZED, mcs_client()->state());
   EXPECT_FALSE(received_message());
   EXPECT_TRUE(connection_factory()->reconnect_pending());
 }
@@ -401,7 +390,6 @@ TEST_F(MCSClientTest, SendMessageRMQWhileDisconnected) {
   GetFakeHandler()->set_fail_send(false);
   clock()->Advance(base::Seconds(kTTLValue - 1));
   connection_factory()->Connect();
-  WaitForMCSEvent();  // Wait for the login to finish.
   PumpLoop();         // Wait for the send to happen.
 
   // Receive the ack.

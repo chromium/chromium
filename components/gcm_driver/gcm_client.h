@@ -21,7 +21,6 @@
 
 namespace base {
 class FilePath;
-class RetainingOneShotTimer;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -270,10 +269,6 @@ class GCMClient {
 
   // Gets internal states and statistics.
   virtual GCMStatistics GetStatistics() const = 0;
-
-  // Updates the timer used by the HeartbeatManager for sending heartbeats.
-  virtual void UpdateHeartbeatTimer(
-      std::unique_ptr<base::RetainingOneShotTimer> timer) = 0;
 
   // Adds the Instance ID data for a specific app to the persistent store.
   virtual void AddInstanceIDData(const std::string& app_id,

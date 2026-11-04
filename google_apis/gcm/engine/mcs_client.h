@@ -25,7 +25,6 @@
 
 namespace base {
 class Clock;
-class RetainingOneShotTimer;
 }  // namespace base
 
 namespace google {
@@ -84,12 +83,6 @@ class GCM_EXPORT MCSClient {
     SEND_STATUS_COUNT
   };
 
-  // Callback for MCSClient's error conditions. A repeating callback is used
-  // because occasionally multiple errors are reported, see crbug.com/1039598
-  // for more context.
-  // TODO(fgorski): Keeping it as a callback with intention to add meaningful
-  // error information.
-  using ErrorCallback = base::RepeatingClosure;
   // Callback when a message is received.
   using OnMessageReceivedCallback =
       base::RepeatingCallback<void(const MCSMessage& message)>;
@@ -112,27 +105,20 @@ class GCM_EXPORT MCSClient {
 
   virtual ~MCSClient();
 
-  // Initialize the client. Will load any previous id/token information as well
-  // as unacknowledged message information from the GCM storage, if it exists,
-  // passing the id/token information back via |initialization_callback| along
-  // with a |success == true| result. If no GCM information is present (and
-  // this is therefore a fresh client), a clean GCM store will be created and
-  // values of 0 will be returned via |initialization_callback| with
-  // |success == true|.
-  // If an error loading the GCM store is encountered,
-  // |initialization_callback| will be invoked with |success == false|.
-  void Initialize(const ErrorCallback& initialization_callback,
-                  const OnMessageReceivedCallback& message_received_callback,
+  // Initializes the client from `load_result`, restoring any previous id/token
+  // information and unacknowledged messages. If no device credentials are
+  // present in `load_result`, assumes a fresh client.
+  void Initialize(const OnMessageReceivedCallback& message_received_callback,
                   const OnMessageSentCallback& message_sent_callback,
                   std::unique_ptr<GCMStore::LoadResult> load_result);
 
   // Logs the client into the server. Client must be initialized.
-  // |android_id| and |security_token| are optional if this is not a new
+  // `android_id` and `security_token` are optional if this is not a new
   // client, else they must be non-zero.
-  // Successful login will result in |message_received_callback| being invoked
+  // Successful login will result in `message_received_callback` being invoked
   // with a valid LoginResponse.
-  // Login failure (typically invalid id/token) will shut down the client, and
-  // |initialization_callback| to be invoked with |success = false|.
+  // Login failure (typically invalid id/token) resets the client state and
+  // signals a connection reset.
   virtual void Login(uint64_t android_id, uint64_t security_token);
 
   // Sends a message, with or without reliable message queueing (RMQ) support.
@@ -155,9 +141,6 @@ class GCM_EXPORT MCSClient {
 
   // Returns text representation of the state enum.
   std::string GetStateString() const;
-
-  // Updates the timer used by |heartbeat_manager_| for sending heartbeats.
-  void UpdateHeartbeatTimer(std::unique_ptr<base::RetainingOneShotTimer> timer);
 
  private:
   using StreamId = uint32_t;
@@ -231,7 +214,6 @@ class GCM_EXPORT MCSClient {
   State state_;
 
   // Callbacks for owner.
-  ErrorCallback mcs_error_callback_;
   OnMessageReceivedCallback message_received_callback_;
   OnMessageSentCallback message_sent_callback_;
 
