@@ -31,7 +31,8 @@ class _Context:
         java_types.JavaClass('org/jni_zero/CheckDiscard'),
         java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),
     ]
-    if any(n.return_type.java_class == java_types.JNI_RAW_PTR_CLASS or any(
+    if any(n.return_type.class_without_prefix == java_types.JNI_RAW_PTR_CLASS
+           or any(
         p.java_type.is_safe_pointer() for p in n.params)
            for n in jni_obj.proxy_natives):
       imports.append(java_types.JNI_ZERO_INTERNAL_CLASS)
@@ -60,7 +61,8 @@ override fun {native.name}({sig_params})""")
       if not native.params[0].java_type.is_safe_pointer():
         sb(f'assert({native.params[0].name} != 0L)\n')
     is_raw_ptr_ret = (
-        native.return_type.java_class == java_types.JNI_RAW_PTR_CLASS)
+        native.return_type.class_without_prefix ==
+            java_types.JNI_RAW_PTR_CLASS)
     if not native.return_type.is_void():
       sb('return ')
     if is_raw_ptr_ret:

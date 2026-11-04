@@ -10,6 +10,8 @@ class SampleSafePointersKotlin {
 
   @CalledByNative fun onPtr(ptr: JniPtr<NativeObj>, nullablePtr: JniPtr<NativeObj>?) {}
 
+  @CalledByNative fun onUniquePtr(ptr: JniUniquePtr<NativeObj>) {}
+
   fun exercise() {
     val raw: JniRawPtr<NativeObj> = SampleSafePointersKotlinJni.get().borrowRaw()
     val maybeRaw: JniRawPtr<NativeObj>? = SampleSafePointersKotlinJni.get().maybeBorrowRaw()

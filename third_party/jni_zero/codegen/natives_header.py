@@ -78,7 +78,7 @@ def _prep_param(sb, param, native):
   java_type = param.java_type
 
   if java_type.is_safe_pointer():
-    assert java_type.java_class == java_types.JNI_PTR_CLASS, (
+    assert java_type.class_without_prefix == java_types.JNI_PTR_CLASS, (
         f'Only JniPtr is supported as a parameter in proxy native methods; '
         f'got {java_type.java_class}.')
     cpp_type = java_type.to_backend_cpp_type()
@@ -249,13 +249,13 @@ def entry_point_method(sb,
     if return_type.is_safe_pointer():
       # Construct the Java wrapper object on the native side and return it as
       # a local ref (or raw jlong for JniRawPtr, wrapped in the Java proxy).
-      if return_type.java_class == java_types.JNI_UNIQUE_PTR_CLASS:
+      if return_type.class_without_prefix == java_types.JNI_UNIQUE_PTR_CLASS:
         sb('auto _deleter = return_value.deleter_address();\n')
         with sb.statement():
           sb('return ::jni_zero::internal::CreateJavaJniUniquePtr(env, '
              'reinterpret_cast<jlong>(return_value.release()), '
              '_deleter).ReleaseLocal()')
-      elif return_type.java_class == java_types.JNI_RAW_PTR_CLASS:
+      elif return_type.class_without_prefix == java_types.JNI_RAW_PTR_CLASS:
         with sb.statement():
           sb('return ::jni_zero::internal::WrapRawPtr('
              'reinterpret_cast<jlong>(return_value.get()))')

@@ -331,14 +331,14 @@ def parse_proxy_natives(type_resolver, contents, *, iter_methods):
 
   for name, annotations, params_part, params, return_type in iter_methods(
       type_resolver, interface_body):
-    if return_type.java_class == java_types.JNI_PTR_CLASS:
+    if return_type.class_without_prefix == java_types.JNI_PTR_CLASS:
       raise ParseError(
           f'Method "{name}" returns JniPtr, but a short-borrow pointer is '
           f'auto-invalidated after the call and cannot be returned. Use '
           f'JniUniquePtr or JniRawPtr to hand ownership to Java.')
     for p in params:
       if (p.java_type.is_safe_pointer()
-          and p.java_type.java_class != java_types.JNI_PTR_CLASS):
+          and p.java_type.class_without_prefix != java_types.JNI_PTR_CLASS):
         raise ParseError(
             f'Method "{name}" parameter "{p.name}" has type '
             f'{p.java_type.java_class.name}, but @NativeMethods parameters '
@@ -388,7 +388,7 @@ def parse_proxy_natives(type_resolver, contents, *, iter_methods):
 
 def check_called_by_native_return_type(name, return_type):
   if (return_type.is_safe_pointer()
-      and return_type.java_class != java_types.JNI_PTR_CLASS):
+      and return_type.class_without_prefix != java_types.JNI_PTR_CLASS):
     raise ParseError(
         f'Method "{name}" has return type {return_type.java_class.name}, '
         f'but @CalledByNative return types must use JniPtr<T>. '

@@ -607,6 +607,14 @@ class Tests(BaseTest):
                           package_prefix='this.is.a.package.prefix',
                           package_prefix_filter='org.jni_zero')
 
+  def testPackagePrefixWithSafePointers(self):
+    self._TestGenerateJni(['SampleSafePointersKotlin.kt'],
+                          srcjar=True,
+                          package_prefix='internal',
+                          package_prefix_filter='org.jni_zero',
+                          enable_safe_pointers=True,
+                          generate_placeholders=True)
+
   def testPackagePrefixWithManualRegistration(self):
     self._TestGenerateFinal(['SampleForAnnotationProcessor.java'],
                             package_prefix='this.is.a.package.prefix',

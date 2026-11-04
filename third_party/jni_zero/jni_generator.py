@@ -728,7 +728,7 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
           # JniPtr and JniRawPtr are already in gendeps_java; JniUniquePtr is
           # in jni_zero_java and still needs a placeholder.
           if (java_class.full_name_with_slashes.startswith('java/')
-              or java_class
+              or java_class.class_without_prefix
               in (java_types.JNI_PTR_CLASS, java_types.JNI_RAW_PTR_CLASS)):
             continue
           # TODO(mheikal): handle more than 1 nesting layer.

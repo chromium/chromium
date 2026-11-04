@@ -27,7 +27,8 @@ class _Context:
         java_types.JavaClass('org/jni_zero/internal/NullUnmarked'),
         java_types.JavaClass('org/jni_zero/internal/Nullable'),
     ]
-    if any(n.return_type.java_class == java_types.JNI_RAW_PTR_CLASS or any(
+    if any(n.return_type.class_without_prefix == java_types.JNI_RAW_PTR_CLASS
+           or any(
         p.java_type.is_safe_pointer() for p in n.params)
            for n in jni_obj.proxy_natives):
       imports.append(java_types.JNI_ZERO_INTERNAL_CLASS)
@@ -60,7 +61,8 @@ public {return_type_str} {native.name}({sig_params})""")
         sb(f'assert {p.name} != null : "Parameter \\"{p.name}\\" was null. Add @Nullable to it?";\n')
     with sb.statement():
       is_raw_ptr_ret = (
-          native.return_type.java_class == java_types.JNI_RAW_PTR_CLASS)
+          native.return_type.class_without_prefix ==
+              java_types.JNI_RAW_PTR_CLASS)
       if is_raw_ptr_ret:
         sb('return JniZeroInternal.createRawPtr(')
       elif not native.return_type.is_void():
