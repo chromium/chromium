@@ -2046,19 +2046,6 @@ void GeminiBrowserAgent::OnPageContentPrefChanged() {
           prefs::kIOSBWGPageContentSetting)) {
     shared_tabs_.clear();
   }
-
-  if (IsInGeminiLiveMode() &&
-      processing_status_ == ios::provider::GeminiClientMode::kTranscribing) {
-    return;
-  }
-
-  if (is_floaty_invoked_) {
-    [gemini_container_mediator_ updateFloatyWithPartialPageContext];
-  }
-
-  // Trigger UI update for the attachment chip.
-  ios::provider::RequestUIChange(
-      ios::provider::GeminiUIElementType::kContextAttachment);
 }
 
 void GeminiBrowserAgent::OnMicrophonePrefChanged() {

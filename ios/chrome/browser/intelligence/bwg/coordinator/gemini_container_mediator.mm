@@ -12,6 +12,8 @@
 #import "components/actor/core/task_source_info.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -75,6 +77,7 @@ using ios::provider::GeminiViewState;
                                        IdentityManagerObserving,
                                        IncognitoStateObserver,
                                        LensOverlayStateNotifierObserver,
+                                       PrefObserverDelegate,
                                        TabGridStateObserving>
 
 // Called when the active `WebState` changes.
@@ -86,6 +89,9 @@ using ios::provider::GeminiViewState;
 
 // Called when the page context for `webState` is updated.
 - (void)onPageContextUpdated:(web::WebState*)webState;
+
+// Called when the page content sharing preference changes.
+- (void)onPageContentPrefChanged;
 
 // Called when the `WebStateList` is destroyed.
 - (void)onWebStateListDestroyed;
@@ -168,6 +174,10 @@ class GeminiContainerMediatorTabHelperObserver
   // Observer bridge for `IdentityManager` events.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
+  // Registrar for tracking user preference changes.
+  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+  // Observer bridge for preference changes.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Delegate for shared tabs in a Gemini session.
   raw_ptr<GeminiSharedTabsDelegate> _sharedTabsDelegate;
   // Manager for tracking and recording Gemini session metrics.
@@ -370,6 +380,8 @@ class GeminiContainerMediatorTabHelperObserver
   _sessionMetricsManager = nil;
   _consumer = nil;
   _webStateList = nullptr;
+  _prefObserverBridge.reset();
+  _prefChangeRegistrar.reset();
   _profile = nullptr;
   _authService = nullptr;
   _incognitoState = nil;
@@ -869,6 +881,14 @@ class GeminiContainerMediatorTabHelperObserver
   [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
 }
 
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kIOSBWGPageContentSetting) {
+    [self onPageContentPrefChanged];
+  }
+}
+
 #pragma mark - Private
 
 // Forwards the worklog presentation for `state` to the consumer. Non-actuating
@@ -1072,6 +1092,16 @@ class GeminiContainerMediatorTabHelperObserver
   [self updateFloatyWithPartialPageContext];
 }
 
+- (void)onPageContentPrefChanged {
+  // Update page context for Gemini Live only when the user is not speaking.
+  if ([_stateManager isInGeminiLiveMode] &&
+      _stateManager.processingStatus == GeminiClientMode::kTranscribing) {
+    return;
+  }
+
+  [self updateFloatyWithPartialPageContext];
+}
+
 - (void)onWebStateListDestroyed {
   _webStateList = nullptr;
 }
@@ -1098,6 +1128,13 @@ class GeminiContainerMediatorTabHelperObserver
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
   }
+  if (_profile && !_prefChangeRegistrar) {
+    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+    _prefChangeRegistrar->Init(_profile->GetPrefs());
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kIOSBWGPageContentSetting, _prefChangeRegistrar.get());
+  }
 }
 
 - (void)detachObservers {
@@ -1112,6 +1149,8 @@ class GeminiContainerMediatorTabHelperObserver
   _webStateListObserver.reset();
   [_incognitoState removeObserver:self];
   _identityManagerObserverBridge.reset();
+  _prefObserverBridge.reset();
+  _prefChangeRegistrar.reset();
 }
 
 #pragma mark - Gemini Live
