@@ -970,7 +970,8 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
         break;
       }
     }
-  } else {
+  } else if (event->GetType() != ParamEvent::Type::kSetValueCurveEnd &&
+             event->GetType() != ParamEvent::Type::kCancelValues) {
     // Not a `SetValueCurve` new event. Make sure this new event doesn't overlap
     // any existing `SetValueCurve` event.
     for (int i = ub; i >= 0; i--) {
@@ -982,8 +983,7 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
       }
       if (test_type == ParamEvent::Type::kSetValueCurve) {
         double end_time = events_[i]->Time() + events_[i]->Duration();
-        if (event->GetType() != ParamEvent::Type::kSetValueCurveEnd &&
-            event->Time() >= events_[i]->Time() && event->Time() < end_time) {
+        if (event->Time() >= events_[i]->Time() && event->Time() < end_time) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNotSupportedError,
               StrCat({EventToString(*event), " overlaps ",

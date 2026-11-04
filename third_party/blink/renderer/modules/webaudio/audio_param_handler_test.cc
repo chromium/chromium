@@ -234,4 +234,26 @@ TEST(AudioParamHandlerTest, KRateAutomationClamping) {
   verify_clamped_value(min_value);
 }
 
+TEST(AudioParamHandlerTest, CancelAndHoldAtTimeWithOutOfOrderAdjacentCurves) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 128, 8000, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  OscillatorNode* osc = context->createOscillator(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  // Out-of-order adjacent curves place the earlier curve's end marker after
+  // the later curve's start; cancelling a follow-up ramp must not crash.
+  const Vector<float> curve = {1.0f, 2.0f};
+  osc->frequency()
+      ->setValueCurveAtTime(curve, 0.006, 0.008, exception_state)
+      ->setValueCurveAtTime(curve, 0.002, 0.004, exception_state)
+      ->cancelAndHoldAtTime(0.010, exception_state)
+      ->linearRampToValueAtTime(5.0f, 0.015, exception_state)
+      ->cancelAndHoldAtTime(0.010, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+}
+
 }  // namespace blink
