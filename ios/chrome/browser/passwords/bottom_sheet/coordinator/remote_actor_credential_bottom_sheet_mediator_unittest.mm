@@ -5,16 +5,22 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
 
 #import <memory>
+#import <string>
 #import <utility>
 #import <vector>
 
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "ios/chrome/browser/favicon/model/test_favicon_loader.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_credential_sharing_delegate_bridge.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -24,17 +30,22 @@
 namespace {
 
 constexpr char kTestOrigin[] = "https://instacart.com";
+constexpr char kTestDomain[] = "instacart.com";
+constexpr char16_t kUsername1[] = u"camille.c.walsh@gmail.com";
+constexpr char16_t kPassword1[] = u"secret1";
+constexpr char16_t kUsername2[] = u"camille.walsh@work.com";
+constexpr char16_t kPassword2[] = u"secret2";
 
-// Creates a test `PasswordForm`.
-std::unique_ptr<password_manager::PasswordForm> CreateTestForm() {
+// Creates a `PasswordForm` for `username` and `password`.
+std::unique_ptr<password_manager::PasswordForm> CreateTestForm(
+    std::u16string username,
+    std::u16string password) {
   constexpr char kTestSignonRealm[] = "https://instacart.com/";
-  constexpr char16_t kUsername[] = u"camille.c.walsh@gmail.com";
-  constexpr char16_t kPassword[] = u"secret";
   auto form = std::make_unique<password_manager::PasswordForm>();
   form->url = GURL(kTestOrigin);
   form->signon_realm = kTestSignonRealm;
-  form->username_value = kUsername;
-  form->password_value = password_manager::PasswordString(kPassword);
+  form->username_value = std::move(username);
+  form->password_value = password_manager::PasswordString(std::move(password));
   return form;
 }
 
@@ -45,9 +56,10 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    consumer_ = OCMStrictProtocolMock(
+        @protocol(RemoteActorCredentialBottomSheetConsumer));
     delegate_ = OCMStrictProtocolMock(
         @protocol(RemoteActorCredentialBottomSheetMediatorDelegate));
-    constexpr char kTestDomain[] = "instacart.com";
     constexpr char kTestGaiaID[] = "gaia_id";
     constexpr char kTestTaskID[] = "task_id";
     remote_actor::proto::RemoteActorPasswordUploadRequest request;
@@ -61,12 +73,13 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
            accountPasswordStore:nullptr
                  sharingService:nullptr
           passwordManagerClient:nullptr
-                  faviconLoader:nullptr
+                  faviconLoader:&favicon_loader_
                         request:request];
     mediator_.delegate = delegate_;
   }
 
   void TearDown() override {
+    EXPECT_OCMOCK_VERIFY(consumer_);
     EXPECT_OCMOCK_VERIFY(delegate_);
     [mediator_ disconnect];
     PlatformTest::TearDown();
@@ -81,6 +94,8 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  TestFaviconLoader favicon_loader_;
+  id<RemoteActorCredentialBottomSheetConsumer> consumer_;
   id<RemoteActorCredentialBottomSheetMediatorDelegate> delegate_;
   RemoteActorCredentialBottomSheetMediator* mediator_;
 };
@@ -100,16 +115,70 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
   run_loop.Run();
 }
 
-// Tests that the mediator requests presentation when credentials are provided.
+// Tests that the mediator exposes every provided credential as a suggestion
+// along with the domain, requests presentation, and notifies the consumer.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
-       TestRequestsPresentationWhenCredentialsProvided) {
+       TestParsesCredentialsAndNotifiesConsumer) {
   OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
-  credentials.push_back(CreateTestForm());
+  credentials.push_back(CreateTestForm(kUsername1, kPassword1));
+  credentials.push_back(CreateTestForm(kUsername2, kPassword2));
 
   [sharing_delegate()
       showCredentialSelectionWithCredentials:std::move(credentials)
                                       origin:url::Origin::Create(
                                                  GURL(kTestOrigin))
                                     callback:base::DoNothing()];
+
+  OCMExpect([consumer_
+      setSuggestions:[OCMArg checkWithBlock:^BOOL(
+                                 NSArray<FormSuggestion*>* suggestions) {
+        return suggestions.count == 2 &&
+               [suggestions[0].value
+                   isEqualToString:base::SysUTF16ToNSString(kUsername1)] &&
+               [suggestions[1].value
+                   isEqualToString:base::SysUTF16ToNSString(kUsername2)];
+      }]
+           andDomain:base::SysUTF8ToNSString(kTestDomain)]);
+  OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
+
+  mediator_.consumer = consumer_;
+  EXPECT_NSEQ(consumer_, mediator_.consumer);
+}
+
+// Tests that a consumer set before credentials arrive is notified once the
+// credentials are received.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestConsumerSetBeforeCredentialsIsNotifiedOnArrival) {
+  mediator_.consumer = consumer_;
+
+  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
+  OCMExpect([consumer_ setSuggestions:[OCMArg any] andDomain:[OCMArg any]]);
+  OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
+
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
+  credentials.push_back(CreateTestForm(kUsername1, kPassword1));
+  [sharing_delegate()
+      showCredentialSelectionWithCredentials:std::move(credentials)
+                                      origin:url::Origin::Create(
+                                                 GURL(kTestOrigin))
+                                    callback:base::DoNothing()];
+}
+
+// Tests that an opaque origin falls back to the default globe favicon.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestOpaqueOriginUsesFallbackFavicon) {
+  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
+  credentials.push_back(CreateTestForm(kUsername1, kPassword1));
+
+  [sharing_delegate()
+      showCredentialSelectionWithCredentials:std::move(credentials)
+                                      origin:url::Origin()
+                                    callback:base::DoNothing()];
+
+  OCMExpect([consumer_ setSuggestions:[OCMArg any] andDomain:[OCMArg any]]);
+  OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
+
+  mediator_.consumer = consumer_;
 }

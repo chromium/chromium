@@ -9,6 +9,7 @@
 
 class FaviconLoader;
 @class RemoteActorCredentialBottomSheetMediator;
+@protocol RemoteActorCredentialBottomSheetConsumer;
 
 namespace password_manager {
 class PasswordManagerClient;
@@ -50,6 +51,10 @@ class SyncService;
 // reauthentication is handled by the controller through
 // `passwordManagerClient`.
 @interface RemoteActorCredentialBottomSheetMediator : NSObject
+
+// Consumer of the mediator.
+@property(nonatomic, weak) id<RemoteActorCredentialBottomSheetConsumer>
+    consumer;
 
 // Delegate handling the flow progress.
 @property(nonatomic, weak) id<RemoteActorCredentialBottomSheetMediatorDelegate>
