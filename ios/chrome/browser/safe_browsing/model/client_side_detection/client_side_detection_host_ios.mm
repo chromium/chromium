@@ -34,7 +34,10 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/default_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -88,7 +91,8 @@ ClientSideDetectionHostIOS::ClientSideDetectionHostIOS(
     IntelligentScanDelegate* intelligent_scan_delegate,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    PageContextWrapperFactory* page_context_wrapper_factory)
     : ClientSideDetectionHostBase(
           service ? service->GetWeakPtr() : nullptr,
           cache_manager,
@@ -102,7 +106,11 @@ ClientSideDetectionHostIOS::ClientSideDetectionHostIOS(
           web_state ? web_state->GetBrowserState()->IsOffTheRecord() : false),
       web_state_(web_state),
       service_(service),
-      identity_manager_(identity_manager) {
+      identity_manager_(identity_manager),
+      page_context_wrapper_factory_(
+          page_context_wrapper_factory
+              ? *page_context_wrapper_factory
+              : DefaultPageContextWrapperFactory::GetInstance()) {
   CHECK(web_state_);
   web_state_->AddObserver(this);
   EnsureObservingQueryManager();
@@ -204,9 +212,9 @@ void ClientSideDetectionHostIOS::GetInnerText(HostInnerTextCallback callback) {
                                         std::move(tab_screenshot));
       },
       inner_text_weak_factory_.GetWeakPtr());
-  page_context_wrapper_ = [[PageContextWrapper alloc]
-        initWithWebState:web_state_
-      completionCallback:std::move(completion_callback)];
+  page_context_wrapper_ = page_context_wrapper_factory_->Create(
+      web_state_, PageContextWrapperConfigBuilder().Build(),
+      std::move(completion_callback));
   [page_context_wrapper_ setShouldGetInnerText:YES];
   if (ShouldCaptureScreenshotForIntelligentScan()) {
     [page_context_wrapper_ setShouldGetSnapshot:YES];

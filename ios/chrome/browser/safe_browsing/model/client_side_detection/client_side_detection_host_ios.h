@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/time/time.h"
@@ -26,6 +27,7 @@
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
+class PageContextWrapperFactory;
 class PrefService;
 @class PageContextWrapper;
 @class UIImage;
@@ -59,14 +61,18 @@ class ClientSideDetectionHostIOS
   // `service`, `cache_manager`, `pref_service`, `identity_manager`, and
   // `history_service` supply required service dependencies.
   // `intelligent_scan_delegate` is optional and may be null if intelligent
-  // scanning is unsupported or disabled.
-  ClientSideDetectionHostIOS(web::WebState* web_state,
-                             ClientSideDetectionService* service,
-                             VerdictCacheManager* cache_manager,
-                             IntelligentScanDelegate* intelligent_scan_delegate,
-                             PrefService* pref_service,
-                             signin::IdentityManager* identity_manager,
-                             history::HistoryService* history_service);
+  // scanning is unsupported or disabled. `page_context_wrapper_factory` is
+  // optional and defaults to `DefaultPageContextWrapperFactory::GetInstance()`
+  // if null.
+  ClientSideDetectionHostIOS(
+      web::WebState* web_state,
+      ClientSideDetectionService* service,
+      VerdictCacheManager* cache_manager,
+      IntelligentScanDelegate* intelligent_scan_delegate,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      history::HistoryService* history_service,
+      PageContextWrapperFactory* page_context_wrapper_factory = nullptr);
   ~ClientSideDetectionHostIOS() override;
 
   ClientSideDetectionHostIOS(const ClientSideDetectionHostIOS&) = delete;
@@ -254,6 +260,9 @@ class ClientSideDetectionHostIOS
 
   // `PageContextWrapper` for inner text extraction.
   __strong PageContextWrapper* page_context_wrapper_ = nil;
+
+  // Factory used to create `PageContextWrapper` instances.
+  const raw_ref<PageContextWrapperFactory> page_context_wrapper_factory_;
 
   bool is_preclassifying_ = false;
   bool is_page_loaded_ = false;

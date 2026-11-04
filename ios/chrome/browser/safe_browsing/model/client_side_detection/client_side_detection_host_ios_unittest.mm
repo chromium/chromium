@@ -12,6 +12,7 @@
 #import "base/base_switches.h"
 #import "base/command_line.h"
 #import "base/containers/span.h"
+#import "base/functional/bind.h"
 #import "base/strings/strcat.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
@@ -36,6 +37,8 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service_factory.h"
@@ -63,78 +66,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
-
-// Fake `PageContextWrapper` for testing inner text extraction in
-// `ClientSideDetectionHostIOS`.
-@interface FakeClientSideDetectionPageContextWrapper : PageContextWrapper
-
-@property(nonatomic, readonly) BOOL populateCalled;
-
-- (void)respondWithInnerText:(const std::string&)innerText;
-- (void)respondWithInnerText:(const std::string&)innerText
-               tabScreenshot:(const std::string&)tabScreenshot;
-- (void)respondWithError:(PageContextWrapperError)error;
-- (void)respondWithEmptyProto;
-
-@end
-
-@implementation FakeClientSideDetectionPageContextWrapper {
-  base::OnceCallback<void(PageContextWrapperCallbackResponse)> _callback;
-}
-
-- (instancetype)initWithWebState:(web::WebState*)webState
-              completionCallback:
-                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
-                      completionCallback {
-  self = [super initWithWebState:webState completionCallback:base::DoNothing()];
-  if (self) {
-    _callback = std::move(completionCallback);
-    _populateCalled = NO;
-  }
-  return self;
-}
-
-- (void)populatePageContextFieldsAsync {
-  _populateCalled = YES;
-}
-
-- (void)respondWithInnerText:(const std::string&)innerText {
-  if (_callback) {
-    auto page_context =
-        std::make_unique<optimization_guide::proto::PageContext>();
-    page_context->set_inner_text(innerText);
-    std::move(_callback).Run(base::ok(std::move(page_context)));
-  }
-}
-
-- (void)respondWithInnerText:(const std::string&)innerText
-               tabScreenshot:(const std::string&)tabScreenshot {
-  if (_callback) {
-    auto page_context =
-        std::make_unique<optimization_guide::proto::PageContext>();
-    page_context->set_inner_text(innerText);
-    page_context->set_tab_screenshot(tabScreenshot);
-    std::move(_callback).Run(base::ok(std::move(page_context)));
-  }
-}
-
-- (void)respondWithError:(PageContextWrapperError)error {
-  if (_callback) {
-    std::move(_callback).Run(base::unexpected(error));
-  }
-}
-
-- (void)respondWithEmptyProto {
-  if (_callback) {
-    auto page_context =
-        std::make_unique<optimization_guide::proto::PageContext>();
-    std::move(_callback).Run(base::ok(std::move(page_context)));
-  }
-}
-
-@end
 
 namespace safe_browsing {
 namespace {
@@ -326,24 +257,27 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
   }
 
   void TearDown() override {
-    if (mock_page_context_wrapper_class_) {
-      [mock_page_context_wrapper_class_ stopMocking];
-      mock_page_context_wrapper_class_ = nil;
-    }
     mock_service_.SetScorerForTesting(nullptr);
     PlatformTest::TearDown();
   }
 
-  FakeClientSideDetectionPageContextWrapper* CreateAndStubPageContextWrapper() {
-    if (mock_page_context_wrapper_class_) {
-      [mock_page_context_wrapper_class_ stopMocking];
-      mock_page_context_wrapper_class_ = nil;
-    }
-    mock_page_context_wrapper_class_ = OCMClassMock([PageContextWrapper class]);
-    FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-        [FakeClientSideDetectionPageContextWrapper alloc];
-    OCMStub([mock_page_context_wrapper_class_ alloc]).andReturn(fake_wrapper);
-    return fake_wrapper;
+  void CompleteWithInnerText(FakePageContextWrapper* wrapper,
+                             const std::string& inner_text) {
+    auto page_context =
+        std::make_unique<optimization_guide::proto::PageContext>();
+    page_context->set_inner_text(inner_text);
+    [wrapper completeWithPageContext:std::move(page_context)];
+  }
+
+  void CompleteWithInnerTextAndTabScreenshot(
+      FakePageContextWrapper* wrapper,
+      const std::string& inner_text,
+      const std::string& tab_screenshot) {
+    auto page_context =
+        std::make_unique<optimization_guide::proto::PageContext>();
+    page_context->set_inner_text(inner_text);
+    page_context->set_tab_screenshot(tab_screenshot);
+    [wrapper completeWithPageContext:std::move(page_context)];
   }
 
   std::unique_ptr<ClientSideDetectionHostIOS> CreateHost(
@@ -354,7 +288,8 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
         VerdictCacheManagerFactory::GetForProfile(profile_.get()),
         intelligent_scan_delegate, profile_->GetPrefs(),
         IdentityManagerFactory::GetForProfile(profile_.get()),
-        ios::HistoryServiceFactory::GetForProfile(profile_.get()));
+        ios::HistoryServiceFactory::GetForProfile(profile_.get()),
+        &fake_page_context_wrapper_factory_);
   }
 
   void set_last_request_type(ClientSideDetectionHostIOS* host,
@@ -690,7 +625,7 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
   FakeOptimizationGuideModelProvider test_opt_guide_;
   MockClientSideDetectionService mock_service_;
   base::HistogramTester histogram_tester_;
-  id mock_page_context_wrapper_class_ = nil;
+  FakePageContextWrapperFactory fake_page_context_wrapper_factory_;
 };
 
 // Tests that GetFeatureCache() creates the feature cache on-demand when it does
@@ -3857,20 +3792,25 @@ TEST_F(ClientSideDetectionHostIOSTest,
 // and returns the extracted inner text on success.
 TEST_F(ClientSideDetectionHostIOSTest, GetInnerTextSuccess) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
-  EXPECT_FALSE(fake_wrapper.shouldGetSnapshot);
-  EXPECT_FALSE(fake_wrapper.shouldGetFullPagePDF);
-  EXPECT_FALSE(fake_wrapper.shouldGetAnnotatedPageContent);
-  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetInnerText);
+  EXPECT_FALSE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetSnapshot);
+  EXPECT_FALSE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetFullPagePDF);
+  EXPECT_FALSE(fake_page_context_wrapper_factory_.last_wrapper()
+                   .shouldGetAnnotatedPageContent);
+  EXPECT_EQ(page_context_wrapper(host.get()),
+            fake_page_context_wrapper_factory_.last_wrapper());
 
-  [fake_wrapper respondWithInnerText:kTestInnerText];
+  CompleteWithInnerText(fake_page_context_wrapper_factory_.last_wrapper(),
+                        kTestInnerText);
   EXPECT_EQ(future.Get(), kTestInnerText);
   EXPECT_EQ(page_context_wrapper(host.get()), nil);
 }
@@ -3880,15 +3820,16 @@ TEST_F(ClientSideDetectionHostIOSTest, GetInnerTextSuccess) {
 TEST_F(ClientSideDetectionHostIOSTest,
        GetInnerTextExtractionFailureReturnsEmptyString) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper);
-  [fake_wrapper respondWithError:PageContextWrapperError::kInnerTextError];
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_EQ(page_context_wrapper(host.get()),
+            fake_page_context_wrapper_factory_.last_wrapper());
+  [fake_page_context_wrapper_factory_.last_wrapper()
+      completeWithError:PageContextWrapperError::kInnerTextError];
 
   EXPECT_EQ(future.Get(), "");
   EXPECT_EQ(page_context_wrapper(host.get()), nil);
@@ -3899,15 +3840,16 @@ TEST_F(ClientSideDetectionHostIOSTest,
 TEST_F(ClientSideDetectionHostIOSTest,
        GetInnerTextMissingInnerTextReturnsEmptyString) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper);
-  [fake_wrapper respondWithEmptyProto];
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_EQ(page_context_wrapper(host.get()),
+            fake_page_context_wrapper_factory_.last_wrapper());
+  [fake_page_context_wrapper_factory_.last_wrapper()
+      completeWithEmptyPageContext];
 
   EXPECT_EQ(future.Get(), "");
   EXPECT_EQ(page_context_wrapper(host.get()), nil);
@@ -3921,18 +3863,20 @@ TEST_F(ClientSideDetectionHostIOSTest,
        OverlappingInnerTextExtractionCleanlyResolvesOlderCallback) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
 
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper1 =
-      CreateAndStubPageContextWrapper();
   base::test::TestFuture<std::string> future1;
   host->GetInnerText(future1.GetCallback());
+  FakePageContextWrapper* fake_wrapper1 =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(fake_wrapper1, nil);
   EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper1);
   EXPECT_FALSE(future1.IsReady());
 
   // Start a second request, superseding the first request.
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper2 =
-      CreateAndStubPageContextWrapper();
   base::test::TestFuture<std::string> future2;
   host->GetInnerText(future2.GetCallback());
+  FakePageContextWrapper* fake_wrapper2 =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(fake_wrapper2, nil);
 
   // The first request must be cleanly resolved with an empty string.
   EXPECT_TRUE(future1.IsReady());
@@ -3942,12 +3886,12 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   // Triggering the superseded wrapper's response must not hijack the active
   // request's callback or nil out the active wrapper.
-  [fake_wrapper1 respondWithInnerText:"stale text"];
+  CompleteWithInnerText(fake_wrapper1, "stale text");
   EXPECT_FALSE(future2.IsReady());
   EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper2);
 
   // Completing the second wrapper resolves the second request.
-  [fake_wrapper2 respondWithInnerText:"new text"];
+  CompleteWithInnerText(fake_wrapper2, "new text");
   EXPECT_TRUE(future2.IsReady());
   EXPECT_EQ(future2.Get(), "new text");
   EXPECT_EQ(page_context_wrapper(host.get()), nil);
@@ -3959,31 +3903,33 @@ TEST_F(ClientSideDetectionHostIOSTest,
 TEST_F(ClientSideDetectionHostIOSTest,
        CancelledInnerTextExtractionCompletionDoesNotAffectSubsequentRequest) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper1 =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future1;
   host->GetInnerText(future1.GetCallback());
-  EXPECT_TRUE([fake_wrapper1 populateCalled]);
+  FakePageContextWrapper* fake_wrapper1 =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(fake_wrapper1, nil);
+  EXPECT_TRUE(fake_wrapper1.populateCalled);
 
   host->CancelPendingRequests();
   EXPECT_EQ(page_context_wrapper(host.get()), nil);
 
   // Start a new request after cancellation.
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper2 =
-      CreateAndStubPageContextWrapper();
   base::test::TestFuture<std::string> future2;
   host->GetInnerText(future2.GetCallback());
+  FakePageContextWrapper* fake_wrapper2 =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(fake_wrapper2, nil);
   EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper2);
 
   // Trigger response on the cancelled older wrapper; ensure it is ignored.
-  [fake_wrapper1 respondWithInnerText:"stale text"];
+  CompleteWithInnerText(fake_wrapper1, "stale text");
   EXPECT_FALSE(future1.IsReady());
   EXPECT_FALSE(future2.IsReady());
   EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper2);
 
   // Trigger response on the active newer wrapper.
-  [fake_wrapper2 respondWithInnerText:kTestInnerText];
+  CompleteWithInnerText(fake_wrapper2, kTestInnerText);
   EXPECT_FALSE(future1.IsReady());
   EXPECT_TRUE(future2.IsReady());
   EXPECT_EQ(future2.Get(), kTestInnerText);
@@ -4008,17 +3954,17 @@ TEST_F(ClientSideDetectionHostIOSTest,
 TEST_F(ClientSideDetectionHostIOSTest,
        CancelPendingRequestsCancelsInnerTextExtraction) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
   host->CancelPendingRequests();
 
   // Trigger response after cancellation; ensure no callback dispatch occurs.
-  [fake_wrapper respondWithInnerText:kTestInnerText];
+  CompleteWithInnerText(fake_page_context_wrapper_factory_.last_wrapper(),
+                        kTestInnerText);
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -4067,20 +4013,20 @@ TEST_F(ClientSideDetectionHostIOSTest, ScorerChangeCancelsImageEmbedding) {
 TEST_F(ClientSideDetectionHostIOSTest,
        HostDestructionDuringExtractionDoesNotCrash) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
 
   // Destroy the host while the wrapper is in flight.
   host.reset();
 
   // Trigger response on the orphan wrapper; ensure no crash or callback
   // dispatch occurs.
-  [fake_wrapper respondWithInnerText:kTestInnerText];
+  CompleteWithInnerText(fake_page_context_wrapper_factory_.last_wrapper(),
+                        kTestInnerText);
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -4089,18 +4035,18 @@ TEST_F(ClientSideDetectionHostIOSTest,
 TEST_F(ClientSideDetectionHostIOSTest,
        WebStateDestructionCancelsPendingInnerTextExtraction) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
   host->WebStateDestroyed(&web_state_);
 
   // Trigger response after `WebState` destruction; ensure no callback dispatch
   // occurs.
-  [fake_wrapper respondWithInnerText:kTestInnerText];
+  CompleteWithInnerText(fake_page_context_wrapper_factory_.last_wrapper(),
+                        kTestInnerText);
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -4117,8 +4063,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   MockIntelligentScanDelegate mock_delegate;
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
       .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
@@ -4175,8 +4119,10 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  [fake_wrapper respondWithInnerText:std::string(100, 'a')];
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  CompleteWithInnerText(fake_page_context_wrapper_factory_.last_wrapper(),
+                        std::string(100, 'a'));
 
   SafeBrowsingUnsafeResourceContainer* container =
       SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state_);
@@ -4221,8 +4167,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   MockIntelligentScanDelegate mock_delegate;
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::UnguessableToken scan_id = base::UnguessableToken::Create();
 
@@ -4249,8 +4193,10 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  [fake_wrapper respondWithInnerText:std::string(100, 'a')];
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  CompleteWithInnerText(fake_page_context_wrapper_factory_.last_wrapper(),
+                        std::string(100, 'a'));
 
   EXPECT_CALL(mock_delegate, CancelIntelligentScan(scan_id))
       .Times(testing::AtLeast(1))
@@ -4269,21 +4215,25 @@ TEST_F(ClientSideDetectionHostIOSTest,
       safe_browsing::kClientSideDetectionServerModelMultimodal);
 
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
-  EXPECT_TRUE(fake_wrapper.shouldGetSnapshot);
-  EXPECT_FALSE(fake_wrapper.shouldGetFullPagePDF);
-  EXPECT_FALSE(fake_wrapper.shouldGetAnnotatedPageContent);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetInnerText);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetSnapshot);
+  EXPECT_FALSE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetFullPagePDF);
+  EXPECT_FALSE(fake_page_context_wrapper_factory_.last_wrapper()
+                   .shouldGetAnnotatedPageContent);
 
   std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
-  [fake_wrapper respondWithInnerText:kTestInnerText
-                       tabScreenshot:encoded_screenshot];
+  CompleteWithInnerTextAndTabScreenshot(
+      fake_page_context_wrapper_factory_.last_wrapper(), kTestInnerText,
+      encoded_screenshot);
 
   EXPECT_EQ(future.Get(), kTestInnerText);
   ASSERT_TRUE(intelligent_scan_tab_screenshot(host.get()).has_value());
@@ -4303,17 +4253,19 @@ TEST_F(ClientSideDetectionHostIOSTest,
       safe_browsing::kClientSideDetectionServerModelMultimodal);
 
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
-  EXPECT_FALSE(fake_wrapper.shouldGetSnapshot);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetInnerText);
+  EXPECT_FALSE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetSnapshot);
 
-  [fake_wrapper respondWithInnerText:kTestInnerText];
+  CompleteWithInnerText(fake_page_context_wrapper_factory_.last_wrapper(),
+                        kTestInnerText);
   EXPECT_EQ(future.Get(), kTestInnerText);
   EXPECT_FALSE(intelligent_scan_tab_screenshot(host.get()).has_value());
 }
@@ -4329,8 +4281,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   MockIntelligentScanDelegate mock_delegate;
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
       .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
@@ -4368,13 +4318,17 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
-  EXPECT_TRUE(fake_wrapper.shouldGetSnapshot);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetInnerText);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetSnapshot);
 
   std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
-  [fake_wrapper respondWithInnerText:std::string(100, 'a')
-                       tabScreenshot:encoded_screenshot];
+  CompleteWithInnerTextAndTabScreenshot(
+      fake_page_context_wrapper_factory_.last_wrapper(), std::string(100, 'a'),
+      encoded_screenshot);
 
   ASSERT_TRUE(
       host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
@@ -4393,8 +4347,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   MockIntelligentScanDelegate mock_delegate;
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
       .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
@@ -4432,13 +4384,17 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
-  EXPECT_FALSE(fake_wrapper.shouldGetSnapshot);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetInnerText);
+  EXPECT_FALSE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetSnapshot);
 
   std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
-  [fake_wrapper respondWithInnerText:std::string(100, 'a')
-                       tabScreenshot:encoded_screenshot];
+  CompleteWithInnerTextAndTabScreenshot(
+      fake_page_context_wrapper_factory_.last_wrapper(), std::string(100, 'a'),
+      encoded_screenshot);
 
   EXPECT_FALSE(
       host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
@@ -4456,8 +4412,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   MockIntelligentScanDelegate mock_delegate;
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
       .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
@@ -4485,11 +4439,15 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
 
-  EXPECT_TRUE([fake_wrapper populateCalled]);
-  EXPECT_TRUE(fake_wrapper.shouldGetSnapshot);
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
+  EXPECT_TRUE(
+      fake_page_context_wrapper_factory_.last_wrapper().shouldGetSnapshot);
 
   std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
-  [fake_wrapper respondWithInnerText:"" tabScreenshot:encoded_screenshot];
+  CompleteWithInnerTextAndTabScreenshot(
+      fake_page_context_wrapper_factory_.last_wrapper(), "",
+      encoded_screenshot);
 
   ASSERT_TRUE(
       host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
@@ -4509,8 +4467,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   MockIntelligentScanDelegate mock_delegate;
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
       .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
@@ -4534,8 +4490,10 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
 
-  [fake_wrapper respondWithInnerText:std::string(100, 'a')
-                       tabScreenshot:"!not_valid_base64!"];
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  CompleteWithInnerTextAndTabScreenshot(
+      fake_page_context_wrapper_factory_.last_wrapper(), std::string(100, 'a'),
+      "!not_valid_base64!");
 
   EXPECT_FALSE(
       host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
@@ -4549,14 +4507,13 @@ TEST_F(ClientSideDetectionHostIOSTest,
       safe_browsing::kClientSideDetectionServerModelMultimodal);
 
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
-      CreateAndStubPageContextWrapper();
 
   base::test::TestFuture<std::string> future;
   host->GetInnerText(future.GetCallback());
-  [fake_wrapper
-      respondWithInnerText:kTestInnerText
-             tabScreenshot:base::Base64Encode(kTestScreenshotPngBytes)];
+  ASSERT_NE(fake_page_context_wrapper_factory_.last_wrapper(), nil);
+  CompleteWithInnerTextAndTabScreenshot(
+      fake_page_context_wrapper_factory_.last_wrapper(), kTestInnerText,
+      base::Base64Encode(kTestScreenshotPngBytes));
   ASSERT_TRUE(intelligent_scan_tab_screenshot(host.get()).has_value());
 
   host->CancelPendingRequests();

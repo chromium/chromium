@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/ios/browser/web_ui",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/intelligence/proto_wrappers:test_support",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model:verdict_cache_manager_factory",
@@ -132,7 +133,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/ocmock",
     "//url",
   ]
 }
