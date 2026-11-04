@@ -351,8 +351,10 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
   tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({4});
   tab_strip_model->ActivateTabAt(1);
 
-  tab_strip_model->UpdateTabInSplit(tab_strip_model->GetTabAtIndex(1), 4,
-                                    TabStripModel::SplitUpdateType::kReplace);
+  tab_strip_model->UpdateTabInSplit(
+      tab_strip_model->GetTabAtIndex(1)->GetHandle(),
+      tab_strip_model->GetTabAtIndex(4)->GetHandle(),
+      TabStripModel::SplitUpdateType::kReplace);
 
   // Make sure the dialog is shown, and fake clicking the button.
   tab_groups::DeletionDialogController* deletion_dialog_controller =

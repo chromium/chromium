@@ -105,11 +105,15 @@ void SplitTabSwapMenuModel::ExecuteCommand(int command_id, int event_flags) {
   CHECK_EQ(tabs_in_split.size(), 2U);
 
   if (id == CommandId::kSwapStartTab) {
-    tab_strip_model_->UpdateTabInSplit(tabs_in_split[0], tab_index_,
-                                       TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model_->UpdateTabInSplit(
+        tabs_in_split[0]->GetHandle(),
+        tab_strip_model_->GetTabAtIndex(tab_index_)->GetHandle(),
+        TabStripModel::SplitUpdateType::kSwap);
   } else if (id == CommandId::kSwapEndTab) {
-    tab_strip_model_->UpdateTabInSplit(tabs_in_split[1], tab_index_,
-                                       TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model_->UpdateTabInSplit(
+        tabs_in_split[1]->GetHandle(),
+        tab_strip_model_->GetTabAtIndex(tab_index_)->GetHandle(),
+        TabStripModel::SplitUpdateType::kSwap);
   }
 }
 

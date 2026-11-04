@@ -133,5 +133,6 @@ ExistingWindowSubMenuModel::BuildMenuItemInfoVectorForBrowsers(
 }
 
 void ExistingWindowSubMenuModel::ExecuteExistingCommand(size_t target_index) {
-  model()->ExecuteAddToExistingWindowCommand(GetContextIndex(), target_index);
+  model()->ExecuteAddToExistingWindowCommand(
+      model()->GetTabAtIndex(GetContextIndex())->GetHandle(), target_index);
 }

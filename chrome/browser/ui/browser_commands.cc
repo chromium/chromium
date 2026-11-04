@@ -1721,14 +1721,16 @@ void MoveTabsToNewWindow(BrowserWindowInterface* browser,
 }
 
 bool CanCloseTabsToRight(const BrowserWindowInterface* browser) {
+  tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
   return browser->GetTabStripModel()->IsContextMenuCommandEnabled(
-      browser->GetTabStripModel()->active_index(),
+      active_tab ? active_tab->GetHandle() : tabs::TabHandle::Null(),
       TabStripModel::CommandCloseTabsToRight);
 }
 
 bool CanCloseOtherTabs(const BrowserWindowInterface* browser) {
+  tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
   return browser->GetTabStripModel()->IsContextMenuCommandEnabled(
-      browser->GetTabStripModel()->active_index(),
+      active_tab ? active_tab->GetHandle() : tabs::TabHandle::Null(),
       TabStripModel::CommandCloseOtherTabs);
 }
 

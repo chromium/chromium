@@ -1548,8 +1548,10 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, SwapTabIntoSplitUKMLogged) {
       split_tabs::SplitTabCreatedSource::kTabContextMenu);
 
   // Swap the first tab with the last.
-  tab_strip_model()->UpdateTabInSplit(tab_strip_model()->GetTabAtIndex(0), 2,
-                                      TabStripModel::SplitUpdateType::kSwap);
+  tab_strip_model()->UpdateTabInSplit(
+      tab_strip_model()->GetTabAtIndex(0)->GetHandle(),
+      tab_strip_model()->GetTabAtIndex(2)->GetHandle(),
+      TabStripModel::SplitUpdateType::kSwap);
 
   // Ensure UKM is recorded.
   auto entries = ukm_recorder_->GetEntriesByName(

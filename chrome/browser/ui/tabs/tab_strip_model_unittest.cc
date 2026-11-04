@@ -4306,7 +4306,8 @@ TEST_F(TabStripModelTest, ReplaceActiveTabInSplit) {
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
-  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0), 3,
+  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0)->GetHandle(),
+                               tabstrip()->GetTabAtIndex(3)->GetHandle(),
                                TabStripModel::SplitUpdateType::kReplace);
   EXPECT_EQ("2ps 3ps 1p 4", GetTabStripStateString(tabstrip()));
 
@@ -4335,7 +4336,8 @@ TEST_F(TabStripModelTest, SwapActiveTabInSplit) {
       tabstrip()->GetTabAtIndex(0)->RegisterWillBecomeHidden(
           will_become_hiden_callback.Get());
 
-  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0), 3,
+  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0)->GetHandle(),
+                               tabstrip()->GetTabAtIndex(3)->GetHandle(),
                                TabStripModel::SplitUpdateType::kSwap);
   EXPECT_EQ("2ps 3ps 1p 0 4", GetTabStripStateString(tabstrip()));
   testing::Mock::VerifyAndClearExpectations(&will_become_hiden_callback);
@@ -4360,12 +4362,37 @@ TEST_F(TabStripModelTest, SwapActiveTabInSplitWithOnlyTabInGroup) {
 
   tab_groups::TabGroupId update_group_id = tabstrip()->AddToNewGroup({3});
 
-  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0), 3,
+  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0)->GetHandle(),
+                               tabstrip()->GetTabAtIndex(3)->GetHandle(),
                                TabStripModel::SplitUpdateType::kSwap);
   EXPECT_EQ("2ps 3ps 1p 0 4", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(tabstrip()->GetTabGroupForTab(3), update_group_id);
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
+}
+
+TEST_F(TabStripModelTest, UpdateTabInSplitWithNullOrDetachedTabDoesNotCrash) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Calling UpdateTabInSplit with null handles or detached tabs should safely
+  // no-op.
+  tabstrip()->UpdateTabInSplit(tabs::TabHandle::Null(),
+                               tabstrip()->GetTabAtIndex(3)->GetHandle(),
+                               TabStripModel::SplitUpdateType::kSwap);
+  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0)->GetHandle(),
+                               tabs::TabHandle::Null(),
+                               TabStripModel::SplitUpdateType::kSwap);
+  tabstrip()->UpdateTabInSplit(tabs::TabHandle::Null(), tabs::TabHandle::Null(),
+                               TabStripModel::SplitUpdateType::kSwap);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
+  tabstrip()->CloseAllTabs();
 }
 
 TEST_F(TabStripModelTest, ReverseTabsInSplit) {
@@ -4417,7 +4444,8 @@ TEST_F(TabStripModelTest, ReverseAndReplaceTabsInSplit) {
   tabstrip()->ReverseTabsInSplit(split_tab_id);
   EXPECT_EQ("0 2s 1s", GetTabStripStateString(tabstrip()));
 
-  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(1), 0,
+  tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(1)->GetHandle(),
+                               tabstrip()->GetTabAtIndex(0)->GetHandle(),
                                TabStripModel::SplitUpdateType::kReplace);
   EXPECT_EQ("0s 1s", GetTabStripStateString(tabstrip()));
 
@@ -4568,6 +4596,10 @@ TEST_F(TabStripModelTest, HasTabsClosedByCommand) {
       tabs::TabHandle::Null(), TabStripModel::CommandCloseTabsToRight));
   EXPECT_FALSE(tabstrip()->HasTabsClosedByCommand(
       tabs::TabHandle::Null(), TabStripModel::CommandCloseOtherTabs));
+  EXPECT_FALSE(tabstrip()->IsContextMenuCommandEnabled(
+      tabs::TabHandle::Null(), TabStripModel::CommandCloseTab));
+  tabstrip()->ExecuteContextMenuCommand(tabs::TabHandle::Null(),
+                                        TabStripModel::CommandCloseTab);
 }
 
 TEST_F(TabStripModelTest, GetCommonGroupForTabs) {
@@ -4759,6 +4791,27 @@ TEST_F(TabStripModelTest, WillContextMenuGroup) {
   tabstrip()->SelectTabAt(1);
   EXPECT_TRUE(tabstrip()->WillContextMenuGroup(tab0));
   EXPECT_TRUE(tabstrip()->WillContextMenuGroup(tab1));
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, GetSortedIndicesForTabs) {
+  EXPECT_TRUE(tabstrip()->GetSortedIndicesForTabs({}).empty());
+  EXPECT_TRUE(
+      tabstrip()->GetSortedIndicesForTabs({tabs::TabHandle::Null()}).empty());
+
+  for (int i = 0; i < 4; ++i) {
+    tabstrip()->AppendWebContents(CreateWebContents(), true);
+  }
+  tabs::TabHandle tab0 = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab3 = tabstrip()->GetTabAtIndex(3)->GetHandle();
+
+  EXPECT_EQ(tabstrip()->GetSortedIndicesForTabs({tab3, tab0, tab1}),
+            std::vector<int>({0, 1, 3}));
+  EXPECT_EQ(
+      tabstrip()->GetSortedIndicesForTabs({tab1, tabs::TabHandle::Null()}),
+      std::vector<int>({1}));
 
   tabstrip()->CloseAllTabs();
 }
@@ -8999,7 +9052,8 @@ TEST_F(TabStripModelCallbackTest, MoveTabToExistingGroupThenCloseTab) {
   tabstrip()->AddToNewGroup({0});
   tab_groups::TabGroupId group2_id = tabstrip()->AddToNewGroup({1});
   tabstrip()->SelectTabAt(0);
-  tabstrip()->ExecuteAddToExistingGroupCommand(0, group2_id);
+  tabstrip()->ExecuteAddToExistingGroupCommand(
+      tabstrip()->GetTabAtIndex(0)->GetHandle(), group2_id);
   tabstrip()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
   delegate()->RunCallback();
   EXPECT_EQ(
@@ -9016,11 +9070,99 @@ TEST_F(TabStripModelCallbackTest, MoveTabToGroupThenDeleteGroup) {
   tabstrip()->AddToNewGroup({0});
   tab_groups::TabGroupId group2_id = tabstrip()->AddToNewGroup({1});
   tabstrip()->SelectTabAt(0);
-  tabstrip()->ExecuteAddToExistingGroupCommand(0, group2_id);
+  tabstrip()->ExecuteAddToExistingGroupCommand(
+      tabstrip()->GetTabAtIndex(0)->GetHandle(), group2_id);
   tabstrip()->CloseAllTabsInGroup(group2_id);
   delegate()->RunCallback();
   EXPECT_EQ(tabstrip()->group_model()->ListTabGroups().size(), 0u);
   tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelCallbackTest, MoveMultipleTabsToNewGroup) {
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabs::TabInterface* tab0 = tabstrip()->GetTabAtIndex(0);
+  tabs::TabInterface* tab1 = tabstrip()->GetTabAtIndex(1);
+  tabs::TabInterface* tab2 = tabstrip()->GetTabAtIndex(2);
+  tabstrip()->SelectTabAt(0);
+  tabstrip()->SelectTabAt(2);
+
+  tabstrip()->ExecuteContextMenuCommand(tab0->GetHandle(),
+                                        TabStripModel::CommandAddToNewGroup);
+  EXPECT_EQ(tabstrip()->group_model()->ListTabGroups().size(), 1u);
+  tab_groups::TabGroupId group_id =
+      tabstrip()->group_model()->ListTabGroups()[0];
+  EXPECT_EQ(tab0->GetGroup(), group_id);
+  EXPECT_EQ(tab2->GetGroup(), group_id);
+  EXPECT_EQ(tab1->GetGroup(), std::nullopt);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(2), std::nullopt);
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelCallbackTest, MoveMultipleTabsToExistingGroup) {
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabs::TabInterface* tab0 = tabstrip()->GetTabAtIndex(0);
+  tabs::TabInterface* tab1 = tabstrip()->GetTabAtIndex(1);
+  tabs::TabInterface* tab2 = tabstrip()->GetTabAtIndex(2);
+  tab_groups::TabGroupId existing_group = tabstrip()->AddToNewGroup({1});
+  tabstrip()->SelectTabAt(0);
+  tabstrip()->SelectTabAt(2);
+
+  tabstrip()->ExecuteAddToExistingGroupCommand(tab0->GetHandle(),
+                                               existing_group);
+  EXPECT_EQ(tab0->GetGroup(), existing_group);
+  EXPECT_EQ(tab1->GetGroup(), existing_group);
+  EXPECT_EQ(tab2->GetGroup(), existing_group);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), existing_group);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), existing_group);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(2), existing_group);
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest,
+       CommandDuplicatePreservesTabStripOrderWithSplitAndNormalTabs) {
+  class RecordingDuplicateDelegate : public TestTabStripModelDelegate {
+   public:
+    bool CanDuplicateContentsAt(int index) override { return true; }
+    WebContents* DuplicateContentsAt(int index) override {
+      events.push_back("tab:" + base::NumberToString(index));
+      return nullptr;
+    }
+    void DuplicateSplit(split_tabs::SplitTabId split) override {
+      events.push_back("split");
+    }
+    std::vector<std::string> events;
+  };
+
+  RecordingDuplicateDelegate duplicate_delegate;
+  TabStripModel model(&duplicate_delegate, profile());
+  for (int i = 0; i < 4; ++i) {
+    model.AppendWebContents(CreateWebContentsWithID(i), true);
+  }
+  model.ActivateTabAt(0, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+  model.AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Select the split tabs (0, 1) and trailing normal tabs (2, 3) out of order.
+  model.SelectTabAt(3);
+  model.SelectTabAt(0);
+  model.SelectTabAt(2);
+  model.SelectTabAt(1);
+
+  EXPECT_TRUE(model.IsContextMenuCommandEnabled(
+      model.GetTabAtIndex(0)->GetHandle(), TabStripModel::CommandDuplicate));
+  model.ExecuteContextMenuCommand(model.GetTabAtIndex(0)->GetHandle(),
+                                  TabStripModel::CommandDuplicate);
+
+  EXPECT_THAT(duplicate_delegate.events,
+              testing::ElementsAre("split", "tab:2", "tab:3"));
+  model.CloseAllTabs();
 }
 
 TEST_F(TabStripModelTest, CommandGlicUnshare) {
@@ -9195,12 +9337,15 @@ TEST_F(TabStripModelTest, ContextMenuCommandWindowActivation) {
   const tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({0});
   ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
   EXPECT_CALL(base_window, Activate()).Times(1);
-  tabstrip()->ExecuteAddToExistingGroupCommand(1, group_id);
+  tabstrip()->ExecuteAddToExistingGroupCommand(
+      tabstrip()->GetTabAtIndex(1)->GetHandle(), group_id);
   testing::Mock::VerifyAndClearExpectations(&base_window);
 
   ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
   EXPECT_CALL(base_window, Activate()).Times(1);
-  tabstrip()->ExecuteContextMenuCommand(1, TabStripModel::CommandAddToSplit);
+  tabstrip()->ExecuteContextMenuCommand(
+      tabstrip()->GetTabAtIndex(1)->GetHandle(),
+      TabStripModel::CommandAddToSplit);
   testing::Mock::VerifyAndClearExpectations(&base_window);
 
   // Close commands should not activate an inactive window.

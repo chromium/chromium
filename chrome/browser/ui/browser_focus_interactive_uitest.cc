@@ -435,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest,
   // inactive window should activate it.
   {
     ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-    browser()->GetTabStripModel()->ExecuteAddToExistingGroupCommand(1,
-                                                                    group_id);
+    browser()->GetTabStripModel()->ExecuteAddToExistingGroupCommand(
+        browser()->GetTabStripModel()->GetTabAtIndex(1)->GetHandle(), group_id);
     activation_waiter.WaitForActivation();
     EXPECT_TRUE(browser()->GetWindow()->IsActive());
   }
@@ -450,7 +450,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest,
   {
     ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
     browser()->GetTabStripModel()->ExecuteContextMenuCommand(
-        1, TabStripModel::CommandAddToSplit);
+        browser()->GetTabStripModel()->GetTabAtIndex(1)->GetHandle(),
+        TabStripModel::CommandAddToSplit);
     activation_waiter.WaitForActivation();
     EXPECT_TRUE(browser()->GetWindow()->IsActive());
   }

@@ -2012,7 +2012,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
       Do([this]() {
         auto* tab_0 = browser()->tab_strip_model()->GetTabAtIndex(0);
         browser()->tab_strip_model()->UpdateTabInSplit(
-            tab_0, 2, TabStripModel::SplitUpdateType::kSwap);
+            tab_0->GetHandle(),
+            browser()->tab_strip_model()->GetTabAtIndex(2)->GetHandle(),
+            TabStripModel::SplitUpdateType::kSwap);
       }),
       WaitForState(kActiveTabChanged, true),
       CheckResult(GetOverlayVisibilityAt(2), false),
@@ -2046,7 +2048,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
       Do([this]() {
         auto* tab_1 = browser()->tab_strip_model()->GetTabAtIndex(1);
         browser()->tab_strip_model()->UpdateTabInSplit(
-            tab_1, 2, TabStripModel::SplitUpdateType::kSwap);
+            tab_1->GetHandle(),
+            browser()->tab_strip_model()->GetTabAtIndex(2)->GetHandle(),
+            TabStripModel::SplitUpdateType::kSwap);
       }),
       CheckResult(GetOverlayVisibilityAt(0), true),
       CheckOverlayBoundsMatchContents(0));

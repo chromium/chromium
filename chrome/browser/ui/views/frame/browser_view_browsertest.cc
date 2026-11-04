@@ -1936,7 +1936,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModalInSplitView) {
   // Swapping the tab with the tab modal dialog into the inactive spot in the
   // split should show the scrim but not change the active tab.
   browser()->GetTabStripModel()->UpdateTabInSplit(
-      browser()->GetTabStripModel()->GetTabAtIndex(1), 2,
+      browser()->GetTabStripModel()->GetTabAtIndex(1)->GetHandle(),
+      browser()->GetTabStripModel()->GetTabAtIndex(2)->GetHandle(),
       TabStripModel::SplitUpdateType::kSwap);
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
   EXPECT_TRUE(

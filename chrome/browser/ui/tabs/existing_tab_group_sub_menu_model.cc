@@ -273,7 +273,8 @@ void ExistingTabGroupSubMenuModel::AddSelectedTabsToOpenGroup(
   // If the group exists in this model, move the tab into it.
   TabGroupModel* group_model = model()->group_model();
   if (group_model->ContainsTabGroup(group)) {
-    model()->ExecuteAddToExistingGroupCommand(GetContextIndex(), group);
+    model()->ExecuteAddToExistingGroupCommand(
+        model()->GetTabAtIndex(GetContextIndex())->GetHandle(), group);
     return;
   }
 
@@ -329,5 +330,6 @@ void ExistingTabGroupSubMenuModel::AddSelectedTabsToOpenGroup(
     }
   }
 
-  found_model->ExecuteAddToExistingGroupCommand(selected_indices.back(), group);
+  found_model->ExecuteAddToExistingGroupCommand(
+      found_model->GetTabAtIndex(selected_indices.back())->GetHandle(), group);
 }

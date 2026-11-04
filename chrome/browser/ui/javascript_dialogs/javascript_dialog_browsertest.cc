@@ -580,8 +580,10 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   // Swapping the third tab with the inactive tab in the split should cause that
   // tab to join the split view as an inactive tab. The dialog will still be
   // showing.
-  tab_strip_model()->UpdateTabInSplit(tab_strip_model()->GetTabAtIndex(1), 2,
-                                      TabStripModel::SplitUpdateType::kSwap);
+  tab_strip_model()->UpdateTabInSplit(
+      tab_strip_model()->GetTabAtIndex(1)->GetHandle(),
+      tab_strip_model()->GetTabAtIndex(2)->GetHandle(),
+      TabStripModel::SplitUpdateType::kSwap);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
   ASSERT_EQ(0, tab_strip_model()->active_index());
 

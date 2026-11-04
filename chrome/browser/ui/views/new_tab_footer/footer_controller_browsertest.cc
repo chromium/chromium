@@ -408,14 +408,16 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, SwapTabInSplit) {
 
     ASSERT_FALSE(footer()->GetVisible());
 
-    tab_strip_model()->UpdateTabInSplit(tab_strip_model()->GetActiveTab(),
-                                        non_split_tab_index,
-                                        TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model()->UpdateTabInSplit(
+        tab_strip_model()->GetActiveTab()->GetHandle(),
+        tab_strip_model()->GetTabAtIndex(non_split_tab_index)->GetHandle(),
+        TabStripModel::SplitUpdateType::kSwap);
     EXPECT_TRUE(footer()->GetVisible());
 
-    tab_strip_model()->UpdateTabInSplit(tab_strip_model()->GetActiveTab(),
-                                        non_split_tab_index,
-                                        TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model()->UpdateTabInSplit(
+        tab_strip_model()->GetActiveTab()->GetHandle(),
+        tab_strip_model()->GetTabAtIndex(non_split_tab_index)->GetHandle(),
+        TabStripModel::SplitUpdateType::kSwap);
     EXPECT_FALSE(footer()->GetVisible());
   }
 }
