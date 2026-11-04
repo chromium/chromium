@@ -397,7 +397,7 @@ public class TabStateFileManager {
             // code might throw and log metrics.
             tabState = readState(tabFile, isEncrypted, cipherFactory);
         } catch (FileNotFoundException exception) {
-            Log.e(TAG, "Failed to restore tab state for tab: " + tabFile);
+            Log.e(TAG, "Failed to restore tab state for tab: %s", tabFile);
             recordRestoreTabStateException(RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION);
         } catch (ClosedByInterruptException exception) {
             Log.e(TAG, "Failed to restore tab state.", exception);
@@ -487,12 +487,10 @@ public class TabStateFileManager {
                 if (skipped != size) {
                     Log.e(
                             TAG,
-                            "Only skipped "
-                                    + skipped
-                                    + " bytes when "
-                                    + size
-                                    + " should've "
-                                    + "been skipped. Tab restore may fail.");
+                            "Only skipped %d bytes when %d should've been skipped."
+                                    + " Tab restore may fail.",
+                            skipped,
+                            size);
                 }
             }
 
@@ -517,8 +515,8 @@ public class TabStateFileManager {
                 Log.w(
                         TAG,
                         "Failed to read saved state version id from tab state. Assuming "
-                                + "version "
-                                + webContentsStateVersion);
+                                + "version %d",
+                        webContentsStateVersion);
             }
             tabState.contentsState =
                     new WebContentsState(contentsStateBuffer, webContentsStateVersion);
@@ -667,7 +665,7 @@ public class TabStateFileManager {
                 }
                 int size = dataInputStream.readInt();
                 if (size <= 0) {
-                    Log.e(TAG, "Corrupted FlatBuffer payload size: " + size);
+                    Log.e(TAG, "Corrupted FlatBuffer payload size: %d", size);
                     return null;
                 }
                 byte[] res = new byte[size];
@@ -911,7 +909,7 @@ public class TabStateFileManager {
         } catch (Throwable e) {
             // Catch all in case of an issue saving the FlatBuffer file. Avoid crashing
             // the app and simply log what went wrong.
-            Log.e(TAG, "Exception writing " + file.getName(), e);
+            Log.e(TAG, "Exception writing %s", file.getName(), e);
         } finally {
             // Note: fileOutputStream must NOT be closed before
             // atomicFile.finishWrite(fileOutputStream) because finishWrite() internally calls
@@ -937,7 +935,7 @@ public class TabStateFileManager {
         try {
             atomicFile.finishWrite(fileOutputStream);
         } catch (Throwable e) {
-            Log.e(TAG, "Error finishing atomic write of " + atomicFile, e);
+            Log.e(TAG, "Error finishing atomic write of %s", atomicFile, e);
             safelyFailWrite(atomicFile, fileOutputStream);
         }
     }
@@ -948,7 +946,7 @@ public class TabStateFileManager {
         try {
             atomicFile.failWrite(fileOutputStream);
         } catch (Throwable e) {
-            Log.e(TAG, "Error failing atomic write of " + atomicFile, e);
+            Log.e(TAG, "Error failing atomic write of %s", atomicFile, e);
         }
     }
 
@@ -1016,13 +1014,13 @@ public class TabStateFileManager {
     public static void deleteTabState(File directory, int tabId, boolean encrypted) {
         for (boolean useFlatBuffer : new boolean[] {false, true}) {
             File file = getTabStateFile(directory, tabId, encrypted, useFlatBuffer);
-            if (file.exists() && !file.delete()) Log.e(TAG, "Failed to delete TabState: " + file);
+            if (file.exists() && !file.delete()) Log.e(TAG, "Failed to delete TabState: %s", file);
         }
     }
 
     private static void deleteLegacyTabStateIfExists(File directory, int tabId, boolean encrypted) {
         File file = getTabStateFile(directory, tabId, encrypted, /* isFlatbuffer= */ false);
-        if (file.exists() && !file.delete()) Log.e(TAG, "Failed to delete TabState: " + file);
+        if (file.exists() && !file.delete()) Log.e(TAG, "Failed to delete TabState: %s", file);
     }
 
     /**
@@ -1035,7 +1033,7 @@ public class TabStateFileManager {
     public static void deleteMigratedFile(File directory, int tabId, boolean encrypted) {
         File file = getTabStateFile(directory, tabId, encrypted, /* isFlatbuffer= */ true);
         if (file != null && file.exists() && !file.delete()) {
-            Log.e(TAG, "Failed to delete TabState: " + file);
+            Log.e(TAG, "Failed to delete TabState: %s", file);
         }
     }
 
@@ -1090,7 +1088,7 @@ public class TabStateFileManager {
                         })) {
             File file = new File(stateDirectory, filename);
             if (!file.delete()) {
-                Log.e(TAG, "Failed to delete FlatBuffer TabState: " + file);
+                Log.e(TAG, "Failed to delete FlatBuffer TabState: %s", file);
             }
         }
     }

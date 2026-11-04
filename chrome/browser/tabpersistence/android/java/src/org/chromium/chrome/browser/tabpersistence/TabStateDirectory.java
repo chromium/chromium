@@ -53,7 +53,7 @@ public class TabStateDirectory {
                 sTabbedModeStateDirectory =
                         new File(getOrCreateBaseStateDirectory(), TABBED_MODE_DIRECTORY);
                 if (!sTabbedModeStateDirectory.exists() && !sTabbedModeStateDirectory.mkdirs()) {
-                    Log.e(TAG, "Failed to create state folder: " + sTabbedModeStateDirectory);
+                    Log.e(TAG, "Failed to create state folder: %s", sTabbedModeStateDirectory);
                 }
             }
         }
@@ -70,7 +70,7 @@ public class TabStateDirectory {
                 sCustomTabsStateDirectory =
                         new File(getOrCreateBaseStateDirectory(), CUSTOM_TABS_DIRECTORY);
                 if (!sCustomTabsStateDirectory.exists() && !sCustomTabsStateDirectory.mkdirs()) {
-                    Log.e(TAG, "Failed to create state folder: " + sCustomTabsStateDirectory);
+                    Log.e(TAG, "Failed to create state folder: %s", sCustomTabsStateDirectory);
                 }
             }
         }

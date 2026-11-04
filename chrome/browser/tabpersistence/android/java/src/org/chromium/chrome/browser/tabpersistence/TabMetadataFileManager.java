@@ -203,7 +203,7 @@ public class TabMetadataFileManager {
 
                 // Determine how many Tabs there are.
                 int numTabsTotal = incognitoCount + standardCount;
-                Log.d(TAG, "Persisting tab lists; " + standardCount + ", " + incognitoCount);
+                Log.d(TAG, "Persisting tab lists; %d, %d", standardCount, incognitoCount);
 
                 // Save the index file containing the list of tabs to restore. Wrap a
                 // BufferedOutputStream to batch/buffer actual writes. Most urls are far smaller
