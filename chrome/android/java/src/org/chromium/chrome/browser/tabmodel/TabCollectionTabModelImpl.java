@@ -1944,6 +1944,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 if (isInGroup) {
                     assumeNonNull(tabGroupId);
                     setLastShownTabForGroup(tabGroupId, newSelectedTab);
+                    if (getTabGroupCollapsed(tabGroupId)) {
+                        setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
+                    }
                 }
                 RecordHistogram.recordBooleanHistogram(
                         "TabGroups.SelectedTabInTabGroup", isInGroup);

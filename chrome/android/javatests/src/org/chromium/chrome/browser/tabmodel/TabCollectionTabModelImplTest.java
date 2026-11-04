@@ -1731,6 +1731,65 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testSetIndex_ExpandsCollapsedTabGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token tabGroupId = mCollectionModel.createTabGroup(List.of(tab1, tab2));
+                    assertNotNull(tabGroupId);
+                    mCollectionModel.setIndex(
+                            mCollectionModel.indexOf(tab0), TabSelectionType.FROM_USER);
+                    mCollectionModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ true);
+                    assertTrue(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+
+                    mCollectionModel.setIndex(
+                            mCollectionModel.indexOf(tab2), TabSelectionType.FROM_USER);
+                    assertEquals(tab2, mCollectionModel.getCurrentTabSupplier().get());
+                    assertFalse(
+                            "Selecting a tab should expand its collapsed group.",
+                            mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTab_InGroupThatWasCollapsed_SelectsTabInSameGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token groupA = mCollectionModel.createTabGroup(List.of(tab1, tab2));
+                    Token groupB = mCollectionModel.createTabGroup(List.of(tab3, tab4));
+                    assertNotNull(groupA);
+                    assertNotNull(groupB);
+                    mCollectionModel.setIndex(
+                            mCollectionModel.indexOf(tab0), TabSelectionType.FROM_USER);
+                    mCollectionModel.setTabGroupCollapsed(groupA, /* isCollapsed= */ true);
+
+                    // Select the last tab in the collapsed group, then close it.
+                    mCollectionModel.setIndex(
+                            mCollectionModel.indexOf(tab2), TabSelectionType.FROM_USER);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTab(tab2).allowUndo(false).build());
+
+                    assertEquals(
+                            "Expected the remaining tab in the same group to be selected.",
+                            tab1,
+                            mCollectionModel.getCurrentTabSupplier().get());
+                });
+    }
+
+    @Test
+    @MediumTest
     @UiThreadTest
     public void testSetTabGroupVisualData() {
         Tab tab0 = getTabAt(0);
