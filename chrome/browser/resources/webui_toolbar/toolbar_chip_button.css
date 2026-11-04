@@ -301,13 +301,18 @@
 
 /* Like cr-icon-button, ignore pointer events on the host while disabled, so a
  * disabled chip shows no hover/pressed highlight and doesn't fire click or
- * contextmenu events. */
+ * contextmenu events. Like native ToolbarButton::GetForegroundColor(), paint
+ * disabled icons directly in the inactive icon color rather than dimming with
+ * opacity, and disable forced-colors adjustment so Windows high contrast uses
+ * the ColorProvider's inactive icon color (kColorNativeGrayText). */
 :host([disabled]) {
+  color: var(--toolbar-chip-fg-color,
+      var(--color-toolbar-button-icon-inactive));
+  forced-color-adjust: none;
   pointer-events: none;
 }
 
 #button:disabled {
-  opacity: var(--cr-disabled-opacity, 0.38);
   pointer-events: none;
 }
 

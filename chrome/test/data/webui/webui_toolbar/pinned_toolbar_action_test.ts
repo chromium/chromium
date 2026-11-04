@@ -438,4 +438,43 @@ suite('PinnedToolbarAction', function() {
 
     iconTable.reset();
   });
+
+  test(
+      'Disabled action uses inactive icon color without extra opacity',
+      async () => {
+        const rootStyle = document.documentElement.style;
+        rootStyle.setProperty('--color-toolbar-button-icon', 'rgb(1, 2, 3)');
+        rootStyle.setProperty(
+            '--color-toolbar-button-icon-inactive', 'rgb(4, 5, 6)');
+        try {
+          const button =
+              action.shadowRoot!.querySelector('toolbar-chip-button')!;
+          const innerButton = button.shadowRoot!.querySelector('#button')!;
+
+          action.state = {
+            ...action.state,
+            enabled: false,
+          };
+          await microtasksFinished();
+
+          let style = getComputedStyle(button);
+          assertEquals('rgb(4, 5, 6)', style.color);
+          assertEquals('none', style.forcedColorAdjust);
+          assertEquals('1', getComputedStyle(innerButton).opacity);
+
+          action.state = {
+            ...action.state,
+            enabled: true,
+          };
+          await microtasksFinished();
+
+          style = getComputedStyle(button);
+          assertEquals('rgb(1, 2, 3)', style.color);
+          assertEquals('auto', style.forcedColorAdjust);
+          assertEquals('1', getComputedStyle(innerButton).opacity);
+        } finally {
+          rootStyle.removeProperty('--color-toolbar-button-icon');
+          rootStyle.removeProperty('--color-toolbar-button-icon-inactive');
+        }
+      });
 });

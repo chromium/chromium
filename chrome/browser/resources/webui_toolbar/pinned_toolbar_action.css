@@ -17,9 +17,11 @@ toolbar-chip-button[is-activated] {
       var(--google-blue-600));
 }
 
-/* Like native toolbar buttons, use the inactive icon color while the browser
- * window is inactive on Mac (the browser sets controls-appear-inactive). This
- * doesn't apply during an IPH, where native keeps the IPH color. */
+/* Like native toolbar buttons, use the inactive icon color while disabled or
+ * while the browser window is inactive on Mac (the browser sets
+ * controls-appear-inactive). This doesn't apply during an IPH, where native
+ * keeps the IPH color. */
+toolbar-chip-button[disabled]:not(.help-anchor-highlight),
 :host-context(toolbar-app[controls-appear-inactive])
     toolbar-chip-button:not(.help-anchor-highlight) {
   --toolbar-chip-fg-color: var(--color-toolbar-button-icon-inactive);

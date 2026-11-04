@@ -349,6 +349,50 @@ suite('BackForwardButtonTest', function() {
         assertEquals(0, browserControlsHandler.getCallCount('back'));
       });
 
+  test(
+      'Disabled Button Uses Inactive Icon Color Without Extra Opacity',
+      async function() {
+        const rootStyle = document.documentElement.style;
+        rootStyle.setProperty('--color-toolbar-button-icon', 'rgb(1, 2, 3)');
+        rootStyle.setProperty(
+            '--color-toolbar-button-icon-inactive', 'rgb(4, 5, 6)');
+        try {
+          for (const direction of ['back', 'forward'] as const) {
+            backForwardButton.direction = direction;
+            backForwardButton.state = {
+              enabled: false,
+              shouldBeShown: true,
+              isContextMenuVisible: false,
+            };
+            await microtasksFinished();
+
+            let style = getComputedStyle(backForwardButton.$.button);
+            assertEquals(
+                'rgb(4, 5, 6)',
+                style.getPropertyValue('--cr-icon-button-fill-color').trim());
+            assertEquals('none', style.forcedColorAdjust);
+            assertEquals('1', style.opacity);
+
+            backForwardButton.state = {
+              enabled: true,
+              shouldBeShown: true,
+              isContextMenuVisible: false,
+            };
+            await microtasksFinished();
+
+            style = getComputedStyle(backForwardButton.$.button);
+            assertEquals(
+                'rgb(1, 2, 3)',
+                style.getPropertyValue('--cr-icon-button-fill-color').trim());
+            assertEquals('auto', style.forcedColorAdjust);
+            assertEquals('1', style.opacity);
+          }
+        } finally {
+          rootStyle.removeProperty('--color-toolbar-button-icon');
+          rootStyle.removeProperty('--color-toolbar-button-icon-inactive');
+        }
+      });
+
   // Tests the Glow Up animation lifecycle for back/forward buttons:
   // 1. Initially shows the static fallback icon.
   // 2. On click, transitions to the animated "glow up" icon.

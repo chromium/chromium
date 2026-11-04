@@ -481,14 +481,39 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
       action_id, BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action_item);
 
+  const auto* color_provider =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetColorProvider();
+  const auto expected_rgb = [color_provider](ui::ColorId color_id) {
+    const SkColor color = color_provider->GetColor(color_id);
+    EXPECT_EQ(SK_AlphaOPAQUE, SkColorGetA(color));
+    return base::StringPrintf("rgb(%d, %d, %d)", SkColorGetR(color),
+                              SkColorGetG(color), SkColorGetB(color));
+  };
+  constexpr char kGetIconFillJs[] =
+      "const icon = btn?.querySelector('icon-from-table')"
+      "    ?.shadowRoot?.querySelector('cr-icon'); "
+      "return icon ? getComputedStyle(icon).fill : '(null)';";
+  constexpr char kGetIconForcedColorAdjustJs[] =
+      "const icon = btn?.querySelector('icon-from-table')"
+      "    ?.shadowRoot?.querySelector('cr-icon'); "
+      "return icon ? getComputedStyle(icon).forcedColorAdjust : '(null)';";
+  constexpr char kGetInnerBtnOpacityJs[] =
+      "return innerBtn ? getComputedStyle(innerBtn).opacity : '(null)';";
+
   // Disable the action.
   action_item->SetEnabled(false);
 
-  // Verify button is disabled in WebUI.
+  // Verify button is disabled in WebUI and uses the inactive icon color
+  // directly without dimming #button with disabled opacity.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return EvalJsOnPinnedAction(mojom_action, "return !!btn && btn.disabled;")
         .ExtractBool();
   }));
+  EXPECT_EQ(expected_rgb(kColorToolbarButtonIconInactive),
+            EvalJsOnPinnedAction(mojom_action, kGetIconFillJs));
+  EXPECT_EQ("none",
+            EvalJsOnPinnedAction(mojom_action, kGetIconForcedColorAdjustJs));
+  EXPECT_EQ("1", EvalJsOnPinnedAction(mojom_action, kGetInnerBtnOpacityJs));
 
   // Re-enable.
   action_item->SetEnabled(true);
@@ -496,6 +521,11 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
     return !EvalJsOnPinnedAction(mojom_action, "return !!btn && btn.disabled;")
                 .ExtractBool();
   }));
+  EXPECT_EQ(expected_rgb(kColorToolbarButtonIcon),
+            EvalJsOnPinnedAction(mojom_action, kGetIconFillJs));
+  EXPECT_EQ("auto",
+            EvalJsOnPinnedAction(mojom_action, kGetIconForcedColorAdjustJs));
+  EXPECT_EQ("1", EvalJsOnPinnedAction(mojom_action, kGetInnerBtnOpacityJs));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinUnpinnable) {
