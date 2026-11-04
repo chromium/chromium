@@ -38,6 +38,7 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/devtools/features.h"
@@ -73,6 +74,7 @@
 #include "chrome/browser/ui/tabs/tab_group_home/constants.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
@@ -576,6 +578,12 @@ const FeatureEntry::FeatureVariation kOrganizerPanelVariations[] = {
      nullptr},
     {"without segmentation control", kOrganizerPanelWithoutSegmentationControl,
      nullptr}};
+
+const FeatureEntry::FeatureParam kContextHubTopicsFishfoodFeedback[] = {
+    {"fishfood_feedback", "true"}};
+
+const FeatureEntry::FeatureVariation kContextHubTopicsVariations[] = {
+    {"with feedback", kContextHubTopicsFishfoodFeedback, nullptr}};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -12688,6 +12696,18 @@ const FeatureEntry kFeatureEntries[] = {
     {"sync-gemini-threads", flag_descriptions::kSyncGeminiThreadsName,
      flag_descriptions::kSyncGeminiThreadsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(syncer::kSyncGeminiThread)},
+
+    {"context-hub", flag_descriptions::kContextHubName,
+     flag_descriptions::kContextHubDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(context_hub::features::kContextHub)},
+    {"context-hub-topics", flag_descriptions::kContextHubTopicsName,
+     flag_descriptions::kContextHubTopicsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(browser::context_hub::mojom::kTopics,
+                                    kContextHubTopicsVariations,
+                                    "ContextHubTopics")},
+    {"sync-journey", flag_descriptions::kSyncJourneyName,
+     flag_descriptions::kSyncJourneyDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(syncer::kSyncJourney)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
         // BUILDFLAG(IS_CHROMEOS)
 

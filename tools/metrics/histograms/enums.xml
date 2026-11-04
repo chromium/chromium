@@ -8481,6 +8481,7 @@ from previous Chrome versions.
   <int value="-1949653354"
       label="AutofillEnableAmountExtractionTesting:disabled"/>
   <int value="-1949364473" label="webview-disable-app-recovery"/>
+  <int value="-1948829132" label="ContextHub:enabled"/>
   <int value="-1948236151" label="DrawPredictedInkPoint:disabled"/>
   <int value="-1947165979" label="GridTabSwitcherSurfaceColorUpdate:enabled"/>
   <int value="-1946713268" label="AdjustGetOrCreate2DCanvasProvider:enabled"/>
@@ -10583,6 +10584,7 @@ from previous Chrome versions.
   <int value="-1328090640" label="DesktopPWAsAppHomePage:enabled"/>
   <int value="-1328078305" label="RemoveSearchReadyOmnibox:disabled"/>
   <int value="-1327982727" label="IsolatedWebAppAllowlist:enabled"/>
+  <int value="-1327678473" label="SyncJourney:disabled"/>
   <int value="-1327676774" label="disable-accelerated-mjpeg-decode"/>
   <int value="-1326671705" label="TrustTokens:enabled"/>
   <int value="-1326597785"
@@ -12153,6 +12155,7 @@ from previous Chrome versions.
   <int value="-859583725" label="WebRtcTimerUsesMetronome:enabled"/>
   <int value="-859193162" label="KeepSecondaryZeroSuggest:disabled"/>
   <int value="-859000154" label="PaymentRequestRejectTooSmallWindows:disabled"/>
+  <int value="-858606884" label="ContextHub:disabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
   <int value="-857507314" label="ArcExternalStorageAccess:disabled"/>
   <int value="-856919680" label="RemotePlaybackBackend:disabled"/>
@@ -13646,6 +13649,7 @@ from previous Chrome versions.
   <int value="-414900505" label="ScrollCapture:enabled"/>
   <int value="-414477658" label="DefaultBucketUsesRelaxedDurability:disabled"/>
   <int value="-414398582" label="UpcomingFollowFeatures:disabled"/>
+  <int value="-414137690" label="SyncJourney:enabled"/>
   <int value="-413779344" label="SyncAutofillWalletUsageData:disabled"/>
   <int value="-413562235" label="MessagesForAndroidUpdatePassword:disabled"/>
   <int value="-413350010" label="Cr2023ActionChipsIcons:enabled"/>
@@ -15541,6 +15545,7 @@ from previous Chrome versions.
   <int value="152126026" label="ProjectorExcludeTranscript:enabled"/>
   <int value="152212646" label="PickerCloud:enabled"/>
   <int value="153347646" label="SmartDimModelV3:disabled"/>
+  <int value="154356332" label="Topics:enabled"/>
   <int value="155879687" label="ShimlessRMAEnableStandalone:disabled"/>
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
   <int value="156285060" label="UseMultipleOverlays:disabled"/>
@@ -20988,6 +20993,7 @@ from previous Chrome versions.
   <int value="1783967606" label="PageContentAnnotations:enabled"/>
   <int value="1784129660" label="OmniboxDocumentProviderNoSetting:enabled"/>
   <int value="1784514956" label="QuickAnswersForMoreLocales:enabled"/>
+  <int value="1784778011" label="Topics:disabled"/>
   <int value="1784982889" label="OptimizationGuideOnDeviceModel:disabled"/>
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
   <int value="1785274337"

@@ -1139,6 +1139,15 @@ inline constexpr char kIPHDesktopRealboxContextualSearchFeatureName[] =
 inline constexpr char kIPHDesktopRealboxContextualSearchFeatureDescription[] =
     "Enables In-Product Help for Desktop Realbox Contextual Search.";
 
+inline constexpr char kContextHubName[] = "Context Hub";
+inline constexpr char kContextHubDescription[] =
+    "Enables the experimental chrome://context-hub page.";
+
+inline constexpr char kContextHubTopicsName[] = "Context Hub Topics";
+inline constexpr char kContextHubTopicsDescription[] =
+    "Enables the experimental Topics view in chrome://context-hub. Requires "
+    "#context-hub, #sync-journey and #use-sync-sandbox.";
+
 inline constexpr char kContextMenuAnimationLimitingName[] =
     "Context Menu Animation Limiting";
 inline constexpr char kContextMenuAnimationLimitingDescription[] =
@@ -4766,6 +4775,10 @@ inline constexpr char kSyncWalletVehicleRegistrationsDescription[] =
 inline constexpr char kSyncGeminiThreadsName[] = "Sync Gemini Threads";
 inline constexpr char kSyncGeminiThreadsDescription[] =
     "Acquire Gemini Threads via sync.";
+
+inline constexpr char kSyncJourneyName[] = "Sync journeys";
+inline constexpr char kSyncJourneyDescription[] =
+    "Enables syncing history journeys.";
 
 inline constexpr char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 inline constexpr char kSyncSandboxDescription[] =

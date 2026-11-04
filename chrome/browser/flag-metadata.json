@@ -2368,6 +2368,16 @@
     "expiry_milestone": 170
   },
   {
+    "name": "context-hub",
+    "owners": [ "saeideid@google.com", "igoralsky@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
+    "name": "context-hub-topics",
+    "owners": [ "saeideid@google.com", "hempjudith@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "context-management-in-composebox",
     "owners": [ "ananyaseelam@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160
@@ -9431,6 +9441,11 @@
       "top-chrome-desktop-ui@google.com"
     ],
     "expiry_milestone": 155
+  },
+  {
+    "name": "sync-journey",
+    "owners": [ "saeideid@google.com", "hempjudith@google.com" ],
+    "expiry_milestone": 170
   },
   {
     "name": "sync-restore-on-startup-pref",
