@@ -149,7 +149,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
     /** Helper code to attach notification the Job. */
     @VisibleForTesting
     void attachNotificationToJob(DownloadUpdate update) {
-        Log.w(TAG, "attachNotificationToJob id: " + update.mNotificationId);
+        Log.w(TAG, "attachNotificationToJob id: %d", update.mNotificationId);
 
         int notificationId = update.mNotificationId;
         Notification notification = update.mNotification;

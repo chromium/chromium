@@ -380,12 +380,12 @@ public class DownloadManagerBridge {
                 mDownloadId = manager.enqueue(request);
             } catch (IllegalArgumentException e) {
                 // See crbug.com/40904533 for more details.
-                Log.e(TAG, "Download failed: " + e);
+                Log.e(TAG, "Download failed", e);
                 mFailureReason = DownloadManager.ERROR_UNKNOWN;
                 return false;
             } catch (RuntimeException e) {
                 // See crbug.com/40419101 for more details.
-                Log.e(TAG, "Failed to create target file on the external storage: " + e);
+                Log.e(TAG, "Failed to create target file on the external storage", e);
                 mFailureReason = DownloadManager.ERROR_FILE_ERROR;
                 return false;
             }

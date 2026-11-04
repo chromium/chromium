@@ -72,9 +72,7 @@ public abstract class DownloadContinuityManager {
             @Nullable Notification notification) {
         if (!isEnabled()) return;
         if (downloadStatus != DownloadStatus.IN_PROGRESS) {
-            Log.w(
-                    TAG,
-                    "updateDownloadStatus status: " + downloadStatus + ", id: " + notificationId);
+            Log.w(TAG, "updateDownloadStatus status: %d, id: %d", downloadStatus, notificationId);
         }
         mDownloadUpdateQueue.put(
                 notificationId,

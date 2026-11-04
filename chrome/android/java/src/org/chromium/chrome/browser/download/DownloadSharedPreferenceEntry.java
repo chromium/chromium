@@ -73,7 +73,7 @@ public class DownloadSharedPreferenceEntry {
             String versionString = sharedPrefString.substring(0, sharedPrefString.indexOf(","));
             version = Integer.parseInt(versionString);
         } catch (NumberFormatException ex) {
-            Log.w(TAG, "Exception while parsing pending download:" + sharedPrefString);
+            Log.w(TAG, "Exception while parsing pending download:%s", sharedPrefString);
             return INVALID_ENTRY;
         }
 

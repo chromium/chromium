@@ -318,7 +318,7 @@ class DownloadInterstitialMediator {
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Cannot find activity for sharing");
         } catch (Exception e) {
-            Log.e(TAG, "Cannot start activity for sharing, exception: " + e);
+            Log.e(TAG, "Cannot start activity for sharing", e);
         }
     }
 

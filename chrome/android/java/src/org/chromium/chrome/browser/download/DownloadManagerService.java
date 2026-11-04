@@ -329,7 +329,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         if (!success) {
             // Write synchronously because it might be used on restart and needs to stay
             // up-to-date.
-            Log.e(TAG, "Failed to write DownloadInfo " + type);
+            Log.e(TAG, "Failed to write DownloadInfo %s", type);
         }
     }
 
@@ -363,7 +363,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 assumeNonNull(info);
                 // TODO(cmsy): Use correct FailState.
                 mDownloadNotifier.notifyDownloadFailed(info);
-                Log.w(TAG, "Download failed: " + info.getFilePath());
+                Log.w(TAG, "Download failed: %s", info.getFilePath());
                 break;
             case DownloadStatus.IN_PROGRESS:
                 assumeNonNull(info);
