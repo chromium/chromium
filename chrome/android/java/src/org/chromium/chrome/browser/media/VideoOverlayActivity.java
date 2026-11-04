@@ -110,7 +110,9 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* occlusionTrackingAllowed= */ true);
+                // The PiP window stays above the opener's window, but WindowOcclusionTracker
+                // ranks windows by top resumed state and would report it as occluded.
+                /* occlusionTrackingAllowed= */ false);
     }
 
     @Override

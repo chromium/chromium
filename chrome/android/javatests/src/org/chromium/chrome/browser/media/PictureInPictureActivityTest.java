@@ -142,6 +142,14 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    public void testWindowNotOcclusionTracked() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        Assert.assertFalse(activity.getWindowAndroid().isOcclusionTrackingAllowed());
+        testExitOn(activity, () -> activity.close());
+    }
+
+    @Test
+    @MediumTest
     public void testExitOnClose() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> activity.close());

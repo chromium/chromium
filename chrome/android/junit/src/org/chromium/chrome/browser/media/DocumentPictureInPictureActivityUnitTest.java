@@ -34,6 +34,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,6 +49,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -75,6 +78,12 @@ public class DocumentPictureInPictureActivityUnitTest {
         @Override
         public WindowManager getWindowManager() {
             return mTestWindowManager;
+        }
+
+        // onCreate() doesn't run in these tests, so the inset observer is never created.
+        @Override
+        protected InsetObserver getInsetObserver() {
+            return null;
         }
     }
 
@@ -192,6 +201,16 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.resizeContents(100, 100);
 
         verifyNoInteractions(mMoveTaskDelegate);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testWindowNotOcclusionTracked() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
+        ActivityWindowAndroid windowAndroid = mActivity.createWindowAndroid();
+
+        Assert.assertFalse(windowAndroid.isOcclusionTrackingAllowed());
+        windowAndroid.destroy();
     }
 
     @Test
