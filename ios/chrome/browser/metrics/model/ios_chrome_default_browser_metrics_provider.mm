@@ -24,8 +24,8 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -274,7 +274,9 @@ void ProvideUmaHistograms() {
 
   RecordSignalHistograms(kSegmentationPlatformSignalName,
                          GetDeviceSwitcherSignalStatus(), samples);
-  if (IsQuerySwitcherInfoSignalForDefaultBrowserMetricsEnabled()) {
+  if (first_run::GetAndroidSwitcherDefaultBrowserPromoInFREVariationType() ==
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal) {
     RecordSwitcherInfoSignalHistograms(samples);
   }
 

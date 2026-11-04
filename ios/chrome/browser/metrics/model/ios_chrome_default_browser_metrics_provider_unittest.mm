@@ -21,9 +21,9 @@
 #import "components/segmentation_platform/public/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -118,6 +118,15 @@ class IOSChromeDefaultBrowserMetricsProviderTest : public PlatformTest {
     AuthenticationServiceFactory::GetForProfile(profile)->SignIn(
         identities.front(), signin_metrics::AccessPoint::kStartPage);
     return profile;
+  }
+
+  void EnableSwitcherInfoVariation(
+      base::test::ScopedFeatureList& feature_list) {
+    feature_list.InitAndEnableFeatureWithParameters(
+        first_run::kAndroidSwitcherDefaultBrowserPromoInFRE,
+        {{first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+          first_run::
+              kAndroidSwitcherDefaultBrowserPromoInFREParamSwitcherInfoSignal}});
   }
 
   web::WebTaskEnvironment task_environment_{
@@ -344,8 +353,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoAndroidSwitcherVariant) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
       .is_chrome_user = true});
@@ -382,8 +390,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoNotAndroidSwitcherVariant) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kNotSwitcher,
       .is_chrome_user = false});
@@ -422,8 +429,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoServiceErrorVariantWhenUnknownStatus) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kUnknown,
       .is_chrome_user = false});
@@ -450,8 +456,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoServiceErrorVariantWhenFailed) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   ios::provider::test::SetSwitcherInfoResult(std::nullopt);
   AddSignedInProfile();
 
@@ -477,8 +482,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoAndroidSwitcherVariantWhenNotSignedIn) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
       .is_chrome_user = true});
@@ -508,8 +512,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoUnknownVariantWhenNoIdentitiesOnDevice) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
       .is_chrome_user = true});
@@ -537,8 +540,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoUnknownVariantWhenOnlyManagedIdentityOnDevice) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
       .is_chrome_user = true});
@@ -571,8 +573,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoAndroidSwitcherFromSecondaryIdentity) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   FakeSystemIdentity* primary_identity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* secondary_identity = [FakeSystemIdentity fakeIdentity2];
 
@@ -621,8 +622,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoNotAndroidSwitcherFromSecondaryIdentity) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  EnableSwitcherInfoVariation(feature_list);
   FakeSystemIdentity* primary_identity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* secondary_identity = [FakeSystemIdentity fakeIdentity2];
 
@@ -656,13 +656,45 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when kQuerySwitcherInfoSignalForDefaultBrowserMetrics is disabled,
-// no .SwitcherInfo.* variants are recorded.
+// Tests that when `kAndroidSwitcherDefaultBrowserPromoInFRE` is disabled, no
+// `.SwitcherInfo.*` variants are recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        DoesNotRecordSwitcherInfoVariantWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+      first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  AddSignedInProfile();
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
+  }
+}
+
+// Tests that when the segmentation signal variation of
+// `kAndroidSwitcherDefaultBrowserPromoInFRE` is enabled, no `.SwitcherInfo.*`
+// variants are recorded.
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       DoesNotRecordSwitcherInfoVariantWhenSegmentationSignalVariationEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      first_run::kAndroidSwitcherDefaultBrowserPromoInFRE,
+      {{first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+        first_run::
+            kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal}});
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
       .is_chrome_user = true});
