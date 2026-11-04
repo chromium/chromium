@@ -6904,6 +6904,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6073" label="HTMLMediaElementMutedAttributeWouldMute"/>
   <int value="6074" label="CookieReadInvalidHost"/>
   <int value="6075" label="CookieWriteInvalidHost"/>
+  <int value="6076" label="OverlayPrestitialAd"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
