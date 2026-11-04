@@ -350,16 +350,16 @@ void XRWebGLLayer::OnFrameStart() {
 }
 
 void XRWebGLLayer::OnFrameEnd() {
-  // The session might have ended in the middle of the frame. Only perform the
-  // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
-  // shared image access is properly ended.
-  if (session()->ended()) {
-    DoneWithSharedBuffer();
-    return;
-  }
-
   if (framebuffer_) {
     framebuffer_->MarkOpaqueBufferComplete(false);
+
+    // The session might have ended in the middle of the frame. Only perform the
+    // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
+    // shared image access is properly ended.
+    if (session()->ended()) {
+      DoneWithSharedBuffer();
+      return;
+    }
 
     // Submit the frame to the XR compositor.
     if (session()->immersive()) {
