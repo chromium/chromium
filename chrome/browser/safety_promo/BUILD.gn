@@ -39,6 +39,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/safety_promo_bottom_sheet_instructions_step_number_bg.xml",
     "java/res/drawable/safety_promo_carousel_illustration_bg.xml",
     "java/res/drawable/safety_promo_enhanced_safe_browsing_carousel_illustration.xml",
     "java/res/drawable/safety_promo_enhanced_safe_browsing_illustration.xml",
@@ -49,6 +50,7 @@ android_resources("java_resources") {
     "java/res/drawable/safety_promo_incognito_illustration.xml",
     "java/res/drawable/safety_promo_password_manager_carousel_illustration.xml",
     "java/res/drawable/safety_promo_password_manager_illustration.xml",
+    "java/res/layout/safety_promo_bottom_sheet_instructions_step.xml",
     "java/res/layout/safety_promo_card_item.xml",
     "java/res/layout/safety_promo_carousel_landscape_illustration.xml",
     "java/res/layout/safety_promo_carousel_portrait_illustration.xml",

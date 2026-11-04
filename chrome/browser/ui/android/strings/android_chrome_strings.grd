@@ -3625,6 +3625,39 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SAFETY_FRE_PROMO_INCOGNITO_BOTTOM_SHEET_TITLE" desc="Title of the bottom sheet that shows the user how to lock their Incognito tabs. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
         Secure your Incognito tabs
       </message>
+      <message name="IDS_SAFETY_FRE_PROMO_BOTTOM_SHEET_INSTRUCTIONS_STEP_GO_TO_CHROME_SETTINGS" desc="First step in the bottom sheets that show the user how to turn on Enhanced Safe Browsing or lock their Incognito tabs. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Go to Chrome Settings
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_PASSWORD_MANAGER_BOTTOM_SHEET_INSTRUCTIONS_STEP_1" desc="First step in the bottom sheet that shows the user how to save passwords with Google Password Manager. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Sign in to any website
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_PASSWORD_MANAGER_BOTTOM_SHEET_INSTRUCTIONS_STEP_2" desc="Second step in the bottom sheet that shows the user how to save passwords with Google Password Manager. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Chrome will offer to save your password
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_PASSWORD_MANAGER_BOTTOM_SHEET_INSTRUCTIONS_STEP_3" desc="Third step in the bottom sheet that shows the user how to save passwords with Google Password Manager. 'Save' is the button on Chrome's save password prompt. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Tap Save to easily use this password the next time you sign in
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_HISTORY_QUICK_DELETE_BOTTOM_SHEET_INSTRUCTIONS_STEP_1" desc="First step in the bottom sheet that shows the user how to quickly delete their browsing history. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Open the Chrome menu
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_HISTORY_QUICK_DELETE_BOTTOM_SHEET_INSTRUCTIONS_STEP_2" desc="Second step in the bottom sheet that shows the user how to quickly delete their browsing history. 'Delete browsing data' is an item in the Chrome menu. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Tap Delete browsing data
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_HISTORY_QUICK_DELETE_BOTTOM_SHEET_INSTRUCTIONS_STEP_3" desc="Third step in the bottom sheet that shows the user how to quickly delete their browsing history. 'Delete data' is the button in the Delete browsing data dialog. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Choose a timeframe and then tap Delete data
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_ENHANCED_SAFE_BROWSING_BOTTOM_SHEET_INSTRUCTIONS_STEP_2" desc="Second step in the bottom sheet that shows the user how to turn on Enhanced Safe Browsing. 'Privacy and security' and 'Safe browsing' are Chrome settings pages. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Tap Privacy and security > Safe browsing
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_ENHANCED_SAFE_BROWSING_BOTTOM_SHEET_INSTRUCTIONS_STEP_3" desc="Third step in the bottom sheet that shows the user how to turn on Enhanced Safe Browsing. 'Enhanced protection' is an option in Chrome's Safe Browsing settings. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Choose Enhanced protection
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_INCOGNITO_BOTTOM_SHEET_INSTRUCTIONS_STEP_2" desc="Second step in the bottom sheet that shows the user how to lock their Incognito tabs. 'Privacy and security' is a Chrome settings page. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Tap Privacy and security
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_INCOGNITO_BOTTOM_SHEET_INSTRUCTIONS_STEP_3" desc="Third step in the bottom sheet that shows the user how to lock their Incognito tabs. 'Lock Incognito tabs when you leave Chrome' is a setting in Chrome's Privacy and security settings. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Toggle on Lock Incognito tabs when you leave Chrome
+      </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS" desc="Message explaining that use of Chrome is governed by Chrome's terms of service.">
         <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
       </message>

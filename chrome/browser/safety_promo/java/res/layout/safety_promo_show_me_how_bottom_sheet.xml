@@ -47,10 +47,8 @@ found in the LICENSE file.
           android:gravity="center_horizontal"
           android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-      <!-- TODO(crbug.com/534388538): Add a row per step of the active
-           carousel item. -->
       <LinearLayout
-          android:id="@+id/safety_promo_bottom_sheet_steps_container"
+          android:id="@+id/safety_promo_bottom_sheet_instructions_container"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical" />

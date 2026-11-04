@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -32,6 +33,8 @@ import org.chromium.chrome.browser.safety_promo.R;
 import org.chromium.chrome.browser.safety_promo.SafetyPromoItem;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
+import java.util.List;
 
 /** Unit tests for {@link SafetyPromoBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,6 +67,16 @@ public class SafetyPromoBottomSheetCoordinatorUnitTest {
         assertEquals(
                 contentView.getContext().getString(SafetyPromoItem.INCOGNITO.bottomSheetTitleResId),
                 titleView.getText().toString());
+    }
+
+    @Test
+    public void testInstructions_areItemBottomSheetInstructions() {
+        View contentView = showBottomSheetAndGetContent().getContentView();
+
+        ViewGroup instructionsContainer =
+                contentView.findViewById(R.id.safety_promo_bottom_sheet_instructions_container);
+        List<Integer> stepResIds = SafetyPromoItem.INCOGNITO.bottomSheetInstructionsStepResIds;
+        assertEquals(stepResIds.size(), instructionsContainer.getChildCount());
     }
 
     @Test

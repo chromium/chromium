@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_promo.bottom_sheet;
 
+import static org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetProperties.INSTRUCTIONS_STEP_RES_IDS;
 import static org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetProperties.ON_GOT_IT_CLICKED;
 import static org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetProperties.TITLE_RES_ID;
 
@@ -55,6 +56,7 @@ public class SafetyPromoBottomSheetCoordinator {
         mModel =
                 new PropertyModel.Builder(SafetyPromoBottomSheetProperties.ALL_KEYS)
                         .with(TITLE_RES_ID, item.bottomSheetTitleResId)
+                        .with(INSTRUCTIONS_STEP_RES_IDS, item.bottomSheetInstructionsStepResIds)
                         .with(ON_GOT_IT_CLICKED, _ -> dismissBottomSheet(/* animate= */ true))
                         .build();
         mModelChangeProcessor =

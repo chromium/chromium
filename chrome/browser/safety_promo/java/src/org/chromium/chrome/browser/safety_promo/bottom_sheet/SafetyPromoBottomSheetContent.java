@@ -20,7 +20,7 @@ class SafetyPromoBottomSheetContent implements BottomSheetContent {
     private static final BottomSheetType SHEET_TYPE =
             new BottomSheetType.Builder().setUserInitiated(/* isUserInitiated= */ true).build();
 
-    private final View mContentView;
+    private final SafetyPromoBottomSheetView mContentView;
     private final Runnable mOnDestroyRunnable;
 
     /**
@@ -28,7 +28,7 @@ class SafetyPromoBottomSheetContent implements BottomSheetContent {
      * @param onDestroy Called when the controller destroys the content, i.e. after the sheet is
      *     closed for any reason.
      */
-    SafetyPromoBottomSheetContent(View contentView, Runnable onDestroy) {
+    SafetyPromoBottomSheetContent(SafetyPromoBottomSheetView contentView, Runnable onDestroy) {
         mContentView = contentView;
         mOnDestroyRunnable = onDestroy;
     }
@@ -43,11 +43,9 @@ class SafetyPromoBottomSheetContent implements BottomSheetContent {
         return null;
     }
 
-    // TODO(crbug.com/534388538): Return the scroll offset of the content once it is wrapped in a
-    // scrollable container.
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        return mContentView.getVerticalScrollOffset();
     }
 
     @Override

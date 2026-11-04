@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/safety_fre_bottom_sheet_instructions_step_padding_vertical">
+
+  <TextView
+      android:id="@+id/safety_promo_bottom_sheet_instructions_step_number"
+      android:layout_width=
+          "@dimen/safety_fre_bottom_sheet_instructions_step_number_size"
+      android:layout_height=
+          "@dimen/safety_fre_bottom_sheet_instructions_step_number_size"
+      android:background=
+          "@drawable/safety_promo_bottom_sheet_instructions_step_number_bg"
+      android:gravity="center"
+      android:importantForAccessibility="no"
+      android:includeFontPadding="false"
+      android:textAppearance=
+          "@style/TextAppearance.TextAccentMediumThick.ColorOnPrimaryContainer"
+      />
+
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/safety_promo_bottom_sheet_instructions_step_text"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart=
+          "@dimen/safety_fre_bottom_sheet_instructions_step_text_margin_start"
+      android:textAlignment="viewStart"
+      android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
+</LinearLayout>

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_promo.bottom_sheet;
 
+import static org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetProperties.INSTRUCTIONS_STEP_RES_IDS;
 import static org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetProperties.ON_GOT_IT_CLICKED;
 import static org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetProperties.TITLE_RES_ID;
 
@@ -18,6 +19,8 @@ class SafetyPromoBottomSheetViewBinder {
             PropertyModel model, SafetyPromoBottomSheetView view, PropertyKey propertyKey) {
         if (propertyKey == TITLE_RES_ID) {
             view.setTitle(model.get(TITLE_RES_ID));
+        } else if (propertyKey == INSTRUCTIONS_STEP_RES_IDS) {
+            view.setInstructions(model.get(INSTRUCTIONS_STEP_RES_IDS));
         } else if (propertyKey == ON_GOT_IT_CLICKED) {
             view.setGotItButtonOnClickListener(model.get(ON_GOT_IT_CLICKED));
         }
