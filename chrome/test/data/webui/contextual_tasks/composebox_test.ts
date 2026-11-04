@@ -1358,7 +1358,7 @@ suite('ContextualTasksComposeboxTest', () => {
       });
 
       searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-          tabInfo, 'AppMenu');
+          tabInfo, 'FindInPage');
       await searchboxCallbackRouterRemote.$.flushForTesting();
       await microtasksFinished();
 
@@ -1368,6 +1368,34 @@ suite('ContextualTasksComposeboxTest', () => {
       assertEquals(1, args[0]);  // tabId
       assertTrue(args[1]);       // delayUpload
     });
+
+    for (const source
+             of ['ContentAreaContextMenuPage',
+                 'AppMenu',
+                 'HomeworkActionChip',
+    ]) {
+      test(`ImmediateUploadWhen${source}`, async () => {
+        loadTimeData.overrideValues({
+          webUIOmniboxAskGAboutThisPageEnabled: true,
+          contextualTasksUpdatedEntryPointsEnabled: true,
+        });
+
+        searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tabInfo, source);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Verify addTabContext was called with delay_upload = false
+        assertEquals(1, mockSearchboxPageHandler.getCallCount('addTabContext'));
+        const args = mockSearchboxPageHandler.getArgs('addTabContext')[0];
+        assertEquals(1, args[0]);  // tabId
+        assertFalse(args[1]);      // delayUpload
+
+        const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+        await innerComposebox.updateComplete;
+        assertEquals(1, innerComposebox.attachedContext.size);
+      });
+    }
   });
 });
 

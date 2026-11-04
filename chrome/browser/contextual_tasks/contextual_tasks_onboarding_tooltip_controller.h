@@ -56,6 +56,9 @@ class ContextualTasksOnboardingTooltipController
     return active_variant_;
   }
   views::Widget* bubble_widget_for_testing() { return bubble_widget_.get(); }
+  bool is_ask_google_entry_point_eligible_for_testing() const {
+    return IsAskGoogleEntryPointEligible();
+  }
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -228,8 +229,7 @@ void ContextualTasksOnboardingTooltipController::MaybeShowBubble(
   if (bubble_widget_) {
     CloseBubbleWidget();
   }
-  if (IsAskGoogleEntryPointEligible() &&
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage)) {
+  if (IsAskGoogleEntryPointEligible()) {
     if (ShouldShowVariant(
             ContextualTasksOnboardingBubbleView::Variant::kAskGoogle)) {
       bubble_widget_ = ContextualTasksOnboardingBubbleView::CreateAndShow(
@@ -288,15 +288,28 @@ void ContextualTasksOnboardingTooltipController::MaybeShowBubble(
 
 bool ContextualTasksOnboardingTooltipController::IsAskGoogleEntryPointEligible()
     const {
-  return entry_point_ == omnibox::ChromeAimEntryPoint::
-                             DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH ||
-         entry_point_ == omnibox::ChromeAimEntryPoint::
-                             DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION ||
-         entry_point_ ==
-             omnibox::ChromeAimEntryPoint::
-                 DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION ||
-         entry_point_ == omnibox::ChromeAimEntryPoint::
-                             DESKTOP_CHROME_COBROWSE_OMNIBOX_POPUP_BUTTON;
+  const bool is_omnibox_entry_point =
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage) &&
+      (entry_point_ == omnibox::ChromeAimEntryPoint::
+                           DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH ||
+       entry_point_ == omnibox::ChromeAimEntryPoint::
+                           DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION ||
+       entry_point_ ==
+           omnibox::ChromeAimEntryPoint::
+               DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION ||
+       entry_point_ == omnibox::ChromeAimEntryPoint::
+                           DESKTOP_CHROME_COBROWSE_OMNIBOX_POPUP_BUTTON);
+
+  const bool is_updated_entry_point =
+      AreContextualTasksUpdatedEntryPointsEnabled(profile_) &&
+      (entry_point_ == omnibox::ChromeAimEntryPoint::
+                           DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE ||
+       entry_point_ ==
+           omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE ||
+       entry_point_ == omnibox::ChromeAimEntryPoint::
+                           DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP);
+
+  return is_omnibox_entry_point || is_updated_entry_point;
 }
 
 bool ContextualTasksOnboardingTooltipController::HasAutomaticActiveTab() const {
@@ -325,8 +338,7 @@ bool ContextualTasksOnboardingTooltipController::ShouldShowVariant(
       base::FeatureList::IsEnabled(kContextualTasksBypassDismissedCap);
 
   if (variant == ContextualTasksOnboardingBubbleView::Variant::kAskGoogle) {
-    if (!base::FeatureList::IsEnabled(
-            omnibox::kWebUIOmniboxAskGAboutThisPage)) {
+    if (!IsAskGoogleEntryPointEligible()) {
       return false;
     }
     if (!bypass_cap &&

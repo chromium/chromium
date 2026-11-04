@@ -174,6 +174,12 @@ export class
         loadTimeData.getBoolean('webUIOmniboxAskGAboutThisPageEnabled');
   }
 
+  private get contextualTasksUpdatedEntryPointsEnabled_(): boolean {
+    return loadTimeData.valueExists(
+               'contextualTasksUpdatedEntryPointsEnabled') &&
+        loadTimeData.getBoolean('contextualTasksUpdatedEntryPointsEnabled');
+  }
+
   override getPageHandler(): PageHandlerRemote {
     return this.pageHandler_;
   }
@@ -344,10 +350,17 @@ export class
       }
       return;
     }
-    // AutoSuggestedTabContext is routed differently for Omnibox Page Action.
-    // when it opens a side panel to cobrowse.
-    const askGAndPageAction = this.webUIOmniboxAskGAboutThisPageEnabled_ &&
-        invocationSource === 'OmniboxPageAction' && this.isSidePanel;
+    // AutoSuggestedTabContext is routed differently for Ask Google entry points
+    // when opening a side panel to cobrowse.
+    const isUpdatedEntryPoint =
+        this.contextualTasksUpdatedEntryPointsEnabled_ &&
+        (invocationSource === 'ContentAreaContextMenuPage' ||
+         invocationSource === 'AppMenu' ||
+         invocationSource === 'HomeworkActionChip');
+    const isOmniboxAskG = this.webUIOmniboxAskGAboutThisPageEnabled_ &&
+        invocationSource === 'OmniboxPageAction';
+    const askGAndPageAction =
+        (isOmniboxAskG || isUpdatedEntryPoint) && this.isSidePanel;
 
     // We should delete the automatic active tab if it is different from the
     // current tab when webUIOmniboxAskGAboutThisPageEnabled_ is true. Make sure

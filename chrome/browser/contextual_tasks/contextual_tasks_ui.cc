@@ -248,6 +248,12 @@ std::string EntryPointToString(omnibox::ChromeAimEntryPoint entry_point) {
       return "omnibox_popup_button";
     case omnibox::DESKTOP_CHROME_CONTEXTUAL_CUE:
       return "contextual_cue";
+    case omnibox::DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE:
+      return "page_context_menu";
+    case omnibox::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE:
+      return "app_menu";
+    case omnibox::DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP:
+      return "homework_action_chip";
     default:
       return "unknown";
   }
@@ -562,8 +568,12 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set(
       "webUIOmniboxAskGAboutThisPageEnabled",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage));
+  dict.Set(
+      "contextualTasksUpdatedEntryPointsEnabled",
+      contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(profile));
 #else
   dict.Set("webUIOmniboxAskGAboutThisPageEnabled", false);
+  dict.Set("contextualTasksUpdatedEntryPointsEnabled", false);
 #endif
 
   dict.Set("composeboxFileMaxSize",
