@@ -14699,6 +14699,91 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest,
+       AllowPartialAddressResults_SucceedsAndCachesInHostCache) {
+  AddScopedFeatureList().InitWithFeatures(
+      /*enabled_features=*/{features::
+                                kPartitionConnectionsByNetworkIsolationKey,
+                            features::kDnsTaskAllowPartialAddressResults},
+      /*disabled_features=*/{features::kUseHostResolverCache});
+
+  constexpr std::string_view kHost = "host.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  SchemefulSite site(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey,
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults().endpoints(),
+              ElementsAre(CreateExpected("::1", 80)));
+
+  EXPECT_TRUE(GetCacheHit(HostCache::Key(
+      std::string(kHost), DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
+      HostResolverSource::ANY, kNetworkAnonymizationKey,
+      handles::kInvalidNetworkHandle)));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       AllowPartialAddressResults_OneFailsOtherNodataDoesNotCacheNegative) {
+  AddScopedFeatureList().InitWithFeatures(
+      /*enabled_features=*/{features::
+                                kPartitionConnectionsByNetworkIsolationKey,
+                            features::kDnsTaskAllowPartialAddressResults},
+      /*disabled_features=*/{features::kUseHostResolverCache});
+
+  constexpr std::string_view kHost = "host.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  SchemefulSite site(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(std::move(site));
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey,
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_SERVER_FAILURE));
+
+  // Must not negatively cache ERR_NAME_NOT_RESOLVED when one transaction failed
+  // and the sibling returned NODATA.
+  EXPECT_FALSE(GetCacheHit(HostCache::Key(
+      std::string(kHost), DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
+      HostResolverSource::ANY, kNetworkAnonymizationKey,
+      handles::kInvalidNetworkHandle)));
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+}
+
+TEST_F(HostResolverManagerDnsTest,
        MalformedResponsesNotSavedInHostResolverCache) {
   AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::

@@ -138,6 +138,35 @@ class HostResolverDnsTaskTest : public WithTaskEnvironment,
                                     /*additional_types_enabled=*/true);
   }
 
+  std::unique_ptr<MockDnsClient> CreateInsecureMockDnsClient(
+      MockDnsClientRuleList rules) {
+    auto client = std::make_unique<MockDnsClient>(CreateValidDnsConfig(),
+                                                  std::move(rules));
+    client->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
+                               /*additional_types_enabled=*/true);
+    return client;
+  }
+
+  std::unique_ptr<HostResolverDnsTask> CreateAndStartDnsTask(
+      DnsClient* client,
+      DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::AAAA},
+      const HostResolver::HttpsSvcbOptions& https_svcb_options =
+          HostResolver::HttpsSvcbOptions(),
+      std::string_view hostname = "name.test") {
+    auto task = std::make_unique<HostResolverDnsTask>(
+        client, HostResolver::Host(url::SchemeHostPort("https", hostname, 443)),
+        NetworkAnonymizationKey(), types, resolve_context_.get(),
+        DnsTransactionFactory::AttemptMode::kClassic, SecureDnsMode::kAutomatic,
+        handles::kInvalidNetworkHandle, &mock_dns_task_delegate_,
+        NetLogWithSource(), &clock_, /*fallback_available=*/true,
+        https_svcb_options);
+    while (task->num_additional_transactions_needed() > 0) {
+      task->StartNextTransaction();
+    }
+    return task;
+  }
+
+  base::SimpleTestTickClock clock_;
   std::unique_ptr<URLRequestContext> request_context_;
   std::unique_ptr<ResolveContext> resolve_context_;
   std::unique_ptr<DnsClient> dns_client_;
@@ -1734,6 +1763,657 @@ TEST_F(HostResolverDnsTaskTest, AddressRecordBeforeHttps_OnlyA) {
   histograms.ExpectUniqueTimeSample(
       "Net.Dns.ResolveTimeDiff2.AddressRecordBeforeHTTPS",
       base::Milliseconds(250), 1);
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_FirstAddressFailsSecondSucceeds) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  base::HistogramTester histograms;
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+  auto task = CreateAndStartDnsTask(client.get());
+
+  // AAAA fails first; task should not fail while A is still in progress.
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_dns_task_delegate_, OnIntermediateTransactionsComplete(_))
+      .Times(1);
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+  Mock::VerifyAndClearExpectations(&mock_dns_task_delegate_);
+
+  // A succeeds second; task should succeed with A's IPv4 endpoint.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(AllOf(
+                Property(&HostResolverInternalResult::type,
+                         HostResolverInternalResult::Type::kData),
+                Property(&HostResolverInternalResult::query_type,
+                         DnsQueryType::A),
+                Property(&HostResolverInternalResult::AsData,
+                         Property(&HostResolverInternalDataResult::endpoints,
+                                  ElementsAre(IPEndPoint(
+                                      IPAddress::IPv4Localhost(), 0))))))));
+        run_loop.Quit();
+      });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  run_loop.Run();
+
+  histograms.ExpectUniqueSample("Net.DNS.DnsTask.PartialAddressSuccess", true,
+                                1);
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_FirstAddressSucceedsSecondFails) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  base::HistogramTester histograms;
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/true);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+  auto task = CreateAndStartDnsTask(client.get());
+
+  // AAAA succeeds first.
+  EXPECT_CALL(mock_dns_task_delegate_, OnIntermediateTransactionsComplete(_))
+      .Times(1);
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+  Mock::VerifyAndClearExpectations(&mock_dns_task_delegate_);
+
+  // A fails second; task should still succeed with AAAA's IPv6 endpoint.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(AllOf(
+                Property(&HostResolverInternalResult::type,
+                         HostResolverInternalResult::Type::kData),
+                Property(&HostResolverInternalResult::AsData,
+                         Property(&HostResolverInternalDataResult::endpoints,
+                                  ElementsAre(IPEndPoint(
+                                      IPAddress::IPv6Localhost(), 0))))))));
+        run_loop.Quit();
+      });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  run_loop.Run();
+
+  histograms.ExpectUniqueSample("Net.DNS.DnsTask.PartialAddressSuccess", true,
+                                1);
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_MalformedResponseIgnoredWhenSiblingSucceeds) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kMalformed),
+      /*delay=*/false);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(AllOf(
+                Property(&HostResolverInternalResult::type,
+                         HostResolverInternalResult::Type::kData),
+                Property(&HostResolverInternalResult::AsData,
+                         Property(&HostResolverInternalDataResult::endpoints,
+                                  ElementsAre(IPEndPoint(
+                                      IPAddress::IPv6Localhost(), 0))))))));
+        run_loop.Quit();
+      });
+
+  auto task = CreateAndStartDnsTask(client.get());
+  run_loop.Run();
+}
+
+TEST_F(
+    HostResolverDnsTaskTest,
+    AllowPartialAddressResults_IndividualSortFailureIgnoredWhenSiblingSucceeds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kDnsTaskAllowPartialAddressResults,
+                                 features::kUseHostResolverCache},
+                                {});
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+
+  auto mock_sorter = std::make_unique<MockAddressSorter>();
+  EXPECT_CALL(*mock_sorter, Sort(_, _, _, _))
+      .WillOnce([](const std::vector<IPEndPoint>&,
+                   const NetworkAnonymizationKey&, handles::NetworkHandle,
+                   AddressSorter::CallbackType callback) {
+        // Fail sort for AAAA; A does not use AddressSorter.
+        std::move(callback).Run(/*success=*/false, {});
+      });
+  client->SetAddressSorterForTesting(std::move(mock_sorter));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(AllOf(
+                Property(&HostResolverInternalResult::type,
+                         HostResolverInternalResult::Type::kData),
+                Property(&HostResolverInternalResult::query_type,
+                         DnsQueryType::A),
+                Property(&HostResolverInternalResult::AsData,
+                         Property(&HostResolverInternalDataResult::endpoints,
+                                  ElementsAre(IPEndPoint(
+                                      IPAddress::IPv4Localhost(), 0))))))));
+        run_loop.Quit();
+      });
+
+  auto task = CreateAndStartDnsTask(client.get());
+  run_loop.Run();
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_FirstFailsSecondEmptyFailsTask) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  base::HistogramTester histograms;
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
+      /*delay=*/true);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+  auto task = CreateAndStartDnsTask(client.get());
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  // When A completes with NODATA (kEmpty), no usable addresses were obtained,
+  // so the task must fail with AAAA's uncacheable ERR_DNS_SERVER_FAILURE.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_,
+              OnDnsTaskComplete(_, /*allow_fallback=*/true, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(
+                AllOf(Property(&HostResolverInternalResult::type,
+                               HostResolverInternalResult::Type::kError),
+                      Property(&HostResolverInternalResult::query_type,
+                               DnsQueryType::UNSPECIFIED),
+                      Property(&HostResolverInternalResult::expiration,
+                               std::optional<base::TimeTicks>()),
+                      Property(&HostResolverInternalResult::timed_expiration,
+                               std::optional<base::Time>()),
+                      Property(&HostResolverInternalResult::AsError,
+                               Property(&HostResolverInternalErrorResult::error,
+                                        ERR_DNS_SERVER_FAILURE))))));
+        run_loop.Quit();
+      });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  run_loop.Run();
+
+  histograms.ExpectTotalCount("Net.DNS.DnsTask.PartialAddressSuccess", 0);
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_FirstEmptySecondFailsFailsTask) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
+      /*delay=*/true);
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/true);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+  auto task = CreateAndStartDnsTask(client.get());
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_,
+              OnDnsTaskComplete(_, /*allow_fallback=*/true, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(
+                AllOf(Property(&HostResolverInternalResult::type,
+                               HostResolverInternalResult::Type::kError),
+                      Property(&HostResolverInternalResult::query_type,
+                               DnsQueryType::UNSPECIFIED),
+                      Property(&HostResolverInternalResult::expiration,
+                               std::optional<base::TimeTicks>()),
+                      Property(&HostResolverInternalResult::timed_expiration,
+                               std::optional<base::Time>()),
+                      Property(&HostResolverInternalResult::AsError,
+                               Property(&HostResolverInternalErrorResult::error,
+                                        ERR_DNS_SERVER_FAILURE))))));
+        run_loop.Quit();
+      });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  run_loop.Run();
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_BothFailReportsFirstError) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kTimeout),
+      /*delay=*/true);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+  auto task = CreateAndStartDnsTask(client.get());
+
+  // AAAA fails first with ERR_DNS_SERVER_FAILURE.
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  // A fails second with ERR_DNS_TIMED_OUT; first error should be reported.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_,
+              OnDnsTaskComplete(_, /*allow_fallback=*/true, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(
+                AllOf(Property(&HostResolverInternalResult::type,
+                               HostResolverInternalResult::Type::kError),
+                      Property(&HostResolverInternalResult::AsError,
+                               Property(&HostResolverInternalErrorResult::error,
+                                        ERR_DNS_SERVER_FAILURE))))));
+        run_loop.Quit();
+      });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  run_loop.Run();
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_BothFailPrefersErrorWithoutTtl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kDnsTaskAllowPartialAddressResults,
+                                 features::kUseHostResolverCache},
+                                {});
+  const char kName[] = "name.test";
+
+  for (bool sort_error_first : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "sort_error_first=" << sort_error_first);
+    MockDnsClientRuleList rules;
+    rules.emplace_back(
+        kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+        MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+        /*delay=*/true);
+    rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/false,
+                       MockDnsClientRule::Result(
+                           MockDnsClientRule::ResultType::kFail,
+                           /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                       /*delay=*/true);
+
+    auto client = CreateInsecureMockDnsClient(std::move(rules));
+    auto mock_sorter = std::make_unique<MockAddressSorter>();
+    EXPECT_CALL(*mock_sorter, Sort(_, _, _, _))
+        .WillOnce([](const std::vector<IPEndPoint>&,
+                     const NetworkAnonymizationKey&, handles::NetworkHandle,
+                     AddressSorter::CallbackType callback) {
+          // Fail sort for AAAA, producing ERR_DNS_SORT_ERROR with a TTL.
+          std::move(callback).Run(/*success=*/false, {});
+        });
+    client->SetAddressSorterForTesting(std::move(mock_sorter));
+
+    auto task = CreateAndStartDnsTask(client.get());
+
+    const DnsQueryType first_type =
+        sort_error_first ? DnsQueryType::AAAA : DnsQueryType::A;
+    const DnsQueryType second_type =
+        sort_error_first ? DnsQueryType::A : DnsQueryType::AAAA;
+
+    ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(first_type));
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_dns_task_delegate_,
+                OnDnsTaskComplete(_, /*allow_fallback=*/true, _, _))
+        .WillOnce([&](base::TimeTicks, bool,
+                      HostResolverDnsTask::Results results,
+                      DnsTransactionFactory::AttemptMode) {
+          EXPECT_THAT(
+              results,
+              ElementsAre(Pointee(AllOf(
+                  Property(&HostResolverInternalResult::type,
+                           HostResolverInternalResult::Type::kError),
+                  Property(&HostResolverInternalResult::expiration,
+                           std::optional<base::TimeTicks>()),
+                  Property(&HostResolverInternalResult::timed_expiration,
+                           std::optional<base::Time>()),
+                  Property(&HostResolverInternalResult::AsError,
+                           Property(&HostResolverInternalErrorResult::error,
+                                    ERR_DNS_SERVER_FAILURE))))));
+          run_loop.Quit();
+        });
+
+    ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(second_type));
+    run_loop.Run();
+  }
+}
+
+TEST_F(
+    HostResolverDnsTaskTest,
+    AllowPartialAddressResults_CombinedSortPrunesAllAddressesAfterSiblingFailed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kDnsTaskAllowPartialAddressResults},
+                                {features::kUseHostResolverCache});
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/false);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+
+  auto mock_sorter = std::make_unique<MockAddressSorter>();
+  EXPECT_CALL(*mock_sorter, Sort(_, _, _, _))
+      .WillOnce([](const std::vector<IPEndPoint>&,
+                   const NetworkAnonymizationKey&, handles::NetworkHandle,
+                   AddressSorter::CallbackType callback) {
+        // Prune all IPv6 addresses.
+        std::move(callback).Run(/*success=*/true, {});
+      });
+  client->SetAddressSorterForTesting(std::move(mock_sorter));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_,
+              OnDnsTaskComplete(_, /*allow_fallback=*/true, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(
+                AllOf(Property(&HostResolverInternalResult::type,
+                               HostResolverInternalResult::Type::kError),
+                      Property(&HostResolverInternalResult::expiration,
+                               std::optional<base::TimeTicks>()),
+                      Property(&HostResolverInternalResult::timed_expiration,
+                               std::optional<base::Time>()),
+                      Property(&HostResolverInternalResult::AsError,
+                               Property(&HostResolverInternalErrorResult::error,
+                                        ERR_DNS_SERVER_FAILURE))))));
+        run_loop.Quit();
+      });
+
+  auto task = CreateAndStartDnsTask(client.get());
+  run_loop.Run();
+}
+
+TEST_F(
+    HostResolverDnsTaskTest,
+    AllowPartialAddressResults_AddressFailsSiblingEmptyHttpsSucceedsFailsTask) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  const char kName[] = "name.test";
+
+  DnsResourceRecord https_record = BuildTestHttpsServiceRecord(
+      kName, /*priority=*/1, /*service_name=*/".", /*params=*/{});
+  DnsResponse https_response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeHttps, {https_record});
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/false,
+                     MockDnsClientRule::Result(std::move(https_response)),
+                     /*delay=*/true);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
+      /*delay=*/true);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+  auto task = CreateAndStartDnsTask(
+      client.get(), {DnsQueryType::A, DnsQueryType::AAAA, DnsQueryType::HTTPS});
+
+  // HTTPS succeeds with valid metadata first, and AAAA fails.
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::HTTPS));
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  // When A returns NODATA, HTTPS metadata must not count as a usable address,
+  // so the task must fail with AAAA's ERR_DNS_SERVER_FAILURE.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_,
+              OnDnsTaskComplete(_, /*allow_fallback=*/true, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(
+                AllOf(Property(&HostResolverInternalResult::type,
+                               HostResolverInternalResult::Type::kError),
+                      Property(&HostResolverInternalResult::AsError,
+                               Property(&HostResolverInternalErrorResult::error,
+                                        ERR_DNS_SERVER_FAILURE))))));
+        run_loop.Quit();
+      });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  run_loop.Run();
+}
+
+TEST_F(HostResolverDnsTaskTest,
+       AllowPartialAddressResults_AddressFailsSiblingSucceedsHttpsTimesOut) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDnsTaskAllowPartialAddressResults);
+  const char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeHttps, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kTimeout),
+      /*delay=*/true);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_DNS_SERVER_FAILURE),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  auto client = CreateInsecureMockDnsClient(std::move(rules));
+  HostResolver::HttpsSvcbOptions https_options;
+  https_options.insecure_extra_time_min = base::Milliseconds(1);
+  auto task = CreateAndStartDnsTask(
+      client.get(), {DnsQueryType::A, DnsQueryType::AAAA, DnsQueryType::HTTPS},
+      https_options);
+
+  // AAAA fails and A succeeds while HTTPS remains in progress; this starts the
+  // HTTPS timeout timer with `pending_address_failure_` set.
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+
+  // When the HTTPS timeout fires, the task should succeed with A's address.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_THAT(
+            results,
+            ElementsAre(Pointee(AllOf(
+                Property(&HostResolverInternalResult::type,
+                         HostResolverInternalResult::Type::kData),
+                Property(&HostResolverInternalResult::query_type,
+                         DnsQueryType::A),
+                Property(&HostResolverInternalResult::AsData,
+                         Property(&HostResolverInternalDataResult::endpoints,
+                                  ElementsAre(IPEndPoint(
+                                      IPAddress::IPv4Localhost(), 0))))))));
+        run_loop.Quit();
+      });
+  run_loop.Run();
+}
+
+TEST_F(HostResolverDnsTaskTest, SelectAddressFailure) {
+  const base::TimeTicks kExpiration = base::TimeTicks::Now() + base::Minutes(5);
+  const base::Time kTimedExpiration = base::Time::Now() + base::Minutes(5);
+
+  auto make_error = [](int net_error,
+                       std::optional<base::TimeTicks> expiration = std::nullopt,
+                       std::optional<base::Time> timed_expiration =
+                           std::nullopt) {
+    return std::make_unique<HostResolverInternalErrorResult>(
+        "name.test", DnsQueryType::UNSPECIFIED, expiration, timed_expiration,
+        HostResolverInternalResult::Source::kDns, net_error);
+  };
+
+  // No existing failure: selects candidate.
+  {
+    auto selected = HostResolverDnsTask::SelectAddressFailure(
+        /*existing=*/nullptr, make_error(ERR_DNS_SERVER_FAILURE));
+    EXPECT_EQ(selected->error(), ERR_DNS_SERVER_FAILURE);
+  }
+
+  // Neither has TTL: keeps existing (first failure).
+  {
+    auto selected = HostResolverDnsTask::SelectAddressFailure(
+        make_error(ERR_DNS_SERVER_FAILURE), make_error(ERR_DNS_TIMED_OUT));
+    EXPECT_EQ(selected->error(), ERR_DNS_SERVER_FAILURE);
+  }
+
+  // Existing has no TTL, candidate has TTL: keeps existing.
+  {
+    auto selected = HostResolverDnsTask::SelectAddressFailure(
+        make_error(ERR_DNS_SERVER_FAILURE),
+        make_error(ERR_DNS_SORT_ERROR, kExpiration, kTimedExpiration));
+    EXPECT_EQ(selected->error(), ERR_DNS_SERVER_FAILURE);
+  }
+
+  // Both have equal TTL: keeps existing (first failure).
+  {
+    auto selected = HostResolverDnsTask::SelectAddressFailure(
+        make_error(ERR_DNS_SORT_ERROR, kExpiration, kTimedExpiration),
+        make_error(ERR_DNS_SERVER_FAILURE, kExpiration, kTimedExpiration));
+    EXPECT_EQ(selected->error(), ERR_DNS_SORT_ERROR);
+  }
+
+  // Both have TTL, candidate is shorter: prefers candidate.
+  {
+    const base::TimeTicks kShorterExpiration =
+        base::TimeTicks::Now() + base::Minutes(1);
+    const base::Time kShorterTimedExpiration =
+        base::Time::Now() + base::Minutes(1);
+    auto selected = HostResolverDnsTask::SelectAddressFailure(
+        make_error(ERR_DNS_SORT_ERROR, kExpiration, kTimedExpiration),
+        make_error(ERR_DNS_SERVER_FAILURE, kShorterExpiration,
+                   kShorterTimedExpiration));
+    EXPECT_EQ(selected->error(), ERR_DNS_SERVER_FAILURE);
+  }
+
+  // Both have TTL, existing is shorter: keeps existing.
+  {
+    const base::TimeTicks kLongerExpiration =
+        base::TimeTicks::Now() + base::Minutes(10);
+    const base::Time kLongerTimedExpiration =
+        base::Time::Now() + base::Minutes(10);
+    auto selected = HostResolverDnsTask::SelectAddressFailure(
+        make_error(ERR_DNS_SORT_ERROR, kExpiration, kTimedExpiration),
+        make_error(ERR_DNS_SERVER_FAILURE, kLongerExpiration,
+                   kLongerTimedExpiration));
+    EXPECT_EQ(selected->error(), ERR_DNS_SORT_ERROR);
+  }
+
+  // Existing has TTL, candidate has no TTL: prefers candidate.
+  {
+    auto selected = HostResolverDnsTask::SelectAddressFailure(
+        make_error(ERR_DNS_SORT_ERROR, kExpiration, kTimedExpiration),
+        make_error(ERR_DNS_SERVER_FAILURE));
+    EXPECT_EQ(selected->error(), ERR_DNS_SERVER_FAILURE);
+  }
 }
 
 }  // namespace net

@@ -74,11 +74,13 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
         Results results,
         DnsTransactionFactory::AttemptMode attempt_mode) = 0;
 
-    // Called when one transaction completes successfully, or one more
-    // transactions get cancelled, but only if more transactions are
-    // needed. If no more transactions are needed, expect `OnDnsTaskComplete()`
-    // to be called instead. `single_transaction_results` is passed only when
-    // one transaction completes successfully.
+    // Called when a transaction completes (successfully or with a non-fatal
+    // address failure), or when one or more transactions get cancelled, but
+    // only if more transactions are needed. If no more transactions are
+    // needed, expect `OnDnsTaskComplete()` to be called instead.
+    // `single_transaction_results` is passed when a transaction completes
+    // (with empty `results` on non-fatal address failure), and is
+    // `std::nullopt` when transactions are cancelled.
     virtual void OnIntermediateTransactionsComplete(
         std::optional<SingleTransactionResults> single_transaction_results) = 0;
 
@@ -146,6 +148,18 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Selects which non-fatal address transaction failure to retain when both
+  // address transactions fail. Keeps `existing` (the first failure) unless:
+  // - `existing` carries a TTL and `candidate` does not, preventing `HostCache`
+  //   from negatively caching a failure (e.g. `ERR_DNS_SORT_ERROR` from
+  //   `OnTransactionSorted()`) when the sibling transaction failed with an
+  //   uncacheable transient error (e.g. `ERR_DNS_SERVER_FAILURE`), or
+  // - both carry a TTL and `candidate` has a shorter TTL, to avoid caching the
+  //   failure for longer than the authoritative server intended.
+  static std::unique_ptr<HostResolverInternalErrorResult> SelectAddressFailure(
+      std::unique_ptr<HostResolverInternalErrorResult> existing,
+      std::unique_ptr<HostResolverInternalErrorResult> candidate);
+
   // There are some complex circumstances when some in-progress transactions
   // may be cancelled without cancelling the entire task. This trigger allows
   // testing that logic can correctly respond to being cancelled, regardless of
@@ -154,9 +168,14 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
  private:
   enum class TransactionErrorBehavior {
-    // Errors lead to task fallback (immediately unless another pending/started
+    // Errors lead to task failure (immediately unless another pending/started
     // transaction has the `kFatalOrEmpty` behavior).
-    kFallback,
+    kFailTask,
+
+    // Transaction errors are ignored if another address transaction resolves
+    // usable address results; otherwise they lead to task failure once all
+    // address transactions have finished.
+    kIgnoreIfOtherTransactionResolves,
 
     // Transaction errors are treated as if a NOERROR response were received,
     // allowing task success if other transactions complete successfully.
@@ -173,13 +192,25 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   struct TransactionInfo {
     explicit TransactionInfo(DnsQueryType type,
                              TransactionErrorBehavior error_behavior =
-                                 TransactionErrorBehavior::kFallback);
+                                 TransactionErrorBehavior::kFailTask);
     ~TransactionInfo();
 
     DnsQueryType type;
     TransactionErrorBehavior error_behavior;
     std::unique_ptr<DnsTransaction> transaction;
     base::WeakPtrFactory<TransactionInfo> weak_ptr_factory{this};
+  };
+
+  // Holds the TTL expiration timestamps for a failure result. Both clocks are
+  // tracked to match `HostResolverInternalResult` (which requires
+  // `timed_expiration` whenever `expiration` is set).
+  struct ExpirationTtls {
+    // Monotonic-clock expiration (`base::TimeTicks`), preferred for in-memory
+    // cache expiration checks as it is unaffected by system clock adjustments.
+    base::TimeTicks expiration;
+    // Wall-clock expiration (`base::Time`), used when serializing results (e.g.
+    // to NetLog or persistent cache storage).
+    base::Time timed_expiration;
   };
 
   base::DictValue NetLogDnsTaskCreationParams();
@@ -238,16 +269,33 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   void CancelNonFatalTransactions();
 
+  bool HasSavedAddressResults() const;
+
+  static std::optional<ExpirationTtls> GetMinExpirations(
+      const Results& results);
+
+  // Creates an error result for `net_error` with the given optional TTL
+  // expiration timestamps.
+  std::unique_ptr<HostResolverInternalErrorResult> CreateFailureResult(
+      int net_error,
+      std::optional<ExpirationTtls> expiration_ttls) const;
+
+  void OnNonFatalAddressTransactionFailure(
+      std::unique_ptr<TransactionInfo> transaction_info,
+      int net_error,
+      std::optional<ExpirationTtls> expiration_ttls);
+
   void OnFailure(int net_error,
                  bool allow_fallback,
-                 const Results* base_results = nullptr);
+                 std::optional<ExpirationTtls> expiration_ttls);
   void OnDeferredFailure(bool allow_fallback = true);
 
   void OnSuccess(Results results);
 
-  // Returns whether any transactions left to finish are of a transaction type
-  // in `types`. Used for logging and starting the timeout timer (see
-  // MaybeStartTimeoutTimer()).
+  // Returns whether any queued or in-progress transactions are of a transaction
+  // type in `types` (returns false if no transactions remain at all). Used by
+  // `OnTransactionsFinished()` to check if any address transactions remain and
+  // by `MaybeStartTimeoutTimer()` to decide whether to start the timeout timer.
   bool AnyOfTypeTransactionsRemain(
       std::initializer_list<DnsQueryType> types) const;
 
@@ -285,7 +333,16 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   base::TimeTicks https_record_end_time_;
 
   Results saved_results_;
+  // Set when the task is guaranteed to fail, but completion may need to wait
+  // for in-progress `kFatalOrEmpty` transactions to determine whether fallback
+  // should be disallowed.
   std::unique_ptr<HostResolverInternalErrorResult> deferred_failure_;
+  // Holds a non-`ERR_NAME_NOT_RESOLVED` failure from an address transaction
+  // while waiting to see if the sibling address transaction resolves usable
+  // endpoints. Kept separate from `saved_results_` (which `HostCache::Entry`
+  // requires to contain no real errors on task success) and from
+  // `deferred_failure_` (which cancels remaining non-fatal transactions).
+  std::unique_ptr<HostResolverInternalErrorResult> pending_address_failure_;
 
   const raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks task_start_time_;

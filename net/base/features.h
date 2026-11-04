@@ -75,6 +75,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDnsPlatformFailFastAndRetry);
 NET_EXPORT extern const base::FeatureParam<bool>
     kDnsPlatformCancelPreviousAttemptOnRetry;
 
+// If enabled, HostResolverDnsTask ignores errors from an address (A/AAAA) DNS
+// transaction if the sibling address transaction succeeds with usable
+// addresses, rather than failing the entire DnsTask and falling back to the
+// system resolver.
+NET_EXPORT BASE_DECLARE_FEATURE(kDnsTaskAllowPartialAddressResults);
+
 // Enables querying HTTPS DNS records that will affect results from HostResolver
 // and may be used to affect connection behavior. Whether or not those results
 // are used (e.g. to connect via ECH) may be controlled by separate features.
