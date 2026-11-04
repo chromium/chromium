@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/feature_engagement/internal/jni_headers/TrackerImpl_jni.h"
@@ -157,15 +158,12 @@ base::android::ScopedJavaLocalRef<jobject>
 TrackerImplAndroid::AcquireDisplayLock(JNIEnv* env) {
   std::unique_ptr<DisplayLockHandle> lock_handle =
       tracker_->AcquireDisplayLock();
-  if (!lock_handle)
+  if (!lock_handle) {
     return nullptr;
+  }
 
-  auto lock_handle_android =
-      std::make_unique<DisplayLockHandleAndroid>(std::move(lock_handle));
-
-  // Intentionally release ownership to Java.
-  // Callers are required to invoke DisplayLockHandleAndroid#release().
-  return lock_handle_android.release()->GetJavaObject();
+  return Java_DisplayLockHandleAndroid_create(
+      env, jni_zero::MakeUnique(std::move(lock_handle)));
 }
 
 void TrackerImplAndroid::SetPriorityNotification(
@@ -211,29 +209,6 @@ bool TrackerImplAndroid::IsInitialized(JNIEnv* env) {
 void TrackerImplAndroid::AddOnInitializedCallback(
     base::OnceCallback<void(bool)> callback) {
   tracker_->AddOnInitializedCallback(std::move(callback));
-}
-
-DisplayLockHandleAndroid::DisplayLockHandleAndroid(
-    std::unique_ptr<DisplayLockHandle> display_lock_handle)
-    : display_lock_handle_(std::move(display_lock_handle)) {
-  java_obj_.Reset(
-      base::android::AttachCurrentThread(),
-      Java_DisplayLockHandleAndroid_create(base::android::AttachCurrentThread(),
-                                           reinterpret_cast<intptr_t>(this)));
-}
-
-DisplayLockHandleAndroid::~DisplayLockHandleAndroid() {
-  Java_DisplayLockHandleAndroid_clearNativePtr(
-      base::android::AttachCurrentThread(), java_obj_);
-}
-
-base::android::ScopedJavaLocalRef<jobject>
-DisplayLockHandleAndroid::GetJavaObject() {
-  return base::android::ScopedJavaLocalRef<jobject>(java_obj_);
-}
-
-void DisplayLockHandleAndroid::Release(JNIEnv* env) {
-  delete this;
 }
 
 }  // namespace feature_engagement

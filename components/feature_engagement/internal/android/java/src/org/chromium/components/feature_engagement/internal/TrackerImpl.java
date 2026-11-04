@@ -12,6 +12,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -39,32 +41,25 @@ import java.util.function.BooleanSupplier;
 @JNINamespace("feature_engagement")
 @NullMarked
 public class TrackerImpl implements Tracker {
-    /**
-     * A JNI-wrapper for the native DisplayLockHandle.
-     * The C++ counterpart is DisplayLockHandleAndroid.
-     */
+    @JniType("::feature_engagement::DisplayLockHandle")
+    interface NativeDisplayLockHandle extends JniTypeToken {}
+
+    /** A JNI-wrapper for the native DisplayLockHandle. */
     static class DisplayLockHandleAndroid implements DisplayLockHandle {
         @CalledByNative
-        private static DisplayLockHandleAndroid create(long nativePtr) {
+        static DisplayLockHandleAndroid create(JniUniquePtr<NativeDisplayLockHandle> nativePtr) {
             return new DisplayLockHandleAndroid(nativePtr);
         }
 
-        long mNativePtr;
+        private final JniUniquePtr<NativeDisplayLockHandle> mNativePtr;
 
-        private DisplayLockHandleAndroid(long nativePtr) {
+        private DisplayLockHandleAndroid(JniUniquePtr<NativeDisplayLockHandle> nativePtr) {
             mNativePtr = nativePtr;
-        }
-
-        @CalledByNative
-        private void clearNativePtr() {
-            mNativePtr = 0;
         }
 
         @Override
         public void release() {
-            assert mNativePtr != 0;
-            TrackerImplJni.get().release(mNativePtr);
-            assert mNativePtr == 0;
+            mNativePtr.destroy();
         }
     }
 
@@ -482,7 +477,5 @@ public class TrackerImpl implements Tracker {
         void addOnInitializedCallback(
                 long nativeTrackerImplAndroid,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
-
-        void release(long nativeDisplayLockHandleAndroid);
     }
 }

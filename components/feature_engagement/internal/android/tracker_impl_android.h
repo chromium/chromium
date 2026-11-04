@@ -22,36 +22,6 @@
 
 namespace feature_engagement {
 
-// JNI bridge between DisplayLockHandleAndroid in Java and C++.
-// This class owns the underlying DisplayLockHandle acquired from the backing
-// Tracker. Ownership of this class is released to Java, which means Java owners
-// MUST call release() before removing their reference to this object.
-// This class must be in this header file, since it is used by the generated
-// JNI code.
-class DisplayLockHandleAndroid {
- public:
-  DisplayLockHandleAndroid(
-      std::unique_ptr<DisplayLockHandle> display_lock_handle);
-
-  DisplayLockHandleAndroid(const DisplayLockHandleAndroid&) = delete;
-  DisplayLockHandleAndroid& operator=(const DisplayLockHandleAndroid&) = delete;
-
-  ~DisplayLockHandleAndroid();
-
-  // Returns the Java-side of this JNI bridge.
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
-
-  // Deletes |this|.
-  void Release(JNIEnv* env);
-
- private:
-  // The DisplayLockHandle that this JNI bridge owns.
-  std::unique_ptr<DisplayLockHandle> display_lock_handle_;
-
-  // The Java-side of this JNI bridge.
-  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-};
-
 // JNI bridge between TrackerImpl in Java and C++. See the
 // public API of Tracker for documentation for all methods.
 class TrackerImplAndroid : public base::SupportsUserData::Data {
