@@ -80,7 +80,7 @@ BASE_FEATURE_ENUM_PARAM(
     kAndroidSwitcherDefaultBrowserPromoInFREParamFeature,
     &kAndroidSwitcherDefaultBrowserPromoInFRE,
     kAndroidSwitcherDefaultBrowserPromoInFREParam,
-    AndroidSwitcherDefaultBrowserPromoInFREVariationType::kDisabled,
+    AndroidSwitcherDefaultBrowserPromoInFREVariationType::kSegmentationSignal,
     &kAndroidSwitcherDefaultBrowserPromoInFREOptions);
 
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {

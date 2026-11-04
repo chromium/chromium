@@ -301,6 +301,28 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
       /*is_success=*/true);
 }
 
+// Tests that enabling `kAndroidSwitcherDefaultBrowserPromoInFRE` without
+// explicit feature parameters defaults to the segmentation signal variation.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsAndroidSwitcherPromoWhenEnabledWithoutParams) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{first_run::
+                                kAndroidSwitcherDefaultBrowserPromoInFRE},
+      /*disabled_features=*/{first_run::kAnimatedDefaultBrowserPromoInFRE});
+  ConfigureSegmentationLabels(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+  SignIn();
+
+  [coordinator_ start];
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserAndroidSwitcherScreenViewController
+                          class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher,
+      /*is_success=*/true);
+}
+
 // Tests that when the user has both Android phone and iOS phone Chrome labels,
 // the standard promo is presented and `kNotAndroidSwitcher` is recorded.
 TEST_F(DefaultBrowserScreenCoordinatorTest,
