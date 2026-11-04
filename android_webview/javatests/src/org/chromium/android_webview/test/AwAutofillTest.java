@@ -86,6 +86,9 @@ import java.util.concurrent.Callable;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
+// Point autofill::switches::kAutofillServerURL at an unreachable local port so tests with
+// AutofillServerCommunication enabled fail queries locally instead of hitting the live server.
+@CommandLineFlags.Add({"autofill-server-url=http://127.0.0.1:1/"})
 public class AwAutofillTest extends AwParameterizedTest {
     public static final boolean DEBUG = false;
     public static final String TAG = "AutofillTest";
@@ -647,10 +650,7 @@ public class AwAutofillTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "disable-features=AutofillServerCommunication",
-        "enable-features=AutofillIgnoreCheckableElements"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
     public void testBasicAutofill() throws Throwable {
         final String url =
@@ -785,10 +785,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({
-        "disable-features=AutofillServerCommunication",
-        "enable-features=AutofillAcrossIframes"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @DisabledTest(message = "https://crbug.com/1401726")
     public void testCrossFrameAutofill() throws Throwable {
         loadHTML(
@@ -1088,7 +1085,6 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
-    @RequiresRestart("crbug.com/344662605")
     @DisabledTest(message = "crbug.com/376351174")
     public void testCrossFrameCommit() throws Throwable {
         // The only reason we use a <form> inside the iframe is that this makes it easiest to
@@ -1661,10 +1657,7 @@ public class AwAutofillTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "disable-features=AutofillServerCommunication",
-        "enable-features=AutofillIgnoreCheckableElements"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
     public void testUaAutofillHints() throws Throwable {
         loadHTML(
@@ -2543,7 +2536,6 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @RequiresRestart("crbug.com/344662605")
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @DisabledTest(message = "crbug.com/353502929")
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
@@ -2707,7 +2699,6 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
-    @RequiresRestart("crbug.com/344662605")
     public void testHideDatalistPopup() throws Throwable {
         final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
         loadUrlSync(url);
@@ -2832,10 +2823,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({
-        "disable-features=AutofillServerCommunication",
-        "enable-features=AutofillAcrossIframes"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     public void testCrossFrameServerPredictionArrivesBeforeAutofillStart() throws Throwable {
         loadHTML(
                 """
