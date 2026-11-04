@@ -515,7 +515,9 @@ using chrome_test_util::SettingsDoneButton;
 }
 
 // Tests that UKM recording is disabled when the UrlKeyedMetricsAllowed policy
-// is set to false.
+// is set to false, remains under user control when set to true, and takes
+// precedence over the deprecated UrlKeyedAnonymizedDataCollectionEnabled
+// policy.
 - (void)testUrlKeyedMetricsAllowedPolicy {
   policy_test_utils::SetPolicy(false, policy::key::kUrlKeyedMetricsAllowed);
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
@@ -530,14 +532,38 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM could be disabled by user pref.");
 
+  // UrlKeyedMetricsAllowed=false overrides legacy
+  // UrlKeyedAnonymizedDataCollectionEnabled=true.
+  policy_test_utils::SetPolicy(
+      true, policy::key::kUrlKeyedAnonymizedDataCollectionEnabled);
+  policy_test_utils::MergePolicy(false, policy::key::kUrlKeyedMetricsAllowed);
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UrlKeyedMetricsAllowed=false took "
+             @"precedence.");
+
+  // UrlKeyedMetricsAllowed=true overrides legacy
+  // UrlKeyedAnonymizedDataCollectionEnabled=false and leaves UKM under user
+  // control.
+  policy_test_utils::SetPolicy(
+      false, policy::key::kUrlKeyedAnonymizedDataCollectionEnabled);
+  policy_test_utils::MergePolicy(true, policy::key::kUrlKeyedMetricsAllowed);
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UrlKeyedMetricsAllowed=true allowed UKM.");
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM remained under user control.");
+
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
   policy_test_utils::ClearPolicies();
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM remained enabled.");
 }
 
-// Tests that UKM recording is disabled when the MetricsReportingEnabled policy
-// is set to false.
+// Tests that MetricsReportingEnabled=false forces UKM off, while mandatory
+// MetricsReportingEnabled=true is downgraded to a recommended policy that
+// enables UKM by default without preventing user opt-out.
 - (void)testMetricsReportingPolicy {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   [MetricsAppInterface setForceIsMetricsReportingEnabledPrefLookup:YES];
@@ -557,6 +583,29 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was re-enabled.");
 
+  // Clear the user pref so no explicit user choice is recorded.
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:metrics::prefs::kMetricsReportingEnabled];
+  [MetricsAppInterface updateUploadPermissions];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM was disabled with no user choice.");
+
+  // Mandatory MetricsReportingEnabled=true is downgraded to a recommended
+  // policy, enabling UKM when no user choice is set.
+  policy_test_utils::SetPolicy(true, policy::key::kMetricsReportingEnabled);
+  [MetricsAppInterface updateUploadPermissions];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that recommended policy enabled UKM.");
+
+  // The user can still opt out over the recommended true policy.
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:metrics::prefs::kMetricsReportingEnabled];
+  [MetricsAppInterface updateUploadPermissions];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that user opt-out overrode recommended "
+             @"policy.");
+
+  policy_test_utils::ClearPolicies();
   [ChromeEarlGrey
       resetDataForLocalStatePref:metrics::prefs::kMetricsReportingEnabled];
   [MetricsAppInterface setForceIsMetricsReportingEnabledPrefLookup:NO];
