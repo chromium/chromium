@@ -17,10 +17,8 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
 <if expr="_google_chrome">
       ${this.shouldShowStandaloneWalletIcon_() ? html`
         <div class="title-icon-container-standalone">
-          <img
-              srcset="${this.getScaledSrcSet_(
-                  'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_ICON')}"
-              alt="" role="presentation">
+          <img srcset="${this.getWalletIconSrcSet_()}" alt=""
+              role="presentation">
         </div>
       ` : html`
         <div class="title-icon-container">

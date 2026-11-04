@@ -139,6 +139,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
       isWalletPassBranding2026Enabled_: {type: Boolean},
 
+      autofillEnableGradientGoogleLogos_: {type: Boolean},
+
       /**
        * True while waiting for the backend to respond from Wallet API call.
        */
@@ -171,6 +173,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses');
   private accessor isWalletPassBranding2026Enabled_: boolean =
       loadTimeData.getBoolean('isAutofillAiWalletPassBranding2026Enabled');
+  protected accessor autofillEnableGradientGoogleLogos_: boolean =
+      loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   protected accessor saveInProgress_: boolean = false;
 
   private requiredAttributeTypes_: AttributeType[] = [];
@@ -569,6 +573,13 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
    */
   protected getScaledSrcSet_(url: string): string {
     return `${url} 1x, ${url}@2x 2x`;
+  }
+
+  protected getWalletIconSrcSet_(): string {
+    const iconId = this.autofillEnableGradientGoogleLogos_ ?
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT' :
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_ICON';
+    return this.getScaledSrcSet_(iconId);
   }
 
   /**

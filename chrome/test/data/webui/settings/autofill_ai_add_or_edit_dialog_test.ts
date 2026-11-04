@@ -515,6 +515,74 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     await microtasksFinished();
     assertFalse(dialog.$.dialog.getNative().open);
   });
+
+  test('StandaloneWalletIconWithGradient', async function() {
+    loadTimeData.overrideValues({
+      isAutofillAiWalletPassBranding2026Enabled: true,
+      autofillEnableGradientGoogleLogos: true,
+    });
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+    const newPrivatePass = structuredClone(testEntityInstance);
+    newPrivatePass.guid = '';
+    newPrivatePass.type.supportsWalletStorage = true;
+    newPrivatePass.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    dialog.entityInstance = newPrivatePass;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const standaloneIconImg = dialog.shadowRoot.querySelector<HTMLImageElement>(
+        '.title-icon-container-standalone img');
+    // .title-icon-container-standalone is only present in Google Chrome
+    // branded builds.
+    if (standaloneIconImg) {
+      assertTrue(standaloneIconImg.srcset.includes(
+          'IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT'));
+    }
+  });
+
+  test('StandaloneWalletIconWithoutGradient', async function() {
+    loadTimeData.overrideValues({
+      isAutofillAiWalletPassBranding2026Enabled: true,
+      autofillEnableGradientGoogleLogos: false,
+    });
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+    const newPrivatePass = structuredClone(testEntityInstance);
+    newPrivatePass.guid = '';
+    newPrivatePass.type.supportsWalletStorage = true;
+    newPrivatePass.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    dialog.entityInstance = newPrivatePass;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const standaloneIconImg = dialog.shadowRoot.querySelector<HTMLImageElement>(
+        '.title-icon-container-standalone img');
+    // .title-icon-container-standalone is only present in Google Chrome
+    // branded builds.
+    if (standaloneIconImg) {
+      assertTrue(
+          standaloneIconImg.srcset.includes('IDR_AUTOFILL_GOOGLE_WALLET_ICON'));
+      assertFalse(standaloneIconImg.srcset.includes(
+          'IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT'));
+    }
+  });
 });
 
 suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
