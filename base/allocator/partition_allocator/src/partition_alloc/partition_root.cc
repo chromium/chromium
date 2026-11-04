@@ -23,6 +23,7 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -417,7 +418,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   // DiscardVirtualMemory makes the contents of discarded memory undefined.
   size_t last_slot = static_cast<size_t>(-1);
 #endif
-  std::fill_n(slot_usage.begin(), num_provisioned_slots, 1);
+  std::ranges::fill(base::span(slot_usage).first(num_provisioned_slots), 1);
   SlotSpanStart slot_span_start =
       internal::SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
   // First, walk the freelist for this slot span and make a bitmap of which
