@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DATABASE_MANAGER_MECHANISM_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DATABASE_MANAGER_MECHANISM_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_DATABASE_MANAGER_MECHANISM_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_DATABASE_MANAGER_MECHANISM_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_lookup_mechanism.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -72,4 +72,4 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DATABASE_MANAGER_MECHANISM_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_DATABASE_MANAGER_MECHANISM_H_

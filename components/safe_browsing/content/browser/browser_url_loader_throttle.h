@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
-#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"

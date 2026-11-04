@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_URL_CHECKER_IMPL_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_URL_CHECKER_IMPL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_SAFE_BROWSING_URL_CHECKER_IMPL_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_SAFE_BROWSING_URL_CHECKER_IMPL_H_
 
 #include <memory>
 #include <vector>
@@ -15,8 +15,8 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
-#include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_lookup_mechanism_runner.h"
+#include "components/safe_browsing/core/browser/url_checker/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
@@ -353,4 +353,4 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_URL_CHECKER_IMPL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_SAFE_BROWSING_URL_CHECKER_IMPL_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_LOOKUP_MECHANISM_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_LOOKUP_MECHANISM_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_SAFE_BROWSING_LOOKUP_MECHANISM_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_SAFE_BROWSING_LOOKUP_MECHANISM_H_
 
 #include "base/functional/callback_forward.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -118,4 +118,4 @@ class SafeBrowsingLookupMechanism {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_LOOKUP_MECHANISM_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_SAFE_BROWSING_LOOKUP_MECHANISM_H_

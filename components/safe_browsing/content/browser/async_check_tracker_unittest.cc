@@ -11,7 +11,7 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/test/mock_navigation_handle.h"

@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/url_checker/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 class PrefRegistrySimple;

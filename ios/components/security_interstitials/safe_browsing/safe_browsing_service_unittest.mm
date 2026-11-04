@@ -28,7 +28,7 @@
 #import "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
-#import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#import "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"

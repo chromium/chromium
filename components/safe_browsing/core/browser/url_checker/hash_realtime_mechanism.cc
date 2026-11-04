@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/hash_realtime_mechanism.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -10,7 +10,7 @@
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/common/utils.h"
 
 namespace safe_browsing {
@@ -73,8 +73,7 @@ void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
     ui_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&HashRealTimeMechanism::StartLookupOnUIThread,
-                       weak_factory_.GetWeakPtr(), url_,
-                       lookup_service_on_ui_,
+                       weak_factory_.GetWeakPtr(), url_, lookup_service_on_ui_,
                        base::SequencedTaskRunner::GetCurrentDefault()));
   }
 }

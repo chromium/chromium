@@ -18,7 +18,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #include "ios/web/public/web_state_observer.h"

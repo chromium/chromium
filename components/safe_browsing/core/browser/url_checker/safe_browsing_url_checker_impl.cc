@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 
 #include <memory>
 
@@ -13,15 +13,15 @@
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
-#include "components/safe_browsing/core/browser/url_checker_delegate.h"
-#include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/database_manager_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/hash_realtime_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_lookup_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/url_checker/url_realtime_mechanism.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/scheme_logger.h"

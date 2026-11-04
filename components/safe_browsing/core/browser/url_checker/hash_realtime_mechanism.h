@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASH_REALTIME_MECHANISM_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASH_REALTIME_MECHANISM_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_HASH_REALTIME_MECHANISM_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_HASH_REALTIME_MECHANISM_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/database_manager_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_lookup_mechanism.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -97,4 +97,4 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASH_REALTIME_MECHANISM_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_URL_CHECKER_HASH_REALTIME_MECHANISM_H_

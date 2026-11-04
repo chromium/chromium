@@ -8,7 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
-#import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#import "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"

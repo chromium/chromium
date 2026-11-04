@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_lookup_mechanism_runner.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

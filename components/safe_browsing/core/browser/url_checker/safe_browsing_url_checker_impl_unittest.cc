@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 
 #include <memory>
 
@@ -25,7 +25,7 @@
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
-#include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/url_checker/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"

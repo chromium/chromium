@@ -337,7 +337,7 @@
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
-#include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/url_checker/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
