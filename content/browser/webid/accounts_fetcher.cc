@@ -151,7 +151,8 @@ void AccountsFetcher::FetchAccountsForIdps(
     const url::Origin& embedding_origin,
     FilterAccountsCallback filter_accounts_callback) {
   CHECK(!idp_infos.empty());
-  num_pending_requests_ = idp_infos.size();
+  // Add rather than assign, since logged-out IdPs may already be pending.
+  num_pending_requests_ += idp_infos.size();
 
   request_get_infos_ = token_request_get_infos;
   fedcm_metrics_ = fedcm_metrics;
@@ -231,6 +232,9 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
   well_known_and_config_fetched_time_ = base::TimeTicks::Now();
 
   std::vector<std::unique_ptr<IdentityProviderInfo>> idp_infos;
+  // IdPs which are not fetched because the user is logged out of them, but
+  // which are still offered in the IdP picker in multi-IdP active mode.
+  std::vector<std::unique_ptr<IdentityProviderInfo>> logged_out_idp_infos;
   for (const ConfigFetcher::FetchResult& fetch_result : fetch_results) {
     const GURL& identity_provider_config_url =
         fetch_result.identity_provider_config_url;
@@ -344,6 +348,13 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       // model of which websites a user visits.
       idp_info->endpoints.metrics = GURL();
 
+      if (IsMultiIdpActiveMode()) {
+        // Do not fetch accounts, but offer the IdP in the IdP picker so that
+        // the user can log in to it.
+        logged_out_idp_infos.push_back(std::move(idp_info));
+        continue;
+      }
+
       result.idp_info = std::move(idp_info);
       result.error = FederatedRequestResult::kNotSignedInWithIdp;
       result.token_status = TokenStatus::kNotSignedInWithIdp;
@@ -355,14 +366,26 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
     idp_infos.push_back(std::move(idp_info));
   }
 
-  if (idp_infos.empty()) {
+  if (idp_infos.empty() && logged_out_idp_infos.empty()) {
     std::move(callback_).Run(well_known_and_config_fetched_time_,
                              std::move(results_));
     return;
   }
 
-  FetchAccountsForIdps(idp_infos, request_get_infos_, fedcm_metrics_,
-                       embedding_origin_, filter_accounts_callback_);
+  // Count the logged-out IdPs as pending before starting any request, so that
+  // the callback runs only once every IdP has a result.
+  num_pending_requests_ += logged_out_idp_infos.size();
+  if (!idp_infos.empty()) {
+    FetchAccountsForIdps(idp_infos, request_get_infos_, fedcm_metrics_,
+                         embedding_origin_, filter_accounts_callback_);
+  }
+  for (std::unique_ptr<IdentityProviderInfo>& idp_info : logged_out_idp_infos) {
+    network_manager_->FetchIdpBrandIcon(
+        std::move(idp_info),
+        base::BindOnce(&AccountsFetcher::OnIdpWithoutAccounts,
+                       weak_ptr_factory_.GetWeakPtr(), /*is_mismatch=*/false,
+                       /*accounts_fetched_time=*/base::TimeTicks()));
+  }
 }
 
 void AccountsFetcher::OnAccountsResponseReceived(
@@ -793,6 +816,18 @@ void AccountsFetcher::HandleAccountsFetchFailure(
       return;
     }
 
+    if (IsMultiIdpActiveMode()) {
+      // The login status was unknown and is now logged-out. Like a logged-out
+      // IdP, offer it in the IdP picker so that the user can log in to it.
+      MaybeAddAccountParsingErrorToConsole(*render_frame_host_, status, result);
+      network_manager_->FetchIdpBrandIcon(
+          std::move(idp_info),
+          base::BindOnce(&AccountsFetcher::OnIdpWithoutAccounts,
+                         weak_ptr_factory_.GetWeakPtr(), /*is_mismatch=*/false,
+                         accounts_fetched_time));
+      return;
+    }
+
     // RequestHandler will log the `result` error, so we do not call
     // MaybeAddAccountParsingErrorToConsole here.
     Result res;
@@ -848,11 +883,13 @@ void AccountsFetcher::HandleAccountsFetchFailure(
   // mismatch UI.
   network_manager_->FetchIdpBrandIcon(
       std::move(idp_info),
-      base::BindOnce(&AccountsFetcher::OnIdpMismatch,
-                     weak_ptr_factory_.GetWeakPtr(), accounts_fetched_time));
+      base::BindOnce(&AccountsFetcher::OnIdpWithoutAccounts,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_mismatch=*/true,
+                     accounts_fetched_time));
 }
 
-void AccountsFetcher::OnIdpMismatch(
+void AccountsFetcher::OnIdpWithoutAccounts(
+    bool is_mismatch,
     base::TimeTicks accounts_fetched_time,
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   const std::string idp_for_display =
@@ -862,12 +899,12 @@ void AccountsFetcher::OnIdpMismatch(
       ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},
       idp_info->rp_context, idp_info->format,
       GetDisclosureFields(idp_info->provider->fields),
-      /*has_login_status_mismatch=*/true);
+      /*has_login_status_mismatch=*/is_mismatch);
 
   Result res;
   res.idp_config_url = idp_info->provider->config->config_url;
   res.idp_info = std::move(idp_info);
-  res.is_mismatch = true;
+  res.has_no_accounts = true;
   res.accounts_fetched_time = accounts_fetched_time;
   AddResult(std::move(res));
 }
@@ -889,6 +926,7 @@ void AccountsFetcher::SendFailedTokenRequestMetrics(
 void AccountsFetcher::AddResult(Result&& result) {
   results_.push_back(std::move(result));
   --num_pending_requests_;
+  CHECK_GE(num_pending_requests_, 0);
   if (num_pending_requests_ == 0) {
     std::move(callback_).Run(well_known_and_config_fetched_time_,
                              std::move(results_));
@@ -897,6 +935,11 @@ void AccountsFetcher::AddResult(Result&& result) {
 
 bool AccountsFetcher::ShouldImmediatelyShowLoginDialog() const {
   return params_.rp_mode == RpMode::kActive && request_get_infos_.size() == 1u;
+}
+
+bool AccountsFetcher::IsMultiIdpActiveMode() const {
+  return IsActiveModeMultipleIdentityProvidersEnabled() &&
+         params_.rp_mode == RpMode::kActive && request_get_infos_.size() > 1u;
 }
 
 }  // namespace content::webid

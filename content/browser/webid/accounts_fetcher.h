@@ -80,8 +80,17 @@ class CONTENT_EXPORT AccountsFetcher {
     // per-result. Also consider removing `show_active_mode_modal_dialog` as
     // well.
     bool should_delay_callback = false;
-    bool is_mismatch = false;
     bool show_active_mode_modal_dialog = false;
+    // Whether the IdP has no accounts to show but is still shown, so that the
+    // user can log in to it. `idp_info->data->has_login_status_mismatch` says
+    // why:
+    // - true: the login status was logged-in, but the accounts fetch failed or
+    //   returned no accounts (login status mismatch).
+    // - false: the user is logged out of the IdP. This only happens in active
+    //   mode with multiple IdPs, for IdPs whose login status was logged-out, or
+    //   was unknown and became logged-out because the accounts fetch failed.
+    //   Other modes drop such IdPs instead.
+    bool has_no_accounts = false;
     bool use_native_app_ui = false;
     base::TimeTicks accounts_fetched_time;
     base::TimeTicks client_metadata_fetched_time;
@@ -205,8 +214,13 @@ class CONTENT_EXPORT AccountsFetcher {
       std::vector<IdentityRequestAccountPtr> filtered_accounts,
       base::TimeTicks accounts_fetched_time);
 
-  void OnIdpMismatch(base::TimeTicks accounts_fetched_time,
-                     std::unique_ptr<IdentityProviderInfo> idp_info);
+  // Called once the brand icon of an IdP with no accounts to show has been
+  // fetched. Adds a result with `has_no_accounts` set, so that the IdP is still
+  // shown. `is_mismatch` is whether this is due to a login status mismatch, as
+  // opposed to the user being logged out of the IdP.
+  void OnIdpWithoutAccounts(bool is_mismatch,
+                            base::TimeTicks accounts_fetched_time,
+                            std::unique_ptr<IdentityProviderInfo> idp_info);
 
   void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint,
@@ -219,6 +233,10 @@ class CONTENT_EXPORT AccountsFetcher {
 
   // Login dialog is only shown in Active Mode with 1 IDP.
   bool ShouldImmediatelyShowLoginDialog() const;
+
+  // Whether this is an active mode request with multiple IdPs. In this mode,
+  // IdPs with no accounts to show are still offered in the IdP picker.
+  bool IsMultiIdpActiveMode() const;
 
   base::flat_map<
       GURL,

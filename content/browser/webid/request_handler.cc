@@ -528,15 +528,24 @@ void RequestHandler::FetchEndpointsForIdps(
   if (idps.size() == 1u) {
     auto it = idp_infos_.find(idps[0].identity_provider_config_url);
     if (it != idp_infos_.end() && it->second) {
-      std::vector<std::unique_ptr<IdentityProviderInfo>> cached_idp_infos;
-      cached_idp_infos.push_back(
-          std::make_unique<IdentityProviderInfo>(*it->second));
-      fedcm_accounts_fetcher_->FetchAccountsForIdps(
-          cached_idp_infos, token_request_get_infos_, fedcm_metrics_.get(),
-          GetEmbeddingOrigin(),
-          base::BindRepeating(&RequestHandler::FilterAccounts,
-                              weak_ptr_factory_.GetWeakPtr()));
-      return;
+      // Recompute the login status instead of relying on the cached value, so
+      // that a credentialed accounts request is never sent to an IdP the user
+      // is logged out of. If the user is still logged out, fall through to the
+      // full fetch below, which handles logged-out IdPs.
+      it->second->has_failing_idp_signin_status =
+          ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
+              idps[0].identity_provider_config_url, permission_delegate());
+      if (!it->second->has_failing_idp_signin_status) {
+        std::vector<std::unique_ptr<IdentityProviderInfo>> cached_idp_infos;
+        cached_idp_infos.push_back(
+            std::make_unique<IdentityProviderInfo>(*it->second));
+        fedcm_accounts_fetcher_->FetchAccountsForIdps(
+            cached_idp_infos, token_request_get_infos_, fedcm_metrics_.get(),
+            GetEmbeddingOrigin(),
+            base::BindRepeating(&RequestHandler::FilterAccounts,
+                                weak_ptr_factory_.GetWeakPtr()));
+        return;
+      }
     }
   }
 
@@ -551,6 +560,14 @@ void RequestHandler::FilterAccounts(
     const GURL& idp_config_url,
     const GURL& idp_login_url,
     std::vector<IdentityRequestAccountPtr>& accounts) {
+  // In active mode with multiple IdPs, filtered out accounts are kept and shown
+  // greyed out in the account chooser, so that every IdP which was sent a
+  // credentialed request is visible to the user. An IdP whose accounts are all
+  // filtered out is therefore not treated as a mismatch.
+  if (IsMultiIdpActiveMode()) {
+    return;
+  }
+
   auto filter = [](const IdentityRequestAccountPtr& account) {
     return account->is_filtered_out;
   };
@@ -614,8 +631,8 @@ void RequestHandler::OnAccountsResultsReceived(
       continue;
     }
 
-    if (result.is_mismatch) {
-      OnIdpMismatch(std::move(result.idp_info));
+    if (result.has_no_accounts) {
+      OnIdpWithoutAccounts(std::move(result.idp_info));
       continue;
     }
 
@@ -713,6 +730,26 @@ void RequestHandler::OnFetchDataForIdpFailed(
 
   if (fetch_data_.pending_idps.empty() &&
       !fetch_data_.did_succeed_for_at_least_one_idp) {
+    // In active mode with multiple IdPs, IdPs without accounts (logged out or
+    // with a login status mismatch) that were already handled must still be
+    // shown, unless the page is not visible, in which case no UI should be
+    // shown.
+    //
+    // This is not expected to happen today: well-known and config fetch errors
+    // are added to the results while the configs are processed, before any IdP
+    // without accounts, so they are never handled last. Errors that come after
+    // the accounts fetch are added later, but in this mode a failed accounts
+    // fetch becomes a login status mismatch (logged-in IdP) or a logged-out IdP
+    // (unknown login status), and mediation: silent is not allowed in active
+    // mode, which leaves only kRpPageNotVisible. This check makes sure that the
+    // request does not fail too early if that changes.
+    if (IsMultiIdpActiveMode() && !idp_infos_.empty() &&
+        result != FederatedRequestResult::kRpPageNotVisible) {
+      AddDevToolsIssue(result);
+      AddConsoleErrorMessage(result);
+      ShowUiForIdpsWithoutAccounts();
+      return;
+    }
     CompleteRequestWithError(result, token_status, should_delay_callback);
     return;
   }
@@ -864,6 +901,22 @@ void RequestHandler::MaybeShowAccountsDialog() {
 
   AssembleAndSortAccounts();
 
+  // In active mode with multiple IdPs, if only one IdP is left because the
+  // others failed, and none of its accounts can be used, there is nothing for
+  // the user to choose in the account chooser or the IdP picker. Open its login
+  // pop-up directly instead, as in active mode with a single IdP. This is only
+  // done the first time, so that the pop-up is not reopened after the user logs
+  // in to an account which is filtered out as well.
+  if (IsMultiIdpActiveMode() && idps_user_tried_to_signin_to_.empty() &&
+      idp_infos_.size() == 1u &&
+      std::ranges::all_of(accounts_,
+                          &IdentityRequestAccount::is_filtered_out)) {
+    const IdentityProviderInfo& idp_info = *idp_infos_.begin()->second;
+    MaybeShowActiveModeModalDialog(idp_info.provider->config->config_url,
+                                   idp_info.metadata.idp_login_url);
+    return;
+  }
+
   // Conditional mediation doesn't display the account chooser when called,
   // it instead waits for another UI surface (say, autofill) to trigger the
   // account chooser.
@@ -932,12 +985,17 @@ void RequestHandler::MaybeShowAccountsDialog() {
         idp_data_for_display_,
         ready_to_display_accounts_dialog_time_ - start_time_);
 
-    fedcm_metrics_->RecordShowAccountsDialogTimeBreakdown(
-        well_known_and_config_fetched_time_ - start_time_,
-        accounts_fetched_time_ - well_known_and_config_fetched_time_,
-        client_metadata_fetched_time_ != base::TimeTicks()
-            ? client_metadata_fetched_time_ - accounts_fetched_time_
-            : base::TimeDelta());
+    // No accounts are fetched if the user is logged out of every IdP, which can
+    // happen in active mode with multiple IdPs. There is no breakdown to record
+    // then.
+    if (!accounts_fetched_time_.is_null()) {
+      fedcm_metrics_->RecordShowAccountsDialogTimeBreakdown(
+          well_known_and_config_fetched_time_ - start_time_,
+          accounts_fetched_time_ - well_known_and_config_fetched_time_,
+          client_metadata_fetched_time_ != base::TimeTicks()
+              ? client_metadata_fetched_time_ - accounts_fetched_time_
+              : base::TimeDelta());
+    }
   }
   bool did_succeed_for_at_least_one_idp =
       fetch_data_.did_succeed_for_at_least_one_idp;
@@ -1122,11 +1180,13 @@ void RequestHandler::OnAccountsDisplayed() {
   did_show_ui_ = true;
 }
 
-void RequestHandler::OnIdpMismatch(
+void RequestHandler::OnIdpWithoutAccounts(
     std::unique_ptr<IdentityProviderInfo> idp_info) {
-  const GURL& idp_config_url = idp_info->provider->config->config_url;
-  const GURL& idp_login_url = idp_info->metadata.idp_login_url;
-
+  if (!idp_info->data->has_login_status_mismatch) {
+    // The user is logged out of the IdP.
+    CHECK(IsMultiIdpActiveMode());
+  }
+  const GURL idp_config_url = idp_info->provider->config->config_url;
   idp_infos_[idp_config_url] = std::move(idp_info);
 
   fetch_data_.pending_idps.erase(idp_config_url);
@@ -1134,15 +1194,28 @@ void RequestHandler::OnIdpMismatch(
     return;
   }
 
-  // Invoke the accounts dialog flow if there is at least one account or more
-  // than one IDP for which we should show the mismatch dialog.
-  // TODO(crbug.com/331426009): make this code clearer by creating a separate
-  // method for showing multiple mismatch UI.
-  if (fetch_data_.did_succeed_for_at_least_one_idp || idp_infos_.size() > 1u) {
+  if (fetch_data_.did_succeed_for_at_least_one_idp) {
     MaybeShowAccountsDialog();
-    // If there are no successful IDPs, this is the multi IDP case where all are
-    // mismatch.
-    if (!fetch_data_.did_succeed_for_at_least_one_idp) {
+    return;
+  }
+  ShowUiForIdpsWithoutAccounts();
+}
+
+void RequestHandler::ShowUiForIdpsWithoutAccounts() {
+  CHECK(!idp_infos_.empty());
+  CHECK(!fetch_data_.did_succeed_for_at_least_one_idp);
+
+  // With more than one IdP, show them all: the IdP picker in active mode, or
+  // the mismatch UI in passive mode.
+  if (idp_infos_.size() > 1u) {
+    MaybeShowAccountsDialog();
+    // Check every IdP rather than the one received last, so that the result
+    // does not depend on the order in which the IdPs were fetched.
+    // TODO(crbug.com/331426009): make this code clearer by creating a separate
+    // method for showing multiple mismatch UI.
+    if (std::ranges::any_of(idp_infos_, [](const auto& idp_info) {
+          return idp_info.second->data->has_login_status_mismatch;
+        })) {
       mismatch_dialog_shown_time_ = base::TimeTicks::Now();
       has_shown_mismatch_ = true;
       devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
@@ -1150,11 +1223,15 @@ void RequestHandler::OnIdpMismatch(
     return;
   }
 
+  // With a single IdP, open its login pop-up in active mode, or show the
+  // mismatch UI in passive mode.
+  const IdentityProviderInfo& idp_info = *idp_infos_.begin()->second;
   if (req_->rp_mode() == RpMode::kActive) {
-    MaybeShowActiveModeModalDialog(idp_config_url, idp_login_url);
+    MaybeShowActiveModeModalDialog(idp_info.provider->config->config_url,
+                                   idp_info.metadata.idp_login_url);
     return;
   }
-
+  CHECK(idp_info.data->has_login_status_mismatch);
   ShowSingleIdpFailureDialog();
 }
 
@@ -2620,6 +2697,12 @@ bool RequestHandler::IsNewlyLoggedIn(const IdentityRequestAccount& account) {
   // Exclude filtered out accounts so they are not shown at the top.
   return !account.is_filtered_out &&
          !account_ids_before_login_.contains(account.id);
+}
+
+bool RequestHandler::IsMultiIdpActiveMode() const {
+  return IsActiveModeMultipleIdentityProvidersEnabled() &&
+         req_->rp_mode() == RpMode::kActive &&
+         token_request_get_infos_.size() > 1u;
 }
 
 bool RequestHandler::IsUsingAmbient() const {

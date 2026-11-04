@@ -635,8 +635,13 @@ class TestDialogController
     // State related to ShowNativeAppUi().
     bool did_show_native_app_ui{false};
     std::optional<NativeAppRequestOptions> native_app_request_options;
-    // List of IDP strings for which a mismatch is shown in a test.
+    // List of IDP strings shown as a mismatch in the last ShowAccountsDialog()
+    // call, plus any ShowFailureDialog() calls since then.
     std::vector<std::string> displayed_mismatch_idps;
+    // List of IDP strings passed to the last ShowAccountsDialog() call.
+    std::vector<std::string> displayed_idps;
+    // Number of ShowAccountsDialog() calls.
+    size_t num_show_accounts_dialog{0u};
   };
 
   explicit TestDialogController(MockConfiguration config)
@@ -711,7 +716,11 @@ class TestDialogController
     }
 
     state_->all_accounts_for_display = accounts;
+    ++state_->num_show_accounts_dialog;
+    state_->displayed_idps.clear();
+    state_->displayed_mismatch_idps.clear();
     for (const auto& idp_data : idp_list) {
+      state_->displayed_idps.push_back(idp_data->idp_for_display);
       if (idp_data->has_login_status_mismatch) {
         state_->displayed_mismatch_idps.push_back(idp_data->idp_for_display);
       }
@@ -1673,6 +1682,14 @@ class RequestHandlerTest : public RenderViewHostImplTestHarness {
 
   base::span<const IdentityRequestAccountPtr> new_accounts() const {
     return dialog_controller_state_.new_accounts;
+  }
+
+  std::vector<std::string> displayed_idps() const {
+    return dialog_controller_state_.displayed_idps;
+  }
+
+  size_t num_show_accounts_dialog() const {
+    return dialog_controller_state_.num_show_accounts_dialog;
   }
 
   std::vector<std::string> displayed_mismatch_idps() const {
@@ -5096,6 +5113,23 @@ TEST_F(RequestHandlerTest, MultiIdpWithOneIdpSignedOut) {
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 }
 
+// Test that API does not fetch or show an IdP that is signed out, if there are
+// multiple IdPs.
+TEST_F(RequestHandlerTest, MultiIdpWithOneIdpSignedOutIsNotShown) {
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+
+  RunTest(kDefaultMultiIdpRequestParameters, expectations,
+          kConfigurationMultiIdpValid);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::CONFIG), 1u);
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp2.example"));
+}
+
 // Test that API shows all accounts if the user logs in to the IDP with the
 // mismatch UI.
 TEST_F(RequestHandlerTest, MultiIdpLoginToOneIdp) {
@@ -7232,6 +7266,489 @@ TEST_F(RequestHandlerTest, ActiveFlowMultiIdpRequiresUserActivation) {
   CheckExpectations(kConfigurationMultiIdpValid, error);
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+}
+
+// Test that in active mode with multiple IDPs, an IDP whose login status is
+// logged-out is not fetched but is still passed to the dialog, so that it is
+// offered in the IDP picker.
+TEST_F(RequestHandlerTest, ActiveFlowMultiIdpLoggedOutIdpIsOffered) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  // Only the second IDP's accounts are fetched.
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  EXPECT_EQ(all_accounts_for_display().size(), 3u);
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
+  EXPECT_TRUE(displayed_mismatch_idps().empty());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled, a
+// logged-out IDP in active mode with multiple IDPs is not offered in the
+// dialog.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpLoggedOutIdpNotOfferedWhenFlagDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp2.example"));
+}
+
+// Test that in active mode with multiple IDPs, an IDP whose login status was
+// unknown and which returns no accounts is passed to the dialog, so that it is
+// offered in the IDP picker.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpUnknownStatusWithoutAccountsIsOffered) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kEmptyListError;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  EXPECT_EQ(all_accounts_for_display().size(), 3u);
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
+  EXPECT_TRUE(displayed_mismatch_idps().empty());
+  // The login status is set to logged-out.
+  EXPECT_EQ(test_permission_delegate_
+                ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)],
+            false);
+}
+
+// Test that in active mode with multiple IDPs, the dialog is shown with every
+// IDP and no accounts when the user is logged out of every IDP, so that the
+// IDP picker is shown.
+TEST_F(RequestHandlerTest, ActiveFlowMultiIdpAllLoggedOut) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = false;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  EXPECT_TRUE(all_accounts_for_display().empty());
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
+  EXPECT_FALSE(request_helper_->was_callback_called());
+}
+
+// Test that in active mode with multiple IDPs, dismissing the IDP picker shown
+// when the user is logged out of every IDP fails the request without embargo,
+// and that no accounts fetch timing is recorded since no accounts were fetched.
+TEST_F(RequestHandlerTest, ActiveFlowMultiIdpAllLoggedOutDismissed) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = false;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.accounts_dialog_action = AccountsDialogAction::kClose;
+  RunTest(parameters, expectations, config);
+
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
+  EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.CancelReason",
+                                       DismissReason::kCloseButton, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 0);
+}
+
+// Test that in active mode with multiple IDPs, accounts filtered out by the
+// login hint are kept and shown after the other accounts, and that an IDP
+// whose accounts are all filtered out is not treated as a mismatch.
+TEST_F(RequestHandlerTest, ActiveFlowMultiIdpFilteredOutAccountsAreKept) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  parameters.identity_providers[0].login_hint = "no-matching-account";
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  ASSERT_EQ(all_accounts_for_display().size(), 4u);
+  // The first IDP's only account is filtered out and shown last.
+  for (size_t i = 0; i < 3u; ++i) {
+    EXPECT_FALSE(all_accounts_for_display()[i]->is_filtered_out);
+  }
+  EXPECT_TRUE(all_accounts_for_display()[3]->is_filtered_out);
+  EXPECT_EQ(
+      all_accounts_for_display()[3]->identity_provider->idp_metadata.config_url,
+      GURL(kProviderUrlFull));
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
+  EXPECT_TRUE(displayed_mismatch_idps().empty());
+  // The first IDP's response was valid, so it stays logged-in.
+  EXPECT_EQ(test_permission_delegate_
+                ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)],
+            true);
+}
+
+// Test that in active mode with multiple IDPs, if the only IDP left has no
+// accounts because the user is logged out of it, its login pop-up is opened
+// directly, as in active mode with a single IDP.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpOnlyLoggedOutIdpLeftOpensLoginPopup) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(kConfigurationMultiIdpValid);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  base::RunLoop loop;
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>([&modal, &loop](const GURL& url) {
+        EXPECT_EQ(url, GURL(kIdpLoginUrl));
+        loop.Quit();
+        return modal.get();
+      }));
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // The second IDP's config cannot be fetched.
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderTwoUrlFull].config.fetch_status = {
+      ParseStatus::kHttpNotFoundError, net::HTTP_NOT_FOUND};
+  RunDontWaitForCallback(parameters, config);
+  loop.Run();
+
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_EQ(num_show_accounts_dialog(), 0u);
+}
+
+// Test that in active mode with multiple IDPs, if only one IDP is left because
+// the other's config cannot be fetched, and all of its accounts are filtered
+// out, its login pop-up is opened directly, since there is nothing for the user
+// to choose.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpOnlyIdpLeftWithFilteredOutAccountsOpensLoginPopup) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(kConfigurationMultiIdpValid);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  base::RunLoop loop;
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>([&modal, &loop](const GURL& url) {
+        EXPECT_EQ(url, GURL(kIdpLoginUrl));
+        loop.Quit();
+        return modal.get();
+      }));
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  parameters.identity_providers[0].login_hint = "no-matching-account";
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // The second IDP's config cannot be fetched.
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderTwoUrlFull].config.fetch_status = {
+      ParseStatus::kHttpNotFoundError, net::HTTP_NOT_FOUND};
+  RunDontWaitForCallback(parameters, config);
+  loop.Run();
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  EXPECT_EQ(num_show_accounts_dialog(), 0u);
+  // All accounts being filtered out is not a login status mismatch.
+  EXPECT_EQ(test_permission_delegate_
+                ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)],
+            true);
+}
+
+// Test that in active mode with multiple IDPs, if only one IDP is left because
+// the other's config cannot be fetched, its filtered out accounts are still
+// kept and shown after the others, as with multiple IDPs.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpOnlyIdpLeftKeepsFilteredOutAccounts) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  parameters.identity_providers[1].login_hint = "matching-account";
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // The first IDP's config cannot be fetched.
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderUrlFull].config.fetch_status = {
+      ParseStatus::kHttpNotFoundError, net::HTTP_NOT_FOUND};
+  config.idp_info[kProviderTwoUrlFull].accounts[1]->login_hints = {
+      "matching-account"};
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp2.example"));
+  ASSERT_EQ(all_accounts_for_display().size(), 3u);
+  EXPECT_EQ(all_accounts_for_display()[0]->id, kAccountIdPeter);
+  EXPECT_FALSE(all_accounts_for_display()[0]->is_filtered_out);
+  EXPECT_TRUE(all_accounts_for_display()[1]->is_filtered_out);
+  EXPECT_TRUE(all_accounts_for_display()[2]->is_filtered_out);
+}
+
+// Test that in active mode with multiple IDPs, an IDP with a login status
+// mismatch and an IDP that the user is logged out of are both offered in the
+// IDP picker, but only the former is reported as a mismatch.
+TEST_F(RequestHandlerTest, ActiveFlowMultiIdpMismatchAndLoggedOutIdps) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = false;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kEmptyListError;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  // Only the logged-in IDP is sent an accounts request.
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  EXPECT_TRUE(all_accounts_for_display().empty());
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
+  EXPECT_THAT(displayed_mismatch_idps(), ElementsAre("idp.example"));
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(request_helper_->was_callback_called());
+}
+
+// Test that in active mode with multiple IDPs, the mismatch UI is reported as
+// shown if any IDP has a login status mismatch, even if the last IDP to be
+// fetched is one that the user is logged out of.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpMismatchFetchedBeforeLoggedOutIdp) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  // The second IDP's login status is unknown, so its accounts are fetched after
+  // the first IDP's, and it only becomes logged-out once that fetch fails.
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kEmptyListError;
+  config.idp_info[kProviderTwoUrlFull].accounts_response.parse_status =
+      ParseStatus::kEmptyListError;
+  config.accounts_dialog_action = AccountsDialogAction::kClose;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunTest(parameters, expectations, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+  EXPECT_TRUE(all_accounts_for_display().empty());
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
+  EXPECT_THAT(displayed_mismatch_idps(), ElementsAre("idp.example"));
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.MismatchDialogShownDuration", 1);
+}
+
+// Test that in active mode with multiple IDPs, an IDP that the user is logged
+// out of does not block auto re-authn with another IDP, unlike a login status
+// mismatch.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpLoggedOutIdpDoesNotBlockAutoReauthn) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = false;
+
+  // Pretend the sharing permission has been granted for the first IDP's only
+  // account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillRepeatedly(
+          Return(std::make_optional<base::Time>(base::Time::Now())));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillRepeatedly(Return(true));
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RunDontWaitForCallback(parameters, kConfigurationMultiIdpValid);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  ASSERT_EQ(all_accounts_for_display().size(), 1u);
+  EXPECT_EQ(all_accounts_for_display()[0]->id, kAccountId);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
+}
+
+// Test that in active mode with multiple IDPs, when the user logs in to an IDP
+// that they were logged out of, its accounts are fetched and shown with the
+// other IDP's accounts, and its login status is set to logged-in.
+TEST_F(RequestHandlerTest, ActiveFlowMultiIdpLoginToLoggedOutIdp) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
+  const url::Origin provider_origin = OriginFromString(kProviderUrlFull);
+  test_permission_delegate_->idp_signin_statuses_[provider_origin] = false;
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunDontWaitForCallback(parameters, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+  EXPECT_EQ(all_accounts_for_display().size(), 3u);
+
+  // The user picks the first IDP in the IDP picker and logs in to it.
+  SimulateLoginToIdP();
+  test_permission_delegate_->idp_signin_statuses_[provider_origin] = true;
+  // The successful accounts fetch marks the IDP as logged-in.
+  EXPECT_CALL(*test_permission_delegate_,
+              SetIdpSigninStatus(provider_origin, true, _));
+  request_handler_->OnIdpSigninStatusReceived(provider_origin,
+                                              /*idp_signin_status=*/true);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return num_show_accounts_dialog() == 2u; }));
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+  EXPECT_EQ(all_accounts_for_display().size(), 4u);
+  ASSERT_EQ(new_accounts().size(), 1u);
+  EXPECT_EQ(new_accounts()[0]->identity_provider->idp_metadata.config_url,
+            GURL(kProviderUrlFull));
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example", "idp2.example"));
 }
 
 // Test dismissing a active flow through the loading UI.

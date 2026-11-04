@@ -255,10 +255,15 @@ class CONTENT_EXPORT RequestHandler
     return account_ids_before_login_.contains(account_id);
   }
 
-  // Called when there is an error fetching information to show the prompt for a
-  // given IDP, and because of the mismatch this IDP must be present in the
-  // dialog we show to the user.
-  void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
+  // Called for an IdP that has no accounts to show but must still be shown, so
+  // that the user can log in to it. This is either because of a login status
+  // mismatch, or, in active mode with multiple IdPs, because the user is logged
+  // out of the IdP. See `AccountsFetcher::Result::has_no_accounts`.
+  void OnIdpWithoutAccounts(std::unique_ptr<IdentityProviderInfo> idp_info);
+
+  // Called once every IdP has been fetched, if none of them has accounts but at
+  // least one of them must still be shown. Shows the appropriate UI.
+  void ShowUiForIdpsWithoutAccounts();
 
   void CompleteRequestWithError(
       blink::mojom::FederatedRequestResult result,
@@ -438,6 +443,9 @@ class CONTENT_EXPORT RequestHandler
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
 
+  // Whether this is an active mode request with multiple IdPs.
+  bool IsMultiIdpActiveMode() const;
+
   // Returns whether we'll be using an ambient UI for a passive call.
   bool IsUsingAmbient() const;
 
@@ -465,7 +473,7 @@ class CONTENT_EXPORT RequestHandler
   // RequestToken() method, so all metrics must be recorded after that.
   std::unique_ptr<Metrics> fedcm_metrics_;
 
-  // Populated by OnFetchDataForIdpSucceeded() and OnIdpMismatch().
+  // Populated by OnFetchDataForIdpSucceeded() and OnIdpWithoutAccounts().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
   // Populated by MaybeShowAccountsDialog().
   std::vector<scoped_refptr<IdentityProviderData>> idp_data_for_display_;
