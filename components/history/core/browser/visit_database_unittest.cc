@@ -2132,8 +2132,11 @@ TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_WithVisits) {
   base::Time begin_time = base::Time::Now();
   base::Time end_time = begin_time + base::Days(10);
 
-  base::Time day1_time = begin_time.LocalMidnight() + base::Hours(24);
-  base::Time day2_time = day1_time + base::Hours(24);
+  // Due to DST, the next day at midnight may be more than 24 hours away, so
+  // add 36 hours and round back down to midnight.
+  base::Time day1_time =
+      (begin_time.LocalMidnight() + base::Hours(36)).LocalMidnight();
+  base::Time day2_time = (day1_time + base::Hours(36)).LocalMidnight();
 
   auto add_visit = [&](const GURL& url, base::Time visit_time) {
     VisitRow row{AddURL(URLRow(url)),
@@ -2152,8 +2155,7 @@ TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_WithVisits) {
   add_visit(GURL("https://foo.com/"), begin_time - base::Hours(1));
   // Two visits on first day.
   add_visit(GURL("https://foo.com/bar"), day1_time);
-  add_visit(GURL("https://foo.com/baz"),
-            day1_time + base::Hours(24) - base::Seconds(1));
+  add_visit(GURL("https://foo.com/baz"), day2_time - base::Seconds(1));
   // Five visits on the next day.
   for (int i = 0; i < 5; ++i) {
     add_visit(GURL("https://foo.com/bar"), day2_time);
