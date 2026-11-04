@@ -2958,12 +2958,9 @@ INSTANTIATE_TEST_SUITE_P(
                     std::pair("chrome:new-tab-page", false),
                     std::pair("chrome://autofill-internals", false)));
 
-// Tests that <div contenteditable> can be extracted from admissible URLs.
+// Tests that <form> can be extracted from admissible URLs.
 TEST_P(FormAutofillUtilsTest_AdmissibleUrls, ExtractFormData) {
-  LoadHTMLWithUrlOverride(R"(
-    "<form id=f><input></form>"
-  )",
-                          Url());
+  LoadHTMLWithUrlOverride(R"(<form id=f><input></form>)", Url());
   std::optional<FormData> form =
       ExtractFormData(GetFormElementById(GetDocument(), "f"));
   if (extractable()) {
@@ -2975,10 +2972,7 @@ TEST_P(FormAutofillUtilsTest_AdmissibleUrls, ExtractFormData) {
 
 // Tests that <div contenteditable> can be extracted from admissible URLs.
 TEST_P(FormAutofillUtilsTest_AdmissibleUrls, FindFormForContentEditable) {
-  LoadHTMLWithUrlOverride(R"(
-    "<div id=ce contenteditable></div>"
-  )",
-                          Url());
+  LoadHTMLWithUrlOverride(R"(<div id=ce contenteditable></div>)", Url());
   std::optional<FormData> form =
       FindFormForContentEditable(GetDocument().GetElementById("ce"));
   if (extractable()) {
