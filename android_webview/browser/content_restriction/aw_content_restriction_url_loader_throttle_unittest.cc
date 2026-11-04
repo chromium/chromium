@@ -13,6 +13,7 @@
 
 #include "android_webview/browser/content_restriction/aw_content_restriction_blocked_navigation_tracker.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
+#include "android_webview/common/aw_features.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -22,6 +23,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -159,6 +161,9 @@ class FakeChunkedDataPipeGetter : public network::mojom::ChunkedDataPipeGetter {
 class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebViewContentRestrictionRequestBodySupport);
+
     AwContentRestrictionManagerClient::RegisterPrefs(pref_service_.registry());
     pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, true);
     auto client_delegate =
@@ -322,6 +327,7 @@ class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<AwContentRestrictionManagerClient> client_;
   raw_ptr<MockContentRestrictionManagerClientDelegate> mock_client_delegate_;
@@ -409,6 +415,26 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBody) {
   // Wait for data to be streamed to the pipe and verify the content.
   task_environment_.RunUntilIdle();
   EXPECT_EQ(ReadPipeContent(read_fd.get()), body_data);
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       DoNotStreamRequestBodyWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWebViewContentRestrictionRequestBodySupport);
+  EXPECT_CALL(*mock_client_delegate_, CreateRequestBodyPipeAndGetWriteFd(_))
+      .Times(0);
+  MockRequestContentClassification(true);
+
+  const std::string body_data(kTestRequestPayloadContent);
+  network::ResourceRequest request = CreatePostRequestWithElements(
+      network::DataElement(network::DataElementBytes(
+          std::vector<uint8_t>(body_data.begin(), body_data.end()))));
+  bool defer = false;
+  throttle_->WillStartRequest(&request, &defer);
+  EXPECT_TRUE(defer);
+  EXPECT_TRUE(delegate_.resume_called());
+  EXPECT_FALSE(delegate_.cancel_called());
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBodyFile) {

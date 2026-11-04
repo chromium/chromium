@@ -32,6 +32,7 @@ extern const base::FeatureParam<double> kWebViewCacheSizeLimitMultiplier;
 extern const base::FeatureParam<int> kWebViewCacheSizeLimitMinimum;
 extern const base::FeatureParam<int> kWebViewCacheSizeLimitMaximum;
 extern const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier;
+BASE_DECLARE_FEATURE(kWebViewContentRestrictionRequestBodySupport);
 BASE_DECLARE_FEATURE(kWebViewContentRestrictionSupport);
 extern const base::FeatureParam<base::TimeDelta>
     kWebViewContentRestrictionTimeout;

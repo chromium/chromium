@@ -11,9 +11,11 @@
 
 #include "android_webview/browser/content_restriction/aw_content_restriction_blocked_navigation_tracker.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
+#include "android_webview/common/aw_features.h"
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -627,7 +629,9 @@ void AwContentRestrictionURLLoaderThrottle::WillStartRequest(
     *defer = true;
 
     const int64_t navigation_id = navigation_id_.value();
-    if (request->request_body) {
+    if (request->request_body &&
+        base::FeatureList::IsEnabled(
+            features::kWebViewContentRestrictionRequestBodySupport)) {
       int write_fd = content_restriction_manager_client_
                          ->CreateRequestBodyPipeAndGetWriteFd(navigation_id);
       if (write_fd >= 0) {

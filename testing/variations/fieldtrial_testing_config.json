@@ -20112,6 +20112,27 @@
             "platforms": [
                 "android_webview"
             ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Desktop",
+                    "enable_features": [
+                        "WebViewContentRestrictionRequestBodySupport",
+                        "WebViewContentRestrictionSupport"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "form_factors": [
+                "phone",
+                "tablet"
+            ],
             "experiments": [
                 {
                     "name": "Enabled",

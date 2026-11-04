@@ -41,6 +41,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.net.test.util.TestWebServer;
@@ -307,7 +308,10 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    @EnableFeatures({
+        AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT,
+        AwFeatures.WEBVIEW_CONTENT_RESTRICTION_REQUEST_BODY_SUPPORT
+    })
     public void testAllowedRequestPayloadClassification() throws Throwable {
         int initialHistoryCount = getNavigationHistoryEntryCount();
         mActivityTestRule.loadUrlSync(
@@ -330,13 +334,31 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    @EnableFeatures({
+        AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT,
+        AwFeatures.WEBVIEW_CONTENT_RESTRICTION_REQUEST_BODY_SUPPORT
+    })
     public void testBlockedRequestPayloadClassification() throws Throwable {
         mActivityTestRule.postUrlAsync(
                 mAwContents,
                 mWebServer.getResponseUrl(ALLOWED_SITE_1_PATH),
                 BLOCKED_PAYLOAD.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         waitForInterstitialPageLoad();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    @DisableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_REQUEST_BODY_SUPPORT})
+    public void testBlockedRequestPayloadAllowedWhenRequestBodySupportDisabled() throws Throwable {
+        mActivityTestRule.postUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                mWebServer.getResponseUrl(ALLOWED_SITE_1_PATH),
+                BLOCKED_PAYLOAD.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        Assert.assertEquals(
+                ALLOWED_SITE_1_TITLE, mActivityTestRule.getTitleOnUiThread(mAwContents));
     }
 
     @Test

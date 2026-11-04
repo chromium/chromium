@@ -1185,6 +1185,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT,
                 "Enables content restriction support in WebView."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_CONTENT_RESTRICTION_REQUEST_BODY_SUPPORT,
+                "Enables access to request body for content restriction in WebView."),
+        Flag.baseFeature(
                 BaseFeatures.REBINDING_CHILD_SERVICE_CONNECTION_CONTROLLER,
                 "Use a single connection and rebindService() to manage the binding to a child"
                         + " process service."),

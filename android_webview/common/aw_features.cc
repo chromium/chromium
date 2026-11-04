@@ -96,6 +96,10 @@ const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
     &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
     "WebViewCodeCacheSizeLimitMultiplier", 0.5};
 
+// Enables access to the request body for content restriction in WebView.
+BASE_FEATURE(kWebViewContentRestrictionRequestBodySupport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables content restriction support in WebView.
 BASE_FEATURE(kWebViewContentRestrictionSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
