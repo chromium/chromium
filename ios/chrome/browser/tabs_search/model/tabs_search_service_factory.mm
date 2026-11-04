@@ -35,8 +35,8 @@ TabsSearchServiceFactory::TabsSearchServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  const bool is_off_the_record = profile->IsOffTheRecord();
+    ProfileIOS& profile) const {
+  const bool is_off_the_record = profile.IsOffTheRecord();
   syncer::DeviceInfoSyncService* device_info_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
   return std::make_unique<TabsSearchService>(

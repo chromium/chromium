@@ -24,8 +24,8 @@ IOSTrustedVaultServiceFactory::IOSTrustedVaultServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSTrustedVaultServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  CHECK(!profile.IsOffTheRecord());
 
   return std::make_unique<trusted_vault::TrustedVaultService>(
       /*chrome_sync_security_domain_client=*/
@@ -33,7 +33,7 @@ IOSTrustedVaultServiceFactory::BuildServiceInstanceFor(
           ChromeAccountManagerServiceFactory::GetForProfile(profile),
           IdentityManagerFactory::GetForProfile(profile),
           TrustedVaultClientBackendFactory::GetForProfile(profile),
-          profile->GetSharedURLLoaderFactory()),
+          profile.GetSharedURLLoaderFactory()),
       // TODO(crbug.com/540854648): Consider providing an IOSTrustedVaultClient
       // for SecurityDomainId::kPasskeys and migrating iOS passkey callers to
       // TrustedVaultService.

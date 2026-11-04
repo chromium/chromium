@@ -156,13 +156,13 @@ SessionSyncServiceFactory::SessionSyncServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-SessionSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+SessionSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<sync_sessions::SessionSyncServiceImpl>(
       ::GetChannel(),
       std::make_unique<SyncSessionsClientImpl>(
-          profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
+          profile.GetPrefs(), BrowserListFactory::GetForProfile(profile),
           ios::HistoryServiceFactory::GetForProfile(profile),
           DeviceInfoSyncServiceFactory::GetForProfile(profile),
           DataTypeStoreServiceFactory::GetForProfile(profile),
-          ios::sync_start_util::GetFlareForSyncableService(profile)));
+          ios::sync_start_util::GetFlareForSyncableService(&profile)));
 }

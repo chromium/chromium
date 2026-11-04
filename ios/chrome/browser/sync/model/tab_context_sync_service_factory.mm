@@ -34,9 +34,7 @@ namespace {
 
 class TabContextSyncClientIOS : public sync_tab_context::TabContextSyncClient {
  public:
-  explicit TabContextSyncClientIOS(ProfileIOS* profile) : profile_(profile) {
-    CHECK(profile_);
-  }
+  explicit TabContextSyncClientIOS(ProfileIOS& profile) : profile_(profile) {}
 
   ~TabContextSyncClientIOS() override = default;
 
@@ -45,7 +43,7 @@ class TabContextSyncClientIOS : public sync_tab_context::TabContextSyncClient {
     // `SyncService` must be retrieved lazily at runtime rather than injected at
     // construction time.
     const syncer::SyncService* const sync_service =
-        SyncServiceFactory::GetForProfile(profile_);
+        SyncServiceFactory::GetForProfile(profile_.get());
     if (!sync_service) {
       return std::nullopt;
     }
@@ -53,7 +51,7 @@ class TabContextSyncClientIOS : public sync_tab_context::TabContextSyncClient {
   }
 
  private:
-  const raw_ptr<ProfileIOS> profile_;
+  const raw_ref<ProfileIOS> profile_;
 };
 
 }  // namespace
@@ -68,7 +66,7 @@ TabContextSyncServiceFactory::TabContextSyncServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 TabContextSyncServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   syncer::DataTypeStoreService* const store_service =
       DataTypeStoreServiceFactory::GetForProfile(profile);
   signin::IdentityManager* const identity_manager =
@@ -77,13 +75,13 @@ TabContextSyncServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  // `base::Unretained(profile)` is safe because `ProfileIOS` outlives all
+  // `base::Unretained(&profile)` is safe because `ProfileIOS` outlives all
   // `KeyedService` instances associated with it.
   auto ephemeral_key_fetcher =
       std::make_unique<sync_tab_context::HttpRpcBasedEphemeralKeyFetcher>(
           identity_manager,
           base::BindRepeating(&ProfileIOS::GetSharedURLLoaderFactory,
-                              base::Unretained(profile)),
+                              base::Unretained(&profile)),
           sync_tab_context::GetEphemeralKeyServerUrl());
 
   return std::make_unique<sync_tab_context::TabContextSyncServiceImpl>(

@@ -19,9 +19,9 @@ TranslateRankerFactory::TranslateRankerFactory(PassKey key)
           ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService> TranslateRankerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<TranslateRankerImpl>(
-      TranslateRankerImpl::GetModelPath(profile->GetStatePath()),
+      TranslateRankerImpl::GetModelPath(profile.GetStatePath()),
       TranslateRankerImpl::GetModelURL(),
       GetApplicationContext()->GetUkmRecorder());
 }

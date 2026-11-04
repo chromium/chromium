@@ -21,7 +21,7 @@ InactiveTabsServiceFactory::InactiveTabsServiceFactory(PassKey key)
 #pragma mark ProfileKeyedServiceFactoryIOS
 
 std::unique_ptr<KeyedService>
-InactiveTabsServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+InactiveTabsServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<InactiveTabsService>(
-      profile->GetPrefs(), BrowserListFactory::GetForProfile(profile));
+      profile.GetPrefs(), BrowserListFactory::GetForProfile(profile));
 }

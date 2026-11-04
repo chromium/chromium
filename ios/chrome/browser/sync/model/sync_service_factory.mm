@@ -91,7 +91,7 @@ contextual_tasks::ContextualTasksService* GetContextualTasksService(
 }
 
 syncer::DataTypeController::TypeVector CreateControllers(
-    ProfileIOS* profile,
+    ProfileIOS& profile,
     syncer::SyncService* sync_service) {
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
@@ -116,7 +116,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   // A callback is needed here to decouple `SyncServiceFactory` from
   // `IOSContextualTasksServiceFactory` and prevent dependency cycles.
   builder.SetContextualTasksServiceGetter(
-      base::BindRepeating(&GetContextualTasksService, profile->AsWeakPtr()));
+      base::BindRepeating(&GetContextualTasksService, profile.AsWeakPtr()));
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile));
   builder.SetPersonalCollaborationDataService(
@@ -143,8 +143,8 @@ syncer::DataTypeController::TypeVector CreateControllers(
                                profile, ServiceAccessType::IMPLICIT_ACCESS),
                            IOSChromeAccountPasswordStoreFactory::GetForProfile(
                                profile, ServiceAccessType::IMPLICIT_ACCESS));
-  builder.SetPrefService(profile->GetPrefs());
-  builder.SetPrefServiceSyncable(profile->GetSyncablePrefs());
+  builder.SetPrefService(profile.GetPrefs());
+  builder.SetPrefServiceSyncable(profile.GetSyncablePrefs());
   builder.SetSendTabToSelfSyncService(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile));
   builder.SetSessionSyncService(
@@ -240,7 +240,7 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS& profile) {
   init_params.os_crypt_async = GetApplicationContext()->GetOSCryptAsync();
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
-  sync_service->Initialize(CreateControllers(&profile, sync_service.get()));
+  sync_service->Initialize(CreateControllers(profile, sync_service.get()));
 
   password_manager::PasswordReceiverService* password_receiver_service =
       IOSChromePasswordReceiverServiceFactory::GetForProfile(profile);
@@ -294,8 +294,15 @@ SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
   if (!profile) {
     return nullptr;
   }
+  return GetForProfileAsSyncServiceImplForTesting(*profile);  // IN-TEST
+}
+
+// static
+syncer::SyncServiceImpl*
+SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
+    ProfileIOS& profile) {
   return GetInstance()->GetServiceForProfileAs<syncer::SyncServiceImpl>(
-      *profile, /*create*/ true);
+      profile, /*create*/ true);
 }
 
 // static

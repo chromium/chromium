@@ -22,7 +22,7 @@ SyncInvalidationsServiceFactory::SyncInvalidationsServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   gcm::GCMDriver* gcm_driver =
       IOSChromeGCMProfileServiceFactory::GetForProfile(profile)->driver();
   instance_id::InstanceIDDriver* instance_id_driver =

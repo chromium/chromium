@@ -25,7 +25,7 @@ TextClassifierModelServiceFactory::TextClassifierModelServiceFactory(
 
 std::unique_ptr<KeyedService>
 TextClassifierModelServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     return nullptr;
   }

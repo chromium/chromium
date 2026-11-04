@@ -27,6 +27,8 @@ class SyncServiceFactory final
   // is not a real instance.
   static syncer::SyncServiceImpl* GetForProfileAsSyncServiceImplForTesting(
       ProfileIOS* profile);
+  static syncer::SyncServiceImpl* GetForProfileAsSyncServiceImplForTesting(
+      ProfileIOS& profile);
 
   // Iterates over all profiles that have been loaded so far and extract their
   // SyncService if present. Returned pointers are guaranteed to be not null.

@@ -28,9 +28,9 @@ UnifiedConsentServiceFactory::UnifiedConsentServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 UnifiedConsentServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   sync_preferences::PrefServiceSyncable* user_pref_service =
-      profile->GetSyncablePrefs();
+      profile.GetSyncablePrefs();
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
