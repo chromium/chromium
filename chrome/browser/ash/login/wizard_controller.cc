@@ -453,6 +453,8 @@ WizardController::WizardController(
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     policy::DeviceRestrictionScheduleController*
         device_restriction_schedule_controller,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
     WizardContext* wizard_context)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(metrics_service),
@@ -462,6 +464,8 @@ WizardController::WizardController(
       component_manager_ash_(std::move(component_manager_ash)),
       device_restriction_schedule_controller_(
           device_restriction_schedule_controller),
+      multi_user_sign_in_policy_controller_(
+          CHECK_DEREF(multi_user_sign_in_policy_controller)),
       quickstart_controller_(
           std::make_unique<quick_start::QuickStartController>(
               &local_state_.get())),
@@ -2494,7 +2498,8 @@ void WizardController::OnEnrollmentDone() {
         &local_state_.get(), metrics_service_.get(),
         &application_locale_storage_.get(), shared_url_loader_factory_,
         &browser_policy_connector_ash_.get(), component_manager_ash_,
-        device_restriction_schedule_controller_.get());
+        device_restriction_schedule_controller_.get(),
+        &multi_user_sign_in_policy_controller_.get());
   } else {
     ShowLoginScreen();
   }
@@ -2550,7 +2555,8 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
           &local_state_.get(), metrics_service_.get(),
           &application_locale_storage_.get(), shared_url_loader_factory_,
           &browser_policy_connector_ash_.get(), component_manager_ash_,
-          device_restriction_schedule_controller_.get());
+          device_restriction_schedule_controller_.get(),
+          &multi_user_sign_in_policy_controller_.get());
       break;
     case DemoSetupScreen::Result::kCanceled:
       ShowWelcomeScreen();

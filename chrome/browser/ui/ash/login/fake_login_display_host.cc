@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/global_features.h"
@@ -30,12 +31,16 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
   void HideImpl() override {}
 };
 
-FakeLoginDisplayHost::FakeLoginDisplayHost(PrefService* local_state)
-    : wizard_context_(std::make_unique<WizardContext>()),
-      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>(
-          local_state ? local_state
-                      : TestingBrowserProcess::GetGlobal()->local_state(),
-          /*metrics_service=*/nullptr)) {
+FakeLoginDisplayHost::FakeLoginDisplayHost(
+    PrefService* local_state,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller)
+    : multi_user_sign_in_policy_controller_(
+          multi_user_sign_in_policy_controller),
+      wizard_context_(std::make_unique<WizardContext>()),
+      oobe_metrics_helper_(
+          std::make_unique<OobeMetricsHelper>(local_state,
+                                              /*metrics_service=*/nullptr)) {
   // Only one SessionManager can be instantiated at a time. Check to see if one
   // has already been instantiated before creating one.
   if (!session_manager::SessionManager::Get()) {
@@ -82,6 +87,7 @@ void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
   if (wizard_controller_) {
     wizard_controller_->AdvanceToScreen(first_screen);
   } else {
+    CHECK(multi_user_sign_in_policy_controller_);
     wizard_controller_ = std::make_unique<WizardController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()->metrics_service(),
@@ -98,7 +104,7 @@ void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->device_restriction_schedule_controller(),
-        wizard_context_.get());
+        multi_user_sign_in_policy_controller_.get(), wizard_context_.get());
 
     fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);
     wizard_controller_->SetCurrentScreenForTesting(fake_screen_.get());

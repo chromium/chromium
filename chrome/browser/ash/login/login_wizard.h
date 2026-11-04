@@ -28,14 +28,18 @@ class BrowserPolicyConnectorAsh;
 class DeviceRestrictionScheduleController;
 }  // namespace policy
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}  // namespace user_manager
+
 namespace ash {
 
 // Shows the Chrome OS out-of-box / login UI. The LoginDisplayHost may be
 // created asynchronously, after a locale switch.
 // `local_state`, `metrics_service`, `application_locale_storage`,
-// `browser_policy_connector_ash` and `device_restriction_schedule_controller`
-// must be non-null and must outlive the LoginDisplayHost that this function
-// creates.
+// `browser_policy_connector_ash`, `device_restriction_schedule_controller` and
+// `multi_user_sign_in_policy_controller` must be non-null and must outlive the
+// LoginDisplayHost that this function creates.
 // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void ShowLoginWizard(
     PrefService* local_state,
@@ -46,14 +50,16 @@ void ShowLoginWizard(
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     policy::DeviceRestrictionScheduleController*
         device_restriction_schedule_controller,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
     OobeScreenId first_screen);
 
 // Shuts down LoginDisplayHostWebUI host and creates LoginDisplayHostMojo
 // instead. This may happen asynchronously, after a locale switch.
 // `local_state`, `metrics_service`, `application_locale_storage`,
-// `browser_policy_connector_ash` and `device_restriction_schedule_controller`
-// must be non-null and must outlive the LoginDisplayHost that this function
-// creates.
+// `browser_policy_connector_ash`, `device_restriction_schedule_controller` and
+// `multi_user_sign_in_policy_controller` must be non-null and must outlive the
+// LoginDisplayHost that this function creates.
 // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void SwitchWebUItoMojo(
     PrefService* local_state,
@@ -63,7 +69,9 @@ void SwitchWebUItoMojo(
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     policy::DeviceRestrictionScheduleController*
-        device_restriction_schedule_controller);
+        device_restriction_schedule_controller,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller);
 
 }  // namespace ash
 

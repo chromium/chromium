@@ -96,6 +96,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
@@ -2002,7 +2003,9 @@ class ArcSessionManagerPolicyTest
 
  private:
   void CreateLoginDisplayHost() {
-    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        /*multi_user_sign_in_policy_controller=*/nullptr);
   }
 
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
@@ -2163,6 +2166,11 @@ class ArcSessionOobeOptInNegotiatorTest
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         true);
 
+    // FakeLoginDisplayHost::StartWizard() passes this to WizardController.
+    multi_user_sign_in_policy_controller_ =
+        std::make_unique<user_manager::MultiUserSignInPolicyController>(
+            TestingBrowserProcess::GetGlobal()->local_state(), user_manager());
+
     CreateLoginDisplayHost();
     login_display_host()->StartWizard(ash::OobeScreenId("fake"));
 
@@ -2204,6 +2212,9 @@ class ArcSessionOobeOptInNegotiatorTest
     // Correctly stop service.
     arc_session_manager()->Shutdown();
 
+    fake_login_display_host_.reset();
+    multi_user_sign_in_policy_controller_.reset();
+
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         false);
 
@@ -2241,7 +2252,9 @@ class ArcSessionOobeOptInNegotiatorTest
   }
 
   void CreateLoginDisplayHost() {
-    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        multi_user_sign_in_policy_controller_.get());
   }
 
   ash::FakeLoginDisplayHost* login_display_host() {
@@ -2250,6 +2263,8 @@ class ArcSessionOobeOptInNegotiatorTest
 
   void CloseLoginDisplayHost() { fake_login_display_host_.reset(); }
 
+  std::unique_ptr<user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
 };
 

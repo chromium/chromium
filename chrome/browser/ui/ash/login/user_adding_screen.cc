@@ -67,13 +67,17 @@ void UserAddingScreenImpl::Start() {
       device_restriction_schedule_controller =
           g_browser_process->platform_part()
               ->device_restriction_schedule_controller();
+  const user_manager::MultiUserSignInPolicyController*
+      multi_user_sign_in_policy_controller =
+          g_browser_process->platform_part()
+              ->multi_user_sign_in_policy_controller();
 
   CHECK(!IsRunning());
   display_host_ = new LoginDisplayHostMojo(
       local_state, metrics_service, application_locale_storage,
       shared_url_loader_factory, browser_policy_connector_ash,
       component_manager_ash, device_restriction_schedule_controller,
-      DisplayedScreen::USER_ADDING_SCREEN,
+      multi_user_sign_in_policy_controller, DisplayedScreen::USER_ADDING_SCREEN,
       /*update_geolocation_usage_allowed=*/false);
 
   // This triggers input method manager to filter login screen methods. This

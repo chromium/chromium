@@ -92,6 +92,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -281,6 +282,11 @@ class WizardControllerTestBase : public ::testing::Test {
 
     // PreProfileInit:
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
+    // Needed by WizardController.
+    multi_user_sign_in_policy_controller_ =
+        std::make_unique<user_manager::MultiUserSignInPolicyController>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            fake_user_manager_.Get());
     session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
     quick_unlock::PinBackend::Initialize(
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -390,6 +396,7 @@ class WizardControllerTestBase : public ::testing::Test {
     profile_manager_.reset();
     services_customization_document_.reset();
     session_manager_.reset();
+    multi_user_sign_in_policy_controller_.reset();
     fake_user_manager_.Reset();
 
     TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
@@ -441,6 +448,8 @@ class WizardControllerTestBase : public ::testing::Test {
 
  protected:
   testing::NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
+  std::unique_ptr<user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_;
 
  private:
   base::test::ScopedCommandLine command_line_;
@@ -502,7 +511,9 @@ class WizardControllerTest : public WizardControllerTestBase {
     test_web_ui_->set_web_contents(
         web_contents_factory_->CreateWebContents(web_ui_profile));
 
-    fake_login_display_host_ = std::make_unique<FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<FakeLoginDisplayHost>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        multi_user_sign_in_policy_controller_.get());
     auto oobe_ui = std::make_unique<OobeUI>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
@@ -534,6 +545,7 @@ class WizardControllerTest : public WizardControllerTestBase {
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->device_restriction_schedule_controller(),
+        multi_user_sign_in_policy_controller_.get(),
         fake_login_display_host_->GetWizardContext());
     wizard_controller_ = wizard_controller.get();
     fake_login_display_host_->SetWizardController(std::move(wizard_controller));

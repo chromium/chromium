@@ -56,6 +56,10 @@ class BrowserPolicyConnectorAsh;
 class DeviceRestrictionScheduleController;
 }  // namespace policy
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}  // namespace user_manager
+
 namespace ash {
 class FocusRingController;
 class WebUILoginView;
@@ -80,8 +84,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public OobeUI::Observer {
  public:
   // `local_state`, `metrics_service`, `application_locale_storage`,
-  // `browser_policy_connector_ash` and `device_restriction_schedule_controller`
-  // must be non-null and must outlive `this`.
+  // `browser_policy_connector_ash`, `device_restriction_schedule_controller`
+  // and `multi_user_sign_in_policy_controller` must be non-null and must
+  // outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostWebUI(
       PrefService* local_state,
@@ -92,7 +97,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash,
       policy::DeviceRestrictionScheduleController*
-          device_restriction_schedule_controller);
+          device_restriction_schedule_controller,
+      const user_manager::MultiUserSignInPolicyController*
+          multi_user_sign_in_policy_controller);
 
   LoginDisplayHostWebUI(const LoginDisplayHostWebUI&) = delete;
   LoginDisplayHostWebUI& operator=(const LoginDisplayHostWebUI&) = delete;

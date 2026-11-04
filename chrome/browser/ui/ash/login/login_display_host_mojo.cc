@@ -196,6 +196,8 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     policy::DeviceRestrictionScheduleController*
         device_restriction_schedule_controller,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
@@ -205,15 +207,15 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
                              browser_policy_connector_ash,
                              std::move(component_manager_ash),
                              device_restriction_schedule_controller,
+                             multi_user_sign_in_policy_controller,
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
           application_locale_storage,
           std::move(shared_url_loader_factory),
           browser_policy_connector_ash,
+          multi_user_sign_in_policy_controller,
           // TODO(crbug.com/404133029): Avoid using g_browser_process.
-          g_browser_process->platform_part()
-              ->multi_user_sign_in_policy_controller(),
           g_browser_process->platform_part()->GetSystemClock(),
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
@@ -940,7 +942,8 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
       &local_state_.get(), &metrics_service_.get(),
       &application_locale_storage_.get(), shared_url_loader_factory_.get(),
       &browser_policy_connector_ash_.get(), component_manager_ash_,
-      &device_restriction_schedule_controller_.get(), GetWizardContext());
+      &device_restriction_schedule_controller_.get(),
+      &multi_user_sign_in_policy_controller_.get(), GetWizardContext());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
       &security_token_pin_dialog_host_login_impl_);

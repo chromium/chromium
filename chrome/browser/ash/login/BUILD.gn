@@ -657,6 +657,7 @@ source_set("unit_tests") {
     "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
+    "//components/user_manager:multi_user",
     "//components/user_manager:test_support",
     "//content/public/browser",
     "//content/public/common",

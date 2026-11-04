@@ -39,6 +39,10 @@ class BrowserPolicyConnectorAsh;
 class DeviceRestrictionScheduleController;
 }  // namespace policy
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}  // namespace user_manager
+
 class ApplicationLocaleStorage;
 class PrefService;
 class Profile;
@@ -70,8 +74,9 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
   //   - Launches the auto launched kiosk app;
   //   - Resumes user sessions on crash-and-restart;
   //   - Starts a stub login session for dev or test;
-  // `metrics_service`, `application_locale_storage` and
-  // `device_restriction_schedule_controller` must not be nullptr, and must be
+  // `metrics_service`, `application_locale_storage`,
+  // `device_restriction_schedule_controller` and
+  // `multi_user_sign_in_policy_controller` must not be nullptr, and must be
   // valid while main RunLoop is running.
   // `shared_url_loader_factory` and `component_manager_ash` must not be
   // nullptr.
@@ -83,6 +88,8 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
           component_manager_ash,
       policy::DeviceRestrictionScheduleController*
           device_restriction_schedule_controller,
+      const user_manager::MultiUserSignInPolicyController*
+          multi_user_sign_in_policy_controller,
       const base::CommandLine& parsed_command_line,
       Profile* profile,
       bool is_running_test);

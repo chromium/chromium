@@ -171,7 +171,9 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
  protected:
   void CreateLoginDisplayHost() {
-    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        /*multi_user_sign_in_policy_controller=*/nullptr);
   }
 
  private:

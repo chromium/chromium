@@ -897,6 +897,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
       g_browser_process->platform_part()->component_manager_ash(),
       g_browser_process->platform_part()
           ->device_restriction_schedule_controller(),
+      g_browser_process->platform_part()
+          ->multi_user_sign_in_policy_controller(),
       ash::OOBE_SCREEN_UNKNOWN);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);

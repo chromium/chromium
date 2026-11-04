@@ -392,7 +392,9 @@ class EnrollmentScreenBaseTest : public testing::Test {
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
   // Used by `enrollment_screen_`.
-  FakeLoginDisplayHost fake_login_display_host_;
+  FakeLoginDisplayHost fake_login_display_host_{
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      /*multi_user_sign_in_policy_controller=*/nullptr};
 
   std::unique_ptr<EnrollmentScreen> enrollment_screen_;
 

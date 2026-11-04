@@ -70,7 +70,9 @@ class EnrollmentConfigTest : public testing::Test {
   base::test::ScopedCommandLine command_line_;
   test::EnrollmentTestHelper enrollment_test_helper_{&command_line_,
                                                      &statistics_provider_};
-  ash::FakeLoginDisplayHost fake_login_display_host_;
+  ash::FakeLoginDisplayHost fake_login_display_host_{
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      /*multi_user_sign_in_policy_controller=*/nullptr};
   ash::FakeSessionManagerClient fake_session_manager_client_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_;
   policy::DevicePolicyBuilder device_policy_;

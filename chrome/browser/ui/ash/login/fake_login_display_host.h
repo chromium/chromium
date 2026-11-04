@@ -18,11 +18,20 @@ namespace session_manager {
 class SessionManager;
 }
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}
+
 namespace ash {
 
 class FakeLoginDisplayHost : public LoginDisplayHost {
  public:
-  explicit FakeLoginDisplayHost(PrefService* local_state = nullptr);
+  // `local_state` must be non-null and must outlive `this`.
+  // `multi_user_sign_in_policy_controller` must be non-null when StartWizard()
+  // creates a WizardController, and must outlive `this` if it's non-null.
+  FakeLoginDisplayHost(PrefService* local_state,
+                       const user_manager::MultiUserSignInPolicyController*
+                           multi_user_sign_in_policy_controller);
 
   FakeLoginDisplayHost(const FakeLoginDisplayHost&) = delete;
   FakeLoginDisplayHost& operator=(const FakeLoginDisplayHost&) = delete;
@@ -87,6 +96,9 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
 
  private:
   class FakeBaseScreen;
+
+  const raw_ptr<const user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_;
 
   raw_ptr<OobeUI> oobe_ui_ = nullptr;
 

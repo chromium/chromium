@@ -46,6 +46,10 @@ class BrowserPolicyConnectorAsh;
 class DeviceRestrictionScheduleController;
 }  // namespace policy
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}  // namespace user_manager
+
 namespace ash {
 
 class LoginFeedback;
@@ -61,8 +65,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public ash::SessionTerminationManager::Observer {
  public:
   // `local_state`, `metrics_service`, `application_locale_storage`,
-  // `browser_policy_connector_ash` and `device_restriction_schedule_controller`
-  // must be non-null and must outlive `this`.
+  // `browser_policy_connector_ash`, `device_restriction_schedule_controller`
+  // and `multi_user_sign_in_policy_controller` must be non-null and must
+  // outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostCommon(
       PrefService* local_state,
@@ -74,6 +79,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
           component_manager_ash,
       policy::DeviceRestrictionScheduleController*
           device_restriction_schedule_controller,
+      const user_manager::MultiUserSignInPolicyController*
+          multi_user_sign_in_policy_controller,
       bool update_geolocation_usage_allowed);
 
   LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
@@ -174,6 +181,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       component_manager_ash_;
   const raw_ref<policy::DeviceRestrictionScheduleController>
       device_restriction_schedule_controller_;
+  const raw_ref<const user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_;
 
  private:
   void Cleanup();

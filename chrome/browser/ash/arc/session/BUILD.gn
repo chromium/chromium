@@ -231,6 +231,7 @@ source_set("unit_tests") {
     "//components/session_manager/test:test_support",
     "//components/strings:components_strings_grit",
     "//components/user_manager",
+    "//components/user_manager:multi_user",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",

@@ -237,6 +237,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     policy::DeviceRestrictionScheduleController*
         device_restriction_schedule_controller,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(CHECK_DEREF(metrics_service)),
@@ -246,6 +248,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
       component_manager_ash_(std::move(component_manager_ash)),
       device_restriction_schedule_controller_(
           CHECK_DEREF(device_restriction_schedule_controller)),
+      multi_user_sign_in_policy_controller_(
+          CHECK_DEREF(multi_user_sign_in_policy_controller)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       kiosk_app_menu_controller_(local_state),

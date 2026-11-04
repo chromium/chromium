@@ -45,6 +45,7 @@
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/version_info/version_info.h"
@@ -687,12 +688,19 @@ class ArcOobeTest : public ChromeArcUtilTest,
         test_url_loader_factory_.GetSafeWeakWrapper());
 
     ChromeArcUtilTest::SetUp();
+
+    // FakeLoginDisplayHost::StartWizard() passes this to WizardController.
+    multi_user_sign_in_policy_controller_ =
+        std::make_unique<user_manager::MultiUserSignInPolicyController>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            user_manager::UserManager::Get());
   }
 
   void TearDown() override {
     // Fake display host have to be shut down first, as it may access
     // configuration.
     fake_login_display_host_.reset();
+    multi_user_sign_in_policy_controller_.reset();
 
     ChromeArcUtilTest::TearDown();
 
@@ -707,7 +715,9 @@ class ArcOobeTest : public ChromeArcUtilTest,
 
  protected:
   void CreateLoginDisplayHost() {
-    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        multi_user_sign_in_policy_controller_.get());
   }
 
   ash::FakeLoginDisplayHost* login_display_host() {
@@ -718,6 +728,8 @@ class ArcOobeTest : public ChromeArcUtilTest,
 
  private:
   std::unique_ptr<ash::OobeConfiguration> oobe_configuration_;
+  std::unique_ptr<user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   base::test::ScopedFeatureList scoped_feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;

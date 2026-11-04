@@ -1399,6 +1399,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         g_browser_process->platform_part()->component_manager_ash(),
         g_browser_process->platform_part()
             ->device_restriction_schedule_controller(),
+        g_browser_process->platform_part()
+            ->multi_user_sign_in_policy_controller(),
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());
 
