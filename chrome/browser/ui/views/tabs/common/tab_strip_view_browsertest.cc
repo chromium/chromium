@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 
 #include "base/auto_reset.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
@@ -150,6 +151,38 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   EXPECT_NE(tab_strip_view(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripViewBrowserTest,
+                       RecordsVerticalTimeToSwitchOnlyInVerticalMode) {
+  AppendTab();
+  RunScheduledLayouts();
+
+  ASSERT_NE(tab_strip_view(), nullptr);
+  ASSERT_NE(unpinned_collection_node(), nullptr);
+  ASSERT_GE(unpinned_collection_node()->children().size(), 2u);
+  views::View* tab_view = unpinned_collection_node()->children()[0]->view();
+  ASSERT_NE(tab_view, nullptr);
+
+  base::HistogramTester histogram_tester;
+
+  ui::MouseEvent enter_event(ui::EventType::kMouseEntered, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  tab_strip_view()->OnMouseEntered(enter_event);
+
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(5, 5),
+                             gfx::Point(5, 5), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view->OnMousePressed(press_event);
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(5, 5),
+                               gfx::Point(5, 5), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view->OnMouseReleased(release_event);
+
+  histogram_tester.ExpectTotalCount("TabStrip.Vertical.TimeToSwitch",
+                                    is_horizontal() ? 0 : 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

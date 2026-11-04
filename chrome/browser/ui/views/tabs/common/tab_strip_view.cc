@@ -477,9 +477,11 @@ void TabStripView::ScrollToFitViews(views::View* view1, views::View* view2) {
 void TabStripView::RecordMousePressedInTab() {
   if (mouse_entered_tabstrip_time_.has_value() &&
       !has_reported_time_mouse_entered_to_switch_) {
-    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-        "TabStrip.Vertical.TimeToSwitch",
-        base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
+    if (orientation_ == TabStripOrientation::kVertical) {
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "TabStrip.Vertical.TimeToSwitch",
+          base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
+    }
     has_reported_time_mouse_entered_to_switch_ = true;
   }
 }
