@@ -171,6 +171,17 @@ class RuleFeatureSetTest : public testing::Test {
         .NeedsHasInvalidationForInsertedOrRemovedElement(element);
   }
 
+  bool NeedsHasInvalidationForPseudoClass(
+      CSSSelector::PseudoType pseudo_type) const {
+    return rule_feature_set_.GetRuleInvalidationData()
+        .NeedsHasInvalidationForPseudoClass(pseudo_type);
+  }
+
+  bool NeedsHasInvalidationForPseudoStateChange() const {
+    return rule_feature_set_.GetRuleInvalidationData()
+        .NeedsHasInvalidationForPseudoStateChange();
+  }
+
   void MergeInto(RuleFeatureSet& rule_feature_set) {
     rule_feature_set.Merge(rule_feature_set_);
   }
@@ -2198,6 +2209,82 @@ TEST_F(RuleFeatureSetTest,
     element->setAttribute(html_names::kClassAttr, AtomicString("f"));
     EXPECT_TRUE(NeedsHasInvalidationForInsertedOrRemovedElement(*element));
   }
+}
+
+TEST_F(RuleFeatureSetTest, NeedsHasInvalidationForPseudoClass) {
+  ScopedCSSMediaElementPseudosForTest scoped_media_pseudos(true);
+
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoStateChange());
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoActive));
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoHover));
+
+  // Exercise pseudo-classes spanning all three 64-bit words of
+  // PseudosInHasArgument ([0..63], [64..127], and [128..172]), including the
+  // kFirstPseudoType (kPseudoActive == 0) boundary and nested :is() selectors.
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a:has(:active)"));
+  EXPECT_TRUE(NeedsHasInvalidationForPseudoStateChange());
+  EXPECT_TRUE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoActive));
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoHover));
+
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(".a:has(:is(:focus .b))"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a:has(:defined)"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(".a:has(:popover-open)"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(".a:has(:volume-locked)"));
+
+  EXPECT_TRUE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoFocus));
+  EXPECT_TRUE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoDefined));
+  EXPECT_TRUE(
+      NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoPopoverOpen));
+  EXPECT_TRUE(
+      NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoVolumeLocked));
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoChecked));
+
+  // :visited and :scope inside :has() are intentionally ignored.
+  ClearFeatures();
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoStateChange());
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a:has(:visited)"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a:has(:scope)"));
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoStateChange());
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoVisited));
+  EXPECT_FALSE(NeedsHasInvalidationForPseudoClass(CSSSelector::kPseudoScope));
+
+  // Verify RuleFeatureSet::Merge, equality, and Clear.
+  ClearFeatures();
+  RuleFeatureSet local1;
+  CollectFeatures(".a:has(:active)");
+  MergeInto(local1);
+  ClearFeatures();
+
+  RuleFeatureSet local2;
+  CollectFeatures(".a:has(:popover-open)");
+  MergeInto(local2);
+  ClearFeatures();
+
+  RuleFeatureSet merged;
+  merged.Merge(local1);
+  EXPECT_NE(merged, local2);
+  merged.Merge(local2);
+
+  RuleFeatureSet combined;
+  CollectFeatures(".a:has(:active)");
+  CollectFeatures(".a:has(:popover-open)");
+  MergeInto(combined);
+  ClearFeatures();
+
+  EXPECT_EQ(merged, combined);
+  EXPECT_TRUE(
+      merged.GetRuleInvalidationData().NeedsHasInvalidationForPseudoClass(
+          CSSSelector::kPseudoActive));
+  EXPECT_TRUE(
+      merged.GetRuleInvalidationData().NeedsHasInvalidationForPseudoClass(
+          CSSSelector::kPseudoPopoverOpen));
+
+  merged.Clear();
+  EXPECT_FALSE(merged.GetRuleInvalidationData()
+                   .NeedsHasInvalidationForPseudoStateChange());
 }
 
 TEST_F(RuleFeatureSetTest, invalidatesCustomPseudo) {

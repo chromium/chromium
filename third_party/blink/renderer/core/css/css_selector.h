@@ -239,6 +239,7 @@ class CORE_EXPORT CSSSelector {
 
   enum PseudoType {
     kPseudoActive,
+    kFirstPseudoType = kPseudoActive,
     kPseudoActiveOption,
     kPseudoActiveViewTransition,
     kPseudoActiveViewTransitionType,
@@ -441,6 +442,9 @@ class CORE_EXPORT CSSSelector {
 
     // ::skeleton for preview rendering
     kPseudoSkeleton,
+
+    // Keep `kLastPseudoType` updated when adding new values.
+    kLastPseudoType = kPseudoSkeleton,
   };
 
   enum class AttributeMatchType : int {

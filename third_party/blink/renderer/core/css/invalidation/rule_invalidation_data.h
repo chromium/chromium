@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_RULE_INVALIDATION_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_RULE_INVALIDATION_DATA_H_
 
+#include "base/containers/enum_set.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
@@ -235,7 +236,9 @@ class CORE_EXPORT RuleInvalidationData {
               scoped_refptr<InvalidationSet>,
               IntWithZeroKeyHashTraits<unsigned>>;
   using ValuesInHasArgument = HashSet<AtomicString>;
-  using PseudosInHasArgument = HashSet<CSSSelector::PseudoType>;
+  using PseudosInHasArgument = base::EnumSet<CSSSelector::PseudoType,
+                                             CSSSelector::kFirstPseudoType,
+                                             CSSSelector::kLastPseudoType>;
 
   // Class and ID invalidation have a special rule that is different from the
   // other sets; we do not store self-invalidation entries directly, but as a

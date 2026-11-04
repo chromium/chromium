@@ -77,7 +77,7 @@ void RuleInvalidationData::Clear() {
   attributes_in_has_argument.clear();
   ids_in_has_argument.clear();
   tag_names_in_has_argument.clear();
-  pseudos_in_has_argument.clear();
+  pseudos_in_has_argument.Clear();
   max_direct_adjacent_selectors = 0;
   uses_first_line_rules = false;
   uses_window_inactive_selector = false;
@@ -353,7 +353,7 @@ bool RuleInvalidationData::NeedsHasInvalidationForInsertedOrRemovedElement(
 
 bool RuleInvalidationData::NeedsHasInvalidationForPseudoClass(
     CSSSelector::PseudoType pseudo_type) const {
-  return pseudos_in_has_argument.Contains(pseudo_type);
+  return pseudos_in_has_argument.Has(pseudo_type);
 }
 
 String RuleInvalidationData::ToString() const {

@@ -60,9 +60,8 @@ void RuleInvalidationDataBuilder::Merge(const RuleInvalidationData& other) {
       other.universal_in_has_argument;
   rule_invalidation_data_.not_pseudo_in_has_argument |=
       other.not_pseudo_in_has_argument;
-  for (const auto& pseudo_type : other.pseudos_in_has_argument) {
-    rule_invalidation_data_.pseudos_in_has_argument.insert(pseudo_type);
-  }
+  rule_invalidation_data_.pseudos_in_has_argument.PutAll(
+      other.pseudos_in_has_argument);
 
   rule_invalidation_data_.max_direct_adjacent_selectors =
       std::max(rule_invalidation_data_.max_direct_adjacent_selectors,

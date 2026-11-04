@@ -1207,7 +1207,7 @@ bool RuleInvalidationDataVisitor<VisitorType>::
         break;
       default:
         if constexpr (is_builder()) {
-          rule_invalidation_data_.pseudos_in_has_argument.insert(pseudo_type);
+          rule_invalidation_data_.pseudos_in_has_argument.Put(pseudo_type);
         }
         break;
     }
