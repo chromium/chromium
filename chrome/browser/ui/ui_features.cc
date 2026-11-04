@@ -132,7 +132,9 @@ BASE_FEATURE(kSettingsRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
 // and the search WebUI that consumes it. Only takes effect when
 // kSettingsRefresh2026 is also enabled.
 BASE_FEATURE(kSettingsSearch2026, base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables search in the app Chrome menu.
+// Enables search in the app Chrome menu. Only takes effect when
+// kAppMenuGlowUp is also enabled, since the search bar is part of the
+// action-based app menu.
 BASE_FEATURE(kChroMenuSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kChroMenuSearchQuery,

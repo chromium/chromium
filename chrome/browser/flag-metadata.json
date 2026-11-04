@@ -2032,6 +2032,15 @@
     "expiry_milestone": 170
   },
   {
+    "name": "chro-menu-search",
+    "owners": [
+      "dljames@chromium.org",
+      "hbecky@google.com",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "chrome-dark-neutrals-26",
     "owners": [
       "rtatum@google.com",

@@ -21078,6 +21078,7 @@ from previous Chrome versions.
   <int value="1807178878" label="FedCmAutoReauthn:enabled"/>
   <int value="1807374811" label="CCTModuleCache:enabled"/>
   <int value="1808301349" label="ChromeFindsInternals:enabled"/>
+  <int value="1809296247" label="ChroMenuSearch:enabled"/>
   <int value="1809704744"
       label="SyncAndroidPromosWithAlternativeTitle:disabled"/>
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
@@ -21765,6 +21766,7 @@ from previous Chrome versions.
   <int value="2010329451"
       label="ProfileCreationFrictionReductionExperimentRemoveSigninStep:disabled"/>
   <int value="2010787190" label="prompt-api-sampling-mode:enabled"/>
+  <int value="2011073378" label="ChroMenuSearch:disabled"/>
   <int value="2011785323" label="EnableSchemeBoundCookies:enabled"/>
   <int value="2011873998" label="LiveCaptionMultiLanguage:enabled"/>
   <int value="2012757088" label="EnergyEffect:disabled"/>

@@ -124,6 +124,11 @@ inline constexpr char kCentralizedInfoBarFrameworkName[] =
 inline constexpr char kCentralizedInfoBarFrameworkDescription[] =
     "Enables the centralized desktop infobars framework.";
 
+inline constexpr char kChroMenuSearchName[] = "ChroMenu Search";
+inline constexpr char kChroMenuSearchDescription[] =
+    "Enables search in the app Chrome menu. Only takes effect when "
+    "#app-menu-glow-up is also enabled.";
+
 inline constexpr char kCredentialManagementUnifiedUiName[] =
     "Credential Management Unified UI";
 inline constexpr char kCredentialManagementUnifiedUiDescription[] =

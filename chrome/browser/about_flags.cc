@@ -14469,6 +14469,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kBookmarkBarAreaKeyboardNavigation)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"chro-menu-search", flag_descriptions::kChroMenuSearchName,
+     flag_descriptions::kChroMenuSearchDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChroMenuSearch)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
