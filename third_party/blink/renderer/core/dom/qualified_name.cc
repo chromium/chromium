@@ -30,9 +30,87 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+
+namespace {
+
+// Converts ASCII lowercase characters to uppercase on the fly for StringHasher
+// so QualifiedName::BloomFilterSlow() produces the exact same hash as
+// LocalNameUpper().Hash() without allocating or interning an uppercase string.
+template <typename CharType>
+struct AsciiUpperHashReader {
+  static constexpr size_t kCompressionFactor = 1;
+  static constexpr size_t kExpansionFactor = 1;
+
+  ALWAYS_INLINE static uint64_t Uppercase(CharType ch) {
+    return ToAsciiUpper(ch);
+  }
+
+  // SAFETY: rapidhash callback.
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t Read64(const uint8_t* ptr) {
+    const CharType* p = reinterpret_cast<const CharType*>(ptr);
+#if defined(__SSE2__) || defined(__ARM_NEON__)
+    CharType b __attribute__((vector_size(8)));
+    memcpy(&b, p, sizeof(b));
+    b &= ~((b >= 'a' & b <= 'z') & 0x20);
+    uint64_t ret;
+    memcpy(&ret, &b, sizeof(b));
+    return ret;
+#else
+    if constexpr (sizeof(CharType) == 2) {
+      return Uppercase(p[0]) | (Uppercase(p[1]) << 16) |
+             (Uppercase(p[2]) << 32) | (Uppercase(p[3]) << 48);
+    } else {
+      return Uppercase(p[0]) | (Uppercase(p[1]) << 8) |
+             (Uppercase(p[2]) << 16) | (Uppercase(p[3]) << 24) |
+             (Uppercase(p[4]) << 32) | (Uppercase(p[5]) << 40) |
+             (Uppercase(p[6]) << 48) | (Uppercase(p[7]) << 56);
+    }
+#endif
+  }
+
+  // SAFETY: rapidhash callback.
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t Read32(const uint8_t* ptr) {
+    const CharType* p = reinterpret_cast<const CharType*>(ptr);
+#if defined(__SSE2__) || defined(__ARM_NEON__)
+    CharType b __attribute__((vector_size(4)));
+    memcpy(&b, p, sizeof(b));
+    b &= ~((b >= 'a' & b <= 'z') & 0x20);
+    uint32_t ret;
+    memcpy(&ret, &b, sizeof(b));
+    return ret;
+#else
+    if constexpr (sizeof(CharType) == 2) {
+      return Uppercase(p[0]) | (Uppercase(p[1]) << 16);
+    } else {
+      return Uppercase(p[0]) | (Uppercase(p[1]) << 8) |
+             (Uppercase(p[2]) << 16) | (Uppercase(p[3]) << 24);
+    }
+#endif
+  }
+
+  // SAFETY: rapidhash callback.
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t ReadSmall(
+      const uint8_t* ptr,
+      size_t size) {
+    if constexpr (sizeof(CharType) == 2) {
+      DCHECK_EQ(size, 2u);
+      CharType ch = static_cast<CharType>(
+          Uppercase(*reinterpret_cast<const CharType*>(ptr)));
+      const uint8_t* p = reinterpret_cast<const uint8_t*>(&ch);
+      return (uint64_t{p[0]} << 56) | (uint64_t{p[1]} << 32) | uint64_t{p[1]};
+    } else {
+      return (Uppercase(ptr[0]) << 56) | (Uppercase(ptr[size >> 1]) << 32) |
+             Uppercase(ptr[size - 1]);
+    }
+  }
+};
+
+}  // namespace
 
 struct SameSizeAsQualifiedNameImpl
     : public RefCounted<SameSizeAsQualifiedNameImpl> {
@@ -154,7 +232,25 @@ const AtomicString& QualifiedName::LocalNameUpperSlow() const {
 }
 
 uint32_t QualifiedName::BloomFilterSlow() const {
-  impl_->bloom_filter_ = Element::FilterForString(LocalNameUpper());
+  // Compute a case-insensitive Bloom filter from the ASCII-uppercase hash of
+  // `local_name_` without materializing or interning an uppercase AtomicString.
+  // Hashing uppercase characters avoids Bloom filter collisions between
+  // lowercase attribute names and lowercase class names in
+  // Element::attribute_or_class_bloom_.
+  StringImpl* impl = impl_->local_name_.Impl();
+  uint32_t hash = 0;
+  if (!impl) [[unlikely]] {
+    hash = 0;
+  } else if (!impl->length()) [[unlikely]] {
+    hash = impl->GetHash();
+  } else if (impl_->local_name_upper_) {
+    hash = impl_->local_name_upper_.Hash();
+  } else if (impl->Is8Bit()) [[likely]] {
+    hash = HashString24<AsciiUpperHashReader<LChar>>(impl->RawByteSpan());
+  } else {
+    hash = HashString24<AsciiUpperHashReader<UChar>>(impl->RawByteSpan());
+  }
+  impl_->bloom_filter_ = Element::FilterForHash(hash);
   return impl_->bloom_filter_;
 }
 

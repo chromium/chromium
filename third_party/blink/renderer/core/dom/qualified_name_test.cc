@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 
 namespace blink {
 
@@ -41,6 +43,27 @@ TEST_F(QualifiedNameTest, HashFitsInBitfield) {
     EXPECT_LE(computed_hash, 0xFFFFFFu);
     EXPECT_EQ(blink::GetHash(name), computed_hash);
   }
+}
+
+TEST_F(QualifiedNameTest, CaseInsensitiveBloomFilter) {
+  EXPECT_EQ(svg_names::kViewBoxAttr.bloom_filter,
+            svg_names::kViewBoxAttr.BloomFilter());
+  EXPECT_EQ(svg_names::kViewBoxAttr.BloomFilter(),
+            QualifiedName(AtomicString("viewbox")).BloomFilter());
+  EXPECT_EQ(svg_names::kViewBoxAttr.BloomFilter(),
+            QualifiedName(AtomicString("VIEWBOX")).BloomFilter());
+
+  QualifiedName mixed_case(AtomicString("data-CustomAttr"));
+  QualifiedName lower_case(AtomicString("data-customattr"));
+  QualifiedName upper_case(AtomicString("DATA-CUSTOMATTR"));
+  EXPECT_EQ(mixed_case.BloomFilter(), lower_case.BloomFilter());
+  EXPECT_EQ(mixed_case.BloomFilter(), upper_case.BloomFilter());
+  // Computing the Bloom filter should not eagerly materialize
+  // local_name_upper_.
+  EXPECT_TRUE(mixed_case.Impl()->local_name_upper_.IsNull());
+  EXPECT_EQ(mixed_case.LocalNameUpper(), AtomicString("DATA-CUSTOMATTR"));
+  EXPECT_EQ(mixed_case.BloomFilter(),
+            Element::FilterForString(mixed_case.LocalNameUpper()));
 }
 
 }  // namespace blink

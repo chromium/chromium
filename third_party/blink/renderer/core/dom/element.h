@@ -924,8 +924,7 @@ class CORE_EXPORT Element : public ContainerNode {
       const QualifiedName& attribute_name) {
     return attribute_name.BloomFilter();
   }
-  static TinyBloomFilter FilterForString(const AtomicString& str) {
-    unsigned hash = str.Hash();
+  static constexpr TinyBloomFilter FilterForHash(unsigned hash) {
     TinyBloomFilter filter = 0;
     // Build a 32-bit Bloom filter, with k=2. We extract the two
     // (5-bit) hashes that we need from non-overlapping parts of the
@@ -933,6 +932,9 @@ class CORE_EXPORT Element : public ContainerNode {
     filter |= 1u << (hash & 31);
     filter |= 1u << ((hash >> 5) & 31);
     return filter;
+  }
+  static TinyBloomFilter FilterForString(const AtomicString& str) {
+    return FilterForHash(str.Hash());
   }
   bool SubtreeMayMatchClassOrAttrFilter(TinyBloomFilter filter) const {
     bool match = CouldMatchFilter(filter);
