@@ -10,11 +10,6 @@
  * #include=pdf-shared bottom-toolbar-shared
  * #css_wrapper_metadata_end */
 
-:host {
-  --cr-icon-button-margin-end: 0;
-  --cr-icon-button-margin-start: 0;
-}
-
 #vertical-separator {
   background: rgba(255, 255, 255, 0.3);
   height: 20px;
