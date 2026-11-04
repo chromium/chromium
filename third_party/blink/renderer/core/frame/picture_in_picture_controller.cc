@@ -4,12 +4,27 @@
 
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 
+#include "third_party/blink/renderer/core/buildflags.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+bool IsDocumentPictureInPictureWindowLookupEnabled() {
+#if BUILDFLAG(TARGET_OS_IS_ANDROID)
+  return RuntimeEnabledFeatures::
+      DocumentPictureInPictureWindowLookupAndroidEnabled();
+#else
+  return true;
+#endif  // BUILDFLAG(TARGET_OS_IS_ANDROID)
+}
+
+}  // namespace
 
 PictureInPictureController::PictureInPictureController(Document& document)
     : Supplement<Document>(document) {}
@@ -58,25 +73,23 @@ bool PictureInPictureController::IsInDocumentPictureInPicture(
 // static
 LocalDOMWindow* PictureInPictureController::GetDocumentPictureInPictureWindow(
     const Document& document) {
-#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
+  if (!IsDocumentPictureInPictureWindowLookupEnabled()) {
+    return nullptr;
+  }
   PictureInPictureController* controller =
       Supplement<Document>::From<PictureInPictureController>(document);
   return controller ? controller->GetDocumentPictureInPictureWindow() : nullptr;
-#else
-  return nullptr;
-#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 }
 
 // static
 LocalDOMWindow* PictureInPictureController::GetDocumentPictureInPictureOwner(
     const Document& document) {
-#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
+  if (!IsDocumentPictureInPictureWindowLookupEnabled()) {
+    return nullptr;
+  }
   PictureInPictureController* controller =
       Supplement<Document>::From<PictureInPictureController>(document);
   return controller ? controller->GetDocumentPictureInPictureOwner() : nullptr;
-#else
-  return nullptr;
-#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 }
 
 void PictureInPictureController::Trace(Visitor* visitor) const {

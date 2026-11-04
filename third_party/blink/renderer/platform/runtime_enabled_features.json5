@@ -2714,6 +2714,13 @@
         "default": "stable",
       },
     },
+    // Kill switch for letting Blink look up a document's picture-in-picture
+    // window and owner on Android, which lets the window focus its opener
+    // (crbug.com/581052751). Only checked on Android.
+    {
+      name: "DocumentPictureInPictureWindowLookupAndroid",
+      status: "stable",
+    },
     // Enables the ability to use Document Policy header to control feature
     // DocumentDomain.
     {
