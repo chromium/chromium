@@ -44,6 +44,7 @@ ukm::SourceId TestAutofillDriver::GetPageUkmSourceId() {
 }
 
 void TestAutofillDriver::TriggerFormExtractionInAllFrames(
+    bool force,
     base::OnceCallback<void(bool)> form_extraction_finished_callback) {
   std::vector<FormData> forms;
   GetAutofillManager().ForEachCachedForm(
@@ -58,7 +59,5 @@ void TestAutofillDriver::TriggerFormExtractionInAllFrames(
         base::BindOnce(std::move(form_extraction_finished_callback), true));
   }
 }
-
-void TestAutofillDriver::ClearFormCacheInAllFrames() {}
 
 }  // namespace autofill

@@ -635,12 +635,11 @@ bool AutofillManager::CanShowAutofillUi() const {
 void AutofillManager::TriggerFormExtractionInAllFrames(
     base::OnceCallback<void(bool success)> form_extraction_finished_callback) {
   driver_->TriggerFormExtractionInAllFrames(
-      std::move(form_extraction_finished_callback));
+      /*force=*/false, std::move(form_extraction_finished_callback));
 }
 
 void AutofillManager::ReparseKnownForms() {
-  driver_->ClearFormCacheInAllFrames();
-  TriggerFormExtractionInAllFrames(base::DoNothing());
+  driver_->TriggerFormExtractionInAllFrames(/*force=*/true, base::DoNothing());
 }
 
 base::flat_map<FieldGlobalId, AutofillServerPrediction>

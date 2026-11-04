@@ -329,15 +329,20 @@ void ContentAutofillDriver::Reset(ContentAutofillDriverFactoryPassKey) {
 }
 
 void ContentAutofillDriver::TriggerFormExtractionInDriverFrame(
-    AutofillDriverRouterAndFormForestPassKey pass_key) {
+    AutofillDriverRouterAndFormForestPassKey pass_key,
+    bool force) {
   if (!IsActive()) {
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     return;
+  }
+  if (force) {
+    GetAutofillAgent()->ClearFormCache();
   }
   GetAutofillAgent()->TriggerFormExtraction();
 }
 
 void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
+    bool force,
     base::OnceCallback<void(bool success)> form_extraction_finished_callback) {
   std::vector<ContentAutofillDriver*> drivers;
   render_frame_host()->GetMainFrame()->ForEachRenderFrameHost(
@@ -359,20 +364,12 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
           },
           std::move(form_extraction_finished_callback)));
   for (ContentAutofillDriver* driver : drivers) {
+    if (force) {
+      driver->GetAutofillAgent()->ClearFormCache();
+    }
     driver->GetAutofillAgent()->TriggerFormExtractionWithResponse(
         barrier_callback);
   }
-}
-
-void ContentAutofillDriver::ClearFormCacheInAllFrames() {
-  render_frame_host()->GetMainFrame()->ForEachRenderFrameHost(
-      [](content::RenderFrameHost* rfh) {
-        if (rfh->IsActive()) {
-          if (auto* driver = GetForRenderFrameHost(rfh)) {
-            driver->GetAutofillAgent()->ClearFormCache();
-          }
-        }
-      });
 }
 
 void ContentAutofillDriver::ObserveFieldVisibility(

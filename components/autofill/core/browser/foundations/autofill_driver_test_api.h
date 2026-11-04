@@ -22,8 +22,8 @@ class AutofillDriverTestApi {
     driver_->lifecycle_state_ = lifecycle_state;
   }
 
-  void TriggerFormExtractionInDriverFrame() {
-    driver_->TriggerFormExtractionInDriverFrame(/*pass_key=*/{});
+  void TriggerFormExtractionInDriverFrame(bool force = false) {
+    driver_->TriggerFormExtractionInDriverFrame(/*pass_key=*/{}, force);
   }
 
  protected:

@@ -64,10 +64,11 @@ class MockAutofillDriver : public TestAutofillDriver {
   explicit MockAutofillDriver(TestAutofillClient* client)
       : TestAutofillDriver(client) {
     ON_CALL(*this, TriggerFormExtractionInAllFrames)
-        .WillByDefault([this](base::OnceCallback<void(bool)>
+        .WillByDefault([this](bool force,
+                              base::OnceCallback<void(bool)>
                                   form_extraction_finished_callback) {
           TestAutofillDriver::TriggerFormExtractionInAllFrames(
-              std::move(form_extraction_finished_callback));
+              force, std::move(form_extraction_finished_callback));
         });
   }
   MockAutofillDriver(const MockAutofillDriver&) = delete;
@@ -77,9 +78,8 @@ class MockAutofillDriver : public TestAutofillDriver {
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const));
   MOCK_METHOD(void,
               TriggerFormExtractionInAllFrames,
-              (base::OnceCallback<void(bool)>),
-              ());
-  MOCK_METHOD(void, ClearFormCacheInAllFrames, (), (override));
+              (bool, base::OnceCallback<void(bool)>),
+              (override));
 };
 
 class MockFieldClassificationModelHandler
@@ -898,13 +898,14 @@ TEST_F(AutofillManagerTest, CanShowAutofillUi) {
 }
 
 TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
-  EXPECT_CALL(autofill_driver(), TriggerFormExtractionInAllFrames);
+  EXPECT_CALL(autofill_driver(),
+              TriggerFormExtractionInAllFrames(/*force=*/false, _));
   autofill_manager().TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 
 TEST_F(AutofillManagerTest, ReparseKnownForms) {
-  EXPECT_CALL(autofill_driver(), ClearFormCacheInAllFrames);
-  EXPECT_CALL(autofill_driver(), TriggerFormExtractionInAllFrames);
+  EXPECT_CALL(autofill_driver(),
+              TriggerFormExtractionInAllFrames(/*force=*/true, _));
   autofill_manager().ReparseKnownForms();
 }
 

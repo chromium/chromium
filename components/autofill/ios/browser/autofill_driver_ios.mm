@@ -384,7 +384,8 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
     const std::u16string& value) {}
 
 void AutofillDriverIOS::TriggerFormExtractionInDriverFrame(
-    AutofillDriverRouterAndFormForestPassKey pass_key) {
+    AutofillDriverRouterAndFormForestPassKey pass_key,
+    bool force) {
   if (!is_processed()) {
     return;
   }
@@ -452,6 +453,7 @@ void AutofillDriverIOS::FetchFormsFilteredByName(
 }
 
 void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
+    bool force,
     base::OnceCallback<void(bool)> form_extraction_finished_callback) {
   if (!web_state_) {
     std::move(form_extraction_finished_callback).Run(false);
@@ -481,10 +483,6 @@ void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
   for (AutofillDriverIOS* driver : drivers) {
     driver->ScanForms(/*immediately=*/false, barrier_callback);
   }
-}
-
-void AutofillDriverIOS::ClearFormCacheInAllFrames() {
-  // iOS does not maintain a renderer-side form cache across scans.
 }
 
 void AutofillDriverIOS::ObserveFieldVisibility(

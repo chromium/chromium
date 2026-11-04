@@ -220,9 +220,9 @@ class ContentAutofillDriver : public AutofillDriver,
   // autofill::AutofillDriver:
   void ExposeDomNodeIdsInAllFrames() override;
   void TriggerFormExtractionInAllFrames(
+      bool force,
       base::OnceCallback<void(bool success)> form_extraction_finished_callback)
       override;
-  void ClearFormCacheInAllFrames() override;
   void RendererShouldClearPreviewedForm() override;
 
   // Group (1b): browser -> renderer events, routed (see comment above).
@@ -283,7 +283,8 @@ class ContentAutofillDriver : public AutofillDriver,
   // Group (1d): browser -> renderer events, unrouted (see comment above).
   // autofill::AutofillDriver:
   void TriggerFormExtractionInDriverFrame(
-      AutofillDriverRouterAndFormForestPassKey pass_key) override;
+      AutofillDriverRouterAndFormForestPassKey pass_key,
+      bool force) override;
 
   // Group (2a): renderer -> browser events, broadcast (see comment above).
   // mojom::AutofillDriver:

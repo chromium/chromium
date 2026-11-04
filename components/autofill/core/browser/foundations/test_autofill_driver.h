@@ -104,12 +104,12 @@ class TestAutofillDriverTemplate : public T {
 #endif
   }
   void TriggerFormExtractionInDriverFrame(
-      AutofillDriver::AutofillDriverRouterAndFormForestPassKey pass_key)
-      override {}
+      AutofillDriver::AutofillDriverRouterAndFormForestPassKey pass_key,
+      bool force) override {}
   void TriggerFormExtractionInAllFrames(
+      bool force,
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override {}
-  void ClearFormCacheInAllFrames() override {}
   void ExtractFormWithField(
       FieldGlobalId field_id,
       AutofillDriver::BrowserFormHandler response_handler) override {}
@@ -225,9 +225,9 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   ukm::SourceId GetPageUkmSourceId() const override;
   ukm::SourceId GetPageUkmSourceId();
   void TriggerFormExtractionInAllFrames(
+      bool force,
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
-  void ClearFormCacheInAllFrames() override;
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
     autofill_manager_ = std::move(autofill_manager);

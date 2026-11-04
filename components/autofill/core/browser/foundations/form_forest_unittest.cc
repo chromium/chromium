@@ -333,7 +333,7 @@ class FakeAutofillDriver : public TestAutofillDriver {
 
   MOCK_METHOD(void,
               TriggerFormExtractionInDriverFrame,
-              (AutofillDriverRouterAndFormForestPassKey),
+              (AutofillDriverRouterAndFormForestPassKey, bool),
               (override));
 
   // Fakes whether a subframe is a root frame from the perspective of

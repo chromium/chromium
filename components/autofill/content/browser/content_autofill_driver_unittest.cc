@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -185,6 +186,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // mojom::AutofillAgent:
+  MOCK_METHOD(void, ClearFormCache, (), (override));
   MOCK_METHOD(void,
               TriggerFormExtractionWithResponse,
               (base::OnceCallback<void(bool)>),
@@ -229,7 +231,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override {}
-  void ClearFormCache() override {}
 
   void ApplyFieldsAction(mojom::FormActionType action_type,
                          mojom::ActionPersistence action_persistence,
@@ -860,21 +861,37 @@ TEST_F(ContentAutofillDriverTestWithAddressForm, ApplyFieldAction_Preview) {
   EXPECT_EQ(input_value, agent().GetString16PreviewFieldWithValue(field));
 }
 
-TEST_F(ContentAutofillDriverTest, TriggerFormExtractionInAllFrames) {
+class ContentAutofillDriverTest_TriggerFormExtractionWithResponse
+    : public ContentAutofillDriverTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool should_force() const { return GetParam(); }
+};
+
+TEST_P(ContentAutofillDriverTest_TriggerFormExtractionWithResponse,
+       TriggerFormExtractionInAllFrames) {
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   base::OnceCallback<void(bool)> form_extraction_finished_callback;
 
-  EXPECT_CALL(agent(), TriggerFormExtractionWithResponse)
-      .WillOnce(MoveArg<0>(&form_extraction_finished_callback));
-  driver().browser_events().TriggerFormExtractionInAllFrames(base::BindOnce(
-      [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-      &run_loop));
+  {
+    testing::InSequence s;
+    EXPECT_CALL(agent(), ClearFormCache).Times(should_force());
+    EXPECT_CALL(agent(), TriggerFormExtractionWithResponse)
+        .WillOnce(MoveArg<0>(&form_extraction_finished_callback));
+  }
+  driver().browser_events().TriggerFormExtractionInAllFrames(
+      should_force(), base::IgnoreArgs<bool>(run_loop.QuitClosure()));
   run_loop.RunUntilIdle();
 
   EXPECT_FALSE(form_extraction_finished_callback.is_null());
   std::move(form_extraction_finished_callback).Run(true);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ContentAutofillDriverTest,
+    ContentAutofillDriverTest_TriggerFormExtractionWithResponse,
+    ::testing::Bool());
 
 TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm,
        ExtractFormWithField_NotFound) {

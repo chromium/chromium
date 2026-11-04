@@ -500,7 +500,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // https://crrev.com/c/3055422 for a draft implementation.
   if (AutofillDriver* parent_driver = nullptr;
       !frame->parent_form && (parent_driver = driver.GetParent())) {
-    parent_driver->TriggerFormExtractionInDriverFrame(/*pass_key=*/{});
+    parent_driver->TriggerFormExtractionInDriverFrame(/*pass_key=*/{},
+                                                      /*force=*/false);
   }
 }
 

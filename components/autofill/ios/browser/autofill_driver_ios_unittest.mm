@@ -413,7 +413,8 @@ TEST_F(AutofillDriverIOSTest, TriggerFormExtractionInAllFrames_Success) {
   [bridge() setForms:bridge_result];
 
   base::test::TestFuture<bool> future;
-  main_frame_driver()->TriggerFormExtractionInAllFrames(future.GetCallback());
+  main_frame_driver()->TriggerFormExtractionInAllFrames(/*force=*/false,
+                                                        future.GetCallback());
 
   EXPECT_TRUE(future.Get());
   // Forms seen should be notified for both frames since bridge returns forms.
@@ -430,7 +431,8 @@ TEST_F(AutofillDriverIOSTest, TriggerFormExtractionInAllFrames_Failure) {
   [bridge() setFetchFormsCompletionHandler:std::move(callback)];
 
   base::test::TestFuture<bool> future;
-  main_frame_driver()->TriggerFormExtractionInAllFrames(future.GetCallback());
+  main_frame_driver()->TriggerFormExtractionInAllFrames(/*force=*/false,
+                                                        future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }

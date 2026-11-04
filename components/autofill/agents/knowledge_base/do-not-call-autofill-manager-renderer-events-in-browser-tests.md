@@ -87,7 +87,8 @@ ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), form_url));
 content::SimulateMouseClickOrTapElementWithId(web_contents(), "field_id");
 
 // Acceptable fallback when DOM hit-testing is impractical or flaky:
-autofill_manager().driver().TriggerFormExtractionInAllFrames(base::DoNothing());
+autofill_manager().driver().TriggerFormExtractionInAllFrames(
+    /*force=*/false, base::DoNothing());
 autofill_manager().driver().RendererShouldTriggerSuggestions(
     first_field.global_id(),
     AutofillSuggestionTriggerSource::kFormControlElementClicked);
