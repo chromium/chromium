@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -1106,6 +1107,47 @@ TEST_F(GCMDriverInstanceIDTest, GCMClientNotReadyBeforeDeleteToken) {
   // DeleteToken operation will be invoked after GCMClient becomes ready.
   GetGCMClient()->PerformDelayedStart();
   WaitForAsyncOperation();
+  EXPECT_EQ(GCMClient::SUCCESS, unregistration_result());
+}
+
+TEST_F(GCMDriverInstanceIDTest, StopClearsPendingTokenCallbacks) {
+  CreateDriver();
+  PumpIOLoop();
+  PumpUILoop();
+
+  // Hold GCMClient startup so GetToken and DeleteToken stay queued.
+  GetGCMClient()->set_start_mode_overridding(
+      FakeGCMClient::FORCE_TO_ALWAYS_DELAY_START_GCM);
+
+  AddAppHandlers();
+  GetToken(kTestAppID1, kUserID1, kScope, GCMDriverTest::DO_NOT_WAIT);
+  DeleteToken(kTestAppID1, kUserID1, kScope, GCMDriverTest::DO_NOT_WAIT);
+  PumpIOLoop();
+  PumpUILoop();
+  ASSERT_TRUE(registration_id().empty());
+
+  // Removing all app handlers stops GCMDriverDesktop and calls
+  // pending token callbacks with GCM_DISABLED so subsequent requests do not
+  // fail with ASYNC_OPERATION_PENDING.
+  RemoveAppHandlers();
+  EXPECT_TRUE(registration_id().empty());
+  EXPECT_EQ(GCMClient::GCM_DISABLED, registration_result());
+  EXPECT_EQ(GCMClient::GCM_DISABLED, unregistration_result());
+  PumpIOLoop();
+  PumpUILoop();
+
+  GetGCMClient()->set_start_mode_overridding(FakeGCMClient::RESPECT_START_MODE);
+  AddAppHandlers();
+  PumpIOLoop();
+  PumpUILoop();
+
+  const std::string expected_token =
+      FakeGCMClient::GenerateInstanceIDToken(kUserID1, kScope);
+  GetToken(kTestAppID1, kUserID1, kScope, GCMDriverTest::WAIT);
+  EXPECT_EQ(expected_token, registration_id());
+  EXPECT_EQ(GCMClient::SUCCESS, registration_result());
+
+  DeleteToken(kTestAppID1, kUserID1, kScope, GCMDriverTest::WAIT);
   EXPECT_EQ(GCMClient::SUCCESS, unregistration_result());
 }
 
