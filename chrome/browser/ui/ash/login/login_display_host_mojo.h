@@ -35,6 +35,10 @@
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
+
 namespace metrics {
 class MetricsService;
 }  // namespace metrics
@@ -68,13 +72,15 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
  public:
   // `local_state`, `metrics_service`, `application_locale_storage` and
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
-  // `shared_url_loader_factory` must be non-null.
+  // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostMojo(
       PrefService* local_state,
       ::metrics::MetricsService* metrics_service,
       ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash,
       DisplayedScreen displayed_screen,
       bool update_geolocation_usage_allowed);
 

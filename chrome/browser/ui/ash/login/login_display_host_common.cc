@@ -80,6 +80,7 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -233,12 +234,14 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(CHECK_DEREF(metrics_service)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      component_manager_ash_(std::move(component_manager_ash)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       kiosk_app_menu_controller_(local_state),
@@ -249,6 +252,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
       oobe_metrics_helper_(
           std::make_unique<OobeMetricsHelper>(local_state, metrics_service)) {
   CHECK(shared_url_loader_factory_);
+  CHECK(component_manager_ash_);
 
   if (features::IsOobeCrosEventsEnabled()) {
     oobe_cros_events_metrics_ = std::make_unique<OobeCrosEventsMetrics>(

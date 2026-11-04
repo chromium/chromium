@@ -154,6 +154,7 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
         g_browser_process->GetFeatures()->application_locale_storage(),
         g_browser_process->shared_url_loader_factory(),
         g_browser_process->platform_part()->browser_policy_connector_ash(),
+        g_browser_process->platform_part()->component_manager_ash(),
         WelcomeView::kScreenId);
     test::WaitForWelcomeScreen();
   }

@@ -22,6 +22,10 @@ namespace base {
 class CommandLine;
 }
 
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
+
 namespace metrics {
 class MetricsService;
 }  // namespace metrics
@@ -67,11 +71,14 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
   //   - Starts a stub login session for dev or test;
   // `metrics_service` and `application_locale_storage` must not be nullptr,
   // and must be valid while main RunLoop is running.
-  // `shared_url_loader_factory` must not be nullptr.
+  // `shared_url_loader_factory` and `component_manager_ash` must not be
+  // nullptr.
   void Initialize(
       ::metrics::MetricsService* metrics_service,
       ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash,
       const base::CommandLine& parsed_command_line,
       Profile* profile,
       bool is_running_test);

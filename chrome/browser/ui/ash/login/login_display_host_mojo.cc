@@ -193,6 +193,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
@@ -200,6 +201,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
                              application_locale_storage,
                              shared_url_loader_factory,
                              browser_policy_connector_ash,
+                             std::move(component_manager_ash),
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
@@ -935,8 +937,7 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   wizard_controller_ = std::make_unique<WizardController>(
       &local_state_.get(), &metrics_service_.get(),
       &application_locale_storage_.get(), shared_url_loader_factory_.get(),
-      &browser_policy_connector_ash_.get(),
-      g_browser_process->platform_part()->component_manager_ash(),
+      &browser_policy_connector_ash_.get(), component_manager_ash_,
       g_browser_process->platform_part()
           ->device_restriction_schedule_controller(),
       GetWizardContext());

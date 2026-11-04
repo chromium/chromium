@@ -11,6 +11,10 @@
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
+
 namespace metrics {
 class MetricsService;
 }  // namespace metrics
@@ -30,13 +34,14 @@ namespace ash {
 // `local_state`, `metrics_service`, `application_locale_storage` and
 // `browser_policy_connector_ash` must be non-null and must outlive the
 // LoginDisplayHost that this function creates.
-// `shared_url_loader_factory` must be non-null.
+// `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void ShowLoginWizard(
     PrefService* local_state,
     ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     OobeScreenId first_screen);
 
 // Shuts down LoginDisplayHostWebUI host and creates LoginDisplayHostMojo
@@ -44,13 +49,15 @@ void ShowLoginWizard(
 // `local_state`, `metrics_service`, `application_locale_storage` and
 // `browser_policy_connector_ash` must be non-null and must outlive the
 // LoginDisplayHost that this function creates.
-// `shared_url_loader_factory` must be non-null.
+// `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void SwitchWebUItoMojo(
     PrefService* local_state,
     ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh>
+        component_manager_ash);
 
 }  // namespace ash
 

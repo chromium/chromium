@@ -85,13 +85,14 @@ void RemoveObsoleteKioskCryptohomes() {
 // `local_state`, `metrics_service`, `application_locale_storage`, and
 // `browser_policy_connector_ash` must be non-null and must outlive
 // LoginDisplayHostWebUI.
-// `shared_url_loader_factory` must be non-null.
+// `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void StartKioskSession(
     PrefService* local_state,
     ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     KioskAppId app,
     bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
@@ -105,7 +106,8 @@ void StartKioskSession(
   // Manages its own lifetime. See ShutdownDisplayHost().
   auto* display_host = new LoginDisplayHostWebUI(
       local_state, metrics_service, application_locale_storage,
-      std::move(shared_url_loader_factory), browser_policy_connector_ash);
+      std::move(shared_url_loader_factory), browser_policy_connector_ash,
+      std::move(component_manager_ash));
   display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
@@ -116,19 +118,22 @@ void StartKioskSession(
 // `local_state`, `metrics_service`, `application_locale_storage`, and
 // `browser_policy_connector_ash` must be non-null and must outlive
 // LoginDisplayHostWebUI.
-// `shared_url_loader_factory` must be non-null.
+// `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void StartAutoLaunchKioskSession(
     PrefService* local_state,
     ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash) {
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh>
+        component_manager_ash) {
   auto app = KioskController::Get().GetAutoLaunchApp();
   CHECK(app.has_value());
 
   StartKioskSession(local_state, metrics_service, application_locale_storage,
                     std::move(shared_url_loader_factory),
-                    browser_policy_connector_ash, app.value().id(),
+                    browser_policy_connector_ash,
+                    std::move(component_manager_ash), app.value().id(),
                     /*is_auto_launch=*/true);
 }
 
@@ -136,17 +141,20 @@ void StartAutoLaunchKioskSession(
 // `local_state`, `metrics_service`, `application_locale_storage`, and
 // `browser_policy_connector_ash` must be non-null and must outlive the
 // LoginDisplayHost created by ShowLoginWizard().
-// `shared_url_loader_factory` must be non-null.
+// `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void StartLoginOobeSession(
     PrefService* local_state,
     ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash) {
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh>
+        component_manager_ash) {
   // State will be defined once out-of-box/login branching is complete.
   ShowLoginWizard(local_state, metrics_service, application_locale_storage,
                   std::move(shared_url_loader_factory),
-                  browser_policy_connector_ash, OOBE_SCREEN_UNKNOWN);
+                  browser_policy_connector_ash,
+                  std::move(component_manager_ash), OOBE_SCREEN_UNKNOWN);
 
   // Reset reboot after update flag when login screen is shown.
   if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
@@ -459,12 +467,14 @@ void ChromeSessionManager::Initialize(
     ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     const base::CommandLine& parsed_command_line,
     Profile* profile,
     bool is_running_test) {
   CHECK(metrics_service);
   CHECK(application_locale_storage);
   CHECK(shared_url_loader_factory);
+  CHECK(component_manager_ash);
 
   // If a forced powerwash was triggered and no confirmation from the user is
   // necessary, we trigger the device wipe here before the user can log in again
@@ -506,20 +516,20 @@ void ChromeSessionManager::Initialize(
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state_.get())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
-    StartAutoLaunchKioskSession(&local_state_.get(), metrics_service,
-                                application_locale_storage,
-                                std::move(shared_url_loader_factory),
-                                &browser_policy_connector_ash_.get());
+    StartAutoLaunchKioskSession(
+        &local_state_.get(), metrics_service, application_locale_storage,
+        std::move(shared_url_loader_factory),
+        &browser_policy_connector_ash_.get(), std::move(component_manager_ash));
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
     if (is_running_test && !force_login_screen_in_test) {
       return;
     }
     VLOG(1) << "Starting Chrome with login/oobe screen.";
-    StartLoginOobeSession(&local_state_.get(), metrics_service,
-                          application_locale_storage,
-                          std::move(shared_url_loader_factory),
-                          &browser_policy_connector_ash_.get());
+    StartLoginOobeSession(
+        &local_state_.get(), metrics_service, application_locale_storage,
+        std::move(shared_url_loader_factory),
+        &browser_policy_connector_ash_.get(), std::move(component_manager_ash));
   } else {
     VLOG(1) << "Starting Chrome with a user session.";
     StartUserSession(std::move(shared_url_loader_factory), user_manager_,

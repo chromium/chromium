@@ -150,6 +150,7 @@ static_library("login") {
     "//chromeos/ash/resources:resources_grit",
     "//components/application_locale_storage",
     "//components/captive_portal/core",
+    "//components/component_updater/ash",
     "//components/constrained_window",
     "//components/content_settings/core/common",
     "//components/language/core/browser",
