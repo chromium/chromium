@@ -184,6 +184,13 @@ const char kInfobarSaveCvcModalEventHistogram[] =
 // Badge.
 const char kInfobarSaveCvcBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeSaveCvc";
+
+// Histogram names for InfobarTypeContextualCue.
+// Banner.
+const char kInfobarContextualCueBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeContextualCue";
+const char kInfobarContextualCueBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeContextualCue";
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -260,8 +267,8 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
           kInfobarAutofillAiSaveEntityBannerEventHistogram, event);
       break;
     case InfobarType::kInfobarTypeContextualCue:
-      // TODO(crbug.com/559227915): Record infobar banner events if standard
-      // banner metrics are needed for contextual cues.
+      base::UmaHistogramEnumeration(kInfobarContextualCueBannerEventHistogram,
+                                    event);
       break;
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support banners.
@@ -334,8 +341,8 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
           kInfobarAutofillAiSaveEntityBannerDismissTypeHistogram, dismissType);
       break;
     case InfobarType::kInfobarTypeContextualCue:
-      // TODO(crbug.com/559227915): Record infobar banner dismiss metrics if
-      // needed.
+      base::UmaHistogramEnumeration(
+          kInfobarContextualCueBannerDismissTypeHistogram, dismissType);
       break;
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support banners.
