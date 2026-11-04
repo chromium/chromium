@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Destroying a MediaSource's context during attachment keeps it closed</title>
+<script src="/w3c/resources/testharness.js"></script>
+<script src="/w3c/resources/testharnessreport.js"></script>
+<body>
+<script>
+// Regression test for https://crbug.com/577171064: when the context owning a
+// MediaSource is destroyed after a media element in another document starts
+// attaching to it, but before that attachment completes, the MediaSource must
+// remain closed. Otherwise it would open with a reference to the media
+// element's demuxer, which dangles once the element's player is destroyed.
+async_test(t => {
+  // The window load event is delayed until the media element finishes
+  // attaching to the MediaSource, so the test must start before load.
+  assert_equals(document.readyState, 'loading', 'document.readyState');
+
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const mediaSource = new iframe.contentWindow.MediaSource();
+
+  const video = document.createElement('video');
+  document.body.appendChild(video);
+
+  // 'loadstart' is queued just before the media element starts attaching to
+  // the MediaSource, and fires before the element's player finishes opening
+  // the MediaSource. Destroy the MediaSource's context in that window.
+  video.addEventListener('loadstart', t.step_func(() => {
+    iframe.remove();
+    assert_equals(mediaSource.readyState, 'closed',
+                  'readyState after context destruction');
+  }), {once: true});
+
+  window.addEventListener('load', t.step_func(() => {
+    assert_equals(mediaSource.readyState, 'closed',
+                  'readyState after attachment completes');
+    assert_true(isNaN(mediaSource.duration),
+                'duration after attachment completes');
+
+    // Detach the media element, which destroys its player and demuxer.
+    video.removeAttribute('src');
+    video.load();
+
+    assert_equals(mediaSource.readyState, 'closed', 'readyState after detach');
+    assert_true(isNaN(mediaSource.duration), 'duration after detach');
+    t.done();
+  }));
+
+  video.src = URL.createObjectURL(mediaSource);
+}, 'MediaSource stays closed if its context is destroyed during attachment');
+</script>
+</body>
