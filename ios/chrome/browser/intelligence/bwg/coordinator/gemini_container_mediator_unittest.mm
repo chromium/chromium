@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
@@ -275,8 +275,8 @@ class FakeGeminiContainerMediatorEventHandler
   bool force_dismiss_floaty_called_ = false;
 };
 
-// A test spy for `GeminiSharedTabsDelegate`.
-class FakeGeminiSharedTabsDelegate : public GeminiSharedTabsDelegate {
+// A test spy for `GeminiSharedTabsManager`.
+class FakeGeminiSharedTabsManager : public GeminiSharedTabsManager {
  public:
   NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const override {
     return inactive_shared_tabs_;
@@ -362,7 +362,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
         authenticationService:AuthenticationServiceFactory::GetForProfile(
                                   profile_.get())
                  eventHandler:&delegate_
-           sharedTabsDelegate:&shared_tabs_delegate_
+            sharedTabsManager:&shared_tabs_manager_
         sessionMetricsManager:session_metrics_manager_];
     mediator_.containerHandler = mock_container_handler_;
     mediator_.geminiHandler = mock_gemini_handler_;
@@ -403,7 +403,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   GeminiStartupState* startup_state_;
   FakeGeminiContainerMediatorEventHandler delegate_;
-  FakeGeminiSharedTabsDelegate shared_tabs_delegate_;
+  FakeGeminiSharedTabsManager shared_tabs_manager_;
   GeminiSessionMetricsManager* session_metrics_manager_;
   GeminiContainerMediator* mediator_;
   id mock_settings_handler_;
@@ -701,7 +701,7 @@ TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
           authenticationService:AuthenticationServiceFactory::GetForProfile(
                                     profile_.get())
                    eventHandler:nullptr
-             sharedTabsDelegate:nullptr
+              sharedTabsManager:nullptr
           sessionMetricsManager:session_metrics_manager_];
 
   // Verify that calling delegate methods does not crash when delegate is null.
@@ -806,10 +806,10 @@ TEST_F(GeminiContainerMediatorTest, TestConnectTriggersInitialUIState) {
 
     [mediator_mock connect];
 
-    EXPECT_EQ(1, shared_tabs_delegate_
+    EXPECT_EQ(1, shared_tabs_manager_
                      .update_shared_tabs_for_active_web_state_call_count_);
     EXPECT_EQ(active_web_state,
-              shared_tabs_delegate_.last_updated_active_web_state_);
+              shared_tabs_manager_.last_updated_active_web_state_);
     EXPECT_NE(nil, consumer.geminiViewController);
     EXPECT_TRUE(consumer.isZeroState);
     EXPECT_EQ(1, consumer.zeroStateChangeCount);
@@ -1177,10 +1177,10 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
 
-// Tests that propagatePageContext queries sharedTabsDelegate and
+// Tests that `propagatePageContext:` queries `sharedTabsManager` and
 // updates the active attached tab context.
 TEST_F(GeminiContainerMediatorTest,
-       TestPropagatePageContextQueriesSharedTabsDelegate) {
+       TestPropagatePageContextQueriesSharedTabsManager) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kGeminiMultiTabContext, kPageActionMenu}, {});
@@ -1192,7 +1192,7 @@ TEST_F(GeminiContainerMediatorTest,
   web_state->SetContentsMimeType("text/html");
 
   GeminiPageContext* shared_context = [[GeminiPageContext alloc] init];
-  shared_tabs_delegate_.inactive_shared_tabs_ = @[ shared_context ];
+  shared_tabs_manager_.inactive_shared_tabs_ = @[ shared_context ];
   GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
 
   [mediator_ propagatePageContext:active_context];
@@ -1201,9 +1201,9 @@ TEST_F(GeminiContainerMediatorTest,
             active_context.geminiPageContextAttachmentState);
   EXPECT_NE(ios::provider::GeminiPageContextComputationState::kBlocked,
             active_context.geminiPageContextComputationState);
-  EXPECT_EQ(1, shared_tabs_delegate_.save_active_page_context_call_count_);
+  EXPECT_EQ(1, shared_tabs_manager_.save_active_page_context_call_count_);
   EXPECT_EQ(active_context,
-            shared_tabs_delegate_.last_saved_active_page_context_);
+            shared_tabs_manager_.last_saved_active_page_context_);
 }
 
 // Tests that requestActivePageContextGeneration triggers page context
@@ -1393,7 +1393,7 @@ TEST_F(GeminiContainerMediatorTest, TestActuationMediumDetentHeight) {
 }
 
 // Test that switching the active `WebState` updates the page context via
-// `ios::provider::UpdateActivePageContext`, notifies `sharedTabsDelegate`, and
+// `ios::provider::UpdateActivePageContext`, notifies `sharedTabsManager`, and
 // transfers the `GeminiTabHelper` observer from the old `WebState` to the new
 // active `WebState` only while floaty is invoked.
 TEST_F(GeminiContainerMediatorTest,
@@ -1423,10 +1423,11 @@ TEST_F(GeminiContainerMediatorTest,
   browser_->GetWebStateList()->InsertWebState(
       std::move(second_web_state_owned),
       WebStateList::InsertionParams::Automatic().Activate(true));
-  EXPECT_EQ(1, shared_tabs_delegate_
-                   .update_shared_tabs_for_active_web_state_call_count_);
+  EXPECT_EQ(
+      1,
+      shared_tabs_manager_.update_shared_tabs_for_active_web_state_call_count_);
   EXPECT_EQ(second_web_state,
-            shared_tabs_delegate_.last_updated_active_web_state_);
+            shared_tabs_manager_.last_updated_active_web_state_);
   EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
 
   // Updating the title on the inactive first `WebState` should not trigger
@@ -1529,14 +1530,14 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_TRUE(first_wrapper.populateCalled);
   [first_wrapper completeWithEmptyPageContext];
   EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
-  EXPECT_EQ(1, shared_tabs_delegate_.save_active_page_context_call_count_);
-  ASSERT_NE(nil, shared_tabs_delegate_.last_saved_active_page_context_);
+  EXPECT_EQ(1, shared_tabs_manager_.save_active_page_context_call_count_);
+  ASSERT_NE(nil, shared_tabs_manager_.last_saved_active_page_context_);
   EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kSuccess,
-            shared_tabs_delegate_.last_saved_active_page_context_
+            shared_tabs_manager_.last_saved_active_page_context_
                 .geminiPageContextComputationState);
   EXPECT_NE(
       nullptr,
-      shared_tabs_delegate_.last_saved_active_page_context_.uniquePageContext);
+      shared_tabs_manager_.last_saved_active_page_context_.uniquePageContext);
 
   // Transitioning to `kThinking` does not update page context.
   [mediator_
@@ -1555,14 +1556,14 @@ TEST_F(GeminiContainerMediatorTest,
                  conversationID:@"conv"];
   EXPECT_EQ(first_wrapper, fake_page_context_wrapper_factory_.last_wrapper());
   EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
-  EXPECT_EQ(2, shared_tabs_delegate_.save_active_page_context_call_count_);
-  ASSERT_NE(nil, shared_tabs_delegate_.last_saved_active_page_context_);
+  EXPECT_EQ(2, shared_tabs_manager_.save_active_page_context_call_count_);
+  ASSERT_NE(nil, shared_tabs_manager_.last_saved_active_page_context_);
   EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kPending,
-            shared_tabs_delegate_.last_saved_active_page_context_
+            shared_tabs_manager_.last_saved_active_page_context_
                 .geminiPageContextComputationState);
   EXPECT_NE(
       nullptr,
-      shared_tabs_delegate_.last_saved_active_page_context_.uniquePageContext);
+      shared_tabs_manager_.last_saved_active_page_context_.uniquePageContext);
 }
 
 // Test that `assistantContainer:didChangeDetent:` requests full page context
@@ -1885,10 +1886,11 @@ TEST_F(GeminiContainerMediatorTest, TestUpdateWithStartupState) {
   [mediator_mock updateWithStartupState:startup_state];
 
   EXPECT_EQ(startup_state, mediator_.startupState);
-  EXPECT_EQ(1, shared_tabs_delegate_
-                   .update_shared_tabs_for_active_web_state_call_count_);
+  EXPECT_EQ(
+      1,
+      shared_tabs_manager_.update_shared_tabs_for_active_web_state_call_count_);
   EXPECT_EQ(active_web_state,
-            shared_tabs_delegate_.last_updated_active_web_state_);
+            shared_tabs_manager_.last_updated_active_web_state_);
   EXPECT_EQ(dummy_image, ios::provider::GetLastAttachedImage());
   EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
   EXPECT_THAT(
@@ -2032,34 +2034,34 @@ TEST_F(GeminiContainerMediatorTest, TestLensOverlayDismissesContainer) {
 }
 
 // Tests that `GeminiViewStateDelegate` tab methods on `GeminiContainerMediator`
-// route tab attachment and multi-tab queries to `sharedTabsDelegate`.
+// route tab attachment and multi-tab queries to `sharedTabsManager`.
 TEST_F(GeminiContainerMediatorTest,
-       TestViewStateDelegateTabMethodsRouteToSharedTabsDelegate) {
+       TestViewStateDelegateTabMethodsRouteToSharedTabsManager) {
   [mediator_ didRequestToDetachTabWithID:@"123"];
-  EXPECT_NSEQ(@"123", shared_tabs_delegate_.last_detached_tab_id_);
+  EXPECT_NSEQ(@"123", shared_tabs_manager_.last_detached_tab_id_);
 
   [mediator_ didAttachTabWithID:@"456"];
-  EXPECT_NSEQ(@"456", shared_tabs_delegate_.last_local_attachment_tab_id_);
+  EXPECT_NSEQ(@"456", shared_tabs_manager_.last_local_attachment_tab_id_);
   EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
-            shared_tabs_delegate_.last_local_attachment_state_);
+            shared_tabs_manager_.last_local_attachment_state_);
 
   [mediator_ didDetachTabWithID:@"789"];
-  EXPECT_NSEQ(@"789", shared_tabs_delegate_.last_local_attachment_tab_id_);
+  EXPECT_NSEQ(@"789", shared_tabs_manager_.last_local_attachment_tab_id_);
   EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kDetached,
-            shared_tabs_delegate_.last_local_attachment_state_);
+            shared_tabs_manager_.last_local_attachment_state_);
 
-  shared_tabs_delegate_.shared_tabs_count_ = 3u;
+  shared_tabs_manager_.shared_tabs_count_ = 3u;
   EXPECT_EQ(3u, [mediator_ attachedTabsCount]);
 
   GeminiPageContext* inactive_context = [[GeminiPageContext alloc] init];
-  shared_tabs_delegate_.inactive_shared_tabs_ = @[ inactive_context ];
+  shared_tabs_manager_.inactive_shared_tabs_ = @[ inactive_context ];
   EXPECT_TRUE([mediator_ isMultiTabUsed]);
 }
 
-// Tests that `sharedTabsDelegate` passed to `GeminiContainerMediator` is
+// Tests that `sharedTabsManager` passed to `GeminiContainerMediator` is
 // forwarded to `gatewayManager.tabPickerHandler`.
 TEST_F(GeminiContainerMediatorTest,
-       TestSharedTabsDelegateForwardedToTabPickerHandler) {
+       TestSharedTabsManagerForwardedToTabPickerHandler) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kGeminiMultiTabContext, kPageActionMenu}, {});
@@ -2070,12 +2072,12 @@ TEST_F(GeminiContainerMediatorTest,
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 profile_.get())
                eventHandler:&delegate_
-         sharedTabsDelegate:&shared_tabs_delegate_
+          sharedTabsManager:&shared_tabs_manager_
       sessionMetricsManager:session_metrics_manager_];
 
   EXPECT_EQ(
-      &shared_tabs_delegate_,
-      multi_tab_mediator.gatewayManager.tabPickerHandler.sharedTabsDelegate);
+      &shared_tabs_manager_,
+      multi_tab_mediator.gatewayManager.tabPickerHandler.sharedTabsManager);
   [multi_tab_mediator disconnect];
 }
 
@@ -2097,29 +2099,29 @@ TEST_F(GeminiContainerMediatorTest, TestOnPageContentPrefChanged) {
   EXPECT_TRUE(
       profile_->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting));
   EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
-            shared_tabs_delegate_.last_saved_active_page_context_
+            shared_tabs_manager_.last_saved_active_page_context_
                 .geminiPageContextAttachmentState);
 
-  int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+  int call_count = shared_tabs_manager_.save_active_page_context_call_count_;
 
   // Toggle page content preference to false.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
 
-  EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
+  EXPECT_GT(shared_tabs_manager_.save_active_page_context_call_count_,
             call_count);
   EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kUserDisabled,
-            shared_tabs_delegate_.last_saved_active_page_context_
+            shared_tabs_manager_.last_saved_active_page_context_
                 .geminiPageContextAttachmentState);
 
-  call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+  call_count = shared_tabs_manager_.save_active_page_context_call_count_;
 
   // Toggle page content preference back to true.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, true);
 
-  EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
+  EXPECT_GT(shared_tabs_manager_.save_active_page_context_call_count_,
             call_count);
   EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
-            shared_tabs_delegate_.last_saved_active_page_context_
+            shared_tabs_manager_.last_saved_active_page_context_
                 .geminiPageContextAttachmentState);
 }
 
@@ -2136,14 +2138,14 @@ TEST_F(GeminiContainerMediatorTest,
                       sessionID:@"test_session"
                  conversationID:@"test_convo"];
 
-  int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+  int call_count = shared_tabs_manager_.save_active_page_context_call_count_;
 
   // Toggle page content preference to false.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
 
   // Partial page context should not be updated while transcribing.
   EXPECT_EQ(call_count,
-            shared_tabs_delegate_.save_active_page_context_call_count_);
+            shared_tabs_manager_.save_active_page_context_call_count_);
 }
 
 // Tests that preference changes are not observed after mediator disconnects.
@@ -2152,12 +2154,12 @@ TEST_F(GeminiContainerMediatorTest, TestPrefChangesIgnoredAfterDisconnect) {
   [mediator_ connect];
   [mediator_ disconnect];
 
-  int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+  int call_count = shared_tabs_manager_.save_active_page_context_call_count_;
 
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
 
   EXPECT_EQ(call_count,
-            shared_tabs_delegate_.save_active_page_context_call_count_);
+            shared_tabs_manager_.save_active_page_context_call_count_);
 }
 
 }  // namespace

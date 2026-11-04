@@ -29,7 +29,7 @@ source_set("model") {
     "gemini_session_delegate.h",
     "gemini_session_handler.h",
     "gemini_session_handler.mm",
-    "gemini_shared_tabs_delegate.h",
+    "gemini_shared_tabs_manager.h",
     "gemini_suggestion_delegate.h",
     "gemini_suggestion_handler.h",
     "gemini_suggestion_handler.mm",

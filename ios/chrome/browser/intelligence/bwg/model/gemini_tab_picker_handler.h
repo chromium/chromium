@@ -7,16 +7,16 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_delegate.h"
 
-class GeminiSharedTabsDelegate;
+class GeminiSharedTabsManager;
 @protocol SnackbarCommands;
 @protocol TabPickerCommands;
 
 // The handler for Gemini Tab Picker actions. Configures and presents the Tab
-// Picker UI in response to GeminiTabPickerDelegate actions.
+// Picker UI in response to `GeminiTabPickerDelegate` actions.
 @interface GeminiTabPickerHandler : NSObject <GeminiTabPickerDelegate>
 
-// Delegate for shared tabs in a Gemini session.
-@property(nonatomic, assign) GeminiSharedTabsDelegate* sharedTabsDelegate;
+// Manager for shared tabs in a Gemini session.
+@property(nonatomic, assign) GeminiSharedTabsManager* sharedTabsManager;
 
 // The handler used to present the Tab Picker UI.
 @property(nonatomic, weak) id<TabPickerCommands> tabPickerHandler;

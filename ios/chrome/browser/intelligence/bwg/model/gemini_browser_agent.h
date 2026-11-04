@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -74,7 +74,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public signin::IdentityManager::Observer,
                            public TabGridStateObserver,
                            public GeminiContainerMediatorEventHandler,
-                           public GeminiSharedTabsDelegate {
+                           public GeminiSharedTabsManager {
  public:
   using SharedTabsList =
       std::vector<std::pair<web::WebStateID, __strong GeminiPageContext*>>;
@@ -186,7 +186,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void OnGeminiUIDidAppear() override;
   void ForceDismissFloaty() override;
 
-  // GeminiSharedTabsDelegate:
+  // Returns the manager for shared tabs in the Gemini session.
+  GeminiSharedTabsManager* GetSharedTabsManager();
+
+  // `GeminiSharedTabsManager`:
   NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const override;
   void SaveActivePageContextToSharedTabs(
       GeminiPageContext* active_page_context) override;

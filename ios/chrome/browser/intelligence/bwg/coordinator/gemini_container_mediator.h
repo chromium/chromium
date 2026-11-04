@@ -24,7 +24,7 @@ enum class EntryPoint;
 class AuthenticationService;
 class Browser;
 class GeminiContainerMediatorEventHandler;
-class GeminiSharedTabsDelegate;
+class GeminiSharedTabsManager;
 @class GeminiConfiguration;
 @class GeminiGatewayManager;
 @class GeminiPageContext;
@@ -77,7 +77,7 @@ class GeminiSharedTabsDelegate;
              actorService:(actor::ActorService*)actorService
     authenticationService:(AuthenticationService*)authService
              eventHandler:(GeminiContainerMediatorEventHandler*)eventHandler
-       sharedTabsDelegate:(GeminiSharedTabsDelegate*)sharedTabsDelegate
+        sharedTabsManager:(GeminiSharedTabsManager*)sharedTabsManager
     sessionMetricsManager:(GeminiSessionMetricsManager*)sessionMetricsManager
     NS_DESIGNATED_INITIALIZER;
 
@@ -145,7 +145,7 @@ class GeminiSharedTabsDelegate;
 // floaty is already invoked.
 - (void)updateWithStartupState:(GeminiStartupState*)startupState;
 
-// Propagates active page context and shared tabs from `sharedTabsDelegate` to
+// Propagates active page context and shared tabs from `sharedTabsManager` to
 // the provider.
 - (void)propagatePageContext:(GeminiPageContext*)pageContext;
 

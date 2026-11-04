@@ -53,7 +53,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
@@ -420,7 +420,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 browser_->GetProfile())
                eventHandler:this
-         sharedTabsDelegate:this
+          sharedTabsManager:GetSharedTabsManager()
       sessionMetricsManager:session_metrics_manager_];
 }
 
@@ -1479,6 +1479,10 @@ void GeminiBrowserAgent::OnTabPickerSelectionChanged(
 
   ios::provider::UpdateActivePageContext(active_page_context,
                                          GetInactiveSharedTabs());
+}
+
+GeminiSharedTabsManager* GeminiBrowserAgent::GetSharedTabsManager() {
+  return this;
 }
 
 std::set<web::WebStateID> GeminiBrowserAgent::GetSelectedTabsForTabPicker()

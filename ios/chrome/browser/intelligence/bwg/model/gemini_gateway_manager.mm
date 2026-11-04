@@ -110,7 +110,7 @@
   _sessionHandler = nil;
   _pageStateChangeHandler = nil;
   _cameraHandler = nil;
-  _tabPickerHandler.sharedTabsDelegate = nullptr;
+  _tabPickerHandler.sharedTabsManager = nullptr;
   _tabPickerHandler = nil;
   [_actuationHandler disconnect];
   _actuationHandler = nil;

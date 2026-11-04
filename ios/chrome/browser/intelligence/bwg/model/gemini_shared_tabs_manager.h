@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SHARED_TABS_DELEGATE_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SHARED_TABS_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SHARED_TABS_MANAGER_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SHARED_TABS_MANAGER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -21,21 +21,19 @@ class WebState;
 
 @class GeminiPageContext;
 
-// Delegate for GeminiContainerMediator to communicate with the instance
-// managing the shared tabs (shared by default or by user).
-// As shared tabs have longer lifecycle then Gemini itself
-// GeminiContainerMediator cannot own shared tabs or its' managing instance.
-// Therefore, shared tabs are owned and managed by an instance necessary
-// for it's lifecylce and communicate with GeminiContainerMediator through
+// Interface for `GeminiContainerMediator` and `GeminiTabPickerHandler` to query
+// and mutate the shared tabs (shared by default or by user) across a Gemini
+// session. Because shared tabs outlive an individual `GeminiContainerMediator`
+// invocation, they are owned by a browser-scoped instance and accessed through
 // this interface.
-class GeminiSharedTabsDelegate {
+class GeminiSharedTabsManager {
  public:
-  virtual ~GeminiSharedTabsDelegate() = default;
+  virtual ~GeminiSharedTabsManager() = default;
 
   // Returns the currently inactive shared tabs for the session.
   virtual NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const = 0;
 
-  // Adds the active page context to the list of shared tabs.
+  // Adds `active_page_context` to the list of shared tabs.
   virtual void SaveActivePageContextToSharedTabs(
       GeminiPageContext* active_page_context) = 0;
 
@@ -43,11 +41,12 @@ class GeminiSharedTabsDelegate {
   virtual void UpdateSharedTabsForActiveWebState(
       web::WebState* active_web_state) = 0;
 
-  // Removes a tab from selected tabs and propagates attached tabs to Gemini.
+  // Removes the tab with `tab_id` from selected tabs and propagates attached
+  // tabs to Gemini.
   virtual void DetachTabWithID(NSString* tab_id) = 0;
 
-  // Changes the attachment state of the given tab without propagating it to the
-  // provider.
+  // Changes the attachment state of the tab with `tab_id` to `new_state`
+  // without propagating it to the provider.
   virtual void UpdateLocalTabAttachmentState(
       NSString* tab_id,
       ios::provider::GeminiPageContextAttachmentState new_state) = 0;
@@ -55,7 +54,8 @@ class GeminiSharedTabsDelegate {
   // Returns the number of all currently shared tabs (active and inactive ones).
   virtual NSUInteger SharedTabsCount() const = 0;
 
-  // Updates shared tabs when the tab picker selection changes.
+  // Updates shared tabs when the tab picker selection changes to
+  // `selected_tabs`.
   virtual void OnTabPickerSelectionChanged(
       std::set<web::WebStateID> selected_tabs) = 0;
 
@@ -64,4 +64,4 @@ class GeminiSharedTabsDelegate {
   virtual std::set<web::WebStateID> GetSelectedTabsForTabPicker() const = 0;
 };
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SHARED_TABS_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SHARED_TABS_MANAGER_H_

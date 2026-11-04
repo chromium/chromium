@@ -9,7 +9,7 @@
 #import <set>
 
 #import "base/test/metrics/user_action_tester.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/tab_picker/public/tab_picker_snackbar_presenter.h"
@@ -19,8 +19,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-// Fake delegate for testing `GeminiSharedTabsDelegate`.
-class FakeGeminiSharedTabsDelegate : public GeminiSharedTabsDelegate {
+// Fake manager for testing `GeminiSharedTabsManager`.
+class FakeGeminiSharedTabsManager : public GeminiSharedTabsManager {
  public:
   NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const override {
     return @[];
@@ -62,13 +62,13 @@ class GeminiTabPickerHandlerTest : public PlatformTest {
   id mock_snackbar_handler_;
 };
 
-// Tests that the handler conforms to the GeminiTabPickerDelegate protocol.
+// Tests that the handler conforms to the `GeminiTabPickerDelegate` protocol.
 TEST_F(GeminiTabPickerHandlerTest, TestConformsToProtocol) {
   EXPECT_TRUE([handler_ conformsToProtocol:@protocol(GeminiTabPickerDelegate)]);
 }
 
-// Tests that openTabPickerFromViewController correctly routes the request via
-// command dispatcher.
+// Tests that `openTabPickerFromViewController:` correctly routes the request
+// via command dispatcher.
 TEST_F(GeminiTabPickerHandlerTest, TestOpenTabPicker) {
   UIViewController* mockViewController = OCMClassMock([UIViewController class]);
 
@@ -89,17 +89,17 @@ TEST_F(GeminiTabPickerHandlerTest, TestOpenTabPicker) {
 }
 
 // Tests that `openTabPickerFromViewController:` queries preselected tabs from
-// `sharedTabsDelegate` and forwards the completion selection back to
-// `sharedTabsDelegate`.
-TEST_F(GeminiTabPickerHandlerTest, TestOpenTabPickerWithSharedTabsDelegate) {
+// `sharedTabsManager` and forwards the completion selection back to
+// `sharedTabsManager`.
+TEST_F(GeminiTabPickerHandlerTest, TestOpenTabPickerWithSharedTabsManager) {
   UIViewController* mockViewController = OCMClassMock([UIViewController class]);
-  FakeGeminiSharedTabsDelegate fake_delegate;
+  FakeGeminiSharedTabsManager fake_manager;
   web::WebStateID tabID1 = web::WebStateID::NewUnique();
   web::WebStateID tabID2 = web::WebStateID::NewUnique();
   std::set<web::WebStateID> preselected = {tabID1};
   std::set<web::WebStateID> newlySelected = {tabID1, tabID2};
-  fake_delegate.preselected_tabs = preselected;
-  handler_.sharedTabsDelegate = &fake_delegate;
+  fake_manager.preselected_tabs = preselected;
+  handler_.sharedTabsManager = &fake_manager;
 
   __block TabPickerCompletionBlock capturedCompletion = nil;
   OCMExpect([mock_tab_picker_handler_
@@ -121,7 +121,7 @@ TEST_F(GeminiTabPickerHandlerTest, TestOpenTabPickerWithSharedTabsDelegate) {
   TabPickerSelection selection;
   selection.selected_ids = newlySelected;
   capturedCompletion(selection);
-  EXPECT_EQ(newlySelected, fake_delegate.last_selected_tabs);
+  EXPECT_EQ(newlySelected, fake_manager.last_selected_tabs);
 }
 
 // Tests that showing error snackbars records the corresponding user actions.

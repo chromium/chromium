@@ -177,7 +177,9 @@
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 self.browser->GetProfile())
                eventHandler:geminiBrowserAgent
-         sharedTabsDelegate:geminiBrowserAgent
+          sharedTabsManager:geminiBrowserAgent
+                                ? geminiBrowserAgent->GetSharedTabsManager()
+                                : nullptr
       sessionMetricsManager:_sessionMetricsManager];
   _mediator.delegate = self;
   _mediator.startupState = _startupState;
