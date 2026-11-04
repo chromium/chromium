@@ -22,7 +22,7 @@ IOSAutofillAiModelCacheFactory::IOSAutofillAiModelCacheFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSAutofillAiModelCacheFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiServerModel)) {
     return nullptr;
@@ -30,7 +30,7 @@ IOSAutofillAiModelCacheFactory::BuildServiceInstanceFor(
 
   return std::make_unique<autofill::AutofillAiModelCacheImpl>(
       ios::HistoryServiceFactory::GetForProfile(profile),
-      profile->GetProtoDatabaseProvider(), profile->GetStatePath(),
+      profile.GetProtoDatabaseProvider(), profile.GetStatePath(),
       autofill::features::kAutofillAiServerModelCacheSize.Get(),
       autofill::features::kAutofillAiServerModelCacheAge.Get());
 }

@@ -17,7 +17,7 @@ ProviderStateServiceFactory::ProviderStateServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 ProviderStateServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ProviderStateService>();
 }
 

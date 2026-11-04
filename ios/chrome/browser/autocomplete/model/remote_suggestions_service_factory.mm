@@ -12,11 +12,11 @@
 
 std::unique_ptr<KeyedService>
 RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<RemoteSuggestionsService>(
       /*document_suggestions_service=*/nullptr,
       /*enterprise_search_aggregator_suggestions_service=*/nullptr,
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }
 
 RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory(PassKey key)

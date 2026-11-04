@@ -24,7 +24,7 @@ IOSAutofillAiModelExecutorFactory::IOSAutofillAiModelExecutorFactory(
 
 std::unique_ptr<KeyedService>
 IOSAutofillAiModelExecutorFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiServerModel)) {
     return nullptr;

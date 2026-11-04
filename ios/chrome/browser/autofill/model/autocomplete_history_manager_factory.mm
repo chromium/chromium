@@ -27,12 +27,12 @@ AutocompleteHistoryManagerFactory::AutocompleteHistoryManagerFactory(
 
 std::unique_ptr<KeyedService>
 AutocompleteHistoryManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   scoped_refptr<AutofillWebDataService> autofill_db =
       ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
   return std::make_unique<AutocompleteHistoryManager>(autofill_db,
-                                                      profile->GetPrefs());
+                                                      profile.GetPrefs());
 }
 
 }  // namespace autofill

@@ -19,10 +19,9 @@ ZeroSuggestCacheServiceFactory::ZeroSuggestCacheServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ZeroSuggestCacheService>(
-      std::make_unique<AutocompleteSchemeClassifierImpl>(),
-      profile->GetPrefs());
+      std::make_unique<AutocompleteSchemeClassifierImpl>(), profile.GetPrefs());
 }
 
 }  // namespace ios

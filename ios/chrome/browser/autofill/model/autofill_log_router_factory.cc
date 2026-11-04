@@ -16,7 +16,7 @@ AutofillLogRouterFactory::AutofillLogRouterFactory(PassKey key)
                                          "AutofillInternalsService") {}
 
 std::unique_ptr<KeyedService> AutofillLogRouterFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<LogRouter>();
 }
 

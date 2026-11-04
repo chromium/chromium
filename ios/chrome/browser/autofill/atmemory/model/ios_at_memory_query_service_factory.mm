@@ -47,7 +47,7 @@ IOSAtMemoryQueryServiceFactory::IOSAtMemoryQueryServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSAtMemoryQueryServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(autofill::features::kAutofillAtMemory)) {
     return nullptr;
   }
@@ -76,5 +76,5 @@ IOSAtMemoryQueryServiceFactory::BuildServiceInstanceFor(
                       ->GetTag()
                       .tag_string()),
       personal_context_eligibility_service, subscription_eligibility_service,
-      profile->GetPrefs(), AutofillLogRouterFactory::GetForProfile(profile));
+      profile.GetPrefs(), AutofillLogRouterFactory::GetForProfile(profile));
 }

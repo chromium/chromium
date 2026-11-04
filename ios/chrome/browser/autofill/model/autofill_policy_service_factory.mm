@@ -19,8 +19,8 @@ AutofillPolicyServiceFactory::AutofillPolicyServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AutofillPolicyServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return std::make_unique<AutofillPolicyService>(profile->GetPrefs());
+    ProfileIOS& profile) const {
+  return std::make_unique<AutofillPolicyService>(profile.GetPrefs());
 }
 
 }  // namespace autofill

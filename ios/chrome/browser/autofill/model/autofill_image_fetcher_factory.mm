@@ -18,9 +18,9 @@ AutofillImageFetcherFactory::AutofillImageFetcherFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AutofillImageFetcherFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<AutofillImageFetcherImpl>(
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }
 
 }  // namespace autofill
