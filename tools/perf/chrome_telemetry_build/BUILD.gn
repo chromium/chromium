@@ -7,6 +7,7 @@ import("//build/config/compiler/compiler.gni")
 if (is_android) {
   # Pull in enable_chrome_android_internal and public_android_sdk
   import("//build/config/android/config.gni")
+  import("//build/config/gclient_args.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 }
 is_remote_platform = is_android || is_fuchsia || is_chromeos
@@ -241,6 +242,9 @@ group("telemetry_chrome_test_without_chrome") {
       "//build/android:devil_chromium_py",
       "//build/android:stack_tools",
     ]
+    if (checkout_fuchsia) {
+      data_deps += [ "//build/fuchsia/starview:run_cuttlefish" ]
+    }
   } else if (!is_fuchsia) {
     data_deps += [ "//third_party/catapult/telemetry:bitmaptools" ]
   }
