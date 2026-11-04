@@ -1886,6 +1886,7 @@ public class TabGridDialogTest {
         // Open and close the share flow; the dialog should stay open.
         onView(allOf(isDescendantOfA(withId(R.id.dialog_parent_view)), withId(R.id.share_button)))
                 .perform(click());
+        waitForView(withText(R.string.collaboration_signin_bottom_sheet_description));
         Espresso.pressBack();
         waitForView(withId(R.id.share_button), isDescendantOfA(withId(R.id.dialog_parent_view)));
     }
