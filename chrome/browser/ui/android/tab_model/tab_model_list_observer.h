@@ -7,7 +7,10 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 
-// Observes possible changes to TabModelList.
+// Observes possible changes to TabModelList. Register via
+// `TabModelList::AddObserver(observer, profile)` to observe `TabModel`s for a
+// specific `Profile`, or `TabModelList::AddGlobalObserver(observer)` for
+// browser-wide observation across all profiles.
 class TabModelListObserver {
  public:
   virtual ~TabModelListObserver() = default;

@@ -161,17 +161,17 @@ bool TabModel::IsEmptyRegularModelForEphemeralOrIncognitoCct() const {
 // static
 // From //chrome/browser/tab_list/tab_list_interface.h
 bool TabListInterface::CanEditTabList(Profile& profile) {
-  for (TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() != &profile ||
-        model->GetTabModelType() != TabModel::TabModelType::kStandard ||
+  bool can_edit = true;
+  TabModelList::ForEach(&profile, [&](TabModel* model) {
+    if (model->GetTabModelType() != TabModel::TabModelType::kStandard ||
         model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
-      continue;
+      return true;
     }
-
     if (!model->IsThisTabListEditable()) {
+      can_edit = false;
       return false;
     }
-  }
-
-  return true;
+    return true;
+  });
+  return can_edit;
 }
