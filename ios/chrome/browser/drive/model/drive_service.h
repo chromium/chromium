@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_SERVICE_H_
 
 #import <memory>
+#import <string>
 
 #import "components/keyed_service/core/keyed_service.h"
 
@@ -36,15 +37,12 @@ class DriveService : public KeyedService {
 
   // Returns a DriveFileDownloader to download items from the Drive of
   // `identity`.
-  // TODO(crbug.com/344812086): Make this pure virtual once implemented
-  // everywhere.
   virtual std::unique_ptr<DriveFileDownloader> CreateFileDownloader(
-      id<SystemIdentity> identity);
+      id<SystemIdentity> identity) = 0;
 
   // Returns a DriveList to perform queries on the Drive of `identity`.
-  // TODO(crbug.com/344812086): Make this pure virtual once implemented
-  // everywhere.
-  virtual std::unique_ptr<DriveList> CreateList(id<SystemIdentity> identity);
+  virtual std::unique_ptr<DriveList> CreateList(
+      id<SystemIdentity> identity) = 0;
 
   // Returns a name suggestion for the folder in which to add uploaded files.
   virtual std::string GetSuggestedFolderName() const = 0;

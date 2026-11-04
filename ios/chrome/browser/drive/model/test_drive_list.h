@@ -17,7 +17,7 @@ class TestDriveList final : public DriveList {
   // Returns values reported by callbacks of `DriveList` methods.
   DriveListResult GetDriveListResult() const;
 
-  // Sets DriveListResult to be reported by `ListItems()`.
+  // Sets DriveListResult to be reported by `ListFiles()`.
   void SetDriveListResult(const DriveListResult& result);
 
   // Set quit closures.
@@ -29,6 +29,8 @@ class TestDriveList final : public DriveList {
   void CancelCurrentQuery() final;
   void ListFiles(const DriveListQuery& query,
                  DriveListCompletionCallback completion_callback) final;
+  void ListSharedDrives(const DriveListQuery& query,
+                        DriveListCompletionCallback completion_callback) final;
 
  private:
   // Run quit closures.

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/drive/model/drive_list.h"
 
-#import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 namespace {
@@ -180,19 +179,3 @@ DriveListResult& DriveListResult::operator=(DriveListResult&& other) {
 DriveList::DriveList() = default;
 
 DriveList::~DriveList() = default;
-
-void DriveList::ListItems(const DriveListQuery& query,
-                          DriveListCompletionCallback completion_callback) {
-  NOTREACHED();
-}
-
-void DriveList::ListFiles(const DriveListQuery& query,
-                          DriveListCompletionCallback completion_callback) {
-  ListItems(query, std::move(completion_callback));
-}
-
-void DriveList::ListSharedDrives(
-    const DriveListQuery& query,
-    DriveListCompletionCallback completion_callback) {
-  NOTREACHED();
-}

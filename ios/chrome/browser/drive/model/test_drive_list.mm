@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive/model/test_drive_list.h"
 
+#import "base/notreached.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/time/time.h"
 
@@ -68,6 +69,12 @@ void TestDriveList::ListFiles(const DriveListQuery& query,
                      std::move(completion_callback), GetDriveListResult())
           .Then(completion_quit_closure),
       kTestDriveListTimeConstant);
+}
+
+void TestDriveList::ListSharedDrives(
+    const DriveListQuery& query,
+    DriveListCompletionCallback completion_callback) {
+  NOTREACHED();
 }
 
 #pragma mark - Private

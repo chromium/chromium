@@ -171,26 +171,17 @@ class DriveList {
   virtual bool IsExecutingQuery() const = 0;
   // Cancels the query currently being executed by this uploader.
   virtual void CancelCurrentQuery() = 0;
-  // List items in Drive matching the given `query`.
-  // The final result, including possible error details, is returned
-  // asynchronously through `completion_callback`.
-  // TODO(crbug.com/344812086): This is being replaced with `ListFiles`. When
-  // subclasses do not override this method anymore, remove it.
-  virtual void ListItems(const DriveListQuery& query,
-                         DriveListCompletionCallback completion_callback);
   // List files and folders in Drive matching the given `query`.
   // The final result, including possible error details, is returned
   // asynchronously through `completion_callback`.
-  // TODO(crbug.com/344812086): Make pure virtual once implemented everywhere.
   virtual void ListFiles(const DriveListQuery& query,
-                         DriveListCompletionCallback completion_callback);
+                         DriveListCompletionCallback completion_callback) = 0;
   // List shared drives in Drive matching the given `query`.
   // The final result, including possible error details, is returned
   // asynchronously through `completion_callback`.
-  // TODO(crbug.com/344812086): Make pure virtual once implemented everywhere.
   virtual void ListSharedDrives(
       const DriveListQuery& query,
-      DriveListCompletionCallback completion_callback);
+      DriveListCompletionCallback completion_callback) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_LIST_H_
