@@ -1622,7 +1622,11 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
   view->layer()->SetFillsBoundsOpaquely(false);
 
   // Painting on a transparent layer should DCHECK.
+  // TODO(crbug.com/40725997): The EXPECT_CHECK_DEATH needs
+  // !BUILDFLAG(IS_CHROMEOS).
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_CHECK_DEATH(label->OnPaint(&canvas), base::NotFatalUntil::M163);
+#endif
 
   // We should not DCHECK if the check is skipped.
   label->SetSkipSubpixelRenderingOpacityCheck(true);
