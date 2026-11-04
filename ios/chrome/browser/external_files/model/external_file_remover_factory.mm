@@ -22,7 +22,7 @@ ExternalFileRemoverFactory::ExternalFileRemoverFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-ExternalFileRemoverFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+ExternalFileRemoverFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<ExternalFileRemoverImpl>(
       BrowserListFactory::GetForProfile(profile),
       ios::BookmarkModelFactory::GetForProfile(profile),

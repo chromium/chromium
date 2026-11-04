@@ -37,7 +37,7 @@ IOSSignalsAggregatorFactory::IOSSignalsAggregatorFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSSignalsAggregatorFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   device_signals::UserPermissionService* user_permission_service =
       IOSUserPermissionServiceFactory::GetForProfile(profile);
   if (!user_permission_service) {
@@ -61,7 +61,7 @@ IOSSignalsAggregatorFactory::BuildServiceInstanceFor(
           ->GetReauthModule()));
 
   collectors.push_back(std::make_unique<ProfileSignalsCollectorIOS>(
-      profile->GetPrefs(), profile->GetUserCloudPolicyManager(),
+      profile.GetPrefs(), profile.GetUserCloudPolicyManager(),
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
       enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile)));
 

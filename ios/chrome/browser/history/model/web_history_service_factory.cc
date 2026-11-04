@@ -24,12 +24,12 @@ WebHistoryServiceFactory::WebHistoryServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<history::WebHistoryService>(
       SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          profile->GetURLLoaderFactory()));
+          profile.GetURLLoaderFactory()));
 }
 
 }  // namespace ios

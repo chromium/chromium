@@ -22,7 +22,7 @@ class IOSUserPermissionServiceFactory
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS& profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_IOS_USER_PERMISSION_SERVICE_FACTORY_H_

@@ -40,7 +40,7 @@ void IOSUserPermissionServiceFactory::RegisterProfilePrefs(
 
 std::unique_ptr<KeyedService>
 IOSUserPermissionServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   policy::BrowserManagementService* management_service =
       policy::BrowserManagementServiceFactory::GetForProfile(profile);
 
@@ -56,11 +56,11 @@ IOSUserPermissionServiceFactory::BuildServiceInstanceFor(
   CHECK(browser_policy_connector);
 
   auto user_delegate = std::make_unique<UserDelegateIOS>(
-      profile->GetPolicyConnector(),
+      profile.GetPolicyConnector(),
       base::BindRepeating(&BrowserPolicyConnectorIOS::GetDeviceAffiliationIds,
                           base::Unretained(browser_policy_connector)),
       identity_manager, device_trust_connector_service);
 
   return std::make_unique<UserPermissionServiceIOS>(
-      management_service, std::move(user_delegate), profile->GetPrefs());
+      management_service, std::move(user_delegate), profile.GetPrefs());
 }

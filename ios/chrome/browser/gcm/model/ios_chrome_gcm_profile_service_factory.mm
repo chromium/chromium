@@ -41,11 +41,11 @@ IOSChromeGCMProfileServiceFactory::IOSChromeGCMProfileServiceFactory(
 
 std::unique_ptr<KeyedService>
 IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  DCHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  DCHECK(!profile.IsOffTheRecord());
 
   if (std::unique_ptr<gcm::GCMProfileService> test_gcm_service =
-          tests_hook::CreateGCMProfileService(profile)) {
+          tests_hook::CreateGCMProfileService(&profile)) {
     CHECK_IS_TEST();
     return test_gcm_service;
   }
@@ -55,7 +55,7 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   return std::make_unique<gcm::GCMProfileService>(
-      profile->GetStatePath(),
+      profile.GetStatePath(),
       // This callback may be invoked on a background sequence, but it calls
       // a method of ProfileIOS which is a sequence-affine object, so wrap
       // the callback in BindPostTask(...) to ensure the method happens on
@@ -65,8 +65,8 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::IgnoreArgs<base::WeakPtr<gcm::GCMProfileService>>(
               base::BindRepeating(&ProfileIOS::GetProxyResolvingSocketFactory,
-                                  profile->AsWeakPtr()))),
-      profile->GetSharedURLLoaderFactory(),
+                                  profile.AsWeakPtr()))),
+      profile.GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       GetProductCategoryForSubtypes(),
       std::make_unique<gcm::GCMClientFactory>(), web::GetUIThreadTaskRunner({}),

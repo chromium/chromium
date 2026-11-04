@@ -24,7 +24,7 @@ class TopSitesFactory final
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
   void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 

@@ -17,6 +17,6 @@ IOSChromeLargeIconCacheFactory::IOSChromeLargeIconCacheFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSChromeLargeIconCacheFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<LargeIconCache>();
 }

@@ -22,9 +22,9 @@ GoogleLogoServiceFactory::GoogleLogoServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> GoogleLogoServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<GoogleLogoService>(
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }

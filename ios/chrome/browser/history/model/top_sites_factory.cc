@@ -28,14 +28,14 @@ TopSitesFactory::TopSitesFactory(PassKey key)
 }
 
 scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(profile);
   auto top_sites = base::MakeRefCounted<history::TopSitesImpl>(
-      profile->GetPrefs(), history_service,
+      profile.GetPrefs(), history_service,
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       history::PrepopulatedPageList(), base::BindRepeating(CanAddURLToHistory));
-  top_sites->Init(profile->GetStatePath().Append(history::kTopSitesFilename));
+  top_sites->Init(profile.GetStatePath().Append(history::kTopSitesFilename));
   return top_sites;
 }
 

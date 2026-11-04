@@ -28,8 +28,8 @@ DomainDiversityReporterFactory::DomainDiversityReporterFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 DomainDiversityReporterFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  CHECK(!profile.IsOffTheRecord());
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(profile);
 
@@ -39,7 +39,7 @@ DomainDiversityReporterFactory::BuildServiceInstanceFor(
   }
 
   return std::make_unique<DomainDiversityReporter>(
-      history_service, profile->GetPrefs(), base::DefaultClock::GetInstance());
+      history_service, profile.GetPrefs(), base::DefaultClock::GetInstance());
 }
 
 void DomainDiversityReporterFactory::RegisterProfilePrefs(
