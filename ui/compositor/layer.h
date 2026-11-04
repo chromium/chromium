@@ -52,7 +52,6 @@ class LayerSurface;
 enum class LayerRequestType {
   kPaint,
   kCacheRenderSurface,
-  kTrilinearFiltering,
 };
 
 template <LayerRequestType>
@@ -554,7 +553,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   friend class LayerNinePatch;
   friend class LayerSurface;
   friend class ScopedLayerRequest<LayerRequestType::kPaint>;
-  friend class ScopedLayerRequest<LayerRequestType::kTrilinearFiltering>;
   friend class ScopedLayerRequest<LayerRequestType::kCacheRenderSurface>;
   friend class LayerTestApi;
   friend class internal::LayerMirror;
@@ -566,10 +564,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // surface even if layer is invisible is not a problem.
   void AddCacheRenderSurfaceRequest();
   void RemoveCacheRenderSurfaceRequest();
-
-  // Request trilinear filtering for layer.
-  void AddTrilinearFilteringRequest();
-  void RemoveTrilinearFilteringRequest();
 
   void CollectAnimators(std::vector<scoped_refptr<LayerAnimator>>* animators);
 
@@ -782,12 +776,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // True when SetBackdropFilterBounds() has been called explicitly, preventing
   // automatic bounds recomputation. Cleared by ClearBackdropFilterBounds().
   bool has_explicit_backdrop_filter_bounds_ = false;
-
-  // The counter to maintain how many trilinear filtering requests we have. If
-  // the value > 0, means we need to perform trilinear filtering on the layer.
-  // If the value == 0, means we should not perform trilinear filtering on the
-  // layer.
-  unsigned trilinear_filtering_request_ = 0;
 
   // If true, scroll updates will not use the impl-side fast-path, and will be
   // applied to the main layer tree.

@@ -57,10 +57,6 @@ class COMPOSITOR_EXPORT ScopedLayerAnimationSettings {
   // request will be removed at the end of the animation.
   void DeferPaint();
 
-  // This will request trilinear filtering on the animating layer. The filtering
-  // request will be removed at the end of the animation.
-  void TrilinearFiltering();
-
   LayerAnimator* GetAnimator() { return animator_.get(); }
 
  private:

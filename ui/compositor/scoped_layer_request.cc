@@ -58,29 +58,8 @@ ScopedLayerRequest<
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ScopedTrilinearFilteringLock
-
-template <>
-ScopedLayerRequest<LayerRequestType::kTrilinearFiltering>::ScopedLayerRequest(
-    Layer* layer) {
-  CHECK(layer);
-  observation_.Observe(layer);
-  layer->AddTrilinearFilteringRequest();
-}
-
-template <>
-ScopedLayerRequest<
-    LayerRequestType::kTrilinearFiltering>::~ScopedLayerRequest() {
-  if (Layer* layer = GetLayer()) {
-    layer->RemoveTrilinearFilteringRequest();
-  }
-}
-
 template class COMPOSITOR_EXPORT ScopedLayerRequest<LayerRequestType::kPaint>;
 template class COMPOSITOR_EXPORT
     ScopedLayerRequest<LayerRequestType::kCacheRenderSurface>;
-template class COMPOSITOR_EXPORT
-    ScopedLayerRequest<LayerRequestType::kTrilinearFiltering>;
 
 }  // namespace ui

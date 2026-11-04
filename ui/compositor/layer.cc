@@ -975,7 +975,6 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
       cc_layer_->SafeOpaqueBackgroundColor());
   new_layer->SetSubtreeCaptureId(cc_layer_->subtree_capture_id());
   new_layer->SetCacheRenderSurface(cc_layer_->cache_render_surface());
-  new_layer->SetTrilinearFiltering(cc_layer_->trilinear_filtering());
   new_layer->SetRoundedCorner(cc_layer_->corner_radii());
   new_layer->SetIsFastRoundedCorner(cc_layer_->is_fast_rounded_corner());
   new_layer->SetMasksToBounds(cc_layer_->masks_to_bounds());
@@ -1034,29 +1033,6 @@ void Layer::RemoveCacheRenderSurfaceRequest() {
   if (cache_render_surface_requests_ == 0) {
     cc_layer_->SetCacheRenderSurface(false);
   }
-}
-
-// Note: The code that sets this flag would be responsible to unset it on that
-// Layer. We do not want to clone this flag to a cloned layer by accident,
-// which could be a supprise. But we want to preserve it after switching to a
-// new cc::Layer. There could be a whole subtree and the root changed, but does
-// not mean we want to treat the trilinear filtering all different.
-void Layer::AddTrilinearFilteringRequest() {
-  ++trilinear_filtering_request_;
-  TRACE_COUNTER_ID1("ui", "TrilinearFilteringRequests", this,
-                    trilinear_filtering_request_);
-  if (trilinear_filtering_request_ == 1)
-    cc_layer_->SetTrilinearFiltering(true);
-}
-
-void Layer::RemoveTrilinearFilteringRequest() {
-  CHECK_GT(trilinear_filtering_request_, 0u, base::NotFatalUntil::M163);
-
-  --trilinear_filtering_request_;
-  TRACE_COUNTER_ID1("ui", "TrilinearFilteringRequests", this,
-                    trilinear_filtering_request_);
-  if (trilinear_filtering_request_ == 0)
-    cc_layer_->SetTrilinearFiltering(false);
 }
 
 base::WeakPtr<Layer> Layer::AsWeakPtr() {

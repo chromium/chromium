@@ -123,8 +123,7 @@ WindowMiniViewBase* BuildAndConfigureCycleView(aura::Window* window,
     }
   }
 
-  // `mirror_container_` owns `view`. The `preview_view_` in `view` will use
-  // trilinear filtering in InitLayerOwner().
+  // `mirror_container_` owns `view`.
   return mirror_container->AddChildView(
       std::make_unique<WindowCycleItemView>(window));
 }

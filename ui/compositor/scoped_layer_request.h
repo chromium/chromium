@@ -38,10 +38,6 @@ using ScopedPaintLock = ScopedLayerRequest<LayerRequestType::kPaint>;
 using ScopedCacheRenderSurfaceLock =
     ScopedLayerRequest<LayerRequestType::kCacheRenderSurface>;
 
-// A scoped object that requests trilinear filtering on a given layer.
-using ScopedTrilinearFilteringLock =
-    ScopedLayerRequest<LayerRequestType::kTrilinearFiltering>;
-
 }  // namespace ui
 
 #endif  // UI_COMPOSITOR_SCOPED_LAYER_REQUEST_H_

@@ -39,18 +39,6 @@ TEST_F(ScopedLayerRequestTest, ScopedCacheRenderSurfaceLock) {
   EXPECT_FALSE(layer_test_api.cc_layer()->cache_render_surface());
 }
 
-TEST_F(ScopedLayerRequestTest, ScopedTrilinearFilteringLock) {
-  LayerTextured layer;
-  ui::LayerTestApi layer_test_api(&layer);
-  EXPECT_FALSE(layer_test_api.cc_layer()->trilinear_filtering());
-  {
-    ScopedTrilinearFilteringLock lock(&layer);
-    EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
-    EXPECT_EQ(&layer, lock.GetLayer());
-  }
-  EXPECT_FALSE(layer_test_api.cc_layer()->trilinear_filtering());
-}
-
 TEST_F(ScopedLayerRequestTest, LayerDestroyedWhileLocked) {
   auto layer = std::make_unique<LayerTextured>();
   auto lock = std::make_unique<ScopedPaintLock>(layer.get());

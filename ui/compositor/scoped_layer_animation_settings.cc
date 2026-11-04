@@ -67,9 +67,6 @@ using ScopedRenderSurfaceCaching =
 
 using ScopedDeferredPainting = ScopedLayerAnimationObserver<ScopedPaintLock>;
 
-using ScopedTrilinearFiltering =
-    ScopedLayerAnimationObserver<ScopedTrilinearFilteringLock>;
-
 void AddObserverToSettings(
     ui::ScopedLayerAnimationSettings* settings,
     std::unique_ptr<ui::ImplicitAnimationObserver> observer) {
@@ -167,12 +164,6 @@ void ScopedLayerAnimationSettings::CacheRenderSurface() {
 void ScopedLayerAnimationSettings::DeferPaint() {
   AddScopedDeferredPaintingObserverRecursive(animator_->delegate()->GetLayer(),
                                              this);
-}
-
-void ScopedLayerAnimationSettings::TrilinearFiltering() {
-  auto observer = std::make_unique<ScopedTrilinearFiltering>(
-      animator_->delegate()->GetLayer());
-  AddObserverToSettings(this, std::move(observer));
 }
 
 }  // namespace ui
