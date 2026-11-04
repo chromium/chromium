@@ -11,6 +11,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -64,7 +66,9 @@ import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.TestViewStructure;
 import org.chromium.components.autofill_public.ViewType;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
+import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -397,6 +401,19 @@ public class AwAutofillTest extends AwParameterizedTest {
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         mAutofillProvider = mAwContents.getAutofillProviderForTesting();
+        // Don't let the device's IME interact with the page. Whenever a test focuses a field, the
+        // real IME restarts its input connection and calls into WebView's InputConnection on the
+        // IME thread that WebView shares between all WebViews of the process. These calls can
+        // block that thread for good while waiting for the renderer, so that the key events which
+        // the tests dispatch are never delivered, neither in this test nor in later tests of the
+        // same batch.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ImeAdapter imeAdapter =
+                            assertNonNull(ImeAdapter.fromWebContents(mAwContents.getWebContents()));
+                    imeAdapter.setInputMethodManagerWrapper(
+                            TestInputMethodManagerWrapper.create(imeAdapter));
+                });
 
         ThreadUtils.runOnUiThreadBlocking(() -> histograms.assertExpected());
     }
