@@ -117,6 +117,8 @@ class FakeTtcConversationDelegate : public TtcConversation::Delegate {
   std::optional<ttc::ErrorCode> last_error() const { return last_error_; }
   bool did_initialize() const { return did_initialize_; }
   bool did_close() const { return did_close_; }
+  std::optional<bool> last_mic_muted() const { return last_mic_muted_; }
+  int mic_muted_change_count() const { return mic_muted_change_count_; }
   const std::optional<ttc::ToolRequest>& last_tool_request() const {
     return last_tool_request_;
   }
@@ -124,6 +126,10 @@ class FakeTtcConversationDelegate : public TtcConversation::Delegate {
   // `TtcConversation::Delegate` implementation:
   void OnConversationInitialized() override { did_initialize_ = true; }
   void OnConversationClosed() override { did_close_ = true; }
+  void OnConversationMicMutedChanged(bool muted) override {
+    last_mic_muted_ = muted;
+    ++mic_muted_change_count_;
+  }
   void OnAudioEnergyUpdated(float energy) override { last_energy_ = energy; }
   void OnConversationError(ttc::ErrorCode error) override {
     last_error_ = error;
@@ -142,6 +148,8 @@ class FakeTtcConversationDelegate : public TtcConversation::Delegate {
   std::optional<ttc::ErrorCode> last_error_;
   bool did_initialize_ = false;
   bool did_close_ = false;
+  std::optional<bool> last_mic_muted_;
+  int mic_muted_change_count_ = 0;
   std::optional<ttc::ToolRequest> last_tool_request_;
 };
 
@@ -263,16 +271,20 @@ TEST_F(TtcConversationTest, TestAudioControllerErrorHandling) {
   EXPECT_EQ(*delegate_.last_error(), ttc::ErrorCode::kAudioUnknownError);
 }
 
-// Tests that external capture termination stops the conversation.
+// Tests that external capture termination mutes microphone capture without
+// closing the backend transport or stopping playback.
 TEST_F(TtcConversationTest, TestAudioControllerExternalStopCapture) {
   conversation_->Start();
 
-  EXPECT_CALL(*mock_backend_, Close());
+  EXPECT_CALL(*mock_backend_, Close()).Times(0);
   [fake_audio_controller_.delegate
       audioControllerDidStopCapture:fake_audio_controller_];
 
-  EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
-  EXPECT_FALSE(mock_backend_->is_transport_connected());
+  EXPECT_TRUE(conversation_->IsMicMuted());
+  ASSERT_TRUE(delegate_.last_mic_muted().has_value());
+  EXPECT_TRUE(*delegate_.last_mic_muted());
+  EXPECT_FALSE(fake_audio_controller_.didStopPlayback);
+  EXPECT_TRUE(mock_backend_->is_transport_connected());
 }
 
 // Tests that Disconnect stops capture and playback, disconnects the audio
@@ -589,4 +601,80 @@ TEST_F(TtcConversationTest, TestJournalAudioSuppressionAndDropDeduplication) {
   }
 
   conversation_->set_journal(nullptr);
+}
+
+// Tests that muting microphone capture stops capture and emits zero input
+// energy while keeping backend transport and model audio playback active.
+TEST_F(TtcConversationTest,
+       SetMicMutedStopsCaptureWithoutStoppingPlaybackOrClosingBackend) {
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  mock_backend_->observer()->OnBackendInitialized();
+  ASSERT_TRUE(fake_audio_controller_.isCapturing);
+
+  conversation_->SetMicMuted(true);
+
+  EXPECT_TRUE(conversation_->IsMicMuted());
+  EXPECT_TRUE(fake_audio_controller_.didStopCapture);
+  EXPECT_FALSE(fake_audio_controller_.didStopPlayback);
+  EXPECT_FLOAT_EQ(delegate_.last_energy(), 0.0f);
+  EXPECT_TRUE(mock_backend_->is_transport_connected());
+
+  const int16_t model_pcm[] = {0x1122, 0x3344};
+  NSData* expected_chunk = [NSData dataWithBytes:model_pcm
+                                          length:sizeof(model_pcm)];
+  mock_backend_->observer()->OnAudioOutput(model_pcm, /*sequence_number=*/1);
+  EXPECT_NSEQ(fake_audio_controller_.lastPlayedChunk, expected_chunk);
+}
+
+// Tests that muting microphone capture absorbs synchronous stop capture
+// callbacks without re-entrant mute notifications.
+TEST_F(TtcConversationTest,
+       SetMicMutedAbsorbsSynchronousStopCaptureWithoutRecursion) {
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  mock_backend_->observer()->OnBackendInitialized();
+
+  conversation_->SetMicMuted(true);
+  [fake_audio_controller_.delegate
+      audioControllerDidStopCapture:fake_audio_controller_];
+
+  EXPECT_EQ(delegate_.mic_muted_change_count(), 0);
+}
+
+// Tests that unmuting microphone capture restarts audio capture on the
+// connected backend.
+TEST_F(TtcConversationTest, SetMicMutedFalseRestartsCaptureOnConnectedBackend) {
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  mock_backend_->observer()->OnBackendInitialized();
+  conversation_->SetMicMuted(true);
+  ASSERT_TRUE(conversation_->IsMicMuted());
+
+  conversation_->SetMicMuted(false);
+
+  EXPECT_FALSE(conversation_->IsMicMuted());
+  EXPECT_TRUE(fake_audio_controller_.isCapturing);
+}
+
+// Tests that captured audio chunks and input energy updates are ignored while
+// microphone capture is muted.
+TEST_F(TtcConversationTest,
+       MutedConversationIgnoresCapturedAudioAndInputEnergy) {
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  mock_backend_->observer()->OnBackendInitialized();
+  conversation_->SetMicMuted(true);
+  ASSERT_TRUE(conversation_->IsMicMuted());
+
+  const int16_t mic_pcm[] = {0x1122, 0x3344};
+  NSData* chunk = [NSData dataWithBytes:mic_pcm length:sizeof(mic_pcm)];
+  EXPECT_CALL(*mock_backend_, SendAudioChunk(_)).Times(0);
+
+  [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                              didCaptureAudioChunk:chunk];
+  [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                              didUpdateInputEnergy:0.8f];
+
+  EXPECT_FLOAT_EQ(delegate_.last_energy(), 0.0f);
 }

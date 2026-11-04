@@ -17,6 +17,12 @@ void TtcSessionControllerObserverBridge::OnSessionLifecycleChanged(
   [observer_ sessionController:controller didChangeLifecycle:lifecycle];
 }
 
+void TtcSessionControllerObserverBridge::OnMicMutedChanged(
+    TtcSessionController* controller,
+    bool muted) {
+  [observer_ sessionController:controller didChangeMicMuted:muted];
+}
+
 void TtcSessionControllerObserverBridge::OnUserAudioLevelUpdated(
     TtcSessionController* controller,
     float audio_level) {

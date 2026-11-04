@@ -260,6 +260,10 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
   }
 }
 
+- (void)setMicMuted:(BOOL)micMuted {
+  // Handled by `TTCVoicePlateView` in follow-up CL.
+}
+
 - (void)setMicEnergyLevel:(float)rms {
   [_energyLevelMeter setProgress:rms animated:YES];
 }

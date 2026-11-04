@@ -58,6 +58,7 @@ class TtcVoicePlateMediatorTest : public PlatformTest {
 // energy.
 TEST_F(TtcVoicePlateMediatorTest, SetConsumerPushesInitialState) {
   OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
+  OCMExpect([mock_consumer_ setMicMuted:NO]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
 
   mediator_.consumer = mock_consumer_;
@@ -77,6 +78,7 @@ TEST_F(TtcVoicePlateMediatorTest, SetConsumerReflectsExistingActiveSession) {
       [[TTCVoicePlateMediator alloc] initWithTTCService:ttc_service_];
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kListening]);
+  OCMExpect([mock_consumer_ setMicMuted:NO]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
 
   live_mediator.consumer = mock_consumer_;
@@ -261,6 +263,7 @@ TEST_F(TtcVoicePlateMediatorTest, SessionErrorDispatchesErrorMessage) {
   ASSERT_NE(session_controller, nullptr);
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kError]);
+  OCMExpect([mock_consumer_ setMicMuted:NO]);
   OCMExpect([mock_consumer_ showErrorMessage:@"InternalBackendError"]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
   OCMReject([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);

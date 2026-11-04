@@ -48,6 +48,9 @@ class TtcConversation : public ttc::TtcBackend::Observer {
     // Invoked when the underlying transport session closes cleanly.
     virtual void OnConversationClosed() = 0;
 
+    // Invoked when the conversation's microphone mute state changes.
+    virtual void OnConversationMicMutedChanged(bool muted) = 0;
+
     // Invoked when the microphone audio energy level updates. `energy` is
     // normalized in [0.0, 1.0].
     virtual void OnAudioEnergyUpdated(float energy) = 0;
@@ -92,6 +95,13 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   // Starts the conversation session: connects to the backend and begins audio
   // capture.
   void Start();
+
+  // Mutes or unmutes microphone capture while keeping backend transport and
+  // model audio playback active.
+  void SetMicMuted(bool muted);
+
+  // Whether microphone capture is currently muted.
+  bool IsMicMuted() const;
 
   // Stops the conversation session: halts active audio capture and playback,
   // and disconnects the backend.
@@ -208,6 +218,9 @@ class TtcConversation : public ttc::TtcBackend::Observer {
 
   // Guard flag preventing re-entrant `Stop()` invocations.
   bool is_stopping_ = false;
+
+  // Whether microphone capture is currently muted.
+  bool is_mic_muted_ = false;
 
   // Optional session journal for structured event logging.
   base::WeakPtr<TTCJournal> journal_;

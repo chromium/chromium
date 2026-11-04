@@ -84,6 +84,13 @@ class TtcSessionController : public TtcConversation::Delegate,
   // Starts the session.
   void StartSession();
 
+  // Mutes or unmutes microphone capture while the session is `kLive`. Returns
+  // `true` if the mute state changed.
+  bool SetMicMuted(bool muted);
+
+  // Returns whether microphone capture is currently muted.
+  bool IsMicMuted() const;
+
   // Transitions the session lifecycle to `kFinished`.
   void StopSession();
 
@@ -105,6 +112,7 @@ class TtcSessionController : public TtcConversation::Delegate,
   // `TtcConversation::Delegate` implementation:
   void OnConversationInitialized() override;
   void OnConversationClosed() override;
+  void OnConversationMicMutedChanged(bool muted) override;
   void OnAudioEnergyUpdated(float energy) override;
   void OnConversationError(ttc::ErrorCode error) override;
   void OnToolCall(const ttc::ToolRequest& tool_request,
@@ -142,6 +150,7 @@ class TtcSessionController : public TtcConversation::Delegate,
   // Journal logging helpers.
   void LogLifecycleTransition(TTCSessionLifecycle current_lifecycle,
                               TTCSessionLifecycle new_lifecycle);
+  void LogMicMuted(bool muted);
   void LogSessionError(ttc::ErrorCode error);
   void LogAppDidEnterBackground();
   void LogActuationUnavailable(const std::string& tool_name);

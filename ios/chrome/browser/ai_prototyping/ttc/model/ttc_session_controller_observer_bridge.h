@@ -22,6 +22,10 @@ class TtcSessionController;
 - (void)sessionController:(TtcSessionController*)controller
        didChangeLifecycle:(TTCSessionLifecycle)lifecycle;
 
+// Invoked when the session's microphone mute state changes.
+- (void)sessionController:(TtcSessionController*)controller
+        didChangeMicMuted:(BOOL)micMuted;
+
 // Invoked when the user's captured microphone audio level is updated.
 // `audioLevel` is normalized in the range [0.0, 1.0].
 - (void)sessionController:(TtcSessionController*)controller
@@ -48,6 +52,7 @@ class TtcSessionControllerObserverBridge : public TtcSessionControllerObserver {
   // `TtcSessionControllerObserver` implementation:
   void OnSessionLifecycleChanged(TtcSessionController* controller,
                                  TTCSessionLifecycle lifecycle) override;
+  void OnMicMutedChanged(TtcSessionController* controller, bool muted) override;
   void OnUserAudioLevelUpdated(TtcSessionController* controller,
                                float audio_level) override;
   void OnSessionError(TtcSessionController* controller,

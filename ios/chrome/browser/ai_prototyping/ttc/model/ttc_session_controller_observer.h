@@ -20,6 +20,10 @@ class TtcSessionControllerObserver : public base::CheckedObserver {
   virtual void OnSessionLifecycleChanged(TtcSessionController* controller,
                                          TTCSessionLifecycle lifecycle) {}
 
+  // Invoked when the session's microphone mute state changes.
+  virtual void OnMicMutedChanged(TtcSessionController* controller, bool muted) {
+  }
+
   // Invoked when the user's captured microphone audio level is updated.
   // `audio_level` is normalized in the range [0.0, 1.0].
   virtual void OnUserAudioLevelUpdated(TtcSessionController* controller,

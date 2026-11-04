@@ -124,6 +124,12 @@ class FakeTtcSessionControllerObserver : public TtcSessionControllerObserver {
     last_lifecycle_ = lifecycle;
   }
 
+  void OnMicMutedChanged(TtcSessionController* controller,
+                         bool muted) override {
+    mic_muted_change_count_++;
+    last_mic_muted_ = muted;
+  }
+
   void OnUserAudioLevelUpdated(TtcSessionController* controller,
                                float audio_level) override {
     audio_level_update_count_++;
@@ -138,6 +144,8 @@ class FakeTtcSessionControllerObserver : public TtcSessionControllerObserver {
 
   int lifecycle_change_count() const { return lifecycle_change_count_; }
   TTCSessionLifecycle last_lifecycle() const { return last_lifecycle_; }
+  int mic_muted_change_count() const { return mic_muted_change_count_; }
+  bool last_mic_muted() const { return last_mic_muted_; }
   int audio_level_update_count() const { return audio_level_update_count_; }
   float last_audio_level() const { return last_audio_level_; }
   int error_count() const { return error_count_; }
@@ -146,6 +154,8 @@ class FakeTtcSessionControllerObserver : public TtcSessionControllerObserver {
  private:
   int lifecycle_change_count_ = 0;
   TTCSessionLifecycle last_lifecycle_ = TTCSessionLifecycle::kInitializing;
+  int mic_muted_change_count_ = 0;
+  bool last_mic_muted_ = false;
   int audio_level_update_count_ = 0;
   float last_audio_level_ = 0.0f;
   int error_count_ = 0;
@@ -918,6 +928,98 @@ TEST_F(TtcSessionControllerTest,
   EXPECT_FALSE(fake_audio.didStopCapture);
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return fake_audio.didStopCapture; }));
+  controller.Disconnect();
+}
+
+// Tests that `SetMicMuted()` is ignored before the session reaches `kLive`.
+TEST_F(TtcSessionControllerTest, SetMicMutedBeforeLiveIsIgnored) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcSessionController controller(std::move(conversation), nullptr);
+  FakeTtcSessionControllerObserver observer;
+  controller.AddObserver(&observer);
+  controller.StartSession();
+  ASSERT_EQ(controller.lifecycle(), TTCSessionLifecycle::kInitializing);
+
+  bool did_change = controller.SetMicMuted(true);
+
+  EXPECT_FALSE(did_change);
+  EXPECT_FALSE(controller.IsMicMuted());
+  EXPECT_EQ(observer.mic_muted_change_count(), 0);
+  controller.Disconnect();
+}
+
+// Tests that `SetMicMuted(true)` mutes an active `kLive` session, notifies
+// observers once, and ignores duplicate mute calls.
+TEST_F(TtcSessionControllerTest, SetMicMutedWhenLiveMutesAndNotifiesObservers) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcSessionController controller(std::move(conversation), nullptr);
+  FakeTtcSessionControllerObserver observer;
+  controller.AddObserver(&observer);
+  controller.StartSession();
+  controller.OnConversationInitialized();
+  ASSERT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
+
+  bool did_mute = controller.SetMicMuted(true);
+  bool did_remute = controller.SetMicMuted(true);
+
+  EXPECT_TRUE(did_mute);
+  EXPECT_FALSE(did_remute);
+  EXPECT_TRUE(controller.IsMicMuted());
+  EXPECT_EQ(observer.mic_muted_change_count(), 1);
+  EXPECT_TRUE(observer.last_mic_muted());
+  controller.Disconnect();
+}
+
+// Tests that `SetMicMuted(false)` unmutes a muted `kLive` session and notifies
+// observers.
+TEST_F(TtcSessionControllerTest,
+       SetMicMutedFalseWhenMutedUnmutesAndNotifiesObservers) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcSessionController controller(std::move(conversation), nullptr);
+  FakeTtcSessionControllerObserver observer;
+  controller.AddObserver(&observer);
+  controller.StartSession();
+  controller.OnConversationInitialized();
+  ASSERT_TRUE(controller.SetMicMuted(true));
+  ASSERT_EQ(observer.mic_muted_change_count(), 1);
+
+  bool did_unmute = controller.SetMicMuted(false);
+
+  EXPECT_TRUE(did_unmute);
+  EXPECT_FALSE(controller.IsMicMuted());
+  EXPECT_EQ(observer.mic_muted_change_count(), 2);
+  EXPECT_FALSE(observer.last_mic_muted());
+  controller.Disconnect();
+}
+
+// Tests that an external audio capture stop while the session is still
+// initializing notifies observers of the muted state once initialization
+// completes.
+TEST_F(TtcSessionControllerTest,
+       CaptureStopDuringInitializingNotifiesMicMutedOnInitialized) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcSessionController controller(std::move(conversation), nullptr);
+  FakeTtcSessionControllerObserver observer;
+  controller.AddObserver(&observer);
+  controller.StartSession();
+  ASSERT_EQ(controller.lifecycle(), TTCSessionLifecycle::kInitializing);
+
+  [fake_audio.delegate audioControllerDidStopCapture:fake_audio];
+  ASSERT_EQ(observer.mic_muted_change_count(), 0);
+  controller.OnConversationInitialized();
+
+  EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
+  EXPECT_TRUE(controller.IsMicMuted());
+  EXPECT_EQ(observer.mic_muted_change_count(), 1);
+  EXPECT_TRUE(observer.last_mic_muted());
   controller.Disconnect();
 }
 

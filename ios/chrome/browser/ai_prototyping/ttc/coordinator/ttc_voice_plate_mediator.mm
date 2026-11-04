@@ -49,6 +49,9 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
   // Current voice session lifecycle state (Idle, Connecting, Listening, Error).
   TTCSessionUIState _currentState;
 
+  // Whether microphone capture is currently muted.
+  BOOL _isMicMuted;
+
   // TTC keyed service for the profile.
   raw_ptr<TTCKeyedService> _ttcService;
 
@@ -98,7 +101,9 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
 - (void)startSession {
   if (!_ttcService || !_ttcService->IsEnabled()) {
     _currentState = TTCSessionUIState::kError;
+    _isMicMuted = NO;
     [self.consumer setSessionState:_currentState];
+    [self.consumer setMicMuted:NO];
     [self.consumer showErrorMessage:kServiceUnavailableError];
     return;
   }
@@ -132,8 +137,17 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
 }
 
 - (void)sessionController:(TtcSessionController*)controller
+        didChangeMicMuted:(BOOL)micMuted {
+  if (_isMicMuted == micMuted) {
+    return;
+  }
+  _isMicMuted = micMuted;
+  [self.consumer setMicMuted:micMuted];
+}
+
+- (void)sessionController:(TtcSessionController*)controller
       didUpdateAudioLevel:(float)audioLevel {
-  if (_currentState != TTCSessionUIState::kListening) {
+  if (_currentState != TTCSessionUIState::kListening || _isMicMuted) {
     return;
   }
   [self.consumer setMicEnergyLevel:audioLevel];
@@ -142,7 +156,9 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
 - (void)sessionController:(TtcSessionController*)controller
          didFailWithError:(ttc::ErrorCode)error {
   _currentState = TTCSessionUIState::kError;
+  _isMicMuted = NO;
   [self.consumer setSessionState:_currentState];
+  [self.consumer setMicMuted:NO];
   NSString* errorMessage = error == ttc::ErrorCode::kUnknown
                                ? kDefaultSessionError
                                : base::SysUTF8ToNSString(base::ToString(error));
@@ -189,9 +205,13 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
 // controller lifecycle.
 - (void)updateConsumerForLifecycle:(TTCSessionLifecycle)lifecycle {
   _currentState = SessionUIStateForLifecycle(lifecycle);
-  [self.consumer setSessionState:_currentState];
-  if (_currentState == TTCSessionUIState::kIdle) {
-    [self.consumer setMicEnergyLevel:0.0f];
+  _isMicMuted =
+      _observedSessionController && _observedSessionController->IsMicMuted();
+  id<TTCVoicePlateConsumer> consumer = self.consumer;
+  [consumer setSessionState:_currentState];
+  [consumer setMicMuted:_isMicMuted];
+  if (_currentState == TTCSessionUIState::kIdle || _isMicMuted) {
+    [consumer setMicEnergyLevel:0.0f];
   }
 }
 
@@ -201,9 +221,11 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
     [self startObservingSessionControllerIfNeeded];
   } else if (state == TTCServiceState::kSessionInactive) {
     [self stopObservingSessionControllerIfNeeded];
+    _isMicMuted = NO;
     if (_currentState != TTCSessionUIState::kError) {
       _currentState = TTCSessionUIState::kIdle;
       [self.consumer setSessionState:TTCSessionUIState::kIdle];
+      [self.consumer setMicMuted:NO];
       [self.consumer setMicEnergyLevel:0.0f];
     }
   }
@@ -212,6 +234,7 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
 // Hydrates the consumer with current state and resets audio energy.
 - (void)hydrateConsumer {
   [self.consumer setSessionState:_currentState];
+  [self.consumer setMicMuted:_isMicMuted];
   [self.consumer setMicEnergyLevel:0.0f];
 }
 

@@ -26,6 +26,9 @@ enum class TTCSessionUIState {
 // Updates the current high-level voice session state.
 - (void)setSessionState:(TTCSessionUIState)state;
 
+// Updates whether microphone capture is muted.
+- (void)setMicMuted:(BOOL)micMuted;
+
 // Updates the microphone input energy level in RMS (normalized 0.0 - 1.0).
 - (void)setMicEnergyLevel:(float)rms;
 
