@@ -5936,6 +5936,18 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testUnsetShrinkCloseAnimation_DidClose_StandaloneTab() {
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mModelList.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+
+        var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
+
+        callback.onResult(true);
+        assertFalse(mModelList.get(0).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
+    }
+
+    @Test
     public void testUnsetShrinkCloseAnimation_DidClose_FlatLayout_NoOp() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);

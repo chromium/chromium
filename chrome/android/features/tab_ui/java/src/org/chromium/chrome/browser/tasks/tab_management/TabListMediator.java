@@ -3244,10 +3244,15 @@ public class TabListMediator implements TabListNotificationHandler {
             if (!mTabListConfig.supportsTabGroups) return;
 
             Token tabGroupId = tab.getTabGroupId();
-            int index =
-                    TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled() && tabGroupId != null
-                            ? mModelList.indexFromTabGroupId(tabGroupId)
-                            : getIndexForTabIdWithRelatedTabs(tab.getId());
+            int index;
+            if (TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()) {
+                index =
+                        tabGroupId != null
+                                ? mModelList.indexFromTabGroupId(tabGroupId)
+                                : getIndexFromTabId(tab.getId());
+            } else {
+                index = getIndexForTabIdWithRelatedTabs(tab.getId());
+            }
             if (mModelList.isValidIndex(index)) {
                 if (mTabListConfig.supportsShrinkCloseAnimation) {
                     mModelList
