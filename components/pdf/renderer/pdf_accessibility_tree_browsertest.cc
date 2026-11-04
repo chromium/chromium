@@ -6691,6 +6691,89 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListDotParenDelimiter) {
                    {"1.) ", "2.) "});
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListParenColonDelimiter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"1):", "Item 1", "2):", "Item 2"},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 12.0f, 12.0f),
+                                    gfx::RectF(47.0f, 40.0f, 80.0f, 12.0f),
+                                    gfx::RectF(30.0f, 57.0f, 12.0f, 12.0f),
+                                    gfx::RectF(47.0f, 57.0f, 80.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"},
+                   {"1): ", "2): "});
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListOrdinalIndicatorDelimiter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"1º", "Texto", "2º", "Texto"},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+                                    gfx::RectF(30.0f, 57.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 57.0f, 80.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Texto", "Texto"},
+                   {"1º ", "2º "});
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListDotOrdinalIndicatorDelimiter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.º Texto", "2.º Texto"}, {
+                                      gfx::RectF(30.0f, 40.0f, 90.0f, 12.0f),
+                                      gfx::RectF(30.0f, 57.0f, 90.0f, 12.0f),
+                                  });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Texto", "Texto"},
+                   {"1.º ", "2.º "});
+}
+
+// A date with a degree-sign ordinal (e.g. "1° agosto") is not a list without a
+// following "2°" marker.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListDegreeDateNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"1° agosto 2023", "La reunión tuvo lugar."},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 140.0f, 12.0f),
+                                    gfx::RectF(30.0f, 53.0f, 220.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u),
+                 "1° agosto 2023La reunión tuvo lugar.");
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListThreeDigitMarkers) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

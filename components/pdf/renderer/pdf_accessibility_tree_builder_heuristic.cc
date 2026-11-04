@@ -232,10 +232,18 @@ constexpr float kMaxFirstLineIndentEm = 3.0f;
 constexpr float kWrapRightEdgeToleranceEm = 2.0f;
 
 // Delimiters that may follow the number in a decimal ordered list marker.
-// TODO(crbug.com/525509231): Support delimiters used in other languages, such
-// as ordinal indicators (e.g. "2º").
-constexpr auto kOrderedMarkerDelimiters =
-    std::to_array<std::string_view>({".", ")", ".)"});
+// TODO(crbug.com/525509231): Support CJK delimiters such as "．" (U+FF0E
+// FULLWIDTH FULL STOP) and "、" (U+3001 IDEOGRAPHIC COMMA), which may follow
+// full-width digits and have no trailing space.
+constexpr auto kOrderedMarkerDelimiters = std::to_array<std::string_view>({
+    ".",
+    ")",
+    ".)",
+    "):",
+    "\xC2\xBA",   // º U+00BA (masculine ordinal indicator)
+    ".\xC2\xBA",  // .º
+    "\xC2\xB0",   // ° U+00B0 (degree sign, used as an ordinal indicator)
+});
 
 // Markers that only count when they open or continue a nested level, because
 // at the top level they usually aren't bullets (e.g. "–" as punctuation).
