@@ -1,0 +1,75 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_macro.gni")
+import("//build/rust/rust_static_library.gni")
+import("//third_party/openh264rs/src/sources.gni")
+
+# Public C++ target exposing the drop-in wels/codec_api.h compatibility header.
+source_set("openh264rs") {
+  public = [ "codec_api.h" ]
+  public_deps = [ ":openh264rs_crate" ]
+}
+
+# Core OpenH264rs Rust library and generated cxx FFI bindings.
+rust_static_library("openh264rs_crate") {
+  visibility = [ ":*" ]
+  crate_name = "openh264rs"
+  crate_root = rebase_path(openh264rs_crate_root, ".", "src")
+  edition = "2024"
+
+  # Unsafe is required for architecture-specific SIMD intrinsics and FFI bridge.
+  allow_unsafe = true
+
+  sources = rebase_path(openh264rs_sources, ".", "src")
+
+  features = [ "cxx-api" ]
+  cxx_bindings = rebase_path(openh264rs_cxx_bindings, ".", "src")
+  no_clippy = true
+}
+
+# Proc-macro that shadows #[test] as a no-op for rust_gtest_interop builds.
+rust_macro("openh264rs_noop_test_attribute") {
+  testonly = true
+  visibility = [ ":*" ]
+  crate_name = "openh264rs_noop_test_attribute"
+  crate_root = "noop_test_attribute.rs"
+  edition = "2024"
+  sources = [ "noop_test_attribute.rs" ]
+}
+
+# Runtime test bitstreams and reference SHA-1 hashes for OpenH264rs tests.
+group("openh264rs_test_data") {
+  testonly = true
+  visibility = [ ":*" ]
+  data = [
+    "src/tests/data/",
+    "src/tests/encoder_output_sha1.txt",
+  ]
+}
+
+# GoogleTest wrapper linking OpenH264rs integration tests into media_unittests.
+rust_static_library("openh264rs_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "unittests.rs"
+  edition = "2024"
+  allow_unsafe = true
+  sources = [ "unittests.rs" ] + rebase_path(
+                openh264rs_test_support_sources + openh264rs_integration_tests,
+                ".",
+                "src")
+  deps = [
+    ":openh264rs_crate",
+    ":openh264rs_noop_test_attribute",
+    "//testing/rust_gtest_interop",
+  ]
+  data_deps = [ ":openh264rs_test_data" ]
+  rustflags = [
+    "--cap-lints=allow",
+    "--cfg=has_test_data",
+  ]
+  rustenv = [ "CARGO_MANIFEST_DIR=" + rebase_path("src", "//") ]
+  no_clippy = true
+}

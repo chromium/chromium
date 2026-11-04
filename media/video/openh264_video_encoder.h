@@ -13,8 +13,15 @@
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
-#include "third_party/openh264/src/codec/api/wels/codec_api.h"
+#include "media/media_buildflags.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(ENABLE_RUST_OPENH264)
+#include "third_party/openh264rs/codec_api.h"
+#else
+#include "third_party/openh264/src/codec/api/wels/codec_api.h"
+using c_void = void;
+#endif
 
 namespace media {
 

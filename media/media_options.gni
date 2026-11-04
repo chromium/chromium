@@ -139,6 +139,9 @@ declare_args() {
 
 # Use another declare_args() to allow dependence on args defined above.
 declare_args() {
+  # Enable the Rust port of OpenH264 in the media library.
+  media_use_rust_openh264 = false
+
   # Enable usage of Symphonia audio decoder within the media library.
   media_use_symphonia_decoder = media_use_symphonia
 
@@ -181,6 +184,8 @@ declare_args() {
 
 assert(!enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
        "enable_mse_mpeg2ts_stream_parser required for enable_hls_demuxer")
+assert(!media_use_rust_openh264 || media_use_openh264,
+       "media_use_openh264 required for media_use_rust_openh264")
 assert(!enable_hls_demuxer || proprietary_codecs,
        "proprietary_codecs required for enable_hls_demuxer")
 assert(!enable_platform_ac3_eac3_audio || proprietary_codecs,

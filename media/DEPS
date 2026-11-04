@@ -28,6 +28,7 @@ include_rules = [
   "+third_party/libvpx",
   "+third_party/libyuv",
   "+third_party/openh264/src/codec/api/wels",
+  "+third_party/openh264rs",
   "+third_party/opus",
   # Required for C++ bridge headers (e.g. SymphoniaSourceBridge) interacting with
   # Rust CXX bridge types such as rust::Slice.

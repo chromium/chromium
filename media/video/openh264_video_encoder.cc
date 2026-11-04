@@ -328,7 +328,8 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
   codec.get_deleter().MarkInitialized();
 
   int video_format = EVideoFormatType::videoFormatI420;
-  if (int err = codec->SetOption(ENCODER_OPTION_DATAFORMAT, &video_format)) {
+  if (int err = codec->SetOption(ENCODER_OPTION_DATAFORMAT,
+                                 reinterpret_cast<c_void*>(&video_format))) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "Failed to set data format for OpenH264 encoder")
@@ -370,8 +371,8 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
   result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
   result.color_space = color_space;
   SEncoderStatistics stats = {};
-  if (codec_->GetOption(ENCODER_OPTION_GET_STATISTICS, &stats) ==
-      cmResultSuccess) {
+  if (codec_->GetOption(ENCODER_OPTION_GET_STATISTICS,
+                        reinterpret_cast<c_void*>(&stats)) == cmResultSuccess) {
     constexpr double kMaxH264Qp = 51.0;
     result.qp = std::clamp(stats.uiAverageFrameQP / kMaxH264Qp, 0.0, 1.0);
   }
@@ -547,7 +548,8 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   picture_stride[2] = frame->stride(VideoFrame::Plane::kV);
 
   if (key_frame) {
-    if (int err = codec_->ForceIntraFrame(true)) {
+    // `iLayerId = -1` forces an IDR frame across all spatial layers.
+    if (int err = codec_->ForceIntraFrame(true, /*iLayerId=*/-1)) {
       std::move(done_cb).Run(
           EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                         "Can't make keyframe.")
@@ -612,8 +614,8 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
       profile_, options,
       VideoColorSpace::FromGfxColorSpace(last_frame_color_space_), &params);
 
-  if (int err =
-          codec_->SetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT, &params)) {
+  if (int err = codec_->SetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT,
+                                  reinterpret_cast<c_void*>(&params))) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "OpenH264 encoder failed to set new SEncParamExt.")

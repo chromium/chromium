@@ -73,7 +73,11 @@ source_set("video") {
       "openh264_video_encoder.cc",
       "openh264_video_encoder.h",
     ]
-    public_deps += [ "//third_party/openh264:encoder" ]
+    if (media_use_rust_openh264) {
+      public_deps += [ "//third_party/openh264rs" ]
+    } else {
+      public_deps += [ "//third_party/openh264:encoder" ]
+    }
     deps += [ "//media/parsers" ]
   }
 
@@ -137,5 +141,11 @@ source_set("unit_tests") {
   if (use_libgav1_parser) {
     sources += [ "libgav1_decoder_unittest.cc" ]
     deps += [ "//third_party/libgav1:libgav1_decoder" ]
+  }
+
+  # TODO(crbug.com/581458350): Enable on Windows and Android once decoder stack
+  # usage and APK test-data lookup are fixed.
+  if (proprietary_codecs && media_use_rust_openh264 && (is_linux || is_mac)) {
+    deps += [ "//third_party/openh264rs:openh264rs_unittests" ]
   }
 }
