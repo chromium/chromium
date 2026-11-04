@@ -308,6 +308,7 @@ import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
+import org.chromium.chrome.browser.tabmodel.StubTabModel;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -1742,7 +1743,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             assumeNonNull(mInactivityTrackerSupplier.get())
                     .setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
             initializeSuggestionMetricsTracker();
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
+            if (!(mTabModelSelector.getModel(false) instanceof StubTabModel)
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 mSuggestionEventObserver =
                         new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
                 // Deferring only the promotion coordinator splits the suggestion producer (the
@@ -4271,6 +4273,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private void initGroupSuggestionsPromotionCoordinator() {
         if (mGroupSuggestionsPromotionCoordinator != null) return;
+        TabModel regularModel = mTabModelSelector.getModel(/* incognito= */ false);
+        if (regularModel instanceof StubTabModel) return;
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.GROUP_SUGGESTION_SERVICE,
                 GroupSuggestionsPromotionCoordinator.CREATE_SUGGESTIONS_PROMOTION_UI_PARAM,
@@ -4279,7 +4283,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     new GroupSuggestionsPromotionCoordinator(
                             this,
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),
-                            mTabModelSelector.getModel(/* incognito= */ false));
+                            regularModel);
         }
     }
 

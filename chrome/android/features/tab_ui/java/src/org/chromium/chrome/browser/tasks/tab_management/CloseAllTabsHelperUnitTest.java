@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tabmodel.StubTabModel;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -273,5 +274,15 @@ public class CloseAllTabsHelperUnitTest {
         verify(mRegularTabRemover).closeTabs(argThat(allTabsMatcher), /* allowDialog= */ eq(false));
         verify(mIncognitoTabRemover)
                 .closeTabs(argThat(allTabsMatcher), /* allowDialog= */ eq(false));
+    }
+
+    @Test
+    public void testCloseAllTabsWithStubTabModel() {
+        StubTabModel stubRegularModel = new StubTabModel(/* isIncognito= */ false, mProfile);
+        when(mTabModelSelector.getModel(false)).thenReturn(stubRegularModel);
+
+        CloseAllTabsHelper.closeAllTabsHidingTabGroups(
+                mTabModelSelector, /* allowUndo= */ false, /* closePinnedTabs= */ false);
+        verify(mIncognitoTabRemover).closeTabs(any(), eq(false));
     }
 }

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tabmodel.StubTabModel;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -151,6 +152,7 @@ public class TabModelNotificationDotManager implements Destroyable {
      */
     public void initWithNative(TabModelSelector tabModelSelector) {
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
+        if (mTabModel instanceof StubTabModel) return;
         assert mTabModel.getTabModelType() != TabModelType.EMPTY
                 : "TabModel & native should be initialized.";
 

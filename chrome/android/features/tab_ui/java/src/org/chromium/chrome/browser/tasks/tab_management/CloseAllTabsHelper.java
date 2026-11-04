@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tabmodel.StubTabModel;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -56,18 +57,23 @@ public class CloseAllTabsHelper {
             boolean allowUndo,
             @TabClosingSource int closingSource,
             boolean closePinnedTabs) {
-        tabModelSelector
-                .getModel(/* incognito= */ true)
-                .getTabRemover()
-                .closeTabs(
-                        TabClosureParams.closeAllTabs()
-                                .allowUndo(allowUndo)
-                                .hideTabGroups(true)
-                                .tabClosingSource(closingSource)
-                                .build(),
-                        /* allowDialog= */ false);
+        TabModel incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
+        if (!(incognitoModel instanceof StubTabModel)) {
+            incognitoModel
+                    .getTabRemover()
+                    .closeTabs(
+                            TabClosureParams.closeAllTabs()
+                                    .allowUndo(allowUndo)
+                                    .hideTabGroups(true)
+                                    .tabClosingSource(closingSource)
+                                    .build(),
+                            /* allowDialog= */ false);
+        }
 
         TabModel regularTabModel = tabModelSelector.getModel(/* incognito= */ false);
+        if (regularTabModel instanceof StubTabModel) {
+            return;
+        }
         boolean retainPinnedTabs =
                 !closePinnedTabs
                         && ChromeFeatureList.sAndroidCloseAllTabsRetainsPinnedTabs.isEnabled()

@@ -219,6 +219,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
+import org.chromium.chrome.browser.tabmodel.StubTabModel;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -1603,12 +1604,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ExtensionsUrlOverrideRegistryManagerFactory.getForProfile(originalProfile);
         }
 
-        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)) {
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.asNonNull().get();
+        if (!(tabModelSelector.getModel(false) instanceof StubTabModel)
+                && TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)) {
             var tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(originalProfile);
             assert tabGroupSyncService != null;
             mTabGroupSyncController =
                     new TabGroupSyncControllerImpl(
-                            mTabModelSelectorSupplier.asNonNull().get(),
+                            tabModelSelector,
                             tabGroupSyncService,
                             UserPrefs.get(originalProfile),
                             () -> {
@@ -2390,9 +2393,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
                 .runSyncOrOnAvailable(
                         selector -> {
+                            TabModel tabModel = selector.getModel(/* incognito= */ false);
+                            if (tabModel instanceof StubTabModel) return;
                             mInstantMessageDelegateImpl =
                                     InstantMessageDelegateFactory.getForProfile(originalProfile);
-                            TabModel tabModel = selector.getModel(/* incognito= */ false);
                             DataSharingNotificationManager dataSharingNotificationManager =
                                     new DataSharingNotificationManager(mActivity);
                             mInstantMessageDelegateImpl.attachWindow(
