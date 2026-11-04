@@ -12,12 +12,22 @@
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
 namespace {
+
+TEST(GlicProviderSpecImplTest, PromoBodyStringId) {
+  EXPECT_EQ(CreateGlicProviderSpec(GlicProvider::kGemini, {})
+                ->GetPromoBodyStringId(),
+            IDS_GLIC_PROMO_BODY);
+  EXPECT_EQ(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                ->GetPromoBodyStringId(),
+            IDS_GEIC_PROMO_BODY);
+}
 
 TEST(GlicProviderSpecImplTest, GeminiSupportsSsrFollowsGlicSsr) {
   {

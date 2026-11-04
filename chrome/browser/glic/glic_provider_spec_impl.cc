@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -108,6 +109,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
     return chrome::kGlicSettingsSubpage;
   }
   int GetEntryPointIconId() const override { return IDR_GLIC_BUTTON_ALT_ICON; }
+  int GetPromoBodyStringId() const override { return IDS_GLIC_PROMO_BODY; }
   std::string_view GetSyntheticTrialGroupName() const override {
     return "Gemini";
   }
@@ -197,6 +199,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     return chrome::kGlicEnterpriseSettingsSubpage;
   }
   int GetEntryPointIconId() const override { return IDR_GEIC_BUTTON_ICON; }
+  int GetPromoBodyStringId() const override { return IDS_GEIC_PROMO_BODY; }
   std::string_view GetSyntheticTrialGroupName() const override {
     return "GeminiEnterprise";
   }

@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -18,6 +19,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace glic {
 
@@ -87,6 +89,10 @@ void GlicIphController::MaybeShowPromo() {
   user_education::FeaturePromoParams params(
       show_cta_ ? feature_engagement::kIPHGlicTryItFeature
                 : feature_engagement::kIPHGlicPromoFeature);
+  if (!show_cta_) {
+    params.body_params = l10n_util::GetStringUTF16(
+        GetGlicProviderSpec(window_->GetProfile()).GetPromoBodyStringId());
+  }
   params.show_promo_result_callback = base::BindOnce(
       &GlicIphController::OnShowPromoResult, weak_ptr_factory_.GetWeakPtr());
   BrowserUserEducationInterface::From(&*window_)->MaybeShowFeaturePromo(

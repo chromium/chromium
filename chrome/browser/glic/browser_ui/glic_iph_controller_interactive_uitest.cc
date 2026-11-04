@@ -17,18 +17,24 @@
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/label.h"
 
 namespace glic {
 
@@ -101,6 +107,17 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
   ~GlicIphControllerTestClassic() override = default;
 };
 
+IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic,
+                       ShowsConsumerPromoStrings) {
+  RunTestSequence(
+      WaitForGlicIph({feature_engagement::kIPHGlicPromoFeature}),
+      CheckViewProperty(user_education::HelpBubbleView::kTitleTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE)),
+      CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_GLIC_PROMO_BODY)));
+}
 
 // Confirms that the promo is not shown if the user's profile has a signed-in
 // account that needs to be re-authenticated.
@@ -278,6 +295,33 @@ IN_PROC_BROWSER_TEST_F(GlicIphControllerWarmingDisabledInteractiveUiTest,
   histogram_tester.ExpectBucketCount(
       "Glic.WarmingPool.ContainerCreationReason",
       GlicWebContentsWarmingPool::ContainerCreationReason::kIph, 0);
+}
+
+class GlicIphControllerTestGeicClassic : public GlicIphControllerTestBase {
+ public:
+  GlicIphControllerTestGeicClassic()
+      : GlicIphControllerTestBase({feature_engagement::kIPHGlicPromoFeature}) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{feature_engagement::kIPHGlicTryItFeature});
+  }
+  ~GlicIphControllerTestGeicClassic() override = default;
+
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+IN_PROC_BROWSER_TEST_F(GlicIphControllerTestGeicClassic,
+                       ShowsGeminiEnterprisePromoStrings) {
+  RunTestSequence(
+      WaitForGlicIph({feature_engagement::kIPHGlicPromoFeature}),
+      CheckViewProperty(user_education::HelpBubbleView::kTitleTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE)),
+      CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_GEIC_PROMO_BODY)));
 }
 
 }  // namespace glic

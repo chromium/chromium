@@ -950,7 +950,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(
           feature_engagement::kIPHGlicPromoFeature, kGlicButtonElementId,
-          IDS_GLIC_PROMO_BODY)
+          IDS_WILDCARD)  // Replaced by caller with the correct IDS string.
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleTitleText(IDS_GLIC_PROMO_TITLE)
           // Since this can appear randomly, we do not want to steal focus from

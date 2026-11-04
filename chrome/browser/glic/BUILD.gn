@@ -944,6 +944,7 @@ source_set("unit_tests") {
     ":impl",
     ":selection_context",
     "//base/test:test_support",
+    "//chrome/app:generated_resources",
     "//chrome/browser:global_features",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/actor/ui",

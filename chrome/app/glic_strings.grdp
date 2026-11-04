@@ -29,6 +29,9 @@
   <message name="IDS_GLIC_PROMO_BODY" desc="Text for a promo pointing to the Gemini icon in Chrome.">
     Chat with voice or text to get answers, key takeaways, and more as you browse
   </message>
+  <message name="IDS_GEIC_PROMO_BODY" desc="Text for a promo pointing to the Gemini Enterprise icon in Chrome.">
+    Ask about anything as you browse and get answers grounded in the info you need for work
+  </message>
   <if expr="is_win or is_linux or is_chromeos or is_android">
     <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="Menu text for the Gemini icon on the system try to open Chrome settings and change the keyboard shortcut for opening Gemini in Chrome.">
       Customize keyboard shortcut
