@@ -6,12 +6,14 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -78,8 +80,15 @@ using ::affiliations::AffiliatedFacets;
 using ::affiliations::Facet;
 using ::affiliations::FacetURI;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
+using ::testing::Pair;
 using ::testing::Return;
+
+std::string RetrieveOtpSliceHistogram(std::string_view predicted_otp_type) {
+  return base::StrCat({kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+                       ".", predicted_otp_type});
+}
 
 class TestActorContentAutofillDriver : public TestContentAutofillDriver {
  public:
@@ -316,11 +325,14 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
       future;
   service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
-                        /*is_login_flow=*/false, PredictedOtpType::kUnknown,
+                        /*is_login_flow=*/false, PredictedOtpType::kEmail,
                         future.GetCallback());
   EXPECT_EQ(future.Get().value(), kOtp);
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessCacheMatchFound, 1);
+  histogram_tester_.ExpectUniqueSample(
+      RetrieveOtpSliceHistogram("Email"),
       ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessCacheMatchFound, 1);
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
@@ -467,13 +479,19 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Timeout) {
       future;
   service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
-                        PredictedOtpType::kUnknown, future.GetCallback());
+                        PredictedOtpType::kSms, future.GetCallback());
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
   EXPECT_EQ(future.Get().error(),
             OneTimeTokenRetrievalError::kSubscriptionExpired);
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
+  histogram_tester_.ExpectUniqueSample(
+      RetrieveOtpSliceHistogram("Sms"),
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
+  EXPECT_THAT(histogram_tester_.GetTotalCountsForPrefix(base::StrCat(
+                  {kActorOneTimeTokenFillingServiceRetrieveOtpHistogram, "."})),
+              ElementsAre(Pair(RetrieveOtpSliceHistogram("Sms"), 1)));
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kRetrieveOtpStarted, 1);
@@ -512,12 +530,59 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
   service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
-                        PredictedOtpType::kUnknown, base::DoNothing());
+                        PredictedOtpType::kAuthenticatorApp, base::DoNothing());
   service_.reset();
 
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kCancelled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      RetrieveOtpSliceHistogram("AuthenticatorApp"),
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kCancelled, 1);
+}
+
+// Tests that a superseded request records nothing in its slice and that the
+// newer request's outcome is recorded in the slice for its own type.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_Superseded_RecordsOnlyNewerRequestSlice) {
+  NavigateAndCommit(GURL("https://example.com"));
+
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        PredictedOtpType::kSms, base::DoNothing());
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        PredictedOtpType::kEmail, base::DoNothing());
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+
+  histogram_tester_.ExpectTotalCount(RetrieveOtpSliceHistogram("Sms"), 0);
+  histogram_tester_.ExpectUniqueSample(
+      RetrieveOtpSliceHistogram("Email"),
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
+}
+
+// Tests that a newer call that fails early (null tab) is recorded in its own
+// slice and doesn't change the slice of the request that is pending.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_NullTabWhilePending_KeepsPendingRequestSlice) {
+  NavigateAndCommit(GURL("https://example.com"));
+
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        PredictedOtpType::kSms, base::DoNothing());
+  // A null tab makes this call fail before it can supersede the pending
+  // request.
+  service().RetrieveOtp(tabs::TabHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        PredictedOtpType::kEmail, base::DoNothing());
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+
+  histogram_tester_.ExpectUniqueSample(
+      RetrieveOtpSliceHistogram("Email"),
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kNullTab, 1);
+  histogram_tester_.ExpectUniqueSample(
+      RetrieveOtpSliceHistogram("Sms"),
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
 }
 
 // Tests that `RetrieveOtp` fails gracefully when the tab is null.
@@ -532,6 +597,9 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
   EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kGmailOtpUnknown);
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kNullTab, 1);
+  histogram_tester_.ExpectUniqueSample(
+      RetrieveOtpSliceHistogram("Unknown"),
       ActorOneTimeTokenFillingServiceRetrieveOtp::kNullTab, 1);
 }
 

@@ -8,6 +8,17 @@ found in the LICENSE file.
 
 <histograms>
 
+<!-- LINT.IfChange(AttemptOtpFillingPredictedOtpType) -->
+
+<variants name="AttemptOtpFillingPredictedOtpType">
+  <variant name="AuthenticatorApp" summary="an authenticator app code"/>
+  <variant name="Email" summary="an email code"/>
+  <variant name="Sms" summary="an SMS code"/>
+  <variant name="Unknown" summary="of an unknown type"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.cc:AttemptOtpFillingPredictedOtpTypeSuffix) -->
+
 <variants name="GmailOtpTokenSource">
   <variant name="Cached" summary="a cached"/>
   <variant name="Received" summary="a received (fresh)"/>
@@ -116,6 +127,22 @@ found in the LICENSE file.
     retrieval is pending, the retrieval continues and its outcome is still
     recorded.
   </summary>
+</histogram>
+
+<histogram
+    name="OneTimeTokens.Actor.OneTimeTokenFillingService.RetrieveOtp.{PredictedOtpType}"
+    enum="ActorOneTimeTokenFillingServiceRetrieveOtpEvent"
+    expires_after="2027-06-30">
+  <owner>salmaabdelaziz@google.com</owner>
+  <owner>passwordmanager-mobile-eng@google.com</owner>
+  <summary>
+    Records the outcome of a single OTP retrieval request in
+    ActorOneTimeTokenFillingService for a request where the model predicted the
+    OTP to be {PredictedOtpType}. Uses the outcome buckets of
+    OneTimeTokens.Actor.OneTimeTokenFillingService.RetrieveOtp and is recorded
+    alongside it, once per request when the request ends.
+  </summary>
+  <token key="PredictedOtpType" variants="AttemptOtpFillingPredictedOtpType"/>
 </histogram>
 
 <histogram

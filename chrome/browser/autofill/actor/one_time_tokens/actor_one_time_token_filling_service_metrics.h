@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+#include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
+
 namespace autofill {
 
 // LINT.IfChange(ActorOneTimeTokenFillingServiceRetrieveOtp)
@@ -100,6 +102,13 @@ inline constexpr std::string_view
 // Records events during RetrieveOtp operation.
 void RecordActorOneTimeTokenFillingServiceRetrieveOtp(
     ActorOneTimeTokenFillingServiceRetrieveOtp event);
+
+// Records the outcome `event` of a `RetrieveOtp()` request to
+// `kActorOneTimeTokenFillingServiceRetrieveOtpHistogram` and to its slice for
+// the request's `predicted_otp_type`.
+void RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(
+    ActorOneTimeTokenFillingServiceRetrieveOtp event,
+    ActorOneTimeTokenFillingService::PredictedOtpType predicted_otp_type);
 
 // Records events during FillOtp operation.
 void RecordActorOneTimeTokenFillingServiceFillOtp(

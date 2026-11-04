@@ -225,7 +225,8 @@ ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() {
   // `ExecutionEngine` destroys this service before its `ToolController`, so a
   // pending operation here means the actor task ended mid-flight.
   if (retrieve_otp_callback_) {
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kCancelled);
+    RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(
+        kCancelled, retrieve_otp_predicted_type_);
   }
   // Any observer callback, pending or already posted, later runs with a null
   // service and records nothing, so there is no double count. A fill whose
@@ -308,7 +309,8 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   tabs::TabInterface* tab = tab_handle.Get();
 
   if (!tab || !tab->GetContents()) {
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNullTab);
+    RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(kNullTab,
+                                                            predicted_otp_type);
     journal_->Log(GURL(), task_id_,
                   "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
                   ::actor::JournalDetailsBuilder()
@@ -335,7 +337,8 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           one_time_tokens::switches::kMockOtpValue);
   if (!mock_otp.empty()) {
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kMockOtp);
+    RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(kMockOtp,
+                                                            predicted_otp_type);
     journal_->Log(url, task_id_,
                   "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
                   ::actor::JournalDetailsBuilder()
@@ -352,7 +355,8 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   one_time_tokens::GmailOtpService* const service =
       GmailOtpServiceFactory::GetForProfile(profile_);
   if (!service || !service->GetBackend()) {
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNoService);
+    RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(kNoService,
+                                                            predicted_otp_type);
     journal_->Log(url, task_id_,
                   "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
                   ::actor::JournalDetailsBuilder()
@@ -389,6 +393,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   }
 
   retrieve_otp_callback_ = std::move(callback);
+  retrieve_otp_predicted_type_ = predicted_otp_type;
   auto checker = std::make_unique<affiliations::DomainRelationChecker>(
       CHECK_DEREF(AffiliationServiceFactory::GetForProfile(profile_)));
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
@@ -412,7 +417,8 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
                       .AddError("Failed to retrieve OTP from backend.")
                       .Add("error_code", result.error())
                       .Build());
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(MapError(result.error()));
+    RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(
+        MapError(result.error()), retrieve_otp_predicted_type_);
     std::move(retrieve_otp_callback_).Run(base::unexpected(result.error()));
     return;
   }
@@ -420,12 +426,11 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
   journal_->Log(
       url, task_id_, "ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved",
       ::actor::JournalDetailsBuilder().Add("source", result->source).Build());
-  if (result->source == one_time_tokens::GmailOtpRetriever::Source::kCache) {
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kSuccessCacheMatchFound);
-  } else {
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(
-        kSuccessReceivedMatchFound);
-  }
+  RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(
+      result->source == one_time_tokens::GmailOtpRetriever::Source::kCache
+          ? kSuccessCacheMatchFound
+          : kSuccessReceivedMatchFound,
+      retrieve_otp_predicted_type_);
   std::move(retrieve_otp_callback_).Run(std::move(result->token.value()));
 }
 

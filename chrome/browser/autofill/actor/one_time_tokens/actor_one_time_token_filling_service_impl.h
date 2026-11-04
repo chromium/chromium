@@ -113,6 +113,8 @@ class ActorOneTimeTokenFillingServiceImpl
   base::OnceCallback<void(
       base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>)>
       retrieve_otp_callback_;
+  // The predicted OTP type of the request that owns `retrieve_otp_callback_`.
+  PredictedOtpType retrieve_otp_predicted_type_ = PredictedOtpType::kUnknown;
   std::unique_ptr<ActorFillingObserver> filling_observer_;
 
   base::WeakPtrFactory<ActorOneTimeTokenFillingServiceImpl> weak_ptr_factory_{
