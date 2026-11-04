@@ -1085,6 +1085,26 @@ JavaScriptCompletionBlock WrapCompletionBlock(
                                   currentURL:self.currentURL];
 }
 
+// Starts downloading `url` to `destination` using `source` to track the
+// extraction mechanism in metrics.
+- (void)startDownloadUsingURL:(const GURL&)url
+            toDestinationPath:(NSString*)destination
+             extractionSource:(web::IOSDownloadWebViewExtractionSource)source
+                     delegate:(id<CRWWebViewDownloadDelegate>)delegate
+                      handler:(void (^)(id<CRWWebViewDownload>))handler {
+  NSURLRequest* request = [NSURLRequest requestWithURL:net::NSURLWithGURL(url)];
+  CRWWebViewDownload* download =
+      [[CRWWebViewDownload alloc] initWithPath:destination
+                                       request:request
+                                       webview:self.webView
+                                      delegate:delegate
+                                        source:source];
+  [download startDownload];
+  if (handler) {
+    handler(download);
+  }
+}
+
 - (void)downloadCurrentPageToDestinationPath:(NSString*)destination
                                     delegate:
                                         (id<CRWWebViewDownloadDelegate>)delegate
@@ -1095,17 +1115,15 @@ JavaScriptCompletionBlock WrapCompletionBlock(
                  ? navigationManager->GetLastCommittedItem()->GetURL()
                  : [self currentURL];
 
-  NSURLRequest* request = [NSURLRequest requestWithURL:net::NSURLWithGURL(url)];
-
-  CRWWebViewDownload* download =
-      [[CRWWebViewDownload alloc] initWithPath:destination
-                                       request:request
-                                       webview:self.webView
-                                      delegate:delegate];
-  [download startDownload];
-  if (handler) {
-    handler(download);
-  }
+  // TODO(crbug.com/578364927): Fetch current document content using a blob URL
+  // to avoid secondary network requests, and fall back to WKDownload if
+  // extraction fails.
+  [self
+      startDownloadUsingURL:url
+          toDestinationPath:destination
+           extractionSource:web::IOSDownloadWebViewExtractionSource::kWKDownload
+                   delegate:delegate
+                    handler:handler];
 }
 
 - (BOOL)findInteractionSupported {

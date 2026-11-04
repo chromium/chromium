@@ -30,19 +30,22 @@
 
 @implementation CRWWebViewDownload {
   BOOL _isLocalDownload;
+  web::IOSDownloadWebViewExtractionSource _extractionSource;
   std::optional<base::ElapsedTimer> _downloadTimer;
 }
 
 - (instancetype)initWithPath:(NSString*)destination
                      request:(NSURLRequest*)request
                      webview:(WKWebView*)webview
-                    delegate:(id<CRWWebViewDownloadDelegate>)delegate {
+                    delegate:(id<CRWWebViewDownloadDelegate>)delegate
+                      source:(web::IOSDownloadWebViewExtractionSource)source {
   self = [super init];
   if (self) {
     self.destinationPath = destination;
     self.request = request;
     self.webView = webview;
     self.delegate = delegate;
+    _extractionSource = source;
   }
   return self;
 }
@@ -112,6 +115,9 @@
   base::UmaHistogramEnumeration(web::kIOSDownloadWebViewResultHistogram,
                                 result);
   if (result == web::IOSDownloadWebViewResult::kCompleted) {
+    base::UmaHistogramEnumeration(
+        web::kIOSDownloadWebViewSuccessfulExtractionSourceHistogram,
+        _extractionSource);
     base::UmaHistogramMediumTimes(web::kIOSDownloadWebViewDurationHistogram,
                                   _downloadTimer->Elapsed());
   }

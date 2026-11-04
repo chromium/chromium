@@ -19,6 +19,9 @@ inline constexpr std::string_view kIOSDownloadWebViewDurationHistogram =
     "IOS.Download.WebView.Duration";
 inline constexpr std::string_view kIOSDownloadWebViewLocalSucceededHistogram =
     "IOS.Download.WebView.Local.Succeeded";
+inline constexpr std::string_view
+    kIOSDownloadWebViewSuccessfulExtractionSourceHistogram =
+        "IOS.Download.WebView.SuccessfulExtractionSource";
 
 // LINT.IfChange(IOSDownloadWebViewResult)
 // Result of a non-local web view download. These values are persisted to logs.
@@ -30,6 +33,16 @@ enum class IOSDownloadWebViewResult {
   kMaxValue = kError,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSDownloadWebViewResult)
+
+// LINT.IfChange(IOSDownloadWebViewExtractionSource)
+// Extraction source of a web view download. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSDownloadWebViewExtractionSource {
+  kBlobURL = 0,
+  kWKDownload = 1,
+  kMaxValue = kWKDownload,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSDownloadWebViewExtractionSource)
 
 }  // namespace web
 
@@ -47,14 +60,16 @@ enum class IOSDownloadWebViewResult {
 @property(nonatomic, weak) id<CRWWebViewDownloadDelegate> delegate;
 
 // Initializes CRWWebViewDownload.
-// `destination` is the destination path where the file is save.
+// `destination` is the destination path where the file is saved.
 // `request` is the request called for the download.
 // `webview` is the web view used to call the download.
 // `delegate` is the delegate used to track download status.
+// `source` is the source of the extraction.
 - (instancetype)initWithPath:(NSString*)destination
                      request:(NSURLRequest*)request
                      webview:(WKWebView*)webview
-                    delegate:(id<CRWWebViewDownloadDelegate>)delegate;
+                    delegate:(id<CRWWebViewDownloadDelegate>)delegate
+                      source:(web::IOSDownloadWebViewExtractionSource)source;
 
 // Starts to download the resource at the URL in the request specified at the
 // initialization.

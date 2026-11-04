@@ -670,6 +670,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Low Engagement User with No Recent Icon Launches"/>
 </enum>
 
+<!-- LINT.IfChange(IOSDownloadWebViewExtractionSource) -->
+
+<enum name="IOSDownloadWebViewExtractionSource">
+  <int value="0" label="Blob URL">Downloaded using in-memory blob URL.</int>
+  <int value="1" label="WKDownload">
+    Downloaded via WKDownload using the original URL.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/web/download/crw_web_view_download.h:IOSDownloadWebViewExtractionSource) -->
+
 <!-- LINT.IfChange(IOSDownloadWebViewResult) -->
 
 <enum name="IOSDownloadWebViewResult">

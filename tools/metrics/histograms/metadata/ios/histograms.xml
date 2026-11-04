@@ -2343,6 +2343,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Download.WebView.SuccessfulExtractionSource"
+    enum="IOSDownloadWebViewExtractionSource" expires_after="2027-09-01">
+  <owner>qpubert@google.com</owner>
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the extraction source (blob URL or WKDownload) when a web view
+    download (CRWWebViewDownload) completes successfully.
+  </summary>
+</histogram>
+
 <histogram name="IOS.EditMenu.Error" enum="IOSEditMenuError"
     expires_after="2027-03-09">
   <owner>olivierrobin@chromium.org</owner>

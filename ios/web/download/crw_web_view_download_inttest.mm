@@ -131,7 +131,8 @@ TEST_F(CRWWebViewDownloadInttest, RemoteDownloadSuccess) {
       initWithPath:base::apple::FilePathToNSString(destination_path)
            request:request
            webview:web_view_
-          delegate:delegate];
+          delegate:delegate
+            source:IOSDownloadWebViewExtractionSource::kWKDownload];
 
   [download startDownload];
   ASSERT_TRUE(finish_future.Wait());
@@ -152,6 +153,50 @@ TEST_F(CRWWebViewDownloadInttest, RemoteDownloadSuccess) {
   histogram_tester.ExpectTotalCount(kIOSDownloadWebViewDurationHistogram, 1);
   histogram_tester.ExpectTotalCount(kIOSDownloadWebViewLocalSucceededHistogram,
                                     0);
+  histogram_tester.ExpectUniqueSample(
+      kIOSDownloadWebViewSuccessfulExtractionSourceHistogram,
+      IOSDownloadWebViewExtractionSource::kWKDownload, 1);
+}
+
+// Tests that downloading with `kBlobURL` extraction source records `kBlobURL`
+// on completion.
+TEST_F(CRWWebViewDownloadInttest, RemoteDownloadWithBlobURLExtractionSource) {
+  ASSERT_TRUE(server_.Start());
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> finish_future;
+  base::test::TestFuture<NSError*> failure_future;
+  FakeWebViewDownloadDelegate* delegate = [[FakeWebViewDownloadDelegate alloc]
+      initWithFinishCallback:finish_future.GetCallback()
+             failureCallback:failure_future.GetCallback()];
+
+  NSURL* url = net::NSURLWithGURL(server_.GetURL(kDownloadPath));
+  NSURLRequest* request = [NSURLRequest requestWithURL:url];
+  base::FilePath destination_path = GetDestinationPath();
+
+  CRWWebViewDownload* download = [[CRWWebViewDownload alloc]
+      initWithPath:base::apple::FilePathToNSString(destination_path)
+           request:request
+           webview:web_view_
+          delegate:delegate
+            source:IOSDownloadWebViewExtractionSource::kBlobURL];
+
+  [download startDownload];
+  ASSERT_TRUE(finish_future.Wait());
+  EXPECT_FALSE(failure_future.IsReady());
+
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(destination_path, &content));
+  EXPECT_EQ(kExpectedRemoteDownloadContent, content);
+
+  histogram_tester.ExpectUniqueSample(kIOSDownloadWebViewResultHistogram,
+                                      IOSDownloadWebViewResult::kCompleted, 1);
+  histogram_tester.ExpectTotalCount(kIOSDownloadWebViewDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kIOSDownloadWebViewLocalSucceededHistogram,
+                                    0);
+  histogram_tester.ExpectUniqueSample(
+      kIOSDownloadWebViewSuccessfulExtractionSourceHistogram,
+      IOSDownloadWebViewExtractionSource::kBlobURL, 1);
 }
 
 // Tests that a failing HTTP download notifies the delegate and records
@@ -173,7 +218,8 @@ TEST_F(CRWWebViewDownloadInttest, RemoteDownloadError) {
       initWithPath:base::apple::FilePathToNSString(GetDestinationPath())
            request:request
            webview:web_view_
-          delegate:delegate];
+          delegate:delegate
+            source:IOSDownloadWebViewExtractionSource::kWKDownload];
 
   [download startDownload];
   ASSERT_TRUE(failure_future.Wait());
@@ -214,7 +260,8 @@ TEST_F(CRWWebViewDownloadInttest, RemoteDownloadCanceled) {
       initWithPath:base::apple::FilePathToNSString(GetDestinationPath())
            request:request
            webview:web_view_
-          delegate:delegate];
+          delegate:delegate
+            source:IOSDownloadWebViewExtractionSource::kWKDownload];
 
   [download startDownload];
   ASSERT_TRUE(request_started.Wait());
@@ -261,7 +308,8 @@ TEST_F(CRWWebViewDownloadInttest, LocalDownloadSuccess) {
       initWithPath:base::apple::FilePathToNSString(destination_path)
            request:request
            webview:web_view_
-          delegate:delegate];
+          delegate:delegate
+            source:IOSDownloadWebViewExtractionSource::kWKDownload];
 
   [download startDownload];
   ASSERT_TRUE(finish_future.Wait());
@@ -275,6 +323,8 @@ TEST_F(CRWWebViewDownloadInttest, LocalDownloadSuccess) {
       kIOSDownloadWebViewLocalSucceededHistogram, true, 1);
   histogram_tester.ExpectTotalCount(kIOSDownloadWebViewResultHistogram, 0);
   histogram_tester.ExpectTotalCount(kIOSDownloadWebViewDurationHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSDownloadWebViewSuccessfulExtractionSourceHistogram, 0);
 }
 
 // Tests that failing to copy a missing local `file://` URL notifies the
@@ -295,7 +345,8 @@ TEST_F(CRWWebViewDownloadInttest, LocalDownloadFileIOError) {
       initWithPath:base::apple::FilePathToNSString(GetDestinationPath())
            request:request
            webview:web_view_
-          delegate:delegate];
+          delegate:delegate
+            source:IOSDownloadWebViewExtractionSource::kWKDownload];
 
   [download startDownload];
   ASSERT_TRUE(failure_future.Wait());
@@ -326,7 +377,8 @@ TEST_F(CRWWebViewDownloadInttest, LocalDownloadCanceled) {
       initWithPath:base::apple::FilePathToNSString(GetDestinationPath())
            request:request
            webview:web_view_
-          delegate:delegate];
+          delegate:delegate
+            source:IOSDownloadWebViewExtractionSource::kWKDownload];
 
   [download startDownload];
 

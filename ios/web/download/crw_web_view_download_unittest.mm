@@ -36,11 +36,12 @@ class CRWWebViewDownloadTest : public PlatformTest {
 TEST_F(CRWWebViewDownloadTest, TestDownloadHTTPFile) {
   NSURLRequest* request = [[NSURLRequest alloc]
       initWithURL:[NSURL URLWithString:@"https://example.test"]];
-  CRWWebViewDownload* download =
-      [[CRWWebViewDownload alloc] initWithPath:@"/path/foo/bar"
-                                       request:request
-                                       webview:web_view_
-                                      delegate:delegate_];
+  CRWWebViewDownload* download = [[CRWWebViewDownload alloc]
+      initWithPath:@"/path/foo/bar"
+           request:request
+           webview:web_view_
+          delegate:delegate_
+            source:web::IOSDownloadWebViewExtractionSource::kWKDownload];
 
   __block bool start_called = false;
   OCMExpect([web_view_
@@ -81,7 +82,8 @@ TEST_F(CRWWebViewDownloadTest, TestDownloadLocalFile) {
       initWithPath:base::SysUTF8ToNSString(dest.value())
            request:request
            webview:web_view_
-          delegate:delegate_];
+          delegate:delegate_
+            source:web::IOSDownloadWebViewExtractionSource::kWKDownload];
   __block bool finish_called = false;
   OCMExpect([delegate_ downloadDidFinish]).andDo(^(NSInvocation* invocation) {
     finish_called = true;
