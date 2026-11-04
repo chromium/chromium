@@ -10,3 +10,18 @@ source_set("features") {
 
   deps = [ "//base" ]
 }
+
+if (!is_android) {
+  source_set("remote_actor") {
+    sources = [
+      "remote_actor_credential_sharing_policy.cc",
+      "remote_actor_credential_sharing_policy.h",
+    ]
+
+    deps = [
+      ":features",
+      "//base",
+      "//url",
+    ]
+  }
+}

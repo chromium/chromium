@@ -112,7 +112,6 @@
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/common/indigo/indigo.mojom.h"
-#include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
 #endif
 

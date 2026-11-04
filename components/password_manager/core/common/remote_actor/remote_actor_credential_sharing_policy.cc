@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 
+#include <string>
 #include <vector>
 
 #include "base/no_destructor.h"

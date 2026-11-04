@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"

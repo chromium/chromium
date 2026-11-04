@@ -390,6 +390,7 @@ static_library("renderer") {
     deps += [
       "//chrome/common/read_anything:mojo_bindings",
       "//chrome/renderer/webui_browser",
+      "//components/password_manager/core/common/remote_actor",
       "//components/record_replay/content/renderer",
       "//components/trusted_vault",
       "//services/screen_ai/buildflags",

@@ -363,11 +363,7 @@ static_library("common_lib") {
   } else {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
-    deps +=
-        [ "//components/password_manager/core/common/remote_actor:features" ]
     sources += [
-      "password_manager/remote_actor_credential_sharing_policy.cc",
-      "password_manager/remote_actor_credential_sharing_policy.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",
     ]
