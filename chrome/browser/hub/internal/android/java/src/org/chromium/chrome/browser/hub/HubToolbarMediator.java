@@ -141,6 +141,7 @@ public class HubToolbarMediator {
     private final Callback<Boolean> mOnSearchBoxVisibilityChange =
             this::onSearchBoxVisibilityChange;
     private final NonNullObservableSupplier<Boolean> mHairlineVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mSearchBoxVisibilitySupplier;
     private final NonNullObservableSupplier<Boolean> mManualSearchBoxAnimationSupplier;
     private final NonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier;
 
@@ -202,13 +203,21 @@ public class HubToolbarMediator {
             mRemoveReferenceButtonObservers.add(() -> supplier.removeObserver(observer));
 
             pane.getHubSearchEnabledStateSupplier().addSyncObserver(mOnHubSearchEnabledStateChange);
-            pane.getHubSearchBoxVisibilitySupplier().addSyncObserver(mOnSearchBoxVisibilityChange);
         }
         mHairlineVisibilitySupplier =
                 paneManager
                         .getFocusedPaneSupplier()
                         .createTransitiveNonNull(false, Pane::getHairlineVisibilitySupplier);
         mHairlineVisibilitySupplier.addSyncObserverAndPostIfNonNull(mOnHairlineVisibilityChange);
+        // Only the focused pane controls the search box, not one a swipe is revealing. This
+        // observer is registered before the focus observer, so on a focus change
+        // onConfigurationChanged() sets SEARCH_BOX_VISIBLE from the pane type after this reports
+        // the newly focused pane's value. The pane's own reveal then drives the search box.
+        mSearchBoxVisibilitySupplier =
+                paneManager
+                        .getFocusedPaneSupplier()
+                        .createTransitiveNonNull(false, Pane::getHubSearchBoxVisibilitySupplier);
+        mSearchBoxVisibilitySupplier.addSyncObserver(mOnSearchBoxVisibilityChange);
         MonotonicObservableSupplier<Pane> focusedPaneSupplier =
                 paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addSyncObserverAndPostIfNonNull(mOnFocusedPaneChange);
@@ -252,9 +261,9 @@ public class HubToolbarMediator {
             @Nullable Pane pane = mPaneManager.getPaneForId(paneId);
             if (pane == null) continue;
             pane.getHubSearchEnabledStateSupplier().removeObserver(mOnHubSearchEnabledStateChange);
-            pane.getHubSearchBoxVisibilitySupplier().removeObserver(mOnSearchBoxVisibilityChange);
         }
         mHairlineVisibilitySupplier.removeObserver(mOnHairlineVisibilityChange);
+        mSearchBoxVisibilitySupplier.removeObserver(mOnSearchBoxVisibilityChange);
         mManualSearchBoxAnimationSupplier.removeObserver(mOnManualSearchBoxAnimationChange);
         mSearchBoxVisibilityFractionSupplier.removeObserver(mOnSearchBoxVisibilityFractionChange);
         mPaneTransitionProgressSupplier.removeObserver(mOnPaneTransitionProgress);

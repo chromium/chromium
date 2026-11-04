@@ -236,6 +236,7 @@ public class HubToolbarMediatorUnitTest {
 
         assertFalse(mTabSwitcherReferenceButtonDataSupplier1.hasObservers());
         assertFalse(mIncognitoTabSwitcherReferenceButtonDataSupplier2.hasObservers());
+        assertFalse(mTabSwitcherSearchBoxVisibilitySupplier.hasObservers());
     }
 
     @Test
@@ -686,6 +687,61 @@ public class HubToolbarMediatorUnitTest {
 
         mTabSwitcherSearchBoxVisibilitySupplier.set(false);
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+    }
+
+    @Test
+    public void testSearchBoxVisibilitySupplier_unfocusedPaneIgnored() {
+        SettableNonNullObservableSupplier<Boolean> incognitoSearchBoxVisibilitySupplier =
+                ObservableSuppliers.createNonNull(true);
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(incognitoSearchBoxVisibilitySupplier);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        createMediator();
+
+        incognitoSearchBoxVisibilitySupplier.set(false);
+
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+    }
+
+    @Test
+    public void testSearchBoxVisibilitySupplier_previouslyFocusedPaneIgnored() {
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        createMediator();
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+
+        mTabSwitcherSearchBoxVisibilitySupplier.set(false);
+
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+    }
+
+    @Test
+    public void testSearchBoxVisibilitySupplier_newlyFocusedPaneApplied() {
+        SettableNonNullObservableSupplier<Boolean> incognitoSearchBoxVisibilitySupplier =
+                ObservableSuppliers.createNonNull(true);
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(incognitoSearchBoxVisibilitySupplier);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        createMediator();
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+
+        incognitoSearchBoxVisibilitySupplier.set(false);
+
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+    }
+
+    @Test
+    public void testSearchBoxVisibilitySupplier_focusChangeToHiddenSearchBox_usesPaneType() {
+        SettableNonNullObservableSupplier<Boolean> incognitoSearchBoxVisibilitySupplier =
+                ObservableSuppliers.createNonNull(false);
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(incognitoSearchBoxVisibilitySupplier);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        createMediator();
+
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+
+        // A focus change shows the search box of a search pane, and the pane's reveal follows.
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
     }
 
     @Test
