@@ -10,19 +10,45 @@
 #include "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/browser/signing_key_policy_observer.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/device_trust/core/device_trust_key_manager.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+namespace {
+
+// Returns whether the browser-level policy should initialize the browser-wide
+// device trust key manager.
+bool ShouldObserveSigningKeyPolicy() {
+#if BUILDFLAG(IS_ANDROID)
+  // Unlike on desktop, the Android key manager doesn't depend on the network
+  // service.
+  return IsDeviceTrustConnectorAndroidEnabled();
+#else
+  // `system_network_context_manager` can be null in unit test environments
+  // (e.g. `TestingBrowserProcess`) where the network service and Chrome Browser
+  // Cloud Management (CBCM) are not initialized. In that case, avoid
+  // initializing the device trust key manager and observer.
+  return g_browser_process->system_network_context_manager();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+}  // namespace
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // static
 DeviceTrustConnectorServiceFactory*
@@ -40,11 +66,16 @@ DeviceTrustConnectorService* DeviceTrustConnectorServiceFactory::GetForProfile(
 
 bool DeviceTrustConnectorServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return true;
-#else
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_ANDROID)
+  // Created with the profile so that the browser-level policy pre-warms the
+  // attestation token provider at startup, rather than at the first navigation
+  // that needs this service.
+  return IsDeviceTrustConnectorAndroidEnabled();
+#else
+  return true;
+#endif
 }
 
 bool DeviceTrustConnectorServiceFactory::ServiceIsNULLWhileTesting() const {
@@ -89,19 +120,15 @@ DeviceTrustConnectorServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<DeviceTrustConnectorService> service =
       std::make_unique<DeviceTrustConnectorService>(profile->GetPrefs());
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // `system_network_context_manager` can be null in unit test environments
-  // (e.g. `TestingBrowserProcess`) where the network service and Chrome Browser
-  // Cloud Management (CBCM) are not initialized. In that case, avoid
-  // initializing the device trust key manager and observer.
-  if (g_browser_process->system_network_context_manager()) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (ShouldObserveSigningKeyPolicy()) {
     auto* key_manager = g_browser_process->browser_policy_connector()
                             ->chrome_browser_cloud_management_controller()
                             ->GetDeviceTrustKeyManager();
     service->AddObserver(
         std::make_unique<SigningKeyPolicyObserver>(key_manager));
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return service;
 }
