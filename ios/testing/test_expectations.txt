@@ -100,6 +100,16 @@ crbug.com/512422445 ManageSyncSettingsTestCase/testSignOutFromAccountFromAccount
 crbug.com/512422445 ManageSyncSettingsTestCase/testManageAccountsRemoveManagedAccount [ Pass Failure ]
 crbug.com/512422445 ManageSyncSettingsTestCase/testSwitchToManagedAccountFromAccountMenu [ Pass Failure ]
 
+# Migrated from in-source test disable annotations: reader_mode.
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testUpdateReaderModeFont [ Pass Failure ]
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testTapReaderModeChipShowsOptionsView [ Pass Failure ]
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testChangeReaderModeFontSizeFromOptionsView [ Pass Failure ]
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testChangeReaderModeThemeFromOptionsView [ Pass Failure ]
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testTapCloseButtonInOptionsView [ Pass Failure ]
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testTapTurnOffButtonInOptionsView [ Pass Failure ]
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testTapOutsideOptionsViewDismissesIt [ Pass Failure ]
+crbug.com/481633359 [ Device ] ReaderModeTestCase/testSampleContextualChipVisibleInReaderMode [ Pass Failure ]
+
 # Gardening surpression 2026-07-09
 crbug.com/533057223 [ iPad ] SigninCoordinatorTestCase/testSyncOnWhenPassphraseIntroducedAfterSignIn [ Pass Failure ]
 crbug.com/533075931 [ iOS18 iOS26 iPad Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
