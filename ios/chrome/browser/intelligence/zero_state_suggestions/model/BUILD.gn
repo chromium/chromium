@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/intelligence/proto_wrappers:test_support",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/model:test_support",
     "//ios/chrome/browser/shared/model/browser",
@@ -40,6 +41,5 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }

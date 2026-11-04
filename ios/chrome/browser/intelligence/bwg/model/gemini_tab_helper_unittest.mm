@@ -9,6 +9,8 @@
 #import <string>
 #import <vector>
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
@@ -31,6 +33,8 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -96,7 +100,8 @@ class GeminiTabHelperTest : public PlatformTest {
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
     web_state_->WasShown();
-    GeminiTabHelper::CreateForWebState(web_state_.get());
+    GeminiTabHelper::CreateForWebState(web_state_.get(),
+                                       &fake_page_context_wrapper_factory_);
     tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
 
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
@@ -124,6 +129,7 @@ class GeminiTabHelperTest : public PlatformTest {
 
   // Profile and services that depend on the environment are declared next.
   std::unique_ptr<TestProfileIOS> profile_;
+  FakePageContextWrapperFactory fake_page_context_wrapper_factory_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<GeminiTabHelper, DanglingUntriaged> tab_helper_;
 
@@ -466,43 +472,18 @@ TEST_F(GeminiTabHelperTest,
   ASSERT_EQ(gemini::GetConversationId(profile_->GetPrefs()).value(), server_id);
 }
 
-@interface FakePageContextWrapper : PageContextWrapper
-@property(nonatomic, assign) BOOL populateCalled;
-@end
-
-@implementation FakePageContextWrapper
-- (instancetype)initWithWebState:(web::WebState*)webState
-              completionCallback:
-                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
-                      completionCallback {
-  // Call the super designated initializer but we don't care about the callback
-  // since this is a fake.
-  return [super initWithWebState:webState completionCallback:base::DoNothing()];
-}
-- (void)populatePageContextFieldsAsync {
-  self.populateCalled = YES;
-}
-@end
-
 TEST_F(GeminiTabHelperTest, TestGeneratePageContext) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
 
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  FakePageContextWrapper* fakeWrapper =
-      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
-                                    completionCallback:base::DoNothing()];
-  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
+  tab_helper_->GeneratePageContext(base::DoNothing());
 
-  base::RunLoop run_loop;
-  tab_helper_->GeneratePageContext(
-      base::BindRepeating([](base::RunLoop* run_loop,
-                             GeminiPageContext* response) { run_loop->Quit(); },
-                          &run_loop));
-
-  EXPECT_TRUE(fakeWrapper.shouldGetAnnotatedPageContent);
-  EXPECT_TRUE(fakeWrapper.shouldGetSnapshot);
-  EXPECT_TRUE(fakeWrapper.populateCalled);
+  FakePageContextWrapper* wrapper =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(nil, wrapper);
+  EXPECT_TRUE(wrapper.shouldGetAnnotatedPageContent);
+  EXPECT_TRUE(wrapper.shouldGetSnapshot);
+  EXPECT_TRUE(wrapper.populateCalled);
 }
 
 // Test that PDF extraction is triggered for PDFs when the feature is enabled.
@@ -512,22 +493,15 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext_Pdf) {
   web_state_->SetCurrentURL(GURL("https://example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
 
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  FakePageContextWrapper* fakeWrapper =
-      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
-                                    completionCallback:base::DoNothing()];
-  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
+  tab_helper_->GeneratePageContext(base::DoNothing());
 
-  base::RunLoop run_loop;
-  tab_helper_->GeneratePageContext(
-      base::BindRepeating([](base::RunLoop* run_loop,
-                             GeminiPageContext* response) { run_loop->Quit(); },
-                          &run_loop));
-
-  EXPECT_FALSE(fakeWrapper.shouldGetAnnotatedPageContent);
-  EXPECT_TRUE(fakeWrapper.shouldGetFullPagePDF);
-  EXPECT_TRUE(fakeWrapper.shouldGetSnapshot);
-  EXPECT_TRUE(fakeWrapper.populateCalled);
+  FakePageContextWrapper* wrapper =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(nil, wrapper);
+  EXPECT_FALSE(wrapper.shouldGetAnnotatedPageContent);
+  EXPECT_TRUE(wrapper.shouldGetFullPagePDF);
+  EXPECT_TRUE(wrapper.shouldGetSnapshot);
+  EXPECT_TRUE(wrapper.populateCalled);
 }
 
 TEST_F(GeminiTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
@@ -535,24 +509,21 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  FakePageContextWrapper* fakeWrapper =
-      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
-                                    completionCallback:base::DoNothing()];
-  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
-
   tab_helper_->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
-  EXPECT_FALSE(fakeWrapper.populateCalled);
+  EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
 
   // Now simulate page load finish.
   tab_helper_->PageLoaded(web_state_.get(),
                           web::PageLoadCompletionStatus::SUCCESS);
 
-  EXPECT_TRUE(fakeWrapper.shouldGetAnnotatedPageContent);
-  EXPECT_TRUE(fakeWrapper.shouldGetSnapshot);
-  EXPECT_TRUE(fakeWrapper.populateCalled);
+  FakePageContextWrapper* wrapper =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(nil, wrapper);
+  EXPECT_TRUE(wrapper.shouldGetAnnotatedPageContent);
+  EXPECT_TRUE(wrapper.shouldGetSnapshot);
+  EXPECT_TRUE(wrapper.populateCalled);
 }
 
 TEST_F(
@@ -600,21 +571,16 @@ TEST_F(GeminiTabHelperTest, TestForcePageContextGeneration) {
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  FakePageContextWrapper* fakeWrapper =
-      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
-                                    completionCallback:base::DoNothing()];
-  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
-
   tab_helper_->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
-  EXPECT_FALSE(fakeWrapper.populateCalled);
+  EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
 
   // Force generation.
   tab_helper_->ForcePageContextGeneration();
 
-  EXPECT_TRUE(fakeWrapper.populateCalled);
+  ASSERT_NE(nil, fake_page_context_wrapper_factory_.last_wrapper());
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
 }
 
 TEST_F(GeminiTabHelperTest, TestGeneratePageContext_Timeout) {
@@ -622,21 +588,16 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext_Timeout) {
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  FakePageContextWrapper* fakeWrapper =
-      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
-                                    completionCallback:base::DoNothing()];
-  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
-
   tab_helper_->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
-  EXPECT_FALSE(fakeWrapper.populateCalled);
+  EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
 
   // Fast forward by timeout.
   task_environment_.FastForwardBy(base::Seconds(3) + base::Milliseconds(100));
 
-  EXPECT_TRUE(fakeWrapper.populateCalled);
+  ASSERT_NE(nil, fake_page_context_wrapper_factory_.last_wrapper());
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
 }
 
 // Tests that Gemini is available for a web state when the user is eligible and

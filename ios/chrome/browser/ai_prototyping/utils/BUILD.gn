@@ -28,9 +28,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto_gen",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/intelligence/proto_wrappers:test_support",
     "//ios/web/find_in_page",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }

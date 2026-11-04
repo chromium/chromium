@@ -15,6 +15,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/default_page_context_wrapper_factory.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_factory.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -163,8 +165,8 @@ SavePageContextResult& SavePageContextResult::operator=(
 PageContextWrapper* CreatePageContextWrapper(
     web::WebState* web_state,
     bool rich_extraction,
-    base::OnceCallback<void(PageContextWrapperCallbackResponse)>
-        completion_callback) {
+    PageContextWrapperFactory::CompletionCallback completion,
+    PageContextWrapperFactory* factory) {
   PageContextWrapperConfigBuilder builder;
   if (rich_extraction) {
     builder.SetUseRichExtraction(true)
@@ -172,11 +174,11 @@ PageContextWrapper* CreatePageContextWrapper(
         .SetGraftCrossOriginFrameContent(true)
         .SetExtractPaidContent(true);
   }
-  PageContextWrapperConfig config = builder.Build();
-  PageContextWrapper* page_context_wrapper = [[PageContextWrapper alloc]
-        initWithWebState:web_state
-                  config:config
-      completionCallback:std::move(completion_callback)];
+  if (!factory) {
+    factory = &DefaultPageContextWrapperFactory::GetInstance();
+  }
+  PageContextWrapper* page_context_wrapper =
+      factory->Create(web_state, builder.Build(), std::move(completion));
   [page_context_wrapper setShouldGetAnnotatedPageContent:YES];
   [page_context_wrapper setShouldGetSnapshot:YES];
   [page_context_wrapper setShouldGetFullPagePDF:YES];

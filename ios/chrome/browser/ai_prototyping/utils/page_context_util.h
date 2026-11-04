@@ -10,11 +10,12 @@
 #import "base/files/file_path.h"
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_factory.h"
 
 namespace base {
 class FilePath;
 class TimeDelta;
-}
+}  // namespace base
 @class PageContextWrapper;
 namespace web {
 class WebState;
@@ -43,8 +44,8 @@ struct SavePageContextResult {
 PageContextWrapper* CreatePageContextWrapper(
     web::WebState* web_state,
     bool rich_extraction,
-    base::OnceCallback<void(PageContextWrapperCallbackResponse)>
-        completion_callback);
+    PageContextWrapperFactory::CompletionCallback completion,
+    PageContextWrapperFactory* factory = nullptr);
 
 // Populates the page context from the `wrapper` for the given `web_state`.
 // If the page is still loading, it waits for it to finish before populating.

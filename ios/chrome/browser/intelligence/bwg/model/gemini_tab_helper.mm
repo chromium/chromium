@@ -40,8 +40,10 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/default_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
@@ -112,12 +114,21 @@ NSArray<NSString*>* ConvertZeroStateSuggestionsToStrings(
 
 }  // namespace
 
-GeminiTabHelper::GeminiTabHelper() {
+// TODO(crbug.com/581395525): Remove this constructor.
+GeminiTabHelper::GeminiTabHelper()
+    : page_context_wrapper_factory_(
+          DefaultPageContextWrapperFactory::GetInstance()) {
   CHECK_IS_TEST();
 }
 
-GeminiTabHelper::GeminiTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {
+GeminiTabHelper::GeminiTabHelper(
+    web::WebState* web_state,
+    PageContextWrapperFactory* page_context_wrapper_factory)
+    : web_state_(web_state),
+      page_context_wrapper_factory_(
+          page_context_wrapper_factory
+              ? *page_context_wrapper_factory
+              : DefaultPageContextWrapperFactory::GetInstance()) {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   optimization_guide_decider_ =
@@ -613,13 +624,13 @@ void GeminiTabHelper::PopulatePageContextFields() {
   PageContextWrapperConfig config =
       PageContextWrapperConfigBuilder().SetDefaultRichExtraction(true).Build();
 
+  auto completion_callback =
+      base::BindOnce(&GeminiTabHelper::OnPageContextWrapperResponse,
+                     weak_ptr_factory_.GetWeakPtr());
+
   // Create a new wrapper.
-  page_context_wrapper_ = [[PageContextWrapper alloc]
-        initWithWebState:web_state_
-                  config:config
-      completionCallback:base::BindRepeating(
-                             &GeminiTabHelper::OnPageContextWrapperResponse,
-                             weak_ptr_factory_.GetWeakPtr())];
+  page_context_wrapper_ = page_context_wrapper_factory_->Create(
+      web_state_, config, std::move(completion_callback));
   const bool is_pdf = web::IsContentTypePdf(web_state_->GetContentsMimeType());
   if (is_pdf) {
     page_context_wrapper_.shouldGetFullPagePDF = YES;

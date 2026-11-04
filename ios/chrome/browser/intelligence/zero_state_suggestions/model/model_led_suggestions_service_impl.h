@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ZERO_STATE_SUGGESTIONS_MODEL_MODEL_LED_SUGGESTIONS_SERVICE_IMPL_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ZERO_STATE_SUGGESTIONS_MODEL_MODEL_LED_SUGGESTIONS_SERVICE_IMPL_H_
 
+#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/types/expected.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_factory.h"
 #import "ios/chrome/browser/optimization_guide/mojom/model_led_suggestions_service.mojom.h"
 #import "mojo/public/cpp/bindings/receiver.h"
 #import "url/gurl.h"
@@ -26,10 +29,6 @@ class ZeroStateSuggestionsRequest;
 }  // namespace proto
 }  // namespace optimization_guide
 
-enum class PageContextWrapperError;
-
-@class PageContextWrapper;
-
 namespace ai {
 
 class ModelLedSuggestionsServiceImpl
@@ -37,7 +36,8 @@ class ModelLedSuggestionsServiceImpl
  public:
   explicit ModelLedSuggestionsServiceImpl(
       mojo::PendingReceiver<mojom::ModelLedSuggestionsService> receiver,
-      web::WebState* web_state);
+      web::WebState* web_state,
+      PageContextWrapperFactory* page_context_wrapper_factory = nullptr);
   ~ModelLedSuggestionsServiceImpl() override;
   ModelLedSuggestionsServiceImpl(const ModelLedSuggestionsServiceImpl&) =
       delete;
@@ -74,6 +74,9 @@ class ModelLedSuggestionsServiceImpl
 
   // The service's PageContext wrapper.
   PageContextWrapper* page_context_wrapper_;
+
+  // Factory used to create `PageContextWrapper` instances.
+  const raw_ref<PageContextWrapperFactory> page_context_wrapper_factory_;
 
   // Callback for the current request, cleared once invoked.
   FetchModelLedSuggestionsCallback pending_request_callback_;

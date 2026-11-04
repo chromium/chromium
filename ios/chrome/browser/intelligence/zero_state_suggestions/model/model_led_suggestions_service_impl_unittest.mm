@@ -4,10 +4,15 @@
 
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/fake_optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -19,35 +24,7 @@
 #import "mojo/public/cpp/bindings/remote.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
-
-@interface ModelLedSuggestionsFakePageContextWrapper : PageContextWrapper
-@end
-
-@implementation ModelLedSuggestionsFakePageContextWrapper {
-  base::OnceCallback<void(PageContextWrapperCallbackResponse)> _callback;
-}
-
-- (instancetype)initWithWebState:(web::WebState*)webState
-              completionCallback:
-                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
-                      completionCallback {
-  self = [super initWithWebState:webState completionCallback:base::DoNothing()];
-  if (self) {
-    _callback = std::move(completionCallback);
-  }
-  return self;
-}
-
-- (void)populatePageContextFieldsAsync {
-  auto page_context =
-      std::make_unique<optimization_guide::proto::PageContext>();
-  page_context->set_url("https://example.com");
-  page_context->set_title("Example");
-  std::move(_callback).Run(base::ok(std::move(page_context)));
-}
-@end
 
 namespace ai {
 
@@ -91,12 +68,27 @@ class ModelLedSuggestionsServiceImplTest : public PlatformTest {
 
     // Initialize the service under test.
     service_ = std::make_unique<ModelLedSuggestionsServiceImpl>(
-        remote_.BindNewPipeAndPassReceiver(), fake_web_state_.get());
+        remote_.BindNewPipeAndPassReceiver(), fake_web_state_.get(),
+        &fake_page_context_wrapper_factory_);
+  }
+
+  void CompletePageContextExtraction() {
+    FakePageContextWrapper* wrapper =
+        fake_page_context_wrapper_factory_.last_wrapper();
+    ASSERT_NE(nil, wrapper);
+    EXPECT_TRUE(wrapper.shouldGetInnerText);
+    EXPECT_TRUE(wrapper.populateCalled);
+    auto page_context =
+        std::make_unique<optimization_guide::proto::PageContext>();
+    page_context->set_url("https://example.com");
+    page_context->set_title("Example");
+    [wrapper completeWithPageContext:std::move(page_context)];
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
+  FakePageContextWrapperFactory fake_page_context_wrapper_factory_;
   std::unique_ptr<ModelLedSuggestionsServiceImpl> service_;
   mojo::Remote<mojom::ModelLedSuggestionsService> remote_;
   raw_ptr<FakeOptimizationGuideService> fake_optimization_guide_service_;
@@ -117,10 +109,6 @@ TEST_F(ModelLedSuggestionsServiceImplTest,
 
 // Tests that a successful model execution returns a response.
 TEST_F(ModelLedSuggestionsServiceImplTest, TestFetchSuggestionsSuccess) {
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  OCMStub([mockWrapperClass alloc])
-      .andReturn([ModelLedSuggestionsFakePageContextWrapper alloc]);
-
   optimization_guide::proto::ZeroStateSuggestionsResponse response;
 
   fake_optimization_guide_service_->SetResponse(
@@ -130,16 +118,13 @@ TEST_F(ModelLedSuggestionsServiceImplTest, TestFetchSuggestionsSuccess) {
   base::test::TestFuture<ai::mojom::ModelLedSuggestionsResponseResultPtr>
       future;
   service_->FetchModelLedSuggestions(future.GetCallback());
+  CompletePageContextExtraction();
 
   EXPECT_TRUE(future.Get()->is_response());
 }
 
 // Tests that an error is returned when the model execution fails.
 TEST_F(ModelLedSuggestionsServiceImplTest, TestFetchSuggestionsFailure) {
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  OCMStub([mockWrapperClass alloc])
-      .andReturn([ModelLedSuggestionsFakePageContextWrapper alloc]);
-
   fake_optimization_guide_service_->SetError(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
       static_cast<int>(
@@ -149,6 +134,7 @@ TEST_F(ModelLedSuggestionsServiceImplTest, TestFetchSuggestionsFailure) {
   base::test::TestFuture<ai::mojom::ModelLedSuggestionsResponseResultPtr>
       future;
   service_->FetchModelLedSuggestions(future.GetCallback());
+  CompletePageContextExtraction();
 
   EXPECT_TRUE(future.Get()->is_error());
   EXPECT_EQ(future.Get()->get_error(), "Server model execution error.");

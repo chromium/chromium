@@ -26,6 +26,7 @@ class PageContextWrapperConfig {
     kBypassCache,
   };
 
+  // TODO(crbug.com/581395018): Make PageContextWrapperConfig movable.
   PageContextWrapperConfig(const PageContextWrapperConfig&);
   PageContextWrapperConfig& operator=(const PageContextWrapperConfig&);
   ~PageContextWrapperConfig();

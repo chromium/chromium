@@ -9,6 +9,8 @@
 #import <optional>
 #import <vector>
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -46,6 +48,8 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_consumer.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
@@ -95,49 +99,6 @@ namespace {
 constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 
 }  // namespace
-
-// Fake PageContextWrapper for testing page context generation.
-@interface MediatorFakePageContextWrapper : PageContextWrapper
-@property(nonatomic, assign) BOOL populateCalled;
-@end
-
-@implementation MediatorFakePageContextWrapper {
-  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
-      _completionCallback;
-}
-
-- (instancetype)initWithWebState:(web::WebState*)webState
-                          config:(PageContextWrapperConfig)config
-              completionCallback:
-                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
-                      completionCallback {
-  self = [super initWithWebState:webState
-                          config:config
-              completionCallback:base::DoNothing()];
-  if (self) {
-    _completionCallback = std::move(completionCallback);
-  }
-  return self;
-}
-
-- (instancetype)initWithWebState:(web::WebState*)webState
-              completionCallback:
-                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
-                      completionCallback {
-  return [self initWithWebState:webState
-                         config:PageContextWrapperConfigBuilder().Build()
-             completionCallback:std::move(completionCallback)];
-}
-
-- (void)populatePageContextFieldsAsync {
-  self.populateCalled = YES;
-  if (_completionCallback) {
-    std::move(_completionCallback)
-        .Run(base::ok(
-            std::make_unique<optimization_guide::proto::PageContext>()));
-  }
-}
-@end
 
 // Fake consumer for testing zero state updates.
 @interface FakeGeminiContainerConsumer : NSObject <GeminiContainerConsumer>
@@ -421,7 +382,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     NewTabPageTabHelper::CreateForWebState(web_state.get());
-    GeminiTabHelper::CreateForWebState(web_state.get());
+    GeminiTabHelper::CreateForWebState(web_state.get(),
+                                       &fake_page_context_wrapper_factory_);
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
@@ -432,6 +394,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
+  FakePageContextWrapperFactory fake_page_context_wrapper_factory_;
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   GeminiStartupState* startup_state_;
@@ -651,9 +614,8 @@ TEST_F(GeminiContainerMediatorTest,
 
   AppendActiveWebState();
 
-  EXPECT_FALSE([mediator_
-      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::
-                                                  AppSwitcherAISummarization]);
+  EXPECT_FALSE([mediator_ shouldShowSuggestionChipsForEntryPoint:
+                              gemini::EntryPoint::AppSwitcherAISummarization]);
   EXPECT_TRUE([mediator_
       shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::OverflowMenu]);
 }
@@ -1249,16 +1211,10 @@ TEST_F(GeminiContainerMediatorTest, TestRequestActivePageContextGeneration) {
   web_state->SetCurrentURL(GURL("https://example.com"));
   web_state->SetContentsMimeType("text/html");
 
-  id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
-  MediatorFakePageContextWrapper* fake_wrapper =
-      [[MediatorFakePageContextWrapper alloc]
-            initWithWebState:web_state
-          completionCallback:base::DoNothing()];
-  OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
-
   [mediator_ requestActivePageContextGeneration];
 
-  EXPECT_TRUE(fake_wrapper.populateCalled);
+  ASSERT_NE(nil, fake_page_context_wrapper_factory_.last_wrapper());
+  EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
 }
 
 // Tests that onFloatyDismiss calls cancelPageContextGeneration.
@@ -1286,22 +1242,15 @@ TEST_F(GeminiContainerMediatorTest,
   web_state->SetContentsMimeType("text/html");
   web_state->SetLoading(true);
 
-  id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
-  MediatorFakePageContextWrapper* fake_wrapper =
-      [[MediatorFakePageContextWrapper alloc]
-            initWithWebState:web_state
-          completionCallback:base::DoNothing()];
-  OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
-
   [mediator_ requestActivePageContextGeneration];
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
 
   [mediator_ onFloatyDismiss];
 
   GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
   tab_helper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
 
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
 }
 
 // Tests the actuation lifecycle: activating actuation, updating height, and
@@ -1544,13 +1493,6 @@ TEST_F(GeminiContainerMediatorTest,
   web_state->SetCurrentURL(GURL("https://example.com"));
   web_state->SetContentsMimeType("text/html");
 
-  id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
-  MediatorFakePageContextWrapper* fake_wrapper =
-      [[MediatorFakePageContextWrapper alloc]
-            initWithWebState:web_state
-          completionCallback:base::DoNothing()];
-  OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
-
   // In non-Live mode (`kFloaty`), `kTranscribing` and `kResponding` should not
   // trigger full or partial page context updates.
   [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
@@ -1562,7 +1504,7 @@ TEST_F(GeminiContainerMediatorTest,
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
                       sessionID:@"session"
                  conversationID:@"conv"];
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
   EXPECT_EQ(0, ios::provider::GetUpdateActivePageContextCallCount());
 
   // Switch to Live mode.
@@ -1576,7 +1518,11 @@ TEST_F(GeminiContainerMediatorTest,
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
                       sessionID:@"session"
                  conversationID:@"conv"];
-  EXPECT_TRUE(fake_wrapper.populateCalled);
+  FakePageContextWrapper* first_wrapper =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(nil, first_wrapper);
+  EXPECT_TRUE(first_wrapper.populateCalled);
+  [first_wrapper completeWithEmptyPageContext];
   EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
   EXPECT_EQ(1, shared_tabs_delegate_.save_active_page_context_call_count_);
   ASSERT_NE(nil, shared_tabs_delegate_.last_saved_active_page_context_);
@@ -1587,16 +1533,12 @@ TEST_F(GeminiContainerMediatorTest,
       nullptr,
       shared_tabs_delegate_.last_saved_active_page_context_.uniquePageContext);
 
-  // Reset `populateCalled` to verify subsequent statuses do not trigger full
-  // page context generation.
-  fake_wrapper.populateCalled = NO;
-
   // Transitioning to `kThinking` does not update page context.
   [mediator_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
                       sessionID:@"session"
                  conversationID:@"conv"];
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(first_wrapper, fake_page_context_wrapper_factory_.last_wrapper());
   EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
 
   // Transitioning to `kResponding` in Live mode updates partial page context
@@ -1606,7 +1548,7 @@ TEST_F(GeminiContainerMediatorTest,
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
                       sessionID:@"session"
                  conversationID:@"conv"];
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(first_wrapper, fake_page_context_wrapper_factory_.last_wrapper());
   EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
   EXPECT_EQ(2, shared_tabs_delegate_.save_active_page_context_call_count_);
   ASSERT_NE(nil, shared_tabs_delegate_.last_saved_active_page_context_);
@@ -1616,8 +1558,6 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_NE(
       nullptr,
       shared_tabs_delegate_.last_saved_active_page_context_.uniquePageContext);
-
-  [mock_wrapper_class stopMocking];
 }
 
 // Test that `assistantContainer:didChangeDetent:` requests full page context
@@ -1636,50 +1576,50 @@ TEST_F(
   web_state->SetCurrentURL(GURL("https://example.com"));
   web_state->SetContentsMimeType("text/html");
 
-  id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
-  MediatorFakePageContextWrapper* fake_wrapper =
-      [[MediatorFakePageContextWrapper alloc]
-            initWithWebState:web_state
-          completionCallback:base::DoNothing()];
-  OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
-
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
   [mediator_ connect];
-  EXPECT_TRUE(fake_wrapper.populateCalled);
-  fake_wrapper.populateCalled = NO;
+  FakePageContextWrapper* first_wrapper =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(nil, first_wrapper);
+  EXPECT_TRUE(first_wrapper.populateCalled);
 
   // Transitioning from `kMedium` to `kLarge` should not request context
   // generation.
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kLarge];
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(first_wrapper, fake_page_context_wrapper_factory_.last_wrapper());
 
   // Transitioning from `kLarge` to `kMinimized` should not request context
   // generation.
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMinimized];
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(first_wrapper, fake_page_context_wrapper_factory_.last_wrapper());
 
   // Transitioning from `kMinimized` to `kMedium` should request full page
   // context generation.
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMedium];
-  EXPECT_TRUE(fake_wrapper.populateCalled);
-  fake_wrapper.populateCalled = NO;
+  FakePageContextWrapper* second_wrapper =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(nil, second_wrapper);
+  EXPECT_NE(first_wrapper, second_wrapper);
+  EXPECT_TRUE(second_wrapper.populateCalled);
 
   // Transitioning back to `kMinimized` and then to `kLarge` should also request
   // full page context generation.
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMinimized];
-  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(second_wrapper, fake_page_context_wrapper_factory_.last_wrapper());
 
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kLarge];
-  EXPECT_TRUE(fake_wrapper.populateCalled);
-
-  [mock_wrapper_class stopMocking];
+  FakePageContextWrapper* third_wrapper =
+      fake_page_context_wrapper_factory_.last_wrapper();
+  ASSERT_NE(nil, third_wrapper);
+  EXPECT_NE(second_wrapper, third_wrapper);
+  EXPECT_TRUE(third_wrapper.populateCalled);
 }
 
 // Test that `didChangeUIState:` queries `contentHeight` from the consumer and
@@ -2137,53 +2077,45 @@ TEST_F(GeminiContainerMediatorTest,
 // Tests that changing the page content sharing preference updates the partial
 // page context attachment state and propagates it to shared tabs.
 TEST_F(GeminiContainerMediatorTest, TestOnPageContentPrefChanged) {
-  @autoreleasepool {
-    web::FakeWebState* web_state =
-        static_cast<web::FakeWebState*>(AppendActiveWebState());
-    web_state->WasShown();
-    web_state->SetCurrentURL(GURL("https://example.com"));
-    web_state->SetContentsMimeType("text/html");
+  web::FakeWebState* web_state =
+      static_cast<web::FakeWebState*>(AppendActiveWebState());
+  web_state->WasShown();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
 
-    id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
-    MediatorFakePageContextWrapper* fake_wrapper =
-        [[MediatorFakePageContextWrapper alloc]
-              initWithWebState:web_state
-            completionCallback:base::DoNothing()];
-    OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
+  [mediator_ connect];
+  ASSERT_NE(nil, fake_page_context_wrapper_factory_.last_wrapper());
+  [fake_page_context_wrapper_factory_.last_wrapper()
+      completeWithEmptyPageContext];
 
-    [mediator_ connect];
+  // Preference defaults to true in tests.
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting));
+  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
+            shared_tabs_delegate_.last_saved_active_page_context_
+                .geminiPageContextAttachmentState);
 
-    // Preference defaults to true in tests.
-    EXPECT_TRUE(
-        profile_->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting));
-    EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
-              shared_tabs_delegate_.last_saved_active_page_context_
-                  .geminiPageContextAttachmentState);
+  int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
 
-    int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+  // Toggle page content preference to false.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
 
-    // Toggle page content preference to false.
-    profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
+  EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
+            call_count);
+  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kUserDisabled,
+            shared_tabs_delegate_.last_saved_active_page_context_
+                .geminiPageContextAttachmentState);
 
-    EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
-              call_count);
-    EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kUserDisabled,
-              shared_tabs_delegate_.last_saved_active_page_context_
-                  .geminiPageContextAttachmentState);
+  call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
 
-    call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+  // Toggle page content preference back to true.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, true);
 
-    // Toggle page content preference back to true.
-    profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, true);
-
-    EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
-              call_count);
-    EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
-              shared_tabs_delegate_.last_saved_active_page_context_
-                  .geminiPageContextAttachmentState);
-
-    [mock_wrapper_class stopMocking];
-  }
+  EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
+            call_count);
+  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
+            shared_tabs_delegate_.last_saved_active_page_context_
+                .geminiPageContextAttachmentState);
 }
 
 // Tests that changing the page content sharing preference while in Gemini Live
