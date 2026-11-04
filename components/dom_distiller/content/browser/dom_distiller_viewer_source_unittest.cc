@@ -17,6 +17,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 
@@ -39,6 +40,42 @@ TEST_F(DomDistillerViewerSourceTest, TestMimeType) {
   DomDistillerViewerSource source(nullptr);
   EXPECT_EQ("text/css", source.GetMimeType(GetURL(kViewerCssPath)));
   EXPECT_EQ("text/html", source.GetMimeType(GetURL("anythingelse")));
+}
+
+// Tests that the viewer CSP defaults to 'none' and only opens the directives
+// distilled articles need.
+TEST_F(DomDistillerViewerSourceTest, ContentSecurityPolicy) {
+  using network::mojom::CSPDirectiveName;
+  DomDistillerViewerSource source(nullptr);
+  EXPECT_EQ("default-src 'none';",
+            source.GetContentSecurityPolicy(CSPDirectiveName::DefaultSrc));
+  EXPECT_EQ("img-src 'self' data: http: https:;",
+            source.GetContentSecurityPolicy(CSPDirectiveName::ImgSrc));
+  EXPECT_EQ("media-src http: https:;",
+            source.GetContentSecurityPolicy(CSPDirectiveName::MediaSrc));
+  EXPECT_EQ("font-src https://fonts.gstatic.com;",
+            source.GetContentSecurityPolicy(CSPDirectiveName::FontSrc));
+  EXPECT_EQ("form-action 'none';",
+            source.GetContentSecurityPolicy(CSPDirectiveName::FormAction));
+  EXPECT_EQ("base-uri 'none';",
+            source.GetContentSecurityPolicy(CSPDirectiveName::BaseURI));
+  EXPECT_EQ("style-src 'self' https://fonts.googleapis.com;",
+            source.GetContentSecurityPolicy(CSPDirectiveName::StyleSrc));
+  EXPECT_EQ("child-src *;",
+            source.GetContentSecurityPolicy(CSPDirectiveName::ChildSrc));
+  // connect-src is left empty so that it inherits default-src 'none'.
+  EXPECT_EQ("", source.GetContentSecurityPolicy(CSPDirectiveName::ConnectSrc));
+  EXPECT_EQ("", source.GetContentSecurityPolicy(
+                    CSPDirectiveName::RequireTrustedTypesFor));
+  EXPECT_EQ("",
+            source.GetContentSecurityPolicy(CSPDirectiveName::TrustedTypes));
+  // object-src and script-src are inherited from content::URLDataSource.
+  // script-src is what blocks script in untrusted distilled markup, so both
+  // are pinned exactly.
+  EXPECT_EQ("object-src 'none';",
+            source.GetContentSecurityPolicy(CSPDirectiveName::ObjectSrc));
+  EXPECT_EQ("script-src chrome://resources 'self';",
+            source.GetContentSecurityPolicy(CSPDirectiveName::ScriptSrc));
 }
 
 // Tests that `kViewerSaveFontScalingPath` requests persist the font scaling

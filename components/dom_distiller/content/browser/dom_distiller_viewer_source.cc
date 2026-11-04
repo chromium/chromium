@@ -309,19 +309,33 @@ bool DomDistillerViewerSource::ShouldServiceRequest(
 
 std::string DomDistillerViewerSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {
-  if (directive == network::mojom::CSPDirectiveName::StyleSrc) {
-    return "style-src 'self' https://fonts.googleapis.com;";
-  } else if (directive == network::mojom::CSPDirectiveName::ChildSrc) {
-    return "child-src *;";
-  } else if (directive ==
-                 network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
-             directive == network::mojom::CSPDirectiveName::TrustedTypes) {
-    // This removes require-trusted-types-for and trusted-types directives
-    // from the CSP header.
-    return std::string();
+  switch (directive) {
+    case network::mojom::CSPDirectiveName::DefaultSrc:
+      return "default-src 'none';";
+    // Article images and media come from arbitrary origins, so these stay
+    // open. See crbug.com/562228017.
+    case network::mojom::CSPDirectiveName::ImgSrc:
+      return "img-src 'self' data: http: https:;";
+    case network::mojom::CSPDirectiveName::MediaSrc:
+      return "media-src http: https:;";
+    case network::mojom::CSPDirectiveName::FontSrc:
+      return "font-src https://fonts.gstatic.com;";
+    case network::mojom::CSPDirectiveName::FormAction:
+      return "form-action 'none';";
+    case network::mojom::CSPDirectiveName::BaseURI:
+      return "base-uri 'none';";
+    case network::mojom::CSPDirectiveName::StyleSrc:
+      return "style-src 'self' https://fonts.googleapis.com;";
+    case network::mojom::CSPDirectiveName::ChildSrc:
+      return "child-src *;";
+    case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
+    case network::mojom::CSPDirectiveName::TrustedTypes:
+      // This removes require-trusted-types-for and trusted-types directives
+      // from the CSP header.
+      return std::string();
+    default:
+      return content::URLDataSource::GetContentSecurityPolicy(directive);
   }
-
-  return content::URLDataSource::GetContentSecurityPolicy(directive);
 }
 
 }  // namespace dom_distiller

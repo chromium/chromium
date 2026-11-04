@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
@@ -46,6 +47,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -346,6 +348,67 @@ IN_PROC_BROWSER_TEST_F(ReaderModeViewerSourceBrowserTest, EarlyTemplateLoad) {
 
   result = content::EvalJs(contents, kGetContent).ExtractString();
   EXPECT_THAT(result, HasSubstr("content"));
+}
+
+// Tests that the viewer CSP doesn't block anything a distilled article with
+// cross-origin and data: images needs to render.
+IN_PROC_BROWSER_TEST_F(ReaderModeViewerSourceBrowserTest,
+                       NoContentSecurityPolicyViolations) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ReaderModeServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      browser()->GetProfile(),
+      base::BindRepeating(&ReaderModeViewerSourceBrowserTest::Build,
+                          base::Unretained(this)));
+
+  base::RunLoop distillation_done_loop;
+  FakeDistiller* distiller =
+      new FakeDistiller(false, distillation_done_loop.QuitClosure());
+  EXPECT_CALL(*distiller_factory_, CreateDistillerImpl())
+      .WillOnce(testing::Return(distiller));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetFilter(base::BindRepeating(
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.message.find(u"Content Security Policy") !=
+                   std::u16string::npos ||
+               message.message.find(u"Refused to") != std::u16string::npos;
+      }));
+
+  GURL url(url_utils::GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme, GURL("http://urlthatlooksvalid.com"), "Title"));
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  Navigate(&params);
+  distillation_done_loop.Run();
+  EXPECT_TRUE(content::WaitForLoadStop(contents));
+
+  const GURL image_url = embedded_test_server()->GetURL("/handbag.png");
+  auto article = std::make_unique<DistilledArticleProto>();
+  DistilledPageProto* page = article->add_pages();
+  page->set_url("http://foo.html");
+  page->set_html(base::StrCat(
+      {"<div>content<img src=\"", image_url.spec(), "\">",
+       "<img src=\"data:image/gif;base64,"
+       "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==\"></div>"}));
+  distiller->RunDistillerCallback(std::move(article));
+
+  // Wait for the article and both of its images to finish rendering.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(contents, kGetLoadIndicatorClassName)
+               .ExtractString() == "hidden";
+  }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(contents,
+                           "(() => { const images = document.querySelectorAll("
+                           "'#content img'); return images.length == 2 && "
+                           "Array.from(images).every(i => i.complete && "
+                           "i.naturalWidth > 0); })()")
+        .ExtractBool();
+  }));
+
+  EXPECT_TRUE(console_observer.messages().empty())
+      << console_observer.GetMessageAt(0);
 }
 
 IN_PROC_BROWSER_TEST_F(ReaderModeViewerSourceBrowserTest,
