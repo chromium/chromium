@@ -184,7 +184,7 @@ PumpableTaskRunner::PumpableTaskRunner(
 PumpableTaskRunner::~PumpableTaskRunner() {
   // Because tasks hold a reference to the task runner, the task queue must
   // be empty when it is destroyed.
-  DCHECK(task_queue_.empty());
+  CHECK(task_queue_.empty(), base::NotFatalUntil::M163);
 }
 
 bool PumpableTaskRunner::WaitForSingleWrappedTaskToRun(
@@ -293,7 +293,7 @@ WindowResizeHelperMac* WindowResizeHelperMac::Get() {
 
 void WindowResizeHelperMac::Init(
     const scoped_refptr<base::SingleThreadTaskRunner>& target_task_runner) {
-  DCHECK(!task_runner_);
+  CHECK(!task_runner_, base::NotFatalUntil::M163);
   task_runner_ = new PumpableTaskRunner(
       base::BindRepeating(&WindowResizeHelperMac::EventTimedWait),
       target_task_runner);

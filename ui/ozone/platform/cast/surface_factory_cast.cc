@@ -131,7 +131,8 @@ scoped_refptr<gfx::NativePixmap> SurfaceFactoryCast::CreateNativePixmap(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
-  DCHECK(!framebuffer_size || framebuffer_size == size);
+  CHECK(!framebuffer_size || framebuffer_size == size,
+        base::NotFatalUntil::M163);
   return base::MakeRefCounted<CastPixmap>();
 }
 

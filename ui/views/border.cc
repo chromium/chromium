@@ -242,7 +242,7 @@ class BorderPainter : public Border {
 BorderPainter::BorderPainter(std::unique_ptr<Painter> painter,
                              const gfx::Insets& insets)
     : painter_(std::move(painter)), insets_(insets) {
-  DCHECK(painter_);
+  CHECK(painter_, base::NotFatalUntil::M163);
 }
 
 void BorderPainter::Paint(const View& view, gfx::Canvas* canvas) {

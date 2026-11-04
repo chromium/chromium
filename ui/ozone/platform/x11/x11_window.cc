@@ -248,8 +248,8 @@ X11Window::X11Window(PlatformWindowDelegate* platform_window_delegate)
     : platform_window_delegate_(platform_window_delegate),
       connection_(*x11::Connection::Get()),
       x_root_window_(GetX11RootWindow()) {
-  DCHECK_NE(x_root_window_, x11::Window::None);
-  DCHECK(platform_window_delegate_);
+  CHECK_NE(x_root_window_, x11::Window::None, base::NotFatalUntil::M163);
+  CHECK(platform_window_delegate_, base::NotFatalUntil::M163);
 
   // Set a class property key, which allows |this| to be used for interactive
   // events, e.g. move or resize.
@@ -298,7 +298,7 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   X11WindowManager::GetInstance()->AddWindow(this);
 
   connection_->AddEventObserver(this);
-  DCHECK(X11EventSource::HasInstance());
+  CHECK(X11EventSource::HasInstance(), base::NotFatalUntil::M163);
   X11EventSource::GetInstance()->AddPlatformEventDispatcher(this);
 
   x11_window_move_client_ =
@@ -550,7 +550,7 @@ void X11Window::PrepareForShutdown() {
     X11WindowManager::GetInstance()->UngrabEvents(this);
   }
   connection_->RemoveEventObserver(this);
-  DCHECK(X11EventSource::HasInstance());
+  CHECK(X11EventSource::HasInstance(), base::NotFatalUntil::M163);
   X11EventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 }
 
@@ -692,7 +692,8 @@ bool X11Window::HasCapture() const {
 
 void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
   // TODO(crbug.com/40111909) Support `target_display_id` on this platform.
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
+  CHECK_EQ(target_display_id, display::kInvalidDisplayId,
+           base::NotFatalUntil::M163);
   if (fullscreen) {
     CancelResize();
   }
@@ -910,7 +911,7 @@ bool X11Window::ShouldUseNativeFrame() const {
 }
 
 void X11Window::SetCursor(scoped_refptr<PlatformCursor> cursor) {
-  DCHECK(cursor);
+  CHECK(cursor, base::NotFatalUntil::M163);
 
   // When a DnD loop is running, DesktopDragDropClientOzone may change the
   // cursor type based on the current dnd operation. Setting cursor type with
@@ -1019,7 +1020,7 @@ ZOrderLevel X11Window::GetZOrderLevel() const {
 void X11Window::StackAbove(gfx::AcceleratedWidget widget) {
   // Check comment in the GetWidget method about this cast.
   auto window = static_cast<x11::Window>(widget);
-  DCHECK(window != x11::Window::None);
+  CHECK(window != x11::Window::None, base::NotFatalUntil::M163);
 
   // Find all parent windows up to the root.
   std::vector<x11::Window> window_below_parents =
@@ -1399,7 +1400,7 @@ bool X11Window::CanDispatchEvent(const PlatformEvent& xev) {
   if (is_shutting_down_) {
     return false;
   }
-  DCHECK_NE(window(), x11::Window::None);
+  CHECK_NE(window(), x11::Window::None, base::NotFatalUntil::M163);
   auto* dispatching_event = connection_->dispatching_event();
   return dispatching_event && IsTargetedBy(*dispatching_event);
 }
@@ -1408,8 +1409,8 @@ uint32_t X11Window::DispatchEvent(const PlatformEvent& event) {
   TRACE_EVENT1("views", "X11PlatformWindow::Dispatch", "event->type()",
                event->type());
 
-  DCHECK_NE(window(), x11::Window::None);
-  DCHECK(event);
+  CHECK_NE(window(), x11::Window::None, base::NotFatalUntil::M163);
+  CHECK(event, base::NotFatalUntil::M163);
 
   auto& current_xevent = *connection_->dispatching_event();
 
@@ -1428,7 +1429,7 @@ uint32_t X11Window::DispatchEvent(const PlatformEvent& event) {
 
 void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
   auto* window_manager = X11WindowManager::GetInstance();
-  DCHECK(window_manager);
+  CHECK(window_manager, base::NotFatalUntil::M163);
 
   // Process X11-specific bits
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
@@ -1603,12 +1604,12 @@ void X11Window::OnXWindowLostPointerGrab() {
 }
 
 void X11Window::OnXWindowSelectionEvent(const x11::SelectionNotifyEvent& xev) {
-  DCHECK(drag_drop_client_);
+  CHECK(drag_drop_client_, base::NotFatalUntil::M163);
   drag_drop_client_->OnSelectionNotify(xev);
 }
 
 void X11Window::OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) {
-  DCHECK(drag_drop_client_);
+  CHECK(drag_drop_client_, base::NotFatalUntil::M163);
   drag_drop_client_->HandleXdndEvent(xev);
 }
 
@@ -1668,8 +1669,8 @@ bool X11Window::StartDrag(
     base::OnceClosure drag_started_callback,
     WmDragHandler::DragFinishedCallback drag_finished_callback,
     WmDragHandler::LocationDelegate* location_delegate) {
-  DCHECK(drag_drop_client_);
-  DCHECK(!drag_location_delegate_);
+  CHECK(drag_drop_client_, base::NotFatalUntil::M163);
+  CHECK(!drag_location_delegate_, base::NotFatalUntil::M163);
 
   drag_finished_callback_ = std::move(drag_finished_callback);
   drag_location_delegate_ = location_delegate;
@@ -1744,7 +1745,7 @@ void X11Window::UpdateDragImage(const gfx::ImageSkia& image,
 }
 
 std::optional<gfx::AcceleratedWidget> X11Window::GetDragWidget() {
-  DCHECK(drag_location_delegate_);
+  CHECK(drag_location_delegate_, base::NotFatalUntil::M163);
   return drag_location_delegate_->GetDragWidget();
 }
 
@@ -1754,7 +1755,7 @@ int X11Window::UpdateDrag(const gfx::Point& connection_point) {
     return DragDropTypes::DRAG_NONE;
   }
 
-  DCHECK(drag_drop_client_);
+  CHECK(drag_drop_client_, base::NotFatalUntil::M163);
   auto* target_current_context = drag_drop_client_->target_current_context();
   if (!target_current_context) {
     return DragDropTypes::DRAG_NONE;
@@ -1806,7 +1807,7 @@ int X11Window::UpdateDrag(const gfx::Point& connection_point) {
 }
 
 void X11Window::UpdateCursor(DragOperation negotiated_operation) {
-  DCHECK(drag_location_delegate_);
+  CHECK(drag_location_delegate_, base::NotFatalUntil::M163);
   drag_location_delegate_->OnDragOperationChanged(negotiated_operation);
 }
 
@@ -1855,7 +1856,7 @@ DragOperation X11Window::PerformDrop() {
 }
 
 void X11Window::EndDragLoop() {
-  DCHECK(!drag_finished_callback_.is_null());
+  CHECK(!drag_finished_callback_.is_null(), base::NotFatalUntil::M163);
   std::move(drag_finished_callback_)
       .Run(PreferredDragOperation(allowed_drag_operations_));
   drag_loop_->EndMoveLoop();
@@ -1889,7 +1890,7 @@ gfx::Size X11Window::GetSize() {
 }
 
 void X11Window::QuitDragLoop() {
-  DCHECK(drag_loop_);
+  CHECK(drag_loop_, base::NotFatalUntil::M163);
   drag_loop_->EndMoveLoop();
 }
 
@@ -2483,7 +2484,7 @@ void X11Window::UpdateWMUserTime(Event* event) {
   if (!IsActive()) {
     return;
   }
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   EventType type = event->type();
   if (type == EventType::kMousePressed || type == EventType::kKeyPressed ||
       type == EventType::kTouchPressed) {
@@ -2520,7 +2521,7 @@ void X11Window::OnWindowMapped() {
 }
 
 void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure) {
-  DCHECK_EQ(xwindow_, configure.window);
+  CHECK_EQ(xwindow_, configure.window, base::NotFatalUntil::M163);
 
   if (configure_counter_value_ && !last_configure_size_) {
     last_configure_size_ = gfx::Size(configure.width, configure.height);

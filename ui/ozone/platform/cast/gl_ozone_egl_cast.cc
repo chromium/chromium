@@ -76,14 +76,15 @@ void GLOzoneEglCast::TerminateDisplay() {
       reinterpret_cast<EGLGetDisplayFn>(dlsym(egl_lib_handle, "eglGetDisplay"));
   EGLTerminateFn terminate =
       reinterpret_cast<EGLTerminateFn>(dlsym(egl_lib_handle, "eglTerminate"));
-  DCHECK(get_display);
-  DCHECK(terminate);
+  CHECK(get_display, base::NotFatalUntil::M163);
+  CHECK(terminate, base::NotFatalUntil::M163);
 
   EGLDisplay display = get_display(GetNativeDisplay().GetDisplay());
-  DCHECK_NE(display, EGL_NO_DISPLAY);
+  CHECK_NE(display, EGL_NO_DISPLAY, base::NotFatalUntil::M163);
 
   EGLBoolean terminate_result = terminate(display);
-  DCHECK_EQ(terminate_result, static_cast<EGLBoolean>(EGL_TRUE));
+  CHECK_EQ(terminate_result, static_cast<EGLBoolean>(EGL_TRUE),
+           base::NotFatalUntil::M163);
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateViewGLSurface(
@@ -92,8 +93,8 @@ scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateViewGLSurface(
   // Verify requested widget dimensions are valid. Note that `display_size_`
   // may be updated dynamically by `ResizeDisplay()` when the screen rotates or
   // resizes, while `widget` encodes the initial window dimensions.
-  DCHECK_GT(static_cast<int>(widget >> 16), 0);
-  DCHECK_GT(static_cast<int>(widget & 0xffff), 0);
+  CHECK_GT(static_cast<int>(widget >> 16), 0, base::NotFatalUntil::M163);
+  CHECK_GT(static_cast<int>(widget & 0xffff), 0, base::NotFatalUntil::M163);
 
   return gl::InitializeGLSurface(
       new GLSurfaceCast(display->GetAs<gl::GLDisplayEGL>(), widget, this));

@@ -182,7 +182,7 @@ void DrmWindowHost::OnCursorUpdate() {
 }
 
 bool DrmWindowHost::CanDispatchEvent(const PlatformEvent& event) {
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
 
   // If there is a grab, capture events here.
   gfx::AcceleratedWidget grabber = window_manager_->event_grabber();
@@ -222,7 +222,7 @@ bool DrmWindowHost::CanDispatchEvent(const PlatformEvent& event) {
 }
 
 uint32_t DrmWindowHost::DispatchEvent(const PlatformEvent& event) {
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
 
   if (event->IsLocatedEvent()) {
     // Make the event location relative to this window's origin.

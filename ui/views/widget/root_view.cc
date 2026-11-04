@@ -55,8 +55,9 @@ class MouseEnterExitEvent : public ui::MouseEvent {
       : ui::MouseEvent(event,
                        static_cast<View*>(nullptr),
                        static_cast<View*>(nullptr)) {
-    DCHECK(type == ui::EventType::kMouseEntered ||
-           type == ui::EventType::kMouseExited);
+    CHECK(type == ui::EventType::kMouseEntered ||
+              type == ui::EventType::kMouseExited,
+          base::NotFatalUntil::M163);
     SetType(type);
   }
 
@@ -257,7 +258,7 @@ class PostEventDispatchHandler : public ui::EventHandler {
  private:
   // Overridden from ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override {
-    DCHECK_EQ(ui::EP_POSTTARGET, event->phase());
+    CHECK_EQ(ui::EP_POSTTARGET, event->phase(), base::NotFatalUntil::M163);
     if (event->handled()) {
       return;
     }
@@ -363,7 +364,7 @@ void RootView::NotifyNativeViewHierarchyChanged() {
 // Focus -----------------------------------------------------------------------
 
 void RootView::SetFocusTraversableParent(FocusTraversable* focus_traversable) {
-  DCHECK(focus_traversable != this);
+  CHECK(focus_traversable != this, base::NotFatalUntil::M163);
   focus_traversable_parent_ = focus_traversable;
 }
 
@@ -530,7 +531,7 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
     }
     return true;
   }
-  DCHECK(!explicit_mouse_handler_);
+  CHECK(!explicit_mouse_handler_, base::NotFatalUntil::M163);
 
   // Walk up the tree from the target until we find a view that wants
   // the mouse event.
@@ -1057,7 +1058,8 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
   old_dispatch_target_ = nullptr;
 
 #ifndef NDEBUG
-  DCHECK(!event_dispatch_target_ || Contains(event_dispatch_target_));
+  CHECK(!event_dispatch_target_ || Contains(event_dispatch_target_),
+        base::NotFatalUntil::M163);
 #endif
 
   return details;

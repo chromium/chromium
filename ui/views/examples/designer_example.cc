@@ -656,7 +656,7 @@ bool DesignerExample::GrabHandle::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void DesignerExample::GrabHandle::PositionOnView() {
-  DCHECK(attached_view_);
+  CHECK(attached_view_, base::NotFatalUntil::M163);
   gfx::RectF view_bounds_f(attached_view_->GetLocalBounds());
   views::View::ConvertRectToTarget(attached_view_, parent(), &view_bounds_f);
   gfx::Rect view_bounds = gfx::ToEnclosingRect(view_bounds_f);
@@ -994,7 +994,7 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
     case ui::EventType::kMousePressed:
       if (mouse_event->IsOnlyLeftMouseButton()) {
         designer_panel_->RequestFocus();
-        DCHECK(!dragging_);
+        CHECK(!dragging_, base::NotFatalUntil::M163);
         View* target_view = static_cast<View*>(event->target());
         if (grab_handles_.IsGrabHandle(target_view)) {
           dragging_ = target_view;

@@ -153,16 +153,17 @@ bool HardwareDisplayPlaneManagerLegacy::TestSeamlessMode(
 bool HardwareDisplayPlaneManagerLegacy::DisableOverlayPlanes(
     HardwareDisplayPlaneList* plane_list) {
   // We're never going to ship legacy pageflip with overlays enabled.
-  DCHECK(!std::ranges::contains(plane_list->old_plane_list,
-                                static_cast<uint32_t>(DRM_PLANE_TYPE_OVERLAY),
-                                &HardwareDisplayPlane::type));
+  CHECK(!std::ranges::contains(plane_list->old_plane_list,
+                               static_cast<uint32_t>(DRM_PLANE_TYPE_OVERLAY),
+                               &HardwareDisplayPlane::type),
+        base::NotFatalUntil::M163);
   return true;
 }
 
 bool HardwareDisplayPlaneManagerLegacy::ValidatePrimarySize(
     const DrmOverlayPlane& primary,
     const drmModeModeInfo& mode) {
-  DCHECK(primary.buffer.get());
+  CHECK(primary.buffer.get(), base::NotFatalUntil::M163);
 
   return primary.buffer->size() == gfx::Size(mode.hdisplay, mode.vdisplay);
 }

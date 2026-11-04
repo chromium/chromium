@@ -251,8 +251,8 @@ Painter::~Painter() = default;
 void Painter::PaintPainterAt(gfx::Canvas* canvas,
                              Painter* painter,
                              const gfx::Rect& rect) {
-  DCHECK(canvas);
-  DCHECK(painter);
+  CHECK(canvas, base::NotFatalUntil::M163);
+  CHECK(painter, base::NotFatalUntil::M163);
   canvas->Save();
   canvas->Translate(rect.OffsetFromOrigin());
   painter->Paint(canvas, rect.size());

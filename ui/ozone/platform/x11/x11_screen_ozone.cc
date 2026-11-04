@@ -39,7 +39,7 @@ gfx::Rect DisplayBoundsInPixels(const display::Display& display) {
 const display::Display& GetDisplayForRect(const DisplayList& displays,
                                           const gfx::Rect& rect,
                                           bool rect_in_px) {
-  DCHECK(!displays.empty());
+  CHECK(!displays.empty(), base::NotFatalUntil::M163);
   constexpr auto kMaxDist = std::make_pair(INT_MAX, INT_MAX);
   auto min_dist_display = std::make_pair(kMaxDist, displays.data());
   for (const auto& display : displays) {
@@ -76,7 +76,7 @@ X11ScreenOzone::X11ScreenOzone()
     : connection_(x11::Connection::Get()),
       window_manager_(X11WindowManager::GetInstance()),
       x11_display_manager_(std::make_unique<XDisplayManager>(this)) {
-  DCHECK(window_manager_);
+  CHECK(window_manager_, base::NotFatalUntil::M163);
 #if BUILDFLAG(IS_LINUX)
   if (auto* linux_ui = ui::LinuxUi::instance()) {
     display_scale_factor_observer_.Observe(linux_ui);

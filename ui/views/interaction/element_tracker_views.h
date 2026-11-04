@@ -215,7 +215,7 @@ T* ElementTrackerViews::GetUniqueViewAs(ui::ElementIdentifier id,
     return nullptr;
   }
   T* const result = views::AsViewClass<T>(view);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M163);
   return result;
 }
 
@@ -228,7 +228,7 @@ T* ElementTrackerViews::GetFirstMatchingViewAs(ui::ElementIdentifier id,
     return nullptr;
   }
   T* const result = views::AsViewClass<T>(view);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M163);
   return result;
 }
 

@@ -9,7 +9,7 @@
 namespace views {
 
 gfx::Size GetWindowSizeForClientSize(Widget* widget, const gfx::Size& size) {
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M163);
   return remote_cocoa::NativeWidgetNSWindowBridge::GetWindowSizeForClientSize(
       widget->GetNativeWindow().GetNativeNSWindow(), size);
 }

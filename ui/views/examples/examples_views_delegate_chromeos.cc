@@ -22,7 +22,7 @@ void ExamplesViewsDelegateChromeOS::OnBeforeWidgetInit(
     internal::NativeWidgetDelegate* delegate) {
   views::TestViewsDelegate::OnBeforeWidgetInit(params, delegate);
   if (!params->parent && !params->context) {
-    DCHECK(!wm_helper_);
+    CHECK(!wm_helper_, base::NotFatalUntil::M163);
 
     wm_helper_ = std::make_unique<wm::WMTestHelper>(kDefaultSize);
     wm_helper_->host()->Show();
@@ -35,7 +35,7 @@ void ExamplesViewsDelegateChromeOS::OnHostCloseRequested(
     aura::WindowTreeHost* host) {
   Widget* widget = GetExamplesWidget();
   if (widget) {
-    DCHECK(observation_.IsObservingSource(host));
+    CHECK(observation_.IsObservingSource(host), base::NotFatalUntil::M163);
     observation_.Reset();
     widget->Close();
   }

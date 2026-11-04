@@ -503,7 +503,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     CHECK(!view->owned_by_client())
         << "This should only be called if the client doesn't already have "
            "ownership of |view|.";
-    DCHECK(std::ranges::contains(children_, view));
+    CHECK(std::ranges::contains(children_, view), base::NotFatalUntil::M163);
     RemoveChildView(view);
     return base::WrapUnique(view);
   }

@@ -32,7 +32,7 @@ base::FilePath GetFrameworkBundlePath() {
 
   // One step up to MacOS, another to Contents.
   path = path.DirName().DirName();
-  DCHECK_EQ(path.BaseName().value(), "Contents");
+  CHECK_EQ(path.BaseName().value(), "Contents", base::NotFatalUntil::M163);
 
   // |path| is Chromium.app/Contents, so go down to
   // Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X.
@@ -40,19 +40,22 @@ base::FilePath GetFrameworkBundlePath() {
              .Append(kFrameworkName)
              .Append("Versions")
              .Append(kFrameworkVersion);
-  DCHECK_EQ(path.BaseName().value(), kFrameworkVersion);
-  DCHECK_EQ(path.DirName().BaseName().value(), "Versions");
-  DCHECK_EQ(path.DirName().DirName().BaseName().value(), kFrameworkName);
-  DCHECK_EQ(path.DirName().DirName().DirName().BaseName().value(),
-            "Frameworks");
-  DCHECK_EQ(path.DirName()
-                .DirName()
-                .DirName()
-                .DirName()
-                .DirName()
-                .BaseName()
-                .Extension(),
-            ".app");
+  CHECK_EQ(path.BaseName().value(), kFrameworkVersion,
+           base::NotFatalUntil::M163);
+  CHECK_EQ(path.DirName().BaseName().value(), "Versions",
+           base::NotFatalUntil::M163);
+  CHECK_EQ(path.DirName().DirName().BaseName().value(), kFrameworkName,
+           base::NotFatalUntil::M163);
+  CHECK_EQ(path.DirName().DirName().DirName().BaseName().value(), "Frameworks",
+           base::NotFatalUntil::M163);
+  CHECK_EQ(path.DirName()
+               .DirName()
+               .DirName()
+               .DirName()
+               .DirName()
+               .BaseName()
+               .Extension(),
+           ".app", base::NotFatalUntil::M163);
   return path;
 }
 

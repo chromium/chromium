@@ -73,7 +73,8 @@ bool HeadlessWindow::HasCapture() const {
 }
 
 void HeadlessWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
+  CHECK_EQ(target_display_id, display::kInvalidDisplayId,
+           base::NotFatalUntil::M163);
   if (!delegate_->CanFullscreen()) {
     return;
   }
@@ -235,7 +236,7 @@ void HeadlessWindow::UpdateBounds(const gfx::Rect& bounds) {
 }
 
 void HeadlessWindow::UpdateWindowState(PlatformWindowState new_window_state) {
-  DCHECK_NE(window_state_, new_window_state);
+  CHECK_NE(window_state_, new_window_state, base::NotFatalUntil::M163);
 
   auto old_window_state = window_state_;
   window_state_ = new_window_state;

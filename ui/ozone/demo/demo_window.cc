@@ -81,7 +81,7 @@ void DemoWindow::OnWindowStateChanged(PlatformWindowState old_state,
 void DemoWindow::OnLostCapture() {}
 
 void DemoWindow::OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) {
-  DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
+  CHECK_NE(widget, gfx::kNullAcceleratedWidget, base::NotFatalUntil::M163);
   widget_ = widget;
 }
 

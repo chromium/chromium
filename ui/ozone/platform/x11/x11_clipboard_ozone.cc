@@ -26,7 +26,7 @@ X11ClipboardOzone::X11ClipboardOzone()
     : helper_(std::make_unique<XClipboardHelper>(
           base::BindRepeating(&X11ClipboardOzone::OnSelectionChanged,
                               base::Unretained(this)))) {
-  DCHECK(helper_);
+  CHECK(helper_, base::NotFatalUntil::M163);
 }
 
 X11ClipboardOzone::~X11ClipboardOzone() = default;
@@ -52,7 +52,7 @@ void X11ClipboardOzone::RequestClipboardData(
     ClipboardBuffer buffer,
     const std::string& mime_type,
     PlatformClipboard::RequestDataClosure callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
 
 #if BUILDFLAG(IS_LINUX)
   if (mime_type == kMimeTypeUriList) {
@@ -118,7 +118,7 @@ void X11ClipboardOzone::OnPathsExtracted(
 void X11ClipboardOzone::GetAvailableMimeTypes(
     ClipboardBuffer buffer,
     PlatformClipboard::GetMimeTypesClosure callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
   helper_->GetAvailableMimeTypesAsync(buffer, std::move(callback));
 }
 

@@ -33,7 +33,7 @@ HostDrmDevice::~HostDrmDevice() {
 
 void HostDrmDevice::OnDrmServiceStarted() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  DCHECK(!connected_);
+  CHECK(!connected_, base::NotFatalUntil::M163);
 
   connected_ = true;
 

@@ -297,14 +297,15 @@ Widget::~Widget() {
   }
   if (ownership_ == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
     owned_native_widget_.reset();
-    DCHECK(!native_widget_);
+    CHECK(!native_widget_, base::NotFatalUntil::M163);
   } else if (ownership_ == InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
     // TODO(crbug.com/41444457): Revert to DCHECK once we figure out the reason.
     CHECK(!native_widget_)
         << "Destroying a widget with a live native widget. "
         << "Widget probably should use WIDGET_OWNS_NATIVE_WIDGET ownership.";
   } else {
-    DCHECK_EQ(ownership_, InitParams::CLIENT_OWNS_WIDGET);
+    CHECK_EQ(ownership_, InitParams::CLIENT_OWNS_WIDGET,
+             base::NotFatalUntil::M163);
     // Specifically in the case of CLIENT_OWNS_WIDGET the native widget is
     // notified to allow clearing of any widget-associated state. Do so before
     // the call to `HandleWidgetDestroyed()` below which will invalidate
@@ -438,7 +439,7 @@ void Widget::ForEachOwnedWidget(gfx::NativeView native_view,
 // static
 void Widget::ReparentNativeView(gfx::NativeView native_view,
                                 gfx::NativeView new_parent) {
-  DCHECK(native_view);
+  CHECK(native_view, base::NotFatalUntil::M163);
   internal::NativeWidgetPrivate::ReparentNativeView(native_view, new_parent);
   Widget* child_widget = GetWidgetForNativeView(native_view);
   Widget* parent_widget =
@@ -538,7 +539,7 @@ void Widget::Init(InitParams params) {
         default_delegate.release()->AttachWidgetAndGetHandle(this);
   }
 
-  DCHECK(widget_delegate_);
+  CHECK(widget_delegate_, base::NotFatalUntil::M163);
 
   if (params.opacity == views::Widget::InitParams::WindowOpacity::kInferred) {
     params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
@@ -835,7 +836,7 @@ void Widget::SetContentsView(View* view) {
   // Windows, where the native widget thinks there is still a
   // |non_client_view_|. If you get this error, either use a different type when
   // initializing the widget, or don't call SetContentsView().
-  DCHECK(!non_client_view_);
+  CHECK(!non_client_view_, base::NotFatalUntil::M163);
 
   root_view_->SetContentsView(view);
 
@@ -1287,7 +1288,8 @@ void Widget::SetFullscreen(bool fullscreen, int64_t target_display_id) {
   }
   // It isn't valid to specify `target_display_id` when exiting fullscreen.
   if (!fullscreen) {
-    DCHECK(target_display_id == display::kInvalidDisplayId);
+    CHECK(target_display_id == display::kInvalidDisplayId,
+          base::NotFatalUntil::M163);
   }
   if (IsFullscreen() == fullscreen &&
       target_display_id == display::kInvalidDisplayId) {
@@ -1326,8 +1328,8 @@ void Widget::SetCanAppearInExistingFullscreenSpaces(
 }
 
 void Widget::SetOpacity(float opacity) {
-  DCHECK(opacity >= 0.0f);
-  DCHECK(opacity <= 1.0f);
+  CHECK(opacity >= 0.0f, base::NotFatalUntil::M163);
+  CHECK(opacity <= 1.0f, base::NotFatalUntil::M163);
   if (native_widget_) {
     native_widget_->SetOpacity(opacity);
   }
@@ -2140,8 +2142,8 @@ void Widget::OnNativeWidgetCreated() {
     focus_manager_ = FocusManagerFactory::Create(this);
   }
 
-  DCHECK(native_widget_);
-  DCHECK(widget_delegate_);
+  CHECK(native_widget_, base::NotFatalUntil::M163);
+  CHECK(widget_delegate_, base::NotFatalUntil::M163);
   native_widget_->InitModalType(widget_delegate_->GetModalType());
 
   observers_.Notify(&WidgetObserver::OnWidgetCreated, this);
@@ -2150,7 +2152,7 @@ void Widget::OnNativeWidgetCreated() {
 void Widget::OnNativeWidgetDestroying() {
   // Tell the focus manager (if any) that root_view is being removed
   // in case that the focused view is under this root view.
-  DCHECK(native_widget_);
+  CHECK(native_widget_, base::NotFatalUntil::M163);
   HandleWidgetDestroying();
 }
 
@@ -2468,7 +2470,7 @@ void Widget::GetHitTestMask(SkPath* mask) const {
     return;
   }
 
-  DCHECK(mask);
+  CHECK(mask, base::NotFatalUntil::M163);
   widget_delegate_->GetWidgetHitTestMask(mask);
 }
 
@@ -2866,7 +2868,7 @@ void Widget::SetInitialBounds(const gfx::Rect& bounds) {
 void Widget::SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds) {
   if (bounds.IsEmpty()) {
     View* contents_view = GetContentsView();
-    DCHECK(contents_view);
+    CHECK(contents_view, base::NotFatalUntil::M163);
     // No initial bounds supplied, so size the window to its content and
     // center over its parent if preferred size is provided.
     gfx::Size size = contents_view->GetPreferredSize({});
@@ -2963,7 +2965,7 @@ bool Widget::GetSavedWindowPlacement(gfx::Rect* bounds,
 
 void Widget::UnlockPaintAsActive() {
   const bool was_paint_as_active = ShouldPaintAsActive();
-  DCHECK_GT(paint_as_active_refcount_, 0U);
+  CHECK_GT(paint_as_active_refcount_, 0U, base::NotFatalUntil::M163);
   --paint_as_active_refcount_;
 
   if (!paint_as_active_refcount_ && !native_widget_active_) {

@@ -31,13 +31,13 @@ X11WindowManager* X11WindowManager::GetInstance() {
   if (!g_instance) {
     auto manager = std::make_unique<X11WindowManager>();
     X11WindowManager* manager_ptr = manager.release();
-    DCHECK_EQ(g_instance, manager_ptr);
+    CHECK_EQ(g_instance, manager_ptr, base::NotFatalUntil::M163);
   }
   return g_instance;
 }
 
 void X11WindowManager::GrabEvents(X11Window* window) {
-  DCHECK_NE(located_events_grabber_, window);
+  CHECK_NE(located_events_grabber_, window, base::NotFatalUntil::M163);
 
   // Grabbing the mouse is asynchronous. However, we synchronously start
   // forwarding all mouse events received by Chrome to the
@@ -58,7 +58,7 @@ void X11WindowManager::GrabEvents(X11Window* window) {
 }
 
 void X11WindowManager::UngrabEvents(X11Window* window) {
-  DCHECK_EQ(located_events_grabber_, window);
+  CHECK_EQ(located_events_grabber_, window, base::NotFatalUntil::M163);
   // Release mouse grab asynchronously. A window managed by Chrome is likely
   // the topmost window underneath the mouse so the capture release being
   // asynchronous is likely inconsequential.
@@ -68,20 +68,20 @@ void X11WindowManager::UngrabEvents(X11Window* window) {
 }
 
 void X11WindowManager::AddWindow(X11Window* window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   auto widget = window->GetWidget();
-  DCHECK_NE(gfx::kNullAcceleratedWidget, widget);
-  DCHECK(!windows_.contains(widget));
+  CHECK_NE(gfx::kNullAcceleratedWidget, widget, base::NotFatalUntil::M163);
+  CHECK(!windows_.contains(widget), base::NotFatalUntil::M163);
   windows_.emplace(widget, window);
 }
 
 void X11WindowManager::RemoveWindow(X11Window* window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   auto widget = window->GetWidget();
   auto it = windows_.find(widget);
   // The XWindow might not have been initialized due to some errors.
   if (widget == gfx::kNullAcceleratedWidget) {
-    DCHECK(it == windows_.end());
+    CHECK(it == windows_.end(), base::NotFatalUntil::M163);
   } else {
     CHECK(it != windows_.end());
     if (window_mouse_currently_on_ == it->second)

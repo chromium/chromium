@@ -255,7 +255,7 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     } else {
       IOSurfaceRef io_surface = frame.layer_tree->GetContentIOSurface();
       if (io_surface) {
-        DCHECK(!allow_remote_layers_);
+        CHECK(!allow_remote_layers_, base::NotFatalUntil::M163);
         params.io_surface_mach_port.reset(IOSurfaceCreateMachPort(io_surface));
       }
     }

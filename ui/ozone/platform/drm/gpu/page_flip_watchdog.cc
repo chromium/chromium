@@ -92,7 +92,7 @@ void PageFlipWatchdog::Disarm() {
 
 void PageFlipWatchdog::StartCrashGpuTimer() {
   if (!crash_gpu_timer_.IsRunning()) {
-    DCHECK_GE(failed_page_flip_counter_, 1);
+    CHECK_GE(failed_page_flip_counter_, 1, base::NotFatalUntil::M163);
     LOG(WARNING) << "Initiating GPU process self-destruct in "
                  << kWaitForModesetTimeout
                  << " unless a modeset attempt is detected.";

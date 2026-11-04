@@ -148,8 +148,8 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       gl::GLDisplay* display,
       const gfx::Size& size) override {
-    DCHECK_EQ(size.width(), 0);
-    DCHECK_EQ(size.height(), 0);
+    CHECK_EQ(size.width(), 0, base::NotFatalUntil::M163);
+    CHECK_EQ(size.height(), 0, base::NotFatalUntil::M163);
     return gl::InitializeGLSurface(
         new gl::SurfacelessEGL(display->GetAs<gl::GLDisplayEGL>(), size));
   }
@@ -226,23 +226,23 @@ GbmSurfaceFactory::GbmSurfaceFactory(DrmThreadProxy* drm_thread_proxy)
       drm_thread_proxy_(drm_thread_proxy) {}
 
 GbmSurfaceFactory::~GbmSurfaceFactory() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 void GbmSurfaceFactory::RegisterSurface(gfx::AcceleratedWidget widget,
                                         GbmSurfaceless* surface) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   widget_to_surface_map_.emplace(widget, surface);
 }
 
 void GbmSurfaceFactory::UnregisterSurface(gfx::AcceleratedWidget widget) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   widget_to_surface_map_.erase(widget);
 }
 
 GbmSurfaceless* GbmSurfaceFactory::GetSurface(
     gfx::AcceleratedWidget widget) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   auto it = widget_to_surface_map_.find(widget);
   CHECK(it != widget_to_surface_map_.end());
   return it->second;
@@ -250,7 +250,7 @@ GbmSurfaceless* GbmSurfaceFactory::GetSurface(
 
 std::vector<gl::GLImplementationParts>
 GbmSurfaceFactory::GetAllowedGLImplementations() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
       gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
@@ -304,16 +304,17 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
     return nullptr;
   }
 
-  DCHECK(buffer->AreFdsValid());
-  DCHECK_EQ(buffer->GetNumPlanes(), 1U);
+  CHECK(buffer->AreFdsValid(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer->GetNumPlanes(), 1U, base::NotFatalUntil::M163);
 
   base::ScopedFD vk_image_fd(dup(buffer->GetPlaneFd(0)));
-  DCHECK(vk_image_fd.is_valid());
+  CHECK(vk_image_fd.is_valid(), base::NotFatalUntil::M163);
 
   // TODO(spang): Fix this for formats other than
   // viz::SinglePlaneFormat::kBGRA_8888
-  DCHECK_EQ(viz::SinglePlaneFormat::kBGRA_8888,
-            display::DisplaySnapshot::PrimaryFormat());
+  CHECK_EQ(viz::SinglePlaneFormat::kBGRA_8888,
+           display::DisplaySnapshot::PrimaryFormat(),
+           base::NotFatalUntil::M163);
   VkFormat vk_format = VK_FORMAT_B8G8R8A8_SRGB;
 
   VkDmaBufImageCreateInfo dma_buf_image_create_info = {
@@ -352,7 +353,7 @@ std::unique_ptr<OverlaySurface> GbmSurfaceFactory::CreateOverlaySurface(
 
 std::unique_ptr<SurfaceOzoneCanvas> GbmSurfaceFactory::CreateCanvasForWidget(
     gfx::AcceleratedWidget widget) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   LOG(ERROR) << "Software rendering mode is not supported with GBM platform";
   return nullptr;
 }

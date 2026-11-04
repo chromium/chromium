@@ -55,7 +55,7 @@ base::FilePath GetPathForWidget(const base::FilePath& base_path,
 }
 
 void WriteDataToFile(const base::FilePath& location, const SkBitmap& bitmap) {
-  DCHECK(!location.empty());
+  CHECK(!location.empty(), base::NotFatalUntil::M163);
   std::optional<std::vector<uint8_t>> png_data =
       gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap,
                                             /*discard_transparency=*/true);

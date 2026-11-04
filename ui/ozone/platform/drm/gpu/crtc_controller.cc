@@ -50,7 +50,7 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
                                          bool is_modesetting) {
   // If we're in the process of modesetting, the CRTC is still disabled.
   // Once the modeset is done, we expect it to be enabled.
-  DCHECK(is_modesetting || is_enabled());
+  CHECK(is_modesetting || is_enabled(), base::NotFatalUntil::M163);
 
   const DrmOverlayPlane* primary = DrmOverlayPlane::GetPrimaryPlane(overlays);
   if (primary &&

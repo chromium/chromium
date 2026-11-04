@@ -320,13 +320,13 @@ TrackedElementViews* ElementTrackerViews::GetElementForView(
 
     // We shouldn't be assigning temporary IDs to views which are not yet on
     // widgets (how did we even get a reference to the view?)
-    DCHECK(view->GetWidget());
+    CHECK(view->GetWidget(), base::NotFatalUntil::M163);
     identifier = ui::ElementTracker::kTemporaryIdentifier;
     view->SetProperty(kElementIdentifierKey, identifier);
   }
   const auto it = element_data_.find(identifier);
   if (it == element_data_.end()) {
-    DCHECK(!assign_temporary_id);
+    CHECK(!assign_temporary_id, base::NotFatalUntil::M163);
     return nullptr;
   }
   return it->second.GetElementForView(view);
@@ -413,7 +413,7 @@ void ElementTrackerViews::RegisterView(ui::ElementIdentifier element_id,
 
 void ElementTrackerViews::UnregisterView(ui::ElementIdentifier element_id,
                                          View* view) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   const auto it = element_data_.find(element_id);
   CHECK(it != element_data_.end());
   it->second.RemoveView(view);
@@ -421,7 +421,7 @@ void ElementTrackerViews::UnregisterView(ui::ElementIdentifier element_id,
 
 void ElementTrackerViews::NotifyViewActivated(ui::ElementIdentifier element_id,
                                               View* view) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
   const auto it = element_data_.find(element_id);
   CHECK(it != element_data_.end());
   it->second.NotifyViewActivated(view);

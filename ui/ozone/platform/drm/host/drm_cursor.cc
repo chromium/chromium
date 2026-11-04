@@ -82,8 +82,8 @@ void DrmCursor::SetCursor(gfx::AcceleratedWidget window,
                           scoped_refptr<BitmapCursor> platform_cursor) {
   TRACE_EVENT0("drmcursor", "DrmCursor::SetCursor");
   DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
-  DCHECK_NE(window, gfx::kNullAcceleratedWidget);
-  DCHECK(platform_cursor);
+  CHECK_NE(window, gfx::kNullAcceleratedWidget, base::NotFatalUntil::M163);
+  CHECK(platform_cursor, base::NotFatalUntil::M163);
 
   base::AutoLock lock(lock_);
 
@@ -222,8 +222,9 @@ void DrmCursor::MoveCursor(const gfx::Vector2dF& delta) {
 #if DCHECK_IS_ON()
   // We explicitly check for DCHECK_IS_ON() as |ui_thread_checker_| and
   // |evdev_thread_checker_| do not exist on non-DCHECK builds.
-  DCHECK(evdev_thread_checker_.CalledOnValidThread() ||
-         ui_thread_checker_.CalledOnValidThread());
+  CHECK(evdev_thread_checker_.CalledOnValidThread() ||
+            ui_thread_checker_.CalledOnValidThread(),
+        base::NotFatalUntil::M163);
 #endif
   TRACE_EVENT0("drmcursor", "DrmCursor::MoveCursor");
   base::AutoLock lock(lock_);

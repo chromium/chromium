@@ -140,7 +140,7 @@ class VectorIconGallery : public View, public TextfieldController {
       return;
     }
 
-    DCHECK_EQ(color_input_, sender);
+    CHECK_EQ(color_input_, sender, base::NotFatalUntil::M163);
     if (new_contents.size() != 8u) {
       return;
     }

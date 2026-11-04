@@ -58,7 +58,7 @@ X11KeyboardHook::X11KeyboardHook(
 X11KeyboardHook::~X11KeyboardHook() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M163);
   g_instance = nullptr;
 
   // Use UngrabKey for each key that has been grabbed.  UngrabKeyboard
@@ -77,7 +77,7 @@ void X11KeyboardHook::RegisterHook(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Only one instance of this class can be registered at a time.
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M163);
   g_instance = this;
 
   if (dom_codes.has_value()) {

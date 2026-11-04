@@ -28,7 +28,7 @@ SelectionController::SelectionController(SelectionControllerDelegate* delegate)
     set_handles_selection_clipboard(true);
   }
 
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
 }
 
 SelectionController::~SelectionController() = default;
@@ -38,7 +38,7 @@ bool SelectionController::OnMousePressed(
     bool handled,
     InitialFocusStateOnMousePress initial_focus_state) {
   gfx::RenderText* render_text = GetRenderText();
-  DCHECK(render_text);
+  CHECK(render_text, base::NotFatalUntil::M163);
 
   TrackMouseClicks(event);
   if (handled) {
@@ -107,7 +107,7 @@ bool SelectionController::OnMousePressed(
 }
 
 bool SelectionController::OnMouseDragged(const ui::MouseEvent& event) {
-  DCHECK(GetRenderText());
+  CHECK(GetRenderText(), base::NotFatalUntil::M163);
   // If |drag_selection_timer_| is running, |last_drag_location_| will be used
   // to update the selection.
   last_drag_location_ = event.location();
@@ -139,7 +139,7 @@ bool SelectionController::OnMouseDragged(const ui::MouseEvent& event) {
 
 void SelectionController::OnMouseReleased(const ui::MouseEvent& event) {
   gfx::RenderText* render_text = GetRenderText();
-  DCHECK(render_text);
+  CHECK(render_text, base::NotFatalUntil::M163);
 
   drag_selection_timer_.Stop();
 
@@ -162,7 +162,7 @@ void SelectionController::OnMouseReleased(const ui::MouseEvent& event) {
 
 void SelectionController::OnMouseCaptureLost() {
   gfx::RenderText* render_text = GetRenderText();
-  DCHECK(render_text);
+  CHECK(render_text, base::NotFatalUntil::M163);
 
   drag_selection_timer_.Stop();
 
@@ -196,7 +196,7 @@ void SelectionController::TrackMouseClicks(const ui::MouseEvent& event) {
 
 void SelectionController::SelectWord(const gfx::Point& point) {
   gfx::RenderText* render_text = GetRenderText();
-  DCHECK(render_text);
+  CHECK(render_text, base::NotFatalUntil::M163);
   delegate_->OnBeforePointerAction();
   render_text->MoveCursorToPoint(point, false);
   render_text->SelectWord();
@@ -205,7 +205,7 @@ void SelectionController::SelectWord(const gfx::Point& point) {
 
 void SelectionController::SelectAll() {
   gfx::RenderText* render_text = GetRenderText();
-  DCHECK(render_text);
+  CHECK(render_text, base::NotFatalUntil::M163);
   delegate_->OnBeforePointerAction();
   render_text->SelectAll(false);
   delegate_->OnAfterPointerAction(false, true);
@@ -217,7 +217,7 @@ gfx::RenderText* SelectionController::GetRenderText() {
 
 void SelectionController::SelectThroughLastDragLocation() {
   gfx::RenderText* render_text = GetRenderText();
-  DCHECK(render_text);
+  CHECK(render_text, base::NotFatalUntil::M163);
 
   delegate_->OnBeforePointerAction();
 

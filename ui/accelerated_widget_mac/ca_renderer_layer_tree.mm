@@ -362,7 +362,7 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
         SkImageInfo::Make(size.width(), size.height(), color_type,
                           kPremul_SkAlphaType, color_space.ToSkColorSpace());
     auto canvas = SkCanvas::MakeRasterDirect(info, base_address, bytes_per_row);
-    DCHECK(canvas);
+    CHECK(canvas, base::NotFatalUntil::M163);
     canvas->clear(color);
 
     IOSurfaceUnlock(io_surface.get(), /*options=*/0, /*seed=*/nullptr);
@@ -383,15 +383,15 @@ CARendererLayerTree::SolidColorContents::SolidColorContents(
     base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface)
     : color_(color), io_surface_(std::move(io_surface)) {
   auto* map = GetMap();
-  DCHECK(map->find(color_) == map->end());
+  CHECK(map->find(color_) == map->end(), base::NotFatalUntil::M163);
   map->insert(std::make_pair(color_, this));
 }
 
 CARendererLayerTree::SolidColorContents::~SolidColorContents() {
   auto* map = GetMap();
   auto found = map->find(color_);
-  DCHECK(found != map->end());
-  DCHECK(found->second == this);
+  CHECK(found != map->end(), base::NotFatalUntil::M163);
+  CHECK(found->second == this, base::NotFatalUntil::M163);
   map->erase(color_);
 }
 
@@ -441,7 +441,7 @@ void CARendererLayerTree::CommitScheduledCALayers(
 void CARendererLayerTree::MatchLayersToOldTree(CARendererLayerTree* old_tree) {
   if (!old_tree)
     return;
-  DCHECK(old_tree->has_committed_);
+  CHECK(old_tree->has_committed_, base::NotFatalUntil::M163);
 
   // Match the root layer.
   if (old_tree->scale_factor_ != scale_factor_)
@@ -980,7 +980,7 @@ void CARendererLayerTree::TransformLayer::AddContentLayer(
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
                                                 const gfx::Size& pixel_size) {
   if (old_layer_) {
-    DCHECK(old_layer_->ca_layer_);
+    CHECK(old_layer_->ca_layer_, base::NotFatalUntil::M163);
     std::swap(ca_layer_, old_layer_->ca_layer_);
   } else {
     ca_layer_ = [[CALayer alloc] init];
@@ -1036,8 +1036,8 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
   bool update_is_clipped = true;
   bool update_clip_rect = true;
   if (old_layer_) {
-    DCHECK(old_layer_->clipping_ca_layer_);
-    DCHECK(old_layer_->rounded_corner_ca_layer_);
+    CHECK(old_layer_->clipping_ca_layer_, base::NotFatalUntil::M163);
+    CHECK(old_layer_->rounded_corner_ca_layer_, base::NotFatalUntil::M163);
     std::swap(clipping_ca_layer_, old_layer_->clipping_ca_layer_);
     std::swap(rounded_corner_ca_layer_, old_layer_->rounded_corner_ca_layer_);
     update_is_clipped = old_layer_->is_clipped_ != is_clipped_;
@@ -1054,7 +1054,7 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
   }
 
   if (clipping_ca_layer_.superlayer != superlayer) {
-    DCHECK_EQ(clipping_ca_layer_.superlayer, nil);
+    CHECK_EQ(clipping_ca_layer_.superlayer, nil, base::NotFatalUntil::M163);
     if (last_committed_clip_ca_layer == nullptr) {
       [superlayer insertSublayer:clipping_ca_layer_ atIndex:0];
     } else {
@@ -1115,7 +1115,7 @@ void CARendererLayerTree::TransformLayer::CommitToCA(
   bool update_transform = true;
 
   if (old_layer_) {
-    DCHECK(old_layer_->ca_layer_);
+    CHECK(old_layer_->ca_layer_, base::NotFatalUntil::M163);
     std::swap(ca_layer_, old_layer_->ca_layer_);
     update_transform = old_layer_->transform_ != transform_;
   } else {
@@ -1123,7 +1123,7 @@ void CARendererLayerTree::TransformLayer::CommitToCA(
   }
 
   if (ca_layer_.superlayer != superlayer) {
-    DCHECK_EQ(ca_layer_.superlayer, nil);
+    CHECK_EQ(ca_layer_.superlayer, nil, base::NotFatalUntil::M163);
     if (last_committed_transform_ca_layer == nullptr) {
       [superlayer insertSublayer:ca_layer_ atIndex:0];
     } else {
@@ -1166,7 +1166,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   bool update_ca_filter = true;
 
   if (old_layer_ && old_layer_->type_ == type_) {
-    DCHECK(old_layer_->ca_layer_);
+    CHECK(old_layer_->ca_layer_, base::NotFatalUntil::M163);
     std::swap(ca_layer_, old_layer_->ca_layer_);
     std::swap(av_layer_, old_layer_->av_layer_);
     update_contents =
@@ -1220,7 +1220,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   }
 
   if (ca_layer_.superlayer != superlayer) {
-    DCHECK_EQ(ca_layer_.superlayer, nil);
+    CHECK_EQ(ca_layer_.superlayer, nil, base::NotFatalUntil::M163);
     if (last_committed_ca_layer == nullptr) {
       [superlayer insertSublayer:ca_layer_ atIndex:0];
     } else {

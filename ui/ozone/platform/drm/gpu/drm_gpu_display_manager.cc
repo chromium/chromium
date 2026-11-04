@@ -453,7 +453,7 @@ bool DrmGpuDisplayManager::RelinquishDisplayControl() {
 
 bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
     const EventPropertyMap& event_props) {
-  DCHECK(!event_props.empty());
+  CHECK(!event_props.empty(), base::NotFatalUntil::M163);
 
   const std::string event_seq_num =
       GetEventPropertyByKey("SEQNUM", event_props);
@@ -479,7 +479,7 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
     {
       const bool conversion_success =
           base::StringToUint(connector_id_str, &connector_id);
-      DCHECK(conversion_success);
+      CHECK(conversion_success, base::NotFatalUntil::M163);
     }
 
     // Get the trigger property's ID and convert to an int.
@@ -492,19 +492,19 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
     {
       const bool conversion_success =
           base::StringToUint(trigger_prop_id_str, &trigger_prop_id);
-      DCHECK(conversion_success);
+      CHECK(conversion_success, base::NotFatalUntil::M163);
     }
 
     ScopedDrmObjectPropertyPtr property_values(
         drm->GetObjectProperties(connector_id, DRM_MODE_OBJECT_CONNECTOR));
-    DCHECK(property_values);
+    CHECK(property_values, base::NotFatalUntil::M163);
 
     // Fetch the name of the property from the device.
     ScopedDrmPropertyPtr drm_property(drm->GetProperty(trigger_prop_id));
-    DCHECK(drm_property);
+    CHECK(drm_property, base::NotFatalUntil::M163);
     const std::string enum_value =
         GetEnumNameForProperty(*drm_property, *property_values);
-    DCHECK(!enum_value.empty());
+    CHECK(!enum_value.empty(), base::NotFatalUntil::M163);
 
     trigger_prop_log =
         "[CONNECTOR:" + connector_id_str +

@@ -366,12 +366,12 @@ DrmDisplayHost* DrmDisplayHostManager::GetDisplay(int64_t display_id) {
 }
 
 void DrmDisplayHostManager::AddDelegate(DrmNativeDisplayDelegate* delegate) {
-  DCHECK(!delegate_);
+  CHECK(!delegate_, base::NotFatalUntil::M163);
   delegate_ = delegate;
 }
 
 void DrmDisplayHostManager::RemoveDelegate(DrmNativeDisplayDelegate* delegate) {
-  DCHECK_EQ(delegate_, delegate);
+  CHECK_EQ(delegate_, delegate, base::NotFatalUntil::M163);
   delegate_ = nullptr;
 }
 
@@ -656,8 +656,8 @@ void DrmDisplayHostManager::GpuTookDisplayControl(bool status) {
     return;
   }
 
-  DCHECK(display_externally_controlled_);
-  DCHECK(display_control_change_pending_);
+  CHECK(display_externally_controlled_, base::NotFatalUntil::M163);
+  CHECK(display_control_change_pending_, base::NotFatalUntil::M163);
 
   if (status) {
     scoped_input_devices_disabler_.reset();
@@ -677,8 +677,8 @@ void DrmDisplayHostManager::GpuRelinquishedDisplayControl(bool status) {
     return;
   }
 
-  DCHECK(!display_externally_controlled_);
-  DCHECK(display_control_change_pending_);
+  CHECK(!display_externally_controlled_, base::NotFatalUntil::M163);
+  CHECK(display_control_change_pending_, base::NotFatalUntil::M163);
 
   if (status) {
     scoped_input_devices_disabler_ = input_controller_->DisableInputDevices();

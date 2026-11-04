@@ -99,12 +99,14 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     } else {
       switch (gl::GetGLImplementation()) {
         case gl::kGLImplementationEGLGLES2:
-          DCHECK(window != gfx::kNullAcceleratedWidget);
+          CHECK(window != gfx::kNullAcceleratedWidget,
+                base::NotFatalUntil::M163);
           return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11GLES2(
               display->GetAs<gl::GLDisplayEGL>(),
               static_cast<x11::Window>(window)));
         case gl::kGLImplementationEGLANGLE:
-          DCHECK(window != gfx::kNullAcceleratedWidget);
+          CHECK(window != gfx::kNullAcceleratedWidget,
+                base::NotFatalUntil::M163);
           return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11(
               display->GetAs<gl::GLDisplayEGL>(),
               static_cast<x11::Window>(window)));

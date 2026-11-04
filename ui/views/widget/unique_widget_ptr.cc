@@ -100,7 +100,7 @@ void UniqueWidgetPtr::Impl::OnWidgetDestroying(Widget* widget) {
   widget_observation_.Reset();
   received_widget_destruction_signal_ = true;
   if (widget->ownership() == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
-    DCHECK_EQ(widget, widget_closer_.get());
+    CHECK_EQ(widget, widget_closer_.get(), base::NotFatalUntil::M163);
     widget_closer_.release();
   }
 }

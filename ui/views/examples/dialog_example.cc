@@ -305,7 +305,7 @@ bool DialogExample::AllowDialogClose(bool accept) {
 }
 
 void DialogExample::ResizeDialog() {
-  DCHECK(last_dialog_);
+  CHECK(last_dialog_, base::NotFatalUntil::M163);
   Widget* widget = last_dialog_->GetWidget();
   gfx::Rect preferred_bounds(widget->GetRestoredBounds());
   preferred_bounds.set_size(widget->non_client_view()->GetPreferredSize({}));

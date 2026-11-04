@@ -47,7 +47,7 @@ View* FocusSearch::FindNextFocusableView(
     FocusSearch::AnchoredDialogPolicy can_go_into_anchored_dialog,
     FocusTraversable** focus_traversable,
     View** focus_traversable_view) {
-  DCHECK(!root_->children().empty());
+  CHECK(!root_->children().empty(), base::NotFatalUntil::M163);
 
   *focus_traversable = nullptr;
   *focus_traversable_view = nullptr;
@@ -68,7 +68,7 @@ View* FocusSearch::FindNextFocusableView(
     check_starting_view = StartingViewPolicy::kCheckStartingView;
   } else {
     // The starting view should be a direct or indirect child of the root.
-    DCHECK(Contains(root_, starting_view));
+    CHECK(Contains(root_, starting_view), base::NotFatalUntil::M163);
   }
 
   base::flat_set<View*> seen_views;
@@ -100,8 +100,8 @@ View* FocusSearch::FindNextFocusableView(
   // this case before cycling. Note that Find{Next,Previous}FocusableViewImpl
   // respect |can_go_into_anchored_dialog| so we don't need to check it here.
   if (*focus_traversable) {
-    DCHECK(*focus_traversable_view);
-    DCHECK_EQ(v, nullptr);
+    CHECK(*focus_traversable_view, base::NotFatalUntil::M163);
+    CHECK_EQ(v, nullptr, base::NotFatalUntil::M163);
     return nullptr;
   }
 
@@ -114,7 +114,7 @@ View* FocusSearch::FindNextFocusableView(
 
   // Doing some sanity checks.
   if (v) {
-    DCHECK(IsFocusable(v));
+    CHECK(IsFocusable(v), base::NotFatalUntil::M163);
     return v;
   }
 
@@ -129,11 +129,12 @@ bool FocusSearch::IsViewFocusableCandidate(View* v, int skip_group_id) {
 }
 
 bool FocusSearch::IsFocusable(View* v) {
-  DCHECK(root_);
+  CHECK(root_, base::NotFatalUntil::M163);
   // Sanity Check. Currently the FocusManager keyboard accessibility mode is
   // only used on Mac, for which |accessibility_mode_| is false.
-  DCHECK(!(accessibility_mode_ &&
-           root_->GetWidget()->GetFocusManager()->keyboard_accessible()));
+  CHECK(!(accessibility_mode_ &&
+          root_->GetWidget()->GetFocusManager()->keyboard_accessible()),
+        base::NotFatalUntil::M163);
   if (accessibility_mode_ ||
       root_->GetWidget()->GetFocusManager()->keyboard_accessible()) {
     return v && v->GetViewAccessibility().IsAccessibilityFocusable();

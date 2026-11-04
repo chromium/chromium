@@ -164,13 +164,13 @@ void CATransactionCoordinator::RemovePreCommitObserver(
 
 void CATransactionCoordinator::AddPostCommitObserver(
     scoped_refptr<PostCommitObserver> observer) {
-  DCHECK(!post_commit_observers_.count(observer));
+  CHECK(!post_commit_observers_.count(observer), base::NotFatalUntil::M163);
   post_commit_observers_.insert(std::move(observer));
 }
 
 void CATransactionCoordinator::RemovePostCommitObserver(
     scoped_refptr<PostCommitObserver> observer) {
-  DCHECK(post_commit_observers_.count(observer));
+  CHECK(post_commit_observers_.count(observer), base::NotFatalUntil::M163);
   post_commit_observers_.erase(std::move(observer));
 }
 

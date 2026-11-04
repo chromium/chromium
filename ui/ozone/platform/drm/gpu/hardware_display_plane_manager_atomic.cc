@@ -41,7 +41,7 @@ gfx::GpuFenceHandle CreateMergedGpuFenceFromFDs(
   for (auto& fd : fence_fds) {
     if (merged_fd.is_valid()) {
       merged_fd.reset(sync_merge("", merged_fd.get(), fd.get()));
-      DCHECK(merged_fd.is_valid());
+      CHECK(merged_fd.is_valid(), base::NotFatalUntil::M163);
     } else {
       merged_fd = std::move(fd);
     }
@@ -197,7 +197,7 @@ bool HardwareDisplayPlaneManagerAtomic::SetConnectorProps(
     uint32_t connector_id,
     uint32_t crtc_id) {
   auto connector_index = LookupConnectorIndex(connector_id);
-  DCHECK(connector_index.has_value());
+  CHECK(connector_index.has_value(), base::NotFatalUntil::M163);
   // Only making a copy here to retrieve the the props IDs. The state will be
   // updated only after a successful modeset.
   ConnectorProperties connector_props = connectors_props_[*connector_index];
@@ -260,7 +260,7 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
                           crtc_request.should_enable_crtc() * crtc_id);
 
     if (crtc_request.should_enable_crtc()) {
-      DCHECK(crtc_request.plane_list());
+      CHECK(crtc_request.plane_list(), base::NotFatalUntil::M163);
       if (!AssignOverlayPlanes(crtc_request.plane_list(),
                                crtc_request.overlays(), crtc_id)) {
         LOG_IF(ERROR, !is_testing) << "Failed to Assign Overlay Planes";
@@ -591,14 +591,14 @@ bool HardwareDisplayPlaneManagerAtomic::AddOutFencePtrProperties(
     std::vector<base::ScopedFD::Receiver>* out_fence_fd_receivers) {
   // Reserve space in vector to ensure no reallocation will take place
   // and thus all pointers to elements will remain valid
-  DCHECK(out_fence_fds->empty());
-  DCHECK(out_fence_fd_receivers->empty());
+  CHECK(out_fence_fds->empty(), base::NotFatalUntil::M163);
+  CHECK(out_fence_fd_receivers->empty(), base::NotFatalUntil::M163);
   out_fence_fds->reserve(crtcs.size());
   out_fence_fd_receivers->reserve(crtcs.size());
 
   for (uint32_t crtc : crtcs) {
     const auto crtc_index = LookupCrtcIndex(crtc);
-    DCHECK(crtc_index.has_value());
+    CHECK(crtc_index.has_value(), base::NotFatalUntil::M163);
     const auto out_fence_ptr_id =
         crtc_state_[*crtc_index].properties.out_fence_ptr.id;
 

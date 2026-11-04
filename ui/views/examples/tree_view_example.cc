@@ -154,14 +154,14 @@ void TreeViewExample::AddNewNode() {
 
 void TreeViewExample::RemoveSelectedNode() {
   ui::TreeModelNode* selected_node = tree_view_->GetSelectedNode();
-  DCHECK(selected_node);
-  DCHECK_NE(model_.GetRoot(), selected_node);
+  CHECK(selected_node, base::NotFatalUntil::M163);
+  CHECK_NE(model_.GetRoot(), selected_node, base::NotFatalUntil::M163);
   model_.Remove(selected_node->parent(), selected_node);
 }
 
 void TreeViewExample::SetSelectedNodeTitle() {
   ui::TreeModelNode* selected_node = tree_view_->GetSelectedNode();
-  DCHECK(selected_node);
+  CHECK(selected_node, base::NotFatalUntil::M163);
   model_.SetTitle(
       selected_node,
       selected_node->GetTitle() + GetStringUTF16(IDS_TREE_VIEW_NEW_NODE_LABEL));

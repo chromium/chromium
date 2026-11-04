@@ -231,7 +231,7 @@ void NativeWidgetAura::SetResizeBehaviorFromDelegate(WidgetDelegate* delegate,
 
 void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   // See Widget::InitParams::context for details.
-  DCHECK(params.parent || params.context);
+  CHECK(params.parent || params.context, base::NotFatalUntil::M163);
 
   ownership_ = params.ownership;
   if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
@@ -361,7 +361,7 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   window_->SetEventTargetingPolicy(
       params.accept_events ? aura::EventTargetingPolicy::kTargetAndDescendants
                            : aura::EventTargetingPolicy::kNone);
-  DCHECK(GetWidget()->GetRootView());
+  CHECK(GetWidget()->GetRootView(), base::NotFatalUntil::M163);
   if (params.type != Widget::InitParams::TYPE_TOOLTIP) {
     tooltip_manager_ = std::make_unique<views::TooltipManagerAura>(this);
   }
@@ -742,9 +742,10 @@ void NativeWidgetAura::Close() {
   // |window_| may already be deleted by parent window. This can happen
   // when this widget is child widget or has transient parent
   // and ownership is WIDGET_OWNS_NATIVE_WIDGET or CLIENT_OWNS_WIDGET.
-  DCHECK(window_ ||
-         ownership_ == Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET ||
-         ownership_ == Widget::InitParams::CLIENT_OWNS_WIDGET);
+  CHECK(window_ ||
+            ownership_ == Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET ||
+            ownership_ == Widget::InitParams::CLIENT_OWNS_WIDGET,
+        base::NotFatalUntil::M163);
   auto weak_this = weak_factory.GetWeakPtr();
   if (window_) {
     Hide();
@@ -954,7 +955,7 @@ void NativeWidgetAura::SetOpacity(float opacity) {
 
 void NativeWidgetAura::SetAspectRatio(const gfx::SizeF& aspect_ratio,
                                       const gfx::Size& excluded_margin) {
-  DCHECK(!aspect_ratio.IsEmpty());
+  CHECK(!aspect_ratio.IsEmpty(), base::NotFatalUntil::M163);
   if (excluded_margin.width() > 0 || excluded_margin.height() > 0) {
     NOTIMPLEMENTED_LOG_ONCE();
   }
@@ -1268,7 +1269,7 @@ bool NativeWidgetAura::HasHitTestMask() const {
 }
 
 void NativeWidgetAura::GetHitTestMask(SkPath* mask) const {
-  DCHECK(mask);
+  CHECK(mask, base::NotFatalUntil::M163);
   if (delegate_) {
     delegate_->GetHitTestMask(mask);
   }
@@ -1340,7 +1341,7 @@ void NativeWidgetAura::OnWindowRemovingFromRootWindow(aura::Window* window,
 // NativeWidgetAura, ui::EventHandler implementation:
 
 void NativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
-  DCHECK(window_);
+  CHECK(window_, base::NotFatalUntil::M163);
   // Renderer may send a key event back to us if the key event wasn't handled,
   // and the window may be invisible by that time.
   if (!window_->IsVisible()) {
@@ -1353,8 +1354,8 @@ void NativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void NativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
-  DCHECK(window_);
-  DCHECK(window_->IsVisible());
+  CHECK(window_, base::NotFatalUntil::M163);
+  CHECK(window_->IsVisible(), base::NotFatalUntil::M163);
   if (delegate_ && event->type() == ui::EventType::kMousewheel) {
     delegate_->OnMouseEvent(event);
     return;
@@ -1377,8 +1378,9 @@ void NativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void NativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
-  DCHECK(window_);
-  DCHECK(window_->IsVisible() || event->IsEndingEvent());
+  CHECK(window_, base::NotFatalUntil::M163);
+  CHECK(window_->IsVisible() || event->IsEndingEvent(),
+        base::NotFatalUntil::M163);
   if (delegate_) {
     delegate_->OnGestureEvent(event);
   }
@@ -1398,7 +1400,8 @@ void NativeWidgetAura::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  DCHECK(window_ == gained_active || window_ == lost_active);
+  CHECK(window_ == gained_active || window_ == lost_active,
+        base::NotFatalUntil::M163);
   if (GetWidget() && GetWidget()->GetFocusManager()) {
     if (window_ == gained_active) {
       GetWidget()->GetFocusManager()->RestoreFocusedView();
@@ -1626,7 +1629,7 @@ Widget::Widgets NativeWidgetPrivate::GetAllOwnedWidgets(
 // static
 void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
                                              gfx::NativeView new_parent) {
-  DCHECK(native_view != new_parent);
+  CHECK(native_view != new_parent, base::NotFatalUntil::M163);
 
   gfx::NativeView previous_parent = native_view->parent();
   if (previous_parent == new_parent) {

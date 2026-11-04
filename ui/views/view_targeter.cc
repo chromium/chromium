@@ -16,12 +16,12 @@ namespace views {
 
 ViewTargeter::ViewTargeter(ViewTargeterDelegate* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 ViewTargeter::ViewTargeter(std::unique_ptr<ViewTargeterDelegate> delegate)
     : owned_delegate_(std::move(delegate)), delegate_(owned_delegate_.get()) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 ViewTargeter::~ViewTargeter() = default;

@@ -38,7 +38,7 @@ FocusManager::FocusManager(Widget* widget,
     : widget_(widget),
       delegate_(std::move(delegate)),
       view_tracker_for_stored_view_(std::make_unique<ViewTracker>()) {
-  DCHECK(widget_);
+  CHECK(widget_, base::NotFatalUntil::M163);
 }
 
 FocusManager::~FocusManager() {
@@ -123,7 +123,7 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
                !v->GetViewAccessibility().IsAccessibilityFocusable();
       });
       View::Views::const_iterator i = std::ranges::find(views, focused_view_);
-      DCHECK(i != views.end());
+      CHECK(i != views.end(), base::NotFatalUntil::M163);
       auto index = static_cast<size_t>(i - views.begin());
       if (next && index == views.size() - 1) {
         index = 0;
@@ -177,7 +177,7 @@ void FocusManager::AdvanceFocus(bool reverse) {
 
   // Note that GetNextFocusableView may have returned a View in a different
   // FocusManager.
-  DCHECK(v.view()->GetWidget());
+  CHECK(v.view()->GetWidget(), base::NotFatalUntil::M163);
   v.view()->GetWidget()->GetFocusManager()->SetFocusedViewWithReason(
       v.view(), FocusChangeReason::kFocusTraversal);
   if (!v) {
@@ -283,7 +283,7 @@ View* FocusManager::GetNextFocusableView(View* original_starting_view,
         &new_focus_traversable, &new_starting_view);
 
     if (new_focus_traversable) {
-      DCHECK(!v);
+      CHECK(!v, base::NotFatalUntil::M163);
 
       // There is a FocusTraversable, traverse it down.
       v = FindFocusableView(new_focus_traversable, nullptr, reverse);
@@ -514,7 +514,7 @@ View* FocusManager::FindFocusableView(FocusTraversable* focus_traversable,
         FocusSearch::StartingViewPolicy::kSkipStartingView,
         can_go_into_anchored_dialog, &new_focus_traversable,
         &new_starting_view);
-    DCHECK(!new_focus_traversable || !v);
+    CHECK(!new_focus_traversable || !v, base::NotFatalUntil::M163);
     focus_traversable = std::exchange(new_focus_traversable, nullptr);
     starting_view = nullptr;
   } while (focus_traversable);
@@ -584,7 +584,7 @@ void FocusManager::ViewRemoved(View* removed) {
   // clear the focus.  However, it's not safe to call ClearFocus()
   // (and in turn ClearNativeFocus()) here because ViewRemoved() can
   // be called while the top level widget is being destroyed.
-  DCHECK(removed);
+  CHECK(removed, base::NotFatalUntil::M163);
   if (removed->Contains(focused_view_)) {
     SetFocusedView(nullptr);
   }
@@ -626,7 +626,7 @@ bool FocusManager::ProcessArrowKeyTraversal(const ui::KeyEvent& event) {
 }
 
 bool FocusManager::IsFocusableInCurrentMode(View* view) const {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M163);
 
 // |keyboard_accessible_| is only used on Mac.
 #if BUILDFLAG(IS_MAC)

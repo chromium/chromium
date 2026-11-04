@@ -53,7 +53,7 @@ void InteractionSequenceViews::NameView(ui::InteractionSequence* sequence,
   if (view) {
     element = ElementTrackerViews::GetInstance()->GetElementForView(
         view, /* assign_temporary_id =*/true);
-    DCHECK(element);
+    CHECK(element, base::NotFatalUntil::M163);
   }
   sequence->NameElement(element, name);
 }

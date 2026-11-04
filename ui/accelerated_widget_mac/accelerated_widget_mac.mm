@@ -32,12 +32,12 @@ AcceleratedWidgetMac::AcceleratedWidgetMac() {
 }
 
 AcceleratedWidgetMac::~AcceleratedWidgetMac() {
-  DCHECK(!view_);
+  CHECK(!view_, base::NotFatalUntil::M163);
   WidgetToHelperMap().erase(native_widget_);
 }
 
 void AcceleratedWidgetMac::SetNSView(AcceleratedWidgetMacNSView* view) {
-  DCHECK(view && !view_);
+  CHECK(view && !view_, base::NotFatalUntil::M163);
   view_ = view;
 }
 

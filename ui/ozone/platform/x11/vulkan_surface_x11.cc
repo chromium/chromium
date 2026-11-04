@@ -102,7 +102,8 @@ void VulkanSurfaceX11::Destroy() {
 
 bool VulkanSurfaceX11::Reshape(const gfx::Size& size,
                                gfx::OverlayTransform pre_transform) {
-  DCHECK_EQ(pre_transform, gfx::OVERLAY_TRANSFORM_NONE);
+  CHECK_EQ(pre_transform, gfx::OVERLAY_TRANSFORM_NONE,
+           base::NotFatalUntil::M163);
 
   // Vulkan WSI uses a separate xcb connection, so we need to synchronize
   // ConfigureWindow call.

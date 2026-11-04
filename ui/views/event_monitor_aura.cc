@@ -36,8 +36,9 @@ class WindowMonitorAura : public EventMonitorAura, public aura::WindowObserver {
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK_EQ(window, target_window_);
-    DCHECK(window_observation_.IsObservingSource(target_window_.get()));
+    CHECK_EQ(window, target_window_, base::NotFatalUntil::M163);
+    CHECK(window_observation_.IsObservingSource(target_window_.get()),
+          base::NotFatalUntil::M163);
     window_observation_.Reset();
     target_window_ = nullptr;
     TearDown();
@@ -73,7 +74,7 @@ EventMonitorAura::EventMonitorAura(ui::EventObserver* event_observer,
                                    ui::EventTarget* event_target,
                                    const std::set<ui::EventType>& types)
     : event_observer_(event_observer) {
-  DCHECK(event_observer_);
+  CHECK(event_observer_, base::NotFatalUntil::M163);
   aura::Env::GetInstance()->AddEventObserver(event_observer_, event_target,
                                              types);
 }

@@ -145,7 +145,8 @@ void DrmOverlayManager::CheckOverlaySupport(
 
     // CanHandleCandidate() should never return false if the candidate is
     // the primary plane.
-    DCHECK(can_handle || candidate.plane_z_order != 0);
+    CHECK(can_handle || candidate.plane_z_order != 0,
+          base::NotFatalUntil::M163);
 
     // Also verify if hardware supports required buffer format. It can happen,
     // that a system doesn't support overlays for certain buffer formats. Thus,
@@ -166,10 +167,10 @@ void DrmOverlayManager::CheckOverlaySupport(
     std::vector<OverlayStatus> status =
         SendOverlayValidationRequestSync(result_candidates, widget);
     size_t size = candidates->size();
-    DCHECK_EQ(size, status.size());
+    CHECK_EQ(size, status.size(), base::NotFatalUntil::M163);
     for (size_t i = 0; i < size; i++) {
-      DCHECK(status[i] == OVERLAY_STATUS_ABLE ||
-             status[i] == OVERLAY_STATUS_NOT);
+      CHECK(status[i] == OVERLAY_STATUS_ABLE || status[i] == OVERLAY_STATUS_NOT,
+            base::NotFatalUntil::M163);
       candidates->at(i).overlay_handled = status[i] == OVERLAY_STATUS_ABLE;
     }
     return;
@@ -203,10 +204,10 @@ void DrmOverlayManager::CheckOverlaySupport(
   } else if (value.status.back() != OVERLAY_STATUS_PENDING) {
     size_t size = candidates->size();
     const std::vector<OverlayStatus>& status = value.status;
-    DCHECK_EQ(size, status.size());
+    CHECK_EQ(size, status.size(), base::NotFatalUntil::M163);
     for (size_t i = 0; i < size; i++) {
-      DCHECK(status[i] == OVERLAY_STATUS_ABLE ||
-             status[i] == OVERLAY_STATUS_NOT);
+      CHECK(status[i] == OVERLAY_STATUS_ABLE || status[i] == OVERLAY_STATUS_NOT,
+            base::NotFatalUntil::M163);
       candidates->at(i).overlay_handled = status[i] == OVERLAY_STATUS_ABLE;
     }
   }
@@ -222,7 +223,7 @@ void DrmOverlayManager::RegisterOverlayRequirement(
 }
 
 void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
-  DCHECK(!in_flight_overlay_types_.empty());
+  CHECK(!in_flight_overlay_types_.empty(), base::NotFatalUntil::M163);
   auto committed_overlay_types = std::move(in_flight_overlay_types_.front());
   in_flight_overlay_types_.pop_front();
 }

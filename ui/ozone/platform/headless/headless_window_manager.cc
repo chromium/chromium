@@ -12,7 +12,7 @@ namespace ui {
 HeadlessWindowManager::HeadlessWindowManager() = default;
 
 HeadlessWindowManager::~HeadlessWindowManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 gfx::AcceleratedWidget HeadlessWindowManager::AddWindow(
@@ -22,7 +22,7 @@ gfx::AcceleratedWidget HeadlessWindowManager::AddWindow(
 
 void HeadlessWindowManager::RemoveWindow(gfx::AcceleratedWidget widget,
                                          HeadlessWindow* window) {
-  DCHECK_EQ(window, windows_.Lookup(widget));
+  CHECK_EQ(window, windows_.Lookup(widget), base::NotFatalUntil::M163);
   windows_.Remove(widget);
 }
 

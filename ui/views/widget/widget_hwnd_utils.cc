@@ -52,7 +52,8 @@ WindowStyles CalculateWindowStylesFromInitParams(
   if (!params.accept_events) {
     styles.ex_style |= WS_EX_TRANSPARENT;
   }
-  DCHECK_NE(Widget::InitParams::Activatable::kDefault, params.activatable);
+  CHECK_NE(Widget::InitParams::Activatable::kDefault, params.activatable,
+           base::NotFatalUntil::M163);
   if (params.activatable == Widget::InitParams::Activatable::kNo) {
     styles.ex_style |= WS_EX_NOACTIVATE;
   }

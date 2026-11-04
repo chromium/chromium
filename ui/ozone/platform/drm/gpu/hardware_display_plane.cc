@@ -211,7 +211,7 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   InitializeProperties(drm);
 
   ScopedDrmPlanePtr drm_plane(drm->GetPlane(id_));
-  DCHECK(drm_plane);
+  CHECK(drm_plane, base::NotFatalUntil::M163);
 
   possible_crtc_ids_ =
       drm->plane_manager()->CrtcMaskToCrtcIds(drm_plane->possible_crtcs);

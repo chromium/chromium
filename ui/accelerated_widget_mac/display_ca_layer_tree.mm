@@ -157,7 +157,7 @@ void DisplayCALayerTree::GotIOSurfaceFrame(
     base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
     const gfx::Size& dip_size,
     float scale_factor) {
-  DCHECK(io_surface);
+  CHECK(io_surface, base::NotFatalUntil::M163);
   TRACE_EVENT0("ui", "DisplayCALayerTree::GotIOSurfaceFrame");
   ScopedCAActionDisabler disabler;
 

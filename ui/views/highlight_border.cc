@@ -55,7 +55,7 @@ SkColor HighlightBorder::GetHighlightColor(const views::View& view,
   }
 
   // `view` should be embedded in a Widget to use color provider.
-  DCHECK(view.GetWidget());
+  CHECK(view.GetWidget(), base::NotFatalUntil::M163);
   return view.GetColorProvider()->GetColor(highlight_color_id);
 }
 
@@ -73,7 +73,7 @@ SkColor HighlightBorder::GetBorderColor(const views::View& view,
   }
 
   // `view` should be embedded in a Widget to use color provider.
-  DCHECK(view.GetWidget());
+  CHECK(view.GetWidget(), base::NotFatalUntil::M163);
   return view.GetColorProvider()->GetColor(border_color_id);
 }
 

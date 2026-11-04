@@ -650,7 +650,7 @@ std::optional<TileProperty> DrmDisplay::GetTileProperty() const {
 const DrmDisplay::CrtcConnectorPair*
 DrmDisplay::GetCrtcConnectorPairForConnectorId(uint32_t connector_id) const {
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
-    DCHECK(crtc_connector_pair.connector);
+    CHECK(crtc_connector_pair.connector, base::NotFatalUntil::M163);
 
     if (crtc_connector_pair.connector->connector_id == connector_id) {
       return &crtc_connector_pair;

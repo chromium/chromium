@@ -55,7 +55,7 @@ GLSurfaceCast::GLSurfaceCast(gl::GLDisplayEGL* display,
       parent_(parent),
       uses_triple_buffering_(
           chromecast::IsFeatureEnabled(chromecast::kTripleBuffer720)) {
-  DCHECK(parent_);
+  CHECK(parent_, base::NotFatalUntil::M163);
 }
 
 bool GLSurfaceCast::Resize(const gfx::Size& size,

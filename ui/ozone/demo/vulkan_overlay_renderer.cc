@@ -176,7 +176,7 @@ void VulkanOverlayRenderer::RenderFrame() {
   next_buffer_++;
   next_buffer_ %= std::size(buffers_);
   ++in_use_buffers_;
-  DCHECK_LE(in_use_buffers_, std::size(buffers_));
+  CHECK_LE(in_use_buffers_, std::size(buffers_), base::NotFatalUntil::M163);
 
   gpu::VulkanCommandBuffer& command_buffer = *buffer.command_buffer();
 

@@ -1829,7 +1829,8 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, OnNativeWidgetCreated) {
-  EXPECT_DCHECK_DEATH(widget()->OnNativeWidgetCreated());
+  EXPECT_CHECK_DEATH(widget()->OnNativeWidgetCreated(),
+                     base::NotFatalUntil::M163);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
@@ -1839,7 +1840,8 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
        OnNativeWidgetDestroying) {
-  EXPECT_DCHECK_DEATH(widget()->OnNativeWidgetDestroying());
+  EXPECT_CHECK_DEATH(widget()->OnNativeWidgetDestroying(),
+                     base::NotFatalUntil::M163);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
@@ -1973,8 +1975,9 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ReorderNativeViews) {
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ReparentNativeView) {
-  EXPECT_DCHECK_DEATH(
-      Widget::ReparentNativeView(widget()->GetNativeView(), gfx::NativeView()));
+  EXPECT_CHECK_DEATH(
+      Widget::ReparentNativeView(widget()->GetNativeView(), gfx::NativeView()),
+      base::NotFatalUntil::M163);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Restore) {
@@ -2161,7 +2164,8 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ThemeChanged) {
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, UnlockPaintAsActive) {
   // UnlockPaintAsActive() is called in the destructor of PaintAsActiveLock.
   // External invocation is not allowed.
-  EXPECT_DCHECK_DEATH(widget()->UnlockPaintAsActive());
+  EXPECT_CHECK_DEATH(widget()->UnlockPaintAsActive(),
+                     base::NotFatalUntil::M163);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, UpdateWindowIcon) {
