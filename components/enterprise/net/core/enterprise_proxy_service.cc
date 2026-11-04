@@ -4,6 +4,7 @@
 
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 
+#include <optional>
 #include <set>
 #include <string_view>
 #include <utility>
@@ -28,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "net/base/auth.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -41,6 +43,12 @@ namespace {
 constexpr std::string_view kDisguisedErrorCodes[] = {
     "403", "500", "502", "503", "504",
 };
+
+// Basic auth username key carrying the browser user agent. Secure Gateway
+// ignores standard headers such as `user-agent` when they are encoded in the
+// credentials, and reads this key when the CONNECT request has no User-Agent
+// header.
+constexpr char kUserAgentCredentialKey[] = "x-user-agent";
 
 std::string_view DecisionToString(
     EnterpriseProxyService::ProxyAuthChallengeMatch::Decision decision) {
@@ -203,17 +211,21 @@ EnterpriseProxyService::EnterpriseProxyService(
     EnterpriseNetworkAuthService* auth_service,
     GetURLLoaderFactoryCallback url_loader_factory_callback,
     enterprise::ProfileIdService* profile_id_service,
-    net::NetLog* net_log)
+    net::NetLog* net_log,
+    std::optional<std::string> user_agent)
     : pref_service_(pref_service),
       auth_service_(auth_service),
       url_loader_factory_callback_(std::move(url_loader_factory_callback)),
       profile_id_service_(profile_id_service),
+      user_agent_(std::move(user_agent)),
       net_log_(net::NetLogWithSource::Make(
           net_log,
           net::NetLogSourceType::ENTERPRISE_PROXY_SERVICE)) {
   CHECK(pref_service_);
   CHECK(auth_service_);
   CHECK(url_loader_factory_callback_);
+  CHECK(!user_agent_.has_value() ||
+        net::HttpUtil::IsValidHeaderValue(*user_agent_));
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
   auth_service_observation_.Observe(auth_service_);
   pref_change_registrar_.Init(pref_service_);
@@ -621,6 +633,12 @@ std::string EnterpriseProxyService::BuildBasicAuthUsername(
   net::HttpRequestHeaders resolved_proxy_headers =
       ResolveExtraHeadersWithValues(proxy_headers, profile_id,
                                     accept_languages);
+  if (user_agent_.has_value()) {
+    // Secure Gateway matches the key case-sensitively, and `SetHeader()` would
+    // keep the casing of a PvD entry, so that entry is removed first.
+    resolved_proxy_headers.RemoveHeader(kUserAgentCredentialKey);
+    resolved_proxy_headers.SetHeader(kUserAgentCredentialKey, *user_agent_);
+  }
 
   std::vector<std::string> query_params;
   for (const auto& [key, val] : resolved_proxy_headers.GetHeaderVector()) {

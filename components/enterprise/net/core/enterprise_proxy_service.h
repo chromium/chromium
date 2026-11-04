@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_NET_CORE_ENTERPRISE_PROXY_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -135,12 +136,15 @@ class EnterpriseProxyService
     net::NetLogWithSource net_log;
   };
 
+  // Pass `user_agent` only if the network stack sends no User-Agent header on
+  // proxy CONNECT requests (iOS). It must be a valid header value.
   EnterpriseProxyService(
       PrefService* pref_service,
       EnterpriseNetworkAuthService* auth_service,
       GetURLLoaderFactoryCallback url_loader_factory_callback,
       enterprise::ProfileIdService* profile_id_service = nullptr,
-      net::NetLog* net_log = nullptr);
+      net::NetLog* net_log = nullptr,
+      std::optional<std::string> user_agent = std::nullopt);
 
   EnterpriseProxyService(const EnterpriseProxyService&) = delete;
   EnterpriseProxyService& operator=(const EnterpriseProxyService&) = delete;
@@ -252,7 +256,9 @@ class EnterpriseProxyService
 
   // Resolves variable placeholders (e.g. `${profile_id}`, `${accept_language}`)
   // in the proxy endpoint extra headers and formats them as URL-escaped query
-  // parameters to be used as the Basic Auth username.
+  // parameters to be used as the Basic Auth username. Adds `user_agent_`, if
+  // set, as `x-user-agent`, replacing any PvD entry for that key regardless of
+  // its casing.
   std::string BuildBasicAuthUsername(
       const std::vector<ProxyExtraHeader>& proxy_headers) const;
 
@@ -269,6 +275,9 @@ class EnterpriseProxyService
   GetURLLoaderFactoryCallback url_loader_factory_callback_;
 
   const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
+
+  // User agent embedded in proxy credentials. A valid header value when set.
+  const std::optional<std::string> user_agent_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
