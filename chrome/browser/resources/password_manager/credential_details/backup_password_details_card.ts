@@ -4,28 +4,24 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import '../cr_input_style.css.js';
-import '../shared_style.css.js';
-import './credential_details_card.css.js';
 import './credential_field.js';
 import './credential_note.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ValueCopiedEvent} from '../password_manager_app.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
-import {ShowPasswordMixin} from '../show_password_mixin.js';
+import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
 
-import {getTemplate} from './backup_password_details_card.html.js';
+import {getCss} from './backup_password_details_card.css.js';
+import {getHtml} from './backup_password_details_card.html.js';
 import type {CredentialFieldElement} from './credential_field.js';
 import type {CredentialNoteElement} from './credential_note.js';
 
@@ -45,14 +41,13 @@ export interface BackupPasswordDetailsCardElement {
     domainLabel: HTMLElement,
     passwordValue: CrInputElement,
     noteValue: CredentialNoteElement,
-    showMore: HTMLAnchorElement,
     showPasswordButton: CrIconButtonElement,
     usernameValue: CredentialFieldElement,
   };
 }
 
 const BackupPasswordDetailsCardElementBase =
-    ShowPasswordMixin(I18nMixin(PolymerElement));
+    ShowPasswordMixinLit(I18nMixinLit(CrLitElement));
 
 export class BackupPasswordDetailsCardElement extends
     BackupPasswordDetailsCardElementBase {
@@ -60,27 +55,30 @@ export class BackupPasswordDetailsCardElement extends
     return 'backup-password-details-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      password: {
-        type: Object,
-        observer: 'onPasswordChanged_',
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      interactionsEnum_: {
-        type: Object,
-        value: PasswordViewPageInteractions,
-      },
+  static override get properties() {
+    return {
+      password: {type: Object},
     };
   }
 
-  declare password: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor password: chrome.passwordsPrivate.PasswordUiEntry;
 
-  private getNoteValue_(): string|undefined {
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('password')) {
+      this.isPasswordVisible = false;
+    }
+  }
+
+  protected getNoteValue_(): string {
     assert(this.password.backupPassword);
     const brandingName = this.i18n('localPasswordManager');
     const detailsHeading = this.i18n('passwordDetailsCardBackupPasswordNote');
@@ -91,7 +89,7 @@ export class BackupPasswordDetailsCardElement extends
     return `${detailsHeading}\n\n${detailsContent}`;
   }
 
-  private onCopyPasswordClick_() {
+  protected onCopyPasswordClick_() {
     PasswordManagerImpl.getInstance()
         .copyPlaintextBackupPassword(this.password.id)
         .then(success => {
@@ -104,22 +102,19 @@ export class BackupPasswordDetailsCardElement extends
         PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED);
   }
 
-  private onShowPasswordClick_() {
+  protected onShowPasswordClick_() {
     this.onShowHidePasswordButtonClick();
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED);
   }
 
-  private onDeleteClick_() {
+  protected onDeleteClick_() {
     PasswordManagerImpl.getInstance().removeBackupPassword(this.password.id);
-    this.dispatchEvent(new CustomEvent('backup-password-removed', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('backup-password-removed');
     return;
   }
 
-  private getDomainLabel_(): string {
+  protected getDomainLabel_(): string {
     const hasApps = this.password.affiliatedDomains?.some(
         domain => domain.signonRealm.startsWith('android://'));
     const hasSites = this.password.affiliatedDomains?.some(
@@ -131,11 +126,7 @@ export class BackupPasswordDetailsCardElement extends
   }
 
   private showToast_(message: string) {
-    this.dispatchEvent(new CustomEvent('value-copied', {
-      bubbles: true,
-      composed: true,
-      detail: {toastMessage: message},
-    }));
+    this.fire('value-copied', {toastMessage: message});
   }
 
 
@@ -143,7 +134,7 @@ export class BackupPasswordDetailsCardElement extends
     return this.i18n('passwordLabel');
   }
 
-  private getAriaLabelForBackupPasswordCard_(): string {
+  protected getAriaLabelForBackupPasswordCard_(): string {
     return this.password.username ?
         this.i18n(
             'backupPasswordDetailsCardAriaLabel',
@@ -151,7 +142,7 @@ export class BackupPasswordDetailsCardElement extends
         this.getCredentialTypeString_();
   }
 
-  private getAriaLabelForDeleteButton_(): string {
+  protected getAriaLabelForDeleteButton_(): string {
     return this.password.username ?
         this.i18n(
             'passwordDetailsCardDeleteButtonAriaLabel',
@@ -159,10 +150,6 @@ export class BackupPasswordDetailsCardElement extends
         this.i18n(
             'passwordDetailsCardDeleteButtonNoUsernameAriaLabel',
             this.getCredentialTypeString_());
-  }
-
-  private onPasswordChanged_(): void {
-    this.isPasswordVisible = false;
   }
 }
 

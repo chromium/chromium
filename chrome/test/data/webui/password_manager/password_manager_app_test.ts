@@ -168,13 +168,9 @@ suite('PasswordManagerAppTest', function() {
         app.shadowRoot!.querySelector('password-details-section');
     assertTrue(!!detailsSection);
 
-    detailsSection.dispatchEvent(new CustomEvent('password-removed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        removedFromStores: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
-      },
-    }));
+    detailsSection.fire('password-removed', {
+      removedFromStores: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+    });
 
     assertTrue(app.$.toast.open);
     const undoButton = app.shadowRoot!.querySelector<HTMLElement>('#undo');
@@ -201,10 +197,7 @@ suite('PasswordManagerAppTest', function() {
         app.shadowRoot!.querySelector('password-details-section');
     assertTrue(!!detailsSection);
 
-    detailsSection.dispatchEvent(new CustomEvent('passkey-removed', {
-      bubbles: true,
-      composed: true,
-    }));
+    detailsSection.fire('passkey-removed');
 
     assertTrue(app.$.toast.open);
 
@@ -232,14 +225,10 @@ suite('PasswordManagerAppTest', function() {
         app.shadowRoot!.querySelector('password-details-section');
     assertTrue(!!detailsSection);
     await flushTasks();
-    detailsSection.dispatchEvent(new CustomEvent('passwords-moved', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        accountEmail: testEmail,
-        numberOfPasswords: 1,
-      },
-    }));
+    detailsSection.fire('passwords-moved', {
+      accountEmail: testEmail,
+      numberOfPasswords: 1,
+    });
     await flushTasks();
     assertTrue(app.$.toast.open);
     const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
@@ -268,24 +257,16 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!detailsSection);
 
     // Copy password.
-    detailsSection.dispatchEvent(new CustomEvent('value-copied', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        toastMessage: 'Password copied!',
-      },
-    }));
+    detailsSection.fire('value-copied', {
+      toastMessage: 'Password copied!',
+    });
     await flushTasks();
     assertTrue(app.$.toast.open);
 
     // Copy username.
-    detailsSection.dispatchEvent(new CustomEvent('value-copied', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        toastMessage: VALUE_COPIED_TOAST_LABEL,
-      },
-    }));
+    detailsSection.fire('value-copied', {
+      toastMessage: VALUE_COPIED_TOAST_LABEL,
+    });
 
     await flushTasks();
     assertEquals(app.shadowRoot!.querySelectorAll('cr-toast').length, 1);

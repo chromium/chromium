@@ -4,104 +4,98 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../cr_input_style.css.js';
-import '../shared_style.css.js';
-import './credential_details_card.css.js';
 import './credential_field.js';
 import '../dialogs/edit_passkey_dialog.js';
 import '../dialogs/delete_passkey_dialog.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
-import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import type {CredentialFieldElement} from './credential_field.js';
-import {getTemplate} from './passkey_details_card.html.js';
+import {getCss} from './passkey_details_card.css.js';
+import {getHtml} from './passkey_details_card.html.js';
 
 export interface PasskeyDetailsCardElement {
   $: {
     deleteButton: CrButtonElement,
     domainLabel: HTMLElement,
     editButton: CrButtonElement,
-    showMore: HTMLAnchorElement,
     usernameValue: CredentialFieldElement,
     displayNameValue: CredentialFieldElement,
     infoLabelContent: HTMLElement,
   };
 }
 
-const PasskeyDetailsCardElementBase = UserUtilMixin(I18nMixin(PolymerElement));
+const PasskeyDetailsCardElementBase = I18nMixinLit(CrLitElement);
 
 export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   static get is() {
     return 'passkey-details-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      passkey: Object,
-      interactionsEnum_: {
-        type: Object,
-        value: PasswordViewPageInteractions,
-      },
-      showEditPasskeyDialog_: Boolean,
-      showDeletePasskeyDialog_: Boolean,
+      passkey: {type: Object},
+      showEditPasskeyDialog_: {type: Boolean},
+      showDeletePasskeyDialog_: {type: Boolean},
     };
   }
 
-  declare passkey: chrome.passwordsPrivate.PasswordUiEntry;
-  declare private showEditPasskeyDialog_: boolean;
-  declare private showDeletePasskeyDialog_: boolean;
+  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  protected accessor showEditPasskeyDialog_: boolean = false;
+  protected accessor showDeletePasskeyDialog_: boolean = false;
 
-  private getUsernameValue_(): string {
+  protected getUsernameValue_(): string {
     return !this.passkey.username || this.passkey.username === '' ?
         this.i18n('usernamePlaceholder') :
         this.passkey.username;
   }
 
-  private getDisplayNameValue_(): string {
+  protected getDisplayNameValue_(): string {
     return !this.passkey.displayName || this.passkey.displayName === '' ?
         this.i18n('displayNamePlaceholder') :
         this.passkey.displayName;
   }
 
-  private onDeleteClick_() {
+  protected onDeleteClick_() {
     this.showDeletePasskeyDialog_ = true;
     PasswordManagerImpl.getInstance().extendAuthValidity();
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSKEY_DELETE_BUTTON_CLICKED);
   }
 
-  private onDeletePasskeyDialogClosed_() {
+  protected onDeletePasskeyDialogClose_() {
     this.showDeletePasskeyDialog_ = false;
     PasswordManagerImpl.getInstance().extendAuthValidity();
   }
 
-  private onEditClicked_() {
+  protected onEditClick_() {
     this.showEditPasskeyDialog_ = true;
     PasswordManagerImpl.getInstance().extendAuthValidity();
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSKEY_EDIT_BUTTON_CLICKED);
   }
 
-  private onEditPasskeyDialogClosed_() {
+  protected onEditPasskeyDialogClose_() {
     this.showEditPasskeyDialog_ = false;
     PasswordManagerImpl.getInstance().extendAuthValidity();
   }
 
-  private getAriaLabelForPasswordCard_(): string {
+  protected getAriaLabelForPasswordCard_(): string {
     return !this.passkey.username ?
         this.i18n('passkeyDetailsCardNoUsernameAriaLabel') :
         this.i18n(
@@ -109,7 +103,7 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
             htmlEscape(this.passkey.username));
   }
 
-  private getAriaLabelForEditButton_(): string {
+  protected getAriaLabelForEditButton_(): string {
     return !this.passkey.username ?
         this.i18n('passkeyDetailsCardEditButtonNoUsernameAriaLabel') :
         this.i18n(
@@ -117,7 +111,7 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
             htmlEscape(this.passkey.username));
   }
 
-  private getAriaLabelForDeleteButton_(): string {
+  protected getAriaLabelForDeleteButton_(): string {
     return !this.passkey.username ?
         this.i18n('passkeyDetailsCardDeleteButtonNoUsernameAriaLabel') :
         this.i18n(
@@ -125,7 +119,7 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
             htmlEscape(this.passkey.username));
   }
 
-  private getInfoLabelText_() {
+  protected getInfoLabelText_() {
     if (this.passkey.hidden) {
       return this.i18nAdvanced('passkeyHiddenInfoLabel', {
         substitutions: [this.passkey.affiliatedDomains[0].name],

@@ -1,78 +1,69 @@
-<style include="shared-style cr-input-style cr-shared-style
-                credential-details-card cr-icons">
-  #passkeyIcon {
-    margin: auto 2px auto 0;
-  }
-  #infoLabelContent {
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-</style>
-<div class="card" aria-label="[[getAriaLabelForPasswordCard_(passkey)]]"
+<!-- #html_wrapper_imports_start
+import {PasswordViewPageInteractions} from '../password_manager_proxy.js';
+#html_wrapper_imports_end -->
+<div class="card" aria-label="${this.getAriaLabelForPasswordCard_()}"
     role="region">
   <div class="credential-container">
     <div class="row-container">
       <div class="column-container">
-        <credential-field value="[[getDisplayNameValue_(passkey)]]"
+        <credential-field value="${this.getDisplayNameValue_()}"
             id="displayNameValue" label="$i18n{displayNameLabel}"
             copy-button-label="$i18n{copyDisplayName}"
             value-copied-toast-label="$i18n{displayNameCopiedToClipboard}"
-            interaction-id="[[
-                interactionsEnum_.PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED]]">
+            .interactionId="${PasswordViewPageInteractions
+                .PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED}">
         </credential-field>
       </div>
       <div class="column-container">
         <div id="domainLabel" class="cr-form-field-label">
           $i18n{sitesLabel}
         </div>
-        <template id="links" is="dom-repeat"
-            items="[[passkey.affiliatedDomains]]">
+        ${this.passkey.affiliatedDomains.map(item => html`
           <div class="elide-left">
-            <a href="[[item.url]]" class="site-link" target="_blank">
-              [[item.name]]
+            <a href="${item.url}" class="site-link" target="_blank">
+              ${item.name}
             </a>
           </div>
-        </template>
+        `)}
       </div>
     </div>
     <div class="row-container">
       <div class="column-container">
-        <credential-field value="[[getUsernameValue_(passkey)]]"
+        <credential-field value="${this.getUsernameValue_()}"
             id="usernameValue" label="$i18n{usernameLabel}"
             copy-button-label="$i18n{copyUsername}"
             value-copied-toast-label="$i18n{usernameCopiedToClipboard}"
-            interaction-id="[[interactionsEnum_.USERNAME_COPY_BUTTON_CLICKED]]">
+            .interactionId="${
+                PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED}">
         </credential-field>
       </div>
     </div>
     <div class="row-container">
-      <cr-icon icon="[[getPasskeyIcon_()]]" id="passkeyIcon"></cr-icon>
+      <cr-icon icon="${this.getPasskeyIcon_()}" id="passkeyIcon"></cr-icon>
       <div id="infoLabelContent" class="cr-secondary-text"
-          inner-h-t-m-l="[[getInfoLabelText_(passkey)]]">
+          .innerHTML="${this.getInfoLabelText_()}">
       </div>
     </div>
   </div>
   <div class="button-container">
-    <cr-button id="editButton" class="edit-button" on-click="onEditClicked_"
-        aria-label="[[getAriaLabelForEditButton_(passkey)]]"
-        disabled="[[passkey.hidden]]">
+    <cr-button id="editButton" class="edit-button" @click="${this.onEditClick_}"
+        aria-label="${this.getAriaLabelForEditButton_()}"
+        ?disabled="${this.passkey.hidden}">
       $i18n{edit}
     </cr-button>
-    <cr-button id="deleteButton" on-click="onDeleteClick_"
-        aria-label="[[getAriaLabelForDeleteButton_(passkey)]]">
+    <cr-button id="deleteButton" @click="${this.onDeleteClick_}"
+        aria-label="${this.getAriaLabelForDeleteButton_()}">
       $i18n{delete}
     </cr-button>
   </div>
 </div>
-<template is="dom-if" if="[[showEditPasskeyDialog_]]" restamp
-          id="editPasskeyTemplate">
-  <edit-passkey-dialog on-close="onEditPasskeyDialogClosed_"
-      id="editPasskeyDialog" passkey="{{passkey}}">
+${this.showEditPasskeyDialog_ ? html`
+  <edit-passkey-dialog @close="${this.onEditPasskeyDialogClose_}"
+      id="editPasskeyDialog" .passkey="${this.passkey}">
   </edit-passkey-dialog>
-</template>
-<template is="dom-if" if="[[showDeletePasskeyDialog_]]" restamp
-          id="deletePasskeyTemplate">
-  <delete-passkey-dialog on-close="onDeletePasskeyDialogClosed_"
-      id="deletePasskeyDialog" passkey="{{passkey}}">
+` : ''}
+${this.showDeletePasskeyDialog_ ? html`
+  <delete-passkey-dialog @close="${this.onDeletePasskeyDialogClose_}"
+      id="deletePasskeyDialog" .passkey="${this.passkey}">
   </delete-passkey-dialog>
-</template>
+` : ''}

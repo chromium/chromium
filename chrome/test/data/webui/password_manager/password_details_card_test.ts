@@ -10,7 +10,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -30,7 +29,7 @@ async function createCardElement(
   const card = document.createElement('password-details-card');
   card.password = password;
   document.body.appendChild(card);
-  await flushTasks();
+  await microtasksFinished();
   return card;
 }
 
@@ -55,7 +54,6 @@ suite('PasswordDetailsCardTest', function() {
     SyncBrowserProxyImpl.setInstance(syncProxy);
     metrics = fakeMetricsPrivate();
     Router.getInstance().navigateTo(Page.PASSWORDS);
-    return flushTasks();
   });
 
   test('Content displayed properly', async function() {
@@ -113,8 +111,6 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(
         PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
-
-    await flushTasks();
   });
 
   test('Links properly displayed', async function() {
@@ -128,7 +124,7 @@ suite('PasswordDetailsCardTest', function() {
     const card = await createCardElement(password);
 
     const listItemElements =
-        card.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
+        card.shadowRoot.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(listItemElements.length, password.affiliatedDomains.length);
 
     password.affiliatedDomains.forEach((expectedDomain, i) => {
@@ -158,6 +154,7 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(
         PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
+    await microtasksFinished();
 
     assertEquals(
         loadTimeData.getString('hidePassword'),
@@ -181,11 +178,9 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(
         PasswordViewPageInteractions.PASSWORD_EDIT_BUTTON_CLICKED,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
-    await flushTasks();
 
-    const editDialog =
-        card.shadowRoot!.querySelector<EditPasswordDialogElement>(
-            'edit-password-dialog');
+    const editDialog = card.shadowRoot.querySelector<EditPasswordDialogElement>(
+        'edit-password-dialog');
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
   });
@@ -234,13 +229,13 @@ suite('PasswordDetailsCardTest', function() {
                 assertTrue(isVisible(card.$.deleteButton));
 
                 card.$.deleteButton.click();
-                await flushTasks();
+                await microtasksFinished();
 
                 // Verify that password was not deleted immediately.
                 assertEquals(
                     0, passwordManager.getCallCount('removeCredential'));
 
-                const deleteDialog = card.shadowRoot!.querySelector(
+                const deleteDialog = card.shadowRoot.querySelector(
                     'multi-store-delete-password-dialog');
                 assertTrue(!!deleteDialog);
                 assertTrue(deleteDialog.$.dialog.open);
@@ -250,12 +245,12 @@ suite('PasswordDetailsCardTest', function() {
 
                 if (store === chrome.passwordsPrivate.PasswordStoreSet.DEVICE) {
                   deleteDialog.$.removeFromAccountCheckbox.click();
-                  await deleteDialog.$.removeFromAccountCheckbox.updateComplete;
+                  await microtasksFinished();
                 } else if (
                     store ===
                     chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT) {
                   deleteDialog.$.removeFromDeviceCheckbox.click();
-                  await deleteDialog.$.removeFromDeviceCheckbox.updateComplete;
+                  await microtasksFinished();
                 }
                 deleteDialog.$.removeButton.click();
 
@@ -283,13 +278,13 @@ suite('PasswordDetailsCardTest', function() {
     assertTrue(isVisible(card.$.deleteButton));
 
     card.$.deleteButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify that password was not deleted immediately.
     assertEquals(0, passwordManager.getCallCount('removeCredential'));
 
     const deleteDialog =
-        card.shadowRoot!.querySelector('multi-store-delete-password-dialog');
+        card.shadowRoot.querySelector('multi-store-delete-password-dialog');
     assertTrue(!!deleteDialog);
     assertTrue(deleteDialog.$.dialog.open);
     deleteDialog.$.removeFromAccountCheckbox.click();
@@ -377,14 +372,14 @@ suite('PasswordDetailsCardTest', function() {
             card.i18n('passwordLabel'), 'vik'),
         card.$.shareButton.getAttribute('aria-label'));
 
-    assertFalse(!!card.shadowRoot!.querySelector('share-password-flow'));
+    assertFalse(!!card.shadowRoot.querySelector('share-password-flow'));
 
     // Share flow should become available after the button click.
     card.$.shareButton.click();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
-    const shareFlow = card.shadowRoot!.querySelector('share-password-flow');
+    const shareFlow = card.shadowRoot.querySelector('share-password-flow');
     assertTrue(!!shareFlow);
   });
 
@@ -430,7 +425,7 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(isVisible(card.$.shareButton));
 
     const sharePasswordFlow =
-        card.shadowRoot!.querySelector('share-password-flow');
+        card.shadowRoot.querySelector('share-password-flow');
     assertFalse(!!sharePasswordFlow);
   });
 
@@ -444,7 +439,7 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(isVisible(card.$.shareButton));
 
     const sharePasswordFlow =
-        card.shadowRoot!.querySelector('share-password-flow');
+        card.shadowRoot.querySelector('share-password-flow');
     assertFalse(!!sharePasswordFlow);
   });
   // </if>
@@ -462,13 +457,14 @@ suite('PasswordDetailsCardTest', function() {
     card.isPasswordVisible = true;
 
     card.password = password2;
+    await microtasksFinished();
     assertFalse(card.isPasswordVisible);
   });
 
   test('Move password container content displayed properly', async function() {
     const card = await createCardElement();
     card.isUsingAccountStore = true;
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(isChildVisible(card, '.move-password-container'));
     assertTrue(isChildVisible(card, '#uploadSinglePasswordIcon'));
@@ -485,13 +481,12 @@ suite('PasswordDetailsCardTest', function() {
 
         const card = await createCardElement();
         card.isUsingAccountStore = true;
-        await flushTasks();
+        await microtasksFinished();
 
-        const movePasswordButton = card.shadowRoot!.querySelector<HTMLElement>(
-            '#uploadPasswordButton');
+        const movePasswordButton =
+            card.shadowRoot.querySelector<HTMLElement>('#uploadPasswordButton');
         assertTrue(!!movePasswordButton);
         movePasswordButton.click();
-        await flushTasks();
 
         const movedIds =
             await passwordManager.whenCalled('movePasswordsToAccount');
@@ -521,16 +516,16 @@ suite('PasswordDetailsCardTest', function() {
 
     const card = await createCardElement(password);
 
-    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    const banner = card.shadowRoot.querySelector('#warningContainer');
     assertTrue(!!banner);
     assertTrue(isVisible(banner as HTMLElement));
 
     const warningIcon =
-        card.shadowRoot!.querySelector<HTMLElement>('#warningIcon');
+        card.shadowRoot.querySelector<HTMLElement>('#warningIcon');
     assertTrue(!!warningIcon);
     assertEquals('cr:error', warningIcon.getAttribute('icon'));
 
-    const warningDesc = card.shadowRoot!.querySelector('#warningDesc');
+    const warningDesc = card.shadowRoot.querySelector('#warningDesc');
     assertTrue(!!warningDesc);
     assertTrue(isVisible(warningDesc as HTMLElement));
     assertEquals(
@@ -545,7 +540,7 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(Page.CHECKUP, Router.getInstance().currentRoute.page);
 
     const changePasswordButton =
-        card.shadowRoot!.querySelector<HTMLElement>('#changePasswordButton');
+        card.shadowRoot.querySelector<HTMLElement>('#changePasswordButton');
     assertTrue(!!changePasswordButton);
     assertTrue(isVisible(changePasswordButton));
 
@@ -574,7 +569,7 @@ suite('PasswordDetailsCardTest', function() {
 
     const card = await createCardElement(password);
 
-    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    const banner = card.shadowRoot.querySelector('#warningContainer');
     assertFalse(!!banner);
   });
 
@@ -597,7 +592,7 @@ suite('PasswordDetailsCardTest', function() {
 
         const card = await createCardElement(password);
 
-        const banner = card.shadowRoot!.querySelector('#warningContainer');
+        const banner = card.shadowRoot.querySelector('#warningContainer');
         assertFalse(!!banner);
       });
 
@@ -617,7 +612,7 @@ suite('PasswordDetailsCardTest', function() {
 
     const card = await createCardElement(password);
 
-    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    const banner = card.shadowRoot.querySelector('#warningContainer');
     assertFalse(!!banner);
   });
 
@@ -637,7 +632,7 @@ suite('PasswordDetailsCardTest', function() {
 
     const card = await createCardElement(password);
 
-    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    const banner = card.shadowRoot.querySelector('#warningContainer');
     assertFalse(!!banner);
   });
 });

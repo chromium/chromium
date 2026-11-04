@@ -8,8 +8,7 @@ import 'chrome://password-manager/password_manager.js';
 import type {PasskeyDetailsCardElement, BackupPasswordDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -18,7 +17,6 @@ import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry, make
 
 // <if expr="_google_chrome">
 import {PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID} from 'chrome://password-manager/password_manager.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 // </if>
 // clang-format on
 
@@ -38,20 +36,19 @@ suite('PasswordDetailsSectionTest', function() {
     syncProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncProxy);
     Router.getInstance().navigateTo(Page.PASSWORDS);
-    return flushTasks();
   });
 
   test('Navigation from passwords section', async function() {
     const section: PasswordDetailsSectionElement =
         document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
 
     // Simulate navigation from passwords list.
     const group = createCredentialGroup({name: 'test.com'});
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+    await microtasksFinished();
 
-    const title = section.shadowRoot!.querySelector('#title');
+    const title = section.$.title;
     assertTrue(!!title);
     assertEquals(group.name, title.textContent.trim());
   });
@@ -83,7 +80,7 @@ suite('PasswordDetailsSectionTest', function() {
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
     assertArrayEquals(
         [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
-    await flushTasks();
+    await microtasksFinished();
 
     const title = section.$.title;
     assertTrue(!!title);
@@ -99,7 +96,7 @@ suite('PasswordDetailsSectionTest', function() {
         document.createElement('password-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getCredentialGroups');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
   });
@@ -126,19 +123,18 @@ suite('PasswordDetailsSectionTest', function() {
     // failed.
     assertArrayEquals(
         [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
   });
 
-  test('Clicking back navigates to passwords section', async function() {
+  test('Clicking back navigates to passwords section', function() {
     const group = createCredentialGroup({name: 'test.com'});
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
 
     const section: PasswordDetailsSectionElement =
         document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
 
     const backButton = section.$.backButton;
 
@@ -164,10 +160,10 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     const passwordEntries =
-        section.shadowRoot!.querySelectorAll<PasswordDetailsCardElement>(
+        section.shadowRoot.querySelectorAll<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntries.length);
     assertEquals(passwordEntries.length, 2);
@@ -177,14 +173,14 @@ suite('PasswordDetailsSectionTest', function() {
     }
 
     const backupPasswordEntries =
-        section.shadowRoot!.querySelectorAll<BackupPasswordDetailsCardElement>(
+        section.shadowRoot.querySelectorAll<BackupPasswordDetailsCardElement>(
             'backup-password-details-card');
     assertTrue(!!backupPasswordEntries.length);
     assertEquals(backupPasswordEntries.length, 1);
     assertDeepEquals(backupPasswordEntries[0]!.password, group.entries[1]);
 
     const passkeyEntries =
-        section.shadowRoot!.querySelectorAll<PasskeyDetailsCardElement>(
+        section.shadowRoot.querySelectorAll<PasskeyDetailsCardElement>(
             'passkey-details-card');
     assertEquals(passkeyEntries.length, 1);
     assertEquals(passkeyEntries[0]!.passkey, group.entries[2]);
@@ -202,11 +198,10 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
-        1,
-        section.shadowRoot!.querySelectorAll('password-details-card').length);
+        1, section.shadowRoot.querySelectorAll('password-details-card').length);
 
     // Assert that details section subscribed as a listener.
     assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
@@ -231,11 +226,10 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
-        1,
-        section.shadowRoot!.querySelectorAll('password-details-card').length);
+        1, section.shadowRoot.querySelectorAll('password-details-card').length);
 
     // Assert that details section subscribed as a listener.
     assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
@@ -250,8 +244,7 @@ suite('PasswordDetailsSectionTest', function() {
     // Verify details page is still visible.
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     assertEquals(
-        1,
-        section.shadowRoot!.querySelectorAll('password-details-card').length);
+        1, section.shadowRoot.querySelectorAll('password-details-card').length);
   });
 
   test('Details section updates info when id changed', async function() {
@@ -267,11 +260,10 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
-        1,
-        section.shadowRoot!.querySelectorAll('password-details-card').length);
+        1, section.shadowRoot.querySelectorAll('password-details-card').length);
 
     // Assert that details section subscribed as a listener.
     assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
@@ -286,12 +278,12 @@ suite('PasswordDetailsSectionTest', function() {
     passwordManager.listeners.savedPasswordListChangedListener([]);
     await passwordManager.whenCalled('getCredentialGroups');
     await passwordManager.whenCalled('requestCredentialsDetails');
+    await microtasksFinished();
 
     // Verify details page is still visible.
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     assertEquals(
-        1,
-        section.shadowRoot!.querySelectorAll('password-details-card').length);
+        1, section.shadowRoot.querySelectorAll('password-details-card').length);
   });
 
   test('Url is updated based on new group info', async function() {
@@ -307,13 +299,10 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
-
-    await new Promise(resolve => setTimeout(resolve));
+    await microtasksFinished();
 
     assertEquals(
-        2,
-        section.shadowRoot!.querySelectorAll('password-details-card').length);
+        2, section.shadowRoot.querySelectorAll('password-details-card').length);
 
     // Assert that details section subscribed as a listener.
     assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
@@ -330,15 +319,14 @@ suite('PasswordDetailsSectionTest', function() {
     passwordManager.listeners.savedPasswordListChangedListener([]);
     await passwordManager.whenCalled('getCredentialGroups');
     await passwordManager.whenCalled('requestCredentialsDetails');
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify details page is still visible and path is matching new group name.
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     assertEquals(
         '/passwords/test.de', Router.getInstance().currentRoute.path());
     assertEquals(
-        1,
-        section.shadowRoot!.querySelectorAll('password-details-card').length);
+        1, section.shadowRoot.querySelectorAll('password-details-card').length);
   });
 
   test('Page closes when auth times out', async function() {
@@ -353,7 +341,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     // Assert that details section subscribed as a listener.
     assertTrue(!!passwordManager.listeners.passwordManagerAuthTimeoutListener);
@@ -362,7 +350,7 @@ suite('PasswordDetailsSectionTest', function() {
     assertEquals(
         PasswordViewPageInteractions.TIMED_OUT_IN_VIEW_PAGE,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
-    await flushTasks();
+    await microtasksFinished();
 
     // Assert that now Passwords page is shown.
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
@@ -395,14 +383,14 @@ suite('PasswordDetailsSectionTest', function() {
     await passwordManager.whenCalled('getCredentialGroups');
     assertArrayEquals(
         [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     const title = section.$.title;
     assertEquals('test.com', title.textContent.trim());
 
     const entries =
-        section.shadowRoot!.querySelectorAll<PasswordDetailsCardElement>(
+        section.shadowRoot.querySelectorAll<PasswordDetailsCardElement>(
             'password-details-card');
     assertEquals(2, entries.length);
   });
@@ -418,7 +406,7 @@ suite('PasswordDetailsSectionTest', function() {
         const section: PasswordDetailsSectionElement =
             document.createElement('password-details-section');
         document.body.appendChild(section);
-        await flushTasks();
+        await microtasksFinished();
 
         assertEquals(
             Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
@@ -444,10 +432,9 @@ suite('PasswordDetailsSectionTest', function() {
 
         const section = document.createElement('password-details-section');
         document.body.appendChild(section);
-        await waitAfterNextRender(section);
-        await flushTasks();
+        await microtasksFinished();
 
-        const card = section.shadowRoot!.querySelector('password-details-card');
+        const card = section.shadowRoot.querySelector('password-details-card');
         assertTrue(!!card);
 
         assertDeepEquals(
@@ -477,10 +464,9 @@ suite('PasswordDetailsSectionTest', function() {
 
         const section = document.createElement('password-details-section');
         document.body.appendChild(section);
-        await waitAfterNextRender(section);
-        await flushTasks();
+        await microtasksFinished();
 
-        section.shadowRoot!.querySelectorAll('password-details-card')
+        section.shadowRoot.querySelectorAll('password-details-card')
             .forEach(entry => {
               assertDeepEquals(
                   entry.getSortedAnchorStatusesForTesting(),
@@ -511,13 +497,13 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     const passwordEntry =
-        section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
+        section.shadowRoot.querySelector<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntry);
-    assertTrue(isVisible(passwordEntry.shadowRoot!.querySelector<HTMLElement>(
+    assertTrue(isVisible(passwordEntry.shadowRoot.querySelector<HTMLElement>(
         '.move-password-container')));
   });
 
@@ -537,13 +523,13 @@ suite('PasswordDetailsSectionTest', function() {
 
     const section = document.createElement('password-details-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     const passwordEntry =
-        section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
+        section.shadowRoot.querySelector<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntry);
-    assertFalse(isVisible(passwordEntry.shadowRoot!.querySelector<HTMLElement>(
+    assertFalse(isVisible(passwordEntry.shadowRoot.querySelector<HTMLElement>(
         '.move-password-container')));
   });
 });

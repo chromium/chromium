@@ -7,8 +7,7 @@ import 'chrome://password-manager/password_manager.js';
 import type {DeletePasskeyDialogElement, EditPasskeyDialogElement, PasskeyDetailsCardElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
@@ -18,12 +17,11 @@ suite('PasskeyDetailsCardTest', function() {
   let passkey: chrome.passwordsPrivate.PasswordUiEntry;
   let card: PasskeyDetailsCardElement;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     Router.getInstance().navigateTo(Page.PASSWORDS);
-    await flushTasks();
 
     passkey = createPasswordEntry({
       url: 'test.com',
@@ -37,7 +35,6 @@ suite('PasskeyDetailsCardTest', function() {
     card = document.createElement('passkey-details-card');
     card.passkey = passkey;
     document.body.appendChild(card);
-    await flushTasks();
   });
 
   test('Content displayed properly', function() {
@@ -54,7 +51,7 @@ suite('PasskeyDetailsCardTest', function() {
     assertFalse(card.$.deleteButton.disabled);
 
     const domains =
-        card.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
+        card.shadowRoot.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(domains.length, 1);
     assertEquals(
         passkey.affiliatedDomains[0]!.name, domains[0]!.textContent.trim());
@@ -72,7 +69,7 @@ suite('PasskeyDetailsCardTest', function() {
       hidden: true,
     });
     card.passkey = passkey;
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(passkey.username, card.$.usernameValue.value);
     assertEquals(passkey.displayName, card.$.displayNameValue.value);
@@ -88,7 +85,7 @@ suite('PasskeyDetailsCardTest', function() {
     assertFalse(card.$.deleteButton.disabled);
 
     const domains =
-        card.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
+        card.shadowRoot.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(domains.length, 1);
     assertEquals(
         passkey.affiliatedDomains[0]!.name, domains[0]!.textContent.trim());
@@ -102,21 +99,18 @@ suite('PasskeyDetailsCardTest', function() {
     assertEquals(
         PasswordViewPageInteractions.PASSKEY_EDIT_BUTTON_CLICKED,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
-    await flushTasks();
 
-    const editDialog = card.shadowRoot!.querySelector<EditPasskeyDialogElement>(
+    const editDialog = card.shadowRoot.querySelector<EditPasskeyDialogElement>(
         'edit-passkey-dialog');
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
 
     // Close the dialog and verify it leaves the DOM.
-    const editTemplate =
-        card.shadowRoot!.querySelector('#editPasskeyTemplate')!;
-    const domChange = eventToPromise('dom-change', editTemplate);
+    passwordManager.resetResolver('extendAuthValidity');
     editDialog.$.dialog.close();
     await passwordManager.whenCalled('extendAuthValidity');
-    await domChange;
-    assertEquals(card.shadowRoot!.querySelector('edit-passkey-dialog'), null);
+    await microtasksFinished();
+    assertEquals(card.shadowRoot.querySelector('edit-passkey-dialog'), null);
   });
 
   test('Clicking delete button opens a delete dialog', async function() {
@@ -126,21 +120,18 @@ suite('PasskeyDetailsCardTest', function() {
     assertEquals(
         PasswordViewPageInteractions.PASSKEY_DELETE_BUTTON_CLICKED,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
-    await flushTasks();
 
     const deleteDialog =
-        card.shadowRoot!.querySelector<DeletePasskeyDialogElement>(
+        card.shadowRoot.querySelector<DeletePasskeyDialogElement>(
             'delete-passkey-dialog');
     assertTrue(!!deleteDialog);
     assertTrue(deleteDialog.$.dialog.open);
 
     // Close the dialog and verify it leaves the DOM.
-    const deleteTemplate =
-        card.shadowRoot!.querySelector('#deletePasskeyTemplate')!;
-    const domChange = eventToPromise('dom-change', deleteTemplate);
+    passwordManager.resetResolver('extendAuthValidity');
     deleteDialog.$.dialog.close();
     await passwordManager.whenCalled('extendAuthValidity');
-    await domChange;
-    assertEquals(card.shadowRoot!.querySelector('delete-passkey-dialog'), null);
+    await microtasksFinished();
+    assertEquals(card.shadowRoot.querySelector('delete-passkey-dialog'), null);
   });
 });

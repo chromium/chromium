@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import './shared_style.css.js';
 import './site_favicon.js';
+import './credential_details/backup_password_details_card.js';
 import './credential_details/password_details_card.js';
 import './credential_details/passkey_details_card.js';
-import './user_utils_mixin.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './password_details_section.html.js';
+import {getCss} from './password_details_section.css.js';
+import {getHtml} from './password_details_section.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixin, Router} from './router.js';
-import {UserUtilMixin} from './user_utils_mixin.js';
+import {Page, RouteObserverMixinLit, Router} from './router.js';
+import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
 
 export interface PasswordDetailsSectionElement {
   $: {
@@ -28,7 +26,7 @@ export interface PasswordDetailsSectionElement {
 }
 
 const PasswordDetailsSectionElementBase =
-    UserUtilMixin(RouteObserverMixin(PolymerElement));
+    UserUtilMixinLit(RouteObserverMixinLit(CrLitElement));
 
 export class PasswordDetailsSectionElement extends
     PasswordDetailsSectionElementBase {
@@ -36,11 +34,15 @@ export class PasswordDetailsSectionElement extends
     return 'password-details-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       selectedGroup_: {
         type: Object,
@@ -48,8 +50,9 @@ export class PasswordDetailsSectionElement extends
     };
   }
 
-  declare private selectedGroup_: chrome.passwordsPrivate.CredentialGroup|
+  protected accessor selectedGroup_: chrome.passwordsPrivate.CredentialGroup|
       undefined;
+
   private savedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
   private passwordManagerAuthTimeoutListener_: () => void;
@@ -63,10 +66,7 @@ export class PasswordDetailsSectionElement extends
         return;
       }
 
-      this.dispatchEvent(new CustomEvent('auth-timed-out', {
-        bubbles: true,
-        composed: true,
-      }));
+      this.fire('auth-timed-out');
       this.navigateBack_();
       PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
           PasswordViewPageInteractions.TIMED_OUT_IN_VIEW_PAGE);
@@ -105,6 +105,10 @@ export class PasswordDetailsSectionElement extends
           PasswordViewPageInteractions.CREDENTIAL_REQUESTED_BY_URL);
       this.assignMatchingGroup(route.details as string);
     }
+  }
+
+  protected onBackButtonClick_() {
+    this.navigateBack_();
   }
 
   private navigateBack_() {
@@ -235,13 +239,6 @@ export class PasswordDetailsSectionElement extends
               Router.getInstance().currentRoute.queryParameters);
         })
         .catch(this.navigateBack_);
-  }
-
-  /*
-   * Only register the first card to show the Password Sharing Help Bubble.
-   */
-  private shouldRegisterSharingPromo_(index: number) {
-    return index === 0;
   }
 }
 
