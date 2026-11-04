@@ -345,5 +345,24 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_OK(WaitForGlicOpen());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerGeminiEnterpriseBrowserTest,
+    CaptureRegionHotkeyNotRegistered) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+
+  EXPECT_FALSE(coordinator().GetHotkeyManagerForTesting()->AcceleratorPressed(
+      LocalHotkeyManager::Command::kCaptureRegion));
+
+  TriggerHotkey(LocalHotkeyManager::Command::kCaptureRegion);
+
+  EXPECT_NE(controller->state(), SelectionOverlayController::State::kOverlay);
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+}
+#endif
+
 }  // namespace
 }  // namespace glic

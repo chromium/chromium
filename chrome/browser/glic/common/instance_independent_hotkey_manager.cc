@@ -4,9 +4,9 @@
 
 #include "chrome/browser/glic/common/instance_independent_hotkey_manager.h"
 
-#include <array>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
@@ -42,11 +42,6 @@
 namespace glic {
 
 namespace {
-constexpr LocalHotkeyManager::Command kSupportedCommands[] = {
-    LocalHotkeyManager::Command::kPanelToggle,
-    LocalHotkeyManager::Command::kCaptureRegion,
-};
-
 // Whether `profile`'s provider supports OS-level entry points, including the
 // OS-global hotkey registered by `GlicBackgroundModeManager`. When it doesn't
 // (e.g. Gemini Enterprise), the hotkey is only handled here, while a Chrome
@@ -101,12 +96,12 @@ InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
   }
   // `enabling` can be null in some test environments.
   if (enabling) {
-    consent_subscription_ = enabling->RegisterOnConsentChanged(
-        base::BindRepeating(
+    consent_subscription_ =
+        enabling->RegisterOnConsentChanged(base::BindRepeating(
             &InstanceIndependentHotkeyManager::UpdateHotkeyRegistration,
             base::Unretained(this)));
-    enabled_subscription_ = enabling->RegisterAllowedChanged(
-        base::BindRepeating(
+    enabled_subscription_ =
+        enabling->RegisterAllowedChanged(base::BindRepeating(
             &InstanceIndependentHotkeyManager::UpdateHotkeyRegistration,
             base::Unretained(this)));
   }
@@ -123,9 +118,17 @@ void InstanceIndependentHotkeyManager::UpdateHotkeyRegistration() {
   if (registration_allowed &&
       GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
     if (!hotkey_manager_) {
+      std::vector<LocalHotkeyManager::Command> supported_commands = {
+          LocalHotkeyManager::Command::kPanelToggle,
+      };
+      if (GetGlicProviderSpec(profile_).SupportsFeature(
+              GlicFeature::kCaptureRegion)) {
+        supported_commands.push_back(
+            LocalHotkeyManager::Command::kCaptureRegion);
+      }
       hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
-          std::make_unique<ApplicationScopedRegistrationDelegate>(profile_), this,
-          kSupportedCommands);
+          std::make_unique<ApplicationScopedRegistrationDelegate>(profile_),
+          this, supported_commands);
       hotkey_manager_->InitializeAccelerators();
     }
   } else {
@@ -135,6 +138,10 @@ void InstanceIndependentHotkeyManager::UpdateHotkeyRegistration() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void InstanceIndependentHotkeyManager::RequestCaptureRegion() {
+  if (!GetGlicProviderSpec(profile_).SupportsFeature(
+          GlicFeature::kCaptureRegion)) {
+    return;
+  }
   BrowserWindowInterface* const bwi = GetLastActiveBrowser(profile_);
   // bwi is guaranteed to be valid and belong to profile_ because of
   // CanHandleAccelerators.
@@ -203,6 +210,10 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
     }
 #if !BUILDFLAG(IS_ANDROID)
     case LocalHotkeyManager::Command::kCaptureRegion:
+      if (!GetGlicProviderSpec(profile_).SupportsFeature(
+              GlicFeature::kCaptureRegion)) {
+        return false;
+      }
       RequestCaptureRegion();
       return true;
 #endif
@@ -212,7 +223,8 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
 }
 
 bool InstanceIndependentHotkeyManager::CanHandleAccelerators() const {
-  if (!hotkey_manager_ || !GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
+  if (!hotkey_manager_ ||
+      !GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
     return false;
   }
 #if BUILDFLAG(IS_CHROMEOS)

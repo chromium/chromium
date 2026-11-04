@@ -551,7 +551,7 @@ bool ShouldShowGlicSummarizeButton(content::WebContents* web_contents) {
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
+  if (!glic::GlicEnabling::IsPdfSummarizeEnabled(profile)) {
     return false;
   }
 
@@ -560,7 +560,7 @@ bool ShouldShowGlicSummarizeButton(content::WebContents* web_contents) {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(features::kPdfGlicSummarize);
+  return true;
 }
 
 }  // namespace pdf_extension_util

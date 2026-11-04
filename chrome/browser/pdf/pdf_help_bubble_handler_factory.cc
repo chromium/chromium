@@ -11,8 +11,10 @@
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/memory/self_deleting.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/common/chrome_features.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,7 +40,9 @@ void PdfHelpBubbleHandlerFactory::Create(
     content::RenderFrameHost* render_frame_host,
     HelpFactoryPendingReceiver receiver) {
   bool is_feature_enabled =
-      base::FeatureList::IsEnabled(features::kPdfGlicSummarize);
+      glic::GetGlicProviderSpec(
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
+          .SupportsFeature(glic::GlicFeature::kPdfSummarize);
 #if BUILDFLAG(ENABLE_PDF_INK2)
   is_feature_enabled |=
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2);

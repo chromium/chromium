@@ -564,6 +564,8 @@ using GlicApiMultiProfileActorTest = GlicApiMultiProfileTest;
 // Tests of Chrome sign-in state. GEiC doesn't use the Chrome primary account;
 // see `GlicGeicApiBrowserTest.testSignInPauseStateGeic`.
 using GlicApiConsumerAuthTest = GlicApiTest;
+// Tests of captureRegion, which is consumer-only (not supported by GEiC).
+using GlicApiCaptureRegionTest = GlicApiTest;
 
 class GlicApiTestWithWebContentsWarming : public GlicApiTest {
  public:
@@ -5275,7 +5277,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetAudioDucking) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionError) {
+IN_PROC_BROWSER_TEST_P(GlicApiCaptureRegionTest, testCaptureRegionError) {
   base::HistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
@@ -5876,6 +5878,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiConsumerAuthTest,
+                         ConsumerOnlyTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiCaptureRegionTest,
                          ConsumerOnlyTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

@@ -23,8 +23,18 @@ enum class GlicFeature {
   // `InstanceIndependentHotkeyManager`), unless another profile has the
   // OS-global hotkey registered, in which case that profile is launched.
   kOsEntryPoints,
+  // Auto-opening Glic for PDFs.
+  kPdfAutoOpen,
+  // The PDF viewer's summarize button and its API.
+  kPdfSummarize,
+  // The inline cue shown for text selections.
+  kSelectionInlineCue,
+  // Capturing a page region via the region selection overlay.
+  kCaptureRegion,
+  // The Gemini step of the first run feature showcase.
+  kFirstRunShowcase,
 
-  kMaxValue = kOsEntryPoints,
+  kMaxValue = kFirstRunShowcase,
 };
 
 }  // namespace glic

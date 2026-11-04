@@ -26,8 +26,10 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_fre_impression_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_response_completion_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_submit_query_cui_tracker.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -113,6 +115,7 @@ enum class GlicTurnSource {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTurnSource)
 
 void RecordSelectionOverlayMetrics(
+    bool is_capture_region_enabled,
     const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs,
     const GlicMetricReporter& reporter) {
 // Selection Overlays are not currently implemented on Android.
@@ -132,7 +135,7 @@ void RecordSelectionOverlayMetrics(
       }
     }
   }
-  if (base::FeatureList::IsEnabled(features::kGlicCaptureRegion)) {
+  if (is_capture_region_enabled) {
     reporter.RecordExactLinear("Instance.InputSubmitted.SelectionCount",
                                selection_areas_count, 10);
   }
@@ -1298,7 +1301,9 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
   metric_reporter_.RecordEnumeration("Turn.PromptType", prompt_type);
 
   if (sharing_manager_) {
-    RecordSelectionOverlayMetrics(sharing_manager_->GetPinnedTabs(),
+    RecordSelectionOverlayMetrics(GetGlicProviderSpec(profile_).SupportsFeature(
+                                      GlicFeature::kCaptureRegion),
+                                  sharing_manager_->GetPinnedTabs(),
                                   metric_reporter_);
   }
 

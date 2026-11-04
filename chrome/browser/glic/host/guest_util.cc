@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
@@ -970,7 +971,7 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
         mojom::HostCapability::kGetModelQualityClientId);
   }
   state->enable_capture_region =
-      base::FeatureList::IsEnabled(features::kGlicCaptureRegion);
+      GetGlicProviderSpec(profile).SupportsFeature(GlicFeature::kCaptureRegion);
   state->can_act_on_web = false;
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
     state->can_act_on_web =

@@ -28,6 +28,7 @@
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
@@ -586,9 +587,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass));
 
-  html_source->AddBoolean(
-      "enableInlineCueMenuContentSetting",
-      base::FeatureList::IsEnabled(features::kGlicSelectionPrompt));
+  html_source->AddBoolean("enableInlineCueMenuContentSetting",
+                          glic::GetGlicProviderSpec(profile).SupportsFeature(
+                              glic::GlicFeature::kSelectionInlineCue));
 
   // AI
   auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);
@@ -635,7 +636,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       {"showAiSuggestionsControl",
        base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)},
       {"showInlineCueMenuControl",
-       base::FeatureList::IsEnabled(features::kGlicSelectionPrompt) &&
+       glic::GetGlicProviderSpec(profile).SupportsFeature(
+           glic::GlicFeature::kSelectionInlineCue) &&
            glic_enablement.ShouldShowSettingsPage()},
       {"showSkillsSettingPage",
        base::FeatureList::IsEnabled(features::kSkillsEnabled)},

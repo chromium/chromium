@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -26,6 +28,12 @@ void GeminiStepEligibilityChecker::CheckEligibility(
     base::OnceCallback<void(bool)> callback) {
   profile_ = &profile;
   callback_ = std::move(callback);
+
+  if (!glic::GetGlicProviderSpec(profile_).SupportsFeature(
+          glic::GlicFeature::kFirstRunShowcase)) {
+    std::move(callback_).Run(false);
+    return;
+  }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);

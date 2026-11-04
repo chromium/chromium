@@ -405,6 +405,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Whether the auto open for pdf flow is enabled.
   static bool IsAutoOpenForPdfEnabled(Profile* profile);
 
+  // Whether the PDF viewer's summarize button and its API are enabled for the
+  // profile. This includes the kPdfGlicSummarize flag.
+  static bool IsPdfSummarizeEnabled(Profile* profile);
+
   // Whether the tab web contents contextual menu item is enabled.
   static bool IsContextualMenuItemEnabled(Profile* profile,
                                           const std::u16string& selection_text);

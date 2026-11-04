@@ -1382,7 +1382,8 @@ bool GlicEnabling::IsChromeOSProfileEligible(Profile* profile) {
 
 // static
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
+  if (!GetGlicProviderSpec(profile).SupportsFeature(
+          GlicFeature::kPdfAutoOpen)) {
     return false;
   }
 
@@ -1391,6 +1392,13 @@ bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
   }
 
   return features::kAutoOpenGlicForPdfWithOnboarding.Get();
+}
+
+// static
+bool GlicEnabling::IsPdfSummarizeEnabled(Profile* profile) {
+  return IsEnabledForProfile(profile) &&
+         GetGlicProviderSpec(profile).SupportsFeature(
+             GlicFeature::kPdfSummarize);
 }
 
 // static
@@ -1413,7 +1421,8 @@ bool GlicEnabling::IsContextualMenuItemEnabled(
 // static
 bool GlicEnabling::IsInlineCueEnabledForProfile(Profile* profile) {
   return IsEnabledForProfile(profile) &&
-         base::FeatureList::IsEnabled(features::kGlicSelectionPrompt);
+         GetGlicProviderSpec(profile).SupportsFeature(
+             GlicFeature::kSelectionInlineCue);
 }
 
 // static

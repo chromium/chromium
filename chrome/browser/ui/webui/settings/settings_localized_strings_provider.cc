@@ -28,6 +28,8 @@
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
@@ -1186,9 +1188,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "actorLoginFederatedLoginSupportEnabled",
       base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin));
-  html_source->AddBoolean(
-      "glicSelectionFeatureEnabled",
-      base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
+  html_source->AddBoolean("glicSelectionFeatureEnabled",
+                          glic::GetGlicProviderSpec(profile).SupportsFeature(
+                              glic::GlicFeature::kCaptureRegion));
   html_source->AddBoolean(
       "glicHotkeyLocalScopeEnabled",
       base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope));

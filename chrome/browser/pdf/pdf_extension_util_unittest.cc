@@ -10,7 +10,14 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -297,6 +304,44 @@ TEST_F(PdfExtensionUtilTest, IsPdfSaveToDriveEnabled) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
+class PdfGlicSummarizeButtonTest : public ChromeRenderViewHostTestHarness {
+ public:
+  PdfGlicSummarizeButtonTest() {
+    feature_list_.InitAndEnableFeature(features::kPdfGlicSummarize);
+  }
+
+  // The button check doesn't need GlicKeyedService, which otherwise gets built
+  // because of the enablement bypass.
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        glic::GlicKeyedServiceFactory::GetInstance(),
+        BrowserContextKeyedServiceFactory::TestingFactory()}};
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting bypass_;
+};
+
+TEST_F(PdfGlicSummarizeButtonTest, ShownForConsumerGlic) {
+  EXPECT_TRUE(ShouldShowGlicSummarizeButton(web_contents()));
+}
+
+// Profiles latched to Gemini Enterprise do not support the consumer-only PDF
+// entry points.
+class PdfGlicSummarizeButtonGeminiEnterpriseTest
+    : public PdfGlicSummarizeButtonTest {
+ private:
+  glic::ScopedGlicProviderOverride provider_override_{
+      glic::GlicProvider::kGeminiEnterprise};
+};
+
+TEST_F(PdfGlicSummarizeButtonGeminiEnterpriseTest, HiddenForGeminiEnterprise) {
+  ASSERT_EQ(glic::GetGlicProviderSpec(profile()).GetSettingsSectionId(),
+            glic::kGeminiEnterpriseSettingsSectionId);
+  EXPECT_FALSE(ShouldShowGlicSummarizeButton(web_contents()));
+}
 
 }  // namespace
 }  // namespace pdf_extension_util

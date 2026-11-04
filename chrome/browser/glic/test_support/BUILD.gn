@@ -96,6 +96,7 @@ source_set("test_support") {
   }
   public_deps = [
     "//chrome/browser/glic:impl",
+    "//chrome/browser/glic/public:provider",
     "//chrome/test:test_support",
   ]
   if (!is_android) {

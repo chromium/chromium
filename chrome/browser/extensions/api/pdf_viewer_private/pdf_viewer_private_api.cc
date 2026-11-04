@@ -341,8 +341,8 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
     return RespondNow(Error("No tab."));
   }
 
-  if (!glic::GlicEnabling::IsEnabledForProfile(
-          Profile::FromBrowserContext(contents->GetBrowserContext()))) {
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  if (!glic::GlicEnabling::IsPdfSummarizeEnabled(profile)) {
     return RespondNow(Error("Glic is not enabled."));
   }
 
