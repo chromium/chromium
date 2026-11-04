@@ -197,19 +197,20 @@ def _RestoreWebViewCommandLineFlags(device, original_content):
   logging.info('WebView command line flags restored.')
 
 
-def _SetWebViewCommandLineFlags():
+def _SetWebViewCommandLineFlags(device):
   """Sets WebView command line flags."""
   logging.info('Setting WebView command line flags...')
-  cmd_script_path = _SRC_PATH / 'build/android/adb_system_webview_command_line'
-  flags = ['--disable-features=WebViewPrefetchNativeLibrary']
-  subprocess.run([str(cmd_script_path)] + flags, check=True)
+  flags_path = '/data/local/tmp/webview-command-line'
+  device.WriteFile(
+    flags_path, '_ --disable-features=WebViewPrefetchNativeLibrary\n'
+  )
   logging.info('WebView command line flags set successfully.')
 
 
 def _InitialSetup(device):
   """Performs initial device setup."""
   _DisableWebViewMemoryPinning(device)
-  _SetWebViewCommandLineFlags()
+  _SetWebViewCommandLineFlags(device)
 
   logging.info('Restarting Android framework...')
   # The 'stop' command will terminate the shell, so we don't check for success.
