@@ -6,9 +6,12 @@
 
 #include <utility>
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_latch_factory.h"
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -35,6 +39,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -725,10 +730,15 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndDismissed) {
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Dismissed"), 1);
   histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Dismissed.Onboarding",
                                       1);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Consumer.Fre.TotalTime.Dismissed.Onboarding", 1);
   histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
   histogram_tester().ExpectUniqueSample("Glic.Fre.Dismissed.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Consumer.Fre.Dismissed.InvocationSource",
+      mojom::InvocationSource::kOsButton, 1);
   histogram_tester().ExpectUniqueSample("Glic.Fre.Dismissed.FlowSource",
                                         OptInFlow::kGlicFre, 1);
 }
@@ -745,17 +755,98 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
             1);
   histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Accepted.Onboarding",
                                       1);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Consumer.Fre.TotalTime.Accepted.Onboarding", 1);
 
   // Closing after accept should NOT trigger "Dismissed".
   metrics()->OnInstanceClosed();
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Dismissed"), 0);
   histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Consumer.Fre.Shown.InvocationSource",
+      mojom::InvocationSource::kOsButton, 1);
   histogram_tester().ExpectUniqueSample("Glic.Fre.Accept.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Consumer.Fre.Accept.InvocationSource",
+      mojom::InvocationSource::kOsButton, 1);
   histogram_tester().ExpectUniqueSample("Glic.Fre.Accept.FlowSource",
                                         OptInFlow::kGlicFre, 1);
   histogram_tester().ExpectTotalCount("Glic.Fre.Dismissed.InvocationSource", 0);
+}
+
+class GlicMetricsEnterpriseOnboardingTest
+    : public GlicMetricsTrustFirstOnboardingTest {
+ public:
+  GlicMetricsEnterpriseOnboardingTest() {
+    feature_list_.InitAndEnableFeature(features::kGeicFre);
+  }
+
+  void SetUp() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  GlicProviderLatchFactory::SetProviderForTesting(
+                      context, GlicProvider::kGeminiEnterprise);
+                }));
+
+    GlicMetricsTrustFirstOnboardingTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+TEST_F(GlicMetricsEnterpriseOnboardingTest, EnterpriseGeicOnboardingAccept) {
+  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                        mojom::InvocationSource::kOsButton);
+  metrics()->OnGeicOnboardingAccept();
+
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Onboarding.OptInAccept"),
+            1);
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Accept.FlowSource",
+                                        OptInFlow::kGlicFre, 1);
+
+  histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Accepted.Onboarding",
+                                      1);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Enterprise.Fre.TotalTime.Accepted.Onboarding", 1);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Consumer.Fre.TotalTime.Accepted.Onboarding", 0);
+
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Accept.InvocationSource",
+                                        mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Enterprise.Fre.Accept.InvocationSource",
+      mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Consumer.Fre.Accept.InvocationSource", 0);
+
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
+                                        mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Enterprise.Fre.Shown.InvocationSource",
+      mojom::InvocationSource::kOsButton, 1);
+}
+
+TEST_F(GlicMetricsEnterpriseOnboardingTest, EnterpriseGeicOnboardingDismissed) {
+  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                        mojom::InvocationSource::kOsButton);
+  metrics()->OnInstanceClosed();
+
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Enterprise.Fre.Dismissed.InvocationSource",
+      mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectTotalCount("Glic.Fre.Dismissed.InvocationSource", 1);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Consumer.Fre.Dismissed.InvocationSource", 0);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Enterprise.Fre.TotalTime.Dismissed.Onboarding", 1);
+  histogram_tester().ExpectTotalCount(
+      "Glic.Consumer.Fre.TotalTime.Dismissed.Onboarding", 0);
 }
 
 TEST_F(GlicMetricsTrustFirstOnboardingTest, NotShownIfConsented) {

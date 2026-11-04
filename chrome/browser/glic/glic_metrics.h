@@ -146,6 +146,11 @@ class GlicMetrics {
   // Called when the web client reports that the user completed the
   // FRE (consented).
   void OnTrustFirstOnboardingAccept();
+  // Called when the Gemini Enterprise web client reports that the user
+  // completed the FRE. Records the opt-in user action, FlowSource, and
+  // provider-split FRE accept histograms; skips OnFreAccepted() (so GEiC
+  // does not record FreToFirstQueryTime*).
+  void OnGeicOnboardingAccept();
   // Called whenever an embedder (side panel or floating window) of any glic
   // instance is closed. Idempotent: if the web client FRE was shown and not
   // accepted, logs dismiss metrics and clears `onboarding_shown_time_`;
@@ -219,6 +224,8 @@ class GlicMetrics {
   // and the web client FRE is not already showing, records FRE "shown"
   // metrics and sets `onboarding_shown_time_`. Otherwise this is a no-op.
   void OnInstanceOpened();
+
+  void RecordFreAcceptHistograms();
 
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
