@@ -125,13 +125,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Linux.SandboxStatus" enum="LinuxSandboxStatus"
-    expires_after="2025-05-11">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux sandbox support in the ecosystem
+     (setuid vs. namespace sandbox, seccomp-bpf availability) when making
+     sandbox architecture decisions. -->
+
   <owner>mpdenton@google.com</owner>
   <owner>src/sandbox/linux/OWNERS</owner>
   <summary>
     The Linux sandbox status. This describes what sandboxing features are
     enabled (such as the suid/namespace sandboxes, various namespaces, seccomp
     bpf, ...). Emitted once at startup.
+
+    Warning: this histogram was expired from 2025-05-11 to 2026-11-03; data may
+    be missing.
   </summary>
 </histogram>
 

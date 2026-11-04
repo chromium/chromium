@@ -905,7 +905,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.Sandbox.LandlockState" enum="LandlockState"
-    expires_after="2027-04-16">
+    expires_after="never">
+<!-- expires-never: Needed to measure Landlock LSM availability in the
+     ecosystem when making sandbox architecture decisions. -->
+
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>

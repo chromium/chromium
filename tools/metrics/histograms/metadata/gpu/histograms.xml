@@ -1942,7 +1942,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2027-04-04">
+<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="never">
+<!-- expires-never: Needed to measure how often the GPU process sandbox fails
+     to engage across the ecosystem when making sandbox decisions. -->
+
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
