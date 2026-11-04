@@ -328,9 +328,6 @@ const void* const kProcessPerSiteUmaLoggedKey = &kProcessPerSiteUmaLoggedKey;
 const void* const kSubframeProcessReuseOverLimitUmaLoggedKey =
     &kSubframeProcessReuseOverLimitUmaLoggedKey;
 
-RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
-    nullptr;
-
 // Memory threshold for subframe process reuse, in bytes. A process may be
 // reused for another subframe only if the process's memory footprint stays
 // below this threshold. The default memory threshold is 512MB, for more details
@@ -5742,12 +5739,6 @@ ChildProcessTerminationInfo RenderProcessHostImpl::GetChildTerminationInfo(
     // RenderProcessExited with status TERMINATION_STATUS_STILL_RUNNING,
     // since this will break WebContentsImpl logic.
     info.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
-
-    // TODO(siggi): Remove this once https://crbug.com/806661 is resolved.
-#if BUILDFLAG(IS_WIN)
-    if (info.exit_code == WAIT_TIMEOUT && g_analyze_hung_renderer)
-      g_analyze_hung_renderer(child_process_launcher_->GetProcess());
-#endif
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -5907,12 +5898,6 @@ void RenderProcessHost::PostTaskWhenProcessIsReady(base::OnceClosure task) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
   CHECK(!task.is_null(), base::NotFatalUntil::M152);
   new RenderProcessHostIsReadyObserver(this, std::move(task));
-}
-
-// static
-void RenderProcessHost::SetHungRendererAnalysisFunction(
-    AnalyzeHungRendererFunction analyze_hung_renderer) {
-  g_analyze_hung_renderer = analyze_hung_renderer;
 }
 
 void RenderProcessHostImpl::SuddenTerminationAllowedChanged(bool allowed) {

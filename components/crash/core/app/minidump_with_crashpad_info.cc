@@ -228,6 +228,7 @@ bool MiniDumpWriteDumpWithCrashpadInfo(const base::Process& process,
                                        const crashpad::UUID& report_id,
                                        base::File* dump_file) {
   DCHECK(process.IsValid());
+  DCHECK(exc_info);
   DCHECK(dump_file && dump_file->IsValid());
 
   // The CrashpadInfo structure and its associated directory entry are injected

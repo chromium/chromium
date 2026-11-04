@@ -45,8 +45,3 @@ const wchar_t* GetCrashpadDatabasePath_ExportThunk() {
 }
 
 void ClearReportsBetween_ExportThunk(time_t begin, time_t end) {}
-
-bool DumpHungProcessWithPtype_ExportThunk(HANDLE process_handle,
-                                          const char* ptype) {
-  return false;
-}

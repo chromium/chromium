@@ -8,12 +8,10 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
-#include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
-#include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 
 void RequestSingleCrashUpload_ExportThunk(const char* local_id) {
@@ -77,11 +75,4 @@ const wchar_t* GetCrashpadDatabasePath_ExportThunk() {
 
 void ClearReportsBetween_ExportThunk(time_t begin, time_t end) {
   crash_reporter::ClearReportsBetweenImpl(begin, end);
-}
-
-bool DumpHungProcessWithPtype_ExportThunk(HANDLE process_handle,
-                                          const char* ptype) {
-  base::Process process(process_handle);
-
-  return crash_reporter::DumpHungProcessWithPtypeImpl(process, ptype);
 }

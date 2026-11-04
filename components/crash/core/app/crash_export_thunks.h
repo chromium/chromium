@@ -74,11 +74,6 @@ const wchar_t* GetCrashpadDatabasePath_ExportThunk();
 // within the time range. See crash_reporter::ClearReportsBetween.
 void ClearReportsBetween_ExportThunk(time_t begin, time_t end);
 
-// Immediately dump |process| to a crash dump adorned with |ptype|.
-// Takes ownership of |process|, does not kill nor affect the exit code of
-// |process|.
-bool DumpHungProcessWithPtype_ExportThunk(HANDLE process, const char* ptype);
-
 }  // extern "C"
 
 #endif  // COMPONENTS_CRASH_CORE_APP_CRASH_EXPORT_THUNKS_H_

@@ -918,11 +918,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // content module.
   static size_t GetMaxRendererProcessCount();
 
-  // TODO(siggi): Remove once https://crbug.com/806661 is resolved.
-  using AnalyzeHungRendererFunction = void (*)(const base::Process& renderer);
-  static void SetHungRendererAnalysisFunction(
-      AnalyzeHungRendererFunction analyze_hung_renderer);
-
   // Counts current RenderProcessHost(s), ignoring all spare processes, and
   // optionally ignoring processes that only host prerendered frames or no
   // frames.

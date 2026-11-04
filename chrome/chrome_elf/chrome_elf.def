@@ -6,7 +6,6 @@ LIBRARY  "chrome_elf.dll"
 EXPORTS
   ; From components/crash/core/app/crash_export_stubs.cc
   CrashForException_ExportThunk
-  DumpHungProcessWithPtype_ExportThunk
   GetCrashpadDatabasePath_ExportThunk
   ClearReportsBetween_ExportThunk
   GetCrashReports_ExportThunk
