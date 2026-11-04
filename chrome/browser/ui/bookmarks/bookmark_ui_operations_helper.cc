@@ -19,10 +19,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -511,7 +511,7 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::TargetParent(
     BookmarkMergedSurfaceService* merged_surface_service,
     const BookmarkParentFolder& parent)
     : merged_surface_service_(merged_surface_service),
-      parent_id_(chrome::ToNodeId(parent)) {}
+      parent_id_(bookmarks::ToNodeId(parent)) {}
 
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::~TargetParent() =
     default;
@@ -527,8 +527,8 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::parent_folder() const {
     }
     return BookmarkParentFolder::FromFolderNode(node);
   }
-  return chrome::ToFolder(parent_id_,
-                          merged_surface_service_->bookmark_model());
+  return bookmarks::ToFolder(parent_id_,
+                             merged_surface_service_->bookmark_model());
 }
 
 bool BookmarkUIOperationsHelperMergedSurfaces::TargetParent::IsManaged() const {

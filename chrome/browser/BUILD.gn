@@ -2903,6 +2903,7 @@ source_set("browser") {
       "//chrome/browser/ui/android/hats:impl",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:impl",
+      "//chrome/browser/ui/bookmarks/controllers/android",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/side_panel/internal/android",
       "//chrome/browser/ui/side_panel/internal/android:dev",

@@ -155,9 +155,8 @@ BookmarkBarUIControllerImpl::ShowContextMenu(
     mojom::NodeIdPtr target,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  ModelAdapter& model_adapter = adapters_->model_adapter();
   std::vector<const bookmarks::BookmarkNode*> nodes =
-      GetUnderlyingNodes(model_adapter, *target);
+      GetUnderlyingNodes(adapters_->model_adapter(), *target);
   if (nodes.empty()) {
     return base::unexpected(
         MakeError(mojo_base::mojom::Code::kNotFound, "Target not found"));
@@ -165,7 +164,7 @@ BookmarkBarUIControllerImpl::ShowContextMenu(
 
   // The paste check may finish later, so the menu is shown from the callback.
   // The caller doesn't wait for it.
-  model_adapter.CanPasteFromClipboard(
+  adapters_->action_adapter().CanPasteFromClipboard(
       nodes, base::BindOnce(&BookmarkBarUIControllerImpl::OnPasteCheckComplete,
                             weak_ptr_factory_.GetWeakPtr(), std::move(target),
                             point, source_type));

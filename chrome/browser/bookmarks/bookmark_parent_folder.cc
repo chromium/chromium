@@ -5,6 +5,7 @@
 #include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 
 namespace {
@@ -130,3 +131,34 @@ bool BookmarkParentFolder::HasAncestor(
       BookmarkParentFolder::FromFolderNode(node->parent()));
   return parent.HasAncestor(ancestor);
 }
+
+namespace bookmarks {
+
+BookmarkParentFolder ToFolder(const BookmarkNodeId& folder_id,
+                              BookmarkModel* model) {
+  if (const int64_t* node_id = std::get_if<int64_t>(&folder_id)) {
+    const BookmarkNode* node = GetBookmarkNodeByID(model, *node_id);
+    CHECK(node);
+    return BookmarkParentFolder::FromFolderNode(node);
+  }
+  switch (std::get<PermanentFolderType>(folder_id)) {
+    case PermanentFolderType::kBookmarkBarNode:
+      return BookmarkParentFolder::BookmarkBarFolder();
+    case PermanentFolderType::kOtherNode:
+      return BookmarkParentFolder::OtherFolder();
+    case PermanentFolderType::kMobileNode:
+      return BookmarkParentFolder::MobileFolder();
+    case PermanentFolderType::kManagedNode:
+      return BookmarkParentFolder::ManagedFolder();
+  }
+  NOTREACHED();
+}
+
+BookmarkNodeId ToNodeId(const BookmarkParentFolder& folder) {
+  if (folder.HoldsNonPermanentFolder()) {
+    return folder.as_non_permanent_folder()->id();
+  }
+  return folder.as_permanent_folder().value();
+}
+
+}  // namespace bookmarks

@@ -41,6 +41,13 @@ class ActionAdapter {
       const std::vector<const bookmarks::BookmarkNode*>& nodes,
       ui::mojom::WindowOpenDisposition disposition) = 0;
 
+  // Asynchronously checks whether bookmarks can be pasted from the clipboard
+  // into the folder that a context menu for `selection` would paste into.
+  // `selection` must not be empty.
+  virtual void CanPasteFromClipboard(
+      const std::vector<const bookmarks::BookmarkNode*>& selection,
+      base::OnceCallback<void(bool)> callback) = 0;
+
   // Shows the context menu for the given selection at the screen point.
   // `on_close` runs when the menu closes.
   virtual void ShowContextMenu(

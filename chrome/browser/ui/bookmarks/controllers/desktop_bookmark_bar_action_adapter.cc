@@ -4,12 +4,19 @@
 
 #include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_action_adapter.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/check.h"
 #include "base/containers/to_vector.h"
+#include "chrome/browser/bookmarks/bookmark_bar_utils.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
@@ -85,6 +92,24 @@ void DesktopBookmarkBarActionAdapter::OpenFolderNodes(
       bookmarks::OpenAllBookmarksContext::kNone,
       chrome_navigation_initiator::kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
+}
+
+void DesktopBookmarkBarActionAdapter::CanPasteFromClipboard(
+    const std::vector<const bookmarks::BookmarkNode*>& selection,
+    base::OnceCallback<void(bool)> callback) {
+  // Check the same folder that the context menu's Paste command uses.
+  std::unique_ptr<BookmarkParentFolder> parent =
+      BookmarkContextMenuController::GetParentForNewNodes(
+          base::ToVector(selection, [](const bookmarks::BookmarkNode* node) {
+            return raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>(
+                node);
+          }));
+  CHECK(parent);
+  BookmarkUIOperationsHelperMergedSurfaces(
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(
+          browser_->GetProfile()),
+      parent.get())
+      .CanPasteFromClipboard(std::move(callback));
 }
 
 void DesktopBookmarkBarActionAdapter::ShowContextMenu(

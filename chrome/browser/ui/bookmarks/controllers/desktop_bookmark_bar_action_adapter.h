@@ -34,6 +34,9 @@ class DesktopBookmarkBarActionAdapter : public bookmark_bar_api::ActionAdapter,
   void RecordFolderOpened() override;
   void OpenFolderNodes(const std::vector<const bookmarks::BookmarkNode*>& nodes,
                        ui::mojom::WindowOpenDisposition disposition) override;
+  void CanPasteFromClipboard(
+      const std::vector<const bookmarks::BookmarkNode*>& selection,
+      base::OnceCallback<void(bool)> callback) override;
   void ShowContextMenu(
       const std::vector<const bookmarks::BookmarkNode*>& selection,
       const gfx::Point& point,

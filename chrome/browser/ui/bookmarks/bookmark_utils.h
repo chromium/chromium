@@ -18,10 +18,7 @@ class GURL;
 class Profile;
 struct BookmarkParentFolder;
 
-#include "chrome/browser/bookmarks/bookmark_node_types.h"
-
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
 struct BookmarkNodeData;
@@ -53,30 +50,9 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
                               GURL* url,
                               std::u16string* title);
 
-// Toggles whether the bookmark bar is shown only on the new tab page or on
-// all tabs. This is a preference modifier, not a visual modifier.
-void ToggleBookmarkBarWhenVisible(content::BrowserContext* browser_context);
-
-// Called upon direct user interaction with the bookmarks bar. If the user is in
-// the NTP Simplification transition period (i.e. the visibility state is at its
-// default value), updates the preference to explicitly keep the bookmarks bar
-// visible on the NTP.
-void UpdateBookmarkBarVisibilityPrefOnUserAction(Profile* profile);
-
 // Returns a formatted version of |url| appropriate to display to a user.
 // When re-parsing this URL, clients should call url_formatter::FixupURL().
 std::u16string FormatBookmarkURLForDisplay(const GURL& url);
-
-// Returns whether the Apps shortcut is enabled. If true, then the visibility
-// of the Apps shortcut should be controllable via an item in the bookmark
-// context menu.
-bool IsAppsShortcutEnabled(Profile* profile);
-
-// Returns true if the Apps shortcut should be displayed in the bookmark bar.
-bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile);
-
-// Returns true if the tab groups should be displayed in the bookmark bar.
-bool ShouldShowTabGroupsInBookmarkBar(Profile* profile);
 
 // Returns true if the reading list should be displayed in the bookmark bar.
 bool ShouldShowReadingListInBookmarkBar(Profile* profile);
@@ -124,11 +100,6 @@ gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
     ui::ColorVariant color,
     ui::ColorProvider* color_provider);
 #endif
-
-BookmarkParentFolder ToFolder(const bookmarks::BookmarkNodeId& folder_id,
-                              bookmarks::BookmarkModel* model);
-
-bookmarks::BookmarkNodeId ToNodeId(const BookmarkParentFolder& folder);
 
 }  // namespace chrome
 

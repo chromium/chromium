@@ -12,6 +12,7 @@
 #include "chrome/browser/bookmarks/bookmark_node_types.h"
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -65,5 +66,17 @@ struct BookmarkParentFolder {
   std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
       bookmark_;
 };
+
+namespace bookmarks {
+
+// Converts a `BookmarkNodeId` to a `BookmarkParentFolder`. If `folder_id` holds
+// a node ID, the node must exist in `model` and be a folder.
+BookmarkParentFolder ToFolder(const BookmarkNodeId& folder_id,
+                              BookmarkModel* model);
+
+// Converts a `BookmarkParentFolder` to a `BookmarkNodeId`.
+BookmarkNodeId ToNodeId(const BookmarkParentFolder& folder);
+
+}  // namespace bookmarks
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_PARENT_FOLDER_H_

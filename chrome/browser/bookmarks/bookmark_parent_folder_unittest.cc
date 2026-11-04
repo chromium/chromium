@@ -152,4 +152,28 @@ TEST(BookmarkParentFolderTest, HasAncestor) {
       BookmarkParentFolder::OtherFolder()));
 }
 
+TEST(BookmarkParentFolderTest, NodeIdConversions) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>());
+  model->LoadEmptyForTest();
+  const BookmarkNode* folder_node =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"folder");
+
+  for (PermanentFolderType type :
+       {PermanentFolderType::kBookmarkBarNode, PermanentFolderType::kOtherNode,
+        PermanentFolderType::kMobileNode, PermanentFolderType::kManagedNode}) {
+    const BookmarkParentFolder folder =
+        bookmarks::ToFolder(bookmarks::BookmarkNodeId(type), model.get());
+    EXPECT_EQ(folder.as_permanent_folder(), type);
+    EXPECT_EQ(bookmarks::ToNodeId(folder), bookmarks::BookmarkNodeId(type));
+  }
+
+  const BookmarkParentFolder folder = bookmarks::ToFolder(
+      bookmarks::BookmarkNodeId(folder_node->id()), model.get());
+  EXPECT_EQ(folder, BookmarkParentFolder::FromFolderNode(folder_node));
+  EXPECT_EQ(bookmarks::ToNodeId(folder),
+            bookmarks::BookmarkNodeId(folder_node->id()));
+}
+
 }  // namespace

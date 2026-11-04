@@ -2,41 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_preferences_adapter.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_preferences_adapter.h"
 
+#include "base/check.h"
+#include "chrome/browser/bookmarks/bookmark_bar_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-DesktopBookmarkBarPreferencesAdapter::DesktopBookmarkBarPreferencesAdapter(
-    Profile* profile)
+BookmarkBarPreferencesAdapter::BookmarkBarPreferencesAdapter(Profile* profile)
     : profile_(profile) {
+  CHECK(profile_);
   pref_registrar_.Init(profile_->GetPrefs());
 }
 
-DesktopBookmarkBarPreferencesAdapter::~DesktopBookmarkBarPreferencesAdapter() =
-    default;
+BookmarkBarPreferencesAdapter::~BookmarkBarPreferencesAdapter() = default;
 
-bool DesktopBookmarkBarPreferencesAdapter::IsAppsShortcutEnabled() const {
+bool BookmarkBarPreferencesAdapter::IsAppsShortcutEnabled() const {
   return chrome::ShouldShowAppsShortcutInBookmarkBar(profile_);
 }
 
-bool DesktopBookmarkBarPreferencesAdapter::IsTabGroupsEnabled() const {
+bool BookmarkBarPreferencesAdapter::IsTabGroupsEnabled() const {
   // Incognito browsers also get triggered if the associated regular profile
   // browser is triggered. Early return because incognito has no
   // `saved_tab_group_bar_`.
-  return tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_) &&
+  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_) !=
+             nullptr &&
          chrome::ShouldShowTabGroupsInBookmarkBar(profile_);
 }
 
-bool DesktopBookmarkBarPreferencesAdapter::IsManagedBookmarksEnabled() const {
+bool BookmarkBarPreferencesAdapter::IsManagedBookmarksEnabled() const {
   return profile_->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
 }
 
-void DesktopBookmarkBarPreferencesAdapter::SetOnChangedCallback(
+void BookmarkBarPreferencesAdapter::SetOnChangedCallback(
     base::RepeatingClosure callback) {
   pref_registrar_.RemoveAll();
   if (callback.is_null()) {

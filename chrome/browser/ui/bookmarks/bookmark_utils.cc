@@ -7,12 +7,8 @@
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -20,20 +16,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/public/features.h"
-#include "components/search/ntp_features.h"
-#include "components/search/search.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
@@ -69,7 +59,6 @@ namespace {
 using ::bookmarks::BookmarkModel;
 using ::bookmarks::BookmarkNode;
 using ::ui::mojom::DragOperation;
-using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
 
 #if defined(TOOLKIT_VIEWS)
 // Image source that flips the supplied source image in RTL.
@@ -196,65 +185,6 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
   return true;
 }
 
-void ToggleBookmarkBarWhenVisible(content::BrowserContext* browser_context) {
-  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
-  // The user changed when the bookmark bar is shown, update the preferences.
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpSimplificationBookmarkBar)) {
-    auto current_state = static_cast<bookmarks::BookmarkBarVisibilityState>(
-        prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState));
-    if (current_state == bookmarks::BookmarkBarVisibilityState::kAlwaysShow) {
-      prefs->SetInteger(
-          bookmarks::prefs::kBookmarkBarVisibilityState,
-          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
-    } else {
-      prefs->SetInteger(
-          bookmarks::prefs::kBookmarkBarVisibilityState,
-          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
-    }
-  } else {
-    const bool always_show =
-        !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
-    prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
-  }
-}
-
-// Called upon direct user interaction with the Bookmarks Bar UI (e.g. clicking
-// a bookmark/folder, interacting with saved tab groups, or modifying items via
-// context menu/drag-and-drop).
-//
-// For users in the NTP Simplification transition period (`IsDefaultValue()` is
-// true), this explicitly sets `kBookmarkBarVisibilityState` to
-// `kOnlyShowOnNtp`. This establishes the user store as the controlling
-// preference store, transitioning the user out of the experiment's default
-// state and preventing future auto-hiding.
-//
-// Note: Users who had `kShowBookmarkBar` set to true prior to the experiment
-// are upgraded to `kAlwaysShow` at startup in `BookmarkBarController`, making
-// `IsDefaultValue()` false. Therefore, `IsDefaultValue()` is only true here for
-// users in the "off by default" / "only show on NTP" transition group.
-void UpdateBookmarkBarVisibilityPrefOnUserAction(Profile* profile) {
-  if (!profile || !profile->GetPrefs()) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kNtpSimplificationBookmarkBar)) {
-    return;
-  }
-
-  PrefService* prefs = profile->GetPrefs();
-  const PrefService::Preference* state_pref =
-      prefs->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState);
-
-  if (state_pref && state_pref->IsDefaultValue()) {
-    prefs->SetInteger(
-        bookmarks::prefs::kBookmarkBarVisibilityState,
-        static_cast<int>(
-            bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
-  }
-}
-
 std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
   // Because this gets re-parsed by FixupURL(), it's safe to omit the scheme
   // and trailing slash, and unescape most characters. However, it's
@@ -272,26 +202,6 @@ std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
 
   return url_formatter::FormatUrl(url, format_types, base::UnescapeRule::SPACES,
                                   nullptr, nullptr, nullptr);
-}
-
-bool IsAppsShortcutEnabled(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Chrome OS uses the app list / app launcher.
-  return false;
-#else
-  return search::IsInstantExtendedAPIEnabled() && !profile->IsOffTheRecord();
-#endif
-}
-
-bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
-  return IsAppsShortcutEnabled(profile) &&
-         profile->GetPrefs()->GetBoolean(
-             bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
-}
-
-bool ShouldShowTabGroupsInBookmarkBar(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
 }
 
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,
@@ -398,34 +308,5 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
   return ui::ImageModel::FromVectorIcon(*icon_id, color);
 }
 #endif
-
-BookmarkParentFolder ToFolder(const bookmarks::BookmarkNodeId& folder_id,
-                              bookmarks::BookmarkModel* model) {
-  if (std::holds_alternative<int64_t>(folder_id)) {
-    const bookmarks::BookmarkNode* node =
-        bookmarks::GetBookmarkNodeByID(model, std::get<int64_t>(folder_id));
-    CHECK(node);
-    return BookmarkParentFolder::FromFolderNode(node);
-  }
-  auto type = std::get<BookmarkParentFolder::PermanentFolderType>(folder_id);
-  switch (type) {
-    case BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode:
-      return BookmarkParentFolder::BookmarkBarFolder();
-    case BookmarkParentFolder::PermanentFolderType::kOtherNode:
-      return BookmarkParentFolder::OtherFolder();
-    case BookmarkParentFolder::PermanentFolderType::kMobileNode:
-      return BookmarkParentFolder::MobileFolder();
-    case BookmarkParentFolder::PermanentFolderType::kManagedNode:
-      return BookmarkParentFolder::ManagedFolder();
-  }
-  NOTREACHED();
-}
-
-bookmarks::BookmarkNodeId ToNodeId(const BookmarkParentFolder& folder) {
-  if (folder.HoldsNonPermanentFolder()) {
-    return folder.as_non_permanent_folder()->id();
-  }
-  return folder.as_permanent_folder().value();
-}
 
 }  // namespace chrome

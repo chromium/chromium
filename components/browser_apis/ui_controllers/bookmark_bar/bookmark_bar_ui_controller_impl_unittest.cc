@@ -90,6 +90,11 @@ class MockActionAdapter : public ActionAdapter {
                ui::mojom::WindowOpenDisposition),
               (override));
   MOCK_METHOD(void,
+              CanPasteFromClipboard,
+              ((const std::vector<const bookmarks::BookmarkNode*>&),
+               base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
               ShowContextMenu,
               ((const std::vector<const bookmarks::BookmarkNode*>&),
                const gfx::Point&,
@@ -109,11 +114,6 @@ class MockModelAdapter : public ModelAdapter {
               GetUnderlyingNodes,
               (PermanentFolderType),
               (const, override));
-  MOCK_METHOD(void,
-              CanPasteFromClipboard,
-              ((const std::vector<const bookmarks::BookmarkNode*>&),
-               base::OnceCallback<void(bool)>),
-              (override));
 };
 
 // Points at adapters owned by the test fixture.
@@ -362,7 +362,7 @@ TEST_F(BookmarkBarUIControllerImplTest, ShowContextMenuDelegates) {
   EXPECT_CALL(model_adapter_, GetNodeById(node->id()))
       .Times(2)
       .WillRepeatedly(Return(node));
-  EXPECT_CALL(model_adapter_, CanPasteFromClipboard(ElementsAre(node), _))
+  EXPECT_CALL(action_adapter_, CanPasteFromClipboard(ElementsAre(node), _))
       .WillOnce(base::test::RunOnceCallback<1>(true));
   base::OnceClosure on_close;
   EXPECT_CALL(action_adapter_,
@@ -392,7 +392,7 @@ TEST_F(BookmarkBarUIControllerImplTest, ShowContextMenuRejectsInvalidIds) {
   ON_CALL(model_adapter_, GetNodeById(bar_node->id()))
       .WillByDefault(Return(bar_node));
   EXPECT_CALL(model_adapter_, GetUnderlyingNodes(_)).Times(0);
-  EXPECT_CALL(model_adapter_, CanPasteFromClipboard(_, _)).Times(0);
+  EXPECT_CALL(action_adapter_, CanPasteFromClipboard(_, _)).Times(0);
 
   mojom::NodeIdPtr invalid_ids[] = {
       NodeId(42), NodeId(root->id()), NodeId(bar_node->id()),
@@ -416,7 +416,7 @@ TEST_F(BookmarkBarUIControllerImplTest,
   EXPECT_CALL(model_adapter_, GetNodeById(node->id()))
       .WillOnce(Return(node))
       .WillOnce(Return(nullptr));
-  EXPECT_CALL(model_adapter_, CanPasteFromClipboard(_, _))
+  EXPECT_CALL(action_adapter_, CanPasteFromClipboard(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(true));
   EXPECT_CALL(action_adapter_, ShowContextMenu(_, _, _, _, _)).Times(0);
 

@@ -2,19 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The desktop embedder of //components/browser_apis/ui_controllers/bookmark_bar.
+# The embedders of //components/browser_apis/ui_controllers/bookmark_bar.
 source_set("controllers") {
   sources = [
+    "bookmark_bar_model_adapter.cc",
+    "bookmark_bar_model_adapter.h",
     "bookmark_bar_node_id_conversions.cc",
     "bookmark_bar_node_id_conversions.h",
+    "bookmark_bar_preferences_adapter.cc",
+    "bookmark_bar_preferences_adapter.h",
   ]
 
   public_deps = [
+    "//base",
     "//chrome/browser/bookmarks:types",
+    "//components/browser_apis/bookmarks:mojom",
     "//components/browser_apis/ui_controllers/bookmark_bar",
+    "//components/prefs",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_group_sync:factories",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+  ]
 
   if (!is_android) {
     sources += [
@@ -22,23 +35,13 @@ source_set("controllers") {
       "desktop_bookmark_bar_action_adapter.h",
       "desktop_bookmark_bar_injector.cc",
       "desktop_bookmark_bar_injector.h",
-      "desktop_bookmark_bar_model_adapter.cc",
-      "desktop_bookmark_bar_model_adapter.h",
-      "desktop_bookmark_bar_preferences_adapter.cc",
-      "desktop_bookmark_bar_preferences_adapter.h",
     ]
     deps += [
-      "//chrome/browser/bookmarks",
       "//chrome/browser/page_load_metrics",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/views/bookmarks",
-      "//components/bookmarks/browser",
-      "//components/bookmarks/common",
       "//components/browser_apis/ui_controllers/bookmark_bar:impl",
-      "//components/prefs",
       "//components/profile_metrics",
       "//ui/base:types",
       "//ui/gfx/geometry",

@@ -6,21 +6,20 @@
 
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_model_adapter.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_preferences_adapter.h"
 #include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_action_adapter.h"
-#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_model_adapter.h"
-#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_preferences_adapter.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/browser_apis/ui_controllers/bookmark_bar/bookmark_bar_ui_controller_impl.h"
 
 DesktopBookmarkBarInjector::DesktopBookmarkBarInjector(
     BrowserWindowInterface* browser)
     : browser_(browser),
-      preferences_adapter_(
-          std::make_unique<DesktopBookmarkBarPreferencesAdapter>(
-              browser_->GetProfile())),
+      preferences_adapter_(std::make_unique<BookmarkBarPreferencesAdapter>(
+          browser_->GetProfile())),
       action_adapter_(
           std::make_unique<DesktopBookmarkBarActionAdapter>(browser_)),
-      model_adapter_(std::make_unique<DesktopBookmarkBarModelAdapter>(
+      model_adapter_(std::make_unique<BookmarkBarModelAdapter>(
           BookmarkMergedSurfaceServiceFactory::GetForProfile(
               browser_->GetProfile()))) {}
 

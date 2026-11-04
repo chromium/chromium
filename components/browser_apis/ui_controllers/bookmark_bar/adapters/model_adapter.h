@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "components/browser_apis/bookmarks/bookmarks_api.mojom-forward.h"
 
 namespace bookmarks {
@@ -32,13 +31,6 @@ class ModelAdapter {
   // folder. `type` must not be kUnknown.
   virtual std::vector<const bookmarks::BookmarkNode*> GetUnderlyingNodes(
       bookmarks_api::mojom::PermanentFolderType type) const = 0;
-
-  // Asynchronously checks whether bookmarks can be pasted from the clipboard
-  // into the folder that a context menu for `selection` would paste into.
-  // `selection` must not be empty.
-  virtual void CanPasteFromClipboard(
-      const std::vector<const bookmarks::BookmarkNode*>& selection,
-      base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace bookmark_bar_api

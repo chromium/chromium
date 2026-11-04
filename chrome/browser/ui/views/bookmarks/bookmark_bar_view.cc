@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/bookmarks/bookmark_bar_utils.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -1461,7 +1462,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
 void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
                                           const ui::Event& event) {
   std::ignore = controller_->OnFolderPressed(
-      ToMojoNodeId(chrome::ToNodeId(folder)), event.flags());
+      ToMojoNodeId(bookmarks::ToNodeId(folder)), event.flags());
 }
 
 bool BookmarkBarView::OnMenuButtonAccessibleAction(
@@ -1469,7 +1470,7 @@ bool BookmarkBarView::OnMenuButtonAccessibleAction(
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kExpand) {
     std::ignore = controller_->OnFolderPressed(
-        ToMojoNodeId(chrome::ToNodeId(folder)), ui::EF_NONE);
+        ToMojoNodeId(bookmarks::ToNodeId(folder)), ui::EF_NONE);
     return true;
   }
   if (action_data.action == ax::mojom::Action::kCollapse) {
@@ -2400,7 +2401,7 @@ void BookmarkBarView::OnDisplayOptionsChanged(
 
 void BookmarkBarView::ShowFolderMenu(
     const bookmark_bar_api::mojom::NodeId& folder_id) {
-  const BookmarkParentFolder folder = chrome::ToFolder(
+  const BookmarkParentFolder folder = bookmarks::ToFolder(
       FromMojoNodeId(folder_id), bookmark_service_->bookmark_model());
   const size_t start_index =
       (folder.as_permanent_folder() == PermanentFolderType::kBookmarkBarNode)

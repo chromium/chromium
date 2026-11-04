@@ -10,10 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "components/browser_apis/ui_controllers/bookmark_bar/adapters/platform_adapters_provider.h"
 
+class BookmarkBarModelAdapter;
+class BookmarkBarPreferencesAdapter;
 class BrowserWindowInterface;
 class DesktopBookmarkBarActionAdapter;
-class DesktopBookmarkBarModelAdapter;
-class DesktopBookmarkBarPreferencesAdapter;
 
 namespace bookmark_bar_api {
 class BookmarkBarUIController;
@@ -42,9 +42,9 @@ class DesktopBookmarkBarInjector
 
  private:
   raw_ptr<BrowserWindowInterface> browser_;
-  std::unique_ptr<DesktopBookmarkBarPreferencesAdapter> preferences_adapter_;
+  std::unique_ptr<BookmarkBarPreferencesAdapter> preferences_adapter_;
   std::unique_ptr<DesktopBookmarkBarActionAdapter> action_adapter_;
-  std::unique_ptr<DesktopBookmarkBarModelAdapter> model_adapter_;
+  std::unique_ptr<BookmarkBarModelAdapter> model_adapter_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_DESKTOP_BOOKMARK_BAR_INJECTOR_H_
