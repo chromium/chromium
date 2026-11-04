@@ -66,6 +66,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "media/base/limits.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
@@ -1710,6 +1711,26 @@ void PageHandler::StartScreenRecording(
     callback->sendFailure(Response::InvalidParams("Unknown captureArea"));
     return;
   }
+  // Invalid sizes or frame rates would fail checks in the capture device and
+  // the encoder.
+  const int width = max_width.value_or(800);
+  const int height = max_height.value_or(600);
+  if (width <= 0 || height <= 0 || width > media::limits::kMaxDimension ||
+      height > media::limits::kMaxDimension ||
+      static_cast<int64_t>(width) * height > media::limits::kMaxCanvas) {
+    callback->sendFailure(Response::InvalidParams(
+        base::StrCat({"maxWidth and maxHeight must be between 1 and ",
+                      base::NumberToString(media::limits::kMaxDimension),
+                      ", and their product at most ",
+                      base::NumberToString(media::limits::kMaxCanvas)})));
+    return;
+  }
+  if (frame_rate.value_or(0) > media::limits::kMaxFramesPerSecond) {
+    callback->sendFailure(Response::InvalidParams(base::StrCat(
+        {"frameRate must be at most ",
+         base::NumberToString(media::limits::kMaxFramesPerSecond)})));
+    return;
+  }
   // The browser window shows more than the target page, for example the tab
   // strip and the omnibox. Thus only trusted clients can record it.
   if (record_browser_window && !is_trusted_) {
@@ -1746,8 +1767,8 @@ void PageHandler::StartScreenRecording(
     fps = 30;
   }
 
-  Response result = media_recorder_->Start(
-      host_, has_audio, max_width.value_or(800), max_height.value_or(600), fps);
+  Response result =
+      media_recorder_->Start(host_, has_audio, width, height, fps);
   if (result.IsError()) {
     media_recorder_.reset();
     callback->sendFailure(std::move(result));
