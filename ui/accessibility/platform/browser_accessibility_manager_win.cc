@@ -714,7 +714,9 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
     case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_DECREMENTED:
     case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_INCREMENTED:
-      CHECK(wrapper->IsTextField(), base::NotFatalUntil::M163);
+      // TODO(crbug.com/580063009): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(wrapper->IsTextField());
       FireWinAccessibilityEvent(EVENT_OBJECT_VALUECHANGE, wrapper);
       FireUiaPropertyChangedEvent(UIA_ValueValuePropertyId, wrapper);
       EnqueueTextChangedEvent(*wrapper);
