@@ -104,6 +104,10 @@ BASE_FEATURE(kGlicSelectionOverlayFullSizeScreenshot,
 
 BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for sending the selected region with the overlay's prompt.
+BASE_FEATURE(kGlicSelectionOverlaySendRegionWithPrompt,
+             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+
 bool IsSelectionOverlayPromptEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||
          base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox);
@@ -356,12 +360,11 @@ void SelectionOverlayController::OnSidePanelStateChanged(
 void SelectionOverlayController::PostHandSessionToPanel() {
   // Don't hand off a text selection: `GlicSelectionObserver` already sends the
   // text to the panel, and adopting the session would add a duplicate
-  // screenshot chip.
+  // screenshot chip. A pending prompt closes the session once it's sent.
   // TODO(b:579078690): Clean this up once text and region selections use one
   // path.
-  bool is_text_selection =
-      !session_->selected_regions.empty() && IsTextSelectionEntryPoint();
-  if (session_->owner != Session::Owner::kDirect || is_text_selection) {
+  if (session_->owner != Session::Owner::kDirect ||
+      session_->region_is_text_selection || session_->pending_prompt) {
     return;
   }
   // Not right away: the panel may be opening for this session's own
@@ -373,7 +376,7 @@ void SelectionOverlayController::PostHandSessionToPanel() {
 }
 
 void SelectionOverlayController::HandSessionToPanel() {
-  if (session_->owner != Session::Owner::kDirect ||
+  if (session_->owner != Session::Owner::kDirect || session_->pending_prompt ||
       !GlicSidePanelCoordinator::IsShowing(tab_)) {
     return;
   }
@@ -399,7 +402,8 @@ void SelectionOverlayController::AdoptSession(
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
   session_->owner = Session::Owner::kPanel;
   BindCaptureRegionObserver(std::move(observer));
-  if (!session_->selected_regions.empty() && !IsTextSelectionEntryPoint()) {
+  if (!session_->selected_regions.empty() &&
+      !session_->region_is_text_selection) {
     SyncRegionsToPanel(/*should_focus_panel=*/false);
   }
 }
@@ -409,10 +413,6 @@ bool SelectionOverlayController::IsSidePanelOpen() const {
   // with the tab. Not `kShown` only, which would flip the overlay to closed and
   // back on every tab switch.
   return GlicSidePanelCoordinator::IsShowingOrBackgrounded(tab_);
-}
-
-bool SelectionOverlayController::IsTextSelectionEntryPoint() const {
-  return session_->entry_point != ::selection::EntryPoint::kContextMenuImage;
 }
 
 void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
@@ -545,9 +545,11 @@ void SelectionOverlayController::CaptureRegion(
     return;
   }
   if (selection_overlay_controller->state() != State::kOff) {
+    // The web client already has this session, or a prompt is about to close
+    // it.
     if (selection_overlay_controller->session_->capture_region_observer
-            .is_bound()) {
-      // The web client already has this session.
+            .is_bound() ||
+        selection_overlay_controller->session_->pending_prompt) {
       mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
       remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                        mojom::CaptureRegionErrorReason::kUnknown);
@@ -697,12 +699,16 @@ void SelectionOverlayController::SetRegionFromBounds(
   session_->active_region_id.reset();
   session_->surrounding_text_timer.Stop();
   if (tab_ && tab_->GetContents()) {
-    const bool is_text_selection = IsTextSelectionEntryPoint();
+    // The bounds are an image only from the image context menu; every other
+    // entry point pre-selects text.
+    bool is_text_selection =
+        session_->entry_point != ::selection::EntryPoint::kContextMenuImage;
     if (auto region = CreateRegionFromBounds(
             selection_bounds, tab_->GetContents()->GetViewBounds(),
             /*apply_padding=*/is_text_selection)) {
       base::UnguessableToken id = region->id;
       session_->active_region_id = id;
+      session_->region_is_text_selection = is_text_selection;
       auto [it, _] = session_->selected_regions.emplace(
           id, SelectedRegionData(std::move(region)));
       if (is_text_selection && selected_frame &&
@@ -889,6 +895,7 @@ void SelectionOverlayController::OnScreenshotTaken(const SkBitmap& bitmap) {
 void SelectionOverlayController::OnScreenshotRedacted(const SkBitmap& bitmap) {
   session_->redacted_screenshot = bitmap;
   SyncRegionsToPanelIfPending();
+  SendPendingPromptIfReady();
   MaybeRequestSuggestions();
 }
 
@@ -927,6 +934,7 @@ void SelectionOverlayController::PageContextReady(
   }
 
   SyncRegionsToPanelIfPending();
+  SendPendingPromptIfReady();
   MaybeRequestSuggestions();
 }
 
@@ -1040,6 +1048,7 @@ void SelectionOverlayController::AdjustRegion(
     selection::SelectedRegionPtr target,
     bool is_using_keyboard) {
   session_->active_region_id = target->id;
+  session_->region_is_text_selection = false;
   session_->feedback_zip_builder = ::selection::FeedbackZipBuilder();
   if (SelectedRegionData* region_data =
           base::FindOrNull(session_->selected_regions, target->id)) {
@@ -1063,6 +1072,7 @@ void SelectionOverlayController::AdjustRegion(
 void SelectionOverlayController::DeleteRegion(const base::UnguessableToken& id,
                                               bool is_using_keyboard) {
   if (session_->selected_regions.erase(id)) {
+    session_->region_is_text_selection = false;
     if (session_->selected_regions.empty()) {
       session_->active_region_id.reset();
       Close(CloseReason::kCloseButton);
@@ -1091,21 +1101,71 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
     return;
   }
-  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-  if (service) {
-    if (session_->metrics_logger) {
-      session_->metrics_logger->RecordPromptSubmitted();
-    }
-    GlicInvokeOptions options(glic::Target(*tab_),
-                              mojom::InvocationSource::kTextSelectionWidget);
-    options.prompts.push_back(prompt);
-    // TODO(b/556786015): Fix issue when side panel is not open.
-    service->InvokeWithAutoSubmit(
-        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
-    if (session_->owner == Session::Owner::kDirect) {
-      Close();
-    }
+  if (!GlicKeyedService::Get(tab_->GetProfile())) {
+    return;
   }
+  if (ShouldSendRegionsWithPrompt() && !IsPageContextReady()) {
+    session_->pending_prompt = prompt;
+    return;
+  }
+  SendPrompt(prompt);
+}
+
+bool SelectionOverlayController::ShouldSendRegionsWithPrompt() const {
+  // Panel-owned sessions send their regions through region capture. This
+  // includes sessions the panel started and sessions handed off to it.
+  // TODO(liuwilliam): There are still two code paths to deliver attachments.
+  // Reconsider once the feature is stable.
+  // A text selection goes without its region: `GlicSelectionObserver` sends
+  // the text when the panel opens, and the region would be a second chip.
+  // TODO(b:579078690): Remove once text and region selections take one path.
+  return session_->owner == Session::Owner::kDirect &&
+         !session_->region_is_text_selection &&
+         base::FeatureList::IsEnabled(
+             kGlicSelectionOverlaySendRegionWithPrompt);
+}
+
+bool SelectionOverlayController::IsPageContextReady() const {
+  return session_->tab_context && !session_->redacted_screenshot.empty();
+}
+
+void SelectionOverlayController::SendPrompt(const std::string& prompt) {
+  CapturedRegions regions;
+  if (ShouldSendRegionsWithPrompt() && IsPageContextReady()) {
+    regions = GetCapturedRegions();
+  }
+  InvokeWithPrompt(prompt, std::move(regions));
+  if (session_->owner == Session::Owner::kDirect) {
+    Close();
+  }
+}
+
+void SelectionOverlayController::SendPendingPromptIfReady() {
+  if (session_->pending_prompt && IsPageContextReady()) {
+    SendPrompt(*std::exchange(session_->pending_prompt, std::nullopt));
+  }
+}
+
+void SelectionOverlayController::InvokeWithPrompt(const std::string& prompt,
+                                                  CapturedRegions regions) {
+  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
+  if (!service) {
+    return;
+  }
+  if (session_->metrics_logger) {
+    session_->metrics_logger->RecordPromptSubmitted();
+  }
+  GlicInvokeOptions options(glic::Target(*tab_),
+                            mojom::InvocationSource::kTextSelectionWidget);
+  options.prompts.push_back(prompt);
+  if (!regions.empty()) {
+    options.additional_context = AdditionalTabContext(
+        CreateRegionSelectionContext(*tab_, session_->tab_context.Clone(),
+                                     std::move(regions)),
+        content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
+  }
+  service->InvokeWithAutoSubmit(
+      InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
 }
 
 void SelectionOverlayController::GetSuggestedActions(

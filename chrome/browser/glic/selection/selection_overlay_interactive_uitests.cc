@@ -2369,10 +2369,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "}"));
 }
 
-// Submitting a prompt from the overlay closes the overlay and opens the panel.
-// The panel must not then try to take over the closed overlay. Check: the
-// overlay stays closed, the panel shows only the prompt, and clicking "+" in
-// the panel afterwards starts a new capture normally.
+// Submitting a prompt from the overlay closes the overlay and opens the panel
+// with the prompt and the selected region. The panel must not then try to take
+// over the closed overlay. Check: the overlay stays closed, the panel's capture
+// is off, and clicking "+" in the panel afterwards starts a new capture
+// normally.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                        SubmitPromptFromPageSessionDoesNotHandOff) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
@@ -2402,6 +2403,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
       WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
                         "el => el.textContent.includes('Explain this region')"),
+      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
+                      "el => el.textContent.includes('pendingRegion')"),
       // The panel was not asked to take over: its "+" button is off and its
       // capture list is empty.
       CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
@@ -2412,6 +2415,180 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                   OverlayBaseController::State::kOff),
       ClickMockGlicElement(kCaptureButton),
       WaitForShow(OverlayBaseController::kOverlayId));
+}
+
+// A prompt submitted before the page context is here still goes out with the
+// region. ShowWithImageSelection() starts the fetch, which is async, so
+// submitting in the same step guarantees the context isn't here yet.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       SubmitPromptBeforePageContextSendsRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithImageSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
+                      "el => el.textContent.includes('pendingRegion')"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOff));
+}
+
+// With the panel already open, a page session is handed to the panel, but not
+// once a prompt is waiting for the page context: the prompt goes out with the
+// region and closes the overlay, and the panel doesn't take over.
+IN_PROC_BROWSER_TEST_F(
+    SelectionOverlayInteractiveTestWithPrompt,
+    SubmitPromptBeforePageContextWithPanelOpenDoesNotHandOff) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
+        ShowWithImageSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
+                      "el => el.textContent.includes('pendingRegion')"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOff),
+      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                      "el => !el.hasAttribute('pressed')"));
+}
+
+// A session that started on a text selection sends its prompt without the
+// region: `GlicSelectionObserver` sends the text when the panel opens, so the
+// panel shows one chip.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       SubmitPromptFromTextSelectionSendsNoRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
+                      "el => !el.textContent.includes('pendingRegion')"));
+}
+
+// Once the user draws a region of their own on top of the text selection, the
+// prompt goes out with the regions.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       SubmitPromptAfterDrawingOnTextSelectionSendsRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/false,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->AdjustRegion(selection::SelectedRegion::New(
+                               base::UnguessableToken::Create(),
+                               selection::RegionShape::NewRect(
+                                   gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+                           /*is_using_keyboard=*/true);
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
+                      "el => el.textContent.includes('pendingRegion')"));
+}
+
+namespace {
+
+class SelectionOverlayInteractiveTestWithPromptNoRegion
+    : public SelectionOverlayInteractiveTestWithPrompt {
+ public:
+  SelectionOverlayInteractiveTestWithPromptNoRegion() {
+    // The kill switch is file-local to the controller, so disable it by name.
+    feature_list_.InitFromCommandLine(
+        /*enable_features=*/"",
+        /*disable_features=*/"GlicSelectionOverlaySendRegionWithPrompt");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+// With the kill switch off, the prompt goes out without the region.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptNoRegion,
+                       SubmitPromptSendsNoRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithImageSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
+                      "el => !el.textContent.includes('pendingRegion')"));
 }
 
 namespace {

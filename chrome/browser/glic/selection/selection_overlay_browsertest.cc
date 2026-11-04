@@ -923,7 +923,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   static_cast<selection::SelectionOverlayPageHandler*>(controller)
       ->SubmitPrompt("Explain this selection");
 
-  // The browser started this session, so it dismisses the overlay itself.
+  // The browser started this session, so it dismisses the overlay itself once
+  // the prompt goes out.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller->state() == SelectionOverlayController::State::kOff;
+  }));
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
   histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
                                       ::selection::EntryPoint::kContextMenuText,
@@ -937,9 +941,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "SmartSelection.Submission.Outcome",
       ::selection::SubmissionOutcome::kPromptSubmitted, 1);
-
-  controller->Close();
-  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
 }
 
 class SelectionOverlayTextSelectionBrowserTest : public GlicBrowserTest {

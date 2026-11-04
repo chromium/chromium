@@ -168,9 +168,6 @@ class SelectionOverlayController
   // What `SelectionOverlayPage::SetSidePanelOpen()` sends: the panel is
   // showing, or backgrounded and comes back with `tab_`.
   bool IsSidePanelOpen() const;
-  // Whether a region from `SetRegionFromBounds()` is selected text, not an
-  // image.
-  bool IsTextSelectionEntryPoint() const;
   // Called when the overlay's WebView takes focus, e.g. when the user clicks
   // on it. In a split view the overlay can be rendered over the inactive tab,
   // in which case `tab_` needs to be activated.
@@ -244,6 +241,16 @@ class SelectionOverlayController
   void SyncRegionsToPanelIfPending();
   void SendRegionsToPanel(CapturedRegions captured_regions,
                           bool should_focus_panel);
+
+  // Whether the regions go in the invoke with the overlay's prompt.
+  bool ShouldSendRegionsWithPrompt() const;
+  // Whether the page context and the redacted screenshot are both here.
+  bool IsPageContextReady() const;
+  // Sends `prompt` to glic, with the selected regions for a session started
+  // from the page, and closes such a session.
+  void SendPrompt(const std::string& prompt);
+  void SendPendingPromptIfReady();
+  void InvokeWithPrompt(const std::string& prompt, CapturedRegions regions);
 
   struct SelectedRegionData {
     explicit SelectedRegionData(selection::SelectedRegionPtr region);
@@ -334,6 +341,9 @@ class SelectionOverlayController
     // Whether `SyncRegions()` ran before the page context and the redacted
     // screenshot were here, and the panel still has to get the regions.
     bool panel_sync_pending = false;
+    // A prompt submitted before the page context was here. It's sent with the
+    // regions once the context arrives.
+    std::optional<std::string> pending_prompt;
     SkBitmap initial_rgb_screenshot;
     SkBitmap redacted_screenshot;
     mojom::TabContextResultPtr tab_context;
@@ -341,6 +351,10 @@ class SelectionOverlayController
     // Caches the user-selected regions and their associated suggestions. To be
     // rendered on top of `initial_rgb_screenshot`.
     base::flat_map<base::UnguessableToken, SelectedRegionData> selected_regions;
+    // The region is still the text selection the session started on. Such a
+    // session sends no region with its prompt: GlicSelectionObserver sends
+    // the text.
+    bool region_is_text_selection = false;
     std::optional<base::UnguessableToken> active_region_id;
     ::selection::FeedbackZipBuilder feedback_zip_builder;
     base::OneShotTimer surrounding_text_timer;
