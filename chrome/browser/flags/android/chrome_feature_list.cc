@@ -458,7 +458,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInlinePdfV2Download,
     &kInlinePdfV2Incognito,
     &kKeyboardEscBackNavigation,
-    &kLensOnQuickActionSearchWidget,
     &kLinkHoverStatusBar,
     &kLoadAllTabsAtStartup,
     &kLockTopControlsOnLargeTabletsV2,
@@ -921,7 +920,6 @@ BASE_FEATURE(kInlinePdfV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInlinePdfV2Download, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInlinePdfV2Incognito, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyboardEscBackNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kLensOnQuickActionSearchWidget, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLinkHoverStatusBar, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadAllTabsAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLockTopControlsOnLargeTabletsV2, base::FEATURE_ENABLED_BY_DEFAULT);

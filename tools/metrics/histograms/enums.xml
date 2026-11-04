@@ -7332,7 +7332,7 @@ shown properly on the user-facing crash UI.
   <int value="10" label="Disabled on Low End Device"/>
   <int value="11" label="AGSA Version Not Supported"/>
   <int value="12" label="Disabled on Incognito"/>
-  <int value="13" label="Disabled on Tablet"/>
+  <int value="13" label="(Obsolete) Disabled on Tablet"/>
   <int value="14" label="Disabled for Enterprise user"/>
 </enum>
 

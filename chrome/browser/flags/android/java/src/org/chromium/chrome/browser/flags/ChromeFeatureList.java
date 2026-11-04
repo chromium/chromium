@@ -715,7 +715,6 @@ public abstract class ChromeFeatureList {
     public static final String IPH_BOOKMARK_BAR_VISIBILITY = "IPH_BookmarkBarVisibility";
     public static final String KEYBOARD_ESC_BACK_NAVIGATION = "KeyboardEscBackNavigation";
     public static final String LENS_BYPASS_COMPRESSION_FOR_C2PA = "LensBypassCompressionForC2pa";
-    public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LENS_OVERLAY_ANDROID = "LensOverlayAndroid";
     public static final String LENS_SEND_RAW_FILE_MEDIA_TYPES = "LensSendRawFileMediaTypes";
     public static final String LINK_HOVER_STATUS_BAR = "LinkHoverStatusBar";

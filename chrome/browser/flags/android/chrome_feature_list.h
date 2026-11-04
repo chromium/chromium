@@ -242,7 +242,6 @@ BASE_DECLARE_FEATURE(kInlinePdfV2Download);
 BASE_DECLARE_FEATURE(kInlinePdfV2Incognito);
 BASE_DECLARE_FEATURE(kKeyboardEscBackNavigation);
 BASE_DECLARE_FEATURE(kLanguagesPreference);
-BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLinkHoverStatusBar);
 BASE_DECLARE_FEATURE(kLoadAllTabsAtStartup);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
