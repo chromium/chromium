@@ -151,4 +151,22 @@ TEST_F(ChromeProfileDownloadServiceTrackerTest,
 #endif
 }
 
+TEST_F(ChromeProfileDownloadServiceTrackerTest,
+       ProfileManagerDestroyedBeforeTracker) {
+  auto service_tracker =
+      std::make_unique<ChromeProfileDownloadServiceTracker>();
+  auto* foo_profile = profile_manager_.CreateTestingProfile(kProfileFoo);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(service_tracker->GetBackgroundDownloadService(),
+            GetBackgroundDownloadServiceForProfile(foo_profile));
+
+  // Destroy the ProfileManager while `service_tracker` is still alive. This
+  // exercises `OnProfileManagerDestroying()` and ensures the tracker detaches
+  // cleanly before `ProfileManager`'s `check_empty` observer list is destroyed.
+  TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
+
+  EXPECT_EQ(service_tracker->GetBackgroundDownloadService(), nullptr);
+}
+
 }  // namespace optimization_guide

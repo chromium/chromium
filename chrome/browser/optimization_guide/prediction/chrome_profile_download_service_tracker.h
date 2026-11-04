@@ -36,6 +36,7 @@ class ChromeProfileDownloadServiceTracker
  private:
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;

@@ -772,6 +772,11 @@ void TestingBrowserProcess::MaybeStartTearDown() {
   }
   is_torn_down_ = true;
 
+  // Shut down GlobalFeatures while TaskEnvironment and ThreadPool are still
+  // active, without destroying `testing_profile_manager_` or
+  // `profile_manager_` (which tests may still reference until their own
+  // TearDown() / destructor completes).
+  features_->PostMainMessageLoopRun();
   os_crypt_async_.reset();
   network_time_tracker_.reset();
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)

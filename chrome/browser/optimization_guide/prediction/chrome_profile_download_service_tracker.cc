@@ -16,7 +16,12 @@
 namespace optimization_guide {
 
 ChromeProfileDownloadServiceTracker::ChromeProfileDownloadServiceTracker() {
+  // `profile_manager()` can be null in unit tests that do not set up a
+  // `TestingProfileManager` or after browser shutdown begins.
   auto* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager) {
+    return;
+  }
   profile_manager_observation_.Observe(profile_manager);
   // Start tracking any profiles that already exist.
   for (Profile* profile : profile_manager->GetLoadedProfiles()) {
@@ -25,10 +30,7 @@ ChromeProfileDownloadServiceTracker::ChromeProfileDownloadServiceTracker() {
 }
 
 ChromeProfileDownloadServiceTracker::~ChromeProfileDownloadServiceTracker() {
-  for (Profile* profile : observed_profiles_) {
-    profile->RemoveObserver(this);
-  }
-  observed_profiles_.clear();
+  OnProfileManagerDestroying();
 }
 
 void ChromeProfileDownloadServiceTracker::OnProfileAdded(Profile* profile) {
@@ -49,6 +51,14 @@ void ChromeProfileDownloadServiceTracker::OnProfileAdded(Profile* profile) {
   }
   observed_profiles_.push_back(profile);
   profile->AddObserver(this);
+}
+
+void ChromeProfileDownloadServiceTracker::OnProfileManagerDestroying() {
+  for (Profile* profile : observed_profiles_) {
+    profile->RemoveObserver(this);
+  }
+  observed_profiles_.clear();
+  profile_manager_observation_.Reset();
 }
 
 void ChromeProfileDownloadServiceTracker::OnProfileWillBeDestroyed(
