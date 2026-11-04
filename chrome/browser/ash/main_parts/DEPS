@@ -73,7 +73,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/config",
   "+chrome/browser/ui/webui/ash/emoji",
   "+chrome/common/logging_chrome.h",
-  "+chrome/common/pref_names.h",
 ]
 
 specific_include_rules = {
