@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
@@ -18,7 +20,7 @@
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
 class PrefRegistrySimple;
-class Profile;
+class PrefService;
 
 namespace ash {
 namespace quick_unlock {
@@ -48,7 +50,7 @@ class FingerprintStorage final
   // Registers profile prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  explicit FingerprintStorage(Profile* profile);
+  FingerprintStorage(PrefService* pref_service, std::string username_hash);
 
   FingerprintStorage(const FingerprintStorage&) = delete;
   FingerprintStorage& operator=(const FingerprintStorage&) = delete;
@@ -119,7 +121,11 @@ class FingerprintStorage final
   friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<PrefService> pref_service_;
+
+  // Identifies the user whose records biod is asked for.
+  const std::string username_hash_;
+
   // Number of fingerprint unlock attempts.
   int unlock_attempt_count_ = 0;
 
