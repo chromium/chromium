@@ -735,6 +735,35 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
             u"Customize and control A minimal-ui app");
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
+                       MenuButtonIgnoresShowMenuWhenAlreadyShowing) {
+  const GURL app_url("https://test.org");
+  helper()->InstallAndLaunchWebApp(browser(), app_url);
+
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(
+              helper()->browser_view())));
+  ASSERT_TRUE(menu_button);
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_button->IsMenuShowing());
+  views::MenuItemView* const initial_root_item =
+      menu_button->GetRootMenuItemViewForTesting();
+  EXPECT_NE(initial_root_item, nullptr);
+
+  // Calling ShowMenuWithFlags while the menu is already showing must be a no-op
+  // and must not recreate the running menu.
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_button->IsMenuShowing());
+  EXPECT_EQ(menu_button->GetRootMenuItemViewForTesting(), initial_root_item);
+
+  menu_button->CloseMenu();
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MenuButtonUpdatePending) {
   const GURL app_url("https://test.org");
   webapps::AppId app_id = helper()->InstallAndLaunchWebApp(browser(), app_url);

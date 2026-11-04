@@ -123,6 +123,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -606,7 +607,11 @@ class FullscreenButton : public ImageButton {
   FullscreenButton& operator=(const FullscreenButton&) = delete;
 
   void UpdateState(bool is_fullscreen, bool can_fullscreen) {
+    views::ViewTracker tracker(this);
     SetEnabled(can_fullscreen || is_fullscreen);
+    if (!tracker.view()) {
+      return;
+    }
 
     const int accname_string_id =
         is_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN

@@ -138,6 +138,10 @@ base::CallbackListSubscription WebAppMenuButton::AwaitLabelTextUpdated(
 }
 
 void WebAppMenuButton::ShowMenuWithFlags(int run_types) {
+  if (IsMenuShowing()) {
+    return;
+  }
+
   BrowserWindowInterface* browser = browser_view_->browser();
   if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
     RunActionMenu(browser, run_types);
