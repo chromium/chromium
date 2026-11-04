@@ -21,6 +21,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/AccountPreviewDataService.java",
     "java/src/org/chromium/chrome/browser/signin/services/AccountPreviewPreference.java",
+    "java/src/org/chromium/chrome/browser/signin/services/AiTierPillDrawable.java",
     "java/src/org/chromium/chrome/browser/signin/services/BadgeConfig.java",
     "java/src/org/chromium/chrome/browser/signin/services/DisplayableProfileData.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
@@ -48,6 +49,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/subscription_eligibility:java",
     "//chrome/browser/sync/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/externalauth/android:java",
     "//components/prefs/android:java",
@@ -82,6 +84,7 @@ android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.signin.services"
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/AiTierPillDrawableRenderTest.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheRenderTest.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheWithBadgeRenderTest.java",
   ]
@@ -96,6 +99,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/subscription_eligibility:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
@@ -117,6 +121,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLoggerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/AccountPreviewDataServiceUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/services/AiTierPillDrawableUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/BadgeConfigBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/DisplayableProfileDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
@@ -140,6 +145,7 @@ robolectric_library("junit") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
