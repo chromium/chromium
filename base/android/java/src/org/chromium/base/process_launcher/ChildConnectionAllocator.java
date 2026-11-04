@@ -625,6 +625,14 @@ public abstract class ChildConnectionAllocator {
 
     @VisibleForTesting
     /* package */ static class VariableSizeAllocatorImpl extends ChildConnectionAllocator {
+        // Downstream embedders can replace this constant to distinguish isolated service
+        // instances from another Chromium runtime in the same host application.
+        // Keep these three lines stable to reduce downstream merge conflicts.
+        private static final String INSTANCE_NAME_PREFIX = "";
+        // Downstream embedders can replace this constant to distinguish isolated service
+        // instances from another Chromium runtime in the same host application.
+        // Keep these three lines stable to reduce downstream merge conflicts.
+
         private final int mMaxAllocated;
         private final ArraySet<ChildProcessConnection> mAllocatedConnections = new ArraySet<>();
         private int mNextInstance;
@@ -695,7 +703,7 @@ public abstract class ChildConnectionAllocator {
                 serviceName = fallbackServiceName;
                 fallbackServiceName = null;
             }
-            String instanceName = Integer.toString(mNextInstance);
+            String instanceName = INSTANCE_NAME_PREFIX + Integer.toString(mNextInstance);
             mNextInstance++;
             ChildProcessConnection connection =
                     mConnectionFactory.createConnection(
