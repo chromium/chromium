@@ -511,4 +511,22 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             return mProfileImpl.getCrossOriginIsolatedAllowList();
         }
     }
+
+    @Override
+    public void configureIsolatedSites(@NonNull Set<String> sites) {
+        recordApiCall(ApiCall.CONFIGURE_ISOLATED_SITES);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.CONFIGURE_ISOLATED_SITES")) {
+            mProfileImpl.configureIsolatedSites(sites);
+        }
+    }
+
+    @Override
+    public boolean canConfigureIsolatedSites() {
+        recordApiCall(ApiCall.CAN_CONFIGURE_ISOLATED_SITES);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.CAN_CONFIGURE_ISOLATED_SITES")) {
+            return mProfileImpl.canConfigureIsolatedSites();
+        }
+    }
 }

@@ -515,6 +515,11 @@ public class Features {
     public static final String CROSS_ORIGIN_ISOLATED_ALLOW_LIST =
             "CROSS_ORIGIN_ISOLATED_ALLOW_LIST";
 
+    // Profile.configureIsolatedSites
+    // Profile.canConfigureIsolatedSites
+    public static final String PROFILE_SELECTED_SITE_ISOLATION_V1 =
+            "PROFILE_SELECTED_SITE_ISOLATION_V1";
+
     // NavigationState.getResponseHeaders
     //
     // WebViewNavigationListener.onNavigationRedirected(WebViewNavigationState,

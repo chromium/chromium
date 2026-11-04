@@ -572,4 +572,18 @@ public class Profile {
                 .browserContext
                 .getCrossOriginIsolatedAllowList();
     }
+
+    @UiThread
+    public void configureIsolatedSites(@NonNull Set<String> sites) {
+        getInitializedState(StartupCallSite.PROFILE_CONFIGURE_ISOLATED_SITES)
+                .browserContext
+                .configureIsolatedSites(sites);
+    }
+
+    @UiThread
+    public boolean canConfigureIsolatedSites() {
+        return getInitializedState(StartupCallSite.PROFILE_CAN_CONFIGURE_ISOLATED_SITES)
+                .browserContext
+                .canConfigureIsolatedSites();
+    }
 }

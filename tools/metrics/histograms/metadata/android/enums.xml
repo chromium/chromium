@@ -1052,6 +1052,8 @@ chromium-metrics-reviews@google.com.
   <int value="239" label="GoogleAccountsEvent.getContinueUrl"/>
   <int value="240" label="GoogleAccountsEvent.isOutermostMainFrame"/>
   <int value="241" label="GoogleAccountsEvent.isNavigationRequest"/>
+  <int value="242" label="Profile.configureIsolatedSites"/>
+  <int value="243" label="Profile.canConfigureIsolatedSites"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -3325,6 +3327,8 @@ chromium-metrics-reviews@google.com.
   <int value="146" label="webViewInstanceAddJavaScriptOnEvent"/>
   <int value="147" label="webViewInstanceGetJavaScriptWorld"/>
   <int value="148" label="webViewInstanceGetProfile"/>
+  <int value="149" label="profileConfigureIsolatedSites"/>
+  <int value="150" label="profileCanConfigureIsolatedSites"/>
 </enum>
 
 <!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup,//android_webview/java/src/org/chromium/android_webview/StartupCallSite.java:StartupCallSite) -->

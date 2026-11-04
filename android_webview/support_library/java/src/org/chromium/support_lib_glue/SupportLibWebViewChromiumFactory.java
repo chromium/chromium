@@ -170,6 +170,7 @@ public class SupportLibWebViewChromiumFactory
                 Features.NAVIGATION_LISTENER_NAVIGATION_STATE,
                 Features.HEADER_INTERCEPTOR + Features.DEV_SUFFIX,
                 Features.GOOGLE_ACCOUNTS_CALLBACK,
+                Features.PROFILE_SELECTED_SITE_ISOLATION_V1 + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -435,6 +436,8 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.GOOGLE_ACCOUNTS_EVENT_GET_CONTINUE_URL,
         ApiCall.GOOGLE_ACCOUNTS_EVENT_IS_OUTERMOST_MAIN_FRAME,
         ApiCall.GOOGLE_ACCOUNTS_EVENT_IS_NAVIGATION_REQUEST,
+        ApiCall.CONFIGURE_ISOLATED_SITES,
+        ApiCall.CAN_CONFIGURE_ISOLATED_SITES,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -686,8 +689,10 @@ public class SupportLibWebViewChromiumFactory
         int GOOGLE_ACCOUNTS_EVENT_GET_CONTINUE_URL = 239;
         int GOOGLE_ACCOUNTS_EVENT_IS_OUTERMOST_MAIN_FRAME = 240;
         int GOOGLE_ACCOUNTS_EVENT_IS_NAVIGATION_REQUEST = 241;
+        int CONFIGURE_ISOLATED_SITES = 242;
+        int CAN_CONFIGURE_ISOLATED_SITES = 243;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 242;
+        int COUNT = 244;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
