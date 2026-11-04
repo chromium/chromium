@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/functional/callback.h"
@@ -344,15 +345,10 @@ void ContentAutofillDriver::TriggerFormExtractionInDriverFrame(
 void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
     bool force,
     base::OnceCallback<void(bool success)> form_extraction_finished_callback) {
-  std::vector<ContentAutofillDriver*> drivers;
-  render_frame_host()->GetMainFrame()->ForEachRenderFrameHost(
-      [&drivers](content::RenderFrameHost* rfh) {
-        if (rfh->IsActive()) {
-          if (auto* driver = GetForRenderFrameHost(rfh)) {
-            drivers.push_back(driver);
-          }
-        }
-      });
+  std::vector<autofill::AutofillDriver*> drivers = owner_->GetExistingDrivers();
+  std::erase_if(drivers, [](const autofill::AutofillDriver* driver) {
+    return !driver->IsActive();
+  });
   auto barrier_callback = base::BarrierCallback<bool>(
       drivers.size(),
       base::BindOnce(
@@ -363,11 +359,12 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
                 .Run(std::ranges::all_of(successes, std::identity()));
           },
           std::move(form_extraction_finished_callback)));
-  for (ContentAutofillDriver* driver : drivers) {
+  for (autofill::AutofillDriver* driver : drivers) {
+    auto* content_driver = static_cast<ContentAutofillDriver*>(driver);
     if (force) {
-      driver->GetAutofillAgent()->ClearFormCache();
+      content_driver->GetAutofillAgent()->ClearFormCache();
     }
-    driver->GetAutofillAgent()->TriggerFormExtractionWithResponse(
+    content_driver->GetAutofillAgent()->TriggerFormExtractionWithResponse(
         barrier_callback);
   }
 }

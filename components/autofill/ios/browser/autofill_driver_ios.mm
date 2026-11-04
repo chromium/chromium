@@ -12,6 +12,7 @@
 #import <type_traits>
 #import <utility>
 #import <variant>
+#import <vector>
 
 #import "base/barrier_callback.h"
 #import "base/check_deref.h"
@@ -455,33 +456,19 @@ void AutofillDriverIOS::FetchFormsFilteredByName(
 void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
     bool force,
     base::OnceCallback<void(bool)> form_extraction_finished_callback) {
-  if (!web_state_) {
-    std::move(form_extraction_finished_callback).Run(false);
-    return;
-  }
-
-  web::WebFramesManager* frames_manager =
-      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state_);
-  if (!frames_manager) {
-    std::move(form_extraction_finished_callback).Run(false);
-    return;
-  }
-
-  std::vector<AutofillDriverIOS*> drivers;
-  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
-    if (AutofillDriverIOS* driver =
-            FromWebStateAndWebFrame(web_state_, frame)) {
-      drivers.push_back(driver);
-    }
-  }
+  std::vector<AutofillDriver*> drivers =
+      client_->GetAutofillDriverFactory().GetExistingDrivers();
+  std::erase_if(drivers, [](const AutofillDriver* driver) {
+    return !driver->IsActive();
+  });
 
   auto barrier_callback = base::BarrierCallback<bool>(
       drivers.size(), base::BindOnce([](const std::vector<bool>& successes) {
                         return std::ranges::all_of(successes, std::identity());
                       }).Then(std::move(form_extraction_finished_callback)));
 
-  for (AutofillDriverIOS* driver : drivers) {
-    driver->ScanForms(/*immediately=*/false, barrier_callback);
+  for (AutofillDriver* driver : drivers) {
+    cast(driver)->ScanForms(/*immediately=*/false, barrier_callback);
   }
 }
 
