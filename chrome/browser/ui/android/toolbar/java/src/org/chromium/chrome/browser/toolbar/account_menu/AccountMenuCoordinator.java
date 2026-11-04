@@ -104,6 +104,10 @@ public class AccountMenuCoordinator {
                 ItemType.MENU_ITEM,
                 new LayoutViewBuilder<>(R.layout.account_menu_item),
                 AccountMenuViewBinder::bindMenuItem);
+        mAdapter.registerType(
+                ItemType.ERROR_CARD,
+                new LayoutViewBuilder<>(R.layout.signin_settings_card_view),
+                AccountMenuViewBinder::bindErrorCard);
         // TODO(crbug.com/565733817): Remove DIVIDER registration and account_menu_divider.xml when
         // SigninButtonProfileMenuRefinements is launched.
         mAdapter.registerType(

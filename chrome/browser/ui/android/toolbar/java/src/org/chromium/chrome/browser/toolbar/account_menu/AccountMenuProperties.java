@@ -13,6 +13,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -28,13 +29,20 @@ public class AccountMenuProperties {
     private AccountMenuProperties() {}
 
     /** Item types supported by the Account Menu RecyclerView. */
-    @IntDef({ItemType.MENU_ITEM, ItemType.DIVIDER, ItemType.PROMO_CARD, ItemType.IDENTITY_CARD})
+    @IntDef({
+        ItemType.MENU_ITEM,
+        ItemType.DIVIDER,
+        ItemType.PROMO_CARD,
+        ItemType.IDENTITY_CARD,
+        ItemType.ERROR_CARD
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ItemType {
         int MENU_ITEM = 0;
         int DIVIDER = 1;
         int PROMO_CARD = 2;
         int IDENTITY_CARD = 3;
+        int ERROR_CARD = 4;
     }
 
     /** Properties for menu items in the Account Menu. */
@@ -170,6 +178,27 @@ public class AccountMenuProperties {
                     .with(PROFILE_DATA, profileData)
                     .with(SHOULD_DISPLAY_MANAGED_HEADER, shouldDisplayManagedHeader)
                     .with(MANAGED_HEADER_CLICK_LISTENER, onManagedHeaderClickListener)
+                    .build();
+        }
+    }
+
+    /** Properties for the sync error card item in the Account Menu. */
+    public static class ErrorCardProperties {
+        /** Holds the sync {@link UserActionableError} type. */
+        public static final WritableIntPropertyKey TYPE = new WritableIntPropertyKey();
+
+        public static final WritableObjectPropertyKey<Runnable> BUTTON_CLICK_ACTION =
+                new WritableObjectPropertyKey<>();
+
+        public static final PropertyKey[] ALL_KEYS = {TYPE, BUTTON_CLICK_ACTION};
+
+        private ErrorCardProperties() {}
+
+        public static PropertyModel createModel(
+                @UserActionableError int type, Runnable onButtonClick) {
+            return new PropertyModel.Builder(ALL_KEYS)
+                    .with(TYPE, type)
+                    .with(BUTTON_CLICK_ACTION, onButtonClick)
                     .build();
         }
     }

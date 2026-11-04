@@ -16,7 +16,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.sync.ui.IdentityErrorCardViewBinder;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ErrorCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
@@ -153,6 +155,17 @@ public class AccountMenuViewBinder {
                             model.get(IdentityCardProperties.MANAGED_HEADER_CLICK_LISTENER));
         } else {
             assert false : "Unhandled property key: " + propertyKey;
+        }
+    }
+
+    public static void bindErrorCard(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == ErrorCardProperties.TYPE
+                || propertyKey == ErrorCardProperties.BUTTON_CLICK_ACTION) {
+            IdentityErrorCardViewBinder.bind(
+                    view.getContext(),
+                    view.findViewById(R.id.signin_settings_card),
+                    model.get(ErrorCardProperties.TYPE),
+                    model.get(ErrorCardProperties.BUTTON_CLICK_ACTION));
         }
     }
 }

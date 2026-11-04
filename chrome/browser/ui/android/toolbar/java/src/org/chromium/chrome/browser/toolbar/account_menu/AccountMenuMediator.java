@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ErrorCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
@@ -71,7 +72,9 @@ import java.lang.annotation.RetentionPolicy;
 /** Mediator managing business logic and menu items for the Account Menu popup. */
 @NullMarked
 public class AccountMenuMediator
-        implements SigninManager.SignInStateObserver, ProfileDataCache.Observer {
+        implements SigninManager.SignInStateObserver,
+                ProfileDataCache.Observer,
+                SyncService.SyncStateChangedListener {
     /**
      * Events recorded for the account menu: the menu being shown, along with the sign-in state it
      * was shown in, and the item the user selected in it. These values are persisted to logs.
@@ -168,6 +171,7 @@ public class AccountMenuMediator
         mIdentityManager =
                 assertNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         mSyncService = assertNonNull(SyncServiceFactory.getForProfile(mProfile));
+        mSyncService.addSyncStateChangedListener(this);
 
         updateMenuItems(/* recordShownMetrics= */ false);
     }
@@ -185,6 +189,12 @@ public class AccountMenuMediator
 
     @Override
     public void onSignedOut() {
+        updateMenuItems(/* recordShownMetrics= */ false);
+    }
+
+    /** {@link SyncService.SyncStateChangedListener} implementation. */
+    @Override
+    public void syncStateChanged() {
         updateMenuItems(/* recordShownMetrics= */ false);
     }
 
@@ -230,6 +240,7 @@ public class AccountMenuMediator
 
     /** Cleans up observers and resources. */
     public void destroy() {
+        mSyncService.removeSyncStateChangedListener(this);
         mSigninManager.removeSignInStateObserver(this);
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -262,6 +273,7 @@ public class AccountMenuMediator
         final @Event int shownEvent;
         if (accountInfo != null) {
             addIdentityCard(mIdentityManager, accountInfo);
+            maybeAddErrorCard();
             boolean hasIdentityError =
                     mSyncService.getUserActionableError() != UserActionableError.NONE;
             shownEvent =
@@ -313,6 +325,19 @@ public class AccountMenuMediator
                     accountInfo,
                     mCallbackController.makeCancelable(
                             isManaged -> updateAccountManagedHeader(accountId, isManaged)));
+        }
+    }
+
+    private void maybeAddErrorCard() {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_ERROR_CARD)) {
+            return;
+        }
+        // TODO(crbug.com/555648510): Record a AccountMenu.Event for error card button click.
+        @UserActionableError int error = mSyncService.getUserActionableError();
+        if (error != UserActionableError.NONE) {
+            mModelList.add(
+                    new ListItem(
+                            ItemType.ERROR_CARD, ErrorCardProperties.createModel(error, () -> {})));
         }
     }
 
@@ -468,8 +493,9 @@ public class AccountMenuMediator
     }
 
     private ListItem createAccountSettingsItem(boolean isSectionTop, boolean isSectionBottom) {
-        SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
-        boolean showIconBadge = syncService.getUserActionableError() != UserActionableError.NONE;
+        boolean showIconBadge =
+                !SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_ERROR_CARD)
+                        && mSyncService.getUserActionableError() != UserActionableError.NONE;
         return new ListItem(
                 ItemType.MENU_ITEM,
                 MenuItemProperties.createModel(
