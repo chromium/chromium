@@ -1532,6 +1532,105 @@ TEST_P(PrefetchServiceTest, BrowserContextPrefetchRespectsTTL) {
   EXPECT_FALSE(serving_handle);
 }
 
+TEST_P(PrefetchServiceTest,
+       BrowserContextPrefetchAdditionalHeadersRemovedOnCrossOriginRedirect) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  net::HttpRequestHeaders request_additional_headers = {};
+  request_additional_headers.SetHeader("foo", "bar");
+  request_additional_headers.SetHeader("foo1", "bar1");
+
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("https://example.com"), std::nullopt,
+                                     request_additional_headers,
+                                     /*request_status_listener=*/nullptr);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForBrowserContextPrefetch(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = false,
+       .additional_headers = request_additional_headers});
+  VerifyFollowRedirectParams(0);
+
+  MakeSingleRedirectAndWait(GURL("https://other.example/redirect"));
+  VerifyFollowRedirectParams(1);
+
+  // The additional headers supplied for the originally-requested URL should be
+  // removed when following a redirect to a different origin, matching the
+  // behaviour of `NavigationRequest::OnRedirectChecksComplete()`.
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(request);
+  ASSERT_TRUE(request->test_url_loader);
+  const auto& follow_redirect_params =
+      request->test_url_loader->follow_redirect_params();
+  ASSERT_EQ(follow_redirect_params.size(), 1u);
+  EXPECT_THAT(follow_redirect_params[0].headers_update_params.removed_headers,
+              testing::IsSupersetOf({"foo", "foo1"}));
+
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      prefetch_service().MatchUrl(
+          PrefetchKey(std::nullopt, GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_container);
+  ASSERT_TRUE(prefetch_container->GetResourceRequest());
+  EXPECT_EQ(prefetch_container->GetResourceRequest()->url,
+            GURL("https://other.example/redirect"));
+  EXPECT_FALSE(
+      prefetch_container->GetResourceRequest()->headers.HasHeader("foo"));
+  EXPECT_FALSE(
+      prefetch_container->GetResourceRequest()->headers.HasHeader("foo1"));
+}
+
+TEST_P(PrefetchServiceTest,
+       BrowserContextPrefetchAdditionalHeadersKeptOnSameOriginRedirect) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  net::HttpRequestHeaders request_additional_headers = {};
+  request_additional_headers.SetHeader("foo", "bar");
+  request_additional_headers.SetHeader("foo1", "bar1");
+
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("https://example.com"), std::nullopt,
+                                     request_additional_headers,
+                                     /*request_status_listener=*/nullptr);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForBrowserContextPrefetch(
+      GURL("https://example.com"),
+      {.use_prefetch_proxy = false,
+       .additional_headers = request_additional_headers});
+  VerifyFollowRedirectParams(0);
+
+  MakeSingleRedirectAndWait(GURL("https://example.com/redirect"));
+  VerifyFollowRedirectParams(1);
+
+  // The additional headers should be kept when following a same-origin
+  // redirect.
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(request);
+  ASSERT_TRUE(request->test_url_loader);
+  const auto& follow_redirect_params =
+      request->test_url_loader->follow_redirect_params();
+  ASSERT_EQ(follow_redirect_params.size(), 1u);
+  EXPECT_THAT(follow_redirect_params[0].headers_update_params.removed_headers,
+              testing::Not(testing::Contains(testing::AnyOf("foo", "foo1"))));
+
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      prefetch_service().MatchUrl(
+          PrefetchKey(std::nullopt, GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_container);
+  ASSERT_TRUE(prefetch_container->GetResourceRequest());
+  EXPECT_EQ(prefetch_container->GetResourceRequest()->url,
+            GURL("https://example.com/redirect"));
+  EXPECT_EQ(prefetch_container->GetResourceRequest()->headers.GetHeader("foo"),
+            "bar");
+  EXPECT_EQ(prefetch_container->GetResourceRequest()->headers.GetHeader("foo1"),
+            "bar1");
+}
+
 TEST_P(PrefetchServiceTest, PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());

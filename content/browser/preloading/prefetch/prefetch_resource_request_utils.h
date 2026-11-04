@@ -69,7 +69,8 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
 // `URLLoader::FollowRedirect()`.
 network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
     const GURL& request_url,
-    const PrefetchRequest& prefetch_request);
+    const PrefetchRequest& prefetch_request,
+    bool should_remove_embedder_additional_headers);
 
 // Modifies "X-Client-Data" headers of `resource_request` upon redirect. Must be
 // called after `resource_request.url` is updated.

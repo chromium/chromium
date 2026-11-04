@@ -93,6 +93,47 @@ void AddAdditionalHeaders(net::HttpRequestHeaders& request_headers,
   }
 }
 
+// Remove them when following a redirect to a different origin, explicitly
+// following the semantics of `WebView.navigate` (which is implemented via
+// `NavigationRequest::OnRedirectChecksComplete()` for browser-initiated
+// navigations with `remove_extra_headers_on_cross_origin_redirect`).
+//
+// Please see `PrefetchContainer::ShouldRemoveEmbedderAdditionalHeaders()` too
+// for more details.
+void RemoveAdditionalHeaders(
+    network::HttpRequestHeadersUpdateParams& headers_update_params,
+    bool should_remove_embedder_additional_headers,
+    const PrefetchRequest& prefetch_request) {
+  if (!should_remove_embedder_additional_headers) {
+    return;
+  }
+
+  // Header overwrite and recovery:
+  // `NavigationRequest::OnRedirectChecksComplete()` does not have any explicit
+  // mechanism around handling overwritten headers by additional headers during
+  // the first request; it simply adds them to `removed_headers`. For example,
+  // if the embedder overrides an internal Chrome `X-Example` header via an
+  // Additional header, and the header is pushed to `removed_headers` on a
+  // cross-origin redirect, the embedder's override is simply removed.
+  net::HttpRequestHeaders headers_to_remove =
+      prefetch_request.additional_headers();
+
+  // Unlike `NavigationRequest::OnRedirectChecksComplete()`, which removes all
+  // extra headers (including `User-Agent`) and then re-adds a recomputed
+  // `User-Agent` to `modified_headers`, Prefetch does not currently re-apply
+  // WebContents overrides on redirects (TODO(crbug.com/441612842)).
+  // Therefore, to ensure the overridden UA survives across cross-origin
+  // redirects, it is simply excluded from the removal list here.
+  if (base::FeatureList::IsEnabled(
+          features::kPreloadingRespectUserAgentOverride)) {
+    headers_to_remove.RemoveHeader(net::HttpRequestHeaders::kUserAgent);
+  }
+
+  for (const auto& header : headers_to_remove.GetHeaderVector()) {
+    headers_update_params.removed_headers.push_back(header.key);
+  }
+}
+
 // ------------------------------------------------------------------------
 // [2] `Sec-Purpose`:
 // Returns "Sec-Purpose" header value for a prefetch request to
@@ -516,7 +557,8 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
 
 network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
     const GURL& request_url,
-    const PrefetchRequest& prefetch_request) {
+    const PrefetchRequest& prefetch_request,
+    bool should_remove_embedder_additional_headers) {
   TRACE_EVENT("loading", "PrepareRedirectHeadersForPrefetch");
   // There are sometimes other headers that are modified during navigation
   // redirects; see `NavigationRequest::OnRedirectChecksComplete` (including
@@ -526,6 +568,20 @@ network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
   network::HttpRequestHeadersUpdateParams headers_update_params;
 
   url::Origin request_url_origin = url::Origin::Create(request_url);
+
+  // ------------------------------------------------------------------------
+  // [1] Additional headers:
+  //
+  // Ordering: This is done here just to align with the order of
+  // `AddAdditionalHeaders()` in
+  // `PrepareInitialHeadersForPrefetchPhase1()` and the extra header removal in
+  // `NavigationRequest::OnRedirectChecksComplete()`, while the order of
+  // `RemoveAdditionalHeaders()` is currently no-op here because
+  // `removed_headers` isn't checked during
+  // `PrepareRedirectHeadersForPrefetch()`.
+  RemoveAdditionalHeaders(headers_update_params,
+                          should_remove_embedder_additional_headers,
+                          prefetch_request);
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Purpose`:

@@ -368,6 +368,11 @@ class CONTENT_EXPORT PrefetchContainer
   void PauseAllCookieListeners();
   void ResumeAllCookieListeners();
 
+  // Determines whether embedder additional headers should be removed on a
+  // redirect to `next_url`. This also updates the internal state so that
+  // headers are only removed once per prefetch.
+  bool ShouldRemoveEmbedderAdditionalHeaders(const GURL& next_url);
+
   // The isolated network context used to make network requests, copy cookies,
   // etc. This is a per-`PrefetchContainer` instance that can be used for all
   // redirect hops where needed.
@@ -718,6 +723,10 @@ class CONTENT_EXPORT PrefetchContainer
 
   PrefetchServiceWorkerState service_worker_state_ =
       PrefetchServiceWorkerState::kAllowed;
+
+  // Whether embedder's additional headers are already removed during a
+  // cross-origin redirect.
+  bool is_embedder_additional_headers_removed_ = false;
 
   // The `ResourceRequest` for the current prefetch request.
   // This is initially set in `OnPrefetchStarted()`, which is called from

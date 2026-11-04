@@ -21,6 +21,9 @@ BASE_FEATURE(kPrefetchNIKScope, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchClientHints, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchRedirectRemoveEmbedderAdditionalHeaders,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>::Option
     kPrefetchClientHintsCrossSiteBehaviorOptions[] = {
         {PrefetchClientHintsCrossSiteBehavior::kNone, "none"},

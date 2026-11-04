@@ -1197,6 +1197,33 @@ void PrefetchContainer::UpdateResourceRequest(
   UpdateVariationsHeaderForPrefetch(*resource_request_, request());
 }
 
+bool PrefetchContainer::ShouldRemoveEmbedderAdditionalHeaders(
+    const GURL& next_url) {
+  if (!base::FeatureList::IsEnabled(
+          features::kPrefetchRedirectRemoveEmbedderAdditionalHeaders)) {
+    return false;
+  }
+
+  // Redirect chains: To mirror `NavigationRequest::OnRedirectChecksComplete()`,
+  // the current redirect target is compared against the immediately preceding
+  // URL, and the headers are removed at most once. For example, in an
+  // A -> B -> A redirect chain, the headers are added to `removed_headers`
+  // during the A -> B hop, permanently stripping them from the resource
+  // request. `NavigationRequest::OnRedirectChecksComplete()` then clears
+  // `initial_extra_headers_` and resets
+  // `remove_extra_headers_on_cross_origin_redirect_`, so it is a no-op during
+  // the B -> A hop. `is_embedder_additional_headers_removed_` mirrors that.
+  if (is_embedder_additional_headers_removed_) {
+    return false;
+  }
+  if (url::Origin::Create(next_url).IsSameOriginWith(GetPreviousURL())) {
+    return false;
+  }
+  is_embedder_additional_headers_removed_ = true;
+
+  return true;
+}
+
 void PrefetchContainer::AddRedirectHop(const GURL& url) {
   redirect_chain_.push_back(std::make_unique<PrefetchSingleRedirectHop>(
       *this, url, request().preload_pipeline_info().GetFlow()));
@@ -1636,8 +1663,11 @@ void PrefetchContainer::SimulatePrefetchRedirectedForTest(  // IN-TEST
 
   OnEligibilityCheckComplete(eligibility);
 
-  auto headers_update_params =
-      PrepareRedirectHeadersForPrefetch(redirect_info.new_url, request());
+  bool should_remove_embedder_additional_headers =
+      ShouldRemoveEmbedderAdditionalHeaders(redirect_info.new_url);
+  auto headers_update_params = PrepareRedirectHeadersForPrefetch(
+      redirect_info.new_url, request(),
+      should_remove_embedder_additional_headers);
   UpdateResourceRequest(redirect_info, std::move(headers_update_params));
 }
 

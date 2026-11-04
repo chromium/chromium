@@ -1379,8 +1379,12 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return;
   }
 
+  bool should_remove_embedder_additional_headers =
+      prefetch_container->ShouldRemoveEmbedderAdditionalHeaders(
+          redirect_info.new_url);
   auto headers_update_params = PrepareRedirectHeadersForPrefetch(
-      redirect_info.new_url, prefetch_container->request());
+      redirect_info.new_url, prefetch_container->request(),
+      should_remove_embedder_additional_headers);
 
   prefetch_container->UpdateResourceRequest(redirect_info,
                                             headers_update_params);

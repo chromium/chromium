@@ -31,6 +31,11 @@ BASE_DECLARE_FEATURE(kPrefetchNIKScope);
 // If enabled, prefetches may include client hints request headers.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchClientHints);
 
+// If enabled, embedder additional headers will be removed upon cross-origin
+// redirects for prefetches, providing a fix for crbug.com/511781454.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrefetchRedirectRemoveEmbedderAdditionalHeaders);
+
 // This allows controlling the behavior of client hints with prefetches in case
 // an unexpected issue arises with the planned behavior, or one is suspected and
 // we want to debug more easily.
