@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -2617,6 +2618,33 @@ TEST_P(PaintLayerTest, PaintLayerCanvasTransformUpdated) {
             *target_layer->Transform());
   EXPECT_EQ(gfx::RectF(58, 68, 100, 100),
             target->GetBoundingClientRectNoLifecycleUpdate());
+}
+
+TEST_P(PaintLayerTest, ContentVisibilityHiddenObjectDoesNotPaintSubframe) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <object id="target" type="text/html" data="about:blank"
+            style="width: 100px; height: 100px"></object>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  To<HTMLPlugInElement>(GetElementById("target"))->UpdatePlugin();
+  SetChildFrameHTML(R"HTML(
+    <div id="child" style="width: 50px; height: 50px; background: green"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto* child =
+      ChildDocument().getElementById(AtomicString("child"))->GetLayoutObject();
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(child->Id(), kBackgroundType)));
+
+  GetElementById("target")->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("width: 100px; height: 100px; content-visibility: hidden"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
 }
 
 }  // namespace blink
