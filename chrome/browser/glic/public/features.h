@@ -282,6 +282,8 @@ BASE_DECLARE_FEATURE(kGlicActivityHub);
 // Uses the updated copy and title layout for the Glic experimental triggering
 // OS notification. Kill switch: when disabled, the original strings are shown.
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings);
+
+BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

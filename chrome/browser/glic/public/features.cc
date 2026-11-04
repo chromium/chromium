@@ -380,4 +380,6 @@ BASE_FEATURE(kGlicActivityHub, base::FEATURE_DISABLED_BY_DEFAULT);
 // IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_* strings, once launched.
 BASE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings,
              FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+
+BASE_FEATURE(kGlicWhatsNewLuminous, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
