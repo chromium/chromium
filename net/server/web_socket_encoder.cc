@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
@@ -163,7 +162,7 @@ void EncodeFrameHybi17(std::string_view message,
                        bool compressed,
                        WebSocketFrameHeader::OpCodeEnum op_code,
                        std::string* output) {
-  std::vector<char> frame;
+  std::string frame;
   size_t data_length = message.length();
 
   int reserved1 = compressed ? kReserved1Bit : 0;
@@ -184,21 +183,22 @@ void EncodeFrameHybi17(std::string_view message,
       extended_payload_length[7 - i] = remaining & 0xFF;
       remaining >>= 8;
     }
-    base::Extend(frame, extended_payload_length);
+    frame.append(base::as_string_view(extended_payload_length));
     DCHECK(!remaining);
   }
 
   if (masking_key != 0) {
     std::string_view mask_bytes(reinterpret_cast<const char*>(&masking_key),
                                 kMaskingKeyWidthInBytes);
-    base::Extend(frame, mask_bytes);
+    frame.reserve(frame.size() + kMaskingKeyWidthInBytes + data_length);
+    frame.append(mask_bytes);
     for (size_t i = 0; i < data_length; ++i) {  // Mask the payload.
       frame.push_back(message[i] ^ mask_bytes[i % kMaskingKeyWidthInBytes]);
     }
   } else {
-    base::Extend(frame, message);
+    frame.append(message);
   }
-  *output = std::string(frame.data(), frame.size());
+  *output = std::move(frame);
 }
 
 }  // anonymous namespace
@@ -377,17 +377,16 @@ bool WebSocketEncoder::Inflate(std::string* message) {
   if (!inflater_->Finish())
     return false;
 
-  std::vector<char> output;
+  std::string output;
   while (inflater_->CurrentOutputSize() > 0) {
     scoped_refptr<IOBufferWithSize> chunk =
         inflater_->GetOutput(inflater_->CurrentOutputSize());
     if (!chunk.get())
       return false;
-    base::Extend(output, chunk->span());
+    output.append(base::as_string_view(chunk->span()));
   }
 
-  *message =
-      output.size() ? std::string(output.data(), output.size()) : std::string();
+  *message = std::move(output);
   return true;
 }
 
