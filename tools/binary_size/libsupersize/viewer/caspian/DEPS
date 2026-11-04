@@ -1,4 +1,5 @@
 include_rules = [
+  "+third_party/abseil-cpp",
   "+third_party/zlib",
   "+third_party/jsoncpp",
   "+third_party/re2",

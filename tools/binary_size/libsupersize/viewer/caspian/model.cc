@@ -10,7 +10,6 @@
 #include <list>
 #include <sstream>
 #include <tuple>
-#include <unordered_map>
 
 #include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/function_signature.h"
