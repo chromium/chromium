@@ -2293,6 +2293,13 @@ void HostProcess::ShutdownHost(HostExitCodes exit_code) {
 
   switch (state_) {
     case HOST_SUSPENDED:
+      // A suspended host is not the active host heartbeating to the directory,
+      // so pass `kHostOfflineReasonSuspended` to skip reporting an offline
+      // reason that would mark the active host offline.
+      SetState(HOST_GOING_OFFLINE_TO_STOP);
+      GoOffline(kHostOfflineReasonSuspended);
+      break;
+
     case HOST_STARTING:
     case HOST_STARTED:
       SetState(HOST_GOING_OFFLINE_TO_STOP);

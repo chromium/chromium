@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/at_exit.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -37,6 +38,10 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/proto/terminal.pb.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_POSIX)
+#include <signal.h>
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_LINUX)
 #include <sys/prctl.h>
@@ -278,6 +283,12 @@ int SendAgentStatusMain(const base::CommandLine* command_line) {
 }  // namespace
 
 int HostMain(int argc, char** argv) {
+#if BUILDFLAG(IS_POSIX)
+  // Always ignore SIGPIPE. Networking, IPC, and logging code check write()
+  // return values and expect EPIPE rather than process termination.
+  PCHECK(signal(SIGPIPE, SIG_IGN) != SIG_ERR);
+#endif  // BUILDFLAG(IS_POSIX)
+
   base::ScopedMemoryConsumerRegistry<base::DummyMemoryConsumerRegistry>
       memory_consumer_registry;
 
