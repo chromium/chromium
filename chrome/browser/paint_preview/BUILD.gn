@@ -45,7 +45,6 @@ if (!is_android && enable_paint_preview) {
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//components/paint_preview/browser",
       "//components/paint_preview/browser:test_support",
       "//components/paint_preview/common",

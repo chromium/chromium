@@ -671,7 +671,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/user_education",
-      "//chrome/test:test_support_ui",
       "//chrome/test/user_education:impl",
     ]
   }
@@ -832,7 +831,6 @@ if (!is_android) {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/unified_consent",
-      "//chrome/test:test_support_ui",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/base:tracing",
       "//components/metrics/demographics",
