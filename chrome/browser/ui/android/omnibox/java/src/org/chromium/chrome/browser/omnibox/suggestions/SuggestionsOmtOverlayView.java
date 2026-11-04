@@ -26,6 +26,7 @@ import org.jni_zero.JniUniquePtr;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsOmtInputAnchor.NativeOmtInputReceiverState;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceInput;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,6 +107,14 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
     private @Nullable JniUniquePtr<NativeOmtInputReceiverState> mNativeReceiverState;
 
     /**
+     * Whether a hover interaction has been detected during the current dropdown visibility session.
+     *
+     * <p>Latched to {@code true} on the UI thread when {@link #onHoverDetected()} fires and reset
+     * to {@code false} when the companion dropdown is hidden or this overlay is detached.
+     */
+    private boolean mHoverDetected;
+
+    /**
      * Constructs a new overlay view and starts its dedicated background input looper thread.
      *
      * @param context The Context the view is running in.
@@ -150,6 +159,7 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
         mDropdown.removeOnLayoutChangeListener(mLayoutChangeListener);
         mDropdown.removeOnScrollListener(mScrollListener);
         resetTouchTransfer();
+        mHoverDetected = false;
         ViewGroup parent = (ViewGroup) getParent();
         if (parent != null) {
             parent.removeView(this);
@@ -164,12 +174,17 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
 
     /**
      * Updates the overlay surface visibility and bounds based on live dropdown dimensions, scroll
-     * state, connected pointing devices, and layout bounds.
+     * state, connected pointing devices, accessibility state, hover state, and layout bounds.
      *
      * <p>Must be called on the UI thread.
      */
     void updateOverlayVisualState() {
         matchSuggestionsDropdownPlacement();
+
+        boolean isDropdownShown = mDropdown.isShown();
+        if (!isDropdownShown) {
+            mHoverDetected = false;
+        }
 
         // Require the host window to hold focus so focusable popups or dialogs displayed over part
         // of the dropdown are not blocked from receiving outside-touch dismissal events by the
@@ -181,16 +196,21 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
         // loss from hiding the SurfaceView and destroying its SurfaceControl/AInputReceiver
         // mid-gesture.
         boolean isVisible =
-                mDropdown.isShown()
+                isDropdownShown
                         && mDropdown.getWindowVisibility() == View.VISIBLE
                         && (mDropdown.hasWindowFocus() || isTouchTransferActive());
         boolean isIdle = mDropdown.getScrollState() == RecyclerView.SCROLL_STATE_IDLE;
         boolean hasBounds = mDropdown.getWidth() > 0 && mDropdown.getHeight() > 0;
         // Enable overlay only when the dropdown is visible, stationary (IDLE),
-        // no precision pointing devices are connected, and layout bounds are positive and
-        // non-empty.
+        // no precision pointing devices, touch exploration, or hover interactions are active,
+        // and layout bounds are positive and non-empty.
         boolean shouldBeVisible =
-                isVisible && isIdle && !DeviceInput.supportsPrecisionPointer() && hasBounds;
+                isVisible
+                        && isIdle
+                        && !DeviceInput.supportsPrecisionPointer()
+                        && !AccessibilityState.isTouchExplorationEnabled()
+                        && !mHoverDetected
+                        && hasBounds;
         setVisibility(shouldBeVisible ? View.VISIBLE : View.GONE);
     }
 
@@ -222,6 +242,17 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
 
     void onTouchTransferred() {
         mTouchTransferActive.set(true);
+    }
+
+    void onHoverDetected() {
+        mMainHandler.post(
+                () -> {
+                    if (!mDropdown.isShown() || mHoverDetected) {
+                        return;
+                    }
+                    mHoverDetected = true;
+                    updateOverlayVisualState();
+                });
     }
 
     boolean isTouchTransferActive() {
@@ -267,7 +298,8 @@ class SuggestionsOmtOverlayView extends SurfaceView implements SurfaceHolder.Cal
                                     .registerInputReceiver(
                                             surfaceControl,
                                             mainWindowToken,
-                                            this::onTouchTransferred);
+                                            this::onTouchTransferred,
+                                            this::onHoverDetected);
                 });
     }
 

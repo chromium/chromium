@@ -6,6 +6,7 @@
 
 #include <android/input.h>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -48,7 +49,7 @@ TEST_F(SuggestionsOmtInputAnchorNativeTest,
   const int32_t kNonDownActions[] = {
       AMOTION_EVENT_ACTION_UP,         AMOTION_EVENT_ACTION_MOVE,
       AMOTION_EVENT_ACTION_CANCEL,     AMOTION_EVENT_ACTION_POINTER_DOWN,
-      AMOTION_EVENT_ACTION_POINTER_UP, AMOTION_EVENT_ACTION_HOVER_MOVE,
+      AMOTION_EVENT_ACTION_POINTER_UP, AMOTION_EVENT_ACTION_HOVER_EXIT,
   };
 
   for (int32_t action : kNonDownActions) {
@@ -56,6 +57,37 @@ TEST_F(SuggestionsOmtInputAnchorNativeTest,
         /*context=*/nullptr, AINPUT_EVENT_TYPE_MOTION, action, event_time_ns,
         /*trigger_transfer=*/false);
     EXPECT_FALSE(handled);
+  }
+
+  histogram_tester_.ExpectTotalCount(kTouchDownDelayHistogram, 0);
+}
+
+TEST_F(SuggestionsOmtInputAnchorNativeTest,
+       MotionEventHover_InvokesCallbackAndEmitsNoMetric) {
+  int64_t event_time_ns = (base::TimeTicks::Now() - base::Milliseconds(50))
+                              .since_origin()
+                              .InNanoseconds();
+
+  int hover_callback_count = 0;
+  OmtInputReceiverState state;
+  state.hover_callback =
+      base::BindLambdaForTesting([&]() { ++hover_callback_count; });
+
+  const int32_t kHoverActions[] = {
+      AMOTION_EVENT_ACTION_HOVER_ENTER,
+      AMOTION_EVENT_ACTION_HOVER_MOVE,
+  };
+
+  int expected_count = 0;
+  for (int32_t action : kHoverActions) {
+    bool handled = ProcessMotionEvent(
+        /*context=*/&state, AINPUT_EVENT_TYPE_MOTION, action, event_time_ns);
+    EXPECT_TRUE(handled);
+    EXPECT_EQ(hover_callback_count, ++expected_count);
+
+    bool handled_null_context = ProcessMotionEvent(
+        /*context=*/nullptr, AINPUT_EVENT_TYPE_MOTION, action, event_time_ns);
+    EXPECT_FALSE(handled_null_context);
   }
 
   histogram_tester_.ExpectTotalCount(kTouchDownDelayHistogram, 0);

@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceInput;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,6 +53,7 @@ public class SuggestionsOmtOverlayViewUnitTest {
     @Before
     public void setUp() {
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
         mActivityController = Robolectric.buildActivity(Activity.class).setup();
         mActivityController.windowFocusChanged(true);
         mActivity = mActivityController.get();
@@ -244,6 +246,44 @@ public class SuggestionsOmtOverlayViewUnitTest {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         mOverlayView.updateOverlayVisualState();
         assertEquals(View.GONE, mOverlayView.getVisibility());
+    }
+
+    @Test
+    public void testOverlayVisibility_hiddenWhenTouchExplorationEnabled() {
+        configureVisibleStationaryDropdown(mDropdown);
+        assertEquals(View.VISIBLE, mOverlayView.getVisibility());
+
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
+        mOverlayView.updateOverlayVisualState();
+        assertEquals(View.GONE, mOverlayView.getVisibility());
+
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
+        mOverlayView.updateOverlayVisualState();
+        assertEquals(View.VISIBLE, mOverlayView.getVisibility());
+    }
+
+    @Test
+    public void testOverlayVisibility_hiddenForSessionOnHoverAndReenabledWhenDropdownReappears() {
+        configureVisibleStationaryDropdown(mDropdown);
+        assertEquals(View.VISIBLE, mOverlayView.getVisibility());
+
+        mOverlayView.onHoverDetected();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(View.GONE, mOverlayView.getVisibility());
+
+        // Remains hidden across layout passes and gestures during the same session.
+        mDropdown.layout(0, 0, 120, 220);
+        mOverlayView.onGestureEnded();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(View.GONE, mOverlayView.getVisibility());
+
+        // Re-enables the next time the suggestions dropdown is hidden and shown again, and ignores
+        // late hover callbacks that arrive while the dropdown is hidden.
+        mDropdown.setVisibility(View.GONE);
+        mOverlayView.onHoverDetected();
+        RobolectricUtil.runAllBackgroundAndUi();
+        mDropdown.setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mOverlayView.getVisibility());
     }
 
     @Test

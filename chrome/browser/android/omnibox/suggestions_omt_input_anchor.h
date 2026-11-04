@@ -9,6 +9,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
 struct AInputReceiver;
@@ -26,6 +27,8 @@ struct OmtInputReceiverState {
   base::android::ScopedJavaGlobalRef<jobject> main_window_token;
   // Global reference to a Java Runnable invoked when touch transfer succeeds.
   base::android::ScopedJavaGlobalRef<jobject> transfer_callback;
+  // Callback invoked when a hover event is detected on the overlay surface.
+  base::RepeatingClosure hover_callback;
 
   // Pointer to the native input receiver registering the input channel.
   // RAW_PTR_EXCLUSION: Opaque NDK C handles managed by the Android system

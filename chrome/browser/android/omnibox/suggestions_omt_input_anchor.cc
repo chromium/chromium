@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/android/android_input_receiver_compat.h"
+#include "base/android/callback_android.h"
 #include "base/android/scoped_input_event.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_functions.h"
@@ -44,6 +45,9 @@ namespace omnibox {
 
 OmtInputReceiverState::OmtInputReceiverState() = default;
 OmtInputReceiverState::~OmtInputReceiverState() {
+  if (!base::AndroidInputReceiverCompat::IsSupportAvailable()) {
+    return;
+  }
   const auto& compat = base::AndroidInputReceiverCompat::GetInstance();
   if (input_receiver) {
     compat.AInputReceiver_releaseFn(input_receiver);
@@ -63,8 +67,19 @@ bool ProcessMotionEvent(void* context,
     return false;
   }
 
+  int32_t masked_action = action & AMOTION_EVENT_ACTION_MASK;
+  if (masked_action == AMOTION_EVENT_ACTION_HOVER_ENTER ||
+      masked_action == AMOTION_EVENT_ACTION_HOVER_MOVE) {
+    auto* state = static_cast<OmtInputReceiverState*>(context);
+    if (!state || !state->hover_callback) {
+      return false;
+    }
+    state->hover_callback.Run();
+    return true;
+  }
+
   // Intercept touch DOWN natively to log latency metrics and trigger transfer.
-  if ((action & AMOTION_EVENT_ACTION_MASK) != AMOTION_EVENT_ACTION_DOWN) {
+  if (masked_action != AMOTION_EVENT_ACTION_DOWN) {
     return false;
   }
 
@@ -112,12 +127,13 @@ JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
     const jni_zero::JavaRef<::android::view::JSurfaceControl>& surface_control,
     const jni_zero::JavaRef<::android::window::JInputTransferToken>&
         main_window_token,
-    const jni_zero::JavaRef<jobject>& on_touch_transferred) {
-  const auto& compat = base::AndroidInputReceiverCompat::GetInstance();
-  if (!compat.IsSupportAvailable()) {
+    const jni_zero::JavaRef<jobject>& on_touch_transferred,
+    base::RepeatingClosure on_hover_detected) {
+  if (!base::AndroidInputReceiverCompat::IsSupportAvailable()) {
     return nullptr;
   }
 
+  const auto& compat = base::AndroidInputReceiverCompat::GetInstance();
   auto from_java_sc = GetASurfaceControl_fromJava();
   if (!from_java_sc) {
     return nullptr;
@@ -187,6 +203,7 @@ JNI_SuggestionsOmtInputAnchor_RegisterInputReceiver(
   state->overlay_token.Reset(env, receiver_token_java);
   state->main_window_token.Reset(env, main_window_token);
   state->transfer_callback.Reset(env, on_touch_transferred);
+  state->hover_callback = std::move(on_hover_detected);
 
   return jni_zero::MakeUnique(std::move(state));
 }

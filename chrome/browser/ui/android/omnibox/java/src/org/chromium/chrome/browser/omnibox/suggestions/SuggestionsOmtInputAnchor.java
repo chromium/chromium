@@ -77,12 +77,15 @@ public class SuggestionsOmtInputAnchor {
          * @param mainWindowToken Main window input transfer token to pair with the receiver.
          * @param onTouchTransferred Callback invoked when a touch gesture is transferred from the
          *     overlay surface to the main window.
+         * @param onHoverDetected Callback invoked when a hover event is intercepted on the overlay
+         *     surface.
          * @return Owned handle to the allocated native OmtInputReceiverState instance, or null if
          *     registration failed. Must be destroyed on the same background HandlerThread.
          */
         @Nullable JniUniquePtr<NativeOmtInputReceiverState> registerInputReceiver(
                 SurfaceControl surfaceControl,
                 InputTransferToken mainWindowToken,
-                Runnable onTouchTransferred);
+                Runnable onTouchTransferred,
+                @JniType("base::RepeatingClosure") Runnable onHoverDetected);
     }
 }
