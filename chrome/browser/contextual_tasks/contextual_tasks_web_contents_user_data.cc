@@ -2410,52 +2410,60 @@ void ContextualTasksWebContentsUserData::
         removed_id;
   }
 
-  const auto selected_tabs = GetSelectedTabs();
-  const auto& attached_tabs = session_handle->GetTabContextState().attached;
   size_t explicit_tab_count = 0;
   size_t implicit_tab_count = 0;
-  // Add uploaded tab contexts directly from the session handle.
-  for (const auto& file_info : session_handle->GetUploadedContextFileInfos()) {
-    if (!file_info.request_id.has_value()) {
-      continue;
-    }
-    // If this file corresponds to the lens overlay token, it will be handled
-    // separately when Lens crop is finalized.
-    if (overlay_token.has_value() && file_info.file_token == *overlay_token) {
-      continue;
-    }
-    const bool is_implicit_upload =
-        file_info.is_implicit_upload ||
-        (file_info.input_data && file_info.input_data->is_implicit_upload);
-    const bool is_implicit_smart_tab =
-        is_implicit_upload &&
-        ((file_info.input_data &&
-          file_info.input_data->was_smart_tab_selection) ||
-         contextual_search::TabInfo::ContainsToken(attached_tabs,
-                                                   file_info.file_token));
-    const bool is_selected_manual_tab =
-        contextual_search::TabInfo::ContainsToken(selected_tabs,
-                                                  file_info.file_token);
-    if (!is_selected_manual_tab && !is_implicit_smart_tab) {
-      continue;
-    }
-    auto* added = on_submit_response->add_added_contexts();
-    added->set_search_session_id(session_handle->search_session_id());
-    *added->mutable_request_id() = *file_info.request_id;
-    const auto upload_type =
-        (file_info.input_data && file_info.input_data->upload_type.has_value())
-            ? *file_info.input_data->upload_type
-            : lens::LensOverlayContextualInputUploadType::
-                  CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
-    added->set_contextual_input_upload_type(upload_type);
-    const bool is_implicit =
-        is_implicit_upload || upload_type !=
-                                  lens::LensOverlayContextualInputUploadType::
-                                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
-    if (is_implicit) {
-      ++implicit_tab_count;
-    } else {
-      ++explicit_tab_count;
+  const std::string session_id = session_handle->search_session_id();
+  if (!session_id.empty()) {
+    const auto selected_tabs = GetSelectedTabs();
+    const auto& attached_tabs = session_handle->GetTabContextState().attached;
+    // Add uploaded tab contexts directly from the session handle.
+    for (const auto& file_info :
+         session_handle->GetUploadedContextFileInfos()) {
+      if (file_info.is_superceded ||
+          !contextual_search::IsValidContextUploadStatusForMultimodalRequest(
+              file_info.upload_status) ||
+          !file_info.request_id.has_value()) {
+        continue;
+      }
+      // If this file corresponds to the lens overlay token, it will be handled
+      // separately when Lens crop is finalized.
+      if (overlay_token.has_value() && file_info.file_token == *overlay_token) {
+        continue;
+      }
+      const bool is_implicit_upload =
+          file_info.is_implicit_upload ||
+          (file_info.input_data && file_info.input_data->is_implicit_upload);
+      const bool is_implicit_smart_tab =
+          is_implicit_upload &&
+          ((file_info.input_data &&
+            file_info.input_data->was_smart_tab_selection) ||
+           contextual_search::TabInfo::ContainsToken(attached_tabs,
+                                                     file_info.file_token));
+      const bool is_selected_manual_tab =
+          contextual_search::TabInfo::ContainsToken(selected_tabs,
+                                                    file_info.file_token);
+      if (!is_selected_manual_tab && !is_implicit_smart_tab) {
+        continue;
+      }
+      auto* added = on_submit_response->add_added_contexts();
+      added->set_search_session_id(session_id);
+      *added->mutable_request_id() = *file_info.request_id;
+      const auto upload_type =
+          (file_info.input_data &&
+           file_info.input_data->upload_type.has_value())
+              ? *file_info.input_data->upload_type
+              : lens::LensOverlayContextualInputUploadType::
+                    CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+      added->set_contextual_input_upload_type(upload_type);
+      const bool is_implicit =
+          is_implicit_upload || upload_type !=
+                                    lens::LensOverlayContextualInputUploadType::
+                                        CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+      if (is_implicit) {
+        ++implicit_tab_count;
+      } else {
+        ++explicit_tab_count;
+      }
     }
   }
   base::UmaHistogramCounts100(
@@ -2502,6 +2510,8 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
   if (overlay_token.has_value()) {
     for (const auto& info : uploaded_files) {
       if (info.file_token == *overlay_token && !info.is_superceded &&
+          contextual_search::IsValidContextUploadStatusForMultimodalRequest(
+              info.upload_status) &&
           info.request_id.has_value()) {
         file_info = &info;
         break;
@@ -2509,8 +2519,11 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
     }
   } else {
     for (const auto& info : uploaded_files) {
-      if (!info.is_superceded && info.request_id.has_value() &&
-          info.is_implicit_upload && info.input_data &&
+      if (!info.is_superceded &&
+          contextual_search::IsValidContextUploadStatusForMultimodalRequest(
+              info.upload_status) &&
+          info.request_id.has_value() && info.is_implicit_upload &&
+          info.input_data &&
           info.input_data->upload_type ==
               lens::LensOverlayContextualInputUploadType::
                   CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY) {
@@ -2524,14 +2537,17 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
     return {};
   }
 
-  if (!overlay_token.has_value()) {
-    overlay_token = file_info->file_token;
-  }
-
   auto* query_controller = controller->lens_overlay_query_controller();
   std::string search_session_id = session_handle->search_session_id();
   if (search_session_id.empty() && query_controller) {
     search_session_id = query_controller->search_session_id();
+  }
+  if (search_session_id.empty()) {
+    return {};
+  }
+
+  if (!overlay_token.has_value()) {
+    overlay_token = file_info->file_token;
   }
 
   lens::LensOverlayContextualInputUploadType upload_type =
