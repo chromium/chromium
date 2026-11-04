@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SAVE_TO_DRIVE_PDF_CONTENT_READER_H_
 #define CHROME_BROWSER_SAVE_TO_DRIVE_PDF_CONTENT_READER_H_
 
+#include <cstdint>
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,6 +46,9 @@ class PDFContentReader : public ContentReader {
 
   void OnOpen(OpenCallback callback,
               pdf::mojom::SaveDataBufferHandlerGetResultPtr result);
+  void OnRead(uint32_t offset,
+              ContentReadCallback callback,
+              mojo_base::BigBuffer buffer);
 
   // The handler to read the data to save to Google Drive. This is only valid
   // after the file is opened successfully. This is reset when the file is
@@ -50,6 +56,14 @@ class PDFContentReader : public ContentReader {
   mojo::Remote<pdf::mojom::SaveDataBufferHandler> remote_buffer_handler_;
 
   size_t total_file_size_ = 0;
+
+  // The expected `offset` of the next call to `Read()`. Reads must start at
+  // zero and proceed sequentially; restarting from zero is allowed.
+  size_t next_expected_offset_ = 0;
+
+  // The most recently read trailing bytes, used to verify the end-of-file
+  // marker on the final chunk.
+  std::vector<uint8_t> trailing_bytes_;
 
   // The `RenderFrameHost` associated to the frame containing the PDF plugin.
   const raw_ptr<content::RenderFrameHost> render_frame_host_;

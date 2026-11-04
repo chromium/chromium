@@ -4,50 +4,59 @@
 
 #include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 
-#include <string_view>
+#include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace save_to_drive {
 
 TEST(SaveToDriveUtilsTest, ValidatePdfMagic_ValidHeader) {
-  std::string_view data = "%PDF-1.5 content";
-  mojo_base::BigBuffer buffer(data.size());
-  UNSAFE_BUFFERS(base::span(buffer.data(), buffer.size()))
-      .copy_from(base::as_bytes(base::span(data)));
-  EXPECT_TRUE(ValidatePdfMagic(buffer));
+  EXPECT_TRUE(
+      ValidatePdfMagic(base::byte_span_from_cstring("%PDF-1.5 content")));
 }
 
 TEST(SaveToDriveUtilsTest, ValidatePdfMagic_InvalidHeader) {
-  std::string_view data = "Not a PDF";
-  mojo_base::BigBuffer buffer(data.size());
-  UNSAFE_BUFFERS(base::span(buffer.data(), buffer.size()))
-      .copy_from(base::as_bytes(base::span(data)));
-  EXPECT_FALSE(ValidatePdfMagic(buffer));
+  EXPECT_FALSE(ValidatePdfMagic(base::byte_span_from_cstring("Not a PDF")));
 }
 
 TEST(SaveToDriveUtilsTest, ValidatePdfMagic_EmptyBuffer) {
-  mojo_base::BigBuffer buffer;
-  EXPECT_FALSE(ValidatePdfMagic(buffer));
+  EXPECT_FALSE(ValidatePdfMagic({}));
 }
 
 TEST(SaveToDriveUtilsTest, ValidatePdfMagic_ShortBufferValid) {
-  std::string_view data = "%PDF-";
-  mojo_base::BigBuffer buffer(data.size());
-  UNSAFE_BUFFERS(base::span(buffer.data(), buffer.size()))
-      .copy_from(base::as_bytes(base::span(data)));
-  EXPECT_TRUE(ValidatePdfMagic(buffer));
+  EXPECT_TRUE(ValidatePdfMagic(base::byte_span_from_cstring("%PDF-")));
 }
 
 TEST(SaveToDriveUtilsTest, ValidatePdfMagic_ShortBufferInvalid) {
-  std::string_view data = "%PD";
-  mojo_base::BigBuffer buffer(data.size());
-  UNSAFE_BUFFERS(base::span(buffer.data(), buffer.size()))
-      .copy_from(base::as_bytes(base::span(data)));
-  EXPECT_FALSE(ValidatePdfMagic(buffer));
+  EXPECT_FALSE(ValidatePdfMagic(base::byte_span_from_cstring("%PD")));
+}
+
+TEST(SaveToDriveUtilsTest, ValidatePdfEof_Valid) {
+  EXPECT_TRUE(
+      ValidatePdfEof(base::byte_span_from_cstring("startxref\n123\n%%EOF")));
+  EXPECT_TRUE(
+      ValidatePdfEof(base::byte_span_from_cstring("startxref\n123\n%%EOF\n")));
+  EXPECT_TRUE(ValidatePdfEof(
+      base::byte_span_from_cstring("startxref\n123\n%%EOF\r\n")));
+}
+
+TEST(SaveToDriveUtilsTest, ValidatePdfEof_Invalid) {
+  EXPECT_FALSE(ValidatePdfEof({}));
+  EXPECT_FALSE(ValidatePdfEof(base::byte_span_from_cstring("not a trailer")));
+  EXPECT_FALSE(ValidatePdfEof(base::byte_span_from_cstring("%%EO")));
+}
+
+TEST(SaveToDriveUtilsTest, ValidatePdfEof_WithinSearchWindow) {
+  // The marker is accepted anywhere within the trailing search window.
+  std::string data = "%%EOF" + std::string(512, ' ');
+  EXPECT_TRUE(ValidatePdfEof(base::as_byte_span(data)));
+}
+
+TEST(SaveToDriveUtilsTest, ValidatePdfEof_OutsideSearchWindow) {
+  // A marker that lies before the trailing search window is rejected.
+  std::string data = "%%EOF" + std::string(2048, ' ');
+  EXPECT_FALSE(ValidatePdfEof(base::as_byte_span(data)));
 }
 
 TEST(SaveToDriveUtilsTest, EnsurePdfExtension) {

@@ -39,13 +39,18 @@ int GetTabId(content::RenderFrameHost* render_frame_host) {
   return stream ? stream->tab_id() : extensions::api::tabs::TAB_ID_NONE;
 }
 
-bool ValidatePdfMagic(const mojo_base::BigBuffer& buffer) {
-  if (buffer.size() == 0) {
-    return false;
-  }
+bool ValidatePdfMagic(base::span<const uint8_t> buffer) {
   static constexpr std::string_view kPdfMagic = "%PDF-";
+  return base::as_string_view(buffer).starts_with(kPdfMagic);
+}
+
+bool ValidatePdfEof(base::span<const uint8_t> buffer) {
+  static constexpr std::string_view kPdfEof = "%%EOF";
   std::string_view content = base::as_string_view(buffer);
-  return content.starts_with(kPdfMagic);
+  if (content.size() > kPdfEofSearchWindow) {
+    content.remove_prefix(content.size() - kPdfEofSearchWindow);
+  }
+  return content.find(kPdfEof) != std::string_view::npos;
 }
 
 std::u16string EnsurePdfExtension(const std::u16string& title) {

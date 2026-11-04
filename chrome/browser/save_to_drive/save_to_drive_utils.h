@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_SAVE_TO_DRIVE_SAVE_TO_DRIVE_UTILS_H_
 #define CHROME_BROWSER_SAVE_TO_DRIVE_SAVE_TO_DRIVE_UTILS_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace content {
 class RenderFrameHost;
@@ -19,6 +21,10 @@ class StreamContainer;
 }  // namespace extensions
 
 namespace save_to_drive {
+
+// The number of trailing bytes in which the `%%EOF` marker is expected to
+// appear.
+inline constexpr size_t kPdfEofSearchWindow = 1024;
 
 // Returns the sanitized title with `.pdf` extension.
 // 1. Strips away the existing extension (if any).
@@ -34,7 +40,11 @@ base::WeakPtr<extensions::StreamContainer> GetStreamWeakPtr(
 int GetTabId(content::RenderFrameHost* render_frame_host);
 
 // Validates that the buffer starts with the PDF magic bytes "%PDF-".
-bool ValidatePdfMagic(const mojo_base::BigBuffer& buffer);
+bool ValidatePdfMagic(base::span<const uint8_t> buffer);
+
+// Validates that the buffer contains the PDF end-of-file marker "%%EOF" within
+// the last `kPdfEofSearchWindow` bytes.
+bool ValidatePdfEof(base::span<const uint8_t> buffer);
 
 }  // namespace save_to_drive
 

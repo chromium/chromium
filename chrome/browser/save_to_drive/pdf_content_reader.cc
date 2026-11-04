@@ -4,11 +4,14 @@
 
 #include "chrome/browser/save_to_drive/pdf_content_reader.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -67,6 +70,8 @@ void PDFContentReader::OnOpen(OpenCallback callback,
   remote_buffer_handler_.Bind(
       std::move(save_data_buffer_handler_get_result->handler));
   total_file_size_ = save_data_buffer_handler_get_result->total_file_size;
+  next_expected_offset_ = 0;
+  trailing_bytes_.clear();
   std::move(callback).Run(true);
 }
 
@@ -81,25 +86,62 @@ void PDFContentReader::Read(uint32_t offset,
     std::move(callback).Run(mojo_base::BigBuffer());
     return;
   }
+  remote_buffer_handler_->Read(
+      offset, size,
+      base::BindOnce(&PDFContentReader::OnRead, weak_ptr_factory_.GetWeakPtr(),
+                     offset, std::move(callback)));
+}
 
-  auto wrapped_callback = base::BindOnce(
-      [](uint32_t offset, ContentReadCallback original_callback,
-         mojo_base::BigBuffer buffer) {
-        if (offset == 0 && !save_to_drive::ValidatePdfMagic(buffer)) {
-          // Invalid PDF header, return empty buffer to indicate error.
-          std::move(original_callback).Run(mojo_base::BigBuffer());
-          return;
-        }
-        std::move(original_callback).Run(std::move(buffer));
-      },
-      offset, std::move(callback));
+void PDFContentReader::OnRead(uint32_t offset,
+                              ContentReadCallback callback,
+                              mojo_base::BigBuffer buffer) {
+  // The received `buffer` may be backed by shared memory that is still mapped
+  // in the sender, so copy it once into local storage and use only the copy
+  // from this point on.
+  mojo_base::BigBuffer copy = buffer.Clone();
+  buffer = mojo_base::BigBuffer();
 
-  remote_buffer_handler_->Read(offset, size, std::move(wrapped_callback));
+  if (offset == 0) {
+    next_expected_offset_ = 0;
+    trailing_bytes_.clear();
+  }
+
+  const size_t end = static_cast<size_t>(offset) + copy.size();
+  bool valid = copy.size() != 0 && offset == next_expected_offset_ &&
+               end <= total_file_size_;
+  if (valid && offset == 0) {
+    valid = ValidatePdfMagic(base::span(copy));
+  }
+  if (valid) {
+    // Retain a bounded window of the most recently read bytes so that the
+    // end-of-file marker can be located even when it straddles a chunk
+    // boundary.
+    const auto tail = base::span(copy).last(
+        std::min<size_t>(copy.size(), kPdfEofSearchWindow));
+    trailing_bytes_.insert(trailing_bytes_.end(), tail.begin(), tail.end());
+    if (trailing_bytes_.size() > kPdfEofSearchWindow) {
+      trailing_bytes_.erase(trailing_bytes_.begin(),
+                            trailing_bytes_.begin() +
+                                (trailing_bytes_.size() - kPdfEofSearchWindow));
+    }
+    if (end == total_file_size_) {
+      valid = ValidatePdfEof(trailing_bytes_);
+    }
+  }
+
+  if (!valid) {
+    std::move(callback).Run(mojo_base::BigBuffer());
+    return;
+  }
+  next_expected_offset_ = end;
+  std::move(callback).Run(std::move(copy));
 }
 
 void PDFContentReader::Close() {
   remote_buffer_handler_.reset();
   total_file_size_ = 0;
+  next_expected_offset_ = 0;
+  trailing_bytes_.clear();
 }
 
 }  // namespace save_to_drive
