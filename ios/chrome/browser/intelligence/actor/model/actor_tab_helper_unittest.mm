@@ -479,4 +479,27 @@ TEST_F(ActorTabHelperTest,
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
 }
+
+// Tests that `SetControlState` keeps the tab in `kInactive`, does not suppress
+// input views, and does not notify observers when `task_source_info` is `kTtc`.
+TEST_F(ActorTabHelperTest, SetControlStateIgnoresActorControlForTtcTaskSource) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  id mock_web_view_proxy = OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  web_state_->SetWebViewProxy(mock_web_view_proxy);
+
+  FakeActorTabHelperObserver observer;
+  base::ScopedObservation<ActorTabHelper, ActorTabHelperObserver> observation(
+      &observer);
+  observation.Observe(tab_helper_);
+
+  tab_helper_->SetControlState(
+      ActorControlState::kActorControlled,
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc,
+                            /*id=*/std::nullopt));
+  EXPECT_EQ(ActorControlState::kInactive, tab_helper_->GetControlState());
+  EXPECT_FALSE(observer.on_control_state_changed_called_);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+}
 }  // namespace

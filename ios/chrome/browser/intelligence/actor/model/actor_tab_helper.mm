@@ -4,13 +4,48 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
+#import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/types/optional_ref.h"
+#import "components/actor/core/task_source_info.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// Returns whether `ActorTabHelper` should apply `kActorControlled` state
+// (suppressing keyboard input and notifying overlay observers) for a task
+// created by `task_source_info`. Defaults to `true` when no `TaskSourceInfo` is
+// set; `kTtc` tasks keep the tab in `kInactive` because TTC manages its own UI
+// and does not block user input.
+// TODO(crbug.com/581400371): Move UI configuration out of `ActorTabHelper` so
+// it only stores state and propagates messages.
+bool ShouldApplyControlStateForTaskSource(
+    base::optional_ref<const actor::TaskSourceInfo> task_source_info) {
+  if (!task_source_info.has_value()) {
+    return true;
+  }
+  switch (task_source_info->type) {
+    case actor::TaskSourceInfo::Client::kTtc:
+      return false;
+    case actor::TaskSourceInfo::Client::kUnknown:
+    case actor::TaskSourceInfo::Client::kTest:
+    case actor::TaskSourceInfo::Client::kExperimentalActor:
+    case actor::TaskSourceInfo::Client::kGlic:
+    case actor::TaskSourceInfo::Client::kContextualTasks:
+    case actor::TaskSourceInfo::Client::kBrowserActuator:
+      return true;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 ActorTabHelper::ActorTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -27,7 +62,12 @@ ActorTabHelper::~ActorTabHelper() {
   }
 }
 
-void ActorTabHelper::SetControlState(actor::ActorControlState control_state) {
+void ActorTabHelper::SetControlState(
+    actor::ActorControlState control_state,
+    std::optional<actor::TaskSourceInfo> task_source_info) {
+  if (!ShouldApplyControlStateForTaskSource(task_source_info)) {
+    control_state = actor::ActorControlState::kInactive;
+  }
   if (control_state_ == control_state) {
     return;
   }

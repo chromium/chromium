@@ -2310,4 +2310,33 @@ TEST_F(ActorTaskTest,
                                   "{}");
 }
 
+// Tests that an `ActorTask` with `TaskSourceInfo::Client::kTtc` keeps the
+// controlled `ActorTabHelper` in `ActorControlState::kInactive` during `Act()`.
+TEST_F(ActorTaskTest, TtcTaskSourceKeepsTabHelperInactive) {
+  auto task = std::make_unique<ActorTask>(
+      ActorTaskId(42), "TTC Task",
+      TaskSourceInfo(TaskSourceInfo::Client::kTtc, /*id=*/std::nullopt),
+      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      BrowserListFactory::GetForProfile(profile_.get()),
+      /*policy_checker=*/nullptr, base::DoNothing());
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_TRUE(tab_helper);
+
+  task->AddControlledWebState(web_state.get());
+  EXPECT_EQ(ActorControlState::kInactive, tab_helper->GetControlState());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task->Act(std::move(actions), "Acting for TTC", act_future.GetCallback());
+  EXPECT_EQ(ActorControlState::kInactive, tab_helper->GetControlState());
+  EXPECT_EQ(1u, act_future.Get().size());
+
+  task->Stop(ActorTaskStoppedReason::kTaskComplete);
+  EXPECT_EQ(ActorControlState::kInactive, tab_helper->GetControlState());
+}
+
 }  // namespace actor

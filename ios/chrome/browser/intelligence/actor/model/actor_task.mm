@@ -277,7 +277,8 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
     }
 
     if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
-      tab_helper->SetControlState(ControlStateForTaskState(state_));
+      tab_helper->SetControlState(ControlStateForTaskState(state_),
+                                  source_info_);
     }
 
     background_worker_->OnWebStateAdded(web_state);
@@ -551,7 +552,7 @@ void ActorTask::SetControlStateOnWebStates(ActorControlState control_state) {
     if (!tab_helper) {
       continue;
     }
-    tab_helper->SetControlState(control_state);
+    tab_helper->SetControlState(control_state, source_info_);
   }
 }
 
