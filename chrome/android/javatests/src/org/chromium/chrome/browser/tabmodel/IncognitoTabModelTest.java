@@ -191,8 +191,6 @@ public class IncognitoTabModelTest {
     @Test
     @SmallTest
     public void testHideLastRegularTab_OnModelChange() {
-        mActivityTestRule.skipWindowAndTabStateCleanup();
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertThat(mRegularTabModel)
@@ -203,12 +201,14 @@ public class IncognitoTabModelTest {
 
                     Tab tab = mRegularTabModel.getTabAt(0);
                     assertFalse(tab.isHidden());
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelectorSupplier()
-                            .get()
-                            .selectModel(true);
+                    TabModelSelector selector =
+                            mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
+                    selector.selectModel(true);
                     assertTrue(tab.isHidden());
+
+                    // Selecting the empty incognito model is not reachable through the UI and
+                    // breaks closing the window during teardown, so select the regular one again.
+                    selector.selectModel(false);
                 });
     }
 
