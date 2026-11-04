@@ -207,6 +207,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Returns a weak pointer to the current instance.
   base::WeakPtr<FakeSystemIdentityManager> GetWeakPtr();
 
+  // Sets default pending capabilities for `identity` so that capability fetches
+  // during the authentication flow resolve without delay. `identity` must
+  // already be in `storage_`.
+  void SetUpDefaultCapabilities(id<SystemIdentity> identity);
+
   // Helper used to implement the asynchronous part of `ForgetIdentity`.
   void ForgetIdentityAsync(id<SystemIdentity> identity,
                            ForgetIdentityCallback callback,
