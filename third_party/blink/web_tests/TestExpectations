@@ -8533,3 +8533,6 @@ crbug.com/578287772 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_ac
 # Gardener 2026-10-28
 crbug.com/579037663 external/wpt/encoding/streams/crashtests/from-cross-realm.html [ Crash Pass ]
 crbug.com/579037663 external/wpt/streams/readable-byte-streams/crashtests/from-cross-realm-error.html [ Crash Pass ]
+
+# Gardener 2026-11-04
+crbug.com/581567966 [ Win11-arm64 ] fast/block/float/float-avoidance.html [ Failure ]
