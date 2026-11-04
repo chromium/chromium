@@ -1217,4 +1217,27 @@ TEST_F(DlpRulesManagerImplTest, DataTransferDlpController) {
   chromeos::DlpClient::Shutdown();
 }
 
+TEST_F(DlpRulesManagerImplTest,
+       IsRestrictedDestination_NullSourcePatternOutput) {
+  dlp_test_util::DlpRule rule(kRuleName1, "Block", kRuleId1);
+  rule.AddSrcUrl(kExampleUrl)
+      .AddDstUrl(kWildCardMatching)
+      .AddRestriction(data_controls::kRestrictionClipboard,
+                      data_controls::kLevelBlock);
+
+  UpdatePolicyPref({rule});
+
+  std::string dst_pattern;
+  DlpRulesManager::RuleMetadata rule_metadata;
+  EXPECT_EQ(
+      DlpRulesManager::Level::kBlock,
+      dlp_rules_manager_->IsRestrictedDestination(
+          GURL(kExampleUrl), GURL(kGmailUrl),
+          DlpRulesManager::Restriction::kClipboard,
+          /*out_source_pattern=*/nullptr, &dst_pattern, &rule_metadata));
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
+  EXPECT_EQ(rule_metadata.name, kRuleName1);
+  EXPECT_EQ(rule_metadata.obfuscated_id, kRuleId1);
+}
+
 }  // namespace policy

@@ -122,7 +122,7 @@ Level ChromeDlpRulesManager::IsRestrictedDestination(
 
   const MatchedRuleInfo rule_info = GetMaxJoinRestrictionLevelAndRuleId(
       restriction, intersection_rules, restrictions_map_);
-  if (rule_info.url_condition.has_value() && out_source_pattern) {
+  if (rule_info.url_condition.has_value()) {
     UrlConditionId src_condition_id = rule_info.url_condition.value().first;
     UrlConditionId dst_condition_id = rule_info.url_condition.value().second;
     if (out_source_pattern) {
