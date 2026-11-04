@@ -519,7 +519,7 @@ PKIMetadataComponentInstallerService::CalculateTrustAnchorIdsWithLandmarks() {
   return SSLConfigServiceMtcLandmarkInfo{
       .max_usable_time = mtc_landmark_max_usable_time_,
       .mtc_landmark_and_standalone_trust_anchor_ids =
-          mtc_landmark_and_standalone_trust_anchor_ids,
+          std::move(mtc_landmark_and_standalone_trust_anchor_ids),
   };
 }
 
