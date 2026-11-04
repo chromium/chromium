@@ -216,9 +216,11 @@ chromium-metrics-reviews@google.com.
   <owner>adithyas@chromium.org</owner>
   <owner>baranerf@google.com</owner>
   <summary>
-    Records the trigger source for the Indigo page action when it is shown. This
-    helps determine if Indigo was forced, or which logic was used to decide to
-    show it (e.g., optimization guide hint).
+    Records the trigger source for Indigo when an entry point is shown: the page
+    action (icon, chip, or anchored message), or a context menu containing the
+    Indigo item. This helps determine if Indigo was forced, or which logic was
+    used to decide to show it (e.g., optimization guide hint). Recorded at most
+    once per page load, by whichever entry point is shown first.
   </summary>
 </histogram>
 

@@ -197,6 +197,7 @@ void IndigoPageActionController::OnContextMenuShown() {
   }
   context_menu_shown_on_current_page_ = true;
   RecordShownEntryPoint(IndigoPageActionEntryPoint::kContextMenu);
+  RecordTriggerSource();
 }
 
 void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
@@ -587,6 +588,7 @@ void IndigoPageActionController::DidFinishNavigation(
   last_trigger_source_ = std::nullopt;
   last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
+  trigger_source_recorded_on_current_page_ = false;
   UpdateEntryPointsState();
 
   if (optimization_guide_) {
@@ -742,6 +744,7 @@ void IndigoPageActionController::ResetTriggeringState() {
   last_trigger_source_ = std::nullopt;
   last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
+  trigger_source_recorded_on_current_page_ = false;
   UpdateEntryPointsState();
 }
 
@@ -772,8 +775,7 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     // eligibility is evaluated (which might be called multiple times or not
     // lead to a shown cue).
     if (!delegate_to_contextual_cues) {
-      base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
-                                    *eval.source);
+      RecordTriggerSource();
     }
   } else if (!eval.is_pending) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/false);
@@ -820,10 +822,13 @@ void IndigoPageActionController::RefreshDiscoverySkills() {
 }
 
 void IndigoPageActionController::RecordTriggerSource() {
-  if (last_trigger_source_.has_value()) {
-    base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
-                                  *last_trigger_source_);
+  if (!last_trigger_source_.has_value() ||
+      trigger_source_recorded_on_current_page_) {
+    return;
   }
+  trigger_source_recorded_on_current_page_ = true;
+  base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
+                                *last_trigger_source_);
 }
 
 void IndigoPageActionController::OnOnboardingDialogClosed(

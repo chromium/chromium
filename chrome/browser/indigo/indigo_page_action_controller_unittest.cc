@@ -2497,6 +2497,71 @@ TEST_P(IndigoPageActionControllerTest,
 }
 
 TEST_P(IndigoPageActionControllerTest,
+       OnContextMenuShownRecordsTriggerSourceOncePerPageLoad) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+  base::HistogramTester histogram_tester;
+
+  GURL url1("https://example.com/page1");
+  ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
+  ExpectEntryPointShown();
+  auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
+      url1, tab_interface_->GetContents());
+  navigation1->Commit();
+
+  // The trigger source is recorded once per page load, whether it is first
+  // recorded by the context menu or (in legacy mode) by showing the page
+  // action.
+  controller_->OnContextMenuShown();
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kOptimizationGuide,
+                                      1);
+
+  // Subsequently showing a contextual cue on the same page does not record it
+  // again.
+  ShowCueIfDelegatedToContextualCueing();
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kOptimizationGuide,
+                                      1);
+
+  // Navigating to a new page allows it to be recorded again.
+  GURL url2("https://example.com/page2");
+  ExpectOptimizationGuideDecision(url2, OptimizationGuideDecision::kTrue);
+  ExpectEntryPointShown();
+  auto navigation2 = content::NavigationSimulator::CreateBrowserInitiated(
+      url2, tab_interface_->GetContents());
+  navigation2->Commit();
+
+  controller_->OnContextMenuShown();
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kOptimizationGuide,
+                                      2);
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       OnContextMenuShownAfterCueDoesNotRecordTriggerSourceAgain) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+  base::HistogramTester histogram_tester;
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  ExpectEntryPointShown();
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+  ShowCueIfDelegatedToContextualCueing();
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kOptimizationGuide,
+                                      1);
+
+  controller_->OnContextMenuShown();
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kOptimizationGuide,
+                                      1);
+}
+
+TEST_P(IndigoPageActionControllerTest,
        InvokeActionContextMenuDoesNotOpenGlicAndRecordsMetrics) {
   CreateController();
   SetupEligibleAndOnboarded();

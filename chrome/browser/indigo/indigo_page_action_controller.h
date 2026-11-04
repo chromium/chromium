@@ -128,7 +128,8 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Refreshes 1P discovery skills for the tab's profile.
   virtual void RefreshDiscoverySkills();
 
-  // Records the trigger source to UMA.
+  // Records the trigger source to UMA, unless it has already been recorded on
+  // the current page load.
   void RecordTriggerSource();
 
   using EligibilityCallback = base::OnceCallback<void(bool)>;
@@ -374,6 +375,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // the current page load. Used to deduplicate
   // `Indigo.PageAction.ShownEntryPoint` impressions per page load.
   bool context_menu_shown_on_current_page_ = false;
+
+  // True if `Indigo.PageAction.TriggerSource` has already been recorded on the
+  // current page load, whether for a contextual cue or the context menu.
+  bool trigger_source_recorded_on_current_page_ = false;
 
   // Weak pointer factory used for the invocation flow. This is invalidated on
   // navigation to ensure that if a user starts an action (like onboarding) and
