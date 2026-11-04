@@ -22,4 +22,14 @@ agentic_review {
     path_expression: "(?:.*/)?knowledge_base/.*\\.md|(?:.*/)?(?:DIR|COMMON)_METADATA"
     rules: "components/enterprise/knowledge_base/keep-knowledge-base-rules-atomic-and-scoped.md"
   }
+  capability_groups {
+    rules: "components/enterprise/knowledge_base/encapsulate-content-analysis-audit-reporting-in-delegates.md"
+  }
+  capability_groups {
+    rules: "components/enterprise/knowledge_base/encapsulate-platform-ui-in-platform-implementations.md"
+  }
+  capability_groups {
+    content_patterns: "DeepScanAccessPoint"
+    rules: "components/enterprise/knowledge_base/map-deep-scan-access-point-for-file-attachments.md"
+  }
 }
