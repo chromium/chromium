@@ -82,6 +82,7 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   void DCheckStateTransition(PageStabilityState old_state,
                              PageStabilityState new_state);
 
+  void OnFirstContentfulPaint();
   void OnPaintStabilityReached();
   void OnNetworkAndMainThreadIdle();
   void OnRenderFrameGoingAway();
