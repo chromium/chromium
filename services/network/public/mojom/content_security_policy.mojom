@@ -199,10 +199,6 @@ struct ContentSecurityPolicy {
 
 // Data to report Content-Security-Policy violations.
 struct CSPViolation {
-  // The name of the directive that violates the policy. |directive| might be a
-  // directive that serves as a fallback to the |effective_directive|.
-  string directive;
-
   // The name the effective directive that was checked against.
   string effective_directive;
 

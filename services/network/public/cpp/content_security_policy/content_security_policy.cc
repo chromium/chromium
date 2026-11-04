@@ -305,36 +305,37 @@ std::string ErrorMessage(CSPDirectiveName directive,
 
 void ReportViolation(CSPContext* context,
                      const mojom::ContentSecurityPolicyPtr& policy,
+                     const CSPDirectiveName fallback_directive_name,
                      const CSPDirectiveName effective_directive_name,
-                     const CSPDirectiveName directive_name,
                      const GURL& url,
                      const mojom::SourceLocationPtr& source_location) {
   // For security reasons, some urls must not be disclosed. This includes the
   // blocked url and the source location of the error. Care must be taken to
   // ensure that these are not transmitted between different cross-origin
   // renderers.
-  GURL blocked_url = (directive_name == CSPDirectiveName::FrameAncestors)
-                         ? GURL(ToString(*policy->self_origin))
-                         : url;
+  GURL blocked_url =
+      (effective_directive_name == CSPDirectiveName::FrameAncestors)
+          ? GURL(ToString(*policy->self_origin))
+          : url;
   std::string blocked_url_scheme(blocked_url.scheme());
   auto safe_source_location =
       source_location ? source_location->Clone() : mojom::SourceLocation::New();
 
-  context->SanitizeDataForUseInCspViolation(directive_name, &blocked_url,
-                                            safe_source_location.get());
+  context->SanitizeDataForUseInCspViolation(
+      effective_directive_name, &blocked_url, safe_source_location.get());
 
   std::stringstream message;
   message << base::ReplaceStringPlaceholders(
-      ErrorMessage(directive_name, policy->header->type),
+      ErrorMessage(effective_directive_name, policy->header->type),
       {ElideURLForReportViolation(blocked_url),
-       base::StrCat({ToStringView(effective_directive_name), " ",
-                     ToString(policy->directives[effective_directive_name])})},
+       base::StrCat({ToStringView(fallback_directive_name), " ",
+                     ToString(policy->directives[fallback_directive_name])})},
       nullptr);
 
-  if (effective_directive_name != directive_name) {
-    message << " Note that '" << ToStringView(directive_name)
+  if (fallback_directive_name != effective_directive_name) {
+    message << " Note that '" << ToStringView(effective_directive_name)
             << "' was not explicitly set, so '"
-            << ToStringView(effective_directive_name)
+            << ToStringView(fallback_directive_name)
             << "' is used as a fallback.";
   }
 
@@ -343,7 +344,7 @@ void ReportViolation(CSPContext* context,
   // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
   // schemes, including custom schemes, must be explicitly listed in a source
   // list.
-  if (policy->directives[effective_directive_name]->allow_star) {
+  if (policy->directives[fallback_directive_name]->allow_star) {
     message << " Note that '*' matches only URLs with network schemes ('http', "
                "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s "
                "scheme. The scheme '"
@@ -353,10 +354,10 @@ void ReportViolation(CSPContext* context,
   message << "\n";
 
   context->ReportContentSecurityPolicyViolation(mojom::CSPViolation::New(
-      ToString(effective_directive_name), ToString(directive_name),
-      message.str(), blocked_url, policy->report_endpoints,
-      policy->use_reporting_api, policy->header->header_value,
-      policy->header->type, std::move(safe_source_location)));
+      ToString(effective_directive_name), message.str(), blocked_url,
+      policy->report_endpoints, policy->use_reporting_api,
+      policy->header->header_value, policy->header->type,
+      std::move(safe_source_location)));
 }
 
 // Extensions can load their own internal content into the document. They
@@ -1511,11 +1512,11 @@ CSPCheckResult CheckContentSecurityPolicy(
     return CSPCheckResult::Allowed();
   }
 
-  for (CSPDirectiveName effective_directive_name = directive_name;
-       effective_directive_name != CSPDirectiveName::Unknown;
-       effective_directive_name =
-           CSPFallbackDirective(effective_directive_name, directive_name)) {
-    const auto& directive = policy->directives.find(effective_directive_name);
+  for (CSPDirectiveName fallback_directive_name = directive_name;
+       fallback_directive_name != CSPDirectiveName::Unknown;
+       fallback_directive_name =
+           CSPFallbackDirective(fallback_directive_name, directive_name)) {
+    const auto& directive = policy->directives.find(fallback_directive_name);
     if (directive == policy->directives.end())
       continue;
 
@@ -1526,7 +1527,7 @@ CSPCheckResult CheckContentSecurityPolicy(
 
     if (!result) {
       ReportViolation(
-          context, policy, effective_directive_name, directive_name,
+          context, policy, fallback_directive_name, directive_name,
           is_opaque_fenced_frame
               ? GURL("urn:uuid")
               : (directive_name == CSPDirectiveName::FrameSrc ||
