@@ -120,9 +120,24 @@ class TaskRequestForURLContextTest : public PlatformTest {
     });
   }
 
+  // Writes an App Group command only holding its `command_time` to the shared
+  // defaults.
+  void WriteAppGroupCommandWithOnlyTime(NSDate* command_time) {
+    WriteAppGroupCommand(@{
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTimePreference) :
+          command_time,
+    });
+  }
+
   void WriteAppGroupCommand(NSDictionary* command_dictionary) {
     [app_group::GetGroupUserDefaults() setObject:command_dictionary
                                           forKey:AppGroupCommandPreference()];
+  }
+
+  // Returns whether an App Group command is in the shared defaults.
+  bool HasAppGroupCommand() {
+    return [app_group::GetGroupUserDefaults()
+               objectForKey:AppGroupCommandPreference()] != nil;
   }
 
   NSString* AppGroupCommandPreference() {
@@ -319,9 +334,9 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackURLMetrics) {
   }
 }
 
-// Tests that X-Callback app-group-command URLs cache `commandTime` on
-// initialization and log the application group command delay metric during
-// execute.
+// Tests that X-Callback app-group-command URLs consume the App Group command
+// on initialization, which logs the application group command delay metric
+// once.
 TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
   base::HistogramTester histogram_tester;
 
@@ -357,11 +372,9 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
   EXPECT_NE(request, nil);
   histogram_tester.ExpectTotalCount(kUMAMobileSessionStartActionHistogram, 0);
   histogram_tester.ExpectTotalCount(kAppLaunchSource, 0);
-  histogram_tester.ExpectTotalCount("Startup.ApplicationGroupCommandDelay", 0);
-
-  // Clear shared defaults before execution to verify `commandTime` was cached
-  // at initialization time.
-  [sharedDefaults removeObjectForKey:commandDictionaryPreference];
+  histogram_tester.ExpectUniqueSample("Startup.ApplicationGroupCommandDelay", 5,
+                                      1);
+  EXPECT_FALSE(HasAppGroupCommand());
 
   [request execute];
 
@@ -371,14 +384,14 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
   histogram_tester.ExpectUniqueSample(kAppLaunchSource,
                                       AppLaunchSource::X_CALLBACK, 1);
 
-  // Verify that the command delay was recorded during execute.
-  histogram_tester.ExpectTotalCount("Startup.ApplicationGroupCommandDelay", 1);
+  // The command delay is not recorded again during execute.
   histogram_tester.ExpectUniqueSample("Startup.ApplicationGroupCommandDelay", 5,
                                       1);
 }
 
-// Tests that a valid share extension App Group command marks the request as
-// coming from the share extension and extracts the `gaia_id`.
+// Tests that a valid share extension App Group command is consumed at
+// initialization, marks the request as coming from the share extension and
+// extracts the `gaia_id`.
 TEST_F(TaskRequestForURLContextTest, TestShareExtensionCommandSetsGaiaID) {
   WriteShareExtensionCommand([NSDate date]);
 
@@ -387,6 +400,7 @@ TEST_F(TaskRequestForURLContextTest, TestShareExtensionCommandSetsGaiaID) {
 
   EXPECT_TRUE(request.isFromShareExtension);
   EXPECT_NSEQ(kTestGaiaID, request.gaiaID);
+  EXPECT_FALSE(HasAppGroupCommand());
 }
 
 // Tests that the share extension origin is kept after the App Group command is
@@ -397,10 +411,13 @@ TEST_F(TaskRequestForURLContextTest,
   TaskRequestForURLContext* request =
       CreateRequestWithGaiaID(kAppGroupCommandURL);
 
-  [app_group::GetGroupUserDefaults()
-      removeObjectForKey:AppGroupCommandPreference()];
+  // A second request can't consume the command again.
+  TaskRequestForURLContext* second_request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
 
   EXPECT_TRUE(request.isFromShareExtension);
+  EXPECT_FALSE(second_request.isFromShareExtension);
+  EXPECT_NSEQ(nil, second_request.gaiaID);
 }
 
 // Tests that an expired App Group command doesn't allow an account switch.
@@ -413,6 +430,7 @@ TEST_F(TaskRequestForURLContextTest, TestExpiredShareExtensionCommand) {
 
   EXPECT_FALSE(request.isFromShareExtension);
   EXPECT_NSEQ(nil, request.gaiaID);
+  EXPECT_FALSE(HasAppGroupCommand());
 }
 
 // Tests that an App Group command URL without a command in the shared defaults
@@ -423,6 +441,105 @@ TEST_F(TaskRequestForURLContextTest, TestAppGroupURLWithoutCommand) {
 
   EXPECT_FALSE(request.isFromShareExtension);
   EXPECT_NSEQ(nil, request.gaiaID);
+}
+
+// Tests that a recent App Group command allows an account switch even if it
+// can't be executed (no caller or command).
+TEST_F(TaskRequestForURLContextTest, TestRecentCommandWithOnlyTimeSetsGaiaID) {
+  WriteAppGroupCommandWithOnlyTime([NSDate date]);
+
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
+
+  EXPECT_TRUE(request.isFromShareExtension);
+  EXPECT_NSEQ(kTestGaiaID, request.gaiaID);
+  EXPECT_FALSE(HasAppGroupCommand());
+}
+
+// Tests that a command dated in the future allows an account switch.
+TEST_F(TaskRequestForURLContextTest, TestFutureShareExtensionCommand) {
+  WriteShareExtensionCommand(
+      [NSDate dateWithTimeIntervalSinceNow:app_group::kAppGroupCommandTimeout]);
+
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
+
+  EXPECT_TRUE(request.isFromShareExtension);
+  EXPECT_NSEQ(kTestGaiaID, request.gaiaID);
+}
+
+// Tests that an HTTPS URL mimicking an App Group command doesn't allow an
+// account switch, as any app or webpage can open it.
+TEST_F(TaskRequestForURLContextTest, TestHTTPSAppGroupURLIgnoresGaiaID) {
+  WriteShareExtensionCommand([NSDate date]);
+
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(@"https://x-callback-url/app-group-command");
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_NSEQ(nil, request.gaiaID);
+  // The command is still consumed, as X-Callback URLs are recognized by their
+  // host only.
+  EXPECT_FALSE(HasAppGroupCommand());
+}
+
+// Tests that widget URLs neither consume the App Group command nor are
+// attributed to the share extension.
+TEST_F(TaskRequestForURLContextTest, TestWidgetURLDoesNotConsumeCommand) {
+  WriteShareExtensionCommand([NSDate date]);
+
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(@"chromewidgetkit://search-widget/search");
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_TRUE(HasAppGroupCommand());
+}
+
+// Tests that X-Callback URLs other than App Group commands neither consume the
+// App Group command nor allow an account switch.
+TEST_F(TaskRequestForURLContextTest, TestXCallbackOpenDoesNotConsumeCommand) {
+  WriteShareExtensionCommand([NSDate date]);
+
+  TaskRequestForURLContext* request = CreateRequestWithGaiaID(
+      @"googlechrome://x-callback-url/open?url=https://www.example.com");
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_NSEQ(nil, request.gaiaID);
+  EXPECT_TRUE(HasAppGroupCommand());
+}
+
+// Tests that widget URLs allow an account switch without being attributed to
+// the share extension.
+TEST_F(TaskRequestForURLContextTest, TestWidgetURLSetsGaiaID) {
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(@"chromewidgetkit://search-widget/search");
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_NSEQ(kTestGaiaID, request.gaiaID);
+}
+
+// Tests that standard URLs don't allow an account switch.
+TEST_F(TaskRequestForURLContextTest, TestStandardURLIgnoresGaiaID) {
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(@"https://www.example.com");
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_NSEQ(nil, request.gaiaID);
+}
+
+// Tests that the caller app of a valid App Group command is taken from the
+// command, which is a trusted source.
+TEST_F(TaskRequestForURLContextTest, TestShareExtensionCommandCallerApp) {
+  base::HistogramTester histogram_tester;
+  WriteShareExtensionCommand([NSDate date]);
+  TaskRequestForURLContext* request =
+      CreateRequestWithGaiaID(kAppGroupCommandURL);
+
+  [request execute];
+
+  histogram_tester.ExpectUniqueSample("Startup.MobileSessionStartFromApps",
+                                      CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION,
+                                      1);
 }
 
 // Tests that standard HTTP/HTTPS, File, and External Action URLs log launch

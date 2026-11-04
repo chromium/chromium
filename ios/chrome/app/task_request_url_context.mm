@@ -150,7 +150,7 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
 - (MobileSessionCallerApp)callerApp {
   if (!_callerApp.has_value()) {
     _callerApp = GetCallerApp(_URLContext.options.sourceApplication,
-                              /*secure_source_app_id=*/nil,
+                              [self secureSourceApplication],
                               net::GURLWithNSURL(_URLContext.URL));
   }
   return _callerApp.value();
@@ -251,6 +251,12 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
     }
   }
   [self handleCommandWithSceneState:sceneState];
+}
+
+#pragma mark - Protected
+
+- (NSString*)secureSourceApplication {
+  return nil;
 }
 
 #pragma mark - Private

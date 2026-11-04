@@ -31,6 +31,11 @@ class GURL;
 // Records metrics for the URL context.
 - (void)recordMetrics;
 
+// Returns the bundle ID of the app that requested the task, when it is known
+// from a trusted source rather than from `UIOpenURLContext`. Returns nil by
+// default.
+- (NSString*)secureSourceApplication;
+
 // Handles the command associated with the request using the given scene state.
 - (void)handleCommandWithSceneState:(SceneState*)sceneState;
 

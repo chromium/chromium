@@ -44,7 +44,8 @@ using ShortcutCompletionHandler = void (^)(BOOL succeeded);
 // Group command, which only Chrome extensions can write. Such requests are
 // attributed to the share extension, the only extension requesting account
 // switches. Computed when the task is created, because the App Group command
-// may no longer be in the shared defaults when the task is executed.
+// is consumed at that time and is no longer available when the task is
+// executed.
 @property(nonatomic, readonly) BOOL isFromShareExtension;
 
 // Minimum execution stage for a task.
