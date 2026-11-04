@@ -17,6 +17,7 @@ import androidx.test.internal.util.AndroidRunnerParams;
 
 import org.jni_zero.JniTestInstancesSnapshot;
 import org.junit.AssumptionViolatedException;
+import org.junit.Ignore;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -44,8 +45,12 @@ import org.chromium.base.test.util.AndroidSdkLevelSkipCheck;
 import org.chromium.base.test.util.BaseRestrictions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisableIfSkipCheck;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.base.test.util.TestAnimations;
@@ -57,9 +62,12 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * A custom runner for JUnit4 tests that checks requirements to conditionally ignore tests.
@@ -209,7 +217,19 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
     }
 
+    // Annotations read by the default SkipChecks.
+    private static final Set<Class<? extends Annotation>> SKIP_ANNOTATIONS =
+            Set.of(
+                    Ignore.class,
+                    Restriction.class,
+                    MinAndroidSdkLevel.class,
+                    MaxAndroidSdkLevel.class,
+                    DisableIf.Build.class,
+                    DisableIf.Builds.class,
+                    DisableIf.Device.class);
+
     protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
+    private @Nullable Boolean mClassHasSkipAnnotation;
     private long mClassStartTimeMs;
     private long mLastTestEndTimeMs;
     private long mTestStartTimeMs;
@@ -347,6 +367,73 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         return super.isIgnored(method) || shouldSkip(method);
     }
 
+    private Map<Description, FrameworkMethod> getMethodsByDescription() {
+        Map<Description, FrameworkMethod> methods = new HashMap<>();
+        for (FrameworkMethod method : getChildren()) {
+            methods.put(describeChild(method), method);
+        }
+        return methods;
+    }
+
+    private boolean areAllChildrenIgnored() {
+        Map<Description, FrameworkMethod> methods = getMethodsByDescription();
+        for (Description child : getDescription().getChildren()) {
+            if (!isKnownIgnored(methods.get(child))) return false;
+        }
+        return true;
+    }
+
+    private boolean hasSkipAnnotation(FrameworkMethod method) {
+        if (mClassHasSkipAnnotation == null) {
+            mClassHasSkipAnnotation = false;
+            for (Class<?> c = getTestClass().getJavaClass(); c != null; c = c.getSuperclass()) {
+                mClassHasSkipAnnotation |= hasSkipAnnotation(c.getAnnotations());
+            }
+        }
+        return mClassHasSkipAnnotation || hasSkipAnnotation(method.getAnnotations());
+    }
+
+    private static boolean hasSkipAnnotation(Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            if (SKIP_ANNOTATIONS.contains(annotation.annotationType())) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns whether SkipChecks are known to skip the test, as evaluated now.
+     *
+     * <p>Returns true only when isIgnored() returns true. Returns false, without guaranteeing that
+     * the test will run, when:
+     *
+     * <ul>
+     *   <li>The test has none of the annotations that the default SkipChecks read (class or
+     *       method). SkipChecks are not evaluated then, since that takes ~1ms per test. A runner
+     *       that adds a SkipCheck reading another annotation would not be covered (none does).
+     *   <li>Evaluating SkipChecks throws (e.g. an unknown @Restriction value). The test reports the
+     *       error when it runs.
+     * </ul>
+     *
+     * <p>Tests skipped by an Assume (in a rule, @Before or the test body) are never known here:
+     * SkipChecks cannot see them.
+     *
+     * <p>This runs before onBeforeTestClass() applies the class's @CommandLineFlags, as JUnit's own
+     * check for skipping @BeforeClass does. The only switch that SkipChecks read is
+     * --force-desktop-android, which no test sets via @CommandLineFlags.
+     */
+    private boolean isKnownIgnored(@Nullable FrameworkMethod method) {
+        if (method == null || !hasSkipAnnotation(method)) {
+            return false;
+        }
+        try {
+            return isIgnored(method);
+        } catch (Throwable t) {
+            // The test will report the error when it runs.
+            Log.w(TAG, "Could not evaluate skip checks for %s", method.getName(), t);
+            return false;
+        }
+    }
+
     @Override
     protected List<MethodRule> rules(Object target) {
         List<MethodRule> declaredRules = super.rules(target);
@@ -365,7 +452,15 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     @Override
     public void run(RunNotifier notifier) {
         if (BaseChromiumAndroidJUnitRunner.shouldListTests()) {
+            Map<Description, FrameworkMethod> methods = getMethodsByDescription();
             for (Description child : getDescription().getChildren()) {
+                // Lets the test runner group tests that will be skipped. This is only a hint:
+                // SkipChecks run again when the test runs. E.g. with --run-disabled (not
+                // passed when listing), @DisableIf tests are reported here but run, so the
+                // test runner does not group tests then.
+                if (isKnownIgnored(methods.get(child))) {
+                    notifier.fireTestIgnored(child);
+                }
                 notifier.fireTestFinished(child);
             }
             return;
@@ -426,6 +521,12 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     @Override
     protected Statement classBlock(RunNotifier notifier) {
         Statement innerStatement = super.classBlock(notifier);
+        if (areAllChildrenIgnored()) {
+            // Like JUnit does for @BeforeClass, skip class setup when no test will run. Also
+            // avoids changing command-line flags when tests of several classes are skipped in
+            // one process. Tests that are skipped but not known to be still get class setup.
+            return innerStatement;
+        }
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {

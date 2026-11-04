@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -42,6 +43,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
     private final List<Failure> mFailures = new ArrayList<>();
     private Class<?> mActiveTestClass;
     private final Set<String> mClassesWithWrongRunner = new TreeSet<>();
+    private final Set<Description> mIgnoredTests = new HashSet<>();
 
     public TestListInstrumentationRunListener() {
         this(false);
@@ -60,6 +62,12 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
         }
     }
 
+    /** Records tests that the class runner would skip on this device (e.g. via a SkipCheck). */
+    @Override
+    public void testIgnored(Description desc) {
+        mIgnoredTests.add(desc);
+    }
+
     @Override
     public void testFinished(Description desc) throws Exception {
         try {
@@ -75,6 +83,9 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
             bundle.putString("method", desc.getMethodName());
             bundle.putString(
                     "method_annotations", getAnnotationJSON(desc.getAnnotations()).toString());
+            if (mIgnoredTests.remove(desc)) {
+                bundle.putString("ignored", "true");
+            }
 
             sendStatus(STATUS_CODE, bundle);
 

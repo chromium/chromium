@@ -87,6 +87,20 @@ public class TestListInstrumentationRunListenerTest {
     }
 
     @Test
+    public void testIgnoredTestIsMarked() throws Throwable {
+        Description desc =
+                Description.createTestDescription(
+                        ParentClass.class,
+                        "testA",
+                        ParentClass.class.getMethod("testA").getAnnotations());
+        mListener.testIgnored(desc);
+        mListener.testFinished(desc);
+        Assert.assertEquals("true", mLastBundle.getString("ignored"));
+        mListener.testFinished(desc);
+        Assert.assertNull(mLastBundle.getString("ignored"));
+    }
+
+    @Test
     public void testGetTestMethodJSON_testB() throws Throwable {
         Description desc =
                 Description.createTestDescription(
