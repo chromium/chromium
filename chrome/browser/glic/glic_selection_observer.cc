@@ -93,6 +93,7 @@ GlicSelectionObserver* GlicSelectionObserver::From(tabs::TabInterface* tab) {
 GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
   CHECK(web_contents);
+  last_web_contents_size_ = web_contents->GetSize();
   shake_trigger_ = std::make_unique<ShakeTrigger>(web_contents, *this);
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -329,6 +330,14 @@ void GlicSelectionObserver::PrimaryPageChanged(content::Page& page) {
 }
 
 void GlicSelectionObserver::PrimaryMainFrameWasResized(bool width_changed) {
+  // Ignore notifications where the WebContents size is unchanged (e.g., when
+  // `SynchronizeVisualProperties()` fires for non-size changes such as surface
+  // ID or screen info updates).
+  const gfx::Size current_size = web_contents()->GetSize();
+  if (current_size == last_web_contents_size_) {
+    return;
+  }
+  last_web_contents_size_ = current_size;
   DismissUI(DismissReason::kExternal);
 }
 

@@ -694,6 +694,38 @@ TEST_F(GlicSelectionObserverTest, PrimaryMainFrameResizedDismissesUI) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
+  const gfx::Size current_size = web_contents()->GetSize();
+  web_contents()->Resize(
+      gfx::Rect(current_size.width() + 10, current_size.height() + 10));
+  observer->PrimaryMainFrameWasResized(/*width_changed=*/true);
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_EQ(observer->dismiss_ui_reason(),
+            GlicSelectionObserver::DismissReason::kExternal);
+}
+
+TEST_F(GlicSelectionObserverTest,
+       PrimaryMainFrameResizeIgnoredWhenSizeUnchanged) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->PrimaryMainFrameWasResized(/*width_changed=*/false);
+  EXPECT_FALSE(observer->dismiss_ui_called());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       PrimaryMainFrameResizedAfterSelectionDuringPendingResizeDismissesUI) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  // Resize WebContents before PrimaryMainFrameWasResized fires (e.g. when a
+  // visual properties ack is pending), then select text before the resize
+  // notification arrives.
+  const gfx::Size current_size = web_contents()->GetSize();
+  web_contents()->Resize(
+      gfx::Rect(current_size.width() + 10, current_size.height() + 10));
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  ASSERT_FALSE(observer->dismiss_ui_called());
+
   observer->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_TRUE(observer->dismiss_ui_called());
   EXPECT_EQ(observer->dismiss_ui_reason(),

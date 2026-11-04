@@ -136,8 +136,9 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ActiveTabObserver, kActiveTabChanged);
 
 // Waits for `PrimaryMainFrameWasResized` to settle, matching
 // `StabilizationTask` in `glic_invoke_task.cc`. A resize dismisses the small
-// chip and nothing brings it back, and opening the side panel can land its
-// tab-contents resize after the test selects text (seen on Mac).
+// chip and nothing brings it back, and initial window setup or opening the side
+// panel can land its tab-contents resize after the test selects text (seen on
+// Mac).
 class TabResizeSettledObserver : public content::WebContentsObserver,
                                  public ui::test::StateObserver<bool> {
  public:
@@ -2393,7 +2394,14 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
         // Use FocusElement() instead of an OS mouse click so the click's
         // asynchronous kMouseDown input observer task does not dismiss the
         // selection widget right as SelectAll() shows it.
-        WaitForWebContentsPainted(tab), FocusElement(tab), Do([this] {
+        WaitForWebContentsPainted(tab),
+        ObserveState(
+            kTabResizeSettled,
+            [this]() {
+              return browser()->tab_strip_model()->GetActiveWebContents();
+            }),
+        WaitForState(kTabResizeSettled, true),
+        StopObservingState(kTabResizeSettled), FocusElement(tab), Do([this] {
           browser()->tab_strip_model()->GetActiveWebContents()->SelectAll();
         }),
         // The chip is its own widget, outside the browser's context.
@@ -2569,15 +2577,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                                "post-selection-renderer"};
 
   RunTestSequence(
-      OpenGlic(),
-      ObserveState(
-          kTabResizeSettled,
-          [this]() {
-            return browser()->tab_strip_model()->GetActiveWebContents();
-          }),
-      WaitForState(kTabResizeSettled, true),
-      StopObservingState(kTabResizeSettled),
-      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      OpenGlic(), OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
       // One region around the text selection.
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
