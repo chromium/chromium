@@ -2830,6 +2830,13 @@ inline constexpr char kFedCmActiveModeMultipleIdentityProvidersName[] =
 inline constexpr char kFedCmActiveModeMultipleIdentityProvidersDescription[] =
     "Enables Active Mode support with multiple Identity Providers in FedCM.";
 
+inline constexpr char kFedCmIdpLinksName[] = "FedCM IdP links";
+inline constexpr char kFedCmIdpLinksDescription[] =
+    "When FedCM asks for permission to share data with a site, shows links to "
+    "the identity provider's account management page, privacy policy and "
+    "terms of service, from the account_management_url, privacy_policy_url and "
+    "terms_of_service_url keys of its config file.";
+
 inline constexpr char kFedCmIdPRegistrationName[] =
     "FedCM with IdP Registration support";
 inline constexpr char kFedCmIdPRegistrationDescription[] =

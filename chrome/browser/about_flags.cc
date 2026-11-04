@@ -9017,6 +9017,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmActiveModeMultipleIdentityProviders)},
 
+    {"fedcm-idp-links", flag_descriptions::kFedCmIdpLinksName,
+     flag_descriptions::kFedCmIdpLinksDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFedCmIdpLinks)},
+
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
