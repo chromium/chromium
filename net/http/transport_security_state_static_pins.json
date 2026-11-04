@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2026-11-03 13:55 UTC
+// Last updated: 2026-11-03 20:11 UTC
 //
 {
   "pinsets": [
@@ -169,6 +169,11 @@
     {
       "name": "gmail.com",
       "include_subdomains": false,
+      "pins": "google"
+    },
+    {
+      "name": "gmail.kz",
+      "include_subdomains": true,
       "pins": "google"
     },
     {
@@ -688,6 +693,11 @@
     },
     {
       "name": "google.com.kw",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.kz",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -1488,6 +1498,16 @@
     },
     {
       "name": "youtube-nocookie.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "youtube.com.kz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "youtube.kz",
       "include_subdomains": true,
       "pins": "google"
     },
