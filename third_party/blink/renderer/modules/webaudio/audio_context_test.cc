@@ -1681,6 +1681,72 @@ TEST_F(AudioContextStatsTest, ClosedAudioContextReclaimedAfterPermissionBound) {
   EXPECT_EQ(weak_context.Get(), nullptr);
 }
 
+// Test that an unreferenced AudioContext is kept alive by
+// ActiveScriptWrappable while open (initial, running, and suspended states)
+// and is reclaimed by Oilpan garbage collection after closeContext().
+TEST_F(AudioContextTest,
+       OpenAudioContextKeptAliveUntilClosedByGarbageCollection) {
+  WeakPersistent<AudioContext> weak_context;
+  {
+    AudioContextOptions* options = AudioContextOptions::Create();
+    AudioContext* audio_context = AudioContext::Create(
+        GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+    weak_context = audio_context;
+  }
+
+  // Should survive GC immediately after creation before tasks run.
+  WebHeap::CollectAllGarbageForTesting();
+  ASSERT_NE(weak_context.Get(), nullptr);
+
+  // Should survive GC while running.
+  test::RunPendingTasks();
+  WebHeap::CollectAllGarbageForTesting();
+  ASSERT_NE(weak_context.Get(), nullptr);
+  EXPECT_EQ(weak_context->ContextState(), V8AudioContextState::Enum::kRunning);
+
+  // Should survive GC while suspended.
+  {
+    ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+    ScriptState::Scope scope(script_state);
+    DummyExceptionStateForTesting exception_state;
+    weak_context->suspendContext(script_state, exception_state);
+  }
+  test::RunPendingTasks();
+  WebHeap::CollectAllGarbageForTesting();
+  ASSERT_NE(weak_context.Get(), nullptr);
+  EXPECT_EQ(weak_context->ContextState(),
+            V8AudioContextState::Enum::kSuspended);
+
+  // Should be collected by GC after closeContext().
+  {
+    ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+    ScriptState::Scope scope(script_state);
+    DummyExceptionStateForTesting exception_state;
+    weak_context->closeContext(script_state, exception_state);
+  }
+  test::RunPendingTasks();
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_EQ(weak_context.Get(), nullptr);
+}
+
+// Test that AudioContext::Create throws InvalidStateError if the
+// ExecutionContext was already destroyed while the frame is still attached
+// (e.g. after LocalFrame::ForciblyPurgeV8Memory()).
+TEST_F(AudioContextTest, CreateOnDestroyedContextThrowsException) {
+  GetFrame().ForciblyPurgeV8Memory();
+  ASSERT_NE(GetFrame().DomWindow()->GetFrame(), nullptr);
+  ASSERT_TRUE(GetFrame().DomWindow()->IsContextDestroyed());
+
+  DummyExceptionStateForTesting exception_state;
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context =
+      AudioContext::Create(GetFrame().DomWindow(), options, exception_state);
+  EXPECT_EQ(audio_context, nullptr);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+}
+
 // Test that tearing down the frame/context on an already-closed AudioContext
 // (where audio_context_manager_ was reset) does not re-execute DidClose() or
 // crash when GetWindow()->GetFrame() is null.

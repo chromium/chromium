@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -372,13 +371,11 @@ class MODULES_EXPORT AudioContext final
   // Performs the async transition of the context state to "suspended".
   void PerformTransitionToSuspended(ScriptPromiseResolver<IDLUndefined>*);
 
-  // Starts rendering via AudioDestinationNode. This sets the self-referencing
-  // pointer to this object.
+  // Starts rendering via AudioDestinationNode.
   void StartRendering() override;
 
   // Called when the context is being closed to stop rendering audio and clean
-  // up handlers. This clears the self-referencing pointer, making this object
-  // available for the potential GC.
+  // up handlers.
   void StopRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // Called when suspending the context to stop rendering audio, but don't clean
@@ -530,8 +527,6 @@ class MODULES_EXPORT AudioContext final
   // determine audibility on render quantum boundaries, so counting quanta is
   // all that's needed.
   size_t total_audible_renders_ = 0;
-
-  SelfKeepAlive<AudioContext> keep_alive_{{}, this};
 
   // Initially, we assume that the microphone permission is denied. But this
   // will be corrected after the actual construction.

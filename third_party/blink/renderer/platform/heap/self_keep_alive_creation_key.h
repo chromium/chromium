@@ -19,7 +19,6 @@ class SelfKeepAliveCreationKey final {
 
   template <typename V8SessionObjectType>
   friend class AIContextObserver;
-  friend class AudioContext;
   friend class BlobFileReaderClient;
   friend class BodyStreamBuffer;
   friend class CachedResponseFileReaderLoaderClient;
