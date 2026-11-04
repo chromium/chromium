@@ -306,10 +306,10 @@ void AppShimController::PreInitFeatureState(
       {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
        "CacheGurlSchemeIsHttpOrHttpsResult", "DcheckIsFatal",
        "DisallowSpaceCharacterInURLHostParsing", "LRUCacheMemoryConsumer",
-       "NonSpecialLeadingSlashHandling", "PreservePercentEncodedDotInPath",
-       "UseIDNAContextJRules", "MojoBindingsInlineSLS", "MojoIpczMemV2",
-       "MojoFixGeometricBufferGrowth", "MojoFixGeometricBufferGrowth2",
-       "UseNSURLDataForGURLConversion",
+       "MemoryConsumerModeOverrides", "NonSpecialLeadingSlashHandling",
+       "PreservePercentEncodedDotInPath", "UseIDNAContextJRules",
+       "MojoBindingsInlineSLS", "MojoIpczMemV2", "MojoFixGeometricBufferGrowth",
+       "MojoFixGeometricBufferGrowth2", "UseNSURLDataForGURLConversion",
        "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
        "UseMachVouchers"});
 }

@@ -5,6 +5,8 @@
 #ifndef CONTENT_CHILD_MEMORY_COORDINATOR_CHILD_MEMORY_COORDINATOR_H_
 #define CONTENT_CHILD_MEMORY_COORDINATOR_CHILD_MEMORY_COORDINATOR_H_
 
+#include <optional>
+
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "content/child/memory_coordinator/browser_memory_coordinator_bridge.h"
 #include "content/common/content_export.h"
@@ -29,6 +31,14 @@ class CONTENT_EXPORT ChildMemoryCoordinator {
 
   ~ChildMemoryCoordinator();
 
+  // Applies feature-gated configuration to the registry and instantiates the
+  // policies. Must be called once, after the FeatureList is initialized, and
+  // before BindAndPassReceiver(). This is separate from the constructor because
+  // the coordinator may be created before the FeatureList (e.g. in the zygote).
+  // No policy exists before this call, so that no consumer is notified before
+  // the registry applies the "disabled" overrides.
+  void InitializePolicies();
+
   MemoryConsumerRegistry& registry() { return registry_.Get(); }
   MemoryCoordinatorPolicyManager& policy_manager() { return policy_manager_; }
 
@@ -43,15 +53,13 @@ class CONTENT_EXPORT ChildMemoryCoordinator {
 
   BrowserMemoryCoordinatorBridge browser_memory_coordinator_bridge_{
       policy_manager_};
-  MemoryCoordinatorPolicyRegistration
-      browser_memory_coordinator_bridge_registration_{
-          policy_manager_, browser_memory_coordinator_bridge_};
 
-  MemoryPressureListenerPolicy memory_pressure_listener_policy_{
-      policy_manager_};
-  MemoryCoordinatorPolicyRegistration
-      memory_pressure_listener_policy_registration_{
-          policy_manager_, memory_pressure_listener_policy_};
+  // The policies are registered by InitializePolicies().
+  std::optional<MemoryCoordinatorPolicyRegistration>
+      browser_memory_coordinator_bridge_registration_;
+  std::optional<MemoryPressureListenerPolicy> memory_pressure_listener_policy_;
+  std::optional<MemoryCoordinatorPolicyRegistration>
+      memory_pressure_listener_policy_registration_;
 };
 
 }  // namespace content

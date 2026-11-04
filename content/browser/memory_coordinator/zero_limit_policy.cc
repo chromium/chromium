@@ -27,7 +27,7 @@ ZeroLimitPolicy::ZeroLimitPolicy(MemoryCoordinatorPolicyManager& manager)
                                  base::MemoryConsumerTraits traits,
                                  ProcessType process_type,
                                  ChildProcessId child_process_id) {
-            return base::IsEffectivelyStateful(traits);
+            return base::IsEffectivelyStateful(consumer_name, traits);
           })),
       policy_registration_(manager, *this) {
   SetLimit(base::MemoryLimit::FromPercent(0), /*release_memory=*/true);

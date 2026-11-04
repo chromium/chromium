@@ -44,10 +44,12 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
 
   ~BrowserMemoryCoordinatorImpl() override;
 
-  // Instantiates the feature-gated policies. Must be called once, after the
-  // FeatureList is initialized. This is separate from the constructor because
-  // the coordinator may be created before the FeatureList in the browser
-  // process.
+  // Applies feature-gated configuration to the registry and instantiates the
+  // policies. Must be called once, after the FeatureList is initialized. This
+  // is separate from the constructor because the coordinator may be created
+  // before the FeatureList in the browser process. No policy exists before this
+  // call, so that no consumer is notified before the registry applies the
+  // "disabled" overrides.
   void InitializePolicies();
 
   // BrowserMemoryCoordinator:
@@ -82,11 +84,10 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
                       std::unique_ptr<ChildMemoryConsumerRegistryHost>>
       hosts_;
 
-  MemoryPressureListenerPolicy memory_pressure_listener_policy_{
-      policy_manager_};
-  MemoryCoordinatorPolicyRegistration
-      memory_pressure_listener_policy_registration_{
-          policy_manager_, memory_pressure_listener_policy_};
+  // The policies are created by InitializePolicies().
+  std::optional<MemoryPressureListenerPolicy> memory_pressure_listener_policy_;
+  std::optional<MemoryCoordinatorPolicyRegistration>
+      memory_pressure_listener_policy_registration_;
 
   std::optional<ZeroLimitPolicy> zero_limit_policy_;
 

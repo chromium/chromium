@@ -93,7 +93,7 @@ constexpr base::MemoryConsumerTraits kTestTraits1(
 
 class BrowserMemoryCoordinatorBridgeTest : public Test {
  protected:
-  BrowserMemoryCoordinatorBridgeTest() = default;
+  BrowserMemoryCoordinatorBridgeTest() { coordinator_.InitializePolicies(); }
 
   ChildMemoryCoordinator& coordinator() { return coordinator_; }
   MemoryConsumerRegistry& registry() { return coordinator_.registry(); }

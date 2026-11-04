@@ -3957,6 +3957,7 @@ test("base_unittests") {
     "memory_coordinator/async_memory_consumer_registration_unittest.cc",
     "memory_coordinator/memory_consumer_registry_unittest.cc",
     "memory_coordinator/memory_consumer_unittest.cc",
+    "memory_coordinator/memory_coordinator_features_unittest.cc",
     "memory_coordinator/memory_limit_unittest.cc",
     "memory_coordinator/multi_memory_consumer_unittest.cc",
     "message_loop/message_pump_glib_unittest.cc",

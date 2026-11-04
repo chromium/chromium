@@ -666,6 +666,10 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
   }
   delegate->PostEarlyInitialization(invoked_in_child);
 
+  // The ChildMemoryCoordinator was created in the zygote, before the
+  // FeatureList.
+  ChildMemoryCoordinator::Get().InitializePolicies();
+
   // The Zygote must use a local scoped fence, otherwise the scoped object
   // would live across the fork.
   std::optional<base::ScopedBestEffortExecutionFence> best_effort_fence;
@@ -782,6 +786,11 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
   // Create the memory coordinator as early as possible to support
   // MemoryConsumers that register very early in the process lifetime.
   ChildMemoryCoordinator child_memory_coordinator;
+  // The zygote has no FeatureList. Its children initialize the policies after
+  // they fork, in RunZygote().
+  if (process_type != switches::kZygoteProcess) {
+    child_memory_coordinator.InitializePolicies();
+  }
 
   // The hang watcher needs to be started once the feature list is available
   // but before the IO thread is started.

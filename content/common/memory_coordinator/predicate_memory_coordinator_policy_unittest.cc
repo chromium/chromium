@@ -430,4 +430,68 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest,
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
+TEST_F(PredicateMemoryCoordinatorPolicyTest,
+       RepeatedReleaseWithStatelessOverride) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{base::kStatefulMemoryPressure, {}},
+       {base::kMemoryConsumerModeOverrides, {{"overridden", "stateless"}}}},
+      {});
+
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId;
+
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                              &host);
+
+  // Both consumers have stateful traits (IsStateful::kYes is the default).
+  constexpr base::MemoryConsumerTraits kStatefulTraits(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous);
+
+  const std::string kOverriddenName = "overridden";
+  const uint32_t kOverriddenId = base::PersistentHash(kOverriddenName);
+  const std::string kStatefulName = "stateful";
+  const uint32_t kStatefulId = base::PersistentHash(kStatefulName);
+
+  policy_manager().OnConsumerGroupAdded(kOverriddenId, kOverriddenName,
+                                        kStatefulTraits, kChildId);
+  policy_manager().OnConsumerGroupAdded(kStatefulId, kStatefulName,
+                                        kStatefulTraits, kChildId);
+
+  PredicateMemoryCoordinatorPolicy policy(
+      policy_manager(),
+      base::BindRepeating(
+          [](uint32_t consumer_id, std::string_view consumer_name,
+             base::MemoryConsumerTraits traits, ProcessType process_type,
+             ChildProcessId child_process_id) {
+            return child_process_id.is_null();
+          }));
+  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+
+  // Initial critical pressure: both consumers are notified.
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(
+                  MemoryConsumerUpdate{kOverriddenId,
+                                       base::MemoryLimit::FromPercent(0), true},
+                  MemoryConsumerUpdate{
+                      kStatefulId, base::MemoryLimit::FromPercent(0), true})));
+  policy.SetLimit(base::MemoryLimit::FromPercent(0), true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Repeated critical pressure: the consumer overridden to stateless mode is
+  // notified despite its stateful traits and kStatefulMemoryPressure being
+  // enabled. The other consumer is skipped.
+  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                        kOverriddenId, std::nullopt, true})));
+  policy.SetLimit(base::MemoryLimit::FromPercent(0), true);
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().OnConsumerGroupRemoved(kOverriddenId, kChildId);
+  policy_manager().OnConsumerGroupRemoved(kStatefulId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
 }  // namespace content

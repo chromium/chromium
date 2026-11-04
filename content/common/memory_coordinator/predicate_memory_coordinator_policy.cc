@@ -84,11 +84,12 @@ void PredicateMemoryCoordinatorPolicy::TriggerRepeatedRelease() {
         }
 
         // Don't repeat the signal for stateful consumers. They are trusted to
-        // self-regulate once they receive the limit. However, if the
-        // kStatefulMemoryPressure feature is disabled, consumers operate in
-        // stateless mode regardless of their declared traits, so they still
-        // require repeated signals.
-        return !base::IsEffectivelyStateful(traits);
+        // self-regulate once they receive the limit. However, consumers that
+        // don't use stateful memory pressure (see
+        // base::ShouldUseStatefulMemoryPressure()) operate in stateless mode
+        // regardless of their declared traits, so they still require repeated
+        // signals.
+        return !base::IsEffectivelyStateful(consumer_name, traits);
       },
       std::nullopt, true);
 }

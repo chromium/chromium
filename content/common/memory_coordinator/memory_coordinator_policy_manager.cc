@@ -119,7 +119,7 @@ bool MemoryCoordinatorPolicyManager::GroupState::ClearMemoryReleaseSuppression(
   // its current limit allows. A stateful consumer can't be above the highest
   // limit applied since it last released memory. A stateless consumer ignores
   // limit updates, so it may be above its limit whenever under pressure.
-  return base::IsEffectivelyStateful(traits_)
+  return base::IsEffectivelyStateful(consumer_name_, traits_)
              ? current_limit_ < peak_limit_since_release_
              : current_limit_ < base::MemoryLimit::Default();
 }

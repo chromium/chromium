@@ -7,7 +7,9 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -89,6 +91,15 @@ void MemoryConsumerRegistry::AddMemoryConsumer(std::string_view consumer_name,
 
   uint32_t consumer_id = PersistentHash(consumer_name);
 
+  if (!disabled_consumer_ids_) {
+    // Remember the consumers that registered before the overrides are known,
+    // so that OnFeatureListInitialized() can remove the disabled ones.
+    early_consumers_.emplace_back(consumer_id, consumer);
+  } else if (disabled_consumer_ids_->contains(consumer_id)) {
+    // Disabled consumers are never forwarded to the implementation.
+    return;
+  }
+
   // Suppress the consumer's callbacks for the duration of the registration,
   // which typically happens during its construction. Implementations may
   // still push an initial limit to the consumer synchronously; only
@@ -102,6 +113,18 @@ void MemoryConsumerRegistry::RemoveMemoryConsumer(
     MemoryConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t consumer_id = PersistentHash(consumer_name);
+
+  if (!disabled_consumer_ids_) {
+    size_t removed = std::erase_if(early_consumers_, [&](const auto& entry) {
+      return entry.first == consumer_id && entry.second == consumer;
+    });
+    CHECK_EQ(removed, 1u);
+  } else if (disabled_consumer_ids_->contains(consumer_id)) {
+    // Disabled consumers were either never forwarded to the implementation, or
+    // already removed from it by OnFeatureListInitialized().
+    return;
+  }
+
   OnMemoryConsumerRemoved(consumer_id, consumer);
 }
 
@@ -118,6 +141,33 @@ void MemoryConsumerRegistry::RemoveDestructionObserver(
     MemoryConsumerRegistryDestructionObserver* observer) {
   size_t removed = destruction_observers_.erase(observer);
   CHECK_EQ(removed, 1u);
+}
+
+void MemoryConsumerRegistry::OnFeatureListInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(FeatureList::GetInstance());
+  CHECK(!disabled_consumer_ids_);
+
+  disabled_consumer_ids_.emplace();
+  for (const auto& [consumer_name, mode] :
+       internal::ParseMemoryConsumerModeOverrides()) {
+    if (mode == internal::MemoryConsumerMode::kDisabled) {
+      disabled_consumer_ids_->insert(PersistentHash(consumer_name));
+    }
+  }
+
+  // Remove the disabled consumers that registered early from the
+  // implementation, so that all instances of a consumer in this process behave
+  // consistently.
+  for (const auto& [consumer_id, consumer] :
+       std::exchange(early_consumers_, {})) {
+    if (!disabled_consumer_ids_->contains(consumer_id)) {
+      continue;
+    }
+    // The implementation must not have notified the consumer yet.
+    CHECK(consumer->memory_limit() == MemoryLimit::Default());
+    OnMemoryConsumerRemoved(consumer_id, consumer);
+  }
 }
 
 void MemoryConsumerRegistry::NotifyDestruction() {

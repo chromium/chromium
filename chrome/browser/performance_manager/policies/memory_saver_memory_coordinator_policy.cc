@@ -30,7 +30,7 @@ bool ShouldManageConsumer(uint32_t consumer_id,
                           content::ChildProcessId child_process_id) {
   return traits.supports_memory_limit ==
              base::MemoryConsumerTraits::SupportsMemoryLimit::kYes &&
-         base::IsEffectivelyStateful(traits);
+         base::IsEffectivelyStateful(consumer_name, traits);
 }
 
 base::MemoryLimit GetLimitForState(bool enabled,

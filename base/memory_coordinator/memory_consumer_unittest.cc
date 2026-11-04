@@ -4,9 +4,11 @@
 
 #include "base/memory_coordinator/memory_consumer.h"
 
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,6 +57,78 @@ TEST(MemoryConsumerTest, UpdateMemoryLimit) {
 
   EXPECT_EQ(consumer.memory_limit(), MemoryLimit::FromPercent(150));
   EXPECT_DOUBLE_EQ(consumer.memory_limit_ratio(), 1.5);
+}
+
+TEST(MemoryConsumerTest, DisabledMemoryConsumerIsNotRegistered) {
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kMemoryConsumerModeOverrides,
+      {{"disabled_consumer", "disabled"}, {"stateless_consumer", "stateless"}});
+
+  TestMemoryConsumerRegistry test_registry;
+  test_registry.OnFeatureListInitialized();
+
+  // A disabled consumer is not registered, and keeps the default memory limit.
+  MockMemoryConsumer disabled_consumer;
+  MemoryConsumerRegistration disabled_registration(
+      "disabled_consumer", kTestTraits, &disabled_consumer);
+  EXPECT_EQ(test_registry.size(), 0u);
+  EXPECT_CALL(disabled_consumer, OnUpdateMemoryLimit()).Times(0);
+  test_registry.NotifyUpdateMemoryLimit(MemoryLimit::FromPercent(20));
+  EXPECT_EQ(disabled_consumer.memory_limit(), MemoryLimit::Default());
+
+  // Consumers with a non-disabled override are registered normally.
+  MockMemoryConsumer stateless_consumer;
+  MemoryConsumerRegistration stateless_registration(
+      "stateless_consumer", kTestTraits, &stateless_consumer);
+  EXPECT_EQ(test_registry.size(), 1u);
+}
+
+// The "disabled" override also applies to the consumers that registered before
+// OnFeatureListInitialized(): they are removed from the registry.
+TEST(MemoryConsumerTest, EarlyDisabledMemoryConsumerIsRemoved) {
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kMemoryConsumerModeOverrides,
+      {{"early_consumer", "disabled"},
+       {"early_stateless_consumer", "stateless"}});
+
+  TestMemoryConsumerRegistry test_registry;
+
+  // Registered before the overrides are applied.
+  MockMemoryConsumer early_consumer;
+  MemoryConsumerRegistration early_registration("early_consumer", kTestTraits,
+                                                &early_consumer);
+  MockMemoryConsumer early_stateless_consumer;
+  MemoryConsumerRegistration early_stateless_registration(
+      "early_stateless_consumer", kTestTraits, &early_stateless_consumer);
+
+  // Registered and unregistered before the overrides are applied.
+  {
+    MockMemoryConsumer transient_consumer;
+    MemoryConsumerRegistration transient_registration(
+        "early_consumer", kTestTraits, &transient_consumer);
+    EXPECT_EQ(test_registry.size(), 3u);
+  }
+  EXPECT_EQ(test_registry.size(), 2u);
+
+  test_registry.OnFeatureListInitialized();
+
+  // Only the disabled consumer is removed. The "stateless" override still
+  // applies to the other early consumer.
+  EXPECT_EQ(test_registry.size(), 1u);
+  EXPECT_FALSE(ShouldUseStatefulMemoryPressure("early_stateless_consumer"));
+
+  EXPECT_CALL(early_consumer, OnUpdateMemoryLimit()).Times(0);
+  EXPECT_CALL(early_stateless_consumer, OnUpdateMemoryLimit());
+  test_registry.NotifyUpdateMemoryLimit(MemoryLimit::FromPercent(20));
+  EXPECT_EQ(early_consumer.memory_limit(), MemoryLimit::Default());
+
+  // A new instance of the disabled consumer is not registered either.
+  MockMemoryConsumer late_consumer;
+  MemoryConsumerRegistration late_registration("early_consumer", kTestTraits,
+                                               &late_consumer);
+  EXPECT_EQ(test_registry.size(), 1u);
 }
 
 #if !BUILDFLAG(IS_IOS)

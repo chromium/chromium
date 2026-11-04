@@ -51,7 +51,15 @@ BrowserMemoryCoordinatorImpl::~BrowserMemoryCoordinatorImpl() {
 
 void BrowserMemoryCoordinatorImpl::InitializePolicies() {
   CHECK(base::FeatureList::GetInstance());
-  CHECK(!zero_limit_policy_);
+  // Ensures that no consumer is notified before the "disabled" overrides are
+  // applied.
+  CHECK(!policy_manager_.HasPolicies());
+
+  registry_.Get().OnFeatureListInitialized();
+
+  memory_pressure_listener_policy_.emplace(policy_manager_);
+  memory_pressure_listener_policy_registration_.emplace(
+      policy_manager_, *memory_pressure_listener_policy_);
 
   if (base::FeatureList::IsEnabled(kMemoryCoordinatorZeroLimit)) {
     zero_limit_policy_.emplace(policy_manager_);

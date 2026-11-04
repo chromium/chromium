@@ -5,8 +5,12 @@
 #ifndef BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_H_
 #define BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_H_
 
+#include <stdint.h>
+
+#include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
@@ -49,6 +53,15 @@ class BASE_EXPORT MemoryConsumerRegistry {
       PassKey<MemoryConsumerRegistration>,
       MemoryConsumerRegistryDestructionObserver* observer);
 
+  // Must be called once, after the FeatureList is initialized. Applies the
+  // "disabled" overrides specified via `kMemoryConsumerModeOverrides`. This is
+  // separate from the constructor because the registry may be created before
+  // the FeatureList. Consumers that were registered before this call and are
+  // disabled are removed from the implementation. Thus, to guarantee that a
+  // disabled consumer never receives any notification, implementations must
+  // not notify consumers before this call.
+  void OnFeatureListInitialized();
+
  protected:
   // Helpers to notify consumers of memory events.
   static void NotifyReleaseMemory(MemoryConsumer* consumer);
@@ -81,6 +94,21 @@ class BASE_EXPORT MemoryConsumerRegistry {
   // Adding an observer during that time could rehash the set and invalidate
   // the iteration.
   bool is_notifying_destruction_ = false;
+
+ private:
+  // The IDs of the consumers disabled via `kMemoryConsumerModeOverrides`.
+  // Disabled consumers are never forwarded to the implementation, and thus keep
+  // the default memory limit. The other modes are handled by
+  // ShouldUseStatefulMemoryPressure().
+  //
+  // Unset until OnFeatureListInitialized() is called.
+  std::optional<absl::flat_hash_set<uint32_t>> disabled_consumer_ids_;
+
+  // The consumers that are registered before OnFeatureListInitialized() is
+  // called, with their ID, so that the disabled ones can be removed from the
+  // implementation once the overrides are known. Cleared by
+  // OnFeatureListInitialized().
+  std::vector<std::pair<uint32_t, raw_ptr<MemoryConsumer>>> early_consumers_;
 };
 
 // Helper class for creating and registering a singleton registry. This is

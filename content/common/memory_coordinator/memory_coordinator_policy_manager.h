@@ -82,6 +82,9 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   // Unregisters a policy with the manager and clears all its associated data.
   void RemovePolicy(MemoryCoordinatorPolicy* policy);
 
+  // Returns true if at least one policy is registered with the manager.
+  bool HasPolicies() const { return !policies_.empty(); }
+
   // MemoryConsumerGroupController:
   void AddMemoryConsumerGroupHost(ProcessType process_type,
                                   ChildProcessId child_process_id,
