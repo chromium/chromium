@@ -37,6 +37,16 @@ export interface ContentPosition {
   source: ContentPositionSource;
 }
 
+// A line focus position not yet hit-tested into a ContentPosition.
+export class PendingLineFocusPosition {
+  readonly source = ContentPositionSource.LINE_FOCUS;
+  // Viewport y of the line focus.
+  constructor(readonly focalPoint: number) {}
+}
+
+// Where Read Aloud starts playing from.
+export type StartPosition = ContentPosition|PendingLineFocusPosition;
+
 // A selection whose endpoints are identified by AXNodeIDs and offsets.
 export interface SelectionWithIds {
   anchorNodeId?: number;

@@ -528,28 +528,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   ///////////////////////// LineFocusListener methods //////////////////////////
-  onLineFocusVisualPositionChange(newTop: number, newHeight: number): void {
+  onLineFocusVisualPositionChange(
+      newTop: number, newHeight: number, newFocalPoint: number): void {
     this.styleUpdater_.setLineFocusPos(newTop, newHeight);
+    this.speechController_.onLineFocusVisualMove(newFocalPoint);
   }
 
   onLineFocusContentPositionChange(
       newTop: number, newHeight: number, newFocalPoint: number): void {
     this.styleUpdater_.setLineFocusPos(newTop, newHeight);
-
-    // Only update content position when read aloud is not speaking
-    // or temporarily paused (e.g. during voice preview or settings change).
-    // During active speech, line focus moves on every word boundary. So
-    // calling document.caretPositionFromPoint would force synchronous layout
-    // recalculations on every word, lagging the UI. Additionally, calling
-    // onLineFocusChange updates currentContentPosition, causing subsequent
-    // Play/Pause to be slow.
-    if (this.speechController_.isSpeechActive() ||
-        this.speechController_.isTemporaryPause()) {
-      return;
-    }
-    const position: CaretPosition|null = document.caretPositionFromPoint(
-        0, newFocalPoint, {shadowRoots: [this.shadowRoot]});
-    this.speechController_.onLineFocusChange(position);
+    this.speechController_.onLineFocusContentMove(newFocalPoint);
   }
 
   onNeedScrollForLineFocus(scrollDiff: number, instant: boolean = false): void {

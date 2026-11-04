@@ -4,8 +4,8 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement, ContentController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {calculateTextBounds, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, ContentController, ContentPosition, SelectionController, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {calculateTextBounds, ContentPositionSource, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -14,6 +14,8 @@ import {emitEvent, setupAppTestEnvironment} from './common.js';
 suite('AppLineFocus', () => {
   let app: AppElement;
   let contentController: ContentController;
+  let selectionController: SelectionController;
+  let speechController: SpeechController;
 
   function getLineFocusPadding(): number {
     const val = app.style.getPropertyValue('--line-focus-padding');
@@ -24,6 +26,8 @@ suite('AppLineFocus', () => {
     const result = await setupAppTestEnvironment();
     app = result.app;
     contentController = result.contentController;
+    selectionController = result.selectionController;
+    speechController = result.speechController;
   });
 
   teardown(() => {
@@ -282,4 +286,254 @@ suite('AppLineFocus', () => {
         assertLT(cursorY, staticY);
         assertEquals(firstLineTop, cursorY);
       });
+
+  suite('deferred hit testing', () => {
+    let originalCaretPositionFromPoint: typeof document.caretPositionFromPoint;
+    let caretCalls: number;
+    let caretY: number|null;
+    let caretPosition: CaretPosition|null;
+
+    setup(async () => {
+      originalCaretPositionFromPoint = document.caretPositionFromPoint;
+      caretCalls = 0;
+      caretY = null;
+      caretPosition = null;
+      document.caretPositionFromPoint = (x, y, options) => {
+        caretCalls++;
+        caretY = y;
+        caretPosition =
+            originalCaretPositionFromPoint.call(document, x, y, options);
+        return caretPosition;
+      };
+
+      emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
+      emitEvent(
+          app, ToolbarEvent.LINE_FOCUS_STYLE,
+          {detail: {data: LineFocusStyle.UNDERLINE}});
+      await microtasksFinished();
+    });
+
+    teardown(() => {
+      document.caretPositionFromPoint = originalCaretPositionFromPoint;
+    });
+
+    test(
+        'mouse move updates styles but defers hit testing until play',
+        async () => {
+          let onLineFocusChangeCalls = 0;
+          let onLineFocusPosition: CaretPosition|null = null;
+          const originalOnLineFocusChange =
+              speechController.onLineFocusChange.bind(speechController);
+          speechController.onLineFocusChange =
+              (position: CaretPosition|null) => {
+                onLineFocusChangeCalls++;
+                onLineFocusPosition = position;
+                originalOnLineFocusChange(position);
+              };
+
+          app.onLineFocusContentPositionChange(10, 20, 50);
+
+          assertEquals('10px', app.style.getPropertyValue('--line-focus-y'));
+          assertEquals(
+              '20px', app.style.getPropertyValue('--line-focus-height'));
+          assertEquals(0, caretCalls);
+          assertEquals(0, onLineFocusChangeCalls);
+
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+
+          assertEquals(1, caretCalls);
+          assertEquals(50, caretY);
+          assertEquals(1, onLineFocusChangeCalls);
+          assertEquals(caretPosition, onLineFocusPosition);
+
+          // Subsequent play toggles do not re-query caret position since the
+          // pending focal point was already consumed.
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+          assertEquals(1, caretCalls);
+        });
+
+    test('keydown play shortcut hit-tests pending position', async () => {
+      app.onLineFocusContentPositionChange(10, 20, 85);
+      assertEquals(0, caretCalls);
+
+      document.dispatchEvent(new KeyboardEvent('keydown', {key: 'k'}));
+      await microtasksFinished();
+
+      assertEquals(1, caretCalls);
+      assertEquals(85, caretY);
+    });
+
+    test('visual move updates pending hit test', async () => {
+      app.onLineFocusContentPositionChange(10, 20, 50);
+      // E.g. a font size change recenters the snapped line.
+      app.onLineFocusVisualPositionChange(40, 20, 80);
+
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      assertEquals(1, caretCalls);
+      assertEquals(80, caretY);
+    });
+
+    test(
+        'non-empty selection after line focus clears pending hit test',
+        async () => {
+          contentController.setState(ContentType.HAS_CONTENT);
+          await microtasksFinished();
+
+          app.onLineFocusContentPositionChange(10, 20, 50);
+          assertEquals(0, caretCalls);
+
+          // Simulate a non-empty selection change.
+          selectionController.hasSelection = () => true;
+          selectionController.getCurrentSelectionStart = (): ContentPosition =>
+              ({
+                node: document.body,
+                offset: 2,
+                source: ContentPositionSource.SELECTION,
+              });
+
+          document.dispatchEvent(new Event('selectionchange'));
+          await microtasksFinished();
+
+          // Play starts from the selection, so the older line focus point is
+          // dropped without a hit test.
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+
+          assertEquals(0, caretCalls);
+        });
+
+    test(
+        'empty selection after line focus does not clear pending hit test',
+        async () => {
+          contentController.setState(ContentType.HAS_CONTENT);
+          await microtasksFinished();
+
+          app.onLineFocusContentPositionChange(10, 20, 50);
+          assertEquals(0, caretCalls);
+
+          // Simulate a collapsed/empty selection change.
+          selectionController.hasSelection = () => false;
+
+          document.dispatchEvent(new Event('selectionchange'));
+          await microtasksFinished();
+
+          // Play still hit-tests the pending line focus position.
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+
+          assertEquals(1, caretCalls);
+        });
+
+    test('line focus move after selection is hit-tested on play', async () => {
+      contentController.setState(ContentType.HAS_CONTENT);
+      await microtasksFinished();
+
+      selectionController.hasSelection = () => true;
+      selectionController.getCurrentSelectionStart = (): ContentPosition => ({
+        node: document.body,
+        offset: 2,
+        source: ContentPositionSource.SELECTION,
+      });
+      document.dispatchEvent(new Event('selectionchange'));
+      await microtasksFinished();
+
+      // E.g. the panel scrolls to a selection made on the main page.
+      app.onLineFocusContentPositionChange(10, 20, 50);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      assertEquals(1, caretCalls);
+      assertEquals(50, caretY);
+    });
+
+    test('manual scroll defers hit testing until play', async () => {
+      document.body.style.height = '400px';
+      app.style.height = '400px';
+      const paragraph = document.createElement('p');
+      paragraph.style.whiteSpace = 'pre';
+      paragraph.style.lineHeight = '30px';
+      paragraph.textContent =
+          Array.from({length: 30}, (_, i) => `Line ${i}`).join('\n');
+      app.$.container.replaceChildren(paragraph);
+      contentController.setState(ContentType.HAS_CONTENT);
+      emitEvent(
+          app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+          {detail: {data: LineFocusMovement.STATIC}});
+      await microtasksFinished();
+
+      const scrollEnd = eventToPromise('scrollend', app.$.containerScroller);
+      app.$.containerScroller.scrollTop += 100;
+      await scrollEnd;
+      await microtasksFinished();
+      assertEquals(0, caretCalls);
+
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+      assertEquals(1, caretCalls);
+    });
+
+    test('settings changes do not hit test', async () => {
+      emitEvent(app, ToolbarEvent.FONT_SIZE, {detail: {data: true}});
+      emitEvent(app, ToolbarEvent.LINE_SPACING, {detail: {data: 3}});
+      emitEvent(app, ToolbarEvent.LETTER_SPACING, {detail: {data: 3}});
+      await microtasksFinished();
+
+      assertEquals(0, caretCalls);
+    });
+
+    test(
+        'visual move without a pending position does not hit test',
+        async () => {
+          // Drop the position set when line focus was turned on, e.g. after
+          // pausing speech.
+          speechController.onLineFocusChange(null);
+
+          // E.g. a settings change recenters the focus window.
+          app.onLineFocusVisualPositionChange(40, 20, 80);
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+
+          assertEquals(0, caretCalls);
+        });
+
+    test('disabling line focus clears pending hit test', async () => {
+      app.onLineFocusContentPositionChange(10, 20, 50);
+      assertEquals(0, caretCalls);
+
+      emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
+      await microtasksFinished();
+
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      assertEquals(0, caretCalls);
+    });
+
+    test('showLoading clears pending hit test', async () => {
+      app.onLineFocusContentPositionChange(10, 20, 50);
+      assertEquals(0, caretCalls);
+
+      app.showLoading();
+      await microtasksFinished();
+
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      assertEquals(0, caretCalls);
+    });
+
+    test('pausing active speech does not perform hit test', async () => {
+      app.onLineFocusContentPositionChange(10, 20, 50);
+      speechController.isSpeechActive = () => true;
+
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      assertEquals(0, caretCalls);
+    });
+  });
 });

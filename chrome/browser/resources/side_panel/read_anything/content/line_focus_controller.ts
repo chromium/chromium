@@ -23,7 +23,8 @@ export interface LineFocusListener {
   // Called when the line focus position has been changed due to an automatic
   // adjustment. For example, changing settings such as font size or line focus
   // type.
-  onLineFocusVisualPositionChange(newTop: number, newHeight: number): void;
+  onLineFocusVisualPositionChange(
+      newTop: number, newHeight: number, newFocalPoint: number): void;
   onNeedScrollForLineFocus(scrollDiff: number, instant?: boolean): void;
   onNeedScrollToTop(): void;
   onLineFocusModesChanged(): void;
@@ -232,7 +233,8 @@ export class LineFocusController implements MoveModeDelegate {
   notifyMoveWithVisualPositionChange(): void {
     this.listeners_.forEach(
         l => l.onLineFocusVisualPositionChange(
-            this.model_.getTop(), this.model_.getWindowHeight()));
+            this.model_.getTop(), this.model_.getWindowHeight(),
+            this.model_.getFocalPoint()));
   }
 
   notifyScroll(scrollDiff: number, instant?: boolean): void {

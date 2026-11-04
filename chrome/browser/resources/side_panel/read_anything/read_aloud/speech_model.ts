@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ContentPosition} from '../content/read_anything_types.js';
+import type {StartPosition} from '../content/read_anything_types.js';
 
 import {ReadAloudNode} from './read_aloud_types.js';
 import type {WordBoundaryState} from './word_boundaries.js';
@@ -69,8 +69,9 @@ export class SpeechModel {
   private lastReadingPosition_: ReadingPosition|null = null;
   // The current position in the content, which can be derived from either a
   // user selection or the line focus position. This is used to determine
-  // where to begin or resume speech playback.
-  private currentContentPosition_: ContentPosition|null = null;
+  // where to begin or resume speech playback. A line focus position stays
+  // pending until speech starts, to avoid hit-testing on every move.
+  private currentContentPosition_: StartPosition|null = null;
   private savedSpeechPlayingState_: SpeechPlayingState|null = null;
   private savedWordBoundaryState_: WordBoundaryState|null = null;
 
@@ -168,11 +169,11 @@ export class SpeechModel {
     this.lastReadingPosition_ = position;
   }
 
-  getCurrentContentPosition(): ContentPosition|null {
+  getCurrentContentPosition(): StartPosition|null {
     return this.currentContentPosition_;
   }
 
-  setCurrentContentPosition(position: ContentPosition|null) {
+  setCurrentContentPosition(position: StartPosition|null) {
     this.currentContentPosition_ = position;
   }
 
