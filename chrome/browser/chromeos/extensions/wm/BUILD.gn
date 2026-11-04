@@ -15,9 +15,8 @@ source_set("wm") {
     "wm_desks_private_api.h",
     "wm_desks_private_events.cc",
     "wm_desks_private_events.h",
+    "wm_desks_private_feature.cc",
     "wm_desks_private_feature.h",
-    "wm_desks_private_feature_ash.cc",
-    "wm_desks_private_feature_ash.h",
   ]
 
   deps = [

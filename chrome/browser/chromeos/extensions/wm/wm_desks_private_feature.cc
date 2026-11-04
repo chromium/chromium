@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
+#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature.h"
 
 #include <string>
 
@@ -76,11 +76,11 @@ api::wm_desks_private::SavedDesk GetSavedDeskFromAshDeskTemplate(
 
 }  // namespace
 
-WMDesksPrivateFeatureAsh::WMDesksPrivateFeatureAsh() = default;
+WMDesksPrivateFeature::WMDesksPrivateFeature() = default;
 
-WMDesksPrivateFeatureAsh::~WMDesksPrivateFeatureAsh() = default;
+WMDesksPrivateFeature::~WMDesksPrivateFeature() = default;
 
-void WMDesksPrivateFeatureAsh::GetDeskTemplateJson(
+void WMDesksPrivateFeature::GetDeskTemplateJson(
     const base::Uuid& template_uuid,
     Profile* profile,
     GetDeskTemplateJsonCallback callback) {
@@ -99,8 +99,8 @@ void WMDesksPrivateFeatureAsh::GetDeskTemplateJson(
           std::move(callback)));
 }
 
-void WMDesksPrivateFeatureAsh::LaunchDesk(std::string desk_name,
-                                          LaunchDeskCallback callback) {
+void WMDesksPrivateFeature::LaunchDesk(std::string desk_name,
+                                       LaunchDeskCallback callback) {
   auto result =
       DesksClient::Get()->LaunchEmptyDesk(base::UTF8ToUTF16(desk_name));
   if (!result.has_value()) {
@@ -110,10 +110,10 @@ void WMDesksPrivateFeatureAsh::LaunchDesk(std::string desk_name,
   std::move(callback).Run({}, result.value());
 }
 
-void WMDesksPrivateFeatureAsh::RemoveDesk(const base::Uuid& desk_uuid,
-                                          bool combine_desk,
-                                          bool allow_undo,
-                                          RemoveDeskCallback callback) {
+void WMDesksPrivateFeature::RemoveDesk(const base::Uuid& desk_uuid,
+                                       bool combine_desk,
+                                       bool allow_undo,
+                                       RemoveDeskCallback callback) {
   ash::DeskCloseType close_type =
       combine_desk ? ash::DeskCloseType::kCombineDesks
                    : (allow_undo ? ash::DeskCloseType::kCloseAllWindowsAndWait
@@ -122,7 +122,7 @@ void WMDesksPrivateFeatureAsh::RemoveDesk(const base::Uuid& desk_uuid,
   std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 
-void WMDesksPrivateFeatureAsh::SetAllDeskProperty(
+void WMDesksPrivateFeature::SetAllDeskProperty(
     int32_t window_id,
     bool all_desks,
     SetAllDeskPropertyCallback callback) {
@@ -131,7 +131,7 @@ void WMDesksPrivateFeatureAsh::SetAllDeskProperty(
   std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 
-void WMDesksPrivateFeatureAsh::GetAllDesks(GetAllDesksCallback callback) {
+void WMDesksPrivateFeature::GetAllDesks(GetAllDesksCallback callback) {
   auto result = DesksClient::Get()->GetAllDesks();
   if (!result.has_value()) {
     std::move(callback).Run(GetStringError(result.error()), {});
@@ -144,7 +144,7 @@ void WMDesksPrivateFeatureAsh::GetAllDesks(GetAllDesksCallback callback) {
   std::move(callback).Run({}, std::move(api_desks));
 }
 
-void WMDesksPrivateFeatureAsh::SaveActiveDesk(SaveActiveDeskCallback callback) {
+void WMDesksPrivateFeature::SaveActiveDesk(SaveActiveDeskCallback callback) {
   DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindOnce(
           [](SaveActiveDeskCallback callback,
@@ -164,9 +164,8 @@ void WMDesksPrivateFeatureAsh::SaveActiveDesk(SaveActiveDeskCallback callback) {
       ash::DeskTemplateType::kSaveAndRecall);
 }
 
-void WMDesksPrivateFeatureAsh::DeleteSavedDesk(
-    const base::Uuid& desk_uuid,
-    DeleteSavedDeskCallback callback) {
+void WMDesksPrivateFeature::DeleteSavedDesk(const base::Uuid& desk_uuid,
+                                            DeleteSavedDeskCallback callback) {
   DesksClient::Get()->DeleteDeskTemplate(
       desk_uuid,
       base::BindOnce(
@@ -177,9 +176,8 @@ void WMDesksPrivateFeatureAsh::DeleteSavedDesk(
           std::move(callback)));
 }
 
-void WMDesksPrivateFeatureAsh::RecallSavedDesk(
-    const base::Uuid& desk_uuid,
-    RecallSavedDeskCallback callback) {
+void WMDesksPrivateFeature::RecallSavedDesk(const base::Uuid& desk_uuid,
+                                            RecallSavedDeskCallback callback) {
   DesksClient::Get()->LaunchDeskTemplate(
       desk_uuid, base::BindOnce(
                      [](RecallSavedDeskCallback callback,
@@ -195,7 +193,7 @@ void WMDesksPrivateFeatureAsh::RecallSavedDesk(
                      std::move(callback)));
 }
 
-void WMDesksPrivateFeatureAsh::GetSavedDesks(GetSavedDesksCallback callback) {
+void WMDesksPrivateFeature::GetSavedDesks(GetSavedDesksCallback callback) {
   DesksClient::Get()->GetDeskTemplates(base::BindOnce(
       [](GetSavedDesksCallback callback,
          std::optional<DesksClient::DeskActionError> error,
@@ -216,19 +214,19 @@ void WMDesksPrivateFeatureAsh::GetSavedDesks(GetSavedDesksCallback callback) {
       std::move(callback)));
 }
 
-void WMDesksPrivateFeatureAsh::GetActiveDesk(GetActiveDeskCallback callback) {
+void WMDesksPrivateFeature::GetActiveDesk(GetActiveDeskCallback callback) {
   base::Uuid desk_id = DesksClient::Get()->GetActiveDesk();
   std::move(callback).Run({}, desk_id);
 }
 
-void WMDesksPrivateFeatureAsh::SwitchDesk(const base::Uuid& desk_uuid,
-                                          SwitchDeskCallback callback) {
+void WMDesksPrivateFeature::SwitchDesk(const base::Uuid& desk_uuid,
+                                       SwitchDeskCallback callback) {
   auto error = DesksClient::Get()->SwitchDesk(desk_uuid);
   std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 
-void WMDesksPrivateFeatureAsh::GetDeskByID(const base::Uuid& desk_uuid,
-                                           GetDeskByIDCallback callback) {
+void WMDesksPrivateFeature::GetDeskByID(const base::Uuid& desk_uuid,
+                                        GetDeskByIDCallback callback) {
   auto result = DesksClient::Get()->GetDeskByID(desk_uuid);
   if (!result.has_value()) {
     std::move(callback).Run(GetStringError(result.error()), {});
