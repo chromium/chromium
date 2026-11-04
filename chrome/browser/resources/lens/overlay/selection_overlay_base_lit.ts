@@ -488,7 +488,7 @@ export abstract class SelectionOverlayBaseLitElement extends
       return;
     }
 
-    if (event.button === 2 /* right button */) {
+    if (event.button === 2 /* right button */ && !this.dragsOnRightButton()) {
       this.handleRightClick(event);
       return;
     }
@@ -507,6 +507,12 @@ export abstract class SelectionOverlayBaseLitElement extends
   }
 
   protected pointerDownHandled() {}
+
+  // Whether a right button press starts a gesture, like the left button,
+  // instead of going to `handleRightClick()`.
+  protected dragsOnRightButton(): boolean {
+    return false;
+  }
 
   protected handleRightClick(event: PointerEvent) {
     this.selectionElements.postSelectionRenderer.handleRightClick(event);

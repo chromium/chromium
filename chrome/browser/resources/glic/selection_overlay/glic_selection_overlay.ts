@@ -123,6 +123,10 @@ export class GlicSelectionOverlayElement extends
   // `sidePanelOpened`, which applies the Lens side panel margins; the Glic
   // overlay is tab-scoped and never applies them.
   accessor sidePanelOpen: boolean = false;
+  // Whether the current gesture started with the right button.
+  private isRightButtonGesture_: boolean = false;
+  // Number of selected regions, as last sent by the browser.
+  private regionCount_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -137,6 +141,26 @@ export class GlicSelectionOverlayElement extends
         handlerImpl.addSetSidePanelOpenListener((open: boolean) => {
           this.sidePanelOpen = open;
         }));
+    this.listenerIds.push(this.baseHandler.addMultiRegionSelectionListener(
+        (regions) => this.onRegionCountChanged_(regions.length)));
+  }
+
+  // The prompt and its suggestions are for a single area. With more, hide
+  // them; bring them back once there is one again.
+  private onRegionCountChanged_(count: number) {
+    const wasMultiple = this.hasMultipleRegions_();
+    this.regionCount_ = count;
+    if (this.hasMultipleRegions_()) {
+      this.showFloatingPrompt = false;
+      this.clearSuggestedActions_();
+    } else if (wasMultiple && count === 1) {
+      this.fetchSuggestedActions();
+      this.updateFloatingPromptPosition();
+    }
+  }
+
+  private hasMultipleRegions_(): boolean {
+    return this.regionCount_ > 1;
   }
 
   override disconnectedCallback() {
@@ -198,6 +222,15 @@ export class GlicSelectionOverlayElement extends
     this.eventTracker_.add(window, 'resize', () => {
       if (this.showFloatingPrompt) {
         this.updateFloatingPromptPosition();
+      }
+    });
+
+    // A context menu would interrupt a right drag. Keep it in the prompt
+    // input for copy and paste.
+    this.eventTracker_.add(this, 'contextmenu', (e: Event) => {
+      if (this.dragsOnRightButton() &&
+          !(e.composedPath()[0] instanceof HTMLInputElement)) {
+        e.preventDefault();
       }
     });
 
@@ -330,17 +363,23 @@ export class GlicSelectionOverlayElement extends
   private suggestedActionsListenerRouter_:
       SuggestedActionsListenerCallbackRouter|null = null;
 
+  private clearSuggestedActions_() {
+    this.suggestedActionsListenerRouter_?.$.close();
+    this.suggestedActionsListenerRouter_ = null;
+    this.suggestedActions = [];
+    // A card belongs to the previous selection's actions.
+    this.clearInlineFulfillment_();
+  }
+
   private fetchSuggestedActions() {
     if (!this.enableSelectionOverlayPrompt &&
         !this.enableSelectionOverlayPromptBox) {
       return;
     }
-    if (this.suggestedActionsListenerRouter_) {
-      this.suggestedActionsListenerRouter_.$.close();
+    this.clearSuggestedActions_();
+    if (this.hasMultipleRegions_()) {
+      return;
     }
-    this.suggestedActions = [];
-    // A card belongs to the previous selection's actions.
-    this.clearInlineFulfillment_();
     this.suggestedActionsListenerRouter_ =
         new SuggestedActionsListenerCallbackRouter();
     this.suggestedActionsListenerRouter_.onSuggestedActionsAvailable
@@ -372,7 +411,8 @@ export class GlicSelectionOverlayElement extends
       return;
     }
 
-    if (!this.selectionElements.postSelectionRenderer.hasSelection()) {
+    if (!this.selectionElements.postSelectionRenderer.hasSelection() ||
+        this.hasMultipleRegions_()) {
       this.showFloatingPrompt = false;
       return;
     }
@@ -483,9 +523,24 @@ export class GlicSelectionOverlayElement extends
     requestAnimationFrame(refinePosition);
   }
 
+  // With the prompt box, a right drag adds an area and a left drag replaces
+  // it.
+  protected override dragsOnRightButton(): boolean {
+    return this.enableSelectionOverlayPromptBox && !this.disableMultiSelect;
+  }
+
+  protected override onPointerDown(event: PointerEvent) {
+    this.isRightButtonGesture_ = event.button === 2;
+    super.onPointerDown(event);
+  }
+
   override handleGestureStart() {
     super.handleGestureStart();
     this.showFloatingPrompt = false;
+    // A right drag always draws a new area, even over an existing one.
+    if (this.isRightButtonGesture_) {
+      return;
+    }
     if (this.selectionElements.postSelectionRenderer.handleGestureStart(
             this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
@@ -518,8 +573,13 @@ export class GlicSelectionOverlayElement extends
       this.setCursorToCrosshair();
       this.draggingRespondent = DragFeature.MANUAL_REGION;
 
-      this.activeRegionId = '';
-      this.baseHandler.activeRegionId = '';
+      // With the prompt box, only a right drag with the side panel open adds
+      // an area. Otherwise keep the active id so the drag replaces it.
+      if (!this.enableSelectionOverlayPromptBox ||
+          (this.isRightButtonGesture_ && this.sidePanelOpen)) {
+        this.activeRegionId = '';
+        this.baseHandler.activeRegionId = '';
+      }
       this.selectionElements.postSelectionRenderer.clearSelection();
 
       // TODO(crbug.com/421002691): follow the convention where the layer
@@ -562,10 +622,11 @@ export class GlicSelectionOverlayElement extends
         break;
       case GestureState.STARTING:
         if (this.draggingRespondent === DragFeature.NONE) {
-          // With the prompt box, a click doesn't select an area around it. It
-          // closes the overlay once there is a region, and does nothing before.
+          // With the prompt box, a click doesn't select an area around it. A
+          // left click closes the overlay once there is a region; otherwise it
+          // does nothing.
           if (this.enableSelectionOverlayPromptBox) {
-            if (this.activeRegionId) {
+            if (this.activeRegionId && !this.isRightButtonGesture_) {
               (this.baseHandler as SelectionOverlayBaseHandlerImpl)
                   .dismissOverlay(DismissOverlayReason.kBackgroundClick);
             }

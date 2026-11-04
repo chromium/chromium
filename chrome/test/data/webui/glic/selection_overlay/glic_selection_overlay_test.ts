@@ -208,12 +208,16 @@ function fakeScreenshotBitmap(
   };
 }
 
-function pointerEvent(type: string, x: number, y: number): PointerEvent {
+const LEFT_BUTTON = 0;
+const RIGHT_BUTTON = 2;
+
+function pointerEvent(
+    type: string, x: number, y: number, button: number): PointerEvent {
   return new PointerEvent(type, {
     pointerId: 1,
     bubbles: true,
     composed: true,
-    button: 0,
+    button,
     clientX: x,
     clientY: y,
     isPrimary: true,
@@ -222,6 +226,7 @@ function pointerEvent(type: string, x: number, y: number): PointerEvent {
 
 // Region ids are tokens: 32 hex digits.
 const REGION_ID = '0123456789ABCDEF0123456789ABCDEF';
+const REGION_ID_2 = 'FEDCBA9876543210FEDCBA9876543210';
 
 suite('GlicSelectionOverlayClick', () => {
   let overlay: GlicSelectionOverlayElement;
@@ -235,30 +240,40 @@ suite('GlicSelectionOverlayClick', () => {
     return {x: rect.left + x * rect.width, y: rect.top + y * rect.height};
   }
 
-  async function click(x: number, y: number) {
+  async function click(x: number, y: number, button: number = LEFT_BUTTON) {
     const point = toClient(x, y);
-    overlay.dispatchEvent(pointerEvent('pointerdown', point.x, point.y));
-    overlay.dispatchEvent(pointerEvent('pointerup', point.x, point.y));
+    overlay.dispatchEvent(
+        pointerEvent('pointerdown', point.x, point.y, button));
+    overlay.dispatchEvent(pointerEvent('pointerup', point.x, point.y, button));
     await flushTasks();
   }
 
-  async function drag(fromX: number, fromY: number, toX: number, toY: number) {
+  async function drag(
+      fromX: number, fromY: number, toX: number, toY: number,
+      button: number = LEFT_BUTTON) {
     const from = toClient(fromX, fromY);
     const to = toClient(toX, toY);
-    overlay.dispatchEvent(pointerEvent('pointerdown', from.x, from.y));
-    overlay.dispatchEvent(pointerEvent('pointermove', to.x, to.y));
+    overlay.dispatchEvent(pointerEvent('pointerdown', from.x, from.y, button));
+    overlay.dispatchEvent(pointerEvent('pointermove', to.x, to.y, button));
     // Pointer moves are handled once per frame.
     await waitAfterNextRender(overlay);
-    overlay.dispatchEvent(pointerEvent('pointerup', to.x, to.y));
+    overlay.dispatchEvent(pointerEvent('pointerup', to.x, to.y, button));
     await flushTasks();
   }
 
-  // Answers as the browser does once it holds the region with `id`.
-  async function setRegion(id: string) {
-    page.setPostRegionSelections(
-        [{id, shape: {rect: {x: 0.2, y: 0.2, width: 0.2, height: 0.2}}}]);
+  // Answers as the browser does once it holds the regions with `ids`.
+  async function setRegions(ids: string[]) {
+    page.setPostRegionSelections(ids.map(
+        (id, i) => ({
+          id,
+          shape: {rect: {x: 0.1 + 0.4 * i, y: 0.2, width: 0.2, height: 0.2}},
+        })));
     await page.$.flushForTesting();
     await overlay.updateComplete;
+  }
+
+  async function setRegion(id: string) {
+    await setRegions([id]);
   }
 
   async function showOverlay(enablePromptBox: boolean) {
@@ -311,15 +326,80 @@ suite('GlicSelectionOverlayClick', () => {
     assertEquals(1, handler.getCallCount('dismissOverlay'));
   });
 
-  test('DragAddsRegion', async () => {
+  test('LeftDragReplacesRegion', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+    page.setSidePanelOpen(true);
+    await setRegion(REGION_ID);
+
+    await drag(0.5, 0.5, 0.7, 0.7);
+
+    assertEquals(1, handler.getCallCount('adjustRegion'));
+    assertEquals(REGION_ID, handler.getArgs('adjustRegion')[0][0].id);
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+  });
+
+  test('RightDragAddsRegionWithSidePanelOpen', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+    page.setSidePanelOpen(true);
+    await setRegion(REGION_ID);
+
+    await drag(0.5, 0.5, 0.7, 0.7, RIGHT_BUTTON);
+
+    assertEquals(1, handler.getCallCount('adjustRegion'));
+    assertNotEquals(REGION_ID, handler.getArgs('adjustRegion')[0][0].id);
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+  });
+
+  test('RightDragReplacesRegionWithSidePanelClosed', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+    await setRegion(REGION_ID);
+
+    await drag(0.5, 0.5, 0.7, 0.7, RIGHT_BUTTON);
+
+    assertEquals(1, handler.getCallCount('adjustRegion'));
+    assertEquals(REGION_ID, handler.getArgs('adjustRegion')[0][0].id);
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+  });
+
+  test('RightClickWithRegionDoesNothing', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+    await setRegion(REGION_ID);
+
+    await click(0.8, 0.8, RIGHT_BUTTON);
+
+    assertEquals(0, handler.getCallCount('adjustRegion'));
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+  });
+
+  test('ContextMenuBlockedWithPromptBox', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+
+    const event =
+        new MouseEvent('contextmenu', {bubbles: true, cancelable: true});
+    overlay.dispatchEvent(event);
+
+    assertTrue(event.defaultPrevented);
+  });
+
+  test('DragReplacesRegionWithSidePanelClosed', async () => {
     await showOverlay(/*enablePromptBox=*/ true);
     await setRegion(REGION_ID);
 
     await drag(0.5, 0.5, 0.7, 0.7);
 
     assertEquals(1, handler.getCallCount('adjustRegion'));
-    assertNotEquals(REGION_ID, handler.getArgs('adjustRegion')[0][0].id);
+    assertEquals(REGION_ID, handler.getArgs('adjustRegion')[0][0].id);
     assertEquals(0, handler.getCallCount('dismissOverlay'));
+  });
+
+  test('DragAddsRegionWithoutPromptBox', async () => {
+    await showOverlay(/*enablePromptBox=*/ false);
+    await setRegion(REGION_ID);
+
+    await drag(0.5, 0.5, 0.7, 0.7);
+
+    assertEquals(1, handler.getCallCount('adjustRegion'));
+    assertNotEquals(REGION_ID, handler.getArgs('adjustRegion')[0][0].id);
   });
 
   test('ClickSelectsAreaWithoutPromptBox', async () => {
@@ -329,6 +409,39 @@ suite('GlicSelectionOverlayClick', () => {
 
     assertEquals(1, handler.getCallCount('adjustRegion'));
     assertEquals(0, handler.getCallCount('dismissOverlay'));
+  });
+
+  test('MultipleRegionsHidePromptAndSuggestions', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+    await setRegion(REGION_ID);
+    overlay.showFloatingPrompt = true;
+    overlay.suggestedActions = [{title: 'Explain'} as SuggestedAction];
+
+    await setRegions([REGION_ID, REGION_ID_2]);
+
+    assertFalse(overlay.showFloatingPrompt);
+    assertEquals(0, overlay.suggestedActions.length);
+  });
+
+  test('NoSuggestionsFetchedWithMultipleRegions', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+    await setRegions([REGION_ID, REGION_ID_2]);
+    const fetches = handler.getCallCount('getSuggestedActions');
+
+    await drag(0.5, 0.5, 0.7, 0.7);
+
+    assertEquals(fetches, handler.getCallCount('getSuggestedActions'));
+    assertFalse(overlay.showFloatingPrompt);
+  });
+
+  test('BackToOneRegionFetchesSuggestions', async () => {
+    await showOverlay(/*enablePromptBox=*/ true);
+    await setRegions([REGION_ID, REGION_ID_2]);
+    const fetches = handler.getCallCount('getSuggestedActions');
+
+    await setRegion(REGION_ID);
+
+    assertEquals(fetches + 1, handler.getCallCount('getSuggestedActions'));
   });
 });
 
