@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h",
   "+ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h",
   # keep-sorted end
 ]

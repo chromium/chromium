@@ -4,11 +4,81 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
 
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+
+// Point size of the icons displayed in the header badges.
+constexpr CGFloat kHeaderIconPointSize = 30.0;
+
+// Creates a rounded square badge view containing `image`.
+UIView* CreateIconBadgeView(UIImage* image) {
+  static constexpr CGFloat kHeaderBadgeSize = 60.0;
+  static constexpr CGFloat kHeaderBadgeCornerRadius = 15.0;
+  static constexpr CGFloat kHeaderBadgeShadowRadius = 6.0;
+  static constexpr CGFloat kHeaderBadgeShadowOffsetY = 2.0;
+  static constexpr float kHeaderBadgeShadowOpacity = 0.12f;
+
+  UIView* badge_view = [[UIView alloc] init];
+  badge_view.translatesAutoresizingMaskIntoConstraints = NO;
+  badge_view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  badge_view.layer.cornerRadius = kHeaderBadgeCornerRadius;
+  badge_view.layer.shadowOffset = CGSizeMake(0, kHeaderBadgeShadowOffsetY);
+  badge_view.layer.shadowRadius = kHeaderBadgeShadowRadius;
+  badge_view.layer.shadowColor = [UIColor colorNamed:kSolidBlackColor].CGColor;
+  badge_view.layer.shadowOpacity = kHeaderBadgeShadowOpacity;
+  [badge_view
+      registerForTraitChanges:@[ [UITraitUserInterfaceStyle class] ]
+                  withHandler:^(UIView* view, UITraitCollection* previous) {
+                    view.layer.shadowColor =
+                        [UIColor colorNamed:kSolidBlackColor].CGColor;
+                  }];
+
+  UIImageView* image_view = [[UIImageView alloc] initWithImage:image];
+  image_view.translatesAutoresizingMaskIntoConstraints = NO;
+  [badge_view addSubview:image_view];
+
+  AddSquareConstraints(badge_view, kHeaderBadgeSize);
+  AddSameCenterConstraints(image_view, badge_view);
+
+  return badge_view;
+}
+
+// Creates the header illustration above the title showing the Gemini badge and
+// the Google Password Manager key badge.
+UIView* CreateAboveTitleView() {
+  static constexpr CGFloat kHeaderBadgeContainerWidth = 105.0;
+  static constexpr CGFloat kHeaderBadgeContainerHeight = 95.0;
+
+  UIView* container_view = [[UIView alloc] init];
+  container_view.translatesAutoresizingMaskIntoConstraints = NO;
+  // The header is decorative; the title below provides the context.
+  container_view.accessibilityElementsHidden = YES;
+
+  UIView* gemini_badge = CreateIconBadgeView(
+      [GeminiUIUtils createGradientGeminiLogo:kHeaderIconPointSize]);
+  UIImage* password_manager_icon = MakeSymbolMulticolor(
+      SymbolWithPointSize(SymbolPasswordManager, kHeaderIconPointSize));
+  UIView* password_manager_badge = CreateIconBadgeView(password_manager_icon);
+
+  [container_view addSubview:gemini_badge];
+  [container_view addSubview:password_manager_badge];
+
+  AddSizeConstraints(container_view, CGSizeMake(kHeaderBadgeContainerWidth,
+                                                kHeaderBadgeContainerHeight));
+  AddSameConstraintsToSides(gemini_badge, container_view,
+                            LayoutSides::kTop | LayoutSides::kLeading);
+  AddSameConstraintsToSides(password_manager_badge, container_view,
+                            LayoutSides::kBottom | LayoutSides::kTrailing);
+
+  return container_view;
+}
 
 // Creates the default button stack configuration using the tertiary style so
 // both options are equally weighted.
@@ -28,11 +98,29 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   return [super initWithConfiguration:SetUpButtonConfiguration()];
 }
 
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  static constexpr CGFloat kCustomSpacingBeforeImage = 16.0;
+  static constexpr CGFloat kCustomSpacing = 12.0;
+
+  self.aboveTitleView = CreateAboveTitleView();
+  self.customSpacingBeforeImage = kCustomSpacingBeforeImage;
+  self.customSpacing = kCustomSpacing;
+
+  self.titleTextStyle = UIFontTextStyleLargeTitle;
+  self.subtitleTextStyle = UIFontTextStyleSubheadline;
+
+  [super viewDidLoad];
+
+  [self adjustTransactionsButtonHorizontalConstraints];
+}
+
 #pragma mark - TableViewBottomSheetViewController
 
 - (NSUInteger)rowCount {
   // TODO(crbug.com/579012416): Update `rowCount` to return the number of
-  // suggestions to display.
+  // credentials to display.
   return 0;
 }
 
