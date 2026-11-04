@@ -241,6 +241,8 @@ void PasswordStoreBuiltInBackend::Shutdown(
   weak_ptr_factory_.InvalidateWeakPtrs();
   affiliated_match_helper_.reset();
   sync_observation_.Reset();
+  last_user_actionable_error_ = syncer::SyncService::UserActionableError::kNone;
+  last_password_sync_active_ = false;
   if (helper_) {
     background_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
     std::move(shutdown_completed).Run();
@@ -474,6 +476,8 @@ void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(
 #endif
 
   sync_observation_.Reset();
+  last_user_actionable_error_ = syncer::SyncService::UserActionableError::kNone;
+  last_password_sync_active_ = false;
   if (sync_service) {
     sync_observation_.Observe(sync_service);
   }
@@ -489,13 +493,27 @@ void PasswordStoreBuiltInBackend::OnStateChanged(syncer::SyncService* sync) {
 #endif
 
   CHECK(sync_observation_.IsObservingSource(sync));
-  if (remote_form_changes_received_callback_) {
-    if (ShouldForwardSyncErrorToStore(sync->GetUserActionableError())) {
-      remote_form_changes_received_callback_.Run(
-          SyncErrorToBackendError(sync->GetUserActionableError()));
-    }
+
+  const syncer::SyncService::UserActionableError raw_error =
+      sync->GetUserActionableError();
+  const syncer::SyncService::UserActionableError current_error =
+      ShouldForwardSyncErrorToStore(raw_error)
+          ? raw_error
+          : syncer::SyncService::UserActionableError::kNone;
+  const bool error_changed = (last_user_actionable_error_ != current_error);
+  last_user_actionable_error_ = current_error;
+
+  const bool passwords_active =
+      sync->GetActiveDataTypes().Has(syncer::PASSWORDS);
+  const bool sync_active_changed =
+      (last_password_sync_active_ != passwords_active);
+  last_password_sync_active_ = passwords_active;
+
+  if (error_changed && remote_form_changes_received_callback_) {
+    remote_form_changes_received_callback_.Run(
+        SyncErrorToBackendError(current_error));
   }
-  if (sync_enabled_or_disabled_cb_) {
+  if ((error_changed || sync_active_changed) && sync_enabled_or_disabled_cb_) {
     sync_enabled_or_disabled_cb_.Run();
   }
 }
@@ -511,6 +529,8 @@ void PasswordStoreBuiltInBackend::OnSyncShutdown(syncer::SyncService* sync) {
 
   CHECK(sync_observation_.IsObservingSource(sync));
   sync_observation_.Reset();
+  last_user_actionable_error_ = syncer::SyncService::UserActionableError::kNone;
+  last_password_sync_active_ = false;
 }
 
 base::WeakPtr<PasswordStoreBackend> PasswordStoreBuiltInBackend::AsWeakPtr() {

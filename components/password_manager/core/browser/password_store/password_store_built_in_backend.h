@@ -25,15 +25,12 @@
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 namespace os_crypt_async {
 class OSCryptAsync;
@@ -182,6 +179,13 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
+
+  // Tracks the last known sync error and whether password sync is active to
+  // avoid redundant notifications to observers.
+  syncer::SyncService::UserActionableError last_user_actionable_error_
+      GUARDED_BY_CONTEXT(sequence_checker_) =
+          syncer::SyncService::UserActionableError::kNone;
+  bool last_password_sync_active_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<PasswordStoreBuiltInBackend> weak_ptr_factory_{this};
 };
