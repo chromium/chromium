@@ -14,6 +14,7 @@
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -241,6 +242,7 @@ TEST_F(InputStateModelTest, TestInitialization) {
   EXPECT_TRUE(state.disabled_tools.empty());
   EXPECT_TRUE(state.disabled_models.empty());
   EXPECT_TRUE(state.disabled_input_types.empty());
+  EXPECT_EQ(state.max_total_inputs, 0);
 }
 
 TEST_F(InputStateModelTest,
@@ -1291,6 +1293,57 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   // Image input should still be disabled due to max_instance.
   EXPECT_THAT(final_state.disabled_input_types,
               UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
+}
+
+TEST_F(InputStateModelCompatibilityTest,
+       DefaultMaxTotalInputsWhenUnsetInRuleSet) {
+  config_.mutable_rule_set()->clear_max_total_inputs();
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  const auto& initial_state = input_state_model_->get_state_for_testing();
+  EXPECT_EQ(initial_state.max_total_inputs, omnibox::kDefaultMaxTotalInputs);
+  EXPECT_TRUE(initial_state.disabled_input_types.empty());
+
+  // Simulate adding `kDefaultMaxTotalInputs - 1` files.
+  std::vector<FileInfo> file_infos(omnibox::kDefaultMaxTotalInputs - 1);
+  for (auto& file_info : file_infos) {
+    file_info.mime_type = lens::MimeType::kPdf;
+  }
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  input_state_model_->OnContextChanged();
+  EXPECT_TRUE(
+      input_state_model_->get_state_for_testing().disabled_input_types.empty());
+
+  // Adding one more file reaches `kDefaultMaxTotalInputs` and disables all
+  // allowed input types.
+  file_infos.emplace_back();
+  file_infos.back().mime_type = lens::MimeType::kPdf;
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  input_state_model_->OnContextChanged();
+  EXPECT_THAT(input_state_model_->get_state_for_testing().disabled_input_types,
+              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
+
+  // If no inputs are allowed, `max_total_inputs` should be 0.
+  config_.clear_input_type_configs();
+  auto model_without_inputs = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  EXPECT_TRUE(model_without_inputs->get_state_for_testing()
+                  .allowed_input_types.empty());
+  EXPECT_EQ(model_without_inputs->get_state_for_testing().max_total_inputs, 0);
 }
 
 TEST_F(InputStateModelCompatibilityTest,

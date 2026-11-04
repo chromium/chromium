@@ -18,6 +18,7 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/contextual_input.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -359,11 +360,6 @@ void InputStateModel::PopulateConfig(const SearchboxConfig& config) {
       state_.hint_text = mutable_config.hint_text();
     } else {
       state_.hint_text.clear();
-    }
-    if (rule_set_.has_max_total_inputs()) {
-      state_.max_total_inputs = rule_set_.max_total_inputs();
-    } else {
-      state_.max_total_inputs = 0;
     }
     state_.max_inputs_by_type.clear();
     for (const auto& rule : rule_set_.input_type_rules()) {
@@ -971,6 +967,14 @@ void InputStateModel::RebuildAllowedInputTypes() {
   if (!contains(omnibox::INPUT_TYPE_DRIVE) && !is_signed_in_ &&
       IsDriveSupported() && sharing_enabled) {
     state_.allowed_input_types.push_back(omnibox::INPUT_TYPE_DRIVE);
+  }
+
+  if (rule_set_.has_max_total_inputs()) {
+    state_.max_total_inputs = rule_set_.max_total_inputs();
+  } else if (state_.allowed_input_types.empty()) {
+    state_.max_total_inputs = 0;
+  } else {
+    state_.max_total_inputs = omnibox::kDefaultMaxTotalInputs;
   }
 }
 
