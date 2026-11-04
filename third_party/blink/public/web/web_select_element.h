@@ -72,6 +72,8 @@ class BLINK_EXPORT WebSelectElement final : public WebFormControlElement {
   // `WebFormControlElement::SetSuggestedValue()`. Does not dispatch any events.
   void SetSuggestedOption(WebOptionElement* option);
 
+  void SelectOption(WebOptionElement* option, bool send_events);
+
   std::vector<WebElement> GetListItems() const;
 
 #if INSIDE_BLINK

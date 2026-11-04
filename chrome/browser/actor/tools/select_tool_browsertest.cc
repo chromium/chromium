@@ -3,18 +3,23 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/shared_types.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
-using base::test::TestFuture;
 using content::EvalJs;
 using content::ExecJs;
 using content::GetDOMNodeId;
@@ -181,6 +186,32 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kSelectNoSuchOption);
+
+  EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), plain_select_id),
+            initial_value);
+}
+
+// Test that attempting to select with an empty match_text fails with
+// kArgumentsInvalid and does not change the current selection.
+IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+                       SelectTool_EmptyMatchTextFails) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string plain_select_id = "#plainSelect";
+  int32_t plain_select_dom_node_id =
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
+
+  const std::string initial_value =
+      GetSelectElementCurrentValue(web_contents(), plain_select_id);
+  ASSERT_EQ(initial_value, "alpha");
+
+  std::unique_ptr<ToolRequest> action =
+      MakeSelectRequest(*main_frame(), plain_select_dom_node_id, "");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
 
   EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), plain_select_id),
             initial_value);
@@ -465,6 +496,129 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 
   EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), listbox_select_id),
             "delta");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+                       SelectTool_MatchByTextFromApc) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    const select = document.createElement('select');
+    select.id = 'testSelect';
+    select.innerHTML =
+        '<option value="label_only" label="Label Only"></option>' +
+        '<option value="text_only">Text Only</option>' +
+        '<option value="both" label="Both Label">Both Text</option>';
+    document.body.appendChild(select);
+  )JS"));
+
+  const std::string select_id = "#testSelect";
+  const int32_t select_dom_node_id =
+      GetDOMNodeId(*main_frame(), select_id).value();
+
+  // Get the text via APC to ensure we use the same option text as would be
+  // seen by a client using APC.
+  GetPageApc();
+  const auto* apc =
+      ActorTabData::From(active_tab())->GetLastObservedPageContent();
+  ASSERT_TRUE(apc);
+
+  const std::string document_id =
+      apc->main_frame_data().document_identifier().serialized_token();
+  std::optional<optimization_guide::TargetNodeInfo> select_node_info =
+      optimization_guide::FindNodeWithID(*apc, document_id, select_dom_node_id);
+  ASSERT_TRUE(select_node_info.has_value());
+  ASSERT_TRUE(select_node_info->node);
+
+  const auto& select_options = select_node_info->node->content_attributes()
+                                   .form_control_data()
+                                   .select_options();
+  ASSERT_EQ(select_options.size(), 3);
+
+  auto make_select_by_text_request =
+      [&](std::string_view text) -> std::unique_ptr<ToolRequest> {
+    return std::make_unique<SelectToolRequest>(
+        ActorSurfaceHandle::From(active_tab()->GetHandle()),
+        PageTarget(DomNode{.node_id = select_dom_node_id,
+                           .document_identifier = document_id}),
+        text, mojom::SelectAction::OptionMatchMode::kText);
+  };
+
+  // Select the second option before the first since the first option is
+  // initially selected by default.
+  {
+    std::unique_ptr<ToolRequest> action =
+        make_select_by_text_request(select_options[1].text());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), select_id),
+              "text_only");
+  }
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        make_select_by_text_request(select_options[0].text());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), select_id),
+              "label_only");
+  }
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        make_select_by_text_request(select_options[2].text());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), select_id), "both");
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+                       SelectTool_MatchByTextWithDuplicateValues) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    const select = document.createElement('select');
+    select.id = 'testSelect';
+    select.innerHTML =
+        '<option value="foo">First Option</option>' +
+        '<option value="foo">Second Option</option>';
+    document.body.appendChild(select);
+  )JS"));
+
+  const std::string select_id = "#testSelect";
+  const int32_t select_dom_node_id =
+      GetDOMNodeId(*main_frame(), select_id).value();
+  const std::string document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(main_frame())
+              ->serialized_token();
+
+  ASSERT_EQ(0, EvalJs(web_contents(),
+                      "document.getElementById('testSelect').selectedIndex"));
+
+  std::unique_ptr<ToolRequest> action = std::make_unique<SelectToolRequest>(
+      ActorSurfaceHandle::From(active_tab()->GetHandle()),
+      PageTarget(DomNode{.node_id = select_dom_node_id,
+                         .document_identifier = document_id}),
+      "Second Option", mojom::SelectAction::OptionMatchMode::kText);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(1, EvalJs(web_contents(),
+                      "document.getElementById('testSelect').selectedIndex"));
+  EXPECT_EQ(
+      "Second Option",
+      EvalJs(web_contents(),
+             "document.getElementById('testSelect').selectedOptions[0].text"));
 }
 
 }  // namespace

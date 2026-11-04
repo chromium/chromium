@@ -11,7 +11,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "components/actor/core/task_id.h"
-#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_select_element.h"
 
 namespace content {
@@ -37,13 +37,13 @@ class SelectTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
-  struct TargetAndValue {
+  struct TargetAndOption {
     blink::WebSelectElement select;
-    blink::WebString option_value;
+    blink::WebOptionElement option;
   };
 
   mojom::SelectActionPtr action_;
-  std::optional<TargetAndValue> validated_target_and_value_;
+  std::optional<TargetAndOption> validated_target_and_option_;
 
   base::WeakPtrFactory<SelectTool> weak_ptr_factory_{this};
 };

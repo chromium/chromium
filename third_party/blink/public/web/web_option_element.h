@@ -54,6 +54,7 @@ class BLINK_EXPORT WebOptionElement final : public WebElement {
 
   WebString Value() const;
   WebString GetText() const;
+  WebString GetInnerText() const;
   WebString Label() const;
 
   bool IsEnabled() const;

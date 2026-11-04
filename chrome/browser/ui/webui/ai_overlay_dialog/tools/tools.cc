@@ -562,7 +562,7 @@ void AiOverlayTools::SelectOption(const blink::DOMNodeIdType& dom_node_id,
   rfh->GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame);
 
   auto select_action = actor::mojom::SelectAction::New();
-  select_action->value = value;
+  select_action->match_text = value;
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->task_id = actor::TaskId();

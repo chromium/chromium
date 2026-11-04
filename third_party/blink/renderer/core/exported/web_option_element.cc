@@ -44,6 +44,10 @@ WebString WebOptionElement::GetText() const {
   return ConstUnwrap<HTMLOptionElement>()->DisplayLabel();
 }
 
+WebString WebOptionElement::GetInnerText() const {
+  return ConstUnwrap<HTMLOptionElement>()->text();
+}
+
 WebString WebOptionElement::Label() const {
   return ConstUnwrap<HTMLOptionElement>()->label();
 }

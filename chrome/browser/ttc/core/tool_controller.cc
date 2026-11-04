@@ -340,21 +340,20 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   select_option.parameters_json_schema =
       base::DictValue()
           .Set("type", "object")
-          .Set(
-              "properties",
-              base::DictValue()
-                  .Set("node_id",
-                       base::DictValue()
-                           .Set("type", "integer")
-                           .Set("description",
-                                "The numeric node ID of the target dropdown "
-                                "element (e.g. 101)."))
-                  .Set("value", base::DictValue()
+          .Set("properties",
+               base::DictValue()
+                   .Set("node_id",
+                        base::DictValue()
+                            .Set("type", "integer")
+                            .Set("description",
+                                 "The numeric node ID of the target dropdown "
+                                 "element (e.g. 101)."))
+                   .Set("text", base::DictValue()
                                     .Set("type", "string")
                                     .Set("description",
-                                         "The value of the <option> element to "
+                                         "The text of the <option> element to "
                                          "select.")))
-          .Set("required", base::ListValue().Append("node_id").Append("value"));
+          .Set("required", base::ListValue().Append("node_id").Append("text"));
   select_option.behavior = ToolDefinition::Behavior::kBlocking;
   select_option.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(select_option));
@@ -873,19 +872,21 @@ void ToolController::SelectOption(const base::DictValue& arguments,
     return;
   }
 
-  const std::string* value = arguments.FindString("value");
-  if (!value) {
+  const std::string* text = arguments.FindString("text");
+  if (!text) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing value argument"));
+                            "Missing text argument"));
     return;
   }
 
+  // In Ttc options are selected based on visible text.
   PerformActionOnTrackedContents(
-      [&page_target, &value](actor::ActorSurfaceHandle actor_surface_handle)
+      [&page_target, &text](actor::ActorSurfaceHandle actor_surface_handle)
           -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::SelectToolRequest>(actor_surface_handle,
-                                                          *page_target, *value);
+        return std::make_unique<actor::SelectToolRequest>(
+            actor_surface_handle, *page_target, *text,
+            actor::mojom::SelectAction::OptionMatchMode::kText);
       },
       std::move(callback));
 }

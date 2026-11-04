@@ -75,6 +75,12 @@ void WebSelectElement::SetSuggestedOption(WebOptionElement* option) {
   Unwrap<HTMLSelectElement>()->SetSuggestedOption(*option);
 }
 
+void WebSelectElement::SelectOption(WebOptionElement* option,
+                                    bool send_events) {
+  Unwrap<HTMLSelectElement>()->SelectOptionByElement(
+      *option, send_events, WebAutofillState::kNotFilled);
+}
+
 WebSelectElement::WebSelectElement(HTMLSelectElement* element)
     : WebFormControlElement(element) {}
 

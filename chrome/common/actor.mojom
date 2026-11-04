@@ -116,10 +116,21 @@ struct ScrollAction {
 
 // Action for selecting an option from a <select> element.
 struct SelectAction {
-  // The value of the option to set as the currently selected option. The action
-  // fails if the given value doesn't match the value of one of the element's
-  // <option> children. Case-sensitive.
-  string value;
+  enum OptionMatchMode {
+    // Matches `match_text` against the <option> element's `value` attribute (or
+    // the option's text content if the `value` attribute is not specified).
+    kValue = 0,
+
+    // Matches `match_text` against the <option> element's text content if
+    // non-empty, or `label` attribute otherwise).
+    kText = 1,
+  };
+
+  // The value or text of the option to set as the currently selected option,
+  // depending on `match_mode`. The action fails if the given string doesn't
+  // match one of the element's <option> children. Case-sensitive.
+  string match_text;
+  OptionMatchMode match_mode = kValue;
 };
 
 // Performs a left mouse button down on the from_target, then moves to and

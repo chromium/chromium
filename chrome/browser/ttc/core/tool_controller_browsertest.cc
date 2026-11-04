@@ -1513,7 +1513,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOption) {
   tool_request.arguments.Set("node_id", base::DictValue()
                                             .Set("document_id", document_id)
                                             .Set("dom_node_id", *select_id));
-  tool_request.arguments.Set("value", "last");
+  // TTC matches <option> elements by text rather than value.
+  tool_request.arguments.Set("text", "omega");
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
@@ -1521,6 +1522,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOption) {
   EXPECT_EQ("last", content::EvalJs(web_contents(),
                                     "document.getElementById('plainSelect')"
                                     ".value"));
+  EXPECT_EQ("omega", content::EvalJs(web_contents(),
+                                     "document.getElementById('plainSelect')"
+                                     ".selectedOptions[0].text"));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingNodeId) {
@@ -1531,7 +1535,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingNodeId) {
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name = "select_option";
-  tool_request.arguments.Set("value", "last");
+  tool_request.arguments.Set("text", "omega");
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
@@ -1541,7 +1545,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingNodeId) {
             actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingValue) {
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingText) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
@@ -1603,7 +1607,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   tool_request.arguments.Set("node_id", base::DictValue()
                                             .Set("document_id", old_document_id)
                                             .Set("dom_node_id", *select_id));
-  tool_request.arguments.Set("value", "last");
+  tool_request.arguments.Set("text", "omega");
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
@@ -2364,15 +2368,15 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(select_node_id_type);
   EXPECT_EQ(*select_node_id_type, "integer");
 
-  const std::string* select_value_type =
-      select_schema.FindStringByDottedPath("properties.value.type");
-  ASSERT_TRUE(select_value_type);
-  EXPECT_EQ(*select_value_type, "string");
+  const std::string* select_text_type =
+      select_schema.FindStringByDottedPath("properties.text.type");
+  ASSERT_TRUE(select_text_type);
+  EXPECT_EQ(*select_text_type, "string");
 
   const base::ListValue* select_required = select_schema.FindList("required");
   ASSERT_TRUE(select_required);
   EXPECT_EQ(*select_required,
-            base::ListValue().Append("node_id").Append("value"));
+            base::ListValue().Append("node_id").Append("text"));
 
   const ToolDefinition& scroll_page = tools[expected_tools.size() + 3];
   EXPECT_EQ(scroll_page.name, "scroll_page");

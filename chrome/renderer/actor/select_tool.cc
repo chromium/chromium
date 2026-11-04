@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/to_string.h"
@@ -26,6 +27,15 @@
 #include "third_party/blink/public/web/web_view.h"
 
 namespace actor {
+
+namespace {
+
+// When this flag is enabled, return ArgumentsInvalid if the match_text is
+// empty. This is a kill-switch to a change to previous behavior.
+BASE_FEATURE(kActorSelectToolAllowEmptyTextMatch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 using blink::WebElement;
 using blink::WebNode;
@@ -49,16 +59,16 @@ SelectTool::SelectTool(content::RenderFrame& frame,
 SelectTool::~SelectTool() = default;
 
 void SelectTool::Execute(ToolFinishedCallback callback) {
-  CHECK(validated_target_and_value_.has_value())
+  CHECK(validated_target_and_option_.has_value())
       << "Execute tool was called before validation";
-  WebSelectElement select = validated_target_and_value_.value().select;
-  WebString value = validated_target_and_value_.value().option_value;
+  WebSelectElement select = validated_target_and_option_.value().select;
+  WebOptionElement option = validated_target_and_option_.value().option;
 
-  // Use a weak pointer to check if `this` is still valid after SetValue()
+  // Use a weak pointer to check if `this` is still valid after SelectOption()
   // returns, as it synchronously dispatches DOM events that might destroy the
   // owning frame and this tool.
   base::WeakPtr<SelectTool> weak_this = weak_ptr_factory_.GetWeakPtr();
-  select.SetValue(value, /*send_events=*/true);
+  select.SelectOption(&option, /*send_events=*/true);
 
   if (!weak_this) {
     // If the tool was destroyed, its owner (ToolExecutor) is also likely being
@@ -73,13 +83,22 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
 }
 
 std::string SelectTool::DebugString() const {
-  return absl::StrFormat("SelectTool[%s;value(%s)]", ToDebugString(target_),
-                         action_->value);
+  return absl::StrFormat("SelectTool[%s;match_text(%s);match_mode(%s)]",
+                         ToDebugString(target_), action_->match_text,
+                         base::ToString(action_->match_mode));
 }
 
 ValidationResult SelectTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
+
+  if (action_->match_text.empty() &&
+      (action_->match_mode == mojom::SelectAction::OptionMatchMode::kValue ||
+       base::FeatureList::IsEnabled(kActorSelectToolAllowEmptyTextMatch))) {
+    return ValidationResult(
+        MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+                   /*requires_page_stabilization=*/false, "Empty match_text"));
+  }
 
   if (target_->is_coordinate_dip()) {
     static constexpr std::string_view kErrorMessage =
@@ -112,10 +131,30 @@ ValidationResult SelectTool::Validate() {
                    absl::StrFormat("Element [%s]", base::ToString(select))));
   }
 
-  WebString value(WebString::FromUtf8(action_->value));
+  WebString match_text(WebString::FromUtf8(action_->match_text));
   for (const auto& e : select.GetListItems()) {
     auto option = e.DynamicTo<WebOptionElement>();
-    if (option && option.Value() == value) {
+    if (!option) {
+      continue;
+    }
+    bool matches = false;
+    switch (action_->match_mode) {
+      case mojom::SelectAction::OptionMatchMode::kValue:
+        matches = option.Value() == match_text;
+        break;
+      case mojom::SelectAction::OptionMatchMode::kText: {
+        // Match AnnotatedPageContent's select_options extraction, which uses
+        // the option's inner text and falls back to its display label when
+        // empty.
+        WebString option_text = option.GetInnerText();
+        if (option_text.IsEmpty()) {
+          option_text = option.GetText();
+        }
+        matches = option_text == match_text;
+        break;
+      }
+    }
+    if (matches) {
       if (!option.IsEnabled()) {
         return ValidationResult(MakeResult(
             mojom::ActionResultCode::kSelectOptionDisabled,
@@ -123,7 +162,7 @@ ValidationResult SelectTool::Validate() {
             absl::StrFormat("SelectElement[%s] OptionElement [%s]",
                             base::ToString(select), base::ToString(option))));
       }
-      validated_target_and_value_.emplace(TargetAndValue{select, value});
+      validated_target_and_option_.emplace(TargetAndOption{select, option});
       return ValidationResult(MakeOkResult());
     }
   }

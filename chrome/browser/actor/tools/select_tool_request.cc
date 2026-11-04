@@ -32,11 +32,14 @@ constexpr std::string_view kValueParamDescription =
 
 }  // namespace
 
-
-SelectToolRequest::SelectToolRequest(ActorSurfaceHandle actor_surface_handle,
-                                     const PageTarget& target,
-                                     std::string_view value)
-    : PageToolRequest(actor_surface_handle, target), value_(value) {}
+SelectToolRequest::SelectToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    const PageTarget& target,
+    std::string_view match_text,
+    mojom::SelectAction::OptionMatchMode match_mode)
+    : PageToolRequest(actor_surface_handle, target),
+      match_text_(match_text),
+      match_mode_(match_mode) {}
 
 SelectToolRequest::~SelectToolRequest() = default;
 
@@ -63,7 +66,8 @@ mojom::ToolActionPtr SelectToolRequest::ToMojoToolAction(
     content::RenderFrameHost& frame) const {
   auto select = mojom::SelectAction::New();
 
-  select->value = value_;
+  select->match_text = match_text_;
+  select->match_mode = match_mode_;
 
   return mojom::ToolAction::NewSelect(std::move(select));
 }
