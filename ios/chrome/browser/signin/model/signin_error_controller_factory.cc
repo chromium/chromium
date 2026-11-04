@@ -20,7 +20,7 @@ SigninErrorControllerFactory::SigninErrorControllerFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SigninErrorControllerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<SigninErrorController>(
       SigninErrorController::AccountMode::ANY_ACCOUNT,
       IdentityManagerFactory::GetForProfile(profile));

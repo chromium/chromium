@@ -38,7 +38,7 @@ IdentityManagerFactory::IdentityManagerFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   signin::IdentityManagerBuildParams params;
   ChromeAccountManagerService* chrome_account_manager_service =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
@@ -47,7 +47,7 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
           chrome_account_manager_service);
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();
   params.local_state = GetApplicationContext()->GetLocalState();
-  params.pref_service = profile->GetPrefs();
+  params.pref_service = profile.GetPrefs();
   params.profile_path = base::FilePath();
   params.signin_client = SigninClientFactory::GetForProfile(profile);
   params.account_tracker_service = std::make_unique<AccountTrackerService>(

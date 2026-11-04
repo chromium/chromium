@@ -35,7 +35,7 @@ AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AccountPreviewDataServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData)) {
     return nullptr;
   }
@@ -53,8 +53,8 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceFor(
       SigninClientFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
-      GetApplicationContext()->GetLocalState(), profile->GetPrefs(),
-      profile->GetSharedURLLoaderFactory(),
+      GetApplicationContext()->GetLocalState(), profile.GetPrefs(),
+      profile.GetSharedURLLoaderFactory(),
       std::make_unique<WaitForNetworkCallbackHelperIOS>(), ::GetChannel(),
       profile_metrics_service);
 }

@@ -22,7 +22,7 @@ class TrustedVaultClientBackendFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_BACKEND_FACTORY_H_

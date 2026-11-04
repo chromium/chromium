@@ -22,10 +22,10 @@ AccountInvestigatorFactory::AccountInvestigatorFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-AccountInvestigatorFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+AccountInvestigatorFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   std::unique_ptr<AccountInvestigator> investigator =
       std::make_unique<AccountInvestigator>(
-          profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
+          profile.GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
   investigator->Initialize();
   return std::move(investigator);
 }

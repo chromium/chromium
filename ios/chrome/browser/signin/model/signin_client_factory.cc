@@ -16,7 +16,7 @@ SigninClientFactory::SigninClientFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> SigninClientFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<IOSChromeSigninClient>(
-      profile, ios::HostContentSettingsMapFactory::GetForProfile(profile));
+      &profile, ios::HostContentSettingsMapFactory::GetForProfile(profile));
 }

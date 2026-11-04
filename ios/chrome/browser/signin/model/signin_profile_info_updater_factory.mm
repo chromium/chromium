@@ -22,9 +22,9 @@ SigninProfileInfoUpdaterFactory::SigninProfileInfoUpdaterFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SigninProfileInfoUpdaterFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<SigninProfileInfoUpdater>(
       IdentityManagerFactory::GetForProfile(profile),
       ios::SigninErrorControllerFactory::GetForProfile(profile),
-      profile->GetProfileName());
+      profile.GetProfileName());
 }

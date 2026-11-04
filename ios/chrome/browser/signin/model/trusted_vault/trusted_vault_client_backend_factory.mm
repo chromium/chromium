@@ -19,7 +19,7 @@ TrustedVaultClientBackendFactory::TrustedVaultClientBackendFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 TrustedVaultClientBackendFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake TrustedVaultClientBackend).
   if (auto backend = tests_hook::CreateTrustedVaultClientBackend()) {

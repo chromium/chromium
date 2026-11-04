@@ -22,7 +22,7 @@ AccountReconcilorFactory::AccountReconcilorFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> AccountReconcilorFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto reconcilor = std::make_unique<AccountReconcilor>(
       identity_manager, SigninClientFactory::GetForProfile(profile),

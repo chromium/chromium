@@ -24,9 +24,9 @@ SigninMetricsServiceFactory::SigninMetricsServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SigninMetricsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<SigninMetricsService>(
-      *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
+      *IdentityManagerFactory::GetForProfile(profile), *profile.GetPrefs(),
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder(),
       IOSProfileMetricsServiceFactory::GetForProfile(profile));
 }
