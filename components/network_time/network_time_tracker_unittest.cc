@@ -201,7 +201,8 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   NetworkTimeTrackerTest() : NetworkTimeTrackerTest(false) {}
   explicit NetworkTimeTrackerTest(bool dev_keys)
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::IO),
+            base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         field_trial_test_(std::make_unique<FieldTrialTest>()),
         clock_(new base::SimpleTestClock),
         tick_clock_(new base::SimpleTestTickClock) {
@@ -397,7 +398,9 @@ class NetworkTimeTrackerTest : public ::testing::Test {
 
  private:
   void Intercept(const network::ResourceRequest& request) {
-    CHECK(response_handler_);
+    if (!response_handler_) {
+      return;
+    }
     MockedResponse response = response_handler_.Run();
     // status.decoded_body_length = response.body.size();
     url_loader_factory_.AddResponse(request.url, std::move(response.head),
@@ -683,6 +686,73 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetwork) {
             base::Milliseconds(1));
   // Should see no backoff in the success case.
   EXPECT_EQ(base::Minutes(60), tracker_->GetTimerDelayForTesting());
+}
+
+TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkLatency) {
+  base::Time out_network_time;
+  base::TimeDelta uncertainty;
+  EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SYNC_ATTEMPT,
+            tracker_->GetNetworkTime(&out_network_time, &uncertainty));
+
+  base::TimeTicks start_ticks = tick_clock_->NowTicks();
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  GURL request_url = url_loader_factory_.GetPendingRequest(0)->request.url;
+
+  // Simulate a 20-second delay between starting the request (and receiving
+  // initial response headers) and completing the response body.
+  constexpr base::TimeDelta kFetchLatency = base::Seconds(20);
+  AdvanceBoth(kFetchLatency);
+
+  MockedResponse response = GoodTimeResponseHandler();
+  response.head->load_timing.send_end = start_ticks;
+  response.head->load_timing.receive_headers_start =
+      start_ticks + base::Milliseconds(10);
+  url_loader_factory_.AddResponse(request_url, std::move(response.head),
+                                  std::move(response.body),
+                                  std::move(response.status));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
+            tracker_->GetNetworkTime(&out_network_time, &uncertainty));
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
+                kGoodTimeResponseHandlerJsTime[0]) +
+                kFetchLatency / 2,
+            out_network_time);
+  constexpr base::TimeDelta kExpectedResolution =
+      base::Milliseconds(1) + base::Seconds(10);
+  EXPECT_EQ(kExpectedResolution + kFetchLatency + adjustment_, uncertainty);
+}
+
+TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkTimeout) {
+  base::Time out_network_time;
+  EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SYNC_ATTEMPT,
+            tracker_->GetNetworkTime(&out_network_time, nullptr));
+
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
+  EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_FIRST_SYNC_PENDING,
+            tracker_->GetNetworkTime(&out_network_time, nullptr));
+
+  // Advance just under the 45-second timeout; the request should still be
+  // pending.
+  AdvanceBoth(base::Seconds(44));
+  task_environment_.FastForwardBy(base::Seconds(44));
+  EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_FIRST_SYNC_PENDING,
+            tracker_->GetNetworkTime(&out_network_time, nullptr));
+
+  // Advance past the 45-second timeout; the request should fail and back off.
+  AdvanceBoth(base::Seconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SUCCESSFUL_SYNC,
+            tracker_->GetNetworkTime(&out_network_time, nullptr));
+  EXPECT_EQ(base::Minutes(120), tracker_->GetTimerDelayForTesting());
+
+  // Verify that a subsequent query can succeed once a valid response is served.
+  SetResponseHandler(base::BindRepeating(&GoodTimeResponseHandler));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
+  tracker_->WaitForFetchForTesting(123123123);
+  EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
+            tracker_->GetNetworkTime(&out_network_time, nullptr));
 }
 
 TEST_F(NetworkTimeTrackerTest, StartTimeFetch) {

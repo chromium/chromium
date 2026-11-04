@@ -272,6 +272,7 @@ class NetworkTimeTracker {
   base::RepeatingTimer timer_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> time_fetcher_;
+  base::TimeTicks fetch_started_;
   client_update_protocol::Cup query_signer_;
 
   // The |Clock| and |TickClock| are used to sanity-check one another, allowing

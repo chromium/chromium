@@ -148,6 +148,9 @@ constexpr base::TimeDelta kTimeServerMaxSkew = base::Seconds(10);
 // JSON object, so this is generously above the expected size.
 constexpr size_t kMaxResponseSizeBytes = 1024;
 
+// Timeout for time server queries.
+constexpr base::TimeDelta kTimeServiceTimeout = base::Seconds(45);
+
 // Prefix prepended by the server to defeat cross-site script inclusion. It is
 // stripped before the body is parsed as JSON.
 constexpr std::string_view kJsonSafetyPrefix = ")]}'\n";
@@ -629,11 +632,12 @@ void NetworkTimeTracker::CheckTime() {
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->enable_load_timing = true;
   // This cancels any outstanding fetch.
   time_fetcher_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                    traffic_annotation);
   time_fetcher_->SetAllowHttpErrorResults(true);
+  time_fetcher_->SetTimeoutDuration(kTimeServiceTimeout);
+  fetch_started_ = tick_clock_->NowTicks();
   time_fetcher_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&NetworkTimeTracker::OnURLLoaderComplete,
@@ -682,15 +686,18 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
       base::Time::FromMillisecondsSinceUnixEpoch(*current_time_millis);
   base::TimeDelta resolution = base::Milliseconds(1) + kTimeServerMaxSkew;
 
-  // Record histograms for the latency of the time query and the time delta
-  // between time fetches.
-  base::TimeDelta latency =
-      time_fetcher_->ResponseInfo()->load_timing.receive_headers_start -
-      time_fetcher_->ResponseInfo()->load_timing.send_end;
+  // Fix the NowTicks() value and measure latency as the total time from
+  // starting the fetch to receiving the full response body (rather than
+  // `load_timing.receive_headers_start - load_timing.send_end`), since
+  // `UpdateNetworkTime()` anchors the update at `now_ticks` (body completion)
+  // and any delay in receiving the body must be accounted for in the latency
+  // and uncertainty.
+  base::TimeTicks now_ticks = tick_clock_->NowTicks();
+  base::TimeDelta latency = now_ticks - fetch_started_;
 
   last_fetched_time_ = current_time;
 
-  UpdateNetworkTime(current_time, resolution, latency, tick_clock_->NowTicks());
+  UpdateNetworkTime(current_time, resolution, latency, now_ticks);
   return true;
 }
 
