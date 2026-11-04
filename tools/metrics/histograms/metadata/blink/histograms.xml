@@ -691,13 +691,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.Canvas.WebGLANGLEImplementation"
-    enum="WebGLANGLEImplementation" expires_after="2026-02-22">
+<histogram name="Blink.Canvas.WebGLANGLEImplementation2"
+    enum="WebGLANGLEImplementation" expires_after="2027-04-11">
+  <owner>arthursonzogni@chromium.org</owner>
+  <owner>cwallez@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>webgl-team@google.com</owner>
   <summary>
     Distribution of WebGL1 and WebGL2 contexts and their ANGLE implementation.
-    Recorded at first draw call time for each context.
+    Recorded at first draw call time for each context. Replaces
+    Blink.Canvas.WebGLANGLEImplementation, which had an off-by-one enum mapping
+    after D3D9 removal.
   </summary>
 </histogram>
 

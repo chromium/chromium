@@ -9450,6 +9450,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="8" label="Success Avar2 font"/>
 </enum>
 
+<!-- LINT.IfChange(WebGLANGLEImplementation) -->
+
 <enum name="WebGLANGLEImplementation">
   <int value="0" label="WebGL1, None"/>
   <int value="1" label="WebGL1, D3D9"/>
@@ -9474,6 +9476,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="29" label="WebGL2, Default"/>
   <int value="30" label="WebGL2, D3D11Warp"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc:WebGLANGLEImplementation) -->
 
 <enum name="WebOTPBackendAvailability">
   <int value="0" label="Available"/>
