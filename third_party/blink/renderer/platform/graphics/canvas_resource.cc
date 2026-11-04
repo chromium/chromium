@@ -206,29 +206,6 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   }
 }
 
-void CanvasResourceSharedImage::EndExternalWrite(
-    const gpu::SyncToken& external_write_sync_token) {
-  // Ensure that any subsequent internal accesses wait for the external write to
-  // complete.
-  WaitSyncToken(external_write_sync_token);
-
-  // Additionally ensure that the next compositor read waits for the external
-  // write to complete by ensuring that a new sync token is generated on the
-  // internal interface as part of generating the TransferableResource. This new
-  // sync token will be chained after `external_write_sync_token` thanks to the
-  // wait above.
-  CHECK(context_provider_wrapper_);
-
-  std::unique_ptr<gpu::RasterScopedAccess> access =
-      GetSharedImage()->BeginRasterAccess(
-          context_provider_wrapper_->ContextProvider().RasterInterface(),
-          acquire_sync_token_,
-          /*readonly=*/true);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  SetReleaseSyncToken(sync_token);
-  GetSharedImage()->UpdateDestructionSyncToken(sync_token);
-}
-
 void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
     SkSurface* sk_surface) {
   // Copy the rendering results from `sk_surface` to the SharedImage backing
