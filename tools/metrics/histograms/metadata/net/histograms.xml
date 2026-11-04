@@ -10334,16 +10334,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ZstdFilter.CompressionRatio" units="%"
-    expires_after="2026-06-25">
+    expires_after="2027-10-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Compressed/Decompressed size ratio as a percentage when using zstd.
+
+    Warning: this histogram was expired from 2026-06-26 to 2026-10-29; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.ZstdFilter.ErrorCode" enum="ZstdFilterErrorCode"
-    expires_after="2026-06-25">
+    expires_after="2027-10-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -10352,13 +10355,13 @@ chromium-metrics-reviews@google.com.
     encountered a decoding error. See Net.ZstdFilter.Status to get the overall
     error rate.
 
-    Warning: this histogram was expired from 2024-12-31 to 2025-06-25; data may
-    be missing.
+    Warning: this histogram was expired from 2024-12-31 to 2025-06-25, and then
+    from 2026-06-26 to 2026-10-29; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.ZstdFilter.MaxMemoryUsage" units="KB"
-    expires_after="2026-06-25">
+    expires_after="2027-10-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -10366,11 +10369,14 @@ chromium-metrics-reviews@google.com.
     Zstd-compressed response stream from the network. Recorded once per layer of
     Zstd compression (usually once per zstd-compressed response), at the end of
     decoding.
+
+    Warning: this histogram was expired from 2026-06-26 to 2026-10-29; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.ZstdFilter.Status" enum="ZstdFilterDecodingStatus"
-    expires_after="2026-06-25">
+    expires_after="2027-10-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -10378,8 +10384,8 @@ chromium-metrics-reviews@google.com.
     compression (usually once per zstd-compressed response), at the end of
     decoding.
 
-    Warning: this histogram was expired from 2025-05-05 to 2025-06-25; data may
-    be missing.
+    Warning: this histogram was expired from 2025-05-05 to 2025-06-25, and then
+    from 2026-06-26 to 2026-10-29; data may be missing.
   </summary>
 </histogram>
 

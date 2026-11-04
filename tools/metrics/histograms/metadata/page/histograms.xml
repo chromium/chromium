@@ -4659,7 +4659,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Zstd.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2026-06-25">
+    units="ms" expires_after="2027-10-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4668,12 +4668,15 @@ chromium-metrics-reviews@google.com.
     zstd. A contentful paint includes a paint of text, image, SVG, or canvas.
     Only recorded for navigations that start in the foreground and stay in the
     foreground until the first contentful paint.
+
+    Warning: this histogram was expired from 2026-06-26 to 2026-10-29; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Clients.Zstd.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2026-06-25">
+    units="ms" expires_after="2027-10-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4685,11 +4688,14 @@ chromium-metrics-reviews@google.com.
     content is still considered a valid candidate. Only recorded for navigations
     that happen entirely in the foreground. The metric is emitted when the
     navigation is completed or the app is backgrounded on Android.
+
+    Warning: this histogram was expired from 2026-06-26 to 2026-10-29; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="PageLoad.Clients.Zstd.ParseTiming.NavigationToParseStart"
-    units="ms" expires_after="2026-06-25">
+    units="ms" expires_after="2027-10-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4698,8 +4704,8 @@ chromium-metrics-reviews@google.com.
     navigations that start in the foreground and stay in the foreground until
     parse start. This metric is emitted when the parser starts for a navigation.
 
-    Warning: this histogram was expired from 2025-04-07 to 2025-06-25; data may
-    be missing.
+    Warning: this histogram was expired from 2025-04-07 to 2025-06-25, and then
+    from 2026-06-26 to 2026-10-29; data may be missing.
   </summary>
 </histogram>
 
