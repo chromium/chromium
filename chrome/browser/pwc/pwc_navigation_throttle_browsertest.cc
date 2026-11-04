@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
@@ -116,6 +117,66 @@ IN_PROC_BROWSER_TEST_F(PwcNavigationThrottleBrowserTest,
   EXPECT_EQ(allowed, web_contents->GetLastCommittedURL());
   EXPECT_EQ(url::Origin::Create(allowed),
             web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+}
+
+// Nested schemes (blob:, filesystem:) whose inner origin matches the allowlist
+// are still rejected for the primary main frame because the navigation URL
+// itself does not use an HTTP(S) scheme.
+IN_PROC_BROWSER_TEST_F(PwcNavigationThrottleBrowserTest,
+                       CancelsNestedSchemeMainFrameNavigations) {
+  const GURL allowed = https_server_.GetURL("a.test", "/allowed.html");
+  const GURL allowed_next = https_server_.GetURL("a.test", "/next.html");
+  const url::Origin allowed_origin = url::Origin::Create(allowed);
+
+  std::unique_ptr<PrivilegedWebContents> privileged =
+      PrivilegedWebContents::Create(
+          PrivilegedComponent::kTestComponent, browser()->GetProfile(),
+          std::make_unique<FixedPwcPolicyDelegate>(
+              std::vector<url::Origin>{allowed_origin},
+              std::vector<url::Origin>{allowed_origin}));
+  content::WebContents* web_contents = privileged->web_contents();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, allowed));
+  ASSERT_EQ(allowed, web_contents->GetLastCommittedURL());
+
+  // Create a live blob: URL on the allowlisted origin. url::Origin::Create()
+  // unwraps it to `allowed_origin`, but its outer scheme is blob:.
+  const GURL blob_url(
+      content::EvalJs(
+          web_contents,
+          "URL.createObjectURL(new Blob(['<!doctype html><p>blob</p>'], "
+          "{type: 'text/html'}))")
+          .ExtractString());
+  ASSERT_TRUE(blob_url.is_valid());
+  ASSERT_TRUE(blob_url.SchemeIsBlob());
+  ASSERT_EQ(allowed_origin, url::Origin::Create(blob_url));
+
+  // Browser-initiated navigation to the blob: URL is cancelled.
+  EXPECT_FALSE(content::NavigateToURL(web_contents, blob_url));
+  EXPECT_EQ(allowed, web_contents->GetLastCommittedURL());
+
+  // Renderer-initiated navigation to the blob: URL is also cancelled.
+  content::TestNavigationManager blob_nav(web_contents, blob_url);
+  ASSERT_TRUE(content::ExecJs(
+      web_contents, content::JsReplace("location.href = $1;", blob_url)));
+  ASSERT_TRUE(blob_nav.WaitForNavigationFinished());
+  EXPECT_FALSE(blob_nav.was_committed());
+  EXPECT_EQ(allowed, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(allowed_origin,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  // A filesystem: URL wrapping the allowlisted origin is likewise cancelled.
+  const GURL filesystem_url(base::StrCat(
+      {"filesystem:", allowed.GetWithEmptyPath().spec(), "temporary/a.html"}));
+  ASSERT_TRUE(filesystem_url.is_valid());
+  ASSERT_TRUE(filesystem_url.SchemeIsFileSystem());
+  ASSERT_EQ(allowed_origin, url::Origin::Create(filesystem_url));
+  EXPECT_FALSE(content::NavigateToURL(web_contents, filesystem_url));
+  EXPECT_EQ(allowed, web_contents->GetLastCommittedURL());
+
+  // Standard HTTPS navigation on the allowlisted origin continues to succeed.
+  EXPECT_TRUE(content::NavigateToURL(web_contents, allowed_next));
+  EXPECT_EQ(allowed_next, web_contents->GetLastCommittedURL());
 }
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace pwc {
@@ -74,11 +75,16 @@ PwcNavigationThrottle::CheckUrl() {
   // The throttle is only added for the primary main frame of a
   // PrivilegedWebContents (see MaybeCreateAndAdd).
   CHECK(privileged);
-  // IsNavigationAllowed structurally enforces HTTPS (unless the component's
-  // delegate opts an HTTP dev origin in via AllowsInsecureDevOrigin) in
-  // addition to the component's navigation allowlist.
-  if (!privileged->policy().IsNavigationAllowed(
-          url::Origin::Create(handle.GetURL()))) {
+  // Check the URL scheme before projecting to url::Origin: Origin::Create()
+  // unwraps nested schemes (blob:, filesystem:) to their inner tuple, which
+  // would otherwise pass the origin-level HTTPS check in IsNavigationAllowed().
+  // IsNavigationAllowed() then structurally enforces HTTPS (unless the
+  // component's delegate opts an HTTP dev origin in via
+  // AllowsInsecureDevOrigin) in addition to the component's navigation
+  // allowlist.
+  const GURL& url = handle.GetURL();
+  if (!url.SchemeIsHTTPOrHTTPS() ||
+      !privileged->policy().IsNavigationAllowed(url::Origin::Create(url))) {
     return CANCEL_AND_IGNORE;
   }
   return PROCEED;
