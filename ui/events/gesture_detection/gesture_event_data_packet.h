@@ -60,6 +60,7 @@ class GESTURE_DETECTION_EXPORT GestureEventDataPacket {
   size_t gesture_count() const { return gestures_.size(); }
   GestureSource gesture_source() const { return gesture_source_; }
   MotionEvent::ToolType tool_type() const { return tool_type_; }
+  int flags() const { return flags_; }
   const gfx::PointF& touch_location() const { return touch_location_; }
   const gfx::PointF& raw_touch_location() const { return raw_touch_location_; }
 
@@ -79,7 +80,8 @@ class GESTURE_DETECTION_EXPORT GestureEventDataPacket {
                          MotionEvent::ToolType tool_type,
                          const gfx::PointF& touch_location,
                          const gfx::PointF& raw_touch_location,
-                         uint32_t unique_touch_event_id);
+                         uint32_t unique_touch_event_id,
+                         int flags);
 
   enum { kTypicalMaxGesturesPerTouch = 5 };
   base::TimeTicks timestamp_;
@@ -90,6 +92,7 @@ class GESTURE_DETECTION_EXPORT GestureEventDataPacket {
   MotionEvent::ToolType tool_type_;
   AckState ack_state_;
   uint32_t unique_touch_event_id_;
+  int flags_ = EF_NONE;
 };
 
 }  // namespace ui

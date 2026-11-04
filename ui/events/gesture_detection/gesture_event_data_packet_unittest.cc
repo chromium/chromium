@@ -43,17 +43,21 @@ bool PacketEquals(const GestureEventDataPacket& lhs,
       lhs.gesture_count() != rhs.gesture_count() ||
       lhs.timestamp() != rhs.timestamp() ||
       lhs.gesture_source() != rhs.gesture_source() ||
+      lhs.flags() != rhs.flags() ||
       lhs.touch_location() != rhs.touch_location() ||
       lhs.raw_touch_location() != rhs.raw_touch_location() ||
-      lhs.unique_touch_event_id() != rhs.unique_touch_event_id())
+      lhs.unique_touch_event_id() != rhs.unique_touch_event_id()) {
     return false;
+  }
 
   for (size_t i = 0; i < lhs.gesture_count(); ++i) {
-    if (!GestureEqualsExceptForTouchId(lhs.gesture(i), rhs.gesture(i)))
+    if (!GestureEqualsExceptForTouchId(lhs.gesture(i), rhs.gesture(i))) {
       return false;
+    }
     if (lhs.gesture(i).unique_touch_event_id !=
-        rhs.gesture(i).unique_touch_event_id)
+        rhs.gesture(i).unique_touch_event_id) {
       return false;
+    }
   }
 
   return true;
@@ -98,6 +102,29 @@ TEST_F(GestureEventDataPacketTest, Copy) {
 
   packet0 = packet1;
   EXPECT_TRUE(PacketEquals(packet1, packet0));
+}
+
+TEST_F(GestureEventDataPacketTest, EventFlags) {
+  MockMotionEvent touch(MotionEvent::Action::DOWN);
+  touch.set_flags(EF_FROM_DEBUGGER | EF_SHIFT_DOWN);
+  auto packet = GestureEventDataPacket::FromTouch(touch);
+  EXPECT_EQ(touch.GetFlags(), packet.flags());
+
+  GestureEventDataPacket copy(packet);
+  EXPECT_EQ(touch.GetFlags(), copy.flags());
+  GestureEventDataPacket assigned;
+  assigned = packet;
+  EXPECT_EQ(touch.GetFlags(), assigned.flags());
+
+  GestureEventData gesture = CreateGesture(EventType::kGestureTap);
+  gesture.flags = EF_FROM_DEBUGGER | EF_CONTROL_DOWN;
+  auto timeout = GestureEventDataPacket::FromTouchTimeout(gesture);
+  EXPECT_EQ(gesture.flags, timeout.flags());
+  EXPECT_EQ(gesture.flags, timeout.gesture(0).flags);
+
+  packet = GestureEventDataPacket::FromTouch(
+      MockMotionEvent(MotionEvent::Action::DOWN));
+  EXPECT_EQ(EF_NONE, packet.flags());
 }
 
 TEST_F(GestureEventDataPacketTest, GestureSource) {

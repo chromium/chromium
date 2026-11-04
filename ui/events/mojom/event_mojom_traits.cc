@@ -99,6 +99,9 @@ bool ReadGestureData(ui::mojom::EventDataView* event,
 
 static_assert(ui::mojom::kEventFlagNone == static_cast<int32_t>(ui::EF_NONE),
               "EVENT_FLAGS must match");
+static_assert(ui::mojom::kEventFlagFromDebugger ==
+                  static_cast<int32_t>(ui::EF_FROM_DEBUGGER),
+              "EVENT_FLAGS must match");
 static_assert(ui::mojom::kEventFlagIsSynthesized ==
                   static_cast<int32_t>(ui::EF_IS_SYNTHESIZED),
               "EVENT_FLAGS must match");
@@ -419,8 +422,15 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
           (key_data->key_code < 0 || key_data->key_code > 255)) {
         return false;
       }
-      if (event.flags() > ui::EF_MAX_KEY_EVENT_FLAGS_VALUE)
+      // EventFlags in ui/events/event_constants.h share bits 0..15. Key and
+      // mouse flags reuse bits starting at 16 with different meanings: key
+      // flags end at bit 20 (21 on ChromeOS), mouse flags at bit 25, and touch
+      // adds bit 26. EF_FROM_DEBUGGER (bit 27) is shared by all event types,
+      // so allow it separately from the key-specific range checked here.
+      if ((event.flags() & ~ui::EF_FROM_DEBUGGER) >
+          ui::EF_MAX_KEY_EVENT_FLAGS_VALUE) {
         return false;
+      }
 
       const ui::KeyboardCode key_code =
           static_cast<ui::KeyboardCode>(key_data->key_code);

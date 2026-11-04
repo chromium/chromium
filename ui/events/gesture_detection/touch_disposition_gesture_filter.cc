@@ -31,30 +31,26 @@ static_assert(std::to_underlying(EventType::kGestureTypeEnd) -
 GestureEventData CreateGesture(GestureEventDetails details,
                                int motion_event_id,
                                MotionEvent::ToolType primary_tool_type,
+                               int flags,
                                const GestureEventDataPacket& packet) {
-  // As the event is purely synthetic, we needn't be strict with event flags.
-  int flags = EF_NONE;
+  // Synthetic gestures retain their origin without copying modifier state.
+  flags &= EF_FROM_DEBUGGER;
   details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
-  return GestureEventData(details,
-                          motion_event_id,
-                          primary_tool_type,
-                          packet.timestamp(),
-                          packet.touch_location().x(),
-                          packet.touch_location().y(),
-                          packet.raw_touch_location().x(),
-                          packet.raw_touch_location().y(),
-                          1,
-                          gfx::RectF(packet.touch_location(), gfx::SizeF()),
-                          flags,
-                          packet.unique_touch_event_id());
+  return GestureEventData(
+      details, motion_event_id, primary_tool_type, packet.timestamp(),
+      packet.touch_location().x(), packet.touch_location().y(),
+      packet.raw_touch_location().x(), packet.raw_touch_location().y(), 1,
+      gfx::RectF(packet.touch_location(), gfx::SizeF()), flags,
+      packet.unique_touch_event_id());
 }
 
 GestureEventData CreateGesture(EventType type,
                                int motion_event_id,
                                MotionEvent::ToolType primary_tool_type,
+                               int flags,
                                const GestureEventDataPacket& packet) {
   return CreateGesture(GestureEventDetails(type), motion_event_id,
-                       primary_tool_type, packet);
+                       primary_tool_type, flags, packet);
 }
 
 enum RequiredTouches {
@@ -360,7 +356,7 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
     TRACE_EVENT("input", "EmptyGestureScrollUpdate");
     SendGesture(CreateGesture(EventType::kGestureScrollUpdate,
                               packet.unique_touch_event_id(),
-                              packet.tool_type(), packet),
+                              packet.tool_type(), packet.flags(), packet),
                 packet);
   }
 
@@ -465,6 +461,7 @@ void TouchDispositionGestureFilter::SendGesture(
       CHECK(!needs_tap_ending_event_, base::NotFatalUntil::M163);
       ending_event_motion_event_id_ = event.motion_event_id;
       ending_event_primary_tool_type_ = event.primary_tool_type;
+      ending_event_flags_ = event.flags;
       needs_show_press_event_ = true;
       needs_tap_ending_event_ = true;
       first_gsu_sent_ = false;
@@ -497,6 +494,7 @@ void TouchDispositionGestureFilter::SendGesture(
       EndScrollIfNecessary(packet_being_sent);
       ending_event_motion_event_id_ = event.motion_event_id;
       ending_event_primary_tool_type_ = event.primary_tool_type;
+      ending_event_flags_ = event.flags;
       needs_scroll_ending_event_ = true;
       if (scroll_update_compensator_.has_value()) {
         // The reference timestamp here since it is a good approximation of when
@@ -518,6 +516,7 @@ void TouchDispositionGestureFilter::SendGesture(
       CancelFlingIfNecessary(packet_being_sent);
       ending_event_motion_event_id_ = event.motion_event_id;
       ending_event_primary_tool_type_ = event.primary_tool_type;
+      ending_event_flags_ = event.flags;
       needs_fling_ending_event_ = true;
       needs_scroll_ending_event_ = false;
       break;
@@ -540,7 +539,8 @@ void TouchDispositionGestureFilter::CancelTapIfNecessary(
 
   SendGesture(
       CreateGesture(EventType::kGestureTapCancel, ending_event_motion_event_id_,
-                    ending_event_primary_tool_type_, packet_being_sent),
+                    ending_event_primary_tool_type_, ending_event_flags_,
+                    packet_being_sent),
       packet_being_sent);
   CHECK(!needs_tap_ending_event_, base::NotFatalUntil::M163);
 }
@@ -552,19 +552,21 @@ void TouchDispositionGestureFilter::CancelFlingIfNecessary(
 
   SendGesture(CreateGesture(EventType::kScrollFlingCancel,
                             ending_event_motion_event_id_,
-                            ending_event_primary_tool_type_, packet_being_sent),
+                            ending_event_primary_tool_type_,
+                            ending_event_flags_, packet_being_sent),
               packet_being_sent);
   CHECK(!needs_fling_ending_event_, base::NotFatalUntil::M163);
 }
 
 void TouchDispositionGestureFilter::EndScrollIfNecessary(
     const GestureEventDataPacket& packet_being_sent) {
-  if (!needs_scroll_ending_event_)
+  if (!needs_scroll_ending_event_) {
     return;
+  }
 
-  GestureEventData gesture =
-      CreateGesture(EventType::kGestureScrollEnd, ending_event_motion_event_id_,
-                    ending_event_primary_tool_type_, packet_being_sent);
+  GestureEventData gesture = CreateGesture(
+      EventType::kGestureScrollEnd, ending_event_motion_event_id_,
+      ending_event_primary_tool_type_, ending_event_flags_, packet_being_sent);
   if (scroll_update_compensator_.has_value()) {
     gesture = scroll_update_compensator_->GetCompensatedGestureScrollEnd(
         packet_being_sent, gesture);
@@ -706,7 +708,8 @@ GestureEventData TouchDispositionGestureFilter::ScrollUpdateCompensator::
       GestureEventDetails(EventType::kGestureScrollEnd,
                           total_compensated_scroll_update_.x(),
                           total_compensated_scroll_update_.y()),
-      packet.unique_touch_event_id(), packet.tool_type(), packet);
+      packet.unique_touch_event_id(), packet.tool_type(), gesture.flags,
+      packet);
 }
 
-}  // namespace content
+}  // namespace ui

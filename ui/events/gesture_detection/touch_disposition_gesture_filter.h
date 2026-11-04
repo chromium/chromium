@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/types/event_type.h"
@@ -141,6 +142,9 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   // GestureFlingCancel when a user taps following a GestureFlingStart.
   int ending_event_motion_event_id_;
   MotionEvent::ToolType ending_event_primary_tool_type_;
+  // Like the shared ID/tool bookkeeping above, this holds the latest tap,
+  // scroll or fling start's origin for synthetic endings.
+  int ending_event_flags_ = EF_NONE;
   bool needs_tap_ending_event_;
   bool needs_show_press_event_;
   bool needs_fling_ending_event_;

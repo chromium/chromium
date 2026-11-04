@@ -207,6 +207,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       case EventType::kGestureScrollBegin:
         CHECK(!scroll_event_sent_, base::NotFatalUntil::M163);
         scroll_event_sent_ = true;
+        scroll_event_flags_ = gesture.flags & EF_FROM_DEBUGGER;
         break;
       case EventType::kGestureScrollEnd:
         CHECK(scroll_event_sent_, base::NotFatalUntil::M163);
@@ -219,6 +220,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       case EventType::kGesturePinchBegin:
         CHECK(!pinch_event_sent_, base::NotFatalUntil::M163);
         pinch_event_sent_ = true;
+        pinch_event_flags_ = gesture.flags & EF_FROM_DEBUGGER;
         break;
       case EventType::kGesturePinchEnd:
         CHECK(pinch_event_sent_, base::NotFatalUntil::M163);
@@ -262,9 +264,16 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     switch (gesture.type()) {
       case EventType::kGestureScrollEnd:
         CHECK(scroll_event_sent_, base::NotFatalUntil::M163);
-        if (pinch_event_sent_)
+        gesture.flags =
+            (gesture.flags & ~EF_FROM_DEBUGGER) | scroll_event_flags_;
+        if (pinch_event_sent_) {
           SendImpl(GestureEventData(EventType::kGesturePinchEnd, gesture),
                    should_update);
+        }
+        break;
+      case EventType::kGesturePinchEnd:
+        gesture.flags =
+            (gesture.flags & ~EF_FROM_DEBUGGER) | pinch_event_flags_;
         break;
       case EventType::kGesturePinchBegin:
         CHECK(!pinch_event_sent_, base::NotFatalUntil::M163);
@@ -294,6 +303,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     MotionEventGeneric generic_cancel_event(MotionEvent::Action::CANCEL,
                                             base::TimeTicks::Now(),
                                             PointerProperties());
+    if (const MotionEvent* down = gesture_provider_->current_down_event()) {
+      generic_cancel_event.set_flags(down->GetFlags() & EF_FROM_DEBUGGER);
+    }
 
     // Sending the synthesized end events should not update the internal states.
     // Because this function may be called when a new event handler replaces the
@@ -869,6 +881,11 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   bool pinch_event_sent_;
   bool scroll_event_sent_;
 
+  // End gestures, including synthesized endings, inherit the debugger origin
+  // of the corresponding begin. Unmarked sequences remain unmarked.
+  int pinch_event_flags_ = EF_NONE;
+  int scroll_event_flags_ = EF_NONE;
+
   // Only track the maximum diameter before the show press event has been
   // sent and a tap must still be possible for this touch sequence.
   float max_diameter_before_show_press_;
@@ -931,6 +948,10 @@ bool GestureProvider::OnTouchEvent(const MotionEvent& event) {
 void GestureProvider::ResetDetection() {
   MotionEventGeneric generic_cancel_event(
       MotionEvent::Action::CANCEL, base::TimeTicks::Now(), PointerProperties());
+  if (current_down_event_) {
+    generic_cancel_event.set_flags(current_down_event_->GetFlags() &
+                                   EF_FROM_DEBUGGER);
+  }
   OnTouchEvent(generic_cancel_event);
 }
 

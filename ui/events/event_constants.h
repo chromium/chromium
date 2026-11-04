@@ -19,6 +19,9 @@ constexpr EventFlags EF_NONE = 0;
 
 // Universally applicable status bits.
 constexpr EventFlags EF_IS_SYNTHESIZED = 1 << 0;
+// Input dispatched through DevTools, including gestures derived from it. Bit 27
+// is outside the event-type-specific flag ranges below.
+constexpr EventFlags EF_FROM_DEBUGGER = 1 << 27;
 
 // Modifier key state.
 constexpr EventFlags EF_SHIFT_DOWN = 1 << 1;

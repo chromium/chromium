@@ -7,17 +7,67 @@
 #include <array>
 #include <limits>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
+#include "ui/events/blink/blink_features.h"
+#include "ui/events/blink/web_input_event.h"
+#include "ui/events/event.h"
 #include "ui/events/gesture_event_details.h"
 
 namespace ui {
 
 using BlinkEventUtilTest = testing::Test;
+
+TEST(BlinkEventUtilTest, DebuggerOriginRoundTrips) {
+  for (bool enabled : {false, true}) {
+    SCOPED_TRACE(enabled);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kPreserveDebuggerInputOrigin,
+                                      enabled);
+    // Check this direction independently, including when a UI event already
+    // carries the flag and the feature is disabled.
+    EXPECT_EQ(enabled, (EventFlagsToWebEventModifiers(EF_FROM_DEBUGGER) &
+                        blink::WebInputEvent::kFromDebugger) != 0);
+
+    for (bool from_debugger : {false, true}) {
+      SCOPED_TRACE(from_debugger);
+      const int modifiers =
+          blink::WebInputEvent::kShiftKey |
+          (from_debugger ? blink::WebInputEvent::kFromDebugger
+                         : blink::WebInputEvent::kNoModifiers);
+      const int flags = WebEventModifiersToEventFlags(modifiers);
+      const bool expected_origin = enabled && from_debugger;
+      EXPECT_EQ(expected_origin, (flags & EF_FROM_DEBUGGER) != 0);
+      auto expect_origin = [&](const blink::WebInputEvent& event) {
+        EXPECT_EQ(expected_origin, (event.GetModifiers() &
+                                    blink::WebInputEvent::kFromDebugger) != 0)
+            << blink::WebInputEvent::GetName(event.GetType());
+        EXPECT_TRUE(event.GetModifiers() & blink::WebInputEvent::kShiftKey);
+      };
+
+      const gfx::PointF location(1, 2);
+      const base::TimeTicks time = base::TimeTicks::Now();
+      MouseEvent mouse(EventType::kMousePressed, location, location, time,
+                       flags | EF_LEFT_MOUSE_BUTTON, EF_LEFT_MOUSE_BUTTON);
+      expect_origin(MakeWebMouseEvent(mouse));
+      MouseWheelEvent wheel(gfx::Vector2d(0, 1), location, location, time,
+                            flags, 0);
+      expect_origin(MakeWebMouseWheelEvent(wheel));
+      ScrollEvent fling(EventType::kScrollFlingStart, location, location, time,
+                        flags, 0, 1, 0, 1, 2);
+      expect_origin(MakeWebGestureEvent(fling));
+      GestureEventDetails details(EventType::kGesturePinchBegin);
+      details.set_device_type(GestureDeviceType::DEVICE_TOUCHPAD);
+      GestureEvent pinch(1, 2, flags, time, details);
+      expect_origin(MakeWebGestureEvent(pinch));
+    }
+  }
+}
 
 TEST(BlinkEventUtilTest, NoScalingWith1DSF) {
   ui::GestureEventDetails details(ui::EventType::kGestureScrollUpdate, 1, 1);
@@ -209,7 +259,8 @@ TEST(BlinkEventUtilTest, WebEventModifersAndEventFlags) {
                                               WebInputEvent::kRightButtonDown,
                                               WebInputEvent::kBackButtonDown,
                                               WebInputEvent::kForwardButtonDown,
-                                              WebInputEvent::kIsAutoRepeat};
+                                              WebInputEvent::kIsAutoRepeat,
+                                              WebInputEvent::kFromDebugger};
   // For each WebEventModifier value, test that it maps to a unique ui::Event
   // flag, and that the flag correctly maps back to the WebEventModifier.
   int event_flags = 0;

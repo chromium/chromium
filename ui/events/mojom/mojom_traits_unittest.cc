@@ -100,6 +100,7 @@ TEST(StructTraitsTest, KeyEvent) {
 
   const auto kTestData = std::to_array<KeyEvent>({
       {EventType::kKeyPressed, VKEY_RETURN, EF_CONTROL_DOWN},
+      {EventType::kKeyPressed, VKEY_RETURN, EF_CONTROL_DOWN | EF_FROM_DEBUGGER},
       {EventType::kKeyPressed, VKEY_MENU, EF_ALT_DOWN},
       {EventType::kKeyReleased, VKEY_SHIFT, EF_SHIFT_DOWN},
       {EventType::kKeyReleased, VKEY_MENU, EF_ALT_DOWN},
@@ -126,6 +127,16 @@ TEST(StructTraitsTest, KeyEvent) {
     const KeyEvent* output_key_event = output->AsKeyEvent();
     ExpectEventsEqual(kTestData[i], *output_key_event);
   }
+}
+
+TEST(StructTraitsTest, DebuggerKeyEventRejectsNonKeyFlags) {
+  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
+  std::unique_ptr<Event> event =
+      std::make_unique<KeyEvent>(EventType::kKeyPressed, VKEY_RETURN,
+                                 EF_FROM_DEBUGGER | EF_UNADJUSTED_MOUSE);
+  std::unique_ptr<Event> output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Event>(event, output));
 }
 
 TEST(StructTraitsTest, MouseEvent) {

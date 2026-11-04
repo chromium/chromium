@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <array>
 #include <cstdint>
 #include <initializer_list>
 #include <memory>
@@ -245,6 +246,20 @@ class TouchDispositionGestureFilterTest
     EXPECT_EQ(TouchDispositionGestureFilter::SUCCESS,
               SendTouchGesturesWithResult(touch_event, gesture_packet));
     return touch_event.GetUniqueEventId();
+  }
+
+  uint32_t SendPacketWithFlags(const MockMotionEvent& touch,
+                               GestureList gestures,
+                               int flags) {
+    MockMotionEvent event(touch);
+    event.set_flags(flags);
+    GestureEventDataPacket packet;
+    for (EventType type : gestures) {
+      GestureEventData gesture = CreateGesture(type);
+      gesture.flags = flags;
+      packet.Push(gesture);
+    }
+    return SendTouchGestures(event, packet);
   }
 
   void SetRawTouchOffset(const gfx::Vector2dF& raw_offset) {
@@ -1211,6 +1226,87 @@ TEST_F(TouchDispositionGestureFilterTest, EventFlagPropagation) {
   EXPECT_EQ(0, LastSentGestureFlags());
 }
 
+TEST_F(TouchDispositionGestureFilterTest,
+       SynthesizedEndEventsRetainOriginAcrossQueuedSequences) {
+  const std::array starts = {EventType::kGestureTapDown,
+                             EventType::kGestureScrollBegin,
+                             EventType::kScrollFlingStart};
+  const std::array ends = {EventType::kGestureTapCancel,
+                           EventType::kGestureScrollEnd,
+                           EventType::kScrollFlingCancel};
+  for (int origin : {EF_NONE, EF_FROM_DEBUGGER}) {
+    SCOPED_TRACE(origin);
+    for (size_t i = 0; i < std::size(starts); ++i) {
+      SCOPED_TRACE(i);
+      ResetTouchPoints();
+      GestureList begin = starts[i] == EventType::kScrollFlingStart
+                              ? Gestures(EventType::kGestureScrollBegin,
+                                         EventType::kScrollFlingStart)
+                              : Gestures(starts[i]);
+      const uint32_t begin_id = SendPacketWithFlags(
+          PressTouchPoint(), begin, kDefaultEventFlags | origin);
+
+      // The next sequence has a different origin and is acknowledged first.
+      // Its repair event must retain the origin of the gesture being ended.
+      ResetTouchPoints();
+      const uint32_t next_id =
+          SendPacketWithFlags(PressTouchPoint(), NoGestures(),
+                              kDefaultEventFlags | (origin ^ EF_FROM_DEBUGGER));
+      SendTouchNotConsumedAck(next_id);
+      EXPECT_FALSE(GesturesSent());
+      SendTouchNotConsumedAck(begin_id);
+      begin.push_back(ends[i]);
+      EXPECT_TRUE(GesturesMatch(begin, GetAndResetSentGestures()));
+      EXPECT_EQ(origin, LastSentGestureFlags());
+    }
+  }
+}
+
+TEST_F(TouchDispositionGestureFilterTest,
+       SynthesizedTouchCancelRetainsDebuggerOrigin) {
+  for (int origin : {EF_NONE, EF_FROM_DEBUGGER}) {
+    for (EventType start :
+         {EventType::kGestureTapDown, EventType::kGestureScrollBegin}) {
+      SCOPED_TRACE(origin);
+      SCOPED_TRACE(std::to_underlying(start));
+      ResetTouchPoints();
+      SendPacketWithFlags(PressTouchPoint(), Gestures(start),
+                          kDefaultEventFlags | origin);
+      SendTouchNotConsumedAckForLastTouch();
+      GetAndResetSentGestures();
+      SendPacketWithFlags(CancelTouchPoint(), NoGestures(),
+                          kDefaultEventFlags | (origin ^ EF_FROM_DEBUGGER));
+      SendTouchConsumedAckForLastTouch();
+      const EventType end = start == EventType::kGestureTapDown
+                                ? EventType::kGestureTapCancel
+                                : EventType::kGestureScrollEnd;
+      EXPECT_TRUE(GesturesMatch(Gestures(end), GetAndResetSentGestures()));
+      EXPECT_EQ(origin, LastSentGestureFlags());
+    }
+  }
+}
+
+TEST_F(TouchDispositionGestureFilterTest,
+       EmptyGestureScrollUpdateRetainsTouchOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSendEmptyGestureScrollUpdate);
+  SendPacket(PressTouchPoint(), Gestures(EventType::kGestureScrollBegin));
+  SendTouchNotConsumedAckForLastTouch();
+  SendPacket(MoveTouchPoint(), Gestures(EventType::kGestureScrollUpdate));
+  SendTouchNotConsumedAckForLastTouch();
+  GetAndResetSentGestures();
+
+  for (int origin : {EF_FROM_DEBUGGER, EF_NONE}) {
+    SCOPED_TRACE(origin);
+    SendPacketWithFlags(MoveTouchPoint(), NoGestures(),
+                        kDefaultEventFlags | origin);
+    SendTouchNotConsumedAckForLastTouch();
+    EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollUpdate),
+                              GetAndResetSentGestures()));
+    EXPECT_EQ(origin, LastSentGestureFlags());
+  }
+}
+
 TEST_F(TouchDispositionGestureFilterTest, SendEmptyGestureScrollUpdate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kSendEmptyGestureScrollUpdate);
@@ -1507,6 +1603,35 @@ class GestureScrollUpdatesCompensatedTest
  private:
   base::test::ScopedFeatureList scoped_feature_list;
 };
+
+TEST_F(GestureScrollUpdatesCompensatedTest, ScrollEndRetainsDebuggerOrigin) {
+  for (int origin : {EF_NONE, EF_FROM_DEBUGGER}) {
+    for (bool synthesized : {false, true}) {
+      SCOPED_TRACE(origin);
+      SCOPED_TRACE(synthesized);
+      ResetTouchPoints();
+      SendPacketWithFlags(PressTouchPoint(),
+                          Gestures(EventType::kGestureScrollBegin),
+                          kDefaultEventFlags | origin);
+      SendTouchNotConsumedAckForLastTouch();
+      GetAndResetSentGestures();
+
+      MockMotionEvent release(ReleaseTouchPoint());
+      release.set_flags(kDefaultEventFlags | (origin ^ EF_FROM_DEBUGGER));
+      GestureEventDataPacket packet;
+      if (!synthesized) {
+        GestureEventData end = CreateGesture(EventType::kGestureScrollEnd);
+        end.flags = kDefaultEventFlags | origin;
+        packet.Push(end);
+      }
+      SendTouchGestures(release, packet);
+      SendTouchNotConsumedAckForLastTouch();
+      EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollEnd),
+                                GetAndResetSentGestures()));
+      EXPECT_EQ(origin, LastSentGestureFlags());
+    }
+  }
+}
 
 TEST_F(GestureScrollUpdatesCompensatedTest, GestureScrollUpdatesCompensated) {
   const base::TimeDelta acceptable_latency =

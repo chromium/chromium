@@ -61,6 +61,7 @@ const int32 kEventFlagMiddleMouseButton  = 0x01000;
 const int32 kEventFlagRightMouseButton   = 0x02000;
 const int32 kEventFlagBackMouseButton    = 0x04000;
 const int32 kEventFlagForwardMouseButton = 0x08000;
+const int32 kEventFlagFromDebugger       = 0x8000000;
 
 const int32 kMouseEventFlagIsDoubleClick = 0x10000;
 const int32 kMouseEventFlagIsTripleClick = 0x20000;

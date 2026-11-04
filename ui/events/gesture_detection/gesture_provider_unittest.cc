@@ -2571,6 +2571,166 @@ TEST_F(GestureProviderTest, CancelActiveTouchSequence) {
   EXPECT_EQ(1, GetMostRecentGestureEvent().details.touch_points());
 }
 
+TEST_F(GestureProviderTest, SynthesizedEndEventsRetainDebuggerOrigin) {
+  for (int origin : {EF_NONE, EF_FROM_DEBUGGER}) {
+    SCOPED_TRACE(origin);
+    SetUpWithConfig(GetDefaultConfig());
+    gestures_.clear();
+    const base::TimeTicks now = base::TimeTicks::Now();
+    MockMotionEvent down = ObtainMotionEvent(now, MotionEvent::Action::DOWN);
+    down.set_flags((origin ^ EF_FROM_DEBUGGER) | EF_SHIFT_DOWN);
+    ASSERT_TRUE(gesture_provider_->OnTouchEvent(down));
+    MockMotionEvent move =
+        ObtainMotionEvent(now + kOneMicrosecond, MotionEvent::Action::MOVE,
+                          kFakeCoordX, kFakeCoordY + 2 * GetTapSlop());
+    move.set_flags(origin | EF_SHIFT_DOWN);
+    ASSERT_TRUE(gesture_provider_->OnTouchEvent(move));
+    ASSERT_TRUE(gesture_provider_->IsScrollInProgress());
+    gestures_.clear();
+
+    gesture_provider_->SendSynthesizedEndEvents();
+    ASSERT_EQ(2U, GetReceivedGestureCount());
+    EXPECT_EQ(EventType::kGestureScrollEnd, GetReceivedGesture(0).type());
+    EXPECT_EQ(EventType::kGestureEnd, GetReceivedGesture(1).type());
+    EXPECT_EQ(origin, GetReceivedGesture(0).flags);
+    EXPECT_EQ(origin ^ EF_FROM_DEBUGGER, GetReceivedGesture(1).flags);
+    EXPECT_TRUE(gesture_provider_->IsScrollInProgress());
+    EXPECT_TRUE(gesture_provider_->current_down_event());
+  }
+}
+
+TEST_F(GestureProviderTest, ResetDetectionRetainsDebuggerOrigin) {
+  auto config = GetDefaultConfig();
+  config.gesture_begin_end_types_enabled = true;
+  for (int origin : {EF_NONE, EF_FROM_DEBUGGER}) {
+    SCOPED_TRACE(origin);
+    SetUpWithConfig(config);
+    gestures_.clear();
+    const base::TimeTicks now = base::TimeTicks::Now();
+    MockMotionEvent down = ObtainMotionEvent(now, MotionEvent::Action::DOWN);
+    down.set_flags((origin ^ EF_FROM_DEBUGGER) | EF_SHIFT_DOWN);
+    ASSERT_TRUE(gesture_provider_->OnTouchEvent(down));
+    MockMotionEvent move =
+        ObtainMotionEvent(now + kOneMicrosecond, MotionEvent::Action::MOVE,
+                          kFakeCoordX, kFakeCoordY + 2 * GetTapSlop());
+    move.set_flags(origin | EF_SHIFT_DOWN);
+    ASSERT_TRUE(gesture_provider_->OnTouchEvent(move));
+    ASSERT_TRUE(gesture_provider_->IsScrollInProgress());
+    gestures_.clear();
+
+    gesture_provider_->ResetDetection();
+    ASSERT_EQ(2U, GetReceivedGestureCount());
+    EXPECT_EQ(EventType::kGestureScrollEnd, GetReceivedGesture(0).type());
+    EXPECT_EQ(EventType::kGestureEnd, GetReceivedGesture(1).type());
+    EXPECT_EQ(origin, GetReceivedGesture(0).flags);
+    EXPECT_EQ(origin ^ EF_FROM_DEBUGGER, GetReceivedGesture(1).flags);
+    EXPECT_FALSE(gesture_provider_->IsScrollInProgress());
+    EXPECT_FALSE(gesture_provider_->current_down_event());
+  }
+}
+
+TEST_F(GestureProviderTest, SynthesizedPinchEndRetainsDebuggerOrigin) {
+  auto config = GetDefaultConfig();
+  config.gesture_begin_end_types_enabled = true;
+  for (int origin : {EF_NONE, EF_FROM_DEBUGGER}) {
+    for (bool reset_detection : {false, true}) {
+      SCOPED_TRACE(origin);
+      SCOPED_TRACE(reset_detection);
+      SetUpWithConfig(config);
+      gesture_provider_->SetMultiTouchZoomSupportEnabled(true);
+      gestures_.clear();
+      const base::TimeTicks now = base::TimeTicks::Now();
+      const float span = 20 * GetTapSlop();
+      MockMotionEvent down = ObtainMotionEvent(now, MotionEvent::Action::DOWN);
+      down.set_flags((origin ^ EF_FROM_DEBUGGER) | EF_SHIFT_DOWN);
+      ASSERT_TRUE(gesture_provider_->OnTouchEvent(down));
+      MockMotionEvent second = ObtainMotionEvent(
+          now + kOneMicrosecond, MotionEvent::Action::POINTER_DOWN, kFakeCoordX,
+          kFakeCoordY, kFakeCoordX + span, kFakeCoordY + span);
+      second.set_flags(origin | EF_SHIFT_DOWN);
+      ASSERT_TRUE(gesture_provider_->OnTouchEvent(second));
+      MockMotionEvent move = ObtainMotionEvent(
+          now + 2 * kOneMicrosecond, MotionEvent::Action::MOVE, kFakeCoordX,
+          kFakeCoordY, kFakeCoordX + 1.25f * span, kFakeCoordY + 1.25f * span);
+      move.set_flags(origin | EF_SHIFT_DOWN);
+      ASSERT_TRUE(gesture_provider_->OnTouchEvent(move));
+      ASSERT_TRUE(gesture_provider_->IsPinchInProgress());
+      ASSERT_TRUE(gesture_provider_->IsScrollInProgress());
+      gestures_.clear();
+
+      if (reset_detection) {
+        gesture_provider_->ResetDetection();
+      } else {
+        gesture_provider_->SendSynthesizedEndEvents();
+      }
+      ASSERT_EQ(3U, GetReceivedGestureCount());
+      EXPECT_EQ(EventType::kGesturePinchEnd, GetReceivedGesture(0).type());
+      EXPECT_EQ(EventType::kGestureScrollEnd, GetReceivedGesture(1).type());
+      EXPECT_EQ(EventType::kGestureEnd, GetReceivedGesture(2).type());
+      EXPECT_EQ(origin, GetReceivedGesture(0).flags);
+      EXPECT_EQ(origin, GetReceivedGesture(1).flags);
+      EXPECT_EQ(origin ^ EF_FROM_DEBUGGER, GetReceivedGesture(2).flags);
+    }
+  }
+}
+
+TEST_F(GestureProviderTest, TouchEndRetainsGestureBeginOrigin) {
+  for (int origin : {EF_NONE, EF_FROM_DEBUGGER}) {
+    for (MotionEvent::Action action :
+         {MotionEvent::Action::UP, MotionEvent::Action::CANCEL}) {
+      for (bool pinch : {false, true}) {
+        SCOPED_TRACE(origin);
+        SCOPED_TRACE(static_cast<int>(action));
+        SCOPED_TRACE(pinch);
+        SetUpWithConfig(GetDefaultConfig());
+        gesture_provider_->SetMultiTouchZoomSupportEnabled(true);
+        gestures_.clear();
+        const base::TimeTicks now = base::TimeTicks::Now();
+        MockMotionEvent down =
+            ObtainMotionEvent(now, MotionEvent::Action::DOWN);
+        down.set_flags(origin ^ EF_FROM_DEBUGGER);
+        ASSERT_TRUE(gesture_provider_->OnTouchEvent(down));
+        MockMotionEvent move =
+            ObtainMotionEvent(now + kOneMicrosecond, MotionEvent::Action::MOVE,
+                              kFakeCoordX, kFakeCoordY + 2 * GetTapSlop());
+        move.set_flags(origin);
+        ASSERT_TRUE(gesture_provider_->OnTouchEvent(move));
+        ASSERT_TRUE(gesture_provider_->IsScrollInProgress());
+        if (pinch) {
+          const float span = 20 * GetTapSlop();
+          MockMotionEvent second = ObtainMotionEvent(
+              now + 2 * kOneMicrosecond, MotionEvent::Action::POINTER_DOWN,
+              kFakeCoordX, kFakeCoordY, kFakeCoordX + span, kFakeCoordY + span);
+          second.set_flags(origin);
+          ASSERT_TRUE(gesture_provider_->OnTouchEvent(second));
+          move = ObtainMotionEvent(now + 3 * kOneMicrosecond,
+                                   MotionEvent::Action::MOVE, kFakeCoordX,
+                                   kFakeCoordY, kFakeCoordX + 1.25f * span,
+                                   kFakeCoordY + 1.25f * span);
+          // The pinch begins with the other origin, while the scroll remains
+          // owned by the earlier move.
+          move.set_flags(origin ^ EF_FROM_DEBUGGER);
+          ASSERT_TRUE(gesture_provider_->OnTouchEvent(move));
+          ASSERT_TRUE(gesture_provider_->IsPinchInProgress());
+        }
+        gestures_.clear();
+        MockMotionEvent end = ObtainMotionEvent(now + kOneSecond, action);
+        end.set_flags((origin ^ EF_FROM_DEBUGGER) | EF_CONTROL_DOWN);
+        ASSERT_TRUE(gesture_provider_->OnTouchEvent(end));
+        ASSERT_EQ(pinch ? 2U : 1U, GetReceivedGestureCount());
+        if (pinch) {
+          EXPECT_EQ(EventType::kGesturePinchEnd, GetReceivedGesture(0).type());
+          EXPECT_EQ((origin ^ EF_FROM_DEBUGGER) | EF_CONTROL_DOWN,
+                    GetReceivedGesture(0).flags);
+        }
+        EXPECT_EQ(EventType::kGestureScrollEnd,
+                  GetMostRecentGestureEventType());
+        EXPECT_EQ(origin | EF_CONTROL_DOWN, GetMostRecentGestureEvent().flags);
+      }
+    }
+  }
+}
+
 TEST_F(GestureProviderTest, DoubleTapDragZoomCancelledOnSecondaryPointerDown) {
   const base::TimeTicks down_time_1 = TimeTicks::Now();
   const base::TimeTicks down_time_2 = down_time_1 + GetValidDoubleTapDelay();

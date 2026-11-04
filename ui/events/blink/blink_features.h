@@ -14,6 +14,11 @@ namespace features {
 // is on installed PWA.
 COMPONENT_EXPORT(BLINK_FEATURES)
 BASE_DECLARE_FEATURE(kDontSendKeyEventsToJavascript);
-}
+
+// Preserves debugger origin across UI/Blink event conversions. Disabling this
+// restores the previous conversion behavior.
+COMPONENT_EXPORT(BLINK_FEATURES)
+BASE_DECLARE_FEATURE(kPreserveDebuggerInputOrigin);
+}  // namespace features
 
 #endif  // UI_EVENTS_BLINK_BLINK_FEATURES_H_
