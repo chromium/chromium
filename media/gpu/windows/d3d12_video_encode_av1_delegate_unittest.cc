@@ -781,17 +781,20 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeHDR10Frame) {
   EXPECT_EQ(color_config.matrix_coefficients,
             kLibgav1MatrixCoefficientsBt2020Ncl);
 
+  const libgav1::ObuMetadata* metadata = parser_->metadata();
+  ASSERT_NE(metadata, nullptr);
+
   // The content light level metadata OBU.
-  ASSERT_TRUE(frame->hdr_cll_set());
-  EXPECT_EQ(frame->hdr_cll().max_cll, 1000u);
-  EXPECT_EQ(frame->hdr_cll().max_fall, 400u);
+  ASSERT_TRUE(metadata->hdr_cll_set);
+  EXPECT_EQ(metadata->hdr_cll.max_cll, 1000u);
+  EXPECT_EQ(metadata->hdr_cll.max_fall, 400u);
 
   // The mastering display colour volume metadata OBU. Chromaticities are 0.16
   // fixed point, the maximum luminance 24.8 and the minimum luminance 18.14.
   // Scaling by a power of two is exact in floating point, so the rounded
   // results are deterministic.
-  ASSERT_TRUE(frame->hdr_mdcv_set());
-  const libgav1::ObuMetadataHdrMdcv parsed_mdcv = frame->hdr_mdcv();
+  ASSERT_TRUE(metadata->hdr_mdcv_set);
+  const libgav1::ObuMetadataHdrMdcv parsed_mdcv = metadata->hdr_mdcv;
   EXPECT_THAT(parsed_mdcv.primary_chromaticity_x,
               ElementsAreArray({46399u, 11141u, 8585u}));  // R, G, B x
   EXPECT_THAT(parsed_mdcv.primary_chromaticity_y,
@@ -827,8 +830,7 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeHLGFrame) {
             kLibgav1TransferCharacteristicsHlg);
   EXPECT_EQ(color_config.matrix_coefficients,
             kLibgav1MatrixCoefficientsBt2020Ncl);
-  EXPECT_FALSE(frame->hdr_cll_set());
-  EXPECT_FALSE(frame->hdr_mdcv_set());
+  EXPECT_EQ(parser_->metadata(), nullptr);
 }
 
 // An 8 bit stream still gets the colour description, but no HDR metadata, since
@@ -854,8 +856,7 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeHDRFrameWith8BitInput) {
   EXPECT_EQ(color_config.bitdepth, 8);
   EXPECT_EQ(color_config.transfer_characteristics,
             kLibgav1TransferCharacteristicsSmpte2084);
-  EXPECT_FALSE(frame->hdr_cll_set());
-  EXPECT_FALSE(frame->hdr_mdcv_set());
+  EXPECT_EQ(parser_->metadata(), nullptr);
 }
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest,
@@ -917,8 +918,7 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, ColorDescriptionClearedOnNextKeyFrame) {
             kLibgav1TransferCharacteristicsUnspecified);
   EXPECT_EQ(color_config.matrix_coefficients,
             kLibgav1MatrixCoefficientsUnspecified);
-  EXPECT_FALSE(frame->hdr_cll_set());
-  EXPECT_FALSE(frame->hdr_mdcv_set());
+  EXPECT_EQ(parser_->metadata(), nullptr);
 }
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {

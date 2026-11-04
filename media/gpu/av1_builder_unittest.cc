@@ -600,12 +600,15 @@ TEST_F(AV1BuilderTest, BuildHDRMetadataOBUs) {
   ASSERT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
   ASSERT_NE(current_frame, nullptr);
 
-  ASSERT_TRUE(current_frame->hdr_cll_set());
-  EXPECT_EQ(current_frame->hdr_cll().max_cll, hdr_cll.max_cll);
-  EXPECT_EQ(current_frame->hdr_cll().max_fall, hdr_cll.max_fall);
+  const libgav1::ObuMetadata* metadata = parser->metadata();
+  ASSERT_NE(metadata, nullptr);
 
-  ASSERT_TRUE(current_frame->hdr_mdcv_set());
-  const libgav1::ObuMetadataHdrMdcv parsed_mdcv = current_frame->hdr_mdcv();
+  ASSERT_TRUE(metadata->hdr_cll_set);
+  EXPECT_EQ(metadata->hdr_cll.max_cll, hdr_cll.max_cll);
+  EXPECT_EQ(metadata->hdr_cll.max_fall, hdr_cll.max_fall);
+
+  ASSERT_TRUE(metadata->hdr_mdcv_set);
+  const libgav1::ObuMetadataHdrMdcv parsed_mdcv = metadata->hdr_mdcv;
   EXPECT_THAT(parsed_mdcv.primary_chromaticity_x,
               ElementsAreArray(hdr_mdcv.primary_chromaticity_x));
   EXPECT_THAT(parsed_mdcv.primary_chromaticity_y,

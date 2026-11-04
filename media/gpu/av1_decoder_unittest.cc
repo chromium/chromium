@@ -38,6 +38,7 @@
 #include "third_party/libgav1/src/src/utils/constants.h"
 #include "third_party/libgav1/src/src/utils/types.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/skia_span_util.h"
 #include "ui/gfx/switches.h"
 
 using ::testing::_;
@@ -1297,6 +1298,79 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
     }
     expected.push_back(DecodeResult::kRanOutOfStreamData);
     testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+  }
+  EXPECT_EQ(results, expected);
+}
+
+TEST_F(AV1DecoderTest, DecodeShowExistingPictureStreamWithAgtmMetadata) {
+  constexpr gfx::Size kFrameSize(208, 144);
+  constexpr gfx::Size kRenderSize(208, 144);
+  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
+  constexpr size_t kDecodedFrames = 10;
+  constexpr size_t kOutputFrames = 10;
+  const std::string kShowExistingFrameStream("av1-show_existing_frame.ivf");
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF(kShowExistingFrameStream);
+  ASSERT_EQ(buffers.size(), kOutputFrames);
+
+  EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+      .Times(kDecodedFrames)
+      .WillRepeatedly([]() { return base::MakeRefCounted<FakeAV1Picture>(); });
+  EXPECT_CALL(
+      *mock_accelerator_,
+      SubmitDecode(MatchesFrameSizeAndRenderSize(kFrameSize, kRenderSize),
+                   MatchesYUV420SequenceHeader(kProfile, 8, kFrameSize, false),
+                   _, NonEmptyTileBuffers(), _))
+      .Times(kDecodedFrames)
+      .WillRepeatedly(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange};
+  std::vector<DecodeResult> results;
+  for (size_t i = 0; i < buffers.size(); ++i) {
+    const float reference_white = 100.0f + i * 10.0f;
+    skhdr::AdaptiveGlobalToneMap agtm{.fHdrReferenceWhite = reference_white};
+    sk_sp<SkData> agtm_data = agtm.serialize();
+    ASSERT_TRUE(agtm_data);
+    base::span<const uint8_t> agtm_span = gfx::SkDataToSpan(agtm_data);
+
+    // Build an OBU_METADATA (type 5, obu_has_size_field = 1 -> 0x2A) with
+    // METADATA_TYPE_ITUT_T35 (0x04), the AGTM ITU-T T.35 prefix, the serialized
+    // AGTM payload, and the trailing bit byte (0x80).
+    constexpr uint8_t kAgtmObuPayloadPrefix[] = {0x04, 0xB5, 0x00,
+                                                 0x90, 0x00, 0x01};
+    const size_t metadata_payload_size =
+        std::size(kAgtmObuPayloadPrefix) + agtm_span.size() + 1;
+    ASSERT_LT(metadata_payload_size, 128u);
+
+    base::span<const uint8_t> orig_span(*buffers[i]);
+    // Every packet starts with a 2-byte OBU_TEMPORAL_DELIMITER (0x12, 0x00).
+    ASSERT_GE(orig_span.size(), 2u);
+    std::vector<uint8_t> packet_with_agtm;
+    packet_with_agtm.reserve(orig_span.size() + 2 + metadata_payload_size);
+    packet_with_agtm.insert(packet_with_agtm.end(), orig_span.begin(),
+                            orig_span.begin() + 2);
+    packet_with_agtm.push_back(0x2A);
+    packet_with_agtm.push_back(
+        base::checked_cast<uint8_t>(metadata_payload_size));
+    packet_with_agtm.insert(packet_with_agtm.end(),
+                            std::begin(kAgtmObuPayloadPrefix),
+                            std::end(kAgtmObuPayloadPrefix));
+    packet_with_agtm.insert(packet_with_agtm.end(), agtm_span.begin(),
+                            agtm_span.end());
+    packet_with_agtm.push_back(0x80);
+    packet_with_agtm.insert(packet_with_agtm.end(), orig_span.begin() + 2,
+                            orig_span.end());
+
+    gfx::HDRMetadata expected_hdr_metadata;
+    expected_hdr_metadata.SetAgtm(agtm);
+    EXPECT_CALL(*mock_accelerator_,
+                OutputPicture(MatchesHDRMetadata(expected_hdr_metadata)))
+        .WillOnce(Return(true));
+
+    for (DecodeResult r : Decode(DecoderBuffer::CopyFrom(packet_with_agtm))) {
+      results.push_back(r);
+    }
+    expected.push_back(DecodeResult::kRanOutOfStreamData);
   }
   EXPECT_EQ(results, expected);
 }

@@ -257,6 +257,7 @@ void AV1Decoder::Reset() {
   parser_.reset();
   decrypt_config_.reset();
   decoder_buffer_.reset();
+  hdr_metadata_bitstream_.Reset();
   secure_handle_ = 0;
 
   buffer_pool_ = std::make_unique<libgav1::BufferPool>(
@@ -495,6 +496,33 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
     DCHECK(current_frame_header_);
     const auto& frame_header = *current_frame_header_;
+
+    // AV1 HDR metadata may appear in the below places:
+    // 1. Container.
+    // 2. Bitstream.
+    // 3. Both container and bitstream.
+    // Thus we should also extract HDR metadata here in case we
+    // miss the information.
+    if (const libgav1::ObuMetadata* metadata = parser_->metadata()) {
+      if (metadata->hdr_cll_set) {
+        hdr_metadata_bitstream_.SetCLLI(ToSkHdrCLLI(metadata->hdr_cll));
+      }
+      if (metadata->hdr_mdcv_set) {
+        hdr_metadata_bitstream_.SetMDCV(ToSkHdrMDCV(metadata->hdr_mdcv));
+      }
+      for (const auto& itut_t35 :
+           base::span(metadata->itut_t35)
+               .first(base::checked_cast<size_t>(metadata->itut_t35_count))) {
+        // SAFETY: `itut_t35` is populated by `libgav1::ObuParser` with
+        // `payload_bytes` pointing to `payload_size` valid bytes.
+        auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
+            itut_t35.payload_bytes,
+            base::checked_cast<size_t>(itut_t35.payload_size)));
+        SetAgtmFromT35WithCountryCode(hdr_metadata_bitstream_,
+                                      itut_t35.country_code, t35_payload_span);
+      }
+    }
+
     if (frame_header.show_existing_frame) {
       const size_t frame_to_show =
           base::checked_cast<size_t>(frame_header.frame_to_show);
@@ -515,6 +543,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       }
 
       pic->set_bitstream_id(stream_id_);
+      pic->SetDynamicHdrMetadata(hdr_metadata_bitstream_,
+                                 decoder_buffer_.get());
       if (!accelerator_->OutputPicture(*pic)) {
         return kDecodeError;
       }
@@ -568,32 +598,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     if (current_visible_rect != visible_rect_) {
       DVLOG(2) << "Visible rectangle change in the middle of video sequence.";
       visible_rect_ = current_visible_rect;
-    }
-
-    // AV1 HDR metadata may appears in the below places:
-    // 1. Container.
-    // 2. Bitstream.
-    // 3. Both container and bitstream.
-    // Thus we should also extract HDR metadata here in case we
-    // miss the information.
-    if (current_frame_->hdr_cll_set()) {
-      hdr_metadata_bitstream_.SetCLLI(ToSkHdrCLLI(current_frame_->hdr_cll()));
-    }
-    if (current_frame_->hdr_mdcv_set()) {
-      hdr_metadata_bitstream_.SetMDCV(ToSkHdrMDCV(current_frame_->hdr_mdcv()));
-    }
-    if (current_frame_->itut_t35_count() > 0) {
-      // SAFETY: The best we can do is trust the count provided by libgav1.
-      for (const auto& itut_t35 : UNSAFE_BUFFERS(base::span(
-               current_frame_->itut_t35(),
-               static_cast<size_t>(current_frame_->itut_t35_count())))) {
-        // SAFETY: The best we can do is trust the size provided by libgav1.
-        auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
-            itut_t35.payload_bytes,
-            static_cast<size_t>(itut_t35.payload_size)));
-        SetAgtmFromT35WithCountryCode(hdr_metadata_bitstream_,
-                                      itut_t35.country_code, t35_payload_span);
-      }
     }
 
     DCHECK(current_sequence_header_->film_grain_params_present ||
