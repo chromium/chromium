@@ -740,6 +740,7 @@ void PdfAccessibilityTree::UnserializeNodes() {
 
   ui::AXTreeUpdate update;
   update.root_id = doc_node_->id;
+  update.nodes.reserve(nodes_.size() + 3);
   update.nodes.push_back(*doc_node_);
   update.nodes.push_back(*status_node_);
   update.nodes.push_back(*status_node_text_);
@@ -792,8 +793,7 @@ void PdfAccessibilityTree::ResetStatusNodeAttributes() {
   update.root_id = doc_node_->id;
   // `status_node_` has been either cleared out or set with a new message, so
   // add it to `ui::AXTreeUpdate`.
-  update.nodes.push_back(*status_node_);
-  update.nodes.push_back(*status_node_text_);
+  update.nodes = {*status_node_, *status_node_text_};
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
   }
