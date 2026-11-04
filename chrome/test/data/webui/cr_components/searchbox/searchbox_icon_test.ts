@@ -63,6 +63,14 @@ suite('CrComponentsSearchboxIconTest', () => {
     assertEquals('', icon.$.iconImg.getAttribute('alt'));
   });
 
+  test('icon and images are not user-selectable', () => {
+    assertEquals('none', window.getComputedStyle(icon).userSelect);
+    assertEquals('none', window.getComputedStyle(icon.$.image).userSelect);
+    assertEquals(
+        'none', window.getComputedStyle(icon.$.faviconImage).userSelect);
+    assertEquals('none', window.getComputedStyle(icon.$.iconImg).userSelect);
+  });
+
   test('entity image shown on load', async () => {
     const match = createAutocompleteMatch();
     match.suggestTemplate.image = {url: '#', dominantColor: ''};

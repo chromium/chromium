@@ -6112,6 +6112,35 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "WebUIToolbarDisabled";
                          });
 
+// Verifies that single and double clicking the LHS omnibox icon keeps an
+// all-selected elided URL elided and selected, and that `<cr-searchbox-icon>`
+// has `user-select: none` so it can't be highlighted.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ClickingIconKeepsUrlSelectedAndIconUnselectable) {
+  embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  const std::string full_url = url.spec();
+  const std::string display_url = full_url.substr(strlen("https://"));
+
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(), WaitForPopupReady(),
+      WaitForWebUIInputValue(display_url),
+      InAnyContext(CheckWebUIInputSelection(0, display_url.length())),
+      // Single click, then double click, on the LHS icon with the native
+      // mouse. The icon has `pointer-events: none`, so the clicks land on the
+      // surrounding `#inputInnerContainer`, just like real user clicks.
+      ClickPopupElement(kPopupWebView, kWebUIInputIcon),
+      InSameContextAs(kPopupWebView, ClickMouse()),
+      WaitForWebUIInputValue(display_url),
+      InAnyContext(CheckWebUIInputSelection(0, display_url.length())),
+      InAnyContext(CheckJsResultAt(
+          kPopupWebView, kWebUIInputIcon,
+          "el => window.getComputedStyle(el).userSelect", "none")));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          FullWebUIOmniboxInteractiveTest,
                          testing::Bool(),

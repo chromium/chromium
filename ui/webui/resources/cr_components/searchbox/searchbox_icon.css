@@ -15,7 +15,14 @@
   display: flex;
   flex-shrink: 0;
   justify-content: center;
+  user-select: none;
   width: var(--cr-searchbox-icon-container-size, 32px);
+}
+
+#image,
+#iconImg,
+#faviconImage {
+  -webkit-user-drag: none;
 }
 
 :host(:not([is-lens-searchbox_])) {
