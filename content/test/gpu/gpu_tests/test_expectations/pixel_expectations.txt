@@ -438,15 +438,21 @@ crbug.com/286989320 [ chromeos ] Pixel_MeetEffects* [ Failure ]
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/40935289 [ fuchsia no-asan web-engine-shell ] Pixel_Video_AV1 [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia fuchsia-board-astro web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia fuchsia-board-astro no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+# Protected memory on Fuchsia Smart Display produces solid magenta screenshots.
+# Flaky amlogic_video fallback causes occasional unexpected passes on H.264.
+# finder:disable-general crbug.com/40935289
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_VP9 [ Failure ]
+# finder:enable-general
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_HEVC [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia fuchsia-board-astro no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 crbug.com/519220175 [ angle-swiftshader fuchsia web-engine-shell ] Pixel_ReflectedDiv [ Failure ]
 
 # Flaky on Mac ASAN
