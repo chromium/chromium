@@ -7,7 +7,30 @@ source_set("model") {
     "badge_type.h",
     "location_bar_badge_configuration.h",
     "location_bar_badge_configuration.mm",
+    "location_bar_badge_tab_helper.h",
+    "location_bar_badge_tab_helper.mm",
+    "location_bar_badge_tab_helper_observer.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public",
+  ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "fake_location_bar_badge_tab_helper_observer.h",
+    "fake_location_bar_badge_tab_helper_observer.mm",
+    "location_bar_badge_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
 }
