@@ -71,8 +71,6 @@ component("views_examples_lib") {
     "flex_layout_multiple_order_example.h",
     "ink_drop_example.cc",
     "ink_drop_example.h",
-    "json_view_builder.cc",
-    "json_view_builder.h",
     "label_example.cc",
     "label_example.h",
     "layout_example_base.cc",
@@ -119,8 +117,6 @@ component("views_examples_lib") {
     "typography_example.h",
     "vector_example.cc",
     "vector_example.h",
-    "views_canvas_example.cc",
-    "views_canvas_example.h",
     "views_examples_export.h",
     "widget_example.cc",
     "widget_example.h",
@@ -141,7 +137,6 @@ component("views_examples_lib") {
     "//ui/actions",
     "//ui/base",
     "//ui/color",
-    "//ui/color:mixers",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -151,7 +146,6 @@ component("views_examples_lib") {
     "//ui/native_theme",
     "//ui/resources",
     "//ui/resources:ui_test_pak",
-    "//ui/shell_dialogs",
     "//ui/strings:ui_strings",
     "//ui/views",
   ]
@@ -499,7 +493,6 @@ test("views_examples_unittests") {
   sources = [
     "examples_unittest.cc",
     "examples_unittest_main.cc",
-    "json_view_builder_unittest.cc",
   ]
 
   deps = [
@@ -510,7 +503,6 @@ test("views_examples_unittests") {
     "//components/viz/host",
     "//components/viz/service",
     "//mojo/core/embedder",
-    "//ui/accessibility:test_support",
     "//ui/base",
     "//ui/base/ime/init",
     "//ui/compositor",
