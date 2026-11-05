@@ -1921,6 +1921,66 @@ IN_PROC_BROWSER_TEST_P(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
             url_1);
 }
 
+IN_PROC_BROWSER_TEST_P(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
+                       BlockExtensionSpawnedNewTabAndOAuthUrl) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  BrowserWindowInterface* const boca_app_browser =
+      FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(IsLockedForOnTask(boca_app_browser));
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->GetSessionID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+
+  // Spawn a restricted tab.
+  const GURL url_1 = embedded_test_server()->GetURL(kTabUrl1Host, "/");
+  CreateBackgroundTabAndWait(
+      window_id, url_1, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
+  auto* const tab_strip_model = boca_app_browser->GetTabStripModel();
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  WaitForUrlBlocklistUpdate();
+
+  // Simulate an extension or context menu ("Search Google for...") opening a
+  // new foreground tab without an opener to a different domain.
+  const GURL different_domain_url =
+      embedded_test_server()->GetURL(kTabUrl2Host, "/");
+  NavigateParams new_tab_params(boca_app_browser, different_domain_url,
+                                ui::PAGE_TRANSITION_LINK);
+  new_tab_params.disposition =
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab;
+  ui_test_utils::NavigateToURL(&new_tab_params);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(tab_strip_model->count(), 2);
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            url_1);
+
+  // Simulate an extension opening a new tab with an OAuth login URL on a
+  // disallowed domain. Verify the navigation is blocked, the new tab is closed,
+  // and `oauth_in_progress` is not poisoned.
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile());
+  ASSERT_FALSE(window_tracker->oauth_in_progress());
+  const GURL oauth_url = embedded_test_server()->GetURL(
+      kTabUrlRedirectHost, "/authenticate?client_id=123&response_type=code");
+  NavigateParams oauth_nav_params(boca_app_browser, oauth_url,
+                                  ui::PAGE_TRANSITION_LINK);
+  oauth_nav_params.disposition =
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab;
+  ui_test_utils::NavigateToURL(&oauth_nav_params);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(tab_strip_model->count(), 2);
+  EXPECT_FALSE(window_tracker->oauth_in_progress());
+}
+
 class OnTaskLockedSessionNavigationThrottleWorkspaceNavigationInteractiveUITest
     : public OnTaskLockedSessionNavigationThrottleInteractiveUITestBase {
  protected:
