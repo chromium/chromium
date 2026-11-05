@@ -4,3 +4,9 @@ include_rules = [
   "+build/android",
   "+ui/android",
 ]
+
+specific_include_rules = {
+  ".*Test\\.java": [
+    "+components/browser_ui/modaldialog/android",
+  ],
+}
