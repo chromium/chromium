@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
 namespace ash {
 
@@ -44,8 +45,11 @@ std::unique_ptr<KeyedService>
 TokenHandleServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
+  user_manager::User* user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  CHECK(user);
   return std::make_unique<TokenHandleService>(
-      profile, IdentityManagerFactory::GetForProfile(profile),
+      user, IdentityManagerFactory::GetForProfile(profile),
       TokenHandleStoreFactory::Get()->GetTokenHandleStore());
 }
 

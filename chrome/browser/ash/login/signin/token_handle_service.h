@@ -9,12 +9,16 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 
-class Profile;
 class AccountId;
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -23,7 +27,11 @@ class TokenHandleStore;
 class TokenHandleService : public KeyedService,
                            public signin::IdentityManager::Observer {
  public:
-  TokenHandleService(Profile* profile,
+  // `user` must not be null, and must outlive this instance: this is a
+  // KeyedService associated with the user's own BrowserContext, and the
+  // user_manager::User is destroyed only after its BrowserContext's
+  // KeyedServices have been shut down.
+  TokenHandleService(user_manager::User* user,
                      signin::IdentityManager* identity_manager,
                      TokenHandleStore* token_handle_store);
 
@@ -69,7 +77,7 @@ class TokenHandleService : public KeyedService,
 
   void StartObserving();
 
-  raw_ptr<Profile> profile_;
+  const raw_ref<user_manager::User> user_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
   raw_ptr<signin::IdentityManager> identity_manager_;

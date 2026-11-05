@@ -18,6 +18,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -54,6 +56,11 @@ class TokenHandleServiceTest : public testing::Test {
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         account_id_, /*is_affiliated=*/false, user_manager::UserType::kRegular,
         profile_);
+    // `TokenHandleService` resolves its owning user via
+    // `BrowserContextHelper::GetUserByBrowserContext()`, which relies on this
+    // annotation (production profiles get it from
+    // `ProfileUserManagerController`).
+    AnnotatedAccountId::Set(profile_, account_id_);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
 
@@ -93,8 +100,10 @@ class TokenHandleServiceTest : public testing::Test {
   }
 
   void CreateService() {
+    user_manager::User* user =
+        BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
     service_ = std::make_unique<TokenHandleService>(
-        profile_, identity_test_env()->identity_manager(),
+        user, identity_test_env()->identity_manager(),
         TokenHandleStoreFactory::Get()->GetTokenHandleStore());
   }
 

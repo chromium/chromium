@@ -6,33 +6,34 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/browser_context.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace ash {
 namespace {
 
-account_manager::AccountManager* GetAccountManager(Profile* profile) {
+account_manager::AccountManager* GetAccountManager(user_manager::User& user) {
   return AccountManagerFactory::Get()->GetAccountManager(
-      profile->GetPath().value());
+      user.GetPath().value().value());
 }
 
 }  // namespace
 
 TokenHandleService::TokenHandleService(
-    Profile* profile,
+    user_manager::User* user,
     signin::IdentityManager* identity_manager,
     TokenHandleStore* token_handle_store)
-    : profile_(profile),
+    : user_(CHECK_DEREF(user)),
       identity_manager_(identity_manager),
       token_handle_store_(token_handle_store) {
   // We expect identity_manager_ to be non-null, since we declare an explicit
@@ -77,8 +78,7 @@ void TokenHandleService::OnRefreshTokenUpdatedForAccount(
     return;
   }
 
-  const AccountId& account_id =
-      ProfileHelper::Get()->GetUserByProfile(profile_)->GetAccountId();
+  const AccountId& account_id = user_->GetAccountId();
 
   if (account_info.gaia != account_id.GetGaiaId()) {
     return;
@@ -118,7 +118,7 @@ void TokenHandleService::OnAccessTokenFetchComplete(
 
 void TokenHandleService::GetRefreshTokenHash(const AccountId& account_id,
                                              const std::string& access_token) {
-  GetAccountManager(profile_)->GetTokenHash(
+  GetAccountManager(*user_)->GetTokenHash(
       account_manager::AccountKey::FromGaiaId(account_id.GetGaiaId()),
       base::BindOnce(&TokenHandleService::MaybeFetchTokenHandle,
                      weak_factory_.GetWeakPtr(), account_id, access_token));
@@ -128,15 +128,19 @@ void TokenHandleService::MaybeFetchTokenHandle(
     const AccountId account_id,
     const std::string& access_token,
     const std::string& refresh_token_hash) {
+  // TODO(crbug.com/569954060): Get rid of `browser_context` entirely once
+  // AccountManager no longer needs one to look itself up (see
+  // GetAccountManager()).
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByUser(&user_.get());
   token_handle_store_->MaybeFetchTokenHandle(
-      profile_->GetPrefs(), profile_->GetURLLoaderFactory(), account_id,
-      access_token, refresh_token_hash);
+      user_->GetProfilePrefs(), browser_context->GetURLLoaderFactory(),
+      account_id, access_token, refresh_token_hash);
 }
 
 void TokenHandleService::Shutdown() {
   identity_manager_->RemoveObserver(this);
   identity_manager_ = nullptr;
-  profile_ = nullptr;
 }
 
 }  // namespace ash
