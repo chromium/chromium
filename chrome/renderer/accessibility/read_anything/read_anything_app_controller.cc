@@ -206,11 +206,22 @@ void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
   // - Links: The browser ignores click events on non-existent node IDs.
   // - Read Aloud: Text remains in the side panel's DOM and continues to be
   //   read.
+  //
+  // PDFs also ignore node deletions because PDFs are static. Because of how
+  // PDF accessibility is handled for non-reading mode ATs, opening a menu
+  // will cause OnNodeWillBeDeleted to be called, which causes the entire
+  // tree to be cleared, and since the menu content isn't distillable
+  // in reading mode, reading mode can switch from being fully distilled to
+  // the empty state page just because a menu has been opened. To avoid this,
+  // maintain the original distillation on PDFs by ignoring OnNodeWillBeDeleted.
+  // When the menu is closed, the PDF will be redistilled with a
+  // SUBTREE_CREATED.
+  //
   // TODO(crbug.com/538746675): Investigate whether this and the readability
   // check in OnNodeDeleted are the right solution or if it impacts selection
   // too much.
   if (model_.is_readability_next_distillation_method() ||
-      tree->GetAXTreeID() != model_.active_tree_id()) {
+      tree->GetAXTreeID() != model_.active_tree_id() || model_.IsPdf()) {
     return;
   }
   ui::AXNodeID node_id = CHECK_DEREF(node).id();

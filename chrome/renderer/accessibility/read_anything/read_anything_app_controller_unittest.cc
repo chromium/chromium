@@ -6168,6 +6168,74 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_TRUE(IsNodePendingDeletion(2));
 }
 
+TEST_F(ReadAnythingAppControllerTest, OnNodeWillBeDeleted_Pdf_Ignored) {
+  // Same setup as OnNodeWillBeDeleted_ActiveTree_Processed, but for a PDF.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  model().SetIsPdf(true);
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.nodes = {test::TextNode(/* id= */ 2)};
+  AccessibilityEventReceived({std::move(update)});
+
+  model().Reset({2});
+  model().ComputeDisplayNodeIdsForDistilledTree();
+  ASSERT_TRUE(model().GetCurrentlyVisibleNodes()->contains(2));
+
+  const auto& tree_infos = model().tree_infos_for_testing();
+  auto it = tree_infos.find(tree_id_);
+  ASSERT_NE(it, tree_infos.end());
+  ui::AXTree* active_tree = it->second->manager->ax_tree();
+  ui::AXNode* active_node = active_tree->GetFromId(2);
+  ASSERT_NE(active_node, nullptr);
+
+  // PDF nodes can be temporarily removed from the tree, e.g. while the PDF
+  // viewer shows a modal menu. The displayed node should not be marked for
+  // deletion, which would remove it from the side panel.
+  controller().OnNodeWillBeDeleted(active_tree, active_node);
+
+  EXPECT_FALSE(IsNodePendingDeletion(2));
+  EXPECT_TRUE(model().GetCurrentlyVisibleNodes()->contains(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       Pdf_DisplayedNodesTemporarilyRemoved_KeepsContentAndRedistills) {
+  SendUpdateWithNodes({test::TextNode(kId1, u"First page."),
+                       test::TextNode(kId2, u"Second page."),
+                       test::TextNode(kId3, u"Third page.")});
+
+  // Set up a PDF and display its content once the debouncer finishes.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  OnAXTreeDistilled(tree_id_, {kId1, kId2, kId3});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  ASSERT_THAT(model().display_node_ids(),
+              testing::IsSupersetOf({kId1, kId2, kId3}));
+
+  // Simulate the PDF viewer opening a modal menu, which removes the PDF
+  // content from the tree. The displayed content is kept, and no distillation
+  // is triggered because the tree shrank.
+  ExpectDistill(0);
+  ui::AXNodeData empty_root;
+  empty_root.id = 1;
+  SendUpdateWithNodes({std::move(empty_root)});
+  EXPECT_THAT(model().display_node_ids(),
+              testing::IsSupersetOf({kId1, kId2, kId3}));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Simulate the menu closing, which restores the PDF content. The tree grew,
+  // so the content is redistilled.
+  ExpectDistill(1);
+  ui::AXNodeData restored_root;
+  restored_root.id = 1;
+  restored_root.child_ids = {kId1, kId2, kId3};
+  SendUpdateWithNodes({std::move(restored_root),
+                       test::TextNode(kId1, u"First page."),
+                       test::TextNode(kId2, u"Second page."),
+                       test::TextNode(kId3, u"Third page.")});
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnNodeDeleted_InactiveTree_Ignored) {
   model().set_next_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kScreen2x);
