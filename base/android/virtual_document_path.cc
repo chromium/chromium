@@ -92,8 +92,7 @@ VirtualDocumentPath::CreateDocument(std::string_view mime_type) const {
   CHECK(!mime_type.empty());
   JNIEnv* env = android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> result =
-      Java_VirtualDocumentPath_createDocument(env, obj_,
-                                              std::string(mime_type));
+      Java_VirtualDocumentPath_createDocument(env, obj_, mime_type);
   if (result.is_null()) {
     return base::unexpected(base::File::FILE_ERROR_FAILED);
   }

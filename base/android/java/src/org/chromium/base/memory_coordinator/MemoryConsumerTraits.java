@@ -4,14 +4,10 @@
 
 package org.chromium.base.memory_coordinator;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Describes how a {@link MemoryConsumer} behaves using a set of trait enum values. */
-@JNINamespace("base::android")
 @NullMarked
 public final class MemoryConsumerTraits {
     // LINT.IfChange(MemoryConsumerTraits)
@@ -85,8 +81,7 @@ public final class MemoryConsumerTraits {
     }
 
     /** Returns all traits packed into a single 32-bit integer for efficient JNI transfer. */
-    @CalledByNative
-    public int getPackedTraits() {
+    int getPackedTraits() {
         return (mConsumerType & 0x1)
                 | ((mEstimatedMemoryUsage & 0x3) << 1)
                 | ((mReleaseMemoryDataAccess & 0x3) << 3)

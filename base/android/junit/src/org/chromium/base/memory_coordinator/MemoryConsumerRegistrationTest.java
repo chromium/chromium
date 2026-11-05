@@ -7,6 +7,7 @@ package org.chromium.base.memory_coordinator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -58,14 +59,14 @@ public class MemoryConsumerRegistrationTest {
         MemoryConsumerRegistration.flushPendingRegistrations();
 
         long fakeNativePtr = 0x12345678L;
-        when(mNativeMock.register(eq("TestConsumer"), eq(mTraits), eq(mConsumerMock)))
+        int packedTraits = mTraits.getPackedTraits();
+        when(mNativeMock.register(eq("TestConsumer"), eq(packedTraits), eq(mConsumerMock)))
                 .thenReturn(fakeNativePtr);
 
         MemoryConsumerRegistration registration =
                 MemoryConsumerRegistration.create("TestConsumer", mTraits, mConsumerMock);
         assertNotNull(registration);
-        verify(mNativeMock, times(1)).register("TestConsumer", mTraits, mConsumerMock);
-        verify(mNativeMock, times(1)).notifyInitialLimitIfNonDefault(fakeNativePtr);
+        verify(mNativeMock, times(1)).register("TestConsumer", packedTraits, mConsumerMock);
 
         registration.close();
         verify(mNativeMock, times(1)).destroy(fakeNativePtr);
@@ -92,14 +93,14 @@ public class MemoryConsumerRegistrationTest {
 
         // Native registration should not have occurred yet.
         long fakeNativePtr = 0xabcdefL;
-        when(mNativeMock.register(eq("PreNativeConsumer"), eq(mTraits), eq(mConsumerMock)))
+        int packedTraits = mTraits.getPackedTraits();
+        when(mNativeMock.register(eq("PreNativeConsumer"), eq(packedTraits), eq(mConsumerMock)))
                 .thenReturn(fakeNativePtr);
 
         // Simulate native becoming ready.
         MemoryConsumerRegistration.flushPendingRegistrations();
 
-        verify(mNativeMock, times(1)).register("PreNativeConsumer", mTraits, mConsumerMock);
-        verify(mNativeMock, times(1)).notifyInitialLimitIfNonDefault(fakeNativePtr);
+        verify(mNativeMock, times(1)).register("PreNativeConsumer", packedTraits, mConsumerMock);
 
         registration.close();
         verify(mNativeMock, times(1)).destroy(fakeNativePtr);
@@ -117,7 +118,7 @@ public class MemoryConsumerRegistrationTest {
         // Simulate native becoming ready.
         MemoryConsumerRegistration.flushPendingRegistrations();
 
-        verify(mNativeMock, times(0)).register(eq("PreNativeConsumer"), any(), any());
+        verify(mNativeMock, times(0)).register(eq("PreNativeConsumer"), anyInt(), any());
     }
 
     @Test
@@ -125,13 +126,13 @@ public class MemoryConsumerRegistrationTest {
         MemoryConsumerRegistration.flushPendingRegistrations();
 
         long fakeNativePtr = 0x5678L;
-        when(mNativeMock.register(eq("PostInitConsumer"), eq(mTraits), eq(mConsumerMock)))
+        int packedTraits = mTraits.getPackedTraits();
+        when(mNativeMock.register(eq("PostInitConsumer"), eq(packedTraits), eq(mConsumerMock)))
                 .thenReturn(fakeNativePtr);
 
         MemoryConsumerRegistration registration =
                 MemoryConsumerRegistration.create("PostInitConsumer", mTraits, mConsumerMock);
-        verify(mNativeMock, times(1)).register("PostInitConsumer", mTraits, mConsumerMock);
-        verify(mNativeMock, times(1)).notifyInitialLimitIfNonDefault(fakeNativePtr);
+        verify(mNativeMock, times(1)).register("PostInitConsumer", packedTraits, mConsumerMock);
 
         registration.close();
         verify(mNativeMock, times(1)).destroy(fakeNativePtr);
@@ -147,16 +148,16 @@ public class MemoryConsumerRegistrationTest {
         // New registrations should now be queued rather than registering immediately.
         MemoryConsumerRegistration registration =
                 MemoryConsumerRegistration.create("QueuedConsumer", mTraits, mConsumerMock);
-        verify(mNativeMock, times(0)).register(eq("QueuedConsumer"), any(), any());
+        verify(mNativeMock, times(0)).register(eq("QueuedConsumer"), anyInt(), any());
 
         // Re-flushing after native becomes ready again.
         long fakeNativePtr = 0x9999L;
-        when(mNativeMock.register(eq("QueuedConsumer"), eq(mTraits), eq(mConsumerMock)))
+        int packedTraits = mTraits.getPackedTraits();
+        when(mNativeMock.register(eq("QueuedConsumer"), eq(packedTraits), eq(mConsumerMock)))
                 .thenReturn(fakeNativePtr);
 
         MemoryConsumerRegistration.flushPendingRegistrations();
-        verify(mNativeMock, times(1)).register("QueuedConsumer", mTraits, mConsumerMock);
-        verify(mNativeMock, times(1)).notifyInitialLimitIfNonDefault(fakeNativePtr);
+        verify(mNativeMock, times(1)).register("QueuedConsumer", packedTraits, mConsumerMock);
 
         registration.close();
         verify(mNativeMock, times(1)).destroy(fakeNativePtr);
@@ -180,5 +181,24 @@ public class MemoryConsumerRegistrationTest {
 
         // Calling onReleaseMemory on passive consumer is a safe no-op.
         passiveConsumer.onReleaseMemory();
+    }
+
+    @Test
+    public void testCloseDuringNativeRegistrationDestroysNativePeer() {
+        MemoryConsumerRegistration registration =
+                MemoryConsumerRegistration.create("ReentrantConsumer", mTraits, mConsumerMock);
+
+        long fakeNativePtr = 0x8888L;
+        int packedTraits = mTraits.getPackedTraits();
+
+        when(mNativeMock.register(eq("ReentrantConsumer"), eq(packedTraits), eq(mConsumerMock)))
+                .thenAnswer(
+                        invocation -> {
+                            registration.close();
+                            return fakeNativePtr;
+                        });
+
+        MemoryConsumerRegistration.flushPendingRegistrations();
+        verify(mNativeMock, times(1)).destroy(fakeNativePtr);
     }
 }

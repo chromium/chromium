@@ -5537,10 +5537,7 @@ if (is_android) {
   }
 
   generate_jni("memory_coordinator_jni") {
-    sources = [
-      "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerRegistration.java",
-      "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerTraits.java",
-    ]
+    sources = [ "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerRegistration.java" ]
   }
 
   android_library("memory_coordinator_java") {

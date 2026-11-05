@@ -35,7 +35,7 @@ public class ApkAssets {
     private static @Nullable String sLastError;
 
     @CalledByNative
-    public static long[] open(
+    public static @JniType("std::vector<int64_t>") long[] open(
             @JniType("std::string") String apkSubpath, @JniType("std::string") String splitName) {
         apkSubpath = maybeAddSuffix(apkSubpath);
         sLastError = null;

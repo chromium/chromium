@@ -6,6 +6,7 @@ package org.chromium.base.memory_coordinator;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -77,10 +78,18 @@ public final class MemoryConsumerRegistration implements AutoCloseable {
     private void registerInternal(
             String consumerName, MemoryConsumerTraits traits, MemoryConsumer consumer) {
         if (mNativeMemoryConsumerAndroid == 0 && !mClosed) {
-            mNativeMemoryConsumerAndroid =
-                    MemoryConsumerRegistrationJni.get().register(consumerName, traits, consumer);
-            MemoryConsumerRegistrationJni.get()
-                    .notifyInitialLimitIfNonDefault(mNativeMemoryConsumerAndroid);
+            long nativePtr =
+                    MemoryConsumerRegistrationJni.get()
+                            .register(consumerName, traits.getPackedTraits(), consumer);
+            // register() synchronously invokes consumer.onUpdateMemoryLimit() when the
+            // initial limit is non-default. For deferred registrations flushed via
+            // flushPendingRegistrations(), the caller already holds this handle and its
+            // callback may re-entrantly call close() before register() returns.
+            if (mClosed) {
+                MemoryConsumerRegistrationJni.get().destroy(nativePtr);
+            } else {
+                mNativeMemoryConsumerAndroid = nativePtr;
+            }
         }
     }
 
@@ -187,10 +196,11 @@ public final class MemoryConsumerRegistration implements AutoCloseable {
 
     @NativeMethods
     public interface Natives {
-        long register(String consumerName, MemoryConsumerTraits traits, MemoryConsumer consumer);
+        long register(
+                @JniType("std::string") String consumerName,
+                int packedTraits,
+                MemoryConsumer consumer);
 
         void destroy(long nativeMemoryConsumerAndroid);
-
-        void notifyInitialLimitIfNonDefault(long nativeMemoryConsumerAndroid);
     }
 }

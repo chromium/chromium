@@ -6,12 +6,14 @@
 
 #include <jni.h>
 
-#include "base/android/jni_array.h"
+#include <cstdint>
+#include <vector>
+
 #include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/file_descriptor_store.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_jni/ApkAssets_jni.h"
@@ -25,10 +27,8 @@ int OpenApkAsset(const std::string& file_path,
   // The AssetManager API of the NDK does not expose a method for accessing raw
   // resources :(
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jlongArray> jarr =
+  std::vector<int64_t> results =
       Java_ApkAssets_open(env, file_path, split_name);
-  std::vector<int64_t> results;
-  base::android::JavaLongArrayToLongVector(env, jarr, &results);
   CHECK_EQ(3U, results.size());
   int fd = static_cast<int>(results[0]);
   region->offset = results[1];

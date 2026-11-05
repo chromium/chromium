@@ -391,7 +391,7 @@ class VirtualDocumentPath {
      * path.
      */
     @CalledByNative
-    CreateDocumentResult createDocument(@JniType("std::string") String mimeType) {
+    CreateDocumentResult createDocument(@JniType("std::string_view") String mimeType) {
         Pair<VirtualDocumentPath, String> pair = splitPath();
         if (pair == null) {
             return new CreateDocumentResult(FileError.FILE_ERROR_INVALID_OPERATION, null);
