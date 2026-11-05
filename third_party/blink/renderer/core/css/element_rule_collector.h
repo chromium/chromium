@@ -57,7 +57,8 @@ class MatchedRule {
   // cannot make the class itself private, since
   // WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS() and Vector::emplace_back()
   // need it to be visible from the outside.
-  static const unsigned kBitsForPositionInRuleData = 18;
+  static constexpr unsigned kBitsForPositionInRuleData =
+      RuleData::kPositionBits;
 
  public:
   // Does not take overship of rule_data (it is owned by the appropriate
@@ -92,6 +93,9 @@ class MatchedRule {
   uint16_t LayerOrder() const { return sort_key_ >> 48; }
   uint64_t SortKey() const { return sort_key_; }
   uint64_t GetPosition() const { return position_; }  // Secondary sort key.
+  unsigned StyleSheetIndex() const {
+    return static_cast<unsigned>(position_ >> kBitsForPositionInRuleData);
+  }
   unsigned LinkMatchType() const { return link_match_type_; }
   bool PrecomputeHover() const { return precompute_hover_; }
   ValidPropertyFilter GetValidPropertyFilter(bool is_matching_ua_rules) const {
@@ -226,8 +230,6 @@ class CORE_EXPORT ElementRuleCollector {
     return pseudo_style_request_.pseudo_argument;
   }
 
-  void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;
-
   // Writes out the collected selector statistics and clears the values.
   // These values are gathered during rule matching and require higher-level
   // control of when they are output - the statistics are designed to be
@@ -301,6 +303,9 @@ class CORE_EXPORT ElementRuleCollector {
                                  wtf_size_t position);
 
   void SortMatchedRules();
+  void AddMatchedRulesToTracker(CascadeOrigin origin,
+                                bool is_vtt_embedded_style,
+                                StyleRuleUsageTracker* tracker) const;
 
   RuleIndexList* EnsureRuleList();
   StyleRuleList* EnsureStyleRuleList();

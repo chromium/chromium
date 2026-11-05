@@ -14,7 +14,9 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -931,6 +933,98 @@ TEST_F(ElementRuleCollectorTest, TraceRuleIndexList) {
     ASSERT_TRUE(IsA<CSSStyleRule>(css_rule));
     EXPECT_EQ("#e", To<CSSStyleRule>(*css_rule).selectorText());
   }
+}
+
+TEST_F(ElementRuleCollectorTest, RuleUsageTracker) {
+  // - #s1: basic stylesheet with one used and one unused rule.
+  // - #s2: nested rule inside @media (matches both #target and &.nested).
+  // - #s3: identical to #s1 so it shares StyleSheetContents (and StyleRule
+  //   pointers), placed after #s2 so their RuleSets are not merged. This tests
+  //   that rule attribution uses MatchedRule::StyleSheetIndex() rather than
+  //   scanning stylesheets for the StyleRule* pointer (which would attribute
+  //   #s3's match to #s1).
+  SetBodyInnerHTML(R"HTML(
+    <style id="s1">
+      .used1 { color: red; }
+      .unused1 { color: blue; }
+    </style>
+    <style id="s2">
+      @media screen {
+        #target {
+          &.nested { background: green; }
+        }
+      }
+    </style>
+    <style id="s3">
+      .used1 { color: red; }
+      .unused1 { color: blue; }
+    </style>
+    <div id="target" class="used1 nested"></div>
+  )HTML");
+
+  StyleSheetContents* user_contents = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_contents->ParseString(".used1 { font-size: 16px; }");
+  GetDocument().GetStyleEngine().InjectSheet(
+      StyleSheetKey("user"), user_contents, WebCssOrigin::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  // 1. Test tracking during style resolution (kResolvingStyle mode).
+  auto* tracker = MakeGarbageCollected<StyleRuleUsageTracker>();
+  GetDocument().GetStyleEngine().SetRuleUsageTracker(tracker);
+  GetDocument().GetStyleEngine().MarkAllElementsForStyleRecalc(
+      StyleChangeReasonForTracing::Create("test"));
+  UpdateAllLifecyclePhasesForTest();
+
+  StyleRuleUsageTracker::RuleListByStyleSheet delta = tracker->TakeDelta();
+  const CSSStyleSheet* sheet1 =
+      To<HTMLStyleElement>(GetElementById("s1"))->sheet();
+  const CSSStyleSheet* sheet2 =
+      To<HTMLStyleElement>(GetElementById("s2"))->sheet();
+  const CSSStyleSheet* sheet3 =
+      To<HTMLStyleElement>(GetElementById("s3"))->sheet();
+  ASSERT_EQ(sheet1->Contents(), sheet3->Contents());
+
+  ASSERT_TRUE(delta.Contains(sheet1));
+  EXPECT_EQ(1u, delta.at(sheet1)->size());
+  ASSERT_TRUE(delta.Contains(sheet2));
+  // Both outer `#target` and inner `&.nested` match.
+  EXPECT_EQ(2u, delta.at(sheet2)->size());
+  ASSERT_TRUE(delta.Contains(sheet3));
+  EXPECT_EQ(1u, delta.at(sheet3)->size());
+  // sheet1, sheet2, sheet3, and the injected user sheet.
+  EXPECT_EQ(4u, delta.size());
+
+  // 2. Test CSSOM wrapper parent attribution and tracking during rule
+  // collection (kCollectingCSSRules mode).
+  auto* tracker2 = MakeGarbageCollected<StyleRuleUsageTracker>();
+  GetDocument().GetStyleEngine().SetRuleUsageTracker(tracker2);
+  RuleIndexList* css_rules =
+      GetDocument().GetStyleResolver().CssRulesForElement(
+          GetElementById("target"),
+          StyleResolver::kUserCSSRules | StyleResolver::kAuthorCSSRules);
+  ASSERT_NE(nullptr, css_rules);
+  ASSERT_EQ(5u, css_rules->size());
+  // Entry 0 is from the user stylesheet, which has no TreeScope and therefore
+  // creates a CSSOM wrapper without a parentStyleSheet.
+  EXPECT_EQ(nullptr, css_rules->at(0).rule->parentStyleSheet());
+  // Author rules are sorted by specificity first (.used1 in sheet1 and sheet3),
+  // then #target and &.nested in sheet2.
+  EXPECT_EQ(sheet1, css_rules->at(1).rule->parentStyleSheet());
+  EXPECT_EQ(sheet3, css_rules->at(2).rule->parentStyleSheet());
+  EXPECT_EQ(sheet2, css_rules->at(3).rule->parentStyleSheet());
+  EXPECT_EQ(sheet2, css_rules->at(4).rule->parentStyleSheet());
+
+  // Both user and author rule stages must be recorded in the tracker, even
+  // though MatchElementScopeRules calls ClearMatchedRules() after
+  // MatchUserRules.
+  StyleRuleUsageTracker::RuleListByStyleSheet delta2 = tracker2->TakeDelta();
+  EXPECT_TRUE(delta2.Contains(sheet1));
+  EXPECT_TRUE(delta2.Contains(sheet2));
+  EXPECT_TRUE(delta2.Contains(sheet3));
+  EXPECT_EQ(4u, delta2.size());
+
+  GetDocument().GetStyleEngine().SetRuleUsageTracker(nullptr);
 }
 
 }  // namespace blink

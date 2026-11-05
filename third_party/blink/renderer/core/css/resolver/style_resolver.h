@@ -326,8 +326,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                            StyleCascade& cascade,
                            ActiveInterpolationsMap& interpolations);
 
-  void AddMatchedRulesToTracker(const ElementRuleCollector&);
-
   void CollectPseudoRulesForElement(const Element&,
                                     ElementRuleCollector&,
                                     PseudoId,

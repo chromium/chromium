@@ -2665,11 +2665,6 @@ const ComputedStyle* StyleResolver::StyleForText(Text* text_node) {
   return nullptr;
 }
 
-void StyleResolver::AddMatchedRulesToTracker(
-    const ElementRuleCollector& collector) {
-  collector.AddMatchedRulesToTracker(tracker_);
-}
-
 StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
                                                    unsigned rules_to_include) {
   DCHECK(element);
@@ -2736,10 +2731,6 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
   collector.SetMode(SelectorChecker::kCollectingCSSRules);
   CollectPseudoRulesForElement(*element, collector, pseudo_id, pseudo_argument,
                                rules_to_include);
-
-  if (tracker_) {
-    AddMatchedRulesToTracker(collector);
-  }
   return collector.MatchedCSSRuleList();
 }
 
