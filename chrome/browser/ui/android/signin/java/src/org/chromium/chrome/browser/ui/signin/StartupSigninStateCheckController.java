@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSi
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerController.ShownOn;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -208,8 +207,7 @@ public class StartupSigninStateCheckController implements NativeInitObserver, De
 
     private static boolean isPrimaryAccount(
             SigninManager signinManager, CoreAccountId primaryAccountId) {
-        CoreAccountInfo primaryAccountInfo =
-                signinManager.getIdentityManager().getPrimaryAccountInfo();
+        AccountInfo primaryAccountInfo = signinManager.getIdentityManager().getPrimaryAccountInfo();
         if (primaryAccountInfo == null) {
             return false;
         }
