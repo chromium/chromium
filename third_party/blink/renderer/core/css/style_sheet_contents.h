@@ -87,6 +87,9 @@ class CORE_EXPORT StyleSheetContents final
   PropertyRegistry* GetPrivatePropertyRegistry() {
     return private_property_registry_.Get();
   }
+  const PropertyRegistry* GetPrivatePropertyRegistry() const {
+    return private_property_registry_.Get();
+  }
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;

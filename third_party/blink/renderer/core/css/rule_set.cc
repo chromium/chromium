@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -981,6 +982,50 @@ void RuleSet::AddViewTransitionRule(StyleRuleViewTransition* rule,
       CascadeLayered<StyleRuleViewTransition>(rule, layer));
 }
 
+namespace {
+
+void CollectPrivateBindings(base::span<const Member<StyleRuleBase>> rules,
+                            const PropertyRegistry& registry,
+                            PrivateNameMap& bindings) {
+  for (const StyleRuleBase* rule : rules) {
+    if (rule->IsPrivateRule()) {
+      for (const CSSPropertyValue& property :
+           To<StyleRule>(rule)->Properties().Properties()) {
+        if (property.PropertyID() != CSSPropertyID::kVariable) {
+          continue;
+        }
+        const AtomicString& private_name = property.CustomPropertyName();
+        bindings.Set(registry.AuthoredPrivatePropertyName(private_name),
+                     private_name);
+      }
+    } else if (rule->IsConditionRule() || rule->IsLayerBlockRule() ||
+               rule->IsScopeRule() || rule->IsNavigationRule()) {
+      // @private names in nested group rules belong to the nearest style rule.
+      CollectPrivateBindings(To<StyleRuleGroup>(rule)->ChildRules(), registry,
+                             bindings);
+    }
+  }
+}
+
+}  // namespace
+
+const CSSPrivateBindings* RuleSet::PrivateScopeForRules(
+    base::span<const Member<StyleRuleBase>> rules) const {
+  PrivateNameMap bindings;
+  CollectPrivateBindings(rules, *private_property_registry_, bindings);
+  if (bindings.empty()) {
+    return private_scope_;
+  }
+  return MakeGarbageCollected<CSSPrivateBindings>(private_scope_,
+                                                  std::move(bindings));
+}
+
+const CSSPrivateBindings* RuleSet::GetCSSPrivateBindings(
+    const StyleRule& rule) const {
+  auto it = private_bindings_.find(&rule);
+  return it == private_bindings_.end() ? nullptr : it->value.Get();
+}
+
 void RuleSet::AddChildRules(StyleRule* parent_rule,
                             base::span<const Member<StyleRuleBase>> rules,
                             const MediaQueryEvaluator& medium,
@@ -992,6 +1037,9 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                             ApplyMixinsStack& apply_mixins_stack) {
   for (StyleRuleBase* rule : rules) {
     if (auto* style_rule = DynamicTo<StyleRule>(rule)) {
+      if (style_rule->IsPrivateRule()) {
+        continue;
+      }
       AddStyleRule(style_rule, parent_rule, medium, mixins, add_rule_flags,
                    apply_mixins_stack, container_queries, cascade_layer,
                    style_scope);
@@ -1344,9 +1392,13 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
 
   InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(sheet);
   ApplyMixinsStack apply_mixins_stack;
+  Member<const PropertyRegistry> previous_private_property_registry =
+      private_property_registry_;
+  private_property_registry_ = sheet->GetPrivatePropertyRegistry();
   AddChildRules(/*parent_rule=*/nullptr, sheet->ChildRules(), medium, mixins,
                 kRuleHasNoSpecialState, nullptr /* container_queries */,
                 cascade_layer, style_scope, apply_mixins_stack);
+  private_property_registry_ = previous_private_property_registry;
 
   if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
     return;
@@ -1468,6 +1520,21 @@ void RuleSet::AddStyleRule(StyleRule* style_rule,
                            const ContainerQuerySet* container_queries,
                            CascadeLayer* cascade_layer,
                            const StyleScope* style_scope) {
+  // TODO(crbug.com/542651959): Support @private inside mixins. Each @apply
+  // needs fresh hygienic names and the original registrations are in the
+  // defining stylesheet's PropertyRegistry.
+  const CSSPrivateBindings* local_private_scope = private_scope_;
+  if (RuntimeEnabledFeatures::CSSPrivateEnabled() &&
+      apply_mixins_stack.empty() && private_property_registry_ &&
+      style_rule->ChildRules()) {
+    local_private_scope = PrivateScopeForRules(*style_rule->ChildRules());
+  }
+  Member<const CSSPrivateBindings> previous_private_scope = private_scope_;
+  private_scope_ = local_private_scope;
+  if (private_scope_) {
+    private_bindings_.Set(style_rule, private_scope_);
+  }
+
   for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     wtf_size_t selector_index = style_rule->SelectorIndex(*selector);
@@ -1481,6 +1548,7 @@ void RuleSet::AddStyleRule(StyleRule* style_rule,
                   add_rule_flags, container_queries, cascade_layer, style_scope,
                   apply_mixins_stack);
   }
+  private_scope_ = previous_private_scope;
 }
 
 CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
@@ -1948,6 +2016,9 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(container_query_intervals_);
   visitor->Trace(scope_intervals_);
   visitor->Trace(navigation_state_);
+  visitor->Trace(private_property_registry_);
+  visitor->Trace(private_scope_);
+  visitor->Trace(private_bindings_);
 #if DCHECK_IS_ON()
   visitor->Trace(all_rules_);
 #endif  // DCHECK_IS_ON()

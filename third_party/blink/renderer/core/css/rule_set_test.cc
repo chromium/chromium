@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -59,7 +61,159 @@ StyleRule* CreateDummyStyleRule() {
   return rules.front().Rule();
 }
 
+// Returns the internal name `name` refers to in `rule_data`'s rule, or null if
+// it isn't private there.
+AtomicString PrivateNameFor(const RuleSet& rule_set,
+                            const RuleData& rule_data,
+                            const char* name) {
+  const CSSPrivateBindings* bindings =
+      rule_set.GetCSSPrivateBindings(*rule_data.Rule());
+  return bindings ? bindings->Lookup(AtomicString(name)) : g_null_atom;
+}
+
 }  // namespace
+
+TEST(RuleSetTest, CSSPrivateBindingsForNestedRules) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(R"CSS(
+    #outer {
+      @private {
+        --x: outer;
+        --y: parent;
+      }
+      #inherited {
+        color: green;
+      }
+      #shadow {
+        @private {
+          --x: inner;
+        }
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("outer")).size());
+  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("inherited")).size());
+  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("shadow")).size());
+  const RuleData& outer = rule_set.IdRules(AtomicString("outer")).front();
+  const RuleData& inherited =
+      rule_set.IdRules(AtomicString("inherited")).front();
+  const RuleData& shadow = rule_set.IdRules(AtomicString("shadow")).front();
+
+  AtomicString outer_x = PrivateNameFor(rule_set, outer, "--x");
+  AtomicString outer_y = PrivateNameFor(rule_set, outer, "--y");
+  ASSERT_FALSE(outer_x.IsNull());
+  ASSERT_FALSE(outer_y.IsNull());
+  EXPECT_TRUE(PrivateNameFor(rule_set, outer, "--z").IsNull());
+
+  // Nested rules inherit the enclosing scope...
+  EXPECT_EQ(outer_x, PrivateNameFor(rule_set, inherited, "--x"));
+  // ...unless they declare the same name themselves.
+  AtomicString shadow_x = PrivateNameFor(rule_set, shadow, "--x");
+  ASSERT_FALSE(shadow_x.IsNull());
+  EXPECT_NE(outer_x, shadow_x);
+  EXPECT_EQ(outer_y, PrivateNameFor(rule_set, shadow, "--y"));
+}
+
+TEST(RuleSetTest, CSSPrivateBindingsShareNameInSameScope) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(R"CSS(
+    #target {
+      @private {
+        --x: green;
+      }
+      @private {
+        --x: blue;
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  base::span<const RuleData> rules = rule_set.IdRules(AtomicString("target"));
+  ASSERT_EQ(1u, rules.size());
+
+  // Both @private blocks declare the same private property.
+  const StyleRule* rule = rules.front().Rule();
+  ASSERT_EQ(2u, rule->ChildRules()->size());
+  AtomicString name = PrivateNameFor(rule_set, rules.front(), "--x");
+  for (const StyleRuleBase* child : *rule->ChildRules()) {
+    EXPECT_EQ(
+        name,
+        To<StyleRule>(child)->Properties().PropertyAt(0).CustomPropertyName());
+  }
+}
+
+TEST(RuleSetTest, CSSPrivateBindingsInsideGroupRule) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(R"CSS(
+    #outer {
+      @media all {
+        @private {
+          --x: group;
+        }
+        #nested {
+          color: green;
+        }
+      }
+      @media not all {
+        @private {
+          --y: unmatched;
+        }
+      }
+      #sibling {
+        color: green;
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("outer")).size());
+  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("nested")).size());
+  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("sibling")).size());
+  const RuleData& outer = rule_set.IdRules(AtomicString("outer")).front();
+
+  // @private names in nested group rules belong to the whole style rule,
+  // whether or not the condition matches.
+  AtomicString x = PrivateNameFor(rule_set, outer, "--x");
+  ASSERT_FALSE(x.IsNull());
+  EXPECT_FALSE(PrivateNameFor(rule_set, outer, "--y").IsNull());
+  EXPECT_EQ(x, PrivateNameFor(rule_set,
+                              rule_set.IdRules(AtomicString("nested")).front(),
+                              "--x"));
+  EXPECT_EQ(x, PrivateNameFor(rule_set,
+                              rule_set.IdRules(AtomicString("sibling")).front(),
+                              "--x"));
+}
+
+TEST(RuleSetTest, CSSPrivateBindingsAbsentWithoutPrivate) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+  css_test_helpers::TestStyleSheet sheet;
+
+  // #target has no @private names in scope, including those of the previous
+  // rule.
+  sheet.AddCSSRules(R"CSS(
+    #other {
+      @private {
+        --x: 1px;
+      }
+    }
+    #target {
+      color: green;
+    }
+  )CSS");
+  base::span<const RuleData> rules =
+      sheet.GetRuleSet().IdRules(AtomicString("target"));
+  ASSERT_EQ(1u, rules.size());
+  EXPECT_FALSE(sheet.GetRuleSet().GetCSSPrivateBindings(*rules.front().Rule()));
+}
 
 TEST(RuleSetTest, FindBestBucketAndAdd_CustomPseudoElements) {
   test::TaskEnvironment task_environment;
