@@ -82,6 +82,24 @@ scoped_refptr<base::RefCountedMemory> GetScreenshotData() {
   return nullptr;
 }
 
+// Open-tab info is part of the system logs, and is only sent with the
+// screenshot (see `send_tab_titles`).
+os_feedback_ui::metrics::FeedbackAppScreenshotAndTabInfo
+GetScreenshotAndTabInfo(bool has_screenshot,
+                        const os_feedback_ui::mojom::Report& report) {
+  using os_feedback_ui::metrics::FeedbackAppScreenshotAndTabInfo;
+  if (!report.include_screenshot) {
+    if (!has_screenshot) {
+      return FeedbackAppScreenshotAndTabInfo::kNoScreenshotAvailable;
+    }
+    return FeedbackAppScreenshotAndTabInfo::kScreenshotAvailableButNotIncluded;
+  }
+  if (!report.include_system_logs_and_histograms) {
+    return FeedbackAppScreenshotAndTabInfo::kScreenshotIncludedButNoTabInfo;
+  }
+  return FeedbackAppScreenshotAndTabInfo::kScreenshotAndTabInfoIncluded;
+}
+
 constexpr std::size_t MAX_ATTACHED_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 bool ShouldAddAttachment(const AttachedFilePtr& attached_file) {
@@ -337,6 +355,9 @@ void ChromeOsFeedbackDelegate::SendReport(
   // report is submitted.
   ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedSystemInfo(
       report->include_system_logs_and_histograms);
+  ash::os_feedback_ui::metrics::EmitFeedbackAppScreenshotAndTabInfo(
+      GetScreenshotAndTabInfo(
+          /*has_screenshot=*/png_data && png_data->size() > 0, *report));
   // Records the length of description in the textbox when the feedback
   // report is submitted.
   ash::os_feedback_ui::metrics::EmitFeedbackAppDescriptionLength(

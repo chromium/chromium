@@ -74,6 +74,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
 
+<!-- LINT.IfChange(FeedbackAppScreenshotAndTabInfo) -->
+
+<enum name="FeedbackAppScreenshotAndTabInfo">
+  <int value="0" label="No screenshot available"/>
+  <int value="1" label="Screenshot available but not included"/>
+  <int value="2" label="Screenshot included but no tab info"/>
+  <int value="3" label="Screenshot and tab info included"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/webui/os_feedback_ui/backend/histogram_util.h:FeedbackAppScreenshotAndTabInfo) -->
+
 <!-- LINT.IfChange(FindInPageSessionOutcome) -->
 
 <enum name="FindInPageSessionOutcome">

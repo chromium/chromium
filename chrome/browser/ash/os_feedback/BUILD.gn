@@ -80,6 +80,7 @@ source_set("browser_tests") {
     ":os_feedback",
     "//ash/constants",
     "//ash/webui/help_app_ui",
+    "//ash/webui/os_feedback_ui/backend",
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/system_web_apps",

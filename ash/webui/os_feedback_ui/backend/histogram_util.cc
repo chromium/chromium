@@ -83,6 +83,12 @@ void EmitFeedbackAppIncludedSystemInfo(bool included_system_info) {
                             included_system_info);
 }
 
+void EmitFeedbackAppScreenshotAndTabInfo(
+    FeedbackAppScreenshotAndTabInfo screenshot_and_tab_info) {
+  base::UmaHistogramEnumeration(kFeedbackAppScreenshotAndTabInfo,
+                                screenshot_and_tab_info);
+}
+
 void EmitFeedbackAppDescriptionLength(int length) {
   base::UmaHistogramCounts1000(kFeedbackAppDescriptionLength, length);
 }

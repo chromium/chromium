@@ -1590,6 +1590,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.ScreenshotAndTabInfo"
+    enum="FeedbackAppScreenshotAndTabInfo" expires_after="2027-09-30">
+  <owner>khorimoto@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
+  <summary>
+    Records whether a screenshot was available and included in a feedback report
+    sent from the ChromeOS feedback app, and whether information about the
+    user's open tabs (the mem_usage_with_title system log) was sent with it. The
+    open-tab information is only sent when both the screenshot and the system
+    and app info are included. Recorded once per report, when the user sends it.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.TimeOnPage.{FeedbackAppPage}" units="s"
     expires_after="2027-01-30">
   <owner>longbowei@google.com</owner>

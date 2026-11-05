@@ -37,6 +37,8 @@ constexpr char kFeedbackAppIncludedEmail[] =
 constexpr char kFeedbackAppIncludedUrl[] = "Feedback.ChromeOSApp.IncludedUrl";
 constexpr char kFeedbackAppIncludedSystemInfo[] =
     "Feedback.ChromeOSApp.IncludedSystemInfo";
+inline constexpr char kFeedbackAppScreenshotAndTabInfo[] =
+    "Feedback.ChromeOSApp.ScreenshotAndTabInfo";
 constexpr char kFeedbackAppDescriptionLength[] =
     "Feedback.ChromeOSApp.DescriptionLength";
 constexpr char kFeedbackAppExitPath[] = "Feedback.ChromeOSApp.ExitPath";
@@ -61,6 +63,23 @@ enum class FeedbackAppContactUserConsentType {
   kMaxValue = kNo,
 };
 
+// Whether a sent report included the screenshot and the open-tab info. The
+// open-tab info is only sent with both the screenshot and the system info.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FeedbackAppScreenshotAndTabInfo)
+enum class FeedbackAppScreenshotAndTabInfo {
+  kNoScreenshotAvailable = 0,
+  // The user left the screenshot checkbox unchecked.
+  kScreenshotAvailableButNotIncluded = 1,
+  // The system info wasn't included, so the open-tab info wasn't sent.
+  kScreenshotIncludedButNoTabInfo = 2,
+  kScreenshotAndTabInfoIncluded = 3,
+  kMaxValue = kScreenshotAndTabInfoIncluded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:FeedbackAppScreenshotAndTabInfo)
+
 void EmitFeedbackAppOpenDuration(const base::TimeDelta& time_elapsed);
 
 void EmitFeedbackAppPostSubmitAction(mojom::FeedbackAppPostSubmitAction action);
@@ -79,6 +98,9 @@ void EmitFeedbackAppIncludedEmail(bool included_email);
 void EmitFeedbackAppIncludedUrl(bool included_url);
 
 void EmitFeedbackAppIncludedSystemInfo(bool included_system_info);
+
+void EmitFeedbackAppScreenshotAndTabInfo(
+    FeedbackAppScreenshotAndTabInfo screenshot_and_tab_info);
 
 void EmitFeedbackAppDescriptionLength(int length);
 

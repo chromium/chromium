@@ -15,6 +15,7 @@
 #include "ash/constants/chrome_switches.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
+#include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -209,7 +210,8 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
   void RunSendReport(ReportPtr report,
                      const FeedbackParams& expected_params,
                      scoped_refptr<FeedbackData>& actual_feedback_data,
-                     bool preload_system_logs = false) {
+                     bool preload_system_logs = false,
+                     bool has_screenshot = true) {
     // Will be called when preloading system logs is done.
     base::test::TestFuture<bool> fetch_future;
     auto* profile_ = browser()->GetProfile();
@@ -255,7 +257,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     }
 
     OsFeedbackScreenshotManager::GetInstance()->SetPngDataForTesting(
-        CreateFakePngData());
+        has_screenshot ? CreateFakePngData() : nullptr);
 
     base::test::TestFuture<SendReportStatus> future;
     feedback_delegate.SendReport(std::move(report), future.GetCallback());
@@ -1049,5 +1051,51 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   feedback_browser = LaunchFeedbackAppAndGetBrowser();
   feedback_window = feedback_browser->GetWindow()->GetNativeWindow();
   ASSERT_EQ(default_bounds, feedback_window->GetBoundsInScreen());
+}
+
+// Test that SendReport records Feedback.ChromeOSApp.ScreenshotAndTabInfo.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       RecordsScreenshotAndTabInfoHistogram) {
+  using os_feedback_ui::metrics::FeedbackAppScreenshotAndTabInfo;
+  const struct {
+    bool has_screenshot;
+    bool include_screenshot;
+    bool include_system_logs;
+    FeedbackAppScreenshotAndTabInfo expected;
+  } kTestCases[] = {
+      {false, false, true,
+       FeedbackAppScreenshotAndTabInfo::kNoScreenshotAvailable},
+      {true, false, true,
+       FeedbackAppScreenshotAndTabInfo::kScreenshotAvailableButNotIncluded},
+      {true, true, false,
+       FeedbackAppScreenshotAndTabInfo::kScreenshotIncludedButNoTabInfo},
+      {true, true, true,
+       FeedbackAppScreenshotAndTabInfo::kScreenshotAndTabInfoIncluded},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.expected));
+    base::HistogramTester histogram_tester;
+    ReportPtr report = Report::New();
+    report->feedback_context = FeedbackContext::New();
+    report->include_screenshot = test_case.include_screenshot;
+    report->include_system_logs_and_histograms = test_case.include_system_logs;
+    const FeedbackParams expected_params{
+        /*is_internal_email=*/false,
+        /*load_system_info=*/test_case.include_system_logs,
+        /*send_tab_titles=*/test_case.include_screenshot,
+        /*send_histograms=*/test_case.include_system_logs,
+        /*send_bluetooth_logs=*/false,
+        /*send_wifi_debug_logs=*/false,
+        /*send_autofill_metadata=*/false};
+
+    scoped_refptr<FeedbackData> feedback_data;
+    RunSendReport(std::move(report), expected_params, feedback_data,
+                  /*preload_system_logs=*/false, test_case.has_screenshot);
+
+    histogram_tester.ExpectUniqueSample(
+        os_feedback_ui::metrics::kFeedbackAppScreenshotAndTabInfo,
+        test_case.expected, 1);
+  }
 }
 }  // namespace ash
