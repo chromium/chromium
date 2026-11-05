@@ -12,7 +12,9 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
@@ -2862,13 +2864,25 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kObsoletePasswordsUseUPMLocalAndSeparateStores);
   profile_prefs->ClearPref(kObsoleteEmptyProfileStoreLoginDatabase);
   profile_prefs->ClearPref(kObsoleteUpmAutoExportCsvNeedsDeletion);
-  base::DeleteFile(profile_path.Append(FILE_PATH_LITERAL("Login Data")));
-  base::DeleteFile(
-      profile_path.Append(FILE_PATH_LITERAL("Login Data For Account")));
-  base::DeleteFile(
-      profile_path.Append(FILE_PATH_LITERAL("Login Data-journal")));
-  base::DeleteFile(
-      profile_path.Append(FILE_PATH_LITERAL("Login Data For Account-journal")));
+  // Blocking is disallowed on the UI thread after browser startup, and a
+  // profile can be loaded after that (e.g. a second profile), so delete the
+  // obsolete files in the background.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](const base::FilePath& profile_path) {
+            base::DeleteFile(
+                profile_path.Append(FILE_PATH_LITERAL("Login Data")));
+            base::DeleteFile(profile_path.Append(
+                FILE_PATH_LITERAL("Login Data For Account")));
+            base::DeleteFile(
+                profile_path.Append(FILE_PATH_LITERAL("Login Data-journal")));
+            base::DeleteFile(profile_path.Append(
+                FILE_PATH_LITERAL("Login Data For Account-journal")));
+          },
+          profile_path));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 09/2025.
