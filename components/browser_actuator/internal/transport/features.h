@@ -37,6 +37,12 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kProtoStreamStallTimeout);
 // Maximum number of concurrent active transport sessions.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxTransportSessions);
 
+// Timeout for an upstream `SendSessionMessage` HTTP POST request.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBrowserActuatorUpstreamTimeout);
+
+// Maximum number of concurrent in-flight upstream HTTP POST requests.
+BASE_DECLARE_FEATURE_PARAM(int, kMaxPendingUpstreamRequests);
+
 }  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_FEATURES_H_

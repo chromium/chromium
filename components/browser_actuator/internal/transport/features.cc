@@ -32,4 +32,14 @@ BASE_FEATURE_PARAM(int,
                    &kBrowserActuatorProtoStreamTransport,
                    3);
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBrowserActuatorUpstreamTimeout,
+                   &kBrowserActuatorProtoStreamTransport,
+                   base::Minutes(2));
+
+BASE_FEATURE_PARAM(int,
+                   kMaxPendingUpstreamRequests,
+                   &kBrowserActuatorProtoStreamTransport,
+                   64);
+
 }  // namespace browser_actuator::transport

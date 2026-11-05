@@ -4,22 +4,29 @@
 
 #include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/metrics_utils.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/base/is_potentially_trustworthy.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace browser_actuator::transport {
 
@@ -62,6 +69,11 @@ void UpstreamMessageClient::CancelPendingRequests() {
   pending_requests_.clear();
 }
 
+size_t UpstreamMessageClient::GetPendingRequestsCountForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pending_requests_.size();
+}
+
 ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
     std::string_view session_id,
     int64_t client_sequence_number,
@@ -90,6 +102,16 @@ ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
   any_proto->set_value(message.SerializeAsString());
   typed_payload->set_payload_type(ToProtoPayloadType(payload_type));
 
+  const size_t max_pending_requests =
+      static_cast<size_t>(std::max(1, kMaxPendingUpstreamRequests.Get()));
+  if (!endpoint_.is_valid() || !net::IsUrlPotentiallyTrustworthy(endpoint_) ||
+      pending_requests_.size() >= max_pending_requests) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false,
+                                  /*response_code=*/-1));
+    return std::move(*upstream);
+  }
+
   UpstreamRequestLog metrics_log(payload_type);
   metrics_log.RecordPayloadSize(message.ByteSizeLong());
 
@@ -100,7 +122,10 @@ ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
       .SetContentType("application/x-protobuf")
       .SetAuthType(endpoint_fetcher::AuthType::OAUTH)
       .SetOAuthConsumerId(signin::OAuthConsumerId::kBrowserActuator)
-      .SetConsentLevel(signin::ConsentLevel::kSignin);
+      .SetConsentLevel(signin::ConsentLevel::kSignin)
+      .SetTimeout(
+          std::max(base::Seconds(1), kBrowserActuatorUpstreamTimeout.Get()))
+      .SetRedirectMode(network::mojom::RedirectMode::kError);
 
   auto fetcher = std::make_unique<endpoint_fetcher::EndpointFetcher>(
       url_loader_factory_, identity_manager_, params_builder.Build());
