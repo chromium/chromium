@@ -341,12 +341,10 @@ TEST_F(FileHandlingSubManagerConfigureTest,
     std::vector<std::u16string> extensions = {u".txt"};
     handler.accept.emplace(u"text/plain", extensions);
 
-    page_state.opt_manifest =
-        blink::Manifest::Builder(kStartUrl, kStartUrl,
-                                 kStartUrl.GetWithoutFilename())
-            .SetManifestUrl(page_state.manifest_url)
-            .SetFileHandlers({std::move(handler)})
-            .BuildChecked();
+    page_state.opt_manifest = blink::Manifest::Builder(kStartUrl)
+                                  .SetManifestUrl(page_state.manifest_url)
+                                  .SetFileHandlers({std::move(handler)})
+                                  .BuildChecked();
   }
 
   // Install app with file handlers
@@ -435,12 +433,10 @@ TEST_F(FileHandlingSubManagerConfigureTest,
     std::vector<std::u16string> extensions = {u".txt"};
     handler.accept.emplace(u"text/plain", extensions);
 
-    page_state.opt_manifest =
-        blink::Manifest::Builder(kStartUrl, kStartUrl,
-                                 kStartUrl.GetWithoutFilename())
-            .SetManifestUrl(page_state.manifest_url)
-            .SetFileHandlers({std::move(handler)})
-            .BuildChecked();
+    page_state.opt_manifest = blink::Manifest::Builder(kStartUrl)
+                                  .SetManifestUrl(page_state.manifest_url)
+                                  .SetFileHandlers({std::move(handler)})
+                                  .BuildChecked();
   }
 
   // Install app with file handlers
@@ -518,11 +514,9 @@ TEST_F(FileHandlingSubManagerConfigureTest,
     page_state.url_load_result = {webapps::WebAppUrlLoaderResult::kUrlLoaded};
     page_state.manifest_url = kManifestUrl;
 
-    page_state.opt_manifest =
-        blink::Manifest::Builder(kStartUrl, kStartUrl,
-                                 kStartUrl.GetWithoutFilename())
-            .SetManifestUrl(page_state.manifest_url)
-            .BuildChecked();
+    page_state.opt_manifest = blink::Manifest::Builder(kStartUrl)
+                                  .SetManifestUrl(page_state.manifest_url)
+                                  .BuildChecked();
 
     std::vector<ExternalInstallOptions> install_options_list;
     install_options_list.emplace_back(kInstallUrl,

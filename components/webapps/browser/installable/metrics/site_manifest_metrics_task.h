@@ -42,11 +42,12 @@ class SiteManifestMetricsTask {
       base::OnceCallback<void(std::optional<blink::Manifest>)>;
   ~SiteManifestMetricsTask();
 
-  // Create the task, start collecting the manifest from the web_contents and
-  // pass the task back to the MLInstallabilityPromoter. If the result of
-  // fetching the manifest is that the URL changed, then we return std::nullopt
-  // and the MLInstallabilityPromoter handles manifest URL changes.
-  // If there is no manifest present, the callback runs with std::nullopt.
+  // Create the task, start collecting the manifest from the `web_contents` and
+  // pass the task back to the `MLInstallabilityPromoter`. If the result of
+  // fetching the manifest is that the URL changed, then we return
+  // `std::nullopt` and the `MLInstallabilityPromoter` handles manifest URL
+  // changes. If there is no manifest present, the callback runs with
+  // `std::nullopt`.
   static std::unique_ptr<SiteManifestMetricsTask> CreateAndStart(
       content::WebContents& web_contents,
       ResultCallback collect_data_and_self_destruct_callback);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 
+#include <optional>
 #include <string_view>
 
 #include "ash/constants/web_app_id_constants.h"
@@ -11,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 

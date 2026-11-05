@@ -275,11 +275,11 @@ void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
 }
 
 apps::FileHandler::LaunchType ToFileHandlerLaunchType(
-    blink::mojom::ManifestFileHandler_LaunchType launch_type) {
+    blink::Manifest::FileHandler::LaunchType launch_type) {
   switch (launch_type) {
-    case blink::mojom::ManifestFileHandler_LaunchType::kSingleClient:
+    case blink::Manifest::FileHandler::LaunchType::kSingleClient:
       return apps::FileHandler::LaunchType::kSingleClient;
-    case blink::mojom::ManifestFileHandler_LaunchType::kMultipleClients:
+    case blink::Manifest::FileHandler::LaunchType::kMultipleClients:
       return apps::FileHandler::LaunchType::kMultipleClients;
   }
 }

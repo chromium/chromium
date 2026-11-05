@@ -82,14 +82,11 @@ class TrustedIconInstallUnitTest : public WebAppTest {
       icons.push_back(trusted_icon);
     }
 
-    page_state.opt_manifest =
-        blink::Manifest::Builder(
-            app_url(), GenerateManifestIdFromStartUrlOnly(app_url()).value(),
-            app_url().GetWithoutFilename())
-            .SetDisplay(DisplayMode::kStandalone)
-            .SetName(u"Foo Bar App")
-            .SetIcons(std::move(icons))
-            .BuildChecked();
+    page_state.opt_manifest = blink::Manifest::Builder(app_url())
+                                  .SetDisplay(DisplayMode::kStandalone)
+                                  .SetName(u"Foo Bar App")
+                                  .SetIcons(std::move(icons))
+                                  .BuildChecked();
   }
 
   webapps::AppId InstallExternallyManagedApp(

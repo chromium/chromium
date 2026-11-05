@@ -210,10 +210,7 @@ class FetchManifestAndInstallCommandTest
     icon.src = kDefaultIconUrl;
     icon.sizes = {{144, 144}};
     icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-    return blink::Manifest::Builder(
-               kWebAppUrl,
-               GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value(),
-               kWebAppUrl.GetWithoutFilename())
+    return blink::Manifest::Builder(kWebAppUrl)
         .SetName(u"foo")
         .SetShortName(u"bar")
         .SetDisplay(blink::mojom::DisplayMode::kStandalone)

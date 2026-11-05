@@ -43,7 +43,7 @@ class CONTENT_EXPORT ManifestManagerHost
                               const GURL&,
                               std::optional<blink::Manifest>)>;
 
-  // Requests the ManifestManager in the frame to get the manifest. If the
+  // Requests the `ManifestManager` in the frame to get the manifest. If the
   // document specifies no manifest or fetching/parsing fails, the callback
   // receives a default manifest derived from the document URL. If the document
   // cannot have a manifest (e.g. opaque origin) or an unexpected/validation

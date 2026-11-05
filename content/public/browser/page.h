@@ -76,12 +76,13 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // See https://w3c.github.io/manifest/#web-application-manifest
   virtual const std::optional<GURL>& GetManifestUrl() const = 0;
 
-  // Callback for GetManifest. The result field determines the reason for step
-  // failures, the GURL is the URL of the manifest, and the
-  // std::optional<blink::Manifest> is the parsed (or default) manifest. If the
-  // document specifies no manifest or fetching/parsing fails, `manifest` is the
-  // default manifest for the document URL; `manifest` is `std::nullopt` when no
-  // manifest is allowed (e.g. opaque origin) or an unexpected failure occurs.
+  // Callback for `GetManifest()`. The `result` field determines the reason for
+  // step failures, the `GURL` is the URL of the manifest, and the
+  // `std::optional<blink::Manifest>` is the parsed (or default) manifest. If
+  // the document specifies no manifest or fetching/parsing fails, `manifest` is
+  // the default manifest for the document URL; `manifest` is `std::nullopt`
+  // when no manifest is allowed (e.g. opaque origin) or an unexpected failure
+  // occurs.
   using GetManifestCallback =
       base::OnceCallback<void(blink::mojom::ManifestRequestResult,
                               const GURL&,

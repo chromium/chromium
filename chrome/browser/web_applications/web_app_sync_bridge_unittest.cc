@@ -780,12 +780,9 @@ TEST_F(WebAppSyncBridgeTest, MigrateFromSourceAppInSameSyncChange) {
   auto& fake_page_state =
       web_contents_manager.GetOrCreatePageState(kTargetStartUrl);
   fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
-  fake_page_state.opt_manifest =
-      blink::Manifest::Builder(
-          kTargetStartUrl, kTargetStartUrl,
-          blink::Manifest::GetDefaultScope(kTargetStartUrl))
-          .SetName(u"Target App")
-          .BuildChecked();
+  fake_page_state.opt_manifest = blink::Manifest::Builder(kTargetStartUrl)
+                                     .SetName(u"Target App")
+                                     .BuildChecked();
 
   syncer::EntityChangeList entity_changes;
   // Delete source

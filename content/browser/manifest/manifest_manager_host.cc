@@ -142,7 +142,7 @@ base::expected<blink::Manifest, blink::mojom::ManifestRequestResult>
 ManifestManagerHost::ValidateAndMaybeOverrideManifest(
     blink::mojom::ManifestRequestResult result,
     std::optional<blink::Manifest> manifest) {
-  // Intrinsic invariants already hold (enforced in StructTraits::Read).
+  // Intrinsic invariants already hold (enforced in `StructTraits::Read()`).
   if (!manifest) {
     if (result == blink::mojom::ManifestRequestResult::kSuccess) {
       mojo::ReportBadMessage(
@@ -225,13 +225,13 @@ ManifestManagerHost::ValidateParsedManifestFromString(
     return std::nullopt;
   }
 
-  // The returned manifest URL must match the requested manifest_url.
+  // The returned manifest URL must match the requested `manifest_url`.
   if (manifest->manifest_url() != manifest_url) {
     mojo::ReportBadMessage("Returned manifest has incorrect manifest URL");
     return std::nullopt;
   }
 
-  // document_url was verified valid and non-opaque before sending the IPC.
+  // `document_url` was verified valid and non-opaque before sending the IPC.
   url::Origin document_origin = url::Origin::Create(document_url);
   CHECK(!document_origin.opaque());
 

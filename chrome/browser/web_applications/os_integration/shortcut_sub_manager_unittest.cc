@@ -271,13 +271,10 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
       manager.GetOrCreateIconState(icon.src).bitmaps = {bitmap};
       icons.push_back(std::move(icon));
     }
-    page_state.opt_manifest =
-        blink::Manifest::Builder(
-            kWebAppUrl, GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value(),
-            kWebAppUrl.GetWithoutFilename())
-            .SetName(u"New App")
-            .SetIcons(std::move(icons))
-            .BuildChecked();
+    page_state.opt_manifest = blink::Manifest::Builder(kWebAppUrl)
+                                  .SetName(u"New App")
+                                  .SetIcons(std::move(icons))
+                                  .BuildChecked();
 
     base::test::TestFuture<ManifestSilentUpdateCompletionInfo> update_future;
     fake_provider().scheduler().ScheduleManifestSilentUpdate(

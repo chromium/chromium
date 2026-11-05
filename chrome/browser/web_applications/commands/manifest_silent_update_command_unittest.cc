@@ -110,9 +110,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     note_taking.new_note_url = GURL("https://www.foo.bar/web_apps/new_note");
 
     page_state.opt_manifest =
-        blink::Manifest::Builder(
-            kAppUrl, GenerateManifestIdFromStartUrlOnly(kAppUrl).value(),
-            kAppUrl.GetWithoutFilename())
+        blink::Manifest::Builder(kAppUrl)
             .SetDisplay(DisplayMode::kStandalone)
             .SetName(u"Foo App")
             .SetIcons({icon})

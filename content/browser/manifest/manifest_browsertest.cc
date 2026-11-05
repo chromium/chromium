@@ -1110,7 +1110,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_StartUrlCrossOrigin) {
   ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
       shell()->web_contents()->GetPrimaryPage());
 
-  // Test that a manifest with cross-origin start_url triggers a C3 bad message.
+  // Test that a manifest with a cross-origin `start_url` triggers a bad
+  // message.
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   blink::Manifest bad_manifest =
       blink::Manifest::Builder(GURL("https://evil.com/")).BuildChecked();

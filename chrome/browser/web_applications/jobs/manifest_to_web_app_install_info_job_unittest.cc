@@ -138,9 +138,7 @@ class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
 
     // Set up manifest.
     page_state.opt_manifest =
-        blink::Manifest::Builder(
-            start_url_, GenerateManifestIdFromStartUrlOnly(start_url_).value(),
-            start_url_.GetWithoutFilename())
+        blink::Manifest::Builder(start_url_)
             .SetDisplay(DisplayMode::kStandalone)
             .SetName(u"Foo App")
             .SetIcons({icon})

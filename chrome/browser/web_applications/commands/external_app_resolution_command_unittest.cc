@@ -123,10 +123,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   }
 
   blink::Manifest CreateValidManifest() {
-    return blink::Manifest::Builder(
-               kWebAppUrl,
-               GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value(),
-               blink::Manifest::GetDefaultScope(kWebAppUrl))
+    return blink::Manifest::Builder(kWebAppUrl)
         .SetName(u"Example App")
         .SetShortName(u"App")
         .SetDisplay(blink::mojom::DisplayMode::kStandalone)

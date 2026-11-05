@@ -86,14 +86,11 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
         gfx::test::CreateBitmap(kAppIconSize, kAppIconColor)};
 
     // Set up manifest.
-    page_state.opt_manifest =
-        blink::Manifest::Builder(
-            kAppUrl, GenerateManifestIdFromStartUrlOnly(kAppUrl).value(),
-            blink::Manifest::GetDefaultScope(kAppUrl))
-            .SetName(u"Foo App")
-            .SetIcons({icon})
-            .SetHasValidSpecifiedStartUrl(true)
-            .BuildChecked();
+    page_state.opt_manifest = blink::Manifest::Builder(kAppUrl)
+                                  .SetName(u"Foo App")
+                                  .SetIcons({icon})
+                                  .SetHasValidSpecifiedStartUrl(true)
+                                  .BuildChecked();
   }
 
   void UpdatePageManifest(
