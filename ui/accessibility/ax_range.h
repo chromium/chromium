@@ -254,8 +254,8 @@ class AXRange final {
         current_start_ = AXPositionType::CreateNullPosition();
       } else {
         current_start_ = current_start_->CreateNextLeafTreePosition();
-        // TODO(crbug.com/581466836): CHECK-exclusion: Convert to a CHECK once
-        // we are confident it won't be triggered.
+        // TODO(crbug.com/581466836, crbug.com/580137610): CHECK-exclusion:
+        // Convert to a CHECK once we are confident it won't be triggered.
         DCHECK_LE(*current_start_, *iterator_end_);
       }
       return *this;
