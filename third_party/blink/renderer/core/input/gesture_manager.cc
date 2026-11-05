@@ -297,7 +297,8 @@ WebInputEventResult GestureManager::HandleGestureTap(
   Element* tapped_element = current_hit_test.InnerPossiblyPseudoElement();
   LocalFrame::NotifyUserActivation(
       tapped_node ? tapped_node->GetDocument().GetFrame() : nullptr,
-      mojom::blink::UserActivationNotificationType::kInteraction);
+      mojom::blink::UserActivationNotificationType::kInteraction,
+      RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
 
   mouse_event_manager_->SetMouseDownElement(tapped_element);
 
@@ -562,7 +563,8 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   LocalFrame::NotifyUserActivation(
       inner_node ? inner_node->GetDocument().GetFrame() : nullptr,
-      mojom::blink::UserActivationNotificationType::kInteraction);
+      mojom::blink::UserActivationNotificationType::kInteraction,
+      RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
   return SendContextMenuEventForGesture(targeted_event);
 }
 

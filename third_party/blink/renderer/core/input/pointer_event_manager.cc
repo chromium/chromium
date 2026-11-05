@@ -848,7 +848,8 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
       !non_hovering_pointers_canceled_ && pointer_event_target.target_frame) {
     LocalFrame::NotifyUserActivation(
         pointer_event_target.target_frame,
-        mojom::blink::UserActivationNotificationType::kInteraction);
+        mojom::blink::UserActivationNotificationType::kInteraction,
+        RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
   }
 
   if (!event.hovering && !IsAnyTouchActive()) {

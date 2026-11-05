@@ -3956,15 +3956,29 @@ TEST_F(RenderWidgetHostTest, ExpectedUserActivationNotification) {
   base::test::ScopedFeatureList scoped_feature_list(
       blink::features::kTrustedUserActivationTriggers);
 
-  // One event allows one activation notification.
+  // Mouse down event allows one activation notification, mouse move and up
+  // events allow none.
   SimulateMouseEvent(blink::WebInputEvent::Type::kMouseDown);
   EXPECT_TRUE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
   EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
-
-  // Mouse move and up does not increase expected user activation notifications.
   SimulateMouseEvent(blink::WebInputEvent::Type::kMouseMove);
   SimulateMouseEvent(blink::WebInputEvent::Type::kMouseUp);
   EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+
+  // Touch start event allows one activation notification, touch move and end
+  // events allow none.
+  PressTouchPoint(0, 1);
+  SendTouchEvent();
+  EXPECT_TRUE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+  MoveTouchPoint(0, 10, 10);
+  SendTouchEvent();
+  ReleaseTouchPoint(0);
+  SendTouchEvent();
+  EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+
+  // Flush pending touch ACKs before FastForwardBy triggers Android's timeout.
+  host_->mock_render_input_router()->GetAndResetDispatchedMessages();
 
   // Two events allow 2 activation notifications.
   SimulateMouseEvent(blink::WebInputEvent::Type::kMouseDown);
