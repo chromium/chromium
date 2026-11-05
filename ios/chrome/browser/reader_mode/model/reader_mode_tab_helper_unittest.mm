@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -44,6 +45,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using IOS_ReaderMode_Distiller_Latency =
     ukm::builders::IOS_ReaderMode_Distiller_Latency;
@@ -1025,6 +1028,49 @@ TEST_F(ReaderModeTabHelperTest, RevertsTranslationBeforeFindingScrollAnchor) {
   EXPECT_TRUE(prepare_scroll_anchor_called);
   EXPECT_TRUE(revert_translation_called);
   EXPECT_TRUE(find_scroll_anchor_called);
+}
+
+// Tests that when activating Reader Mode, the blur overlay is shown and is not
+// prematurely hidden before the blur animation and distillation complete.
+TEST_F(ReaderModeTabHelperTest, BlurOverlayShownAndNotHiddenBeforeTimeout) {
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+  task_environment()->FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+
+  id reader_mode_handler = OCMStrictProtocolMock(@protocol(ReaderModeCommands));
+  reader_mode_tab_helper()->SetReaderModeHandler(reader_mode_handler);
+
+  __block ProceduralBlock blur_completion = nil;
+  OCMExpect([reader_mode_handler
+      showReaderModeBlurOverlay:[OCMArg checkWithBlock:^BOOL(
+                                            ProceduralBlock completion) {
+        blur_completion = [completion copy];
+        return completion != nil;
+      }]]);
+
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  EXPECT_OCMOCK_VERIFY(reader_mode_handler);
+  ASSERT_TRUE(blur_completion);
+
+  // Advance time for the 0.25s blur animation; `hideReaderModeBlurOverlay`
+  // must not be called before `kReaderModeDistillationTimeout`.
+  task_environment()->FastForwardBy(base::Milliseconds(250));
+  blur_completion();
+  ASSERT_TRUE(WaitForAvailableReaderModeContentInWebState(web_state()));
+
+  // Once Reader Mode content has loaded, the precautionary blur timeout timer
+  // is stopped, so advancing past `kReaderModeDistillationTimeout` does not
+  // call `hideReaderModeBlurOverlay`.
+  task_environment()->FastForwardBy(kReaderModeDistillationTimeout);
+
+  OCMExpect([reader_mode_handler hideReaderModeBlurOverlay]);
+  reader_mode_tab_helper()->DeactivateReader(
+      ReaderModeDeactivationReason::kUserDeactivated);
+  EXPECT_OCMOCK_VERIFY(reader_mode_handler);
 }
 
 INSTANTIATE_TEST_SUITE_P(

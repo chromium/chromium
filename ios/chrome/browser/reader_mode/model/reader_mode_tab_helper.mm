@@ -480,7 +480,7 @@ void ReaderModeTabHelper::CreateReaderModeContent(
     // If Reading Mode distillation has not completed by the expected timeout,
     // remove the blur overlay to avoid blocking the app UI.
     reader_mode_blur_timer_.Start(
-        FROM_HERE, base::Seconds(0),
+        FROM_HERE, ReaderModeDistillationTimeout(),
         base::BindOnce(&ReaderModeTabHelper::HideBlurOverlay,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
