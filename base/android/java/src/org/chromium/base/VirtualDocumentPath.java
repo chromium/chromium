@@ -374,12 +374,12 @@ class VirtualDocumentPath {
             }
         }
 
-        try (OutputStream out = mResolver.openOutputStream(targetUri)) {
+        try (OutputStream out = mResolver.openOutputStream(targetUri, "wt")) {
             if (out == null) return false;
             out.write(data);
             return true;
         } catch (Exception e) {
-            Log.w(TAG, "Failed to write to " + targetUri);
+            Log.w(TAG, "Failed to write document");
             return false;
         }
     }

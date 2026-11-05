@@ -196,18 +196,19 @@ public class VirtualDocumentPathTest {
         VirtualDocumentPath btxt =
                 VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir/b/x.txt");
 
-        Assert.assertTrue(txt.writeFile(new byte[] {'a'}));
+        Assert.assertTrue(txt.writeFile(new byte[] {'a', 'b'}));
         Assert.assertEquals(
                 "application/octet-stream",
                 TestDocumentsProvider.getLastCreatedMimeTypeForTesting());
         InputStream i = resolver.openInputStream(txt.resolveToContentUri());
         Assert.assertEquals('a', i.read());
+        Assert.assertEquals('b', i.read());
         Assert.assertEquals(-1, i.read());
         i.close();
 
-        Assert.assertTrue(txt.writeFile(new byte[] {'b'}));
+        Assert.assertTrue(txt.writeFile(new byte[] {'c'}));
         i = resolver.openInputStream(txt.resolveToContentUri());
-        Assert.assertEquals('b', i.read());
+        Assert.assertEquals('c', i.read());
         Assert.assertEquals(-1, i.read());
         i.close();
 
