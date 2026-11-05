@@ -23,6 +23,9 @@ BASE_FEATURE(kPostFREIphInProfileAgent, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSwitcherDefaultBrowserPromoInFRE,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRecordSwitcherInfoDefaultBrowserMetrics,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
     "AnimatedDefaultBrowserPromoInFREExperimentType";
 

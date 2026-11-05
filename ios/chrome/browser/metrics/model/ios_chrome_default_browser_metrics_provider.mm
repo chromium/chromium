@@ -295,7 +295,7 @@ void ProvideUmaHistograms() {
   RecordSignalHistograms(kSegmentationPlatformSignalName,
                          GetDeviceSwitcherSignalStatus(), samples);
   if (base::FeatureList::IsEnabled(
-          first_run::kAndroidSwitcherDefaultBrowserPromoInFRE)) {
+          first_run::kRecordSwitcherInfoDefaultBrowserMetrics)) {
     RecordSwitcherInfoSignalHistograms(samples);
   }
 
