@@ -13,20 +13,25 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "content/browser/xr/service/browser_xr_runtime_impl.h"
 #include "content/browser/xr/service/vr_service_impl.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_renderer_host.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/test/fake_vr_device.h"
 #include "device/vr/test/fake_vr_device_provider.h"
 #include "device/vr/test/fake_vr_service_client.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -34,6 +39,83 @@
 #endif
 
 namespace content {
+
+namespace {
+
+// An XRRuntime that grants every session request, and that finishes shutting
+// down a session only when the test calls FinishShutdown().
+class FakeXRRuntime : public device::mojom::XRRuntime {
+ public:
+  FakeXRRuntime() = default;
+  FakeXRRuntime(const FakeXRRuntime&) = delete;
+  FakeXRRuntime& operator=(const FakeXRRuntime&) = delete;
+  ~FakeXRRuntime() override = default;
+
+  mojo::PendingRemote<device::mojom::XRRuntime> BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // device::mojom::XRRuntime:
+  void RequestSession(device::mojom::XRRuntimeSessionOptionsPtr options,
+                      RequestSessionCallback callback) override {
+    ++session_requests_;
+    if (has_session_) {
+      ++session_requests_while_presenting_;
+    }
+    has_session_ = true;
+
+    auto result = device::mojom::XRRuntimeSessionResult::New();
+    // Keep the receivers so that the browser's ends stay connected.
+    controller_receivers_.push_back(
+        result->controller.InitWithNewPipeAndPassReceiver());
+    result->session = device::mojom::XRSession::New();
+    data_provider_receivers_.push_back(
+        result->session->data_provider.InitWithNewPipeAndPassReceiver());
+    result->session->device_config =
+        device::mojom::XRSessionDeviceConfig::New();
+    result->session->enviroment_blend_mode =
+        device::mojom::XREnvironmentBlendMode::kOpaque;
+    result->session->interaction_mode =
+        device::mojom::XRInteractionMode::kWorldSpace;
+    std::move(callback).Run(std::move(result));
+  }
+  void ShutdownSession(ShutdownSessionCallback callback) override {
+    shutdown_callback_ = std::move(callback);
+  }
+  void ListenToDeviceChanges(
+      mojo::PendingAssociatedRemote<device::mojom::XRRuntimeEventListener>
+          listener) override {}
+
+  bool IsShuttingDown() const { return !shutdown_callback_.is_null(); }
+  void FinishShutdown() {
+    has_session_ = false;
+    std::move(shutdown_callback_).Run();
+  }
+
+  int session_requests() const { return session_requests_; }
+  int session_requests_while_presenting() const {
+    return session_requests_while_presenting_;
+  }
+
+ private:
+  mojo::Receiver<device::mojom::XRRuntime> receiver_{this};
+  std::vector<mojo::PendingReceiver<device::mojom::XRSessionController>>
+      controller_receivers_;
+  std::vector<mojo::PendingReceiver<device::mojom::XRFrameDataProvider>>
+      data_provider_receivers_;
+  ShutdownSessionCallback shutdown_callback_;
+  bool has_session_ = false;
+  int session_requests_ = 0;
+  int session_requests_while_presenting_ = 0;
+};
+
+device::mojom::XRRuntimeSessionOptionsPtr ImmersiveVrOptions() {
+  auto options = device::mojom::XRRuntimeSessionOptions::New();
+  options->mode = device::mojom::XRSessionMode::kImmersiveVr;
+  return options;
+}
+
+}  // namespace
 
 class XRRuntimeManagerTest : public RenderViewHostTestHarness {
  public:
@@ -215,6 +297,87 @@ TEST_F(XRRuntimeManagerTest, SupportsSession_VisibilityGate) {
                                    device::mojom::XRSessionMode::kImmersiveVr));
 
   Provider()->RemoveDevice(device->GetId());
+}
+
+// An immersive session request that arrives while the runtime shuts down the
+// previous session waits for the shutdown, instead of reaching the runtime
+// while it still has the old session.
+TEST_F(XRRuntimeManagerTest, ImmersiveRequestWaitsForSessionShutdown) {
+  FakeXRRuntime fake_runtime;
+  BrowserXRRuntimeImpl runtime(device::mojom::XRDeviceId::FAKE_DEVICE_ID,
+                               device::mojom::XRDeviceData::New(),
+                               fake_runtime.BindNewPipeAndPassRemote());
+  auto presenting_service = BindService();
+  auto next_service = BindService();
+  runtime.OnServiceAdded(presenting_service.get());
+  runtime.OnServiceAdded(next_service.get());
+
+  base::test::TestFuture<device::mojom::XRRuntimeSessionResultPtr> first;
+  runtime.RequestImmersiveSession(presenting_service.get(),
+                                  ImmersiveVrOptions(), first.GetCallback());
+  ASSERT_TRUE(first.Get());
+  EXPECT_EQ(runtime.GetServiceWithActiveImmersiveSession(),
+            presenting_service.get());
+
+  // The presenting page goes away, e.g. because it navigated.
+  runtime.OnServiceRemoved(presenting_service.get());
+  presenting_service.reset();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return fake_runtime.IsShuttingDown(); }));
+
+  base::test::TestFuture<device::mojom::XRRuntimeSessionResultPtr> second;
+  runtime.RequestImmersiveSession(next_service.get(), ImmersiveVrOptions(),
+                                  second.GetCallback());
+  runtime.FlushForTesting();
+  EXPECT_FALSE(second.IsReady());
+  EXPECT_TRUE(runtime.HasPendingImmersiveSessionRequest());
+  EXPECT_EQ(fake_runtime.session_requests(), 1);
+
+  fake_runtime.FinishShutdown();
+  ASSERT_TRUE(second.Get());
+  EXPECT_FALSE(runtime.HasPendingImmersiveSessionRequest());
+  EXPECT_EQ(runtime.GetServiceWithActiveImmersiveSession(), next_service.get());
+  EXPECT_EQ(fake_runtime.session_requests(), 2);
+  EXPECT_EQ(fake_runtime.session_requests_while_presenting(), 0);
+
+  runtime.OnServiceRemoved(next_service.get());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return fake_runtime.IsShuttingDown(); }));
+  fake_runtime.FinishShutdown();
+  runtime.FlushForTesting();
+}
+
+// A request that waits for the shutdown fails if its page goes away first.
+TEST_F(XRRuntimeManagerTest, WaitingImmersiveRequestFailsWhenServiceIsRemoved) {
+  FakeXRRuntime fake_runtime;
+  BrowserXRRuntimeImpl runtime(device::mojom::XRDeviceId::FAKE_DEVICE_ID,
+                               device::mojom::XRDeviceData::New(),
+                               fake_runtime.BindNewPipeAndPassRemote());
+  auto presenting_service = BindService();
+  auto next_service = BindService();
+  runtime.OnServiceAdded(presenting_service.get());
+  runtime.OnServiceAdded(next_service.get());
+
+  base::test::TestFuture<device::mojom::XRRuntimeSessionResultPtr> first;
+  runtime.RequestImmersiveSession(presenting_service.get(),
+                                  ImmersiveVrOptions(), first.GetCallback());
+  ASSERT_TRUE(first.Get());
+
+  runtime.OnServiceRemoved(presenting_service.get());
+  presenting_service.reset();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return fake_runtime.IsShuttingDown(); }));
+
+  base::test::TestFuture<device::mojom::XRRuntimeSessionResultPtr> second;
+  runtime.RequestImmersiveSession(next_service.get(), ImmersiveVrOptions(),
+                                  second.GetCallback());
+  runtime.OnServiceRemoved(next_service.get());
+  next_service.reset();
+
+  fake_runtime.FinishShutdown();
+  EXPECT_FALSE(second.Get());
+  EXPECT_FALSE(runtime.HasPendingImmersiveSessionRequest());
+  EXPECT_EQ(fake_runtime.session_requests(), 1);
 }
 
 }  // namespace content

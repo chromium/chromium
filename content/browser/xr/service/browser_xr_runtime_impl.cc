@@ -302,9 +302,30 @@ void BrowserXRRuntimeImpl::ShutdownRuntime() {
   // session where the pending `StopImmersiveSession` callback happens after a
   // new session was granted and then kills the new session.
   immersive_session_controller_.set_disconnect_handler(base::DoNothing());
+  is_shutting_down_session_ = true;
   runtime_->ShutdownSession(
-      base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
+      base::BindOnce(&BrowserXRRuntimeImpl::OnShutdownSessionComplete,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserXRRuntimeImpl::OnShutdownSessionComplete() {
+  StopImmersiveSession();
+  is_shutting_down_session_ = false;
+  if (deferred_immersive_session_request_) {
+    std::move(deferred_immersive_session_request_).Run();
+  }
+}
+
+void BrowserXRRuntimeImpl::RunDeferredImmersiveSessionRequest(
+    base::WeakPtr<VRServiceImpl> service,
+    device::mojom::XRRuntimeSessionOptionsPtr options,
+    RequestSessionCallback callback) {
+  if (!service) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  RequestImmersiveSession(service.get(), std::move(options),
+                          std::move(callback));
 }
 
 void BrowserXRRuntimeImpl::SetFramesThrottled(const VRServiceImpl* service,
@@ -325,6 +346,25 @@ void BrowserXRRuntimeImpl::RequestImmersiveSession(
     device::mojom::XRRuntimeSessionOptionsPtr options,
     RequestSessionCallback callback) {
   DVLOG(2) << __func__ << ": id=" << id_;
+  // The runtime can't start a session until it has shut down the previous one,
+  // e.g. when a page requests a session right after navigating away from a
+  // page that was presenting. Wait for the shutdown to finish.
+  if (is_shutting_down_session_) {
+    // VRServiceImpl rejects requests while another one is pending, but a
+    // request that passed that check before this one was deferred can still
+    // arrive.
+    if (deferred_immersive_session_request_) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+    // base::Unretained is safe because `this` owns the callback.
+    deferred_immersive_session_request_ = base::BindOnce(
+        &BrowserXRRuntimeImpl::RunDeferredImmersiveSessionRequest,
+        base::Unretained(this), service->GetWeakPtr(), std::move(options),
+        std::move(callback));
+    return;
+  }
+
   // base::Unretained is safe because we won't be called back after runtime_ is
   // destroyed.
   has_pending_immersive_session_request_ = true;

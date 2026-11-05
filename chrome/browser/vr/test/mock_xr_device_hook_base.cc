@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "content/public/test/xr_test_utils.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -61,6 +64,8 @@ void MockXRDeviceHookBase::StopHooking() {
   // in the service process's OpenXrTestHelper.
 #if BUILDFLAG(IS_ANDROID)
   OpenXrTestHelper::Get().SetTestHook(mojo::NullRemote());
+  webxr::OpenXrPlatformHelperAndroid::SetSessionShutdownHookForTesting(
+      base::NullCallback());
 #endif
   // Unretained is safe here because we are going to block until this message
   // has been processed.
@@ -73,6 +78,31 @@ void MockXRDeviceHookBase::StopHooking() {
   // block here.
   thread_->FlushForTesting();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void MockXRDeviceHookBase::HoldSessionShutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  // Unretained is safe because the XR host activity is disabled in tests, so
+  // the hook runs within PrepareForSessionShutdown(), and StopHooking() removes
+  // it.
+  webxr::OpenXrPlatformHelperAndroid::SetSessionShutdownHookForTesting(
+      base::BindRepeating(
+          [](MockXRDeviceHookBase* self, base::OnceClosure continue_shutdown) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->main_sequence_);
+            self->held_session_shutdown_ = std::move(continue_shutdown);
+          },
+          base::Unretained(this)));
+}
+
+void MockXRDeviceHookBase::ReleaseSessionShutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  CHECK(base::test::RunUntil(
+      [&]() { return !held_session_shutdown_.is_null(); }));
+  webxr::OpenXrPlatformHelperAndroid::SetSessionShutdownHookForTesting(
+      base::NullCallback());
+  std::move(held_session_shutdown_).Run();
+}
+#endif
 
 void MockXRDeviceHookBase::WaitNumFrames(uint32_t num_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);

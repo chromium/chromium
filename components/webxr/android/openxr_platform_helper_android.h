@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_WEBXR_ANDROID_OPENXR_PLATFORM_HELPER_ANDROID_H_
 #define COMPONENTS_WEBXR_ANDROID_OPENXR_PLATFORM_HELPER_ANDROID_H_
 
-#include "device/vr/openxr/openxr_platform_helper.h"
-
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "components/webxr/android/xr_session_coordinator.h"
 #include "device/vr/openxr/openxr_platform.h"
+#include "device/vr/openxr/openxr_platform_helper.h"
 
 namespace content {
 class WebContents;
@@ -23,6 +23,10 @@ namespace webxr {
 class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
  public:
   static void SetXrHostActivityDisabledForTesting(bool disabled);
+  // Lets tests hold a session shutdown before the render thread stops: `hook`
+  // gets the callback that continues the shutdown. A null `hook` stops holding.
+  static void SetSessionShutdownHookForTesting(
+      base::RepeatingCallback<void(base::OnceClosure)> hook);
 
   OpenXrPlatformHelperAndroid();
   ~OpenXrPlatformHelperAndroid() override;

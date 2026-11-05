@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "components/webxr/android/webxr_utils.h"
 #include "components/webxr/android/xr_session_coordinator.h"
 #include "content/public/browser/web_contents.h"
@@ -19,12 +21,24 @@ namespace webxr {
 namespace {
 static PFN_xrInitializeLoaderKHR g_initialize_loader_fn_ = nullptr;
 static bool g_xr_host_activity_disabled_for_testing = false;
+
+base::RepeatingCallback<void(base::OnceClosure)>& GetSessionShutdownHook() {
+  static base::NoDestructor<base::RepeatingCallback<void(base::OnceClosure)>>
+      hook;
+  return *hook;
+}
 }  // anonymous namespace
 
 // static
 void OpenXrPlatformHelperAndroid::SetXrHostActivityDisabledForTesting(
     bool disabled) {
   g_xr_host_activity_disabled_for_testing = disabled;
+}
+
+// static
+void OpenXrPlatformHelperAndroid::SetSessionShutdownHookForTesting(
+    base::RepeatingCallback<void(base::OnceClosure)> hook) {
+  GetSessionShutdownHook() = std::move(hook);
 }
 
 OpenXrPlatformHelperAndroid::OpenXrPlatformHelperAndroid()
@@ -60,6 +74,10 @@ void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
 
 void OpenXrPlatformHelperAndroid::PrepareForSessionShutdown(
     base::OnceClosure shutdown_ready_callback) {
+  if (const auto& hook = GetSessionShutdownHook()) {
+    shutdown_ready_callback =
+        base::BindOnce(hook, std::move(shutdown_ready_callback));
+  }
   session_coordinator_->EndSession(std::move(shutdown_ready_callback));
 }
 

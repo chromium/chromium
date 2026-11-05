@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "content/browser/xr/service/vr_service_impl.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/xr_integration_client.h"
@@ -33,8 +34,9 @@ class XrInstallHelper;
 // There is one BrowserXRRuntimeImpl per physical device runtime. It manages
 // browser-side handling of state, like which VRServiceImpl is listening for
 // device activation.
-class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
-                             public device::mojom::XRRuntimeEventListener {
+class CONTENT_EXPORT BrowserXRRuntimeImpl
+    : public content::BrowserXRRuntime,
+      public device::mojom::XRRuntimeEventListener {
  public:
   using RequestSessionCallback =
       base::OnceCallback<void(device::mojom::XRRuntimeSessionResultPtr)>;
@@ -81,10 +83,14 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   }
 
   bool HasPendingImmersiveSessionRequest() {
-    return has_pending_immersive_session_request_;
+    return has_pending_immersive_session_request_ ||
+           !deferred_immersive_session_request_.is_null();
   }
 
   device::mojom::XRDeviceId GetId() const { return id_; }
+
+  // Waits until the runtime has received the messages sent to it.
+  void FlushForTesting() { runtime_.FlushForTesting(); }
 
 #if BUILDFLAG(IS_WIN)
   std::optional<CHROME_LUID> GetLuid() const;
@@ -115,6 +121,11 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   void OnImmersiveSessionError();
   void OnInstallFinished(XrInstallResult result);
   void ShutdownRuntime();
+  void OnShutdownSessionComplete();
+  void RunDeferredImmersiveSessionRequest(
+      base::WeakPtr<VRServiceImpl> service,
+      device::mojom::XRRuntimeSessionOptionsPtr options,
+      RequestSessionCallback callback);
 
   device::mojom::XRDeviceId id_;
   device::mojom::XRDeviceDataPtr device_data_;
@@ -136,6 +147,10 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   std::unique_ptr<VrUiHost> vr_ui_host_;
   base::OnceCallback<void(XrInstallResult)> install_finished_callback_;
   bool has_pending_immersive_session_request_ = false;
+  // Whether the runtime is shutting down the immersive session.
+  bool is_shutting_down_session_ = false;
+  // An immersive session request that waits for the shutdown to finish.
+  base::OnceClosure deferred_immersive_session_request_;
 
   base::WeakPtrFactory<BrowserXRRuntimeImpl> weak_ptr_factory_{this};
 };
