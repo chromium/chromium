@@ -492,6 +492,12 @@
 # implementation. We don't want R8 to complain about them not being there during optimization.
 -dontwarn android.hardware.fingerprint.FingerprintManager**
 
+# Keep AuthenticationCallback methods when compiling against SDK 37+, where FingerprintManager is
+# removed from android.jar and R8 would otherwise strip the overridden callback methods.
+-keepclassmembers class androidx.biometric.internal.FingerprintManagerCompat$Api23Impl$1 {
+    <methods>;
+}
+
 # Never inline methods, but allow shrinking and obfuscation.
 -keepclassmembernames,allowobfuscation,allowshrinking
         class androidx.biometric.AuthenticationCallbackProvider$Api* {
