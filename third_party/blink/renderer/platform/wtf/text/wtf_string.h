@@ -141,7 +141,7 @@ class WTF_EXPORT String {
   // [string.cons] --------------------------------------------------
 
   // Construct a null string, distinguishable from an empty string.
-  String() = default;
+  constexpr String() = default;
 
   // Construct a string with UTF-16 data.
   explicit String(base::span<const UChar> utf16_data);
@@ -215,8 +215,8 @@ class WTF_EXPORT String {
 
   bool empty() const { return !impl_ || !impl_->length(); }
 
-  explicit operator bool() const { return !IsNull(); }
-  bool IsNull() const { return !impl_; }
+  constexpr explicit operator bool() const { return !IsNull(); }
+  constexpr bool IsNull() const { return !impl_; }
 
   size_t CharactersSizeInBytes() const {
     return impl_ ? impl_->CharactersSizeInBytes() : 0;
@@ -325,7 +325,7 @@ class WTF_EXPORT String {
   bool Is8Bit() const { return impl_->Is8Bit(); }
   void Ensure16Bit();
 
-  StringImpl* Impl() const { return impl_.get(); }
+  constexpr StringImpl* Impl() const { return impl_.get(); }
   scoped_refptr<StringImpl> ReleaseImpl() { return std::move(impl_); }
 
   // Returns an LChar span of the underlying representation of the string.
@@ -660,7 +660,27 @@ class WTF_EXPORT String {
  private:
   friend struct HashTraits<String>;
 
-  scoped_refptr<StringImpl> impl_;
+  // Wrapper around `scoped_refptr<StringImpl>` that provides `constexpr`
+  // accessors (`get()` and `operator bool()`) via `scoped_refptr`'s protected
+  // `ptr_` member so `String` and `AtomicString` can be used in `constexpr` /
+  // `constinit` contexts.
+  class TRIVIAL_ABI StringImplRef : public scoped_refptr<StringImpl> {
+   public:
+    using scoped_refptr<StringImpl>::scoped_refptr;
+    using scoped_refptr<StringImpl>::operator=;
+    constexpr StringImplRef() = default;
+    StringImplRef(scoped_refptr<StringImpl>&& other) noexcept
+        : scoped_refptr<StringImpl>(std::move(other)) {}
+    StringImplRef(const StringImplRef&) = default;
+    StringImplRef& operator=(const StringImplRef&) = default;
+    StringImplRef(StringImplRef&&) noexcept = default;
+    StringImplRef& operator=(StringImplRef&&) = default;
+
+    constexpr StringImpl* get() const { return this->ptr_; }
+    constexpr explicit operator bool() const { return this->ptr_ != nullptr; }
+  };
+
+  StringImplRef impl_;
 };
 
 #undef DISPATCH_CASE_OP

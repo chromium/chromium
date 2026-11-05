@@ -311,7 +311,13 @@ class WTF_EXPORT StringImpl {
     return RefCountAtomic().load(std::memory_order_acquire) == 1;
   }
 
-  ALWAYS_INLINE void AddRef() const {
+  ALWAYS_INLINE constexpr void AddRef() const {
+    if consteval {
+      // Compile-time StringImpl instances are always static (kIsStatic) and
+      // never reference-counted. (`IsStatic()` cannot be called here because
+      // it uses atomic loads.)
+      return;
+    }
     if (!IsStatic()) {
       uint32_t previous_ref_count =
           RefCountAtomic().fetch_add(1, std::memory_order_relaxed);
@@ -343,7 +349,13 @@ class WTF_EXPORT StringImpl {
   //    Table Add and Removal operations (including the fetch_sub to 0) are
   //    done under a lock.
 
-  ALWAYS_INLINE void Release() {
+  ALWAYS_INLINE constexpr void Release() {
+    if consteval {
+      // Compile-time StringImpl instances are always static (kIsStatic) and
+      // never reference-counted or destroyed. (`IsStatic()` cannot be called
+      // here because it uses atomic loads.)
+      return;
+    }
     if (!IsStatic()) {
       // This can be relaxed: if it observes the last reference,
       // DestroyIfNeeded() performs the acquire load before checking flags.

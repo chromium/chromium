@@ -88,7 +88,7 @@ class WTF_EXPORT AtomicString {
 
   // [string.cons] --------------------------------------------------
 
-  AtomicString() = default;
+  constexpr AtomicString() = default;
   explicit AtomicString(const char* chars) {
     if (!chars) {
       return;
@@ -99,8 +99,8 @@ class WTF_EXPORT AtomicString {
     }
     // SAFETY: The below span creation is safe if `chars` points to a
     // NUL-terminated string.
-    *this = AtomicString(base::as_bytes(UNSAFE_BUFFERS(
-        base::span(base::unchecked, chars, strlen(chars)))));
+    *this = AtomicString(base::as_bytes(
+        UNSAFE_BUFFERS(base::span(base::unchecked, chars, strlen(chars)))));
   }
   explicit AtomicString(base::span<const LChar> chars);
   explicit AtomicString(
@@ -124,8 +124,8 @@ class WTF_EXPORT AtomicString {
 
   size_type length() const { return string_.length(); }
   bool empty() const { return string_.empty(); }
-  explicit operator bool() const { return !IsNull(); }
-  bool IsNull() const { return string_.IsNull(); }
+  constexpr explicit operator bool() const { return !IsNull(); }
+  constexpr bool IsNull() const { return string_.IsNull(); }
 
   size_t CharactersSizeInBytes() const {
     return string_.CharactersSizeInBytes();
@@ -140,10 +140,10 @@ class WTF_EXPORT AtomicString {
   // [string.operations] --------------------------------------------
 
   bool Is8Bit() const { return string_.Is8Bit(); }
-  StringImpl* Impl() const { return string_.Impl(); }
+  constexpr StringImpl* Impl() const { return string_.Impl(); }
 
-  operator const String&() const { return string_; }
-  const String& GetString() const { return string_; }
+  constexpr operator const String&() const { return string_; }
+  constexpr const String& GetString() const { return string_; }
 
   uint32_t Hash() const { return string_.Impl()->ExistingHash(); }
 
