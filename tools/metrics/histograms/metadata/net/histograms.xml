@@ -5917,19 +5917,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.AsyncRead" enum="Boolean"
-    expires_after="2024-11-17">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    True if the result of reading a packet from the network was ERR_IO_PENDING.
-    Recorded for each packet when Read() returns.
-
-    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.BlockedFrames.Received" units="units"
     expires_after="2024-02-04">
   <owner>dschinazi@chromium.org</owner>
@@ -7406,26 +7393,6 @@ chromium-metrics-reviews@google.com.
     In the comparison, the first address is the one in SHLO and the second
     address is the client IP address.
   </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.SendPacketSize{EncryptionLevel}" units="bytes"
-    expires_after="2024-12-08">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The size in bytes of an encrypted QUIC packet sent to the peer at the
-    specified encryption level. {EncryptionLevel}
-  </summary>
-  <token key="EncryptionLevel">
-    <variant name=""/>
-    <variant name=".0RTT" summary="Packets sent at 0-RTT encryption only."/>
-    <variant name=".ForwardSecure"
-        summary="Packets sent at Forward Secure encryption only."/>
-    <variant name=".Handshake"
-        summary="Packets sent at Handshake encryption only."/>
-    <variant name=".Initial"
-        summary="Packets sent at Initial encryption only."/>
-  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.ServerSideMtu" units="bytes"

@@ -26,7 +26,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 
-using quic::kMaxOutgoingPacketSize;
 using std::string;
 
 namespace net {
@@ -170,32 +169,11 @@ void QuicConnectionLogger::OnPacketSent(
   // The payload of a UDP datagram carrying the Initial packet MUST be
   // expanded to at least 1200 octets
   const quic::QuicPacketLength kMinClientInitialPacketLength = 1200;
-  switch (encryption_level) {
-    case quic::ENCRYPTION_INITIAL:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.Initial",
-                                  packet_length, 1, kMaxOutgoingPacketSize, 50);
-      if (packet_length < kMinClientInitialPacketLength) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Net.QuicSession.TooSmallInitialSentPacket",
-            kMinClientInitialPacketLength - packet_length, 1,
-            kMinClientInitialPacketLength, 50);
-      }
-      break;
-    case quic::ENCRYPTION_HANDSHAKE:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.Handshake",
-                                  packet_length, 1, kMaxOutgoingPacketSize, 50);
-      break;
-    case quic::ENCRYPTION_ZERO_RTT:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.0RTT",
-                                  packet_length, 1, kMaxOutgoingPacketSize, 50);
-      break;
-    case quic::ENCRYPTION_FORWARD_SECURE:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Net.QuicSession.SendPacketSize.ForwardSecure", packet_length, 1,
-          kMaxOutgoingPacketSize, 50);
-      break;
-    case quic::NUM_ENCRYPTION_LEVELS:
-      NOTREACHED();
+  if (encryption_level == quic::ENCRYPTION_INITIAL &&
+      packet_length < kMinClientInitialPacketLength) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.TooSmallInitialSentPacket",
+                                kMinClientInitialPacketLength - packet_length,
+                                1, kMinClientInitialPacketLength, 50);
   }
 
   event_logger_.OnPacketSent(packet_number, packet_length, has_crypto_handshake,
