@@ -11,6 +11,8 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,6 +41,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -65,6 +68,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link GlicExperimentalOptInUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -143,6 +147,15 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         when(mThinWebView.getView()).thenReturn(new View(mActivity));
         // ContentView talks to the WebContents once it takes focus, which a mock cannot service.
         when(mWebContents.isDestroyed()).thenReturn(true);
+        doAnswer(
+                        invocation -> {
+                            PropertyModel model = invocation.getArgument(0);
+                            int cause = invocation.getArgument(1);
+                            model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, cause);
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .dismissDialog(any(), eq(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
     }
 
     @After
@@ -361,6 +374,54 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         assertEquals(
                 mActivity.getString(R.string.actor_notification_title_preparing_to_start_task),
                 snackbarCaptor.getValue().getTextForTesting());
+    }
+
+    @Test
+    public void testShowAndAccept_RefreshesAndKeepsPendingActorTaskSnackbar() {
+        when(mSnackbarManager.canShowSnackbar()).thenReturn(true);
+        mGlicUiCoordinator = createGlicUiCoordinator();
+
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+        verify(mSnackbarManager).showSnackbar(any());
+        clearInvocations(mSnackbarManager);
+
+        ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
+        coordinator.onOptInAccepted();
+        coordinator.simulateDismissingForTesting();
+
+        ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
+        verify(mSnackbarManager, never()).dismissSnackbars(any());
+        verify(mSnackbarManager, never()).showSnackbar(any());
+
+        ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
+        verify(mSnackbarManager).dismissSnackbars(any());
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    public void testShowAndDismissWithoutAccept_ShowsErrorSnackbar() {
+        when(mSnackbarManager.canShowSnackbar()).thenReturn(true);
+        mGlicUiCoordinator = createGlicUiCoordinator();
+
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+        verify(mSnackbarManager).showSnackbar(any());
+        clearInvocations(mSnackbarManager);
+
+        coordinator.simulateDismissingForTesting();
+
+        verify(mSnackbarManager).dismissSnackbars(any());
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        assertEquals(
+                mActivity.getString(R.string.actor_task_list_bubble_row_failed_task_subtitle),
+                snackbarCaptor.getValue().getTextForTesting());
+        assertEquals(
+                mActivity.getString(R.string.actor_snackbar_back_to_gemini),
+                snackbarCaptor.getValue().getActionText());
     }
 
     @Test

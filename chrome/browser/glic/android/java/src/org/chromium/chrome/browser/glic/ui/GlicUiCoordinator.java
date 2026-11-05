@@ -128,10 +128,19 @@ public class GlicUiCoordinator implements Destroyable {
 
     /**
      * Notifies the snackbar controller that a pending actor task trigger was received (either from
-     * an external-trigger fallback intent or when showing the experimental opt-in dialog).
+     * an external-trigger fallback intent or when showing/accepting the experimental opt-in
+     * dialog).
      */
     public void onPendingActorTaskTrigger() {
         mExternalTriggerSnackbarController.onPendingActorTaskTrigger();
+    }
+
+    /**
+     * Notifies the snackbar controller that a pending actor task trigger failed before task
+     * creation (e.g., when the experimental opt-in dialog is declined or dismissed).
+     */
+    public void onPendingActorTaskFailed() {
+        mExternalTriggerSnackbarController.onPendingActorTaskFailed();
     }
 
     /** Exposes the {@link ActorOverlayCoordinator} for testing. */

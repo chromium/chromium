@@ -123,6 +123,36 @@ public class ActorExternalTriggerSnackbarControllerTest {
     }
 
     @Test
+    public void testOnPendingActorTaskFailed_replacesPreparingWithErrorSnackbarAndCancelsTimeout() {
+        mController.onPendingActorTaskFailed();
+        verify(mSnackbarManager, never()).dismissSnackbars(mController);
+        verify(mSnackbarManager, never()).showSnackbar(any());
+
+        mController.onPendingActorTaskTrigger();
+        assertTrue(mController.isPendingTaskStartForTesting());
+        clearInvocations(mSnackbarManager);
+
+        mController.onPendingActorTaskFailed();
+
+        verify(mSnackbarManager).dismissSnackbars(mController);
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar errorSnackbar = snackbarCaptor.getValue();
+        assertEquals(
+                mActivity.getString(R.string.actor_task_list_bubble_row_failed_task_subtitle),
+                errorSnackbar.getTextForTesting());
+        assertEquals(
+                mActivity.getString(R.string.actor_snackbar_back_to_gemini),
+                errorSnackbar.getActionText());
+        assertFalse(mController.isPendingTaskStartForTesting());
+        assertTrue(mController.isErrorSnackbarShowingForTesting());
+
+        clearInvocations(mSnackbarManager);
+        ShadowLooper.idleMainLooper(2, TimeUnit.MINUTES);
+        verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
     public void testShowsOnStartWhenInitiallyCannotShowSnackbar() {
         when(mSnackbarManager.canShowSnackbar()).thenReturn(false);
         mController.onPendingActorTaskTrigger();

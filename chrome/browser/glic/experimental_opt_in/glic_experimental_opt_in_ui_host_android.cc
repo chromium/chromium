@@ -145,6 +145,9 @@ void GlicExperimentalOptInUIHostAndroid::Close(bool accepted) {
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
+  if (accepted) {
+    Java_GlicExperimentalOptInUiCoordinator_onOptInAccepted(env, java_dialog_);
+  }
   Java_GlicExperimentalOptInUiCoordinator_dismiss(env, java_dialog_);
 }
 

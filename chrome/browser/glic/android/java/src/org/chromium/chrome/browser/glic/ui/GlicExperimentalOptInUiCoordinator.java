@@ -71,6 +71,7 @@ public class GlicExperimentalOptInUiCoordinator {
     private @Nullable ChromeImageButton mCloseButton;
     private int mTargetWidthPx;
     private int mTargetHeightPx;
+    private boolean mOptInAccepted;
 
     // The dialog window is wider than ModalDialogView, so its background shows as a strip on each
     // side of the web contents. Clear it; the card draws the rounded corners instead.
@@ -276,6 +277,15 @@ public class GlicExperimentalOptInUiCoordinator {
     }
 
     @CalledByNative
+    void onOptInAccepted() {
+        mOptInAccepted = true;
+        GlicUiCoordinator glicUiCoordinator = GlicUiCoordinator.from(mWindowAndroid);
+        if (glicUiCoordinator != null) {
+            glicUiCoordinator.onPendingActorTaskTrigger();
+        }
+    }
+
+    @CalledByNative
     private void dismiss() {
         if (mModel != null) {
             mModalDialogManager.dismissDialog(mModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
@@ -283,6 +293,14 @@ public class GlicExperimentalOptInUiCoordinator {
     }
 
     private void onDialogDismissed() {
+        // Reuse the failure snackbar when opt-in is not accepted so the user gets the
+        // "Back to Gemini" action after Chrome was brought to the foreground.
+        if (!mOptInAccepted) {
+            GlicUiCoordinator glicUiCoordinator = GlicUiCoordinator.from(mWindowAndroid);
+            if (glicUiCoordinator != null) {
+                glicUiCoordinator.onPendingActorTaskFailed();
+            }
+        }
         if (mNativePtr != null) {
             GlicExperimentalOptInUiCoordinatorJni.get().onDismissed(mNativePtr);
         }
