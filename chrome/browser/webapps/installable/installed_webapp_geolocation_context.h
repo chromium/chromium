@@ -38,6 +38,11 @@ class InstalledWebappGeolocationContext
       const url::Origin& requesting_origin,
       device::mojom::GeolocationClientId client_id,
       bool has_precise_permission) override;
+  // Installed web applications do not maintain a cached location, and their
+  // clients are not expected to request one. This will trigger a bad message.
+  void QueryCachedPosition(
+      device::mojom::GeolocationContext::QueryCachedPositionCallback callback)
+      override;
   void OnPermissionUpdated(
       const url::Origin& origin,
       device::mojom::GeolocationPermissionLevel permission_level) override;

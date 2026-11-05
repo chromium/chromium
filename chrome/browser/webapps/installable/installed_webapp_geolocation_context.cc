@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/webapps/installable/installed_webapp_geolocation_bridge.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "url/origin.h"
 
 InstalledWebappGeolocationContext::InstalledWebappGeolocationContext() =
@@ -23,10 +24,20 @@ void InstalledWebappGeolocationContext::BindGeolocation(
     bool has_precise_permission) {
   impls_.push_back(std::make_unique<InstalledWebappGeolocationBridge>(
       std::move(receiver), requesting_origin, this));
-  if (geoposition_override_)
+  if (geoposition_override_) {
     impls_.back()->SetOverride(geoposition_override_.Clone());
-  else
+  } else {
     impls_.back()->StartListeningForUpdates();
+  }
+}
+
+void InstalledWebappGeolocationContext::QueryCachedPosition(
+    device::mojom::GeolocationContext::QueryCachedPositionCallback callback) {
+  mojo::ReportBadMessage(
+      "InstalledWebappGeolocationContext does not support QueryCachedPosition");
+  std::move(callback).Run(device::mojom::GeopositionResult::NewError(
+      device::mojom::GeopositionError::New(
+          device::mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
 }
 
 void InstalledWebappGeolocationContext::OnPermissionRevoked(

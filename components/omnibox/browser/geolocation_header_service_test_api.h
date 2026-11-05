@@ -26,7 +26,8 @@ class GeolocationHeaderServiceTestApi {
   }
 
   bool is_geolocation_bound() const {
-    return service_->geolocation_.is_bound();
+    return service_->geolocation_.is_bound() ||
+           service_->is_querying_cached_position_;
   }
 
  private:

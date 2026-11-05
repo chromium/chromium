@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/geolocation/geolocation_impl.h"
+#include "services/device/geolocation/geolocation_provider.h"
 #include "url/origin.h"
 
 namespace device {
@@ -39,6 +40,26 @@ void GeolocationContext::BindGeolocation(
   } else {
     impl->StartListeningForUpdates();
   }
+}
+
+void GeolocationContext::QueryCachedPosition(
+    QueryCachedPositionCallback callback) {
+  if (geoposition_override_) {
+    std::move(callback).Run(geoposition_override_->Clone());
+    return;
+  }
+
+  mojom::GeopositionResultPtr result =
+      GeolocationProvider::GetInstance()->GetCachedPosition();
+
+  if (result) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+          mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
 }
 
 void GeolocationContext::OnPermissionUpdated(

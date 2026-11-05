@@ -31,12 +31,16 @@ interface GeolocationContext {
   // permitted to access precise location data. If false, approximate location
   // will be returned even if precise location is requested. Implementations
   // that do not support finer-grained permission control may return a precise
-  // location regardless of this flag. This method should not be called if
-  // geolocation access is entirely denied.
+  // location regardless of this flag.
   BindGeolocation(pending_receiver<Geolocation> receiver,
                   url.mojom.Origin requesting_origin,
                   GeolocationClientId client_id,
                   bool has_precise_permission);
+
+  // Returns the latest known geoposition from the cache without starting any
+  // OS-level location providers. Returns an error if no position is cached.
+  // Returns the cached position at whatever precision it was recorded.
+  QueryCachedPosition() => (GeopositionResult result);
 
   // Called when the permission level for an origin has changed.
   // Implementers supporting granular permissions should update their accuracy

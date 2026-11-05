@@ -362,104 +362,48 @@ TEST_F(GeolocationImplTest, EffectiveHighAccuracy) {
   EXPECT_EQ(5, GetAddCallbackCount());
 }
 
-TEST_F(GeolocationImplTest, QueryCachedPositionSuccess) {
-  auto position = MakeGeoposition(37, -122);
-  SimulateLocationUpdate(*position);
-
-  TestFuture<mojom::GeopositionResultPtr> geolocation_result;
-  geolocation()->QueryCachedPosition(geolocation_result.GetCallback());
-
-  EXPECT_EQ(geolocation_result.Get()->get_position()->latitude, 37);
-}
-
-TEST_F(GeolocationImplTest, QueryCachedPositionFailure) {
-  TestFuture<mojom::GeopositionResultPtr> geolocation_result;
-  geolocation()->QueryCachedPosition(geolocation_result.GetCallback());
-
-  EXPECT_TRUE(geolocation_result.Get()->is_error());
-
-  // Now simulate an update and verify it works.
-  auto position = MakeGeoposition(37, -122);
-  SimulateLocationUpdate(*position);
-
-  TestFuture<mojom::GeopositionResultPtr> geolocation_result2;
-  geolocation()->QueryCachedPosition(geolocation_result2.GetCallback());
-
-  EXPECT_EQ(geolocation_result2.Get()->get_position()->latitude, 37);
-}
-
-TEST_F(GeolocationImplTest, QueryCachedPositionMultipleUpdates) {
-  auto position1 = MakeGeoposition(37, -122);
-  SimulateLocationUpdate(*position1);
-
-  TestFuture<mojom::GeopositionResultPtr> result1;
-  geolocation()->QueryCachedPosition(result1.GetCallback());
-  EXPECT_EQ(result1.Get()->get_position()->latitude, 37);
-
-  auto position2 = MakeGeoposition(38, -123);
-  SimulateLocationUpdate(*position2);
-
-  TestFuture<mojom::GeopositionResultPtr> result2;
-  geolocation()->QueryCachedPosition(result2.GetCallback());
-
-  EXPECT_EQ(result2.Get()->get_position()->latitude, 38);
-}
-
+// Verifies that calling GeolocationContext::QueryCachedPosition()
+// returns cached position without subscribing to GeolocationProvider or
+// starting the underlying OS location provider.
 TEST_F(GeolocationImplTest, QueryCachedPositionDoesNotStartProvider) {
   int initial_callbacks = GetAddCallbackCount();
 
-  TestFuture<mojom::GeopositionResultPtr> future;
-  geolocation()->QueryCachedPosition(future.GetCallback());
+  GeolocationContext context;
 
-  // Wait for the callback to be called.
-  EXPECT_TRUE(future.Wait());
+  // Calling QueryCachedPosition when cache is empty returns an error.
+  TestFuture<mojom::GeopositionResultPtr> empty_cache_future;
+  context.QueryCachedPosition(empty_cache_future.GetCallback());
+  EXPECT_TRUE(empty_cache_future.Get()->is_error());
+  EXPECT_EQ(empty_cache_future.Get()->get_error()->error_code,
+            mojom::GeopositionErrorCode::kPositionUnavailable);
 
-  // The callback count should not increase because we didn't start listening.
-  EXPECT_EQ(GetAddCallbackCount(), initial_callbacks);
-}
-
-TEST_F(GeolocationImplTest, QueryCachedPositionWithOverride) {
-  auto initial_position = MakeGeoposition(37, -122);
-  SimulateLocationUpdate(*initial_position);
-
-  auto override_position = MakeGeoposition(41, 74);
-  SetOverride(*override_position);
-
-  TestFuture<mojom::GeopositionResultPtr> future;
-  geolocation()->QueryCachedPosition(future.GetCallback());
-
-  EXPECT_EQ(future.Get(), override_position);
-}
-
-TEST_F(GeolocationImplTest,
-       QueryCachedPositionApproximatePermissionPreciseResult) {
-  BindGeolocation(/*has_precise_permission=*/false);
-
+  // Simulate a precise location update to populate the cache.
   auto position = MakeGeoposition(37, -122);
   position->get_position()->is_precise = true;
   SimulateLocationUpdate(*position);
 
-  TestFuture<mojom::GeopositionResultPtr> geolocation_result;
-  geolocation()->QueryCachedPosition(geolocation_result.GetCallback());
+  // Querying cached position should return the precise cached position without
+  // dropping it.
+  TestFuture<mojom::GeopositionResultPtr> cached_future;
+  context.QueryCachedPosition(cached_future.GetCallback());
+  EXPECT_EQ(cached_future.Get(), position);
+  EXPECT_TRUE(cached_future.Get()->is_position() &&
+              cached_future.Get()->get_position()->is_precise);
 
-  EXPECT_TRUE(geolocation_result.Get()->is_error());
-  EXPECT_EQ(geolocation_result.Get()->get_error()->error_code,
-            mojom::GeopositionErrorCode::kPositionUnavailable);
-}
+  // Context override should take precedence.
+  auto override_position = MakeGeoposition(41, 74);
+  context.SetOverride(override_position.Clone());
+  TestFuture<mojom::GeopositionResultPtr> override_future;
+  context.QueryCachedPosition(override_future.GetCallback());
+  EXPECT_EQ(override_future.Get(), override_position);
+  context.ClearOverride();
 
-TEST_F(GeolocationImplTest,
-       QueryCachedPositionApproximatePermissionApproximateResult) {
-  BindGeolocation(/*has_precise_permission=*/false);
+  TestFuture<mojom::GeopositionResultPtr> restored_cached_future;
+  context.QueryCachedPosition(restored_cached_future.GetCallback());
+  EXPECT_EQ(restored_cached_future.Get(), position);
 
-  auto position = MakeGeoposition(37, -122);
-  position->get_position()->is_precise = false;
-  SimulateLocationUpdate(*position);
-
-  TestFuture<mojom::GeopositionResultPtr> geolocation_result;
-  geolocation()->QueryCachedPosition(geolocation_result.GetCallback());
-
-  EXPECT_TRUE(geolocation_result.Get()->is_position());
-  EXPECT_EQ(geolocation_result.Get()->get_position()->latitude, 37);
+  // Querying cached position should never start the provider.
+  EXPECT_EQ(GetAddCallbackCount(), initial_callbacks);
 }
 
 TEST_F(GeolocationImplTest,

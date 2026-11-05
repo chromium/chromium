@@ -128,6 +128,7 @@ GeolocationHeaderService::~GeolocationHeaderService() = default;
 void GeolocationHeaderService::Shutdown() {
   template_url_service_ = nullptr;
   geolocation_.reset();
+  is_querying_cached_position_ = false;
   geolocation_context_.reset();
   last_position_.reset();
 }
@@ -137,11 +138,6 @@ void GeolocationHeaderService::PrimeLocation() {
     return;
   }
 
-  if (geolocation_.is_bound()) {
-    RecordPrimeLocationOutcome(
-        GeolocationHeaderPrimeLocationOutcome::kNotTriedAlreadyBound);
-    return;
-  }
   if (!template_url_service_) {
     RecordPrimeLocationOutcome(
         GeolocationHeaderPrimeLocationOutcome::kNotTriedNoDefaultProvider);
@@ -182,10 +178,14 @@ void GeolocationHeaderService::PrimeLocation() {
     return;
   }
 
+  bool use_cache_only =
+      is_ills_enabled && !IsAllowedByPermission(requesting_url);
+
   // If the location is fresh and matches targeted precision requirements, there
   // is no need to query for a new one.
   if (HasCachedLocation() &&
-      last_position_->is_precise == HasPrecisePermission(requesting_url)) {
+      (use_cache_only ||
+       last_position_->is_precise == HasPrecisePermission(requesting_url))) {
     base::TimeDelta age = location_age_for_testing_.value_or(
         base::Time::Now() - last_position_->timestamp);
     if (age <= kMaxLocationAgeForPriming) {
@@ -195,8 +195,11 @@ void GeolocationHeaderService::PrimeLocation() {
     }
   }
 
-  bool use_cache_only =
-      is_ills_enabled && !IsAllowedByPermission(requesting_url);
+  if (use_cache_only ? is_querying_cached_position_ : geolocation_.is_bound()) {
+    RecordPrimeLocationOutcome(
+        GeolocationHeaderPrimeLocationOutcome::kNotTriedAlreadyBound);
+    return;
+  }
 
   if (!EnsureGeolocationServiceConnection(requesting_url, use_cache_only)) {
     RecordPrimeLocationOutcome(
@@ -204,16 +207,23 @@ void GeolocationHeaderService::PrimeLocation() {
     return;
   }
 
-  auto callback = base::BindOnce(&GeolocationHeaderService::OnLocationUpdate,
-                                 weak_factory_.GetWeakPtr());
   if (use_cache_only) {
     RecordPrimeLocationOutcome(
         GeolocationHeaderPrimeLocationOutcome::kTriedQueryCachedPosition);
-    geolocation_->QueryCachedPosition(std::move(callback));
+    is_querying_cached_position_ = true;
+    geolocation_context_->QueryCachedPosition(base::BindOnce(
+        &GeolocationHeaderService::OnLocationUpdate, weak_factory_.GetWeakPtr(),
+        /*requested_cached_location=*/true));
   } else {
     RecordPrimeLocationOutcome(
         GeolocationHeaderPrimeLocationOutcome::kTriedQueryNextPosition);
-    geolocation_->QueryNextPosition(std::move(callback));
+    // Note: A concurrent query can occur if the user changes the DSE permission
+    // state while a cached position query is already in-flight. This is benign
+    // because the responses are handled identically and protect against stale
+    // overwrites via timestamp validation.
+    geolocation_->QueryNextPosition(base::BindOnce(
+        &GeolocationHeaderService::OnLocationUpdate, weak_factory_.GetWeakPtr(),
+        /*requested_cached_location=*/false));
   }
 }
 
@@ -460,30 +470,41 @@ bool GeolocationHeaderService::HasDeviceLocationPermission(
 bool GeolocationHeaderService::EnsureGeolocationServiceConnection(
     const GURL& requesting_url,
     bool use_cache_only) {
-  if (geolocation_.is_bound()) {
-    return true;
-  }
-
   if (!geolocation_context_.is_bound()) {
     content::GetDeviceService().BindGeolocationContext(
         geolocation_context_.BindNewPipeAndPassReceiver());
+    geolocation_context_.set_disconnect_handler(base::BindOnce(
+        [](base::WeakPtr<GeolocationHeaderService> service) {
+          if (service) {
+            service->geolocation_context_.reset();
+            service->is_querying_cached_position_ = false;
+          }
+        },
+        weak_factory_.GetWeakPtr()));
   }
 
   if (!geolocation_context_.is_bound()) {
     return false;
   }
 
+  if (use_cache_only) {
+    return true;
+  }
+
+  if (geolocation_.is_bound()) {
+    return true;
+  }
+
   // We pass the requesting_url to the Device Service so that the OS level
   // location prompt can attribute the location request to the correct origin.
   bool has_precise = HasPrecisePermission(requesting_url);
+
   geolocation_context_->BindGeolocation(
       geolocation_.BindNewPipeAndPassReceiver(),
       url::Origin::Create(requesting_url),
       device::mojom::GeolocationClientId::kOmnibox, has_precise);
 
-  if (!use_cache_only) {
-    geolocation_->SetHighAccuracyHint(has_precise);
-  }
+  geolocation_->SetHighAccuracyHint(has_precise);
 
   geolocation_.set_disconnect_handler(base::BindOnce(
       [](base::WeakPtr<GeolocationHeaderService> service) {
@@ -497,15 +518,22 @@ bool GeolocationHeaderService::EnsureGeolocationServiceConnection(
 }
 
 void GeolocationHeaderService::OnLocationUpdate(
+    bool requested_cached_location,
     device::mojom::GeopositionResultPtr result) {
-  // We only want to query the location once (which returns the cached/latest
-  // known position). Resetting the remote immediately destroys the underlying
-  // GeolocationImpl and stops it from continuously watching for location
-  // updates.
-  geolocation_.reset();
+  if (requested_cached_location) {
+    is_querying_cached_position_ = false;
+  } else {
+    // We only want to query the active location once. Resetting the remote
+    // immediately destroys the underlying GeolocationImpl and stops active
+    // listening for updates.
+    geolocation_.reset();
+  }
 
   if (result->is_position()) {
-    last_position_ = std::move(result->get_position());
+    if (!last_position_ ||
+        result->get_position()->timestamp >= last_position_->timestamp) {
+      last_position_ = std::move(result->get_position());
+    }
   }
 }
 

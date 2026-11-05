@@ -39,6 +39,7 @@ class GeolocationContext : public mojom::GeolocationContext {
                        const url::Origin& requesting_origin,
                        mojom::GeolocationClientId client_id,
                        bool has_precise_permission) override;
+  void QueryCachedPosition(QueryCachedPositionCallback callback) override;
   void OnPermissionUpdated(
       const url::Origin& origin,
       mojom::GeolocationPermissionLevel permission_level) override;
@@ -52,7 +53,6 @@ class GeolocationContext : public mojom::GeolocationContext {
 
  private:
   std::vector<std::unique_ptr<GeolocationImpl>> impls_;
-
   mojom::GeopositionResultPtr geoposition_override_;
 };
 

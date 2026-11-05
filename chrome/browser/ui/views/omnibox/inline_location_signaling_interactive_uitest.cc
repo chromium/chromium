@@ -77,6 +77,7 @@ struct InlineLocationSignalingTestCase {
   bool use_https = true;
   bool is_precise = false;
   bool has_cached_location = true;
+  bool overrider_has_fresh_location = true;
   bool navigate_to_ineligible = false;
   std::string user_input = "a";
   std::string mock_suggest_response;
@@ -104,12 +105,11 @@ class InlineLocationSignalingE2EInteractiveUiTest
     position->latitude = kMockLatitude;
     position->longitude = kMockLongitude;
     position->accuracy = 1.0;
-    // If has_cached_location is false, we set a stale timestamp (25 hours old).
-    // This ensures that even if a focus flow triggers a geolocation query and
-    // updates the cached location via the overrider, the location is treated
-    // as stale (age > 24h) and HasCachedLocation() returns false during
-    // navigation.
-    position->timestamp = GetParam().has_cached_location
+    // Set a fresh timestamp if the overrider has a fresh location; otherwise
+    // set a stale timestamp (25 hours old). This ensures that even if a focus
+    // flow triggers a geolocation query and updates the cached location via the
+    // overrider, it can be treated as stale (age > 24h) depending on the test.
+    position->timestamp = GetParam().overrider_has_fresh_location
                               ? base::Time::Now()
                               : base::Time::Now() - base::Hours(25);
     position->is_precise = GetParam().is_precise;
@@ -269,6 +269,17 @@ IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
   OmniboxView* omnibox_view =
       BrowserWindow::FromBrowser(browser())->GetLocationBar()->GetOmniboxView();
 
+  // Wait for any asynchronous Mojo geolocation query triggered by the default
+  // search engine (DSE) change to complete before setting up the histogram
+  // tester and triggering focus.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !GeolocationHeaderServiceTestApi(geo_service).is_geolocation_bound();
+  }));
+
+  if (!GetParam().has_cached_location) {
+    GeolocationHeaderServiceTestApi(geo_service).SetLocation(nullptr);
+  }
+
   base::HistogramTester prime_histogram_tester;
   chrome::FocusLocationBar(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -278,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
   ASSERT_TRUE(base::test::RunUntil([&]() { return controller->done(); }));
 
   // Wait for any asynchronous Mojo geolocation query triggered by the focus
-  // flow or DSE change to complete before modifying omnibox state.
+  // flow to complete before modifying omnibox state.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !GeolocationHeaderServiceTestApi(geo_service).is_geolocation_bound();
   }));
@@ -743,9 +754,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
                            u"Use precise location"}},
      .expected_shown_state =
          OmniboxInlineLocationSuggestionShown::kLocationSuggestionShown,
-     .expected_position_metric = 2,
-     .expected_prime_outcome =
-         GeolocationHeaderPrimeLocationOutcome::kTriedQueryCachedPosition},
+     .expected_position_metric = 2},
 
     // 16. E2E test for precise location caching + Dynamic accuracy wording.
     // Again, the UI wording must show "Use precise location" even if the
@@ -766,7 +775,29 @@ const InlineLocationSignalingTestCase kTestCases[] = {
                           {u"a-location-relevant-suggestion", u""}},
      .expected_shown_state =
          OmniboxInlineLocationSuggestionShown::kLocationSuggestionShown,
-     .expected_position_metric = 1,
+     .expected_position_metric = 1},
+
+    // 16.5. E2E test for precise location cache-only querying.
+    // Simulates a scenario where there is no fresh cached location available,
+    // prompting the service to query the cache over Mojo.
+    {.test_name = "PreciseLocation_NoCachedLocation_QueriesCache",
+     .display_order = "DisplayBelow",
+     .wording = "UseApproximateLocation",
+     .use_https = true,
+     .is_precise = true,
+     .has_cached_location = false,
+     .user_input = "a",
+     .mock_suggest_response =
+         "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
+         "{\"google:suggestsubtypes\":[[457]],"
+         "\"google:suggestrelevance\":[1400]}]",
+     .expected_results = {{u"a", kExpectedDseSearchText},
+                          {u"a-location-relevant-suggestion", u""},
+                          {u"a-location-relevant-suggestion",
+                           u"Use precise location"}},
+     .expected_shown_state =
+         OmniboxInlineLocationSuggestionShown::kLocationSuggestionShown,
+     .expected_position_metric = 2,
      .expected_prime_outcome =
          GeolocationHeaderPrimeLocationOutcome::kTriedQueryCachedPosition},
 
@@ -802,6 +833,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .use_https = true,
      .is_precise = false,
      .has_cached_location = false,
+     .overrider_has_fresh_location = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"

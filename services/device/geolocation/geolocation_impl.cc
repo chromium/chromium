@@ -106,32 +106,6 @@ void GeolocationImpl::QueryNextPosition(QueryNextPositionCallback callback) {
   RecordUmaGeolocationImplClientId(client_id_);
 }
 
-void GeolocationImpl::QueryCachedPosition(
-    QueryCachedPositionCallback callback) {
-  if (position_override_) {
-    std::move(callback).Run(position_override_.Clone());
-    return;
-  }
-
-  mojom::GeopositionResultPtr result =
-      GeolocationProvider::GetInstance()->GetCachedPosition();
-
-  // If the cached position is precise but the client only has approximate
-  // permission, treat it as unavailable to avoid leaking precise location.
-  if (!has_precise_permission_ && IsPrecisePosition(result.get())) {
-    result.reset();
-  }
-
-  if (result) {
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  std::move(callback).Run(
-      mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
-          mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
-}
-
 void GeolocationImpl::SetOverride(const mojom::GeopositionResult& result) {
   if (!position_callback_.is_null()) {
     if (!current_result_) {

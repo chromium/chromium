@@ -57,9 +57,6 @@ class GeolocationServiceImpl::GeolocationProxy
   void SetHighAccuracyHint(bool high_accuracy) override {
     geolocation_impl_remote_->SetHighAccuracyHint(high_accuracy);
   }
-  void QueryCachedPosition(QueryCachedPositionCallback callback) override {
-    geolocation_impl_remote_->QueryCachedPosition(std::move(callback));
-  }
   void QueryNextPosition(QueryNextPositionCallback callback) override {
     geolocation_impl_remote_->QueryNextPosition(std::move(callback));
   }
