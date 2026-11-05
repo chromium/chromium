@@ -24,6 +24,7 @@ include_rules = [
 
 specific_include_rules = {
   "reboot_notifications_scheduler_unittest\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
     "+ui/message_center/message_center.h",
   ],
 }

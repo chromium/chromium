@@ -14,8 +14,8 @@
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -35,6 +35,20 @@ const char kPendingRebootNotificationId[] =
 const char kPostRebootNotificationId[] =
     "ash.device_scheduled_reboot_post_reboot_notification";
 }  // namespace ash
+
+namespace {
+
+// Returns the user the notifications belong to. The callers have established
+// through ShouldNotifyUser() that somebody is logged in, and a logged-in user
+// always has a session.
+const user_manager::User& GetActiveUser() {
+  const session_manager::Session& session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
+  return CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUser(session.account_id()));
+}
+
+}  // namespace
 
 RebootNotificationController::RebootNotificationController() = default;
 
@@ -103,12 +117,9 @@ void RebootNotificationController::CloseRebootNotification() const {
   if (!ShouldNotifyUser()) {
     return;
   }
-  const user_manager::User& user =
-      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-          ProfileManager::GetActiveUserProfile()));
   message_center::MessageCenter::Get()->RemoveNotification(
       ash::CreateUserScopedNotificationId(ash::kPendingRebootNotificationId,
-                                          user.username_hash()),
+                                          GetActiveUser().username_hash()),
       /*by_user=*/false);
 }
 
@@ -125,9 +136,7 @@ void RebootNotificationController::ShowNotification(
     const message_center::RichNotificationData& data,
     scoped_refptr<message_center::NotificationDelegate> delegate) const {
   // Create notification.
-  const user_manager::User& user =
-      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-          ProfileManager::GetActiveUserProfile()));
+  const user_manager::User& user = GetActiveUser();
   const std::string notification_id =
       ash::CreateUserScopedNotificationId(id, user.username_hash());
   message_center::NotifierId notifier_id;

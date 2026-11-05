@@ -3,23 +3,21 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,23 +38,23 @@ class RebootNotificationsSchedulerTest : public testing::Test {
   ~RebootNotificationsSchedulerTest() override = default;
 
   void SetUp() override {
-    session_manager_ = std::make_unique<session_manager::SessionManager>(
-        std::make_unique<session_manager::FakeSessionManagerDelegate>());
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    session_manager_->OnUserManagerCreated(user_manager_.Get());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
 
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-
-    AccountId account_id =
+    const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
-    user_manager_->AddUser(account_id);
-
-    profile_ =
-        profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
-    ash::AnnotatedAccountId::Set(profile_, account_id);
-    prefs_ = profile_->GetPrefs();
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
+    prefs_ =
+        CHECK_DEREF(
+            Profile::FromBrowserContext(
+                ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                    account_id)))
+            .GetPrefs();
 
     notifications_scheduler_ =
         std::make_unique<FakeRebootNotificationsScheduler>(
@@ -64,8 +62,6 @@ class RebootNotificationsSchedulerTest : public testing::Test {
             task_environment_.GetMockTickClock(), prefs_.get());
 
     message_center::MessageCenter::Initialize();
-    user_manager_->LoginUser(account_id, true);
-    EXPECT_EQ(ProfileManager::GetActiveUserProfile(), profile_);
 
     ASSERT_EQ(RebootNotificationsScheduler::Get(),
               notifications_scheduler_.get());
@@ -75,10 +71,7 @@ class RebootNotificationsSchedulerTest : public testing::Test {
     notifications_scheduler_.reset();
     message_center::MessageCenter::Shutdown();
     prefs_ = nullptr;
-    profile_ = nullptr;
-    profile_manager_.reset();
-    session_manager_.reset();
-    user_manager_.Reset();
+    user_session_test_environment_.reset();
   }
 
   int GetDisplayedNotificationCount() const {
@@ -88,12 +81,8 @@ class RebootNotificationsSchedulerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
-
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   raw_ptr<PrefService> prefs_ = nullptr;
   std::unique_ptr<FakeRebootNotificationsScheduler> notifications_scheduler_;
 };
@@ -204,7 +193,7 @@ TEST_F(RebootNotificationsSchedulerTest,
   EXPECT_TRUE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
 
   // Start the session and show post reboot notification.
-  session_manager_->SessionStarted();
+  session_manager::SessionManager::Get()->SessionStarted();
   EXPECT_EQ(GetDisplayedNotificationCount(), 1);
 
   // Verify pref is unset.
@@ -223,7 +212,7 @@ TEST_F(RebootNotificationsSchedulerTest,
 
   // Start the session and do not show post reboot notification.
   notifications_scheduler_->SetWaitFullRestoreInit(true);
-  session_manager_->SessionStarted();
+  session_manager::SessionManager::Get()->SessionStarted();
   EXPECT_EQ(GetDisplayedNotificationCount(), 0);
 }
 

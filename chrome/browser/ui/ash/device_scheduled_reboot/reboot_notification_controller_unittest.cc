@@ -4,20 +4,17 @@
 
 #include "chrome/browser/ui/ash/device_scheduled_reboot/reboot_notification_controller.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
-#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -29,8 +26,8 @@ using ::message_center::Notification;
 namespace {
 constexpr char kEmailId[] = "test@example.com";
 constexpr GaiaId::Literal kGaiaId("12345");
-constexpr char kKioskEmailId[] = "test-kiosk@example.com";
-constexpr GaiaId::Literal kKioskGaiaId("6789");
+constexpr char kKioskId[] = "test-kiosk";
+constexpr char kMgsId[] = "test-mgs";
 constexpr base::Time::Exploded kRebootTime2022Feb2At1520 = {.year = 2022,
                                                             .month = 2,
                                                             .day_of_week = 4,
@@ -55,26 +52,24 @@ class ClickCounter {
 class RebootNotificationControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-
-    std::unique_ptr<ash::FakeChromeUserManager> fake_user_manager =
-        std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     message_center::MessageCenter::Initialize();
   }
 
  protected:
-  void TearDown() override { message_center::MessageCenter::Shutdown(); }
+  void TearDown() override {
+    message_center::MessageCenter::Shutdown();
+    user_ = nullptr;
+    user_session_test_environment_.reset();
+  }
 
   const Notification* GetNotification(
       const std::string& notification_id) const {
-    const user_manager::User& user = CHECK_DEREF(
-        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
     return message_center::MessageCenter::Get()->FindNotificationById(
         ash::CreateUserScopedNotificationId(notification_id,
-                                            user.username_hash()));
+                                            user_->username_hash()));
   }
 
   const Notification* GetPendingRebootNotification() const {
@@ -89,43 +84,40 @@ class RebootNotificationControllerTest : public testing::Test {
     return message_center::MessageCenter::Get()->GetNotifications().size();
   }
 
-  void CreateFakeUser(AccountId account_id) {
-    profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
-    fake_user_manager_->AddUser(account_id);
-    ash::AnnotatedAccountId::Set(profile_, account_id);
+  void CreateFakeUser() {
+    user_ = user_session_test_environment_->AddRegularUser(
+        AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId));
+    ASSERT_TRUE(user_);
   }
 
-  void CreateFakeKioskUser(AccountId account_id) {
-    profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
-    fake_user_manager_->AddKioskChromeAppUser(account_id);
-    ash::AnnotatedAccountId::Set(profile_, account_id);
+  void CreateFakeKioskUser() {
+    user_ = user_session_test_environment_->AddKioskChromeAppUser(
+        policy::GenerateDeviceLocalAccountUserId(
+            kKioskId, policy::DeviceLocalAccountType::kKioskApp));
+    ASSERT_TRUE(user_);
   }
 
-  void CreateFakeMgsUser(AccountId account_id) {
-    profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
-    fake_user_manager_->AddPublicAccountUser(account_id);
-    ash::AnnotatedAccountId::Set(profile_, account_id);
+  void CreateFakeMgsUser() {
+    user_ = user_session_test_environment_->AddPublicAccountUser(
+        policy::GenerateDeviceLocalAccountUserId(
+            kMgsId, policy::DeviceLocalAccountType::kPublicSession));
+    ASSERT_TRUE(user_);
   }
 
-  void LoginFakeUser(AccountId account_id) {
-    fake_user_manager_->LoginUser(account_id, true);
-    EXPECT_EQ(ProfileManager::GetActiveUserProfile(), profile_);
+  void LoginFakeUser() {
+    user_session_test_environment_->LogIn(user_->GetAccountId());
   }
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile> profile_ = nullptr;
-
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<const user_manager::User> user_ = nullptr;
   RebootNotificationController notification_controller_;
 };
 
 TEST_F(RebootNotificationControllerTest, UserSessionShowsNotification) {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-  CreateFakeUser(account_id);
+  CreateFakeUser();
   base::Time reboot_time;
   ASSERT_TRUE(
       base::Time::FromLocalExploded(kRebootTime2022Feb2At1520, &reboot_time));
@@ -138,7 +130,7 @@ TEST_F(RebootNotificationControllerTest, UserSessionShowsNotification) {
   EXPECT_EQ(nullptr, GetPostRebootNotification());
 
   // Log in user and show pending reboot notification.
-  LoginFakeUser(account_id);
+  LoginFakeUser();
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time, base::NullCallback());
   EXPECT_NE(nullptr, GetPendingRebootNotification());
@@ -154,8 +146,7 @@ TEST_F(RebootNotificationControllerTest, UserSessionShowsNotification) {
 }
 
 TEST_F(RebootNotificationControllerTest, UserSessionNotificationChanged) {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-  CreateFakeUser(account_id);
+  CreateFakeUser();
   base::Time reboot_time1, reboot_time2;
   ASSERT_TRUE(
       base::Time::FromLocalExploded(kRebootTime2022Feb2At1520, &reboot_time1));
@@ -169,7 +160,7 @@ TEST_F(RebootNotificationControllerTest, UserSessionNotificationChanged) {
   EXPECT_EQ(GetNotificationCount(), 0);
 
   // Log in user and show notification.
-  LoginFakeUser(account_id);
+  LoginFakeUser();
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time1, base::NullCallback());
   EXPECT_NE(nullptr, GetPendingRebootNotification());
@@ -190,8 +181,7 @@ TEST_F(RebootNotificationControllerTest, UserSessionNotificationChanged) {
 }
 
 TEST_F(RebootNotificationControllerTest, ManagedGuestSessionShowsNotification) {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-  CreateFakeMgsUser(account_id);
+  CreateFakeMgsUser();
   base::Time reboot_time;
   ASSERT_TRUE(
       base::Time::FromLocalExploded(kRebootTime2022Feb2At1520, &reboot_time));
@@ -204,7 +194,7 @@ TEST_F(RebootNotificationControllerTest, ManagedGuestSessionShowsNotification) {
   EXPECT_EQ(nullptr, GetPostRebootNotification());
 
   // Log in user and show notification.
-  LoginFakeUser(account_id);
+  LoginFakeUser();
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time, base::NullCallback());
   EXPECT_NE(nullptr, GetPendingRebootNotification());
@@ -220,9 +210,7 @@ TEST_F(RebootNotificationControllerTest, ManagedGuestSessionShowsNotification) {
 }
 
 TEST_F(RebootNotificationControllerTest, KioskSessionDoesNotShowNotification) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kKioskEmailId, kKioskGaiaId);
-  CreateFakeKioskUser(account_id);
+  CreateFakeKioskUser();
   base::Time reboot_time;
   ASSERT_TRUE(
       base::Time::FromUTCExploded(kRebootTime2022Feb2At1520, &reboot_time));
@@ -235,7 +223,7 @@ TEST_F(RebootNotificationControllerTest, KioskSessionDoesNotShowNotification) {
   EXPECT_EQ(nullptr, GetPostRebootNotification());
 
   // Start kiosk session. Don't show notifications.
-  LoginFakeUser(account_id);
+  LoginFakeUser();
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time, base::NullCallback());
   EXPECT_EQ(nullptr, GetPendingRebootNotification());
@@ -244,14 +232,13 @@ TEST_F(RebootNotificationControllerTest, KioskSessionDoesNotShowNotification) {
 }
 
 TEST_F(RebootNotificationControllerTest, CloseNotification) {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-  CreateFakeUser(account_id);
+  CreateFakeUser();
   base::Time reboot_time;
   ASSERT_TRUE(
       base::Time::FromLocalExploded(kRebootTime2022Feb2At1520, &reboot_time));
 
   // Log in user and show notification.
-  LoginFakeUser(account_id);
+  LoginFakeUser();
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time, base::NullCallback());
   EXPECT_NE(nullptr, GetPendingRebootNotification());
@@ -264,14 +251,13 @@ TEST_F(RebootNotificationControllerTest, CloseNotification) {
 }
 
 TEST_F(RebootNotificationControllerTest, HandleNotificationClick) {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-  CreateFakeUser(account_id);
+  CreateFakeUser();
   base::Time reboot_time;
   ASSERT_TRUE(
       base::Time::FromLocalExploded(kRebootTime2022Feb2At1520, &reboot_time));
 
   // Log in user and show notification.
-  LoginFakeUser(account_id);
+  LoginFakeUser();
   ClickCounter counter;
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time, base::BindRepeating(&ClickCounter::ButtonClickCallback,
