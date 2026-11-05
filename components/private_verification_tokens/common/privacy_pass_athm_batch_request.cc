@@ -65,7 +65,7 @@ PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
       std::exchange(batch_client_, std::nullopt)
           ->finalize(rs::SliceRef<const uint8_t>(response_body));
   if (!finalize_result.has_value()) {
-    if (finalize_result.error() == AthmStatus::MakeInvalidInput()) {
+    if (finalize_result.error() == AthmStatus::InvalidInput::Make()) {
       return base::unexpected(
           PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
     }

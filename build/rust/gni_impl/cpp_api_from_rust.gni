@@ -12,6 +12,10 @@ _globally_enabled_crubit_features = [
   # TODO(b/558605603): Remove this feature from the list once it becomes the
   # default in Crubit.
   "always_specialize_generics_in_cpp_api_from_rust",
+
+  # TODO(b/489126000): Remove this feature from the list once it becomes the
+  # default in Crubit.
+  "enum_api_v2",
 ]
 
 # Defines a C++ `source_set` (and supporting targets) that contains C++

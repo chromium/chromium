@@ -23,7 +23,7 @@ GeneratedCode::GeneratedCode(GeneratedCode&&) = default;
 GeneratedCode& GeneratedCode::operator=(GeneratedCode&&) = default;
 
 Error RustErrorToCppError(const ::qr_code::types::QrError& rust_error) {
-  if (rust_error == ::qr_code::types::QrError::MakeDataTooLong()) {
+  if (rust_error == ::qr_code::types::QrError::DataTooLong::Make()) {
     return Error::kInputTooLong;
   }
   return Error::kUnknownError;
@@ -44,10 +44,10 @@ base::expected<GeneratedCode, Error> GenerateCode(
   ::qr_code::QrCode rs_code = std::move(result).value();
 
   if (min_version.has_value()) {
-    auto rs_min_version = ::qr_code::Version::MakeNormal(*min_version);
+    auto rs_min_version = ::qr_code::Version::Normal::Make(*min_version);
     if (rs_code.version().width() < rs_min_version.width()) {
       result = ::qr_code::QrCode::with_version(rs_in, std::move(rs_min_version),
-                                               ::qr_code::EcLevel::MakeM());
+                                               ::qr_code::EcLevel::M::Make());
       if (!result.has_value()) {
         return base::unexpected(RustErrorToCppError(result.err()));
       }
