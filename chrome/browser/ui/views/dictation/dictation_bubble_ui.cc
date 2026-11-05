@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/dictation/reviewing_page_status_view.h"
@@ -47,7 +46,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
                                       kCloseButtonElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
-                                      kToggleButtonElementIdForTesting);
+                                      kDoneButtonElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
                                       kWaveformElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
@@ -65,7 +64,7 @@ class DictationToastView : public views::View {
  public:
   explicit DictationToastView(
       base::RepeatingClosure close_callback,
-      base::RepeatingClosure toggle_active_stream_callback,
+      base::RepeatingClosure end_active_stream_callback,
       base::RepeatingClosure on_layout_changed_callback);
   ~DictationToastView() override;
 
@@ -75,7 +74,7 @@ class DictationToastView : public views::View {
   void UpdateAudioLevel(float audio_level);
   void SetReviewingPageStatusDurationForTesting(base::TimeDelta duration);
 
-  views::MdTextButton* toggle_button() { return toggle_button_; }
+  views::MdTextButton* done_button() { return done_button_; }
   views::ImageButton* close_button() { return close_button_; }
 
   // views::View:
@@ -87,13 +86,13 @@ class DictationToastView : public views::View {
   bool IsReviewingPageStatusVisible() const;
 
   base::RepeatingClosure close_callback_;
-  base::RepeatingClosure toggle_active_stream_callback_;
+  base::RepeatingClosure end_active_stream_callback_;
   base::RepeatingClosure on_layout_changed_callback_;
 
   raw_ptr<views::ImageView> mic_view_ = nullptr;
   raw_ptr<WaveformView> waveform_view_ = nullptr;
   raw_ptr<ReviewingPageStatusView> status_view_ = nullptr;
-  raw_ptr<views::MdTextButton> toggle_button_ = nullptr;
+  raw_ptr<views::MdTextButton> done_button_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
 };
 
@@ -103,10 +102,10 @@ class DictationToastView : public views::View {
 
 DictationToastView::DictationToastView(
     base::RepeatingClosure close_callback,
-    base::RepeatingClosure toggle_active_stream_callback,
+    base::RepeatingClosure end_active_stream_callback,
     base::RepeatingClosure on_layout_changed_callback)
     : close_callback_(std::move(close_callback)),
-      toggle_active_stream_callback_(std::move(toggle_active_stream_callback)),
+      end_active_stream_callback_(std::move(end_active_stream_callback)),
       on_layout_changed_callback_(std::move(on_layout_changed_callback)) {
   SetProperty(views::kElementIdentifierKey,
               DictationBubbleUi::kViewElementIdForTesting);
@@ -148,7 +147,6 @@ void DictationToastView::Init() {
   waveform_view_ = waveform_view;
   waveform_view->SetProperty(views::kElementIdentifierKey,
                              DictationBubbleUi::kWaveformElementIdForTesting);
-  waveform_view->SetCollapseWhenIdle(!kSessionEndsOnStreamEnd.Get());
   waveform_view->SetProperty(views::kMarginsKey, child_margins);
   waveform_view->SetProperty(
       views::kFlexBehaviorKey,
@@ -163,24 +161,23 @@ void DictationToastView::Init() {
   status_view_->Init();
   status_view_->SetProperty(views::kMarginsKey, child_margins);
 
-  views::MdTextButton* toggle_button =
+  views::MdTextButton* done_button =
       AddChildView(std::make_unique<views::MdTextButton>(
-          toggle_active_stream_callback_, l10n_util::GetStringUTF16(IDS_DONE)));
-  toggle_button_ = toggle_button;
-  toggle_button->SetPreferredSize(gfx::Size(
-      toggle_button->GetPreferredSize().width(),
+          end_active_stream_callback_, l10n_util::GetStringUTF16(IDS_DONE)));
+  done_button_ = done_button;
+  done_button->SetPreferredSize(gfx::Size(
+      done_button->GetPreferredSize().width(),
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));
-  toggle_button->SetStyle(ui::ButtonStyle::kProminent);
-  toggle_button->SetProperty(
+  done_button->SetStyle(ui::ButtonStyle::kProminent);
+  done_button->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(
           0,
           lp->GetDistanceMetric(
               DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING),
           0, 0));
-  toggle_button->SetProperty(
-      views::kElementIdentifierKey,
-      DictationBubbleUi::kToggleButtonElementIdForTesting);
+  done_button->SetProperty(views::kElementIdentifierKey,
+                           DictationBubbleUi::kDoneButtonElementIdForTesting);
 
   views::ImageButton* close_button =
       AddChildView(views::CreateVectorImageButtonWithNativeTheme(
@@ -208,25 +205,15 @@ void DictationToastView::UpdateForState(UiState state) {
     waveform_view_->SetMode(ToWaveformMode(state));
   }
 
-  if (toggle_button_) {
+  if (done_button_) {
     switch (state) {
       case UiState::kInactive:
-        // Note that when `kSessionEndsOnStreamEnd` is enabled, the button does
-        // not toggle streams, it can only end both the stream and session.
-        // TODO(b/510738735): Finalize placeholder strings.
-        toggle_button_->SetText(l10n_util::GetStringUTF16(
-            kSessionEndsOnStreamEnd.Get() ? IDS_DONE
-                                          : IDS_DICTATION_BUTTON_START));
-        toggle_button_->SetEnabled(!kSessionEndsOnStreamEnd.Get());
+      case UiState::kFinalizing:
+        done_button_->SetEnabled(false);
         break;
       case UiState::kInitializing:
       case UiState::kTranscribing:
-        toggle_button_->SetText(l10n_util::GetStringUTF16(IDS_DONE));
-        toggle_button_->SetEnabled(true);
-        break;
-      case UiState::kFinalizing:
-        toggle_button_->SetText(l10n_util::GetStringUTF16(IDS_DONE));
-        toggle_button_->SetEnabled(false);
+        done_button_->SetEnabled(true);
         break;
     }
   }
@@ -269,8 +256,8 @@ void DictationToastView::OnReviewingPageStatusVisibilityChanged(bool visible) {
                                     ? WaveformView::kCompactFullSizeBarCount
                                     : WaveformView::kDefaultFullSizeBarCount);
   }
-  if (toggle_button_) {
-    toggle_button_->SetVisible(!visible);
+  if (done_button_) {
+    done_button_->SetVisible(!visible);
   }
   if (on_layout_changed_callback_) {
     on_layout_changed_callback_.Run();
@@ -289,11 +276,11 @@ END_METADATA
 DictationBubbleUi::DictationBubbleUi(
     views::View* anchor_view,
     base::RepeatingClosure close_callback,
-    base::RepeatingClosure toggle_active_stream_callback,
+    base::RepeatingClosure end_active_stream_callback,
     bool show_reviewing_page_status)
     : VoicePlate(anchor_view) {
   SetContentsView(std::make_unique<DictationToastView>(
-      std::move(close_callback), std::move(toggle_active_stream_callback),
+      std::move(close_callback), std::move(end_active_stream_callback),
       base::BindRepeating(&DictationBubbleUi::SizeToContents,
                           base::Unretained(this))));
   CreateWidget();
@@ -313,10 +300,9 @@ void DictationBubbleUi::Show() {
   // focus on activation. Clear it so that the widget becoming active without
   // explicit keyboard navigation doesn't focus the close button, which would
   // pause the reviewing page status timer.
-  views::View* toggle_button =
-      views::AsViewClass<DictationToastView>(GetContentsView())
-          ->toggle_button();
-  if (!toggle_button->GetVisible()) {
+  views::View* done_button =
+      views::AsViewClass<DictationToastView>(GetContentsView())->done_button();
+  if (!done_button->GetVisible()) {
     GetWidget()->GetFocusManager()->SetStoredFocusView(nullptr);
   }
 }
@@ -357,7 +343,7 @@ void DictationBubbleUi::Init() {
   toast_view->Init();
   toast_view->UpdateForState(state_);
 
-  SetInitiallyFocusedView(toast_view->toggle_button());
+  SetInitiallyFocusedView(toast_view->done_button());
 }
 
 views::View* DictationBubbleUi::GetInitiallyFocusedView() {
@@ -365,12 +351,12 @@ views::View* DictationBubbleUi::GetInitiallyFocusedView() {
   if (!toast_view) {
     return nullptr;
   }
-  // The toggle button is hidden while the reviewing page status is shown. Fall
+  // The done button is hidden while the reviewing page status is shown. Fall
   // back to the close button so that keyboard users can still move focus into
   // the bubble (e.g. via pane cycling), since a hidden view can't take focus.
-  views::View* toggle_button = toast_view->toggle_button();
-  if (toggle_button && toggle_button->GetVisible()) {
-    return toggle_button;
+  views::View* done_button = toast_view->done_button();
+  if (done_button && done_button->GetVisible()) {
+    return done_button;
   }
   return toast_view->close_button();
 }

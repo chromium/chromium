@@ -41,7 +41,7 @@ class SessionUiImpl : public SessionUi {
 
   void CreateBubbleUi(bool show_reviewing_page_status);
   void OnDictationBubbleCloseClicked();
-  void OnToggleActiveStreamClicked();
+  void OnEndActiveStreamClicked();
   void OnSessionStateChanged(SessionState state);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);

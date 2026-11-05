@@ -131,7 +131,8 @@ class DictationHotkeyIphUiTest
                    ExtensionSendStreamStateUpdate(
                        profile(), stream_id,
                        ExtensionStreamState::kTranscribing);
-                   session_controller()->UiRequestEndActiveStream();
+                   session_controller()->FinalizeAndShutdown(
+                       DictationStreamEndTrigger::kTest);
                    ExtensionSendStreamStateUpdate(
                        profile(), stream_id, ExtensionStreamState::kComplete);
                  }),

@@ -194,43 +194,6 @@ void SessionController::OnFocusChangedInPage(
   if (attached_stream_provider_) {
     EndDictationStream(DictationStreamEndTrigger::kFocusChange);
   }
-
-  if (kSessionEndsOnStreamEnd.Get()) {
-    // Do not start additional streams, if we only do one stream in a session.
-    return;
-  }
-
-  if (details.editable_level == content::EditableLevel::kNotEditable ||
-      !details.global_dom_node_id.document.AsRenderFrameHostIfValid()) {
-    return;
-  }
-
-  content::GlobalDOMNodeId newly_focused_target_id = details.global_dom_node_id;
-
-  const bool is_finalizing_for_same_element = std::ranges::any_of(
-      finalizing_stream_providers_,
-      [&newly_focused_target_id](
-          const std::unique_ptr<StreamProvider>& provider) {
-        CHECK(newly_focused_target_id.document.AsRenderFrameHostIfValid());
-        return provider->GetTarget() &&
-               provider->GetTarget()
-                       ->global_dom_node_id()
-                       .document.AsRenderFrameHostIfValid() ==
-                   newly_focused_target_id.document
-                       .AsRenderFrameHostIfValid() &&
-               provider->GetTarget()
-                       ->global_dom_node_id()
-                       .target_element_dom_id ==
-                   newly_focused_target_id.target_element_dom_id;
-      });
-
-  if (!is_finalizing_for_same_element && !is_shutting_down_) {
-    StartDictationStream(
-        TargetDetails(
-            newly_focused_target_id,
-            details.editable_level == content::EditableLevel::kRichlyEditable),
-        DictationStreamStartTrigger::kFocusChange, base::TimeTicks::Now());
-  }
 }
 
 void SessionController::PrimaryPageChanged(content::Page& page) {
@@ -265,11 +228,7 @@ void SessionController::EndDictationStream(DictationStreamEndTrigger trigger) {
   CHECK(attached_stream_provider_);
   CHECK(state_ == SessionState::kStreamInitializing ||
         state_ == SessionState::kTranscribing);
-  if (kSessionEndsOnStreamEnd.Get()) {
-    // If ending a stream also ends the session, trigger shutdown after this one
-    // finalizes.
-    is_shutting_down_ = true;
-  }
+  is_shutting_down_ = true;
   attached_stream_provider_->Stop(trigger);
   // TODO(b/525943882): Consider whether an initializing stream should be
   // immediately moved to deletion, rather than finalizing.
@@ -292,10 +251,6 @@ void SessionController::UiRequestEndSession() {
   EndSessionAsynchronously();
 }
 
-void SessionController::UiRequestEndActiveStream() {
-  EndDictationStream(DictationStreamEndTrigger::kDoneButton);
-}
-
 void SessionController::FinalizeAndShutdown(DictationStreamEndTrigger trigger) {
   VT_LOG(GetBrowserContext()) << __func__;
   is_shutting_down_ = true;
@@ -306,20 +261,6 @@ void SessionController::FinalizeAndShutdown(DictationStreamEndTrigger trigger) {
     // here so PostTask to avoid destroying objects in the callstack.
     EndSessionAsynchronously();
   }
-}
-
-void SessionController::UiRequestStartStream() {
-  CHECK(!attached_stream_provider_);
-  CHECK_EQ(state_, SessionState::kInactive);
-  CHECK(!is_shutting_down_);
-
-  // A stream is always started when the session is created using an explicit
-  // target. Starting from UI can only happen after that.
-  CHECK(last_used_target_details_.has_value());
-
-  StartDictationStream(*last_used_target_details_,
-                       DictationStreamStartTrigger::kStartButton,
-                       base::TimeTicks::Now());
 }
 
 SessionState SessionController::GetState() const {
@@ -346,9 +287,7 @@ void SessionController::DidUpdateStreamProviderState(
       stream_provider.GetState() == StreamState::kFailed) {
     std::unique_ptr<StreamProvider> provider_to_delete;
     if (is_attached) {
-      if (kSessionEndsOnStreamEnd.Get()) {
-        is_shutting_down_ = true;
-      }
+      is_shutting_down_ = true;
       provider_to_delete = std::move(attached_stream_provider_);
     } else {
       auto it = std::ranges::find_if(finalizing_stream_providers_,
@@ -455,16 +394,10 @@ void SessionController::MoveToState(SessionState new_state) {
   session_state_changed_callback_list_.Notify(new_state);
 
   if (state_ == SessionState::kInactive && is_shutting_down_) {
-    if (kSessionEndsOnStreamEnd.Get()) {
-      auto_session_end_timer_.Start(
-          FROM_HERE, kAutoSessionEndDelay.Get(),
-          base::BindOnce(&SessionController::EndSessionSynchronously,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      // EndSession destroys `this` so do this async so callers to MoveToState
-      // don't have to avoid the UAF landmine.
-      EndSessionAsynchronously();
-    }
+    auto_session_end_timer_.Start(
+        FROM_HERE, kAutoSessionEndDelay.Get(),
+        base::BindOnce(&SessionController::EndSessionSynchronously,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

@@ -92,31 +92,9 @@ TEST_F(WaveformViewTest, AudioLevelMath) {
   EXPECT_FLOAT_EQ(height_max, kMaxBarHeight);
 }
 
-TEST_F(WaveformViewTest, DoesNotCollapseWhenIdleByDefault) {
+TEST_F(WaveformViewTest, DoesNotCollapseWhenIdle) {
   auto waveform_view = CreateFullSizeWaveformView();
   ASSERT_EQ(waveform_view->mode(), WaveformMode::kIdle);
-  EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
-  EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
-}
-
-TEST_F(WaveformViewTest, CollapsesOnlyWhenIdleIfRequested) {
-  auto waveform_view = CreateFullSizeWaveformView();
-  waveform_view->SetCollapseWhenIdle(true);
-
-  EXPECT_EQ(waveform_view->mode(), WaveformMode::kIdle);
-  EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(0, 0));
-
-  for (WaveformMode mode : {WaveformMode::kWaiting, WaveformMode::kLive,
-                            WaveformMode::kProcessing}) {
-    waveform_view->SetMode(mode);
-    EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
-    EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
-  }
-
-  waveform_view->SetMode(WaveformMode::kIdle);
-  EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(0, 0));
-
-  waveform_view->SetCollapseWhenIdle(false);
   EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
   EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
 }

@@ -5193,8 +5193,6 @@ const FeatureEntry::FeatureVariation kToolbarGlowUpVariations[] = {
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kDictationEvalModeParam[] = {
     {"eval_mode", "true"}};
-const FeatureEntry::FeatureParam kDictationSessionEndsOnStreamEndParam[] = {
-    {"session_ends_on_stream_end", "true"}};
 const FeatureEntry::FeatureParam kDictationShowPartialsParam[] = {
     {"show_partials", "true"}};
 const FeatureEntry::FeatureParam kDictationWebSpeechApiBackendParam[] = {
@@ -5206,8 +5204,6 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kDictationConnectorSmoketestParam[] = {
     {"connector_tag", "smoketest"}};
 const FeatureEntry::FeatureVariation kDictationVariations[] = {
-    {"with close UI after output", kDictationSessionEndsOnStreamEndParam,
-     nullptr},
     {"with evaluation mode", kDictationEvalModeParam, nullptr},
     {"with shown partials", kDictationShowPartialsParam, nullptr},
     {"with Web Speech API backend", kDictationWebSpeechApiBackendParam,

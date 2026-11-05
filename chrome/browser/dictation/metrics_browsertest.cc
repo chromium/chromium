@@ -33,15 +33,13 @@
 
 namespace dictation {
 
-class DictationMetricsBrowserTest : public DictationInteractiveBrowserTestBase,
-                                    public testing::WithParamInterface<bool> {
+class DictationMetricsBrowserTest : public DictationInteractiveBrowserTestBase {
  public:
-  DictationMetricsBrowserTest()
-      : DictationInteractiveBrowserTestBase(GetParam()) {}
+  DictationMetricsBrowserTest() = default;
   ~DictationMetricsBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnSessionStart) {
   base::HistogramTester histogram_tester;
 
@@ -56,7 +54,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
       DictationStreamStartTrigger::kSessionStart, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnContextMenuExistingSessionSameTab) {
   base::HistogramTester histogram_tester;
 
@@ -82,7 +80,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
   histogram_tester.ExpectTotalCount(kSessionStartSourceHistogramName, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     DictationMetricsBrowserTest,
     RecordMetricsOnContextMenuExistingSessionDifferentWindow) {
   base::HistogramTester histogram_tester;
@@ -114,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(
 // Note: DictationUrlCategory::kGlic is tested in
 // DictationGlicBrowserTest.RecordsSessionUrlCategoryGlic in
 // dictation_keyed_service_browsertest.cc.
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordSessionUrlCategoryWebOnSessionStart) {
   base::HistogramTester histogram_tester;
 
@@ -125,7 +123,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       DictationUrlCategory::kWeb, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordSessionUrlCategoryWebUIOnSessionStart) {
   base::HistogramTester histogram_tester;
 
@@ -138,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       DictationUrlCategory::kWebUI, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordSessionUrlCategoryOnlyOnceForExistingSession) {
   base::HistogramTester histogram_tester;
 
@@ -155,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
   histogram_tester.ExpectTotalCount(kSessionUrlCategoryHistogramName, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitUserDone) {
   base::HistogramTester histogram_tester;
 
@@ -163,13 +161,13 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                blink::DOMNodeIdType(123));
 
   RunTestSequence(
-      PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting));
+      PressButton(DictationBubbleUi::kDoneButtonElementIdForTesting));
 
   histogram_tester.ExpectUniqueSample(kStreamExitReasonHistogramName,
                                       DictationStreamExitStatus::kUserDone, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitUserDoneHotkeyToggle) {
   base::HistogramTester histogram_tester;
 
@@ -189,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       DictationStreamExitStatus::kUserDone, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordStreamStartLatencyOnTranscribing) {
   base::HistogramTester histogram_tester;
 
@@ -213,21 +211,21 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
   EXPECT_GT(buckets[0].min, 0);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordStreamAbandonedBeforeListening) {
   base::HistogramTester histogram_tester;
 
   SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
                                blink::DOMNodeIdType(123));
   RunTestSequence(
-      PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting));
+      PressButton(DictationBubbleUi::kDoneButtonElementIdForTesting));
 
   histogram_tester.ExpectTotalCount(
       kStreamAbandonedBeforeListeningHistogramName, 1);
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitUserDoneEscapeKey) {
   base::HistogramTester histogram_tester;
 
@@ -244,7 +242,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       DictationStreamExitStatus::kUserDone, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitUserCancel) {
   base::HistogramTester histogram_tester;
 
@@ -259,7 +257,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitAutoDoneTabSwitch) {
   base::HistogramTester histogram_tester;
 
@@ -280,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       DictationStreamExitStatus::kAutoDone, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     DictationMetricsBrowserTest,
     RecordMetricsOnStreamExitAutoDoneFocusChangeToNonEditable) {
   base::HistogramTester histogram_tester;
@@ -301,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(
                                       DictationStreamExitStatus::kAutoDone, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitAutoDoneStreamTimeout) {
   base::HistogramTester histogram_tester;
 
@@ -320,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       DictationStreamExitStatus::kAutoDone, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitSpeechError) {
   base::HistogramTester histogram_tester;
 
@@ -340,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitAutoDoneNewSession) {
   base::HistogramTester histogram_tester;
 
@@ -355,7 +353,7 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                      DictationStreamExitStatus::kAutoDone, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnStreamExitAutoCancelTabClosed) {
   base::HistogramTester histogram_tester;
 
@@ -380,7 +378,5 @@ IN_PROC_BROWSER_TEST_P(DictationMetricsBrowserTest,
                                       DictationStreamExitStatus::kAutoCancelled,
                                       1);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, DictationMetricsBrowserTest, testing::Bool());
 
 }  // namespace dictation

@@ -37,7 +37,7 @@ namespace dictation {
 class DictationOverlayView : public views::BubbleDialogDelegate {
  public:
   DictationOverlayView(gfx::NativeView parent_window,
-                       base::RepeatingClosure toggle_active_stream_callback);
+                       base::RepeatingClosure end_active_stream_callback);
   ~DictationOverlayView() override;
 
   DictationOverlayView(const DictationOverlayView&) = delete;
@@ -56,7 +56,6 @@ class DictationOverlayView : public views::BubbleDialogDelegate {
   UiState state_for_testing() const;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMicButtonElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementIdForTesting);
 
  private:

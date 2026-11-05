@@ -50,9 +50,7 @@ class SessionController : public SessionUiDelegate,
 
   // SessionUiDelegate:
   void UiRequestEndSession() override;
-  void UiRequestEndActiveStream() override;
   void FinalizeAndShutdown(DictationStreamEndTrigger trigger) override;
-  void UiRequestStartStream() override;
   SessionState GetState() const override;
   base::CallbackListSubscription AddSessionStateChangedCallback(
       SessionStateChangedCallback callback) override;
@@ -144,8 +142,7 @@ class SessionController : public SessionUiDelegate,
   // VoiceTyping.StreamAbandonedBeforeListening.
   base::TimeTicks stream_trigger_time_;
 
-  // Timer for delayed session shutdown when `kSessionEndsOnStreamEnd` is
-  // enabled.
+  // Timer for delayed session shutdown after a stream ends.
   base::OneShotTimer auto_session_end_timer_;
 
   // Display wake lock held whenever `state_` is not `SessionState::kInactive`

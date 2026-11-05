@@ -35,11 +35,10 @@
 
 namespace dictation {
 
-class DictationKeyedServiceTest : public testing::Test,
-                                  public testing::WithParamInterface<bool> {
+class DictationKeyedServiceTest : public testing::Test {
  public:
   DictationKeyedServiceTest()
-      : scoped_feature_list_(CreateEnablingFeatureList(GetParam())),
+      : scoped_feature_list_(CreateEnablingFeatureList()),
         web_contents_(
             content::WebContentsTester::CreateTestWebContents(&profile_,
                                                               nullptr)),
@@ -126,16 +125,14 @@ class DictationKeyedServiceTest : public testing::Test,
   raw_ptr<MockDictationKeyedService> service_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, DictationKeyedServiceTest, testing::Bool());
-
-TEST_P(DictationKeyedServiceTest, StartSessionWithNullTarget) {
+TEST_F(DictationKeyedServiceTest, StartSessionWithNullTarget) {
   ASSERT_EQ(service_->session_controller(), nullptr);
   service_->StartSessionForTesting(tab_, EmptyTarget(),
                                    DictationSessionEntryPoint::kContextMenu);
   EXPECT_NE(service_->session_controller(), nullptr);
 }
 
-TEST_P(DictationKeyedServiceTest, EndSessionRemovesController) {
+TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
   service_->StartSessionForTesting(tab_, EmptyTarget(),
                                    DictationSessionEntryPoint::kContextMenu);
   ASSERT_NE(service_->session_controller(), nullptr);
@@ -143,7 +140,7 @@ TEST_P(DictationKeyedServiceTest, EndSessionRemovesController) {
   EXPECT_EQ(service_->session_controller(), nullptr);
 }
 
-TEST_P(DictationKeyedServiceTest,
+TEST_F(DictationKeyedServiceTest,
        RecordsMetricsOnInitializationAndStartSession) {
   base::HistogramTester histogram_tester;
 
@@ -161,44 +158,7 @@ TEST_P(DictationKeyedServiceTest,
       DictationStreamStartTrigger::kSessionStart, 1);
 }
 
-TEST_P(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
-  if (GetParam()) {
-    GTEST_SKIP()
-        << "Multiple streams per session are not possible in this config.";
-  }
-
-  base::HistogramTester histogram_tester;
-
-  auto service = std::make_unique<MockDictationKeyedService>(&profile_);
-  service->StartSessionForTesting(tab_, EmptyTarget(),
-                                  DictationSessionEntryPoint::kContextMenu);
-  histogram_tester.ExpectBucketCount(kStreamStartTriggerHistogramName,
-                                     DictationStreamStartTrigger::kSessionStart,
-                                     1);
-
-  auto* controller = service->session_controller();
-  ASSERT_NE(controller, nullptr);
-  auto* stream_provider = controller->attached_stream_provider();
-  ASSERT_NE(stream_provider, nullptr);
-
-  controller->UiRequestEndActiveStream();
-
-  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider), GetState())
-      .WillRepeatedly(testing::Return(StreamProvider::StreamState::kComplete));
-  controller->DidUpdateStreamProviderState(
-      *stream_provider, StreamProvider::StreamState::kInitializing);
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return controller->GetState() == SessionState::kInactive; }));
-
-  controller->UiRequestStartStream();
-
-  histogram_tester.ExpectBucketCount(kStreamStartTriggerHistogramName,
-                                     DictationStreamStartTrigger::kStartButton,
-                                     1);
-  histogram_tester.ExpectTotalCount(kStreamStartTriggerHistogramName, 2);
-}
-
-TEST_P(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
+TEST_F(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
   service_->StartSessionForTesting(tab_, EmptyTargetId(),
                                    DictationSessionEntryPoint::kContextMenu);
   auto* controller = service_->session_controller();
@@ -211,13 +171,13 @@ TEST_P(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
   service_->UpdateAudioLevel(0.5f);
 }
 
-TEST_P(DictationKeyedServiceTest, HotkeyIgnoredIfNoActiveBrowser) {
+TEST_F(DictationKeyedServiceTest, HotkeyIgnoredIfNoActiveBrowser) {
   ASSERT_EQ(service_->session_controller(), nullptr);
   service_->ToggleHotkeyHandler();
   EXPECT_EQ(service_->session_controller(), nullptr);
 }
 
-TEST_P(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
+TEST_F(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
   EXPECT_NE(service_->hotkey_manager_for_testing(), nullptr);
 
   profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 2);
@@ -227,7 +187,7 @@ TEST_P(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
   EXPECT_NE(service_->hotkey_manager_for_testing(), nullptr);
 }
 
-TEST_P(DictationKeyedServiceTest, GlobalHotkeyRegisteredOnlyWhileListening) {
+TEST_F(DictationKeyedServiceTest, GlobalHotkeyRegisteredOnlyWhileListening) {
   EXPECT_EQ(global_hotkey(), nullptr);
   EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
 
@@ -239,13 +199,13 @@ TEST_P(DictationKeyedServiceTest, GlobalHotkeyRegisteredOnlyWhileListening) {
   EXPECT_TRUE(global_hotkey()->is_registered());
   EXPECT_TRUE(global_listener().IsListeningFor(hotkey()));
 
-  controller->UiRequestEndActiveStream();
+  controller->FinalizeAndShutdown(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(global_hotkey(), nullptr);
   EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
 }
 
-TEST_P(DictationKeyedServiceTest,
+TEST_F(DictationKeyedServiceTest,
        GlobalHotkeyUnregisteredWhenSessionEndsWhileListening) {
   StartContextMenuSession();
   ASSERT_TRUE(global_listener().IsListeningFor(hotkey()));
@@ -256,7 +216,7 @@ TEST_P(DictationKeyedServiceTest,
   EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
 }
 
-TEST_P(DictationKeyedServiceTest, GlobalHotkeyUnregisteredOnPolicyDisable) {
+TEST_F(DictationKeyedServiceTest, GlobalHotkeyUnregisteredOnPolicyDisable) {
   StartContextMenuSession();
   ASSERT_TRUE(global_listener().IsListeningFor(hotkey()));
 
@@ -265,7 +225,7 @@ TEST_P(DictationKeyedServiceTest, GlobalHotkeyUnregisteredOnPolicyDisable) {
   EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
 }
 
-TEST_P(DictationKeyedServiceTest, GlobalHotkeyPressEndsStream) {
+TEST_F(DictationKeyedServiceTest, GlobalHotkeyPressEndsStream) {
   StartContextMenuSession();
   SessionController* controller = service_->session_controller();
   ASSERT_NE(controller, nullptr);
@@ -284,7 +244,7 @@ TEST_P(DictationKeyedServiceTest, GlobalHotkeyPressEndsStream) {
   EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
 }
 
-TEST_P(DictationKeyedServiceTest, TabChangedCallbackNotified) {
+TEST_F(DictationKeyedServiceTest, TabChangedCallbackNotified) {
   int callback_count = 0;
   base::CallbackListSubscription subscription =
       service_->AddDictationTabChangedCallback(base::BindLambdaForTesting(
@@ -303,7 +263,7 @@ TEST_P(DictationKeyedServiceTest, TabChangedCallbackNotified) {
   EXPECT_EQ(service_->GetActiveDictationTab(), nullptr);
 }
 
-TEST_P(DictationKeyedServiceTest, SessionEndedCallbackNotifiedWithTarget) {
+TEST_F(DictationKeyedServiceTest, SessionEndedCallbackNotifiedWithTarget) {
   std::vector<blink::DOMNodeIdType> targets;
   base::CallbackListSubscription subscription =
       service_->AddSessionEndedCallback(base::BindLambdaForTesting(
@@ -330,7 +290,7 @@ TEST_P(DictationKeyedServiceTest, SessionEndedCallbackNotifiedWithTarget) {
                                             blink::DOMNodeIdType(2)));
 }
 
-TEST_P(DictationKeyedServiceTest,
+TEST_F(DictationKeyedServiceTest,
        SessionEndedCallbackNotifiedWhenServiceEndsSession) {
   int callback_count = 0;
   base::CallbackListSubscription subscription =
@@ -348,7 +308,7 @@ TEST_P(DictationKeyedServiceTest,
   EXPECT_EQ(callback_count, 1);
 }
 
-TEST_P(DictationKeyedServiceTest, SessionEndedCallbackNotifiedWithoutDocument) {
+TEST_F(DictationKeyedServiceTest, SessionEndedCallbackNotifiedWithoutDocument) {
   int callback_count = 0;
   base::CallbackListSubscription subscription =
       service_->AddSessionEndedCallback(base::BindLambdaForTesting(
@@ -370,7 +330,7 @@ TEST_P(DictationKeyedServiceTest, SessionEndedCallbackNotifiedWithoutDocument) {
   EXPECT_EQ(callback_count, 1);
 }
 
-TEST_P(DictationKeyedServiceTest,
+TEST_F(DictationKeyedServiceTest,
        ReviewingPageStatusExpiresAfter60MinutesOnSameDocument) {
   // First invocation on the open document shows the disclaimer.
   EXPECT_TRUE(StartSessionAndGetReviewingPageStatus(tab_));
@@ -388,7 +348,7 @@ TEST_P(DictationKeyedServiceTest,
   EXPECT_FALSE(StartSessionAndGetReviewingPageStatus(tab_));
 }
 
-TEST_P(DictationKeyedServiceTest,
+TEST_F(DictationKeyedServiceTest,
        ReviewingPageStatusShownOnCrossDocumentButNotSameDocumentNavigation) {
   EXPECT_TRUE(StartSessionAndGetReviewingPageStatus(tab_));
 
@@ -407,7 +367,7 @@ TEST_P(DictationKeyedServiceTest,
   EXPECT_TRUE(StartSessionAndGetReviewingPageStatus(tab_));
 }
 
-TEST_P(DictationKeyedServiceTest,
+TEST_F(DictationKeyedServiceTest,
        ReviewingPageStatusTrackedIndependentlyPerDocument) {
   std::unique_ptr<content::WebContents> web_contents_2 =
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);

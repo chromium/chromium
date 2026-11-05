@@ -8,8 +8,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/ui/views/dictation/ui_state.h"
 #include "chrome/browser/ui/views/voice/waveform_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -52,11 +50,9 @@ views::View* FindViewByElementId(views::View* root, ui::ElementIdentifier id) {
 
 }  // namespace
 
-class DictationBubbleUiTest : public ChromeViewsTestBase,
-                              public testing::WithParamInterface<bool> {
+class DictationBubbleUiTest : public ChromeViewsTestBase {
  public:
-  DictationBubbleUiTest()
-      : scoped_feature_list_(CreateEnablingFeatureList(GetParam())) {}
+  DictationBubbleUiTest() = default;
   DictationBubbleUiTest(const DictationBubbleUiTest&) = delete;
   DictationBubbleUiTest& operator=(const DictationBubbleUiTest&) = delete;
   ~DictationBubbleUiTest() override = default;
@@ -79,10 +75,9 @@ class DictationBubbleUiTest : public ChromeViewsTestBase,
  protected:
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<views::View> anchor_view_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(DictationBubbleUiTest, StatePropagatesToWaveform) {
+TEST_F(DictationBubbleUiTest, StatePropagatesToWaveform) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
       /*show_reviewing_page_status=*/false);
@@ -122,7 +117,7 @@ TEST_P(DictationBubbleUiTest, StatePropagatesToWaveform) {
   EXPECT_EQ(waveform_view->mode(), WaveformMode::kIdle);
 }
 
-TEST_P(DictationBubbleUiTest, StatePropagatesToToggleButton) {
+TEST_F(DictationBubbleUiTest, StatePropagatesToDoneButton) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
       /*show_reviewing_page_status=*/false);
@@ -131,29 +126,26 @@ TEST_P(DictationBubbleUiTest, StatePropagatesToToggleButton) {
   views::View* contents_view = bubble->GetContentsView();
   ASSERT_NE(contents_view, nullptr);
 
-  views::View* toggle_button_raw =
+  views::View* done_button_raw =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          DictationBubbleUi::kToggleButtonElementIdForTesting,
+          DictationBubbleUi::kDoneButtonElementIdForTesting,
           views::ElementTrackerViews::GetContextForView(contents_view));
-  ASSERT_NE(toggle_button_raw, nullptr);
+  ASSERT_NE(done_button_raw, nullptr);
 
-  auto* toggle_button =
-      views::AsViewClass<views::MdTextButton>(toggle_button_raw);
-  ASSERT_NE(toggle_button, nullptr);
-
-  const bool session_ends_on_stream_end = GetParam();
+  auto* done_button = views::AsViewClass<views::MdTextButton>(done_button_raw);
+  ASSERT_NE(done_button, nullptr);
 
   bubble->SetState(UiState::kTranscribing);
-  EXPECT_TRUE(toggle_button->GetEnabled());
+  EXPECT_TRUE(done_button->GetEnabled());
 
   bubble->SetState(UiState::kFinalizing);
-  EXPECT_FALSE(toggle_button->GetEnabled());
+  EXPECT_FALSE(done_button->GetEnabled());
 
   bubble->SetState(UiState::kInactive);
-  EXPECT_EQ(toggle_button->GetEnabled(), !session_ends_on_stream_end);
+  EXPECT_FALSE(done_button->GetEnabled());
 }
 
-TEST_P(DictationBubbleUiTest, AudioLevelPropagatesToWaveform) {
+TEST_F(DictationBubbleUiTest, AudioLevelPropagatesToWaveform) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
       /*show_reviewing_page_status=*/false);
@@ -182,7 +174,7 @@ TEST_P(DictationBubbleUiTest, AudioLevelPropagatesToWaveform) {
   EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.2f);
 }
 
-TEST_P(DictationBubbleUiTest, WaveformSizing) {
+TEST_F(DictationBubbleUiTest, WaveformSizing) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
       /*show_reviewing_page_status=*/false);
@@ -200,26 +192,16 @@ TEST_P(DictationBubbleUiTest, WaveformSizing) {
   auto* waveform_view = views::AsViewClass<WaveformView>(waveform_view_raw);
   ASSERT_NE(waveform_view, nullptr);
 
-  const bool session_ends_on_stream_end = GetParam();
-
   // Inactive state
   EXPECT_EQ(waveform_view->mode(), WaveformMode::kIdle);
-  if (session_ends_on_stream_end) {
-    EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
-    EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
-  } else {
-    EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(0, 0));
-  }
+  EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
+  EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
 
   // Initializing state
   bubble->SetState(UiState::kInitializing);
   EXPECT_EQ(waveform_view->mode(), WaveformMode::kWaiting);
-  if (session_ends_on_stream_end) {
-    EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
-    EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
-  } else {
-    EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
-  }
+  EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
+  EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
 
   // Transcribing state
   bubble->SetState(UiState::kTranscribing);
@@ -229,15 +211,11 @@ TEST_P(DictationBubbleUiTest, WaveformSizing) {
   // Transitioning back to inactive state
   bubble->SetState(UiState::kInactive);
   EXPECT_EQ(waveform_view->mode(), WaveformMode::kIdle);
-  if (session_ends_on_stream_end) {
-    EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
-    EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
-  } else {
-    EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(0, 0));
-  }
+  EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
+  EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
 }
 
-TEST_P(DictationBubbleUiTest, ReviewingPageStatusInitialLayout) {
+TEST_F(DictationBubbleUiTest, ReviewingPageStatusInitialLayout) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
       /*show_reviewing_page_status=*/true);
@@ -251,16 +229,16 @@ TEST_P(DictationBubbleUiTest, ReviewingPageStatusInitialLayout) {
   views::View* label_raw = FindViewByElementId(
       contents_view,
       DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting);
-  views::View* toggle_button = FindViewByElementId(
-      contents_view, DictationBubbleUi::kToggleButtonElementIdForTesting);
+  views::View* done_button = FindViewByElementId(
+      contents_view, DictationBubbleUi::kDoneButtonElementIdForTesting);
 
   ASSERT_NE(separator, nullptr);
   ASSERT_NE(label_raw, nullptr);
-  ASSERT_NE(toggle_button, nullptr);
+  ASSERT_NE(done_button, nullptr);
 
   EXPECT_TRUE(separator->GetVisible());
   EXPECT_TRUE(label_raw->GetVisible());
-  EXPECT_FALSE(toggle_button->GetVisible());
+  EXPECT_FALSE(done_button->GetVisible());
 
   auto* label = views::AsViewClass<views::Label>(label_raw);
   ASSERT_NE(label, nullptr);
@@ -274,7 +252,7 @@ TEST_P(DictationBubbleUiTest, ReviewingPageStatusInitialLayout) {
   EXPECT_EQ(waveform_view->bar_count(), WaveformView::kCompactFullSizeBarCount);
 }
 
-TEST_P(DictationBubbleUiTest, ReviewingPageStatusAutoDismissesAfterTimeout) {
+TEST_F(DictationBubbleUiTest, ReviewingPageStatusAutoDismissesAfterTimeout) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
       /*show_reviewing_page_status=*/true);
@@ -289,22 +267,22 @@ TEST_P(DictationBubbleUiTest, ReviewingPageStatusAutoDismissesAfterTimeout) {
   views::View* label = FindViewByElementId(
       contents_view,
       DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting);
-  views::View* toggle_button = FindViewByElementId(
-      contents_view, DictationBubbleUi::kToggleButtonElementIdForTesting);
+  views::View* done_button = FindViewByElementId(
+      contents_view, DictationBubbleUi::kDoneButtonElementIdForTesting);
   views::View* waveform_raw = FindViewByElementId(
       contents_view, DictationBubbleUi::kWaveformElementIdForTesting);
   auto* waveform_view = views::AsViewClass<WaveformView>(waveform_raw);
 
   ASSERT_NE(separator, nullptr);
   ASSERT_NE(label, nullptr);
-  ASSERT_NE(toggle_button, nullptr);
+  ASSERT_NE(done_button, nullptr);
   ASSERT_NE(waveform_view, nullptr);
 
   // Before timeout, context sharing remains active with 5 waveform bars.
   task_environment()->FastForwardBy(base::Milliseconds(40));
   EXPECT_TRUE(separator->IsDrawn());
   EXPECT_TRUE(label->IsDrawn());
-  EXPECT_FALSE(toggle_button->IsDrawn());
+  EXPECT_FALSE(done_button->IsDrawn());
   EXPECT_EQ(waveform_view->bar_count(), WaveformView::kCompactFullSizeBarCount);
   const int height_with_status = contents_view->GetPreferredSize().height();
 
@@ -313,14 +291,14 @@ TEST_P(DictationBubbleUiTest, ReviewingPageStatusAutoDismissesAfterTimeout) {
   task_environment()->FastForwardBy(base::Milliseconds(30));
   EXPECT_FALSE(separator->IsDrawn());
   EXPECT_FALSE(label->IsDrawn());
-  EXPECT_TRUE(toggle_button->IsDrawn());
+  EXPECT_TRUE(done_button->IsDrawn());
   EXPECT_EQ(waveform_view->bar_count(), WaveformView::kDefaultFullSizeBarCount);
 
   // Bubble height remains unchanged.
   EXPECT_EQ(contents_view->GetPreferredSize().height(), height_with_status);
 }
 
-TEST_P(DictationBubbleUiTest,
+TEST_F(DictationBubbleUiTest,
        ReviewingPageStatusPausesOnHoverAndResumesOnExit) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
@@ -336,17 +314,17 @@ TEST_P(DictationBubbleUiTest,
   views::View* label = FindViewByElementId(
       contents_view,
       DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting);
-  views::View* toggle_button = FindViewByElementId(
-      contents_view, DictationBubbleUi::kToggleButtonElementIdForTesting);
+  views::View* done_button = FindViewByElementId(
+      contents_view, DictationBubbleUi::kDoneButtonElementIdForTesting);
 
   ASSERT_NE(separator, nullptr);
   ASSERT_NE(label, nullptr);
-  ASSERT_NE(toggle_button, nullptr);
+  ASSERT_NE(done_button, nullptr);
 
   // Advance 20ms (40ms remaining).
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(separator->IsDrawn());
-  EXPECT_FALSE(toggle_button->IsDrawn());
+  EXPECT_FALSE(done_button->IsDrawn());
 
   // Mouse enters the toast view
   ASSERT_NE(bubble->GetWidget(), nullptr);
@@ -359,7 +337,7 @@ TEST_P(DictationBubbleUiTest,
   task_environment()->FastForwardBy(base::Milliseconds(80));
   EXPECT_TRUE(separator->IsDrawn());
   EXPECT_TRUE(label->IsDrawn());
-  EXPECT_FALSE(toggle_button->IsDrawn());
+  EXPECT_FALSE(done_button->IsDrawn());
 
   // Mouse exits
   generator.MoveMouseTo(gfx::Point(-100, -100));
@@ -367,16 +345,16 @@ TEST_P(DictationBubbleUiTest,
   // 25ms after unhovering, still visible.
   task_environment()->FastForwardBy(base::Milliseconds(25));
   EXPECT_TRUE(separator->IsDrawn());
-  EXPECT_FALSE(toggle_button->IsDrawn());
+  EXPECT_FALSE(done_button->IsDrawn());
 
   // 45ms after unhovering, dismissed.
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(separator->IsDrawn());
   EXPECT_FALSE(label->IsDrawn());
-  EXPECT_TRUE(toggle_button->IsDrawn());
+  EXPECT_TRUE(done_button->IsDrawn());
 }
 
-TEST_P(DictationBubbleUiTest,
+TEST_F(DictationBubbleUiTest,
        ReviewingPageStatusPausesOnFocusAndResumesOnBlur) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
@@ -392,14 +370,14 @@ TEST_P(DictationBubbleUiTest,
   views::View* label = FindViewByElementId(
       contents_view,
       DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting);
-  views::View* toggle_button = FindViewByElementId(
-      contents_view, DictationBubbleUi::kToggleButtonElementIdForTesting);
+  views::View* done_button = FindViewByElementId(
+      contents_view, DictationBubbleUi::kDoneButtonElementIdForTesting);
   views::View* close_button = FindViewByElementId(
       contents_view, DictationBubbleUi::kCloseButtonElementIdForTesting);
 
   ASSERT_NE(separator, nullptr);
   ASSERT_NE(label, nullptr);
-  ASSERT_NE(toggle_button, nullptr);
+  ASSERT_NE(done_button, nullptr);
   ASSERT_NE(close_button, nullptr);
 
   // Advance 20ms (40ms remaining).
@@ -414,7 +392,7 @@ TEST_P(DictationBubbleUiTest,
   task_environment()->FastForwardBy(base::Milliseconds(80));
   EXPECT_TRUE(separator->IsDrawn());
   EXPECT_TRUE(label->IsDrawn());
-  EXPECT_FALSE(toggle_button->IsDrawn());
+  EXPECT_FALSE(done_button->IsDrawn());
 
   // Clear focus
   contents_view->GetFocusManager()->ClearFocus();
@@ -422,16 +400,16 @@ TEST_P(DictationBubbleUiTest,
   // 25ms after blur, still visible.
   task_environment()->FastForwardBy(base::Milliseconds(25));
   EXPECT_TRUE(separator->IsDrawn());
-  EXPECT_FALSE(toggle_button->IsDrawn());
+  EXPECT_FALSE(done_button->IsDrawn());
 
   // 45ms after blur, dismissed.
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(separator->IsDrawn());
   EXPECT_FALSE(label->IsDrawn());
-  EXPECT_TRUE(toggle_button->IsDrawn());
+  EXPECT_TRUE(done_button->IsDrawn());
 }
 
-TEST_P(DictationBubbleUiTest, ReviewingPageStatusAudioLevelPropagates) {
+TEST_F(DictationBubbleUiTest, ReviewingPageStatusAudioLevelPropagates) {
   auto bubble = std::make_unique<DictationBubbleUi>(
       anchor_view_, base::DoNothing(), base::DoNothing(),
       /*show_reviewing_page_status=*/true);
@@ -459,7 +437,5 @@ TEST_P(DictationBubbleUiTest, ReviewingPageStatusAudioLevelPropagates) {
   EXPECT_TRUE(separator->GetVisible());
   EXPECT_TRUE(label->GetVisible());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, DictationBubbleUiTest, testing::Bool());
 
 }  // namespace dictation

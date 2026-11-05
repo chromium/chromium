@@ -21,10 +21,10 @@ namespace dictation {
 class DictationBubbleUi : public voice::VoicePlate {
  public:
   // If `show_reviewing_page_status` is true, the bubble initially shows a
-  // transient "Reviewing page" status in place of the toggle button.
+  // transient "Reviewing page" status in place of the done button.
   DictationBubbleUi(views::View* anchor_view,
                     base::RepeatingClosure close_callback,
-                    base::RepeatingClosure toggle_active_stream_callback,
+                    base::RepeatingClosure end_active_stream_callback,
                     bool show_reviewing_page_status);
   ~DictationBubbleUi() override;
 
@@ -39,7 +39,7 @@ class DictationBubbleUi : public voice::VoicePlate {
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementIdForTesting);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleButtonElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDoneButtonElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeparatorElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(

@@ -5,10 +5,8 @@
 #include "chrome/browser/dictation/session_ui_impl.h"
 
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
-#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_state.h"
@@ -67,11 +65,9 @@ DECLARE_STATE_IDENTIFIER_VALUE(SessionStateObserver, kSessionStateIdentifier);
 DEFINE_STATE_IDENTIFIER_VALUE(SessionStateObserver, kSessionStateIdentifier);
 
 class DictationSessionUiImplBrowserTest
-    : public DictationInteractiveBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public DictationInteractiveBrowserTestBase {
  public:
-  DictationSessionUiImplBrowserTest()
-      : DictationInteractiveBrowserTestBase(GetParam()) {}
+  DictationSessionUiImplBrowserTest() = default;
   ~DictationSessionUiImplBrowserTest() override = default;
 
  protected:
@@ -170,62 +166,9 @@ class DictationSessionUiImplBrowserTest
     return Do(
         [this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); });
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
-                       SessionStateUpdatesToggleButton) {
-  if (GetParam()) {
-    GTEST_SKIP() << "UI state behaviour differs in this config.";
-  }
-
-  // clang-format off
-  RunTestSequence(
-    StartSession(),
-    ObserveSessionStateChanges(),
-    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
-
-    // kStreamInitializing.
-    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::LabelButton::GetText, u"Done"),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::View::GetEnabled, true),
-
-    // kTranscribing.
-    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
-    WaitForShow(DictationBubbleUi::kWaveformElementIdForTesting),
-    CheckResult(GetSessionState(), SessionState::kTranscribing),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::LabelButton::GetText, u"Done"),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::View::GetEnabled, true),
-
-    // kFinalizing.
-    Do([this] {
-      dictation_service().session_controller()->EndDictationStream(
-          DictationStreamEndTrigger::kTest);
-    }),
-    CheckResult(GetSessionState(), SessionState::kFinalizing),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::LabelButton::GetText, u"Done"),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::View::GetEnabled, false),
-
-    // kInactive
-    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::LabelButton::GetText, u"Start"),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::View::GetEnabled, true)
-  );
-  // clang-format on
-}
-
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
   // clang-format off
   RunTestSequence(
     StartSession(),
@@ -239,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        ToastIsActivatableAfterCreation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -270,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        EndSessionTearsDownUI) {
   // clang-format off
   RunTestSequence(
@@ -282,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        DoneButtonEndsActiveStream) {
   // clang-format off
   RunTestSequence(
@@ -290,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
     CheckResult(GetSessionState(), SessionState::kTranscribing),
 
-    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    PressButton(DictationBubbleUi::kDoneButtonElementIdForTesting),
 
     // TODO(b/525943882): Currently the controller immediately disposes of the
     // stream but it should really be going into a finalization state. Update
@@ -301,57 +244,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
-                       ToggleStartStopFromUi) {
-  if (GetParam()) {
-    GTEST_SKIP()
-        << "Multiple streams per session are not possible in this config.";
-  }
-
-  // clang-format off
-  RunTestSequence(
-    // Open the session ui.
-    StartSession(),
-    ObserveSessionStateChanges(),
-    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
-
-    // Move to transcribing state
-    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
-    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
-    CheckResult(GetSessionState(), SessionState::kTranscribing),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::LabelButton::GetText, u"Done"),
-
-    // Click "Done".
-    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
-    CheckResult(GetSessionState(), SessionState::kFinalizing),
-    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
-
-    // The button should become "Start"; click it.
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::LabelButton::GetText, u"Start"),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::View::GetEnabled, true),
-    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
-
-    // Ensure the button becomes "Done" again and a new stream was started.
-    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::LabelButton::GetText, u"Done"),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
-                      &views::View::GetEnabled, true),
-    CheckResult(HasAttachedStreamProvider(), true),
-
-    // Click "Done" to end the second stream.
-    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
-    CheckResult(GetSessionState(), SessionState::kFinalizing),
-    CheckResult(HasAttachedStreamProvider(), false)
-  );
-  // clang-format on
-}
-
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->GetTabStripModel()->ActivateTabAt(0);
@@ -368,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->GetTabStripModel()->ActivateTabAt(0);
@@ -388,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        UiFollowsDetachedTab) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -416,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        ReparentTabBetweenWindowsDoesNotCrash) {
   // Add a second tab with the first tab in the foreground so the initial
   // browser window does not close when its active tab is detached.
@@ -447,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 }
 
 // TODO(b/581316985): Reenable this
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        DISABLED_BackgroundTabActivationEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -489,7 +382,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        TabSwitchShowsDictationStoppedToast) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -509,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     DictationSessionUiImplBrowserTest,
     TabSwitchAfterDoneButtonDoesNotShowDictationStoppedToast) {
   // Add a second tab with the first tab in the foreground.
@@ -520,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(
     StartSession(),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
     // Press "Done" to finish voice input.
-    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    PressButton(DictationBubbleUi::kDoneButtonElementIdForTesting),
     // Switch to the second tab and verify that the Dictation stopped toast
     // is not shown
     SelectTab(kTabStripElementId, 1),
@@ -530,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        SwitchBackToDictatingTabDuringFinalization) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -556,7 +449,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
   // clang-format off
   RunTestSequence(
     StartSession(),
@@ -577,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        FailedStreamInitAllowsOngoingFinalizing) {
   base::WeakPtr<ListenerStreamProvider> finalizing_stream;
   StreamId finalizing_stream_id;
@@ -620,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     CheckResult(HasAttachedStreamProvider(), false),
     EnsurePresent(DictationBubbleUi::kViewElementIdForTesting),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+    CheckViewProperty(DictationBubbleUi::kDoneButtonElementIdForTesting,
                       &views::View::GetEnabled, false),
 
     // The finalizing stream should still be able to accept final text.
@@ -643,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        NavigationEndsSession) {
   // clang-format off
   RunTestSequence(
@@ -664,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabCrashEndsSession) {
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, TabCrashEndsSession) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -692,7 +585,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabCrashEndsSession) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        SecondWindowInvokesDictationMovesUI) {
   // Create a second browser window.
   BrowserWindowInterface* second_browser =
@@ -723,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        OverlayButtonAppearsOnSessionStart) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -743,66 +636,37 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        OverlayButtonStaysWithinTargetInputField) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textinput.html");
   gfx::Rect target_bounds;
 
-  if (GetParam()) {
-    // clang-format off
-    RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, url),
-      StartSessionWithTarget(kWebContentsElementId, "#text_id"),
-      ObserveSessionStateChanges(),
-      InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
-      LookupTargetElementBounds(kWebContentsElementId, "#text_id",
-                                target_bounds),
-      ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
-      ExtensionAPIUpdateTranscription(
-          ExtensionTranscriptionType::kFinal,
-          "This string is longer than the size of the input element."),
-      CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
-                               target_bounds),
-      ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-      WaitForSessionState(SessionState::kInactive),
-      InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting))
-    );
-    // clang-format on
-  } else {
-    // clang-format off
-    RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, url),
-      StartSessionWithTarget(kWebContentsElementId, "#text_id"),
-      ObserveSessionStateChanges(),
-      InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
-      LookupTargetElementBounds(kWebContentsElementId, "#text_id",
-                                target_bounds),
-      ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
-      ExtensionAPIUpdateTranscription(
-          ExtensionTranscriptionType::kFinal,
-          "This string is longer than the size of the input element."),
-      CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
-                               target_bounds),
-      ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-      WaitForSessionState(SessionState::kInactive),
-      // Lingering UI case: verify it is still visible and within bounds.
-      CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
-                               target_bounds)
-    );
-    // clang-format on
-  }
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    ObserveSessionStateChanges(),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
+    LookupTargetElementBounds(kWebContentsElementId, "#text_id",
+                              target_bounds),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kFinal,
+        "This string is longer than the size of the input element."),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
+    WaitForSessionState(SessionState::kInactive),
+    InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting))
+  );
+  // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        AutoSessionEndDelayedShutdownOnAttachedStreamComplete) {
-  if (!GetParam()) {
-    GTEST_SKIP() << "Auto session end only applies to this config.";
-  }
-
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textinput.html");
@@ -824,7 +688,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        OverlayPositionUpdatedOnFullscreen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -852,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        OverlayPositionUsesEditContextSelectionBounds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -872,14 +736,8 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        OverlayLeftInLastPositionWhenTargetLosesFocus) {
-  if (!GetParam()) {
-    // At least until crbug.com/552154453 is addressed for the multiple stream
-    // mode, this test does not apply, as a new stream should move the overlay.
-    GTEST_SKIP() << "Does not apply if focus changes start streams.";
-  }
-
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -907,12 +765,8 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        OverlayButtonUpdatesOnStreamStateChange) {
-  if (GetParam()) {
-    GTEST_SKIP() << "UI state behaviour differs in this config.";
-  }
-
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -925,22 +779,24 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     ObserveSessionStateChanges(),
     InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
 
-    // Initial state (kStreamInitializing): WaveformView shown, others absent.
+    // Initial state (kStreamInitializing): WaveformView shown and enabled.
     CheckResult(GetSessionState(), SessionState::kStreamInitializing),
     InAnyContext(WaitForShow(
         DictationOverlayView::kWaveformElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
+    InAnyContext(CheckViewProperty(
+        DictationOverlayView::kWaveformElementIdForTesting,
+        &views::View::GetEnabled, true)),
 
-    // Transition to kTranscribing: WaveformView shown, others absent.
+    // Transition to kTranscribing: WaveformView shown and enabled.
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
     CheckResult(GetSessionState(), SessionState::kTranscribing),
     InAnyContext(WaitForShow(
         DictationOverlayView::kWaveformElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
+    InAnyContext(CheckViewProperty(
+        DictationOverlayView::kWaveformElementIdForTesting,
+        &views::View::GetEnabled, true)),
 
-    // Transition to kFinalizing: WaveformView shown, others absent.
+    // Transition to kFinalizing: WaveformView shown and disabled.
     Do([this] {
       dictation_service().session_controller()->EndDictationStream(
           DictationStreamEndTrigger::kTest);
@@ -948,21 +804,19 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     InAnyContext(WaitForShow(
         DictationOverlayView::kWaveformElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
+    InAnyContext(CheckViewProperty(
+        DictationOverlayView::kWaveformElementIdForTesting,
+        &views::View::GetEnabled, false)),
 
-    // Transition to kInactive: Mic icon button shown again, others absent.
+    // Transition to kInactive: session ends and overlay hides.
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
     WaitForSessionState(SessionState::kInactive),
-    InAnyContext(WaitForShow(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kWaveformElementIdForTesting))
+    InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting))
   );
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        OverlayWaveformReceivesAudioLevelUpdates) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -987,13 +841,8 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
-                       OverlayButtonsToggleStreamState) {
-  if (GetParam()) {
-    GTEST_SKIP()
-        << "Multiple streams per session are not possible in this config.";
-  }
-
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       OverlayButtonEndsActiveStream) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -1006,25 +855,6 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     ObserveSessionStateChanges(),
     InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
 
-    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
-    InAnyContext(WaitForShow(
-        DictationOverlayView::kWaveformElementIdForTesting)),
-
-    // Pressing the waveform button while initializing ends the stream.
-    InAnyContext(PressButton(
-        DictationOverlayView::kWaveformElementIdForTesting)),
-    CheckResult(GetSessionState(), SessionState::kFinalizing),
-
-    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
-
-    // Pressing the mic button while inactive starts a stream.
-    InAnyContext(WaitForShow(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
-    InAnyContext(PressButton(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
-    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
-
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
     CheckResult(GetSessionState(), SessionState::kTranscribing),
     InAnyContext(WaitForShow(
@@ -1033,12 +863,16 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     // Pressing the waveform button ends the stream.
     InAnyContext(PressButton(
         DictationOverlayView::kWaveformElementIdForTesting)),
-    CheckResult(GetSessionState(), SessionState::kFinalizing)
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
+    WaitForSessionState(SessionState::kInactive),
+    InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting))
   );
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        NoMicrophoneErrorShowsDedicatedToast) {
   constexpr int kNoMicrophoneErrorCode =
       static_cast<int>(StreamErrorReason::kNoMicrophone);
@@ -1064,9 +898,5 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   );
   // clang-format on
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DictationSessionUiImplBrowserTest,
-                         testing::Bool());
 
 }  // namespace dictation

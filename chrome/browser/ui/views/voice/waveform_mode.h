@@ -9,8 +9,7 @@ namespace voice {
 
 // What a `WaveformView` draws.
 enum class WaveformMode {
-  // Resting dots. Clears the audio history, and collapses the view if
-  // WaveformView::collapse_when_idle_ is true.
+  // Resting dots. Clears the audio history.
   kIdle,
   // Resting dots.
   kWaiting,

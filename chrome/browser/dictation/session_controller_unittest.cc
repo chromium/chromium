@@ -573,12 +573,7 @@ TEST_F(DictationSessionControllerTest, EndStreamOnFocusNonEditableNode) {
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 }
 
-TEST_F(DictationSessionControllerTest, StartNewStreamOnFocusOtherEditableNode) {
-  if (kSessionEndsOnStreamEnd.Get()) {
-    GTEST_SKIP()
-        << "Multiple streams per session are not possible in this config.";
-  }
-
+TEST_F(DictationSessionControllerTest, EndStreamOnFocusOtherEditableNode) {
   Target target_1(EmptyTarget());
   auto mock_stream_provider_1 =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
@@ -591,96 +586,15 @@ TEST_F(DictationSessionControllerTest, StartNewStreamOnFocusOtherEditableNode) {
                                     base::TimeTicks::Now());
 
   EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
-
   EXPECT_CALL(*stream_provider_1_ptr, GetTarget())
       .WillRepeatedly(Return(&target_1));
-
-  auto mock_stream_provider_2 =
-      std::make_unique<testing::NiceMock<MockStreamProvider>>();
-  MockStreamProvider* stream_provider_2_ptr = mock_stream_provider_2.get();
-
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
-      .WillOnce(Return(std::move(mock_stream_provider_2)));
-
-  EXPECT_CALL(*stream_provider_2_ptr, BindToTargetAndConnect(Pointee(Property(
-                                          &Target::richly_editable, true))));
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_)).Times(0);
 
   content::FocusedNodeDetails details;
   details.focus_type = blink::mojom::FocusType::kMouse;
   details.editable_level = content::EditableLevel::kRichlyEditable;
   details.global_dom_node_id = MockTargetInMainFrame(1);
 
-  controller_->OnFocusChangedInPage(details);
-  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
-  EXPECT_EQ(controller_->attached_stream_provider(), stream_provider_2_ptr);
-}
-
-TEST_F(DictationSessionControllerTest,
-       DoNotStartNewStreamOnFocusElementWithExistingStream) {
-  content::GlobalDOMNodeId target_id_1 = MockTargetInMainFrame(1);
-  Target target_1(TargetDetails{target_id_1});
-
-  auto mock_stream_provider_1 =
-      std::make_unique<testing::NiceMock<MockStreamProvider>>();
-  MockStreamProvider* stream_provider_1_ptr = mock_stream_provider_1.get();
-
-  EXPECT_CALL(*stream_provider_1_ptr, GetTarget())
-      .WillRepeatedly(Return(&target_1));
-
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
-      .WillOnce(Return(std::move(mock_stream_provider_1)));
-  controller_->StartDictationStream(TargetDetails{target_id_1},
-                                    DictationStreamStartTrigger::kSessionStart,
-                                    base::TimeTicks::Now());
-
-  EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
-  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
-  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
-
-  // While a stream is finalizing for an element, change focus to the same
-  // element. This should not start a new stream.
-  content::FocusedNodeDetails details;
-  details.focus_type = blink::mojom::FocusType::kMouse;
-  details.editable_level = content::EditableLevel::kPlaintextEditable;
-  details.global_dom_node_id = MockTargetInMainFrame(1);
-
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_)).Times(0);
-  controller_->OnFocusChangedInPage(details);
-  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
-  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
-}
-
-TEST_F(DictationSessionControllerTest,
-       DoNotStartNewStreamOnFocusElementDuringShutdown) {
-  content::GlobalDOMNodeId target_id_1 = MockTargetInMainFrame(1);
-  Target target_1(TargetDetails{target_id_1});
-
-  auto mock_stream_provider_1 =
-      std::make_unique<testing::NiceMock<MockStreamProvider>>();
-  MockStreamProvider* stream_provider_1_ptr = mock_stream_provider_1.get();
-
-  EXPECT_CALL(*stream_provider_1_ptr, GetTarget())
-      .WillRepeatedly(Return(&target_1));
-
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
-      .WillOnce(Return(std::move(mock_stream_provider_1)));
-  controller_->StartDictationStream(TargetDetails{target_id_1},
-                                    DictationStreamStartTrigger::kSessionStart,
-                                    base::TimeTicks::Now());
-
-  EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
-  controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kTest);
-  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
-
-  // The session is pending shutdown with a finalizing stream. We cannot create
-  // additional streams in this state. Simulate a focus change, which should not
-  // start a new stream.
-  content::FocusedNodeDetails details;
-  details.focus_type = blink::mojom::FocusType::kMouse;
-  details.editable_level = content::EditableLevel::kPlaintextEditable;
-  details.global_dom_node_id = MockTargetInMainFrame(2);
-
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_)).Times(0);
   controller_->OnFocusChangedInPage(details);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
@@ -1030,10 +944,7 @@ TEST_F(DictationSessionControllerTest,
        AutoSessionEndDelayedShutdownFiresAfterDelay) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{kDictation,
-        {{"session_ends_on_stream_end", "true"},
-         {"auto_session_end_delay", "750ms"}}}},
-      {});
+      {{kDictation, {{"auto_session_end_delay", "750ms"}}}}, {});
 
   controller_->ResetUi();
 
@@ -1076,10 +987,7 @@ TEST_F(DictationSessionControllerTest,
        AutoSessionEndDelayedShutdownCancelledByNewStream) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{kDictation,
-        {{"session_ends_on_stream_end", "true"},
-         {"auto_session_end_delay", "750ms"}}}},
-      {});
+      {{kDictation, {{"auto_session_end_delay", "750ms"}}}}, {});
 
   controller_->ResetUi();
 

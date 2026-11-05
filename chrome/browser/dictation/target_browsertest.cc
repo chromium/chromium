@@ -30,9 +30,7 @@ namespace {
 
 class DictationTargetBrowserTest : public DictationInteractiveBrowserTestBase {
  public:
-  DictationTargetBrowserTest()
-      : DictationInteractiveBrowserTestBase(
-            kSessionEndsOnStreamEnd.default_value) {}
+  DictationTargetBrowserTest() = default;
   ~DictationTargetBrowserTest() override = default;
 
   std::string GetEditableExpectedText(std::string_view selector,

@@ -10,18 +10,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -34,11 +30,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/image_button_factory.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -48,8 +40,6 @@ namespace dictation {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
                                       kViewElementIdForTesting);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
-                                      kMicButtonElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
                                       kWaveformElementIdForTesting);
 
@@ -77,9 +67,7 @@ class DictationOverlayContentsView : public views::View {
 
  public:
   explicit DictationOverlayContentsView(
-      base::RepeatingClosure toggle_active_stream_callback)
-      : toggle_active_stream_callback_(
-            std::move(toggle_active_stream_callback)) {
+      base::RepeatingClosure end_active_stream_callback) {
     SetProperty(views::kElementIdentifierKey,
                 DictationOverlayView::kViewElementIdForTesting);
 
@@ -87,31 +75,12 @@ class DictationOverlayContentsView : public views::View {
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(6));
     SetLayoutManager(std::move(layout));
 
-    auto mic_button = views::CreateVectorImageButtonWithNativeTheme(
-        toggle_active_stream_callback_, vector_icons::kMicIcon, 20,
-        ui::kColorSysOnSurface, ui::kColorIconDisabled, ui::kColorSysOnSurface);
-    mic_button->SetBorder(nullptr);
-    mic_button->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_DICTATION_ACCNAME_OVERLAY_MIC_BUTTON));
-    mic_button->SetPreferredSize(gfx::Size(20, 20));
-    mic_button->SetProperty(
-        views::kElementIdentifierKey,
-        DictationOverlayView::kMicButtonElementIdForTesting);
-    mic_button_ = AddChildView(std::move(mic_button));
-
     auto waveform_view = std::make_unique<WaveformViewButton>(
-        /*full_size=*/false, toggle_active_stream_callback_);
+        /*full_size=*/false, std::move(end_active_stream_callback));
     waveform_view->SetProperty(
         views::kElementIdentifierKey,
         DictationOverlayView::kWaveformElementIdForTesting);
-    if (kSessionEndsOnStreamEnd.Get()) {
-      // When `kSessionEndsOnStreamEnd` is enabled, there is no point
-      // in showing the mic. It cannot start a new stream.
-      mic_button_->SetVisible(false);
-      waveform_view->SetVisible(true);
-    } else {
-      waveform_view->SetVisible(false);
-    }
+    waveform_view->SetEnabled(false);
     waveform_view_ = AddChildView(std::move(waveform_view));
   }
 
@@ -123,28 +92,6 @@ class DictationOverlayContentsView : public views::View {
     }
     state_ = state;
 
-    bool mic_visible = false;
-    bool waveform_visible = false;
-    if (kSessionEndsOnStreamEnd.Get()) {
-      // When `kSessionEndsOnStreamEnd` is enabled, there is no point
-      // in showing the mic. It cannot start a new stream.
-      waveform_visible = true;
-    } else {
-      switch (state) {
-        case UiState::kInactive:
-          mic_visible = true;
-          break;
-        case UiState::kInitializing:
-        case UiState::kTranscribing:
-        case UiState::kFinalizing:
-          waveform_visible = true;
-          break;
-      }
-    }
-
-    mic_button_->SetVisible(mic_visible);
-
-    waveform_view_->SetVisible(waveform_visible);
     waveform_view_->SetMode(ToWaveformMode(state));
     waveform_view_->SetEnabled(state == UiState::kInitializing ||
                                state == UiState::kTranscribing);
@@ -161,9 +108,7 @@ class DictationOverlayContentsView : public views::View {
   UiState state() const { return state_; }
 
  private:
-  base::RepeatingClosure toggle_active_stream_callback_;
   UiState state_ = UiState::kInactive;
-  raw_ptr<views::ImageButton> mic_button_ = nullptr;
   raw_ptr<WaveformViewButton> waveform_view_ = nullptr;
 };
 
@@ -174,7 +119,7 @@ END_METADATA
 
 DictationOverlayView::DictationOverlayView(
     gfx::NativeView parent_window,
-    base::RepeatingClosure toggle_active_stream_callback)
+    base::RepeatingClosure end_active_stream_callback)
     : BubbleDialogDelegate(nullptr,
                            views::BubbleBorder::TOP_LEFT,
                            views::BubbleBorder::STANDARD_SHADOW,
@@ -182,7 +127,7 @@ DictationOverlayView::DictationOverlayView(
   set_parent_window(parent_window);
   SetBackgroundColor(ui::kColorBubbleBackground);
   SetContentsView(std::make_unique<DictationOverlayContentsView>(
-      std::move(toggle_active_stream_callback)));
+      std::move(end_active_stream_callback)));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(false);
   set_margins(gfx::Insets(0));

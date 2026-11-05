@@ -192,11 +192,11 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     WithView(
         DictationBubbleUi::kViewElementIdForTesting,
         [&](views::View* view) { bubble_widget = view->GetWidget(); }),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+    CheckViewProperty(DictationBubbleUi::kDoneButtonElementIdForTesting,
                       &views::View::HasFocus, false),
     SendAccelerator(kBrowserViewElementId, next_pane),
     WaitForState(views::test::kCurrentWidgetFocus, std::ref(bubble_widget)),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+    CheckViewProperty(DictationBubbleUi::kDoneButtonElementIdForTesting,
                       &views::View::HasFocus, true),
     SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
     CheckViewProperty(DictationBubbleUi::kCloseButtonElementIdForTesting,
@@ -226,11 +226,11 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     WithView(
         DictationBubbleUi::kViewElementIdForTesting,
         [&](views::View* view) { bubble_widget = view->GetWidget(); }),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+    CheckViewProperty(DictationBubbleUi::kDoneButtonElementIdForTesting,
                       &views::View::HasFocus, false),
     SendAccelerator(kBrowserViewElementId, focus_inactive_popup),
     WaitForState(views::test::kCurrentWidgetFocus, std::ref(bubble_widget)),
-    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+    CheckViewProperty(DictationBubbleUi::kDoneButtonElementIdForTesting,
                       &views::View::HasFocus, true),
     SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
     CheckViewProperty(DictationBubbleUi::kCloseButtonElementIdForTesting,
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     WaitForShow(
         DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting),
     WaitForShow(DictationBubbleUi::kSeparatorElementIdForTesting),
-    EnsureNotPresent(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    EnsureNotPresent(DictationBubbleUi::kDoneButtonElementIdForTesting),
 
     // End first session.
     Do([this] {
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     // without waiting so this can't pass by the status timing out.
     StartSessionWithTarget(kWebContentsElementId, "#text_id"),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
-    EnsurePresent(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    EnsurePresent(DictationBubbleUi::kDoneButtonElementIdForTesting),
     EnsureNotPresent(
         DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting),
     EnsureNotPresent(DictationBubbleUi::kSeparatorElementIdForTesting),
@@ -290,12 +290,12 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     EnsurePresent(
         DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting),
     EnsurePresent(DictationBubbleUi::kSeparatorElementIdForTesting),
-    EnsureNotPresent(DictationBubbleUi::kToggleButtonElementIdForTesting)
+    EnsureNotPresent(DictationBubbleUi::kDoneButtonElementIdForTesting)
   );
   // clang-format on
 }
 
-// While the reviewing page status is shown the toggle button is hidden. The
+// While the reviewing page status is shown the done button is hidden. The
 // bubble must still be reachable by keyboard (b/559265158), with focus going to
 // the close button instead.
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
         [&](views::View* view) { bubble_widget = view->GetWidget(); }),
     SendAccelerator(kBrowserViewElementId, next_pane),
     WaitForState(views::test::kCurrentWidgetFocus, std::ref(bubble_widget)),
-    EnsureNotPresent(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    EnsureNotPresent(DictationBubbleUi::kDoneButtonElementIdForTesting),
     CheckViewProperty(DictationBubbleUi::kCloseButtonElementIdForTesting,
                       &views::View::HasFocus, true)
   );

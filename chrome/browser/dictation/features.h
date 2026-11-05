@@ -39,12 +39,7 @@ extern const base::FeatureParam<bool> kShowPartials;
 // If true, uses the Web Speech API backend instead of the cloud backend.
 extern const base::FeatureParam<bool> kWebSpeechApiBackend;
 
-// If true, the session will end when a dictation stream ends, rather than
-// allowing multiple streams in a single session.
-extern const base::FeatureParam<bool> kSessionEndsOnStreamEnd;
-
-// The delay before ending a session after a stream ends when
-// `kSessionEndsOnStreamEnd` is enabled.
+// The delay before ending a session after a stream ends.
 extern const base::FeatureParam<base::TimeDelta> kAutoSessionEndDelay;
 
 // Omaha release cohort tag for the connector component extension (e.g.,

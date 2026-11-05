@@ -10,8 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
+#include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -81,7 +81,7 @@ void SessionUiImpl::CreateBubbleUi(bool show_reviewing_page_status) {
       anchor_view,
       base::BindRepeating(&SessionUiImpl::OnDictationBubbleCloseClicked,
                           base::Unretained(this)),
-      base::BindRepeating(&SessionUiImpl::OnToggleActiveStreamClicked,
+      base::BindRepeating(&SessionUiImpl::OnEndActiveStreamClicked,
                           base::Unretained(this)),
       show_reviewing_page_status);
   bubble_ui_->SetState(ToUiState(controller_->GetState()));
@@ -173,7 +173,7 @@ void SessionUiImpl::OnStartedStream(content::GlobalDOMNodeId target_id) {
         web_contents->GetTopLevelNativeWindow());
     overlay_view_ = std::make_unique<DictationOverlayView>(
         parent_view,
-        base::BindRepeating(&SessionUiImpl::OnToggleActiveStreamClicked,
+        base::BindRepeating(&SessionUiImpl::OnEndActiveStreamClicked,
                             base::Unretained(this)));
     overlay_view_->SetState(ToUiState(controller_->GetState()));
   }
@@ -197,29 +197,8 @@ void SessionUiImpl::OnDictationBubbleCloseClicked() {
   controller_->UiRequestEndSession();
 }
 
-void SessionUiImpl::OnToggleActiveStreamClicked() {
-  if (kSessionEndsOnStreamEnd.Get()) {
-    // This configuration does not start new streams within a session. We just
-    // end the session.
-    controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kDoneButton);
-    return;
-  }
-
-  switch (controller_->GetState()) {
-    case SessionState::kStreamInitializing:
-    case SessionState::kTranscribing:
-      controller_->UiRequestEndActiveStream();
-      break;
-    case SessionState::kInactive:
-      controller_->UiRequestStartStream();
-      break;
-    case SessionState::kFinalizing:
-      // The toggle button should be disabled while finalizing.
-      NOTREACHED();
-    case SessionState::kEnded:
-      // The UI is destroyed with the session.
-      NOTREACHED();
-  }
+void SessionUiImpl::OnEndActiveStreamClicked() {
+  controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kDoneButton);
 }
 
 void SessionUiImpl::OnTabWillDetach(tabs::TabInterface* tab,

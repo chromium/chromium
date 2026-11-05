@@ -29,11 +29,6 @@ namespace dictation {
 DictationBrowserTestBase::DictationBrowserTestBase()
     : scoped_feature_list_(CreateEnablingFeatureList()) {}
 
-DictationBrowserTestBase::DictationBrowserTestBase(
-    bool session_ends_on_stream_end)
-    : scoped_feature_list_(
-          CreateEnablingFeatureList(session_ends_on_stream_end)) {}
-
 DictationBrowserTestBase::~DictationBrowserTestBase() = default;
 
 void DictationBrowserTestBase::SetUpCommandLine(
@@ -51,7 +46,7 @@ void DictationBrowserTestBase::SetUpOnMainThread() {
   profile()->GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);
   // Suppress the "Reviewing page" status that is otherwise shown at the start
-  // of a session. While visible, it hides the bubble's toggle button and
+  // of a session. While visible, it hides the bubble's done button and
   // compacts the waveform until a timer expires, which would make tests that
   // interact with the bubble timing-dependent. Tests covering this status
   // re-enable it explicitly.

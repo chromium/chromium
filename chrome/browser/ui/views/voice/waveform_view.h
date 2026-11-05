@@ -42,8 +42,6 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   void SetBarCount(size_t bar_count);
   size_t bar_count() const { return bars_.size(); }
 
-  void SetCollapseWhenIdle(bool collapse_when_idle);
-
   // Sets what the waveform draws.
   void SetMode(WaveformMode mode);
   WaveformMode mode() const { return mode_; }
@@ -80,10 +78,8 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
                                              base::TimeTicks now) const;
 
   size_t GetCenterBarIndex() const;
-  bool IsCollapsed() const;
 
   const bool full_size_;
-  bool collapse_when_idle_ = false;
 
   WaveformMode mode_ = WaveformMode::kIdle;
 
