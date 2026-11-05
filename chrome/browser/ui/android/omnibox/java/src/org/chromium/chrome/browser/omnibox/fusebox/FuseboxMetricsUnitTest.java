@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachm
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
@@ -361,11 +362,15 @@ public class FuseboxMetricsUnitTest {
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation",
                                 AutocompleteRequestType.SEARCH)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation.Other",
+                                AutocompleteRequestType.SEARCH)
                         // No attachment button usage/shown metrics should be recorded.
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
                 true,
+                PageClassification.OTHER,
                 AutocompleteRequestType.SEARCH,
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 /* modelList= */ null);
@@ -386,12 +391,17 @@ public class FuseboxMetricsUnitTest {
                                 "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation",
                                 AutocompleteRequestType.AI_MODE)
                         .expectIntRecord(
+                                "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation"
+                                        + ".ShortcutsWidget",
+                                AutocompleteRequestType.AI_MODE)
+                        .expectIntRecord(
                                 "Omnibox.MobileFusebox.ModelAtNavigation",
                                 ModelMode.MODEL_MODE_GEMINI_REGULAR)
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
                 true,
+                PageClassification.ANDROID_SHORTCUTS_WIDGET,
                 AutocompleteRequestType.AI_MODE,
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 /* modelList= */ null);
@@ -463,6 +473,9 @@ public class FuseboxMetricsUnitTest {
                                 "Omnibox.MobileFusebox.AutocompleteRequestTypeAtAbandon",
                                 AutocompleteRequestType.AI_MODE)
                         .expectIntRecord(
+                                "Omnibox.MobileFusebox.AutocompleteRequestTypeAtAbandon.SRP",
+                                AutocompleteRequestType.AI_MODE)
+                        .expectIntRecord(
                                 "Omnibox.MobileFusebox.ModelAtAbandon",
                                 ModelMode.MODEL_MODE_GEMINI_PRO)
                         .build();
@@ -476,6 +489,7 @@ public class FuseboxMetricsUnitTest {
 
         mMetrics.notifyOmniboxSessionEnded(
                 false,
+                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                 AutocompleteRequestType.AI_MODE,
                 ModelMode.MODEL_MODE_GEMINI_PRO,
                 /* modelList= */ null);
@@ -578,6 +592,7 @@ public class FuseboxMetricsUnitTest {
 
         mMetrics.notifyOmniboxSessionEnded(
                 true,
+                PageClassification.OTHER,
                 AutocompleteRequestType.SEARCH,
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 /* modelList= */ null);
@@ -601,6 +616,7 @@ public class FuseboxMetricsUnitTest {
 
         mMetrics.notifyOmniboxSessionEnded(
                 true,
+                PageClassification.OTHER,
                 AutocompleteRequestType.SEARCH,
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 /* modelList= */ null);
@@ -622,6 +638,7 @@ public class FuseboxMetricsUnitTest {
 
         mMetrics.notifyOmniboxSessionEnded(
                 true,
+                PageClassification.OTHER,
                 AutocompleteRequestType.SEARCH,
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 /* modelList= */ null);
@@ -644,6 +661,7 @@ public class FuseboxMetricsUnitTest {
 
         mMetrics.notifyOmniboxSessionEnded(
                 true,
+                PageClassification.OTHER,
                 AutocompleteRequestType.SEARCH,
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 /* modelList= */ null);
@@ -719,10 +737,15 @@ public class FuseboxMetricsUnitTest {
                                 "Omnibox.MobileFusebox.AttachmentTypeAtSubmission",
                                 FuseboxAttachmentButtonType.FILES,
                                 FuseboxAttachmentButtonType.DRIVE_FILES)
+                        .expectIntRecords(
+                                "Omnibox.MobileFusebox.AttachmentTypeAtSubmission.NTP",
+                                FuseboxAttachmentButtonType.FILES,
+                                FuseboxAttachmentButtonType.DRIVE_FILES)
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
                 true,
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
                 AutocompleteRequestType.SEARCH,
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 mModelList);

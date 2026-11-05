@@ -21,6 +21,7 @@ import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
@@ -446,13 +447,14 @@ public class FuseboxMetrics {
 
     void notifyOmniboxSessionEnded(
             boolean userDidNavigate,
+            @PageClassification int pageClassification,
             @AutocompleteRequestType int autocompleteRequestType,
             @ModelMode int modelMode,
             @Nullable FuseboxAttachmentModelList modelList) {
         if (!mSessionStarted) return;
         if (userDidNavigate && modelList != null) {
             for (FuseboxAttachment attachment : modelList) {
-                recordAttachmentTypeAtSubmission(attachment.buttonType);
+                recordAttachmentTypeAtSubmission(attachment.buttonType, pageClassification);
             }
         }
         RecordHistogram.recordBooleanHistogram(
@@ -489,6 +491,10 @@ public class FuseboxMetrics {
                         : "Omnibox.MobileFusebox.ModelAtAbandon";
         RecordHistogram.recordEnumeratedHistogram(
                 requestTypeHistogram, autocompleteRequestType, AutocompleteRequestType.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                requestTypeHistogram + TOKEN_SEPARATOR + getStringForSurface(pageClassification),
+                autocompleteRequestType,
+                AutocompleteRequestType.COUNT);
         if (ToolModeUtils.isAimRequest(autocompleteRequestType)) {
             RecordHistogram.recordEnumeratedHistogram(
                     modelHistogram, modelMode, MODEL_MODE_HISTOGRAM_BOUND);
@@ -710,8 +716,28 @@ public class FuseboxMetrics {
                 DriveDocumentType.COUNT);
     }
 
-    static void recordAttachmentTypeAtSubmission(@FuseboxAttachmentButtonType int type) {
+    static void recordAttachmentTypeAtSubmission(
+            @FuseboxAttachmentButtonType int type, @PageClassification int pageClassification) {
         RecordHistogram.recordEnumeratedHistogram(
                 ATTACHMENT_TYPE_AT_SUBMISSION_HISTOGRAM, type, FuseboxAttachmentButtonType.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                ATTACHMENT_TYPE_AT_SUBMISSION_HISTOGRAM
+                        + TOKEN_SEPARATOR
+                        + getStringForSurface(pageClassification),
+                type,
+                FuseboxAttachmentButtonType.COUNT);
     }
+
+    // LINT.IfChange(getStringForSurface)
+    @SuppressLint("SwitchIntDef") // Non-Fusebox surfaces fall back to "Other".
+    private static String getStringForSurface(@PageClassification int pageClassification) {
+        return switch (pageClassification) {
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS -> "NTP";
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT -> "SRP";
+            case PageClassification.ANDROID_SHORTCUTS_WIDGET -> "ShortcutsWidget";
+            default -> "Other";
+        };
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:MobileFuseboxSurface)
 }

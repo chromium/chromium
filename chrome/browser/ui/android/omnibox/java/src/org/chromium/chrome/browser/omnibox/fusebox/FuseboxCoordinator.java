@@ -506,7 +506,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         // Skip cases where session should not be recorded (e.g. unsupported page class).
         if (mInput == null || mMetrics == null) return;
         mMetrics.notifyOmniboxSessionEnded(
-                userDidNavigate, mInput.getRequestType(), mInput.getModelMode(), mModelList);
+                userDidNavigate,
+                mInput.getRawPageClassification(),
+                mInput.getRequestType(),
+                mInput.getModelMode(),
+                mModelList);
     }
 
     /** Resets the current input session back to search mode. */

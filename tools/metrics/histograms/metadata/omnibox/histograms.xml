@@ -227,6 +227,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_constants.h:MobileFuseboxPickerAttachmentType) -->
 
+<!-- LINT.IfChange(MobileFuseboxSurface) -->
+
+<variants name="MobileFuseboxSurface">
+  <variant name="" summary="all surfaces"/>
+  <variant name=".NTP" summary="New Tab Page"/>
+  <variant name=".Other"
+      summary="Web pages, and any surface not listed separately"/>
+  <variant name=".ShortcutsWidget" summary="Shortcuts home screen widget"/>
+  <variant name=".SRP" summary="Search Results Page"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:getStringForSurface) -->
+
 <variants name="NavigationOrSuggestionPrefetch">
   <variant name="NavigationPrefetch"
       summary="Recorded for prefetches where Chrome is relatively confident
@@ -3097,37 +3110,68 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.MobileFusebox.AttachmentTypeAtSubmission"
+<histogram name="Omnibox.MobileFusebox.AttachmentTypeAtSubmission{Surface}"
     enum="FuseboxAttachmentButtonType" expires_after="2027-09-01">
   <owner>charlesyc@google.com</owner>
+  <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
-    Recorded for each attachment chip present in Fusebox when the omnibox
-    session results in navigation/submission. Records the attachment type
-    corresponding to the button type that added the attachment.
+    Records the attachment type (corresponding to the button used to add the
+    attachment) for each attachment chip present in the Fusebox when a
+    Fusebox-eligible omnibox session ends in navigation/submission, sliced by
+    {Surface}.
+
+    Emitted once per attached chip remaining at submission (both to the
+    aggregate histogram and to the surface-specific slice). Not emitted if the
+    omnibox session is abandoned without navigating, if no attachments are
+    present at submission, or if the session is not Fusebox-eligible.
+
+    Note: recorded on Android only; iOS does not emit this histogram.
   </summary>
+  <token key="Surface" variants="MobileFuseboxSurface"/>
 </histogram>
 
-<histogram name="Omnibox.MobileFusebox.AutocompleteRequestTypeAtAbandon"
+<histogram
+    name="Omnibox.MobileFusebox.AutocompleteRequestTypeAtAbandon{Surface}"
     enum="AutocompleteRequestType" expires_after="2027-10-01">
   <owner>pnoland@google.com</owner>
   <owner>ender@google.com</owner>
+  <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
-    Records the autocomplete request type at the time of leaving the omnibox.
-    Recorded when the omnibox is left without navigating.
+    Records the active autocomplete request type (e.g. Search, AI Mode, Image
+    Generation) when the user leaves the omnibox without navigating, sliced by
+    {Surface}.
+
+    Emitted once per Fusebox-eligible omnibox session that ends without
+    navigation. Not emitted when the session ends in navigation or when the
+    omnibox session is not Fusebox-eligible.
+
+    Note: on iOS only the unsliced aggregate histogram (all surfaces) is
+    recorded; surface-specific slices are recorded on Android only.
   </summary>
+  <token key="Surface" variants="MobileFuseboxSurface"/>
 </histogram>
 
-<histogram name="Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation"
+<histogram
+    name="Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation{Surface}"
     enum="AutocompleteRequestType" expires_after="2027-10-01">
   <owner>pnoland@google.com</owner>
   <owner>ender@google.com</owner>
+  <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
-    Records the autocomplete request type at the time of navigation. Recorded
-    when the omnibox is used to navigate.
+    Records the active autocomplete request type (e.g. Search, AI Mode, Image
+    Generation) when the user navigates from the omnibox, sliced by {Surface}.
+
+    Emitted once per Fusebox-eligible omnibox session that ends in navigation.
+    Not emitted when the omnibox is left without navigating or when the omnibox
+    session is not Fusebox-eligible.
+
+    Note: on iOS only the unsliced aggregate histogram (all surfaces) is
+    recorded; surface-specific slices are recorded on Android only.
   </summary>
+  <token key="Surface" variants="MobileFuseboxSurface"/>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.ContextUploadError"

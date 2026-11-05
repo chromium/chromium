@@ -416,7 +416,7 @@ public class FuseboxCoordinatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.notifyOmniboxSessionEnded(true);
 
-        verify(mMetrics).notifyOmniboxSessionEnded(eq(true), anyInt(), anyInt(), any());
+        verify(mMetrics).notifyOmniboxSessionEnded(eq(true), anyInt(), anyInt(), anyInt(), any());
 
         mCoordinator.endInput();
         clearInvocations(mMetrics);
@@ -424,7 +424,7 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.beginInput(mSession);
         mCoordinator.notifyOmniboxSessionEnded(false);
 
-        verify(mMetrics).notifyOmniboxSessionEnded(eq(false), anyInt(), anyInt(), any());
+        verify(mMetrics).notifyOmniboxSessionEnded(eq(false), anyInt(), anyInt(), anyInt(), any());
     }
 
     @Test
