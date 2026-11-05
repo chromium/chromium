@@ -19,7 +19,7 @@ public class AwHttpAuthHandlerTest {
 
     @Before
     public void setUp() {
-        mAuthHandler = AwHttpAuthHandler.create(0, true);
+        mAuthHandler = AwHttpAuthHandler.create(null, true);
     }
 
     @Test

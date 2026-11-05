@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwHttpAuthHandler_jni.h"
@@ -38,7 +39,7 @@ AwHttpAuthHandler::AwHttpAuthHandler(
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   http_auth_handler_.Reset(Java_AwHttpAuthHandler_create(
-      env, reinterpret_cast<intptr_t>(this), first_auth_attempt));
+      env, jni_zero::MakeRaw(this), first_auth_attempt));
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
