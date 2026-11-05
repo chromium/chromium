@@ -1166,17 +1166,15 @@ void ChromeExtensionsBrowserClient::ShowReloadBubbleForAllExtensions(
     });
   }
 #else
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() != profile) {
-      continue;
-    }
+  TabModelList::ForEach(profile, [&](TabModel* model) {
     for (int i = 0; i < model->GetTabCount(); ++i) {
       content::WebContents* tab_contents = model->GetWebContentsAt(i);
       if (tab_contents != web_contents) {
         process_web_contents(tab_contents);
       }
     }
-  }
+    return true;
+  });
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

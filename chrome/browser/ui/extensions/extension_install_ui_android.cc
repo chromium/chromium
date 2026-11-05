@@ -97,20 +97,19 @@ content::WebContents* GetWebContentsForProfile(Profile* profile) {
     }
   }
 
-  for (const TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile) {
-      continue;
-    }
-
+  content::WebContents* found_web_contents = nullptr;
+  TabModelList::ForEach(profile, [&](TabModel* tab_model) {
     int tab_count = tab_model->GetTabCount();
     for (int i = 0; i < tab_count; i++) {
       content::WebContents* web_contents = tab_model->GetWebContentsAt(i);
       if (web_contents) {
-        return web_contents;
+        found_web_contents = web_contents;
+        return false;
       }
     }
-  }
-  return nullptr;
+    return true;
+  });
+  return found_web_contents;
 }
 
 }  // namespace

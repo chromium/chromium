@@ -51,33 +51,25 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
 
   ~PlatformDelegate() override {
     tab_model_observations_.RemoveAllObservations();
-    TabModelList::RemoveObserver(this);
+    TabModelList::RemoveObserver(this, profile_);
   }
 
   void Init() {
     // Equivalent to observing for new windows.
-    TabModelList::AddObserver(this);
+    TabModelList::AddObserver(this, profile_);
     // Add models for existing windows.
-    for (TabModel* model : TabModelList::models()) {
+    TabModelList::ForEach(profile_, [&](TabModel* model) {
       OnTabModelAdded(model);
-    }
+      return true;
+    });
   }
 
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* model) override {
-    // We only want to observe tab models (i.e. windows) associated with this
-    // PlatformDelegate's profile. We should also ignore tab models that are
-    // non-standard as they have tabs that will never have WebContents. For
-    // example, imagine a regular window with a regular profile. It has one
-    // TabModelEventRouter associated with the profile and one PlatformDelegate.
-    // If we then create an incognito profile and window, we get a second
-    // TabModelEventRouter and PlatformDelegate. But we only want to observe the
-    // TabModel associated with the incognito profile, not the regular profile,
-    // otherwise we'll see event notifications twice (once per observer). See
-    // TestTabGroupEventsAcrossProfiles. Also ignore empty regular tab models
-    // for ephemeral or incognito CCTs as they are never mutated.
-    if (profile_ != model->GetProfile() ||
-        model->GetTabModelType() != TabModel::TabModelType::kStandard ||
+    // Ignore tab models that are non-standard as they have tabs that will never
+    // have `WebContents`, as well as empty regular tab models for ephemeral or
+    // incognito CCTs as they are never mutated.
+    if (model->GetTabModelType() != TabModel::TabModelType::kStandard ||
         model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
       return;
     }
