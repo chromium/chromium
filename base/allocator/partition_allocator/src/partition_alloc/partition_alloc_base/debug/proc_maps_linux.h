@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
@@ -85,7 +86,7 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool ReadProcMaps(std::string* proc_maps);
 // Parses /proc/<pid>/maps input data and stores in |regions|. Returns true
 // and updates |regions| if and only if all of |input| was successfully parsed.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-bool ParseProcMaps(const std::string& input,
+bool ParseProcMaps(std::string_view input,
                    std::vector<MappedMemoryRegion>* regions);
 
 }  // namespace partition_alloc::internal::base::debug

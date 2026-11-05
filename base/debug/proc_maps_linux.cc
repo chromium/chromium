@@ -109,23 +109,23 @@ bool ParseProcMaps(std::string_view input,
   std::vector<std::string> lines =
       SplitString(input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  for (size_t i = 0; i < lines.size(); ++i) {
+  if (lines.size() > 0) {
     // Due to splitting on '\n' the last line should be empty.
-    if (i == lines.size() - 1) {
-      if (!lines[i].empty()) {
-        DLOG(WARNING) << "Last line not empty";
-        return false;
-      }
-      break;
+    if (!lines.back().empty()) {
+      DLOG(WARNING) << "Last line not empty";
+      return false;
     }
+    lines.pop_back();  // Remove the empty last line.
+    regions.reserve(lines.size());
+  }
 
+  for (const auto& line : lines) {
     MappedMemoryRegion region;
-    const char* line = lines[i].c_str();
     char permissions[5] = {};  // Ensure NUL-terminated string.
     uint8_t dev_major = 0;
     uint8_t dev_minor = 0;
     long inode = 0;
-    int path_index = 0;
+    size_t path_index = 0;
 
     // Sample format from man 5 proc:
     //
@@ -136,7 +136,8 @@ bool ParseProcMaps(std::string_view input,
     // to determine the path name. It *does not* increment the return value.
     // Refer to man 3 sscanf for details.
     if (UNSAFE_TODO(
-            sscanf(line, "%" SCNxPTR "-%" SCNxPTR " %4c %llx %hhx:%hhx %ld %n",
+            sscanf(line.c_str(),
+                   "%" SCNxPTR "-%" SCNxPTR " %4c %llx %hhx:%hhx %ld %zn",
                    &region.start, &region.end, permissions, &region.offset,
                    &dev_major, &dev_minor, &inode, &path_index)) < 7) {
       DPLOG(WARNING) << "sscanf failed for line: " << line;
@@ -176,7 +177,7 @@ bool ParseProcMaps(std::string_view input,
 
     // Pushing then assigning saves us a string copy.
     regions.push_back(region);
-    regions.back().path.assign(UNSAFE_TODO(line + path_index));
+    regions.back().path.assign(line, path_index);
   }
 
   regions_out->swap(regions);
