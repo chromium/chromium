@@ -335,6 +335,20 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPAD_A16_27_3",
+    identifier = "iPad (A16) 27.3",
+    mixins = [
+        "ios_runtime_cache_27_3",
+    ],
+    args = [
+        "--platform",
+        "iPad (A16)",
+        "--version",
+        "27.3",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_PRO_7TH_GEN_18_5",
     identifier = "iPad Pro 13-inch (M4) 18.5",
     mixins = [
@@ -513,6 +527,20 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_16_27_3",
+    identifier = "iPhone 16 27.3",
+    mixins = [
+        "ios_runtime_cache_27_3",
+    ],
+    args = [
+        "--platform",
+        "iPhone 16",
+        "--version",
+        "27.3",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_DUO_27_2",
     identifier = "iPhone Duo 27.2",
     mixins = [
@@ -523,6 +551,20 @@ targets.variant(
         "iPhone Duo",
         "--version",
         "27.2-iphone19-4",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_DUO_27_3",
+    identifier = "iPhone Duo 27.3",
+    mixins = [
+        "ios_runtime_cache_27_3",
+    ],
+    args = [
+        "--platform",
+        "iPhone Duo",
+        "--version",
+        "27.3",
     ],
 )
 
@@ -656,6 +698,20 @@ targets.variant(
         "iPhone SE (3rd generation)",
         "--version",
         "27.2",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_SE_3RD_GEN_27_3",
+    identifier = "iPhone SE (3rd generation) 27.3",
+    mixins = [
+        "ios_runtime_cache_27_3",
+    ],
+    args = [
+        "--platform",
+        "iPhone SE (3rd generation)",
+        "--version",
+        "27.3",
     ],
 )
 

@@ -68,5 +68,5 @@
   },
   "builder_group": "chromium.fyi",
   "recipe": "chromium",
-  "xcode_build_version": "27b52"
+  "xcode_build_version": "27c5020n"
 }
