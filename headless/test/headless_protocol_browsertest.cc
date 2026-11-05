@@ -866,6 +866,9 @@ HEADLESS_PROTOCOL_TEST(
 
 HEADLESS_PROTOCOL_TEST(GetBrowserContexts, "shared/get-browser-contexts.js")
 
+HEADLESS_PROTOCOL_TEST(InteractionMediaFeatures,
+                       "shared/interaction-media-features.js")
+
 class HeadlessProtocolBrowserTestWithDownload
     : public HeadlessProtocolBrowserTest {
  public:
