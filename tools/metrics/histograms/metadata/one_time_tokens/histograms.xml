@@ -232,6 +232,19 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.Gmail.OptIn.SettingsChange"
+    enum="GmailOtpSettingsChangeOutcome" expires_after="2027-08-01">
+  <owner>trangm@google.com</owner>
+  <owner>sdrab@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the outcome when the user toggles Gmail OTP filling on the
+    chrome://settings contact info page, including turn-on attempts blocked by
+    missing account consents or a failed consent fetch. Opt-ins from the opt-in
+    bubble and the actor card are not recorded here.
+  </summary>
+</histogram>
+
 <histogram name="OneTimeTokens.Gmail.OptIn.State" enum="GmailOtpOptInState"
     expires_after="2027-08-01">
   <owner>trangm@google.com</owner>

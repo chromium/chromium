@@ -51,6 +51,7 @@ import type {TypesBlockedEntry} from '../policy_utils.js';
 import {getCss} from './contact_info_page.css.js';
 import {getHtml} from './contact_info_page.html.js';
 
+const ConsentState = chrome.autofillPrivate.UserDataProcessingConsentState;
 
 /**
  * The enum values for the Autofill.Address.IsEnabled.Change metric.
@@ -72,8 +73,39 @@ export const AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF =
     'autofill.gmail_otp_filling.enabled';
 // LINT.ThenChange(//components/autofill/core/common/autofill_prefs.h:AutofillGmailOtpFillingPref)
 
-export const AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC =
-    'Autofill.GmailOtpOptIn.SettingsChange';
+/**
+ * The outcome of toggling the Gmail OTP filling setting.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+// LINT.IfChange(GmailOtpSettingsChangeOutcome)
+export enum GmailOtpSettingsChangeOutcome {
+  TURNED_OFF = 0,
+  TURNED_ON_SUCCESS = 1,
+  TURNED_ON_BLOCKED_BY_COMMS_APPS_CONSENT = 2,
+  TURNED_ON_BLOCKED_BY_GOOGLE_APPS_CONSENT = 3,
+  TURNED_ON_BLOCKED_BY_BOTH_CONSENTS = 4,
+  TURNED_ON_FAILED_CONSENT_FETCH_ERROR = 5,
+
+  // Must be last.
+  COUNT = 6,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpSettingsChangeOutcome)
+
+export const GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC =
+    'OneTimeTokens.Gmail.OptIn.SettingsChange';
+
+function getBlockedTurnOnOutcome(
+    commsAppsEnabled: boolean,
+    googleAppsEnabled: boolean): GmailOtpSettingsChangeOutcome {
+  assert(!commsAppsEnabled || !googleAppsEnabled);
+  if (!commsAppsEnabled && !googleAppsEnabled) {
+    return GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_BOTH_CONSENTS;
+  }
+  return commsAppsEnabled ?
+      GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_GOOGLE_APPS_CONSENT :
+      GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_COMMS_APPS_CONSENT;
+}
 
 const PROFILE_ENABLED_SYNTHETIC_PREF_KEY =
     'synthetic.settings.autofill.profile_enabled';
@@ -710,8 +742,13 @@ export class SettingsContactInfoPageElement extends
     this.setOtpFillingToggleChecked_(true);
     PrefService.getInstance().setPrefValue(
         AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, true);
-    chrome.metricsPrivate.recordBoolean(
-        AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true);
+  }
+
+  private recordGmailOtpSettingsChange_(
+      outcome: GmailOtpSettingsChangeOutcome) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, outcome,
+        GmailOtpSettingsChangeOutcome.COUNT);
   }
 
   private focusOtpFillingToggle_() {
@@ -766,10 +803,8 @@ export class SettingsContactInfoPageElement extends
       if (!this.isConnected || this.lastCheckedAccountEmail_ !== fetchEmail) {
         return;
       }
-      if (consent?.commsApps ===
-              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED &&
-          consent?.googleApps ===
-              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED) {
+      if (consent?.commsApps === ConsentState.ENABLED &&
+          consent?.googleApps === ConsentState.ENABLED) {
         this.setOtpFillingToggleChecked_(true);
       } else {
         // We explicitly don't align the preference value with the
@@ -837,8 +872,8 @@ export class SettingsContactInfoPageElement extends
       this.resetOtpFillingState_();
       PrefService.getInstance().setPrefValue(
           AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, false);
-      chrome.metricsPrivate.recordBoolean(
-          AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false);
+      this.recordGmailOtpSettingsChange_(
+          GmailOtpSettingsChangeOutcome.TURNED_OFF);
       return;
     }
 
@@ -850,20 +885,25 @@ export class SettingsContactInfoPageElement extends
       if (!this.isConnected || this.accountInfo_?.email !== currentEmail) {
         return;
       }
-      if (consent?.commsApps ===
-              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED &&
-          consent?.googleApps ===
-              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED) {
+      const commsAppsEnabled = consent?.commsApps === ConsentState.ENABLED;
+      const googleAppsEnabled = consent?.googleApps === ConsentState.ENABLED;
+      if (commsAppsEnabled && googleAppsEnabled) {
         this.enableOtpFilling_(currentEmail);
+        this.recordGmailOtpSettingsChange_(
+            GmailOtpSettingsChangeOutcome.TURNED_ON_SUCCESS);
       } else {
         this.setOtpFillingToggleChecked_(false);
         this.showGmailOtpDisclaimerDialog_ = true;
+        this.recordGmailOtpSettingsChange_(
+            getBlockedTurnOnOutcome(commsAppsEnabled, googleAppsEnabled));
       }
     } catch {
       if (!this.isConnected || this.accountInfo_?.email !== currentEmail) {
         return;
       }
       this.onGmailOtpConsentBackendNetworkError_();
+      this.recordGmailOtpSettingsChange_(
+          GmailOtpSettingsChangeOutcome.TURNED_ON_FAILED_CONSENT_FETCH_ERROR);
     } finally {
       this.isOtpConsentLoading_ = false;
       // Restore focus to the toggle once it is unhidden if no disclaimer

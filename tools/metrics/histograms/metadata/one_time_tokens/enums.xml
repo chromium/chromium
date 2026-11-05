@@ -248,6 +248,19 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h:GmailOtpSenderDomainMatchType) -->
 
+<!-- LINT.IfChange(GmailOtpSettingsChangeOutcome) -->
+
+<enum name="GmailOtpSettingsChangeOutcome">
+  <int value="0" label="Turned off"/>
+  <int value="1" label="Turned on"/>
+  <int value="2" label="Turn on blocked: comms apps consent not enabled"/>
+  <int value="3" label="Turn on blocked: Google apps consent not enabled"/>
+  <int value="4" label="Turn on blocked: both consents not enabled"/>
+  <int value="5" label="Turn on failed with consent fetch error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/contact_info/contact_info_page.ts:GmailOtpSettingsChangeOutcome) -->
+
 </enums>
 
 </histogram-configuration>

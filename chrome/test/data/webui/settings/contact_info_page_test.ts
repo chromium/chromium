@@ -15,10 +15,11 @@ import type {
 } from 'chrome://settings/lazy_load.js';
 import {
   AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF,
-  AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
   AutofillAddressOptInChange,
   AutofillManagerImpl,
   CountryDetailManagerProxyImpl,
+  GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+  GmailOtpSettingsChangeOutcome,
 } from 'chrome://settings/lazy_load.js';
 import {
   assertDeepEquals,
@@ -1059,9 +1060,12 @@ suite('ContactInfoPageUiTest', function() {
         prefService.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
             .value);
     assertEquals(
+        1, metricsTracker.count(GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC));
+    assertEquals(
         1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_OFF));
     assertEquals(
         1, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
         'fetchUserDataProcessingConsent should not be called on disable');
@@ -1098,11 +1102,10 @@ suite('ContactInfoPageUiTest', function() {
     assertEquals(
         1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_SUCCESS));
     assertEquals(
-        0,
-        metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false));
+        1, metricsTracker.count(GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC));
     assertFalse(
         !!page.shadowRoot.querySelector('settings-gmail-otp-disclaimer-dialog'),
         'disclaimer dialog should not be shown');
@@ -1124,11 +1127,13 @@ suite('ContactInfoPageUiTest', function() {
     assertEquals(
         1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_SUCCESS));
     assertEquals(
         1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_OFF));
     assertEquals(
         1, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
         'fetchUserDataProcessingConsent should not be called when toggled off');
@@ -1146,11 +1151,13 @@ suite('ContactInfoPageUiTest', function() {
     assertEquals(
         2,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_SUCCESS));
     assertEquals(
         1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_OFF));
     assertEquals(
         1, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
         'fetchUserDataProcessingConsent should be called after reset');
@@ -1397,6 +1404,7 @@ suite('ContactInfoPageUiTest', function() {
   });
 
   test('OtpFillingToggleDisconnectedDuringUserToggle', async function() {
+    const metricsTracker = fakeMetricsPrivate();
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const autofillManager = new TestAutofillManager();
     autofillManager.setUserDataProcessingConsent({
@@ -1425,6 +1433,8 @@ suite('ContactInfoPageUiTest', function() {
     assertFalse(
         prefService.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
             .value);
+    assertEquals(
+        0, metricsTracker.count(GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC));
   });
 
   test('OtpFillingToggleFocusRestoredOnConsentGranted', async function() {
@@ -1604,9 +1614,13 @@ suite('ContactInfoPageUiTest', function() {
         prefService.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
             .value);
     assertEquals(
-        0,
+        1, metricsTracker.count(GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC));
+    assertEquals(
+        1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome
+                .TURNED_ON_FAILED_CONSENT_FETCH_ERROR));
     assertFalse(
         !!page.shadowRoot.querySelector('settings-gmail-otp-disclaimer-dialog'),
         'disclaimer dialog should not be shown on error');
@@ -1616,18 +1630,24 @@ suite('ContactInfoPageUiTest', function() {
     commsApps: ConsentState.DISABLED,
     googleApps: ConsentState.ENABLED,
     testName: 'CommsAppsConsentNotEnabled',
+    expectedOutcome:
+        GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_COMMS_APPS_CONSENT,
   },
    {
      commsApps: ConsentState.ENABLED,
      googleApps: ConsentState.DISABLED,
      testName: 'GoogleAppsConsentNotEnabled',
+     expectedOutcome:
+         GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_GOOGLE_APPS_CONSENT,
    },
    {
      commsApps: ConsentState.DISABLED,
      googleApps: ConsentState.DISABLED,
      testName: 'BothConsentsDisabled',
+     expectedOutcome:
+         GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_BOTH_CONSENTS,
    },
-  ].forEach(({commsApps, googleApps, testName}) => {
+  ].forEach(({commsApps, googleApps, testName, expectedOutcome}) => {
     test(
         `OtpFillingToggleShowsDisclaimerWhen${testName}AndConfirmed`,
         async function() {
@@ -1678,9 +1698,11 @@ suite('ContactInfoPageUiTest', function() {
                   .getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
                   .value);
           assertEquals(
-              0,
+              1, metricsTracker.count(GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC));
+          assertEquals(
+              1,
               metricsTracker.count(
-                  AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+                  GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, expectedOutcome));
         });
   });
 
@@ -1721,13 +1743,12 @@ suite('ContactInfoPageUiTest', function() {
         prefService.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
             .value);
     assertEquals(
-        0,
-        metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+        1, metricsTracker.count(GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC));
     assertEquals(
-        0,
+        1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_BOTH_CONSENTS));
   });
 
   test('OtpFillingToggleDismissAndRetry', async function() {
@@ -1763,9 +1784,10 @@ suite('ContactInfoPageUiTest', function() {
         prefService.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
             .value);
     assertEquals(
-        0,
+        1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_BOTH_CONSENTS));
 
     // Reset resolver for second attempt.
     autofillManager.resetResolver('fetchUserDataProcessingConsent');
@@ -1788,9 +1810,10 @@ suite('ContactInfoPageUiTest', function() {
         prefService.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
             .value);
     assertEquals(
-        0,
+        2,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_BOTH_CONSENTS));
 
     // Third attempt: consent is now granted in Gmail settings.
     autofillManager.resetResolver('fetchUserDataProcessingConsent');
@@ -1812,7 +1835,13 @@ suite('ContactInfoPageUiTest', function() {
     assertEquals(
         1,
         metricsTracker.count(
-            AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_SUCCESS));
+    assertEquals(
+        2,
+        metricsTracker.count(
+            GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC,
+            GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_BOTH_CONSENTS));
   });
 
   test('OtpFillingLearnMoreLinkClickedDuringLoading', async function() {
