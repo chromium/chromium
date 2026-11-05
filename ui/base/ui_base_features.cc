@@ -242,14 +242,6 @@ BASE_FEATURE(kFocusFollowsCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill-switch. Disabled text fields, menulists, checkboxes, and radios
-// paint a translucent fill in dark mode (matching light mode) so a
-// colored page background shows through. Disabled buttons and
-// progress/slider tracks are unaffected. Disabling preserves the opaque
-// dark-mode fills.
-BASE_FEATURE(kDarkModeTranslucentDisabledControls,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables applying scroll railing in the renderer.
 BASE_FEATURE(kApplyScrollRailingInRenderer, base::FEATURE_ENABLED_BY_DEFAULT);
 
