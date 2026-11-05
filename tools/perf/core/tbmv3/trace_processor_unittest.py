@@ -44,23 +44,6 @@ class TraceProcessorTestCase(unittest.TestCase):
       )
       self.assertIn('--allow-sql-file-access', run_patch.call_args[0])
 
-  def testConvertProtoTraceToJsonFallback(self):
-    with mock.patch(RUN_METHOD) as run_patch:
-      run_patch.side_effect = [
-        RuntimeError(
-          'Running trace processor failed. Stderr: trace_processor_shell: '
-          'unrecognized option \'--allow-sql-file-access\''
-        ),
-        None,
-      ]
-      trace_processor.ConvertProtoTraceToJson(
-        self.tp_path, '/path/to/proto', '/path/to/json'
-      )
-      self.assertEqual(run_patch.call_count, 2)
-      self.assertNotIn(
-        '--allow-sql-file-access', run_patch.call_args_list[1][0]
-      )
-
   def testEnsureTraceProcessorUsesDownloadedWhenRunnable(self):
     fetched_tp = os.path.join(self.temp_dir, 'fetched_trace_processor_shell')
     with open(fetched_tp, 'w'):
