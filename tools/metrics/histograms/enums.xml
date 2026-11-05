@@ -14399,6 +14399,7 @@ from previous Chrome versions.
   <int value="-192433738" label="AutofillEnableCardBenefits:enabled"/>
   <int value="-192389983" label="NoStatePrefetch:enabled"/>
   <int value="-191625183" label="AccessibilityReducedAnimations:enabled"/>
+  <int value="-191533242" label="SyncEncryptedTabContext:disabled"/>
   <int value="-191329924" label="WallpaperSearchSettingsVisibility:disabled"/>
   <int value="-190723154" label="AppLaunchAutomation:enabled"/>
   <int value="-190449995" label="CommerceLocalPDPDetection:enabled"/>
@@ -19744,6 +19745,7 @@ from previous Chrome versions.
   <int value="1404726271" label="ReduceHorizontalFlingVelocity:enabled"/>
   <int value="1404805189" label="MediaAppImageMantis:enabled"/>
   <int value="1405459667" label="enable-fast-text-autosizing"/>
+  <int value="1405667587" label="SyncEncryptedTabContext:enabled"/>
   <int value="1406046556" label="enable-slimming-paint-v175"/>
   <int value="1406354320" label="MacViewsWebUIDialogs:enabled"/>
   <int value="1406806825"

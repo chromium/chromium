@@ -4771,6 +4771,11 @@ inline constexpr char kSyncWalletVehicleRegistrationsName[] =
 inline constexpr char kSyncWalletVehicleRegistrationsDescription[] =
     "Enables syncing vehicle registrations in the wallet to the server.";
 
+inline constexpr char kSyncEncryptedTabContextName[] =
+    "Sync Encrypted Tab Context";
+inline constexpr char kSyncEncryptedTabContextDescription[] =
+    "Enables syncing of Encrypted Tab Context across devices.";
+
 inline constexpr char kSyncGeminiThreadsName[] = "Sync Gemini Threads";
 inline constexpr char kSyncGeminiThreadsDescription[] =
     "Acquire Gemini Threads via sync.";

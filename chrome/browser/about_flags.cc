@@ -9950,6 +9950,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncAutofillValuableMetadataDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncAutofillValuableMetadata)},
 
+    {"sync-encrypted-tab-context",
+     flag_descriptions::kSyncEncryptedTabContextName,
+     flag_descriptions::kSyncEncryptedTabContextDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncEncryptedTabContext)},
+
     {"sync-wallet-flight-reservations",
      flag_descriptions::kSyncWalletFlightReservationsName,
      flag_descriptions::kSyncWalletFlightReservationsDescription, kOsAll,

@@ -94,8 +94,7 @@ class SingleClientTabContextSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientTabContextSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_overrides_.InitAndEnableFeature(
-        syncer::kSyncEncryptedTabContextContainer);
+    feature_overrides_.InitAndEnableFeature(syncer::kSyncEncryptedTabContext);
   }
 
   SingleClientTabContextSyncTest(const SingleClientTabContextSyncTest&) =

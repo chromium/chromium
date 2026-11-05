@@ -883,8 +883,7 @@ CommonControllerBuilder::CreateSavedTabGroupDataTypeController() {
 
 std::unique_ptr<syncer::DataTypeController> CommonControllerBuilder::
     CreateEncryptedTabContextContainerDataTypeController() {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEncryptedTabContextContainer) ||
+  if (!base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext) ||
       !tab_context_sync_service_.value()) {
     return nullptr;
   }
@@ -902,8 +901,7 @@ std::unique_ptr<syncer::DataTypeController> CommonControllerBuilder::
 
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateEncryptedTabContextItemDataTypeController() {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEncryptedTabContextContainer) ||
+  if (!base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext) ||
       !tab_context_sync_service_.value()) {
     return nullptr;
   }

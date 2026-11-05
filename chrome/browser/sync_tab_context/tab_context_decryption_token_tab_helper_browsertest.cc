@@ -199,8 +199,7 @@ class TabContextDecryptionTokenTabHelperBrowserTest
     return content::EvalJs(web_contents, script).ExtractString();
   }
 
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncEncryptedTabContextContainer};
+  base::test::ScopedFeatureList feature_list_{syncer::kSyncEncryptedTabContext};
   base::CallbackListSubscription create_services_subscription_;
   std::string primary_gaia_id_;
   content::ContentMockCertVerifier mock_cert_verifier_;

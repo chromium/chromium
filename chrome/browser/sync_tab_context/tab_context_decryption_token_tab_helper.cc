@@ -36,8 +36,7 @@ namespace {
 
 bool ShouldExposeTabContextPrivateApi(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEncryptedTabContextContainer)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext)) {
     return false;
   }
 
@@ -74,8 +73,7 @@ class DecryptionTokenApi
       const std::string& obfuscated_gaia_id,
       const base::Uuid& container_id,
       GetContainerDecryptionTokenCallback callback) override {
-    CHECK(base::FeatureList::IsEnabled(
-        syncer::kSyncEncryptedTabContextContainer));
+    CHECK(base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext));
 
     // Although binding is restricted to allowed origins during navigation,
     // a compromised renderer attempting to send an unauthorized IPC message
@@ -157,8 +155,7 @@ TabContextDecryptionTokenTabHelper::MaybeCreate(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEncryptedTabContextContainer)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext)) {
     return nullptr;
   }
 

@@ -53,8 +53,7 @@ TabContextDecryptionTokenExtension::CreateTokenValueForTesting(  // IN-TEST
 bool TabContextDecryptionTokenExtension::ShouldExposeTabContextJavascriptApi(
     const url::Origin& origin,
     bool is_locked_to_site) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEncryptedTabContextContainer)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext)) {
     return false;
   }
   return origin == sync_tab_context::GetAllowedTabContextOrigin() &&

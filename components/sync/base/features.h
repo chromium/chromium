@@ -33,8 +33,8 @@ BASE_DECLARE_FEATURE(kSyncContextualTask);
 // Enables syncing of Gemini threads across devices.
 BASE_DECLARE_FEATURE(kSyncGeminiThread);
 
-// Enables syncing of Encrypted Tab Context Containers across devices.
-BASE_DECLARE_FEATURE(kSyncEncryptedTabContextContainer);
+// Enables syncing of Encrypted Tab Context across devices.
+BASE_DECLARE_FEATURE(kSyncEncryptedTabContext);
 
 // Enables syncing of themes across iOS devices.
 BASE_DECLARE_FEATURE(kSyncThemesIos);

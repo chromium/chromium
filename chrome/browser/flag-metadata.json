@@ -9433,6 +9433,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "sync-encrypted-tab-context",
+    "owners": [ "mastiz@chromium.org", "//components/sync/OWNERS" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "sync-gemini-threads",
     "owners": [
       "chazzy@chromium.org",

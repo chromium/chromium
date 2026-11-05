@@ -1355,8 +1355,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   allowed_types.Put(syncer::READING_LIST);
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
-    if (base::FeatureList::IsEnabled(
-            syncer::kSyncEncryptedTabContextContainer)) {
+    if (base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext)) {
       allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER);
       allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_ITEM);
     }

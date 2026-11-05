@@ -38,16 +38,14 @@ TEST_F(TabContextDecryptionTokenExtensionTest,
   base::test::ScopedFeatureList scoped_feature_list;
 
   // Feature disabled -> false.
-  scoped_feature_list.InitAndDisableFeature(
-      syncer::kSyncEncryptedTabContextContainer);
+  scoped_feature_list.InitAndDisableFeature(syncer::kSyncEncryptedTabContext);
   EXPECT_FALSE(TabContextDecryptionTokenExtension::
                    ShouldExposeTabContextJavascriptApiForTesting(
                        kAllowedOrigin, /*is_locked_to_site=*/true));
 
   // Feature enabled...
   scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncEncryptedTabContextContainer);
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncEncryptedTabContext);
 
   // Feature enabled, wrong origin -> false.
   EXPECT_FALSE(TabContextDecryptionTokenExtension::

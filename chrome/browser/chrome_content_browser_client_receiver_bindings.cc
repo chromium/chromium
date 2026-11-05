@@ -512,7 +512,7 @@ void ChromeContentBrowserClient::
                                                     render_frame_host);
       },
       &render_frame_host));
-  if (base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContextContainer)) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext)) {
     associated_registry.AddInterface<
         chrome::mojom::TabContextDecryptionTokenExtension>(base::BindRepeating(
         [](content::RenderFrameHost* render_frame_host,

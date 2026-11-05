@@ -1946,6 +1946,11 @@ inline constexpr char kSyncContextualTaskName[] = "Sync Contextual Task";
 inline constexpr char kSyncContextualTaskDescription[] =
     "Enables syncing of contextual tasks.";
 
+inline constexpr char kSyncEncryptedTabContextName[] =
+    "Sync Encrypted Tab Context";
+inline constexpr char kSyncEncryptedTabContextDescription[] =
+    "Enables syncing of Encrypted Tab Context across devices.";
+
 inline constexpr char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 inline constexpr char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
