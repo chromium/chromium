@@ -469,6 +469,9 @@ found in the LICENSE file.
     <style name="TextAppearance.FakeSearchBoxTextNewStyle" parent="TextAppearance.MediumStyle">
         <item name="android:textColorHint">?attr/colorOnSurfaceVariant</item>
     </style>
+    <style name="TextAppearance.FakeSearchBoxTextNewStyleDark" parent="TextAppearance.FakeSearchBoxTextNewStyle">
+        <item name="android:textColorHint">@color/default_text_color_secondary_dark</item>
+    </style>
 
     <!-- Similar to FakeSearchBoxText, but with text size 16sp, medium weight, Google Sans text font.
     -->

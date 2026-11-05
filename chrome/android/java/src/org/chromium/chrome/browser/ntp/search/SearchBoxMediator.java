@@ -77,6 +77,7 @@ class SearchBoxMediator implements DestroyObserver {
     private final float mTransitionEndOffset;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Profile mProfile;
+    private final boolean mIsNtpAuroraEnabled;
     private final TemplateUrlServiceObserver mTemplateUrlServiceObserver =
             this::onTemplateURLServiceChanged;
     private @Nullable StatusIconResource mSearchEngineIcon;
@@ -108,6 +109,7 @@ class SearchBoxMediator implements DestroyObserver {
                         ? context.getResources()
                                 .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
+        mIsNtpAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -300,7 +302,8 @@ class SearchBoxMediator implements DestroyObserver {
      * Returns the text appearance style resource ID for the fake search box hint text.
      *
      * <p>When NTP Aurora is enabled ({@link NewTabPageUtils#isNtpAuroraEnabled()}), returns the new
-     * style TextAppearance_FakeSearchBoxTextNewStyle.
+     * style TextAppearance_FakeSearchBoxTextNewStyleDark if {@code apply} is true, otherwise
+     * TextAppearance_FakeSearchBoxTextNewStyle.
      *
      * <p>When NTP Aurora is disabled, falls back to legacy typography based on {@code apply}.
      *
@@ -308,9 +311,12 @@ class SearchBoxMediator implements DestroyObserver {
      * @return The text appearance style resource ID to apply to the fake search box.
      */
     @VisibleForTesting
-    static @StyleRes int getFakeSearchBoxTextStyle(boolean apply) {
-        if (NewTabPageUtils.isNtpAuroraEnabled()) {
-            return R.style.TextAppearance_FakeSearchBoxTextNewStyle;
+    @StyleRes
+    int getFakeSearchBoxTextStyle(boolean apply) {
+        if (mIsNtpAuroraEnabled) {
+            return apply
+                    ? R.style.TextAppearance_FakeSearchBoxTextNewStyleDark
+                    : R.style.TextAppearance_FakeSearchBoxTextNewStyle;
         }
         return apply
                 ? R.style.TextAppearance_FakeSearchBoxTextMediumDark
