@@ -12,13 +12,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
-#endif
 
 namespace extensions::side_panel_util {
 
@@ -63,17 +57,6 @@ void ToggleExtensionSidePanel(BrowserWindowInterface* browser_window,
     return;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* organizer_controller =
-      organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelController::From(browser_window)
-          : nullptr;
-  if (organizer_controller) {
-    organizer_controller->ToggleForExtension(extension_id);
-    return;
-  }
-#endif
-
   SidePanelUI* side_panel_ui = SidePanelUI::From(browser_window);
   if (!side_panel_ui) {
     return;
@@ -88,17 +71,6 @@ void ToggleExtensionSidePanel(BrowserWindowInterface* browser_window,
 void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
                                   content::WebContents* web_contents,
                                   const ExtensionId& extension_id) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* organizer_controller =
-      organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelController::From(&browser_window)
-          : nullptr;
-  if (organizer_controller) {
-    organizer_controller->OpenForExtension(extension_id);
-    return;
-  }
-#endif
-
   SidePanelUI* side_panel_ui = SidePanelUI::From(&browser_window);
   if (!side_panel_ui) {
     return;
@@ -172,17 +144,6 @@ void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
 void OpenContextualExtensionSidePanel(BrowserWindowInterface& browser_window,
                                       content::WebContents& web_contents,
                                       const ExtensionId& extension_id) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* organizer_controller =
-      organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelController::From(&browser_window)
-          : nullptr;
-  if (organizer_controller) {
-    organizer_controller->OpenForExtension(extension_id);
-    return;
-  }
-#endif
-
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
 
@@ -213,17 +174,6 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
   if (!browser_window) {
     return;
   }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* organizer_controller =
-      organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelController::From(browser_window)
-          : nullptr;
-  if (organizer_controller) {
-    organizer_controller->CloseForExtension(extension_id);
-    return;
-  }
-#endif
 
   SidePanelUI* side_panel_ui = SidePanelUI::From(browser_window);
   SidePanelEntry::Key extension_key =
@@ -261,17 +211,6 @@ void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
   if (!browser_window || !web_contents) {
     return;
   }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* organizer_controller =
-      organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelController::From(browser_window)
-          : nullptr;
-  if (organizer_controller) {
-    organizer_controller->CloseForExtension(extension_id);
-    return;
-  }
-#endif
 
   const SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                           extension_id);

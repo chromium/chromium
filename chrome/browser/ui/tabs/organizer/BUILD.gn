@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//extensions/buildflags/buildflags.gni")
-
 source_set("organizer") {
   sources = [
     "organizer_panel_controller.h",
@@ -16,13 +14,8 @@ source_set("organizer") {
     "//chrome/browser/ui/animation",
     "//chrome/browser/ui/views/tabs/organizer:organizer_panel_host",
     "//components/site_engagement/content",
-    "//extensions/buildflags",
     "//ui/base/unowned_user_data",
   ]
-
-  if (enable_extensions) {
-    public_deps += [ "//extensions/common" ]
-  }
 }
 
 source_set("impl") {
@@ -56,10 +49,6 @@ source_set("impl") {
     "//ui/base",
     "//ui/views",
   ]
-
-  if (enable_extensions) {
-    deps += [ "//extensions/browser" ]
-  }
 }
 
 source_set("unit_tests") {

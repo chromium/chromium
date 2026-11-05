@@ -11,8 +11,6 @@ namespace organizer_panel {
 
 BASE_FEATURE(kOrganizerPanel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOrganizerPanelForeignTabs, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kShowExtensionsSidePanelUiInOrganizerPanel,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kOrganizerPanelUseSegmentationControl,
@@ -26,11 +24,6 @@ bool IsOrganizerPanelFeatureEnabled() {
 bool IsOrganizerPanelForeignTabsEnabled() {
   return IsOrganizerPanelFeatureEnabled() &&
          base::FeatureList::IsEnabled(kOrganizerPanelForeignTabs);
-}
-
-bool IsShowExtensionsSidePanelUiInOrganizerPanelEnabled() {
-  return base::FeatureList::IsEnabled(
-      kShowExtensionsSidePanelUiInOrganizerPanel);
 }
 
 bool IsOrganizerPanelSegmentationControlEnabled() {

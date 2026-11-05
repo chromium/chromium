@@ -9,7 +9,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/mock_vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_renderer_host.h"
-#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -149,35 +146,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
   raw_ptr<OrganizerPanelView> view_ = nullptr;
 };
 
-TEST_F(OrganizerPanelViewTest, NoWebViewWhenExtensionSidePanelFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
-
-  CreateView();
-  EXPECT_EQ(GetWebView(), nullptr);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_TRUE(organizer_panel_view()->IsInExtensionModeForTesting());
-#else
-  EXPECT_FALSE(organizer_panel_view()->IsInExtensionModeForTesting());
-#endif
-}
-
-TEST_F(OrganizerPanelViewTest, DefaultWebViewCreatedWhenFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
-
-  CreateView();
-  EXPECT_NE(GetWebView(), nullptr);
-  EXPECT_FALSE(organizer_panel_view()->IsInExtensionModeForTesting());
-}
-
 TEST_F(OrganizerPanelViewTest, DraggableRegionsInWindowCaption) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
-
   CreateView();
   state_controller()->SetOrganizerVisible(true);
   views::WebView* web_view = views::AsViewClass<views::WebView>(GetWebView());
@@ -234,10 +203,6 @@ TEST_F(OrganizerPanelViewTest, DraggableRegionsInWindowCaption) {
 }
 
 TEST_F(OrganizerPanelViewTest, VisibilityChangedRestoresFocusWhenWidgetActive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
-
   CreateView();
   state_controller()->SetOrganizerVisible(true);
   views::View* web_view = GetWebView();
@@ -261,10 +226,6 @@ TEST_F(OrganizerPanelViewTest, VisibilityChangedRestoresFocusWhenWidgetActive) {
 
 TEST_F(OrganizerPanelViewTest,
        VisibilityChangedDoesNotStealFocusWhenWidgetInactive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
-
   CreateView();
   state_controller()->SetOrganizerVisible(true);
   views::View* web_view = GetWebView();
@@ -292,10 +253,6 @@ TEST_F(OrganizerPanelViewTest,
 }
 
 TEST_F(OrganizerPanelViewTest, LazyWebContentsInitialization) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
-
   CreateView(/*show_widget=*/false);
   views::WebView* web_view = views::AsViewClass<views::WebView>(GetWebView());
   ASSERT_NE(web_view, nullptr);

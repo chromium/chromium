@@ -13,7 +13,6 @@ namespace organizer_panel {
 
 BASE_DECLARE_FEATURE(kOrganizerPanel);
 BASE_DECLARE_FEATURE(kOrganizerPanelForeignTabs);
-BASE_DECLARE_FEATURE(kShowExtensionsSidePanelUiInOrganizerPanel);
 
 BASE_DECLARE_FEATURE_PARAM(bool, kOrganizerPanelUseSegmentationControl);
 
@@ -22,10 +21,6 @@ bool IsOrganizerPanelFeatureEnabled();
 
 // Returns whether the Organizer Panel Foreign Tabs feature is enabled.
 bool IsOrganizerPanelForeignTabsEnabled();
-
-// Returns whether the Show Extensions Side Panel UI In Organizer Panel feature
-// is enabled.
-bool IsShowExtensionsSidePanelUiInOrganizerPanelEnabled();
 
 // Returns whether the segmentation control should be used for the organizer
 // panel.

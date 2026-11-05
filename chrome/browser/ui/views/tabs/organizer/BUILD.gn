@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//extensions/buildflags/buildflags.gni")
-
 source_set("organizer") {
   sources = [
     "layout_constants.h",
@@ -20,13 +18,6 @@ source_set("organizer") {
     "//ui/base",
     "//ui/views",
   ]
-
-  if (enable_extensions) {
-    public_deps += [
-      "//extensions/buildflags",
-      "//extensions/common",
-    ]
-  }
 }
 
 source_set("organizer_panel_host") {
@@ -45,10 +36,7 @@ source_set("impl") {
     "organizer_tray_view.cc",
   ]
 
-  public_deps = [
-    ":organizer",
-    "//chrome/browser/ui/views/extensions:extension_view_views",
-  ]
+  public_deps = [ ":organizer" ]
 
   deps = [
     "//chrome/app:generated_resources",
@@ -80,20 +68,6 @@ source_set("impl") {
     "//ui/views/controls/webview",
     "//url",
   ]
-
-  if (enable_extensions) {
-    sources += [
-      "organizer_panel_extension_view.cc",
-      "organizer_panel_extension_view.h",
-    ]
-
-    deps += [
-      "//chrome/browser/extensions",
-      "//chrome/common/extensions/api",
-      "//extensions/browser",
-      "//extensions/common",
-    ]
-  }
 }
 
 source_set("unit_test_support") {
@@ -143,15 +117,6 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
-  if (enable_extensions) {
-    deps += [
-      "//chrome/browser/extensions",
-      "//chrome/common/extensions/api",
-      "//extensions:test_support",
-      "//extensions/browser",
-      "//extensions/common",
-    ]
-  }
 }
 
 source_set("interactive_ui_tests") {
@@ -177,15 +142,4 @@ source_set("interactive_ui_tests") {
     "//ui/decoration",
     "//ui/views",
   ]
-  if (enable_extensions) {
-    sources += [ "organizer_panel_extension_view_interactive_uitest.cc" ]
-    deps += [
-      "//chrome/browser/extensions",
-      "//chrome/browser/extensions:test_support",
-      "//chrome/common/extensions/api",
-      "//extensions:test_support",
-      "//extensions/browser",
-      "//extensions/common",
-    ]
-  }
 }

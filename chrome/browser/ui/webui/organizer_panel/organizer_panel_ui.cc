@@ -53,8 +53,7 @@ bool OrganizerPanelUIConfig::IsWebUIEnabled(
 }
 
 bool OrganizerPanelUIConfig::IsPreloadable() {
-  return organizer_panel::IsOrganizerPanelFeatureEnabled() &&
-         !organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled();
+  return organizer_panel::IsOrganizerPanelFeatureEnabled();
 }
 
 std::optional<int> OrganizerPanelUIConfig::GetCommandIdForTesting() {

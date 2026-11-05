@@ -40,8 +40,6 @@ class OrganizerPanelView : public views::View {
 
   ~OrganizerPanelView() override;
 
-  virtual bool IsInExtensionModeForTesting() const;
-
   // Returns true if `point` is in an area that should be treated as window
   // caption (for dragging the window).
   virtual bool IsPositionInWindowCaption(const gfx::Point& point) const;

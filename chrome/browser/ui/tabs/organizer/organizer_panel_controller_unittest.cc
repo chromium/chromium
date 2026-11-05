@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/tabs/mock_vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
@@ -22,7 +21,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -145,83 +143,6 @@ TEST_F(OrganizerPanelControllerTest, LazyWebContentsInitializationAndReuse) {
   EXPECT_EQ(controller()->web_contents(), web_contents);
   EXPECT_NE(controller()->site_engagement_helper(), nullptr);
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(OrganizerPanelControllerTest, ExtensionModeSkipsWebContentsAllocation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
-
-  EXPECT_EQ(controller()->web_contents(), nullptr);
-  EXPECT_EQ(controller()->site_engagement_helper(), nullptr);
-  controller()->SetOrganizerVisible(true);
-  EXPECT_EQ(controller()->web_contents(), nullptr);
-  EXPECT_EQ(controller()->site_engagement_helper(), nullptr);
-
-  const extensions::ExtensionId kExt1 = "abcdefghijklmnopabcdefghijklmnop";
-  controller()->OpenForExtension(kExt1);
-  EXPECT_EQ(controller()->web_contents(), nullptr);
-}
-
-TEST_F(OrganizerPanelControllerTest, ExtensionOpenToggleClose) {
-  UNCALLED_MOCK_CALLBACK(OrganizerPanelController::StateChangedCallback,
-                         callback);
-  const auto subscription =
-      controller()->RegisterOnStateChanged(callback.Get());
-
-  const extensions::ExtensionId kExt1 = "abcdefghijklmnopabcdefghijklmnop";
-  const extensions::ExtensionId kExt2 = "ponmlkjihgfedcbaponmlkjihgfedcba";
-
-  // Opening for extension opens panel and sets active extension ID.
-  EXPECT_CALL_IN_SCOPE(callback, Run, controller()->OpenForExtension(kExt1));
-  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
-  EXPECT_EQ(controller()->active_extension_id(), kExt1);
-
-  // Calling OpenForExtension with the same extension when already open
-  // should not notify again.
-  controller()->OpenForExtension(kExt1);
-  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
-
-  // Opening for another extension keeps it open and updates active extension.
-  controller()->OpenForExtension(kExt2);
-  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
-  EXPECT_EQ(controller()->active_extension_id(), kExt2);
-
-  // Toggling same extension closes the panel.
-  EXPECT_CALL_IN_SCOPE(callback, Run, controller()->ToggleForExtension(kExt2));
-  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
-  EXPECT_FALSE(controller()->active_extension_id().has_value());
-
-  // Toggling while closed opens it.
-  EXPECT_CALL_IN_SCOPE(callback, Run, controller()->ToggleForExtension(kExt1));
-  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
-  EXPECT_EQ(controller()->active_extension_id(), kExt1);
-
-  // Closing matching extension closes the panel.
-  EXPECT_CALL_IN_SCOPE(callback, Run, controller()->CloseForExtension(kExt1));
-  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
-  EXPECT_FALSE(controller()->active_extension_id().has_value());
-}
-
-TEST_F(OrganizerPanelControllerTest, IncognitoRejectsUnauthorizedExtension) {
-  Profile* const incognito_profile =
-      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  EXPECT_CALL(mock_browser_window_interface_, GetProfile())
-      .WillRepeatedly(testing::Return(incognito_profile));
-
-  const extensions::ExtensionId kExt = "abcdefghijklmnopabcdefghijklmnop";
-
-  // Opening for an unauthorized extension in incognito should do nothing.
-  controller()->OpenForExtension(kExt);
-  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
-  EXPECT_FALSE(controller()->active_extension_id().has_value());
-
-  // Toggling while closed also should do nothing.
-  controller()->ToggleForExtension(kExt);
-  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
-  EXPECT_FALSE(controller()->active_extension_id().has_value());
-}
-#endif
 
 // Test suite that ensures that the panel gets parented to the tray and the
 // vertical tab strip if the tab strip is enabled.

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -43,10 +41,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_extension_view.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -189,11 +183,6 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
 // static
 std::unique_ptr<OrganizerPanelView> OrganizerPanelView::Create(
     BrowserWindowInterface& browser) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()) {
-    return std::make_unique<OrganizerPanelExtensionView>(browser);
-  }
-#endif
   return std::make_unique<OrganizerPanelViewImpl>(browser);
 }
 
@@ -225,10 +214,6 @@ OrganizerPanelView::OrganizerPanelView(BrowserWindowInterface& browser)
 }
 
 OrganizerPanelView::~OrganizerPanelView() = default;
-
-bool OrganizerPanelView::IsInExtensionModeForTesting() const {
-  return false;
-}
 
 bool OrganizerPanelView::IsPositionInWindowCaption(
     const gfx::Point& point) const {

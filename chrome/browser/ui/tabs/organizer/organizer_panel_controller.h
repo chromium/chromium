@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLLER_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -14,12 +13,7 @@
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/extension_id.h"
-#endif
 
 class BrowserView;
 class BrowserWindowInterface;
@@ -61,16 +55,6 @@ class OrganizerPanelController {
 
   OrganizerPanelLocation GetCurrentOrganizerPanelLocation() const;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  void OpenForExtension(const extensions::ExtensionId& extension_id);
-  void ToggleForExtension(const extensions::ExtensionId& extension_id);
-  void CloseForExtension(const extensions::ExtensionId& extension_id);
-
-  const std::optional<extensions::ExtensionId>& active_extension_id() const {
-    return active_extension_id_;
-  }
-#endif
-
   using StateChangedCallback =
       base::RepeatingCallback<void(OrganizerPanelController*)>;
   base::CallbackListSubscription RegisterOnStateChanged(
@@ -111,10 +95,6 @@ class OrganizerPanelController {
 
   content::WebContents* EnsureWebContentsCreated();
   void UpdatePanelWebContents();
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  std::optional<extensions::ExtensionId> active_extension_id_;
-#endif
 
   const raw_ref<BrowserWindowInterface> browser_window_;
   const raw_ptr<actions::ActionItem> root_action_item_;
