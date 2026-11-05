@@ -158,9 +158,12 @@ void InvalidationListenerImpl::Shutdown() {
   CHECK(observers_.empty());
   CHECK(type_to_handler_.empty());
 
+  // Invalidate weak pointers first because RemoveAppHandler() may stop
+  // GCMDriverDesktop and synchronously invoke pending token callbacks on a
+  // shutting down listener.
+  weak_ptr_factory_.InvalidateWeakPtrs();
   registration_token_handler_ = nullptr;
   gcm_driver_->RemoveAppHandler(gcm_app_id_);
-  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void InvalidationListenerImpl::SetRegistrationUploadStatus(
@@ -239,7 +242,9 @@ void InvalidationListenerImpl::OnRegistrationTokenReceived(
     const std::string& new_registration_token,
     instance_id::InstanceID::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(registration_token_handler_);
+  if (!registration_token_handler_) {
+    return;
+  }
 
   base::UmaHistogramEnumeration(RegistrationMetricName, result);
 

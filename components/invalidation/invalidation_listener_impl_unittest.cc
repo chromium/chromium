@@ -412,4 +412,36 @@ TEST_F(InvalidationListenerImplTest, ShutsdownCorrectly) {
   EXPECT_EQ(fake_gcm_driver_.GetAppHandler(kFakeProjectNumberStr), nullptr);
 }
 
+TEST_F(InvalidationListenerImplTest,
+       ShutdownWithPendingTokenRequestDoesNotCrash) {
+  auto mock_instance_id = std::make_unique<MockInstanceID>();
+  instance_id::InstanceID::GetTokenCallback get_token_callback;
+  EXPECT_CALL(*mock_instance_id, GetToken)
+      .WillOnce([&](const std::string&, const std::string&, base::TimeDelta,
+                    std::set<instance_id::InstanceID::Flags>,
+                    instance_id::InstanceID::GetTokenCallback callback) {
+        get_token_callback = std::move(callback);
+      });
+  EXPECT_CALL(mock_instance_id__driver_,
+              GetInstanceID(GetGcmAppId(kFakeProjectNumberStr)))
+      .WillRepeatedly(testing::Return(mock_instance_id.get()));
+
+  InvalidationListenerImpl listener(&fake_gcm_driver_,
+                                    &mock_instance_id__driver_,
+                                    kFakeProjectNumber, kTestLogPrefix);
+
+  FakeRegistrationTokenHandler fake_registration_token_handler;
+  listener.Start(&fake_registration_token_handler);
+
+  listener.Shutdown();
+
+  if (get_token_callback) {
+    std::move(get_token_callback)
+        .Run(std::string(), instance_id::InstanceID::SERVER_ERROR);
+  }
+
+  EXPECT_EQ(fake_gcm_driver_.GetAppHandler(GetGcmAppId(kFakeProjectNumberStr)),
+            nullptr);
+}
+
 }  // namespace invalidation
