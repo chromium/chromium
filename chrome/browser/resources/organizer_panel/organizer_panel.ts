@@ -18,7 +18,7 @@ export {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
 export type {BrowserProxy as ForeignTabsBrowserProxy, ForeignTab} from './foreign_tabs.mojom-webui.js';
 export {browserProxyFactory as foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote} from './foreign_tabs.mojom-webui.js';
 export {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
-export {OrganizerFaviconElement} from './organizer_favicon.js';
+export {isNtpUrl, OrganizerFaviconElement} from './organizer_favicon.js';
 export {OrganizerListElement} from './organizer_list.js';
 export {INITIAL_ITEM_COUNT, OrganizerListSectionElement, OrganizerSectionToggleAction} from './organizer_list_section.js';
 export type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from './organizer_list_section_delegate.js';

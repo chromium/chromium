@@ -29,15 +29,23 @@
   background-repeat: no-repeat;
   box-sizing: border-box;
   height: var(--organizer-favicon-size_);
+  mask-position: center center;
+  mask-repeat: no-repeat;
   position: relative;
   width: var(--organizer-favicon-size_);
 }
 
-:host(:not([stack-vertically])) #firstFavicon {
+.favicons .favicon.ntp {
+  background-color: var(--color-organizer-panel-foreground,
+      var(--cr-primary-text-color));
+}
+
+:host(:not([stack-vertically])) #firstFavicon:has(+ #secondFavicon) {
   clip-path: inset(0 var(--organizer-favicon-clip_) 0 0);
 }
 
-:host-context([dir=rtl]):host(:not([stack-vertically])) #firstFavicon {
+:host-context([dir=rtl]):host(:not([stack-vertically]))
+    #firstFavicon:has(+ #secondFavicon) {
   clip-path: inset(0 0 0 var(--organizer-favicon-clip_));
 }
 
@@ -49,7 +57,7 @@
   flex-direction: column;
 }
 
-:host([stack-vertically]) #firstFavicon {
+:host([stack-vertically]) #firstFavicon:has(+ #secondFavicon) {
   clip-path: inset(0 0 var(--organizer-favicon-clip_) 0);
 }
 

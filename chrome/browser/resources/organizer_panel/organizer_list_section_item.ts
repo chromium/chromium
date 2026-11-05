@@ -221,6 +221,23 @@ export class OrganizerListSectionItemElement extends
     return !!this.item.description && this.item.description.length > 0;
   }
 
+  protected hasFavicon_(): boolean {
+    return !!this.getPrimaryFaviconUrl_();
+  }
+
+  protected getPrimaryFaviconUrl_(): string {
+    return this.item.prefixIcon?.url ??
+        this.item.prefixIcon?.stackedFavicons?.urls[0] ?? '';
+  }
+
+  protected getSecondaryFaviconUrl_(): string {
+    return this.item.prefixIcon?.stackedFavicons?.urls[1] ?? '';
+  }
+
+  protected shouldStackFaviconsVertically_(): boolean {
+    return !!this.item.prefixIcon?.stackedFavicons?.stackVertically;
+  }
+
   protected hasSuffix_(): boolean {
     return !!(this.item.trailingIcon || this.item.hoveredActionButton);
   }

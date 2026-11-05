@@ -10,12 +10,16 @@ export function getHtml(this: OrganizerFaviconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="favicons" class="favicons">
-  <div id="firstFavicon" class="favicon"
-      .style="background-image: ${this.getFavicon_(this.url)};">
+  <div id="firstFavicon"
+      class="favicon ${this.isNtpUrl_(this.url) ? 'ntp' : ''}"
+      .style="${this.getFaviconStyle_(this.url)}">
   </div>
-  <div id="secondFavicon" class="favicon"
-      .style="background-image: ${this.getFavicon_(this.secondaryUrl)};">
-  </div>
+  ${this.secondaryUrl ? html`
+    <div id="secondFavicon"
+        class="favicon ${this.isNtpUrl_(this.secondaryUrl) ? 'ntp' : ''}"
+        .style="${this.getFaviconStyle_(this.secondaryUrl)}">
+    </div>
+  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -6,7 +6,6 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerFaviconElement, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -17,9 +16,6 @@ const TEST_DESCRIPTION_PARTS = [{text: 'google.com'}, {text: '5 mins ago'}];
 const EXPECTED_ARIA_DESCRIPTION = 'google.com, 5 mins ago';
 const TEST_URL_1 = 'https://google.com';
 const TEST_URL_2 = 'https://youtube.com';
-
-const TEST_FAVICON_1 = getFaviconForPageURL(TEST_URL_1, false);
-const TEST_FAVICON_2 = getFaviconForPageURL(TEST_URL_2, false);
 
 const TEST_CUSTOM_ICON_ID = 'customGroupIcon';
 const TEST_CUSTOM_ICON_TEXT = 'Group';
@@ -96,9 +92,12 @@ suite('OrganizerListSectionItemTest', () => {
     };
     await microtasksFinished();
 
-    const crUrlListItem = listItem.$.crUrlListItem;
-    assertTrue(!!crUrlListItem);
-    assertEquals(TEST_URL_1, crUrlListItem.url);
+    const favicon = listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+        'organizer-favicon');
+    assertTrue(!!favicon);
+    assertEquals('customIcon', favicon.getAttribute('slot'));
+    assertEquals(TEST_URL_1, favicon.url);
+    assertEquals('', favicon.secondaryUrl);
   });
 
   test('renders prefix icon with custom element', async () => {
@@ -366,10 +365,6 @@ suite('OrganizerListSectionItemTest', () => {
         };
         await microtasksFinished();
 
-        const crUrlListItem = listItem.$.crUrlListItem;
-        assertTrue(!!crUrlListItem);
-        assertEquals(undefined, crUrlListItem.url);
-
         const favicon =
             listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
                 'organizer-favicon');
@@ -377,10 +372,6 @@ suite('OrganizerListSectionItemTest', () => {
         assertEquals('customIcon', favicon.getAttribute('slot'));
         assertEquals(TEST_URL_1, favicon.url);
         assertEquals(TEST_URL_2, favicon.secondaryUrl);
-        assertEquals(
-            TEST_FAVICON_1, favicon.$.firstFavicon.style.backgroundImage);
-        assertEquals(
-            TEST_FAVICON_2, favicon.$.secondFavicon.style.backgroundImage);
         assertFalse(favicon.stackVertically);
       });
 
@@ -400,23 +391,18 @@ suite('OrganizerListSectionItemTest', () => {
         'organizer-favicon');
     assertTrue(!!favicon);
     assertTrue(favicon.stackVertically);
-    assertTrue(favicon.hasAttribute('stack-vertically'));
   });
 
   test(
-      'does not render organizer favicon when single URL is provided',
+      'does not render organizer favicon when prefixIcon has no URL',
       async () => {
         listItem.item = {
-          title: ['Single URL'],
-          prefixIcon: {
-            url: TEST_URL_1,
-          },
+          title: ['No Icon'],
         };
         await microtasksFinished();
 
         const favicon = listItem.shadowRoot.querySelector('organizer-favicon');
         assertEquals(null, favicon);
-        assertEquals(TEST_URL_1, listItem.$.crUrlListItem.url);
       });
 
   test(
