@@ -657,10 +657,11 @@ class AutofillEventMultiFrameBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 #endif
     // Register request handler before starting server.
-    embedded_test_server()->RegisterRequestHandler(
+    embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&AutofillEventMultiFrameBrowserTest::HandleRequest,
                             base::Unretained(this)));
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -853,7 +854,7 @@ class AutofillEventMultiFrameBrowserTest : public InProcessBrowserTest {
 // for the fields in that frame.
 IN_PROC_BROWSER_TEST_F(AutofillEventMultiFrameBrowserTest,
                        CreditCardFormAcrossIframes) {
-  GURL url = embedded_test_server()->GetURL("/");
+  const GURL url = embedded_https_test_server().GetURL("/");
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   // Wait for the form to be seen. The form has 4 fields:
@@ -922,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(AutofillEventMultiFrameBrowserTest,
 // fields within that frame, not fields from other frames.
 IN_PROC_BROWSER_TEST_F(AutofillEventMultiFrameBrowserTest,
                        EventContainsOnlyLocalFrameFields) {
-  GURL url = embedded_test_server()->GetURL("/");
+  const GURL url = embedded_https_test_server().GetURL("/");
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   constexpr size_t kExpectedFieldCount = 4;

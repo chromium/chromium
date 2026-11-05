@@ -528,6 +528,136 @@ TEST_F(FormFillerTest, UndoSavesFieldByFieldFillingData) {
                                   form.fields().front().global_id());
 }
 
+// Tests that single-field filling and previewing for credit cards and IBANs are
+// blocked on an insecure context, while non-sensitive fields can still fill.
+TEST_F(FormFillerTest,
+       FillOrPreviewField_BlocksCreditCardAndIbanOnInsecureContext) {
+  const FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER,
+                                     .autocomplete_attribute = "cc-number"}}});
+  FormsSeen({form});
+  AutofillField* const field =
+      GetAutofillField(form.global_id(), form.fields().front().global_id());
+  ASSERT_NE(field, nullptr);
+
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("http://insecure.test"));
+  ASSERT_FALSE(autofill_client().IsContextSecure());
+
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
+  form_filler().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      field->global_id(), field, u"4111111111111111",
+      FillingProduct::kCreditCard, CREDIT_CARD_NUMBER);
+  form_filler().FillOrPreviewField(
+      mojom::ActionPersistence::kPreview, mojom::FieldActionType::kReplaceAll,
+      field->global_id(), field, u"4111111111111111",
+      FillingProduct::kCreditCard, CREDIT_CARD_NUMBER);
+  form_filler().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      field->global_id(), field, u"CH93 0076 2011 6238 5295 7",
+      FillingProduct::kIban, IBAN_VALUE);
+  form_filler().FillOrPreviewField(
+      mojom::ActionPersistence::kPreview, mojom::FieldActionType::kReplaceAll,
+      field->global_id(), field, u"CH93 0076 2011 6238 5295 7",
+      FillingProduct::kIban, IBAN_VALUE);
+
+  // Non-sensitive address fields can still be filled on an insecure context.
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction);
+  form_filler().FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                   mojom::FieldActionType::kReplaceAll,
+                                   field->global_id(), field, u"John Doe",
+                                   FillingProduct::kAddress, NAME_FULL);
+}
+
+// Tests that credit card form filling and previewing are blocked on an
+// insecure context unless triggered via DevTools, while non-sensitive forms
+// such as addresses can still fill.
+TEST_F(FormFillerTest, FillOrPreviewForm_BlocksCreditCardOnInsecureContext) {
+  const CreditCard credit_card = test::GetCreditCard();
+  const AutofillProfile profile = test::GetFullProfile();
+  const FormData form = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+  FormsSeen({form});
+  FormStructure* const form_structure = GetFormStructure(form);
+  AutofillField* const trigger_field =
+      GetAutofillField(form.global_id(), form.fields().front().global_id());
+  ASSERT_NE(form_structure, nullptr);
+  ASSERT_NE(trigger_field, nullptr);
+
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("http://insecure.test"));
+  ASSERT_FALSE(autofill_client().IsContextSecure());
+
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *form_structure, *trigger_field,
+      AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kPreview, FillingProduct::kCreditCard,
+      &credit_card, *form_structure, *trigger_field,
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
+      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+
+  // DevTools and non-sensitive address fills are still allowed.
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(2);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *form_structure, *trigger_field,
+      AutofillTriggerSource::kDevtools,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *trigger_field, AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+}
+
+// Tests that dynamic form refills for credit card forms are blocked if the
+// context becomes insecure after the initial fill.
+TEST_F(FormFillerTest, Refill_BlocksCreditCardOnInsecureContext) {
+  const CreditCard credit_card = test::GetCreditCard();
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+
+  FormFieldData cvc_field = form.fields().back();
+  test_api(form).fields().pop_back();
+  FormsSeen({form});
+
+  // Initial fill on a secure context succeeds.
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
+      .WillOnce(Return(std::vector<FieldGlobalId>{}));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *GetFormStructure(form),
+      *GetAutofillField(form.global_id(), form.fields().front().global_id()),
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
+      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+
+  // Simulate the context becoming insecure before the dynamic form refill.
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("http://insecure.test"));
+  ASSERT_FALSE(autofill_client().IsContextSecure());
+
+  // Refill should be blocked, so ApplyFormAction is not called again.
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
+  test_api(form).fields().push_back(std::move(cvc_field));
+  FormsSeen({form});
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+}
+
 // Tests that for autocomplete=unrecognized fields are not filled by default,
 // but are filled if they are the filling trigger field.
 TEST_F(FormFillerTest,

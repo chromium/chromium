@@ -814,6 +814,11 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     FillingProduct filling_product,
                                     std::optional<FieldType> field_type_used) {
   CHECK(!field || field->global_id() == field_id);
+  if ((filling_product == FillingProduct::kCreditCard ||
+       filling_product == FillingProduct::kIban) &&
+      !manager_->client().IsContextSecure()) {
+    return;
+  }
   if (field && action_persistence == mojom::ActionPersistence::kFill) {
     if (ShouldRecordFillingHistory(filling_product)) {
       form_autofill_history_.AddFormFillingEntry(
@@ -846,6 +851,12 @@ void FormFiller::FillOrPreviewForm(
     FillId fill_id,
     const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
     RefillOptions refill_options) {
+  if (filling_product == FillingProduct::kCreditCard &&
+      trigger_source != AutofillTriggerSource::kDevtools &&
+      !manager_->client().IsContextSecure()) {
+    return;
+  }
+
   const AugmentedFillingPayload augmented_filling_payload =
       AugmentedFillingPayload(filling_payload, form, trigger_field);
 
