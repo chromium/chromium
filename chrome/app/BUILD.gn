@@ -25,11 +25,22 @@ if (is_posix) {
   source_set("chrome_crash_reporter_client") {
     public = [ "chrome_crash_reporter_client.h" ]
     public_deps = [
+      ":chrome_crash_user_streams",
       "//base",
       "//build:buildflag_header_h",
       "//components/crash/core/app",
     ]
   }
+}
+
+source_set("chrome_crash_user_streams") {
+  public = [ "chrome_crash_user_streams.h" ]
+  sources = [ "chrome_crash_user_streams.cc" ]
+  public_deps = [
+    "//base",
+    "//components/crash/core/common:shared_memory_user_stream",
+  ]
+  deps = [ "//components/metrics:system_profile_user_stream" ]
 }
 
 # This target is for dependency tracking for the command ID header.
@@ -232,6 +243,7 @@ static_library("test_support") {
       "chrome_crash_reporter_client_win.h",
     ]
     deps += [
+      ":chrome_crash_user_streams",
       "//chrome/browser/win/isolated_browser:isolated_browser_support",
       "//chrome/chrome_elf:constants",
       "//chrome/chrome_elf:test_stubs",
@@ -299,13 +311,18 @@ source_set("unit_tests") {
   # llvm_profile_util.cc is otherwise only compiled directly into the chrome
   # executable targets in //chrome/BUILD.gn, so compile it here too.
   sources = [
+    "chrome_crash_user_streams_unittest.cc",
     "llvm_profile_util.cc",
     "llvm_profile_util.h",
     "llvm_profile_util_unittest.cc",
   ]
   deps = [
+    ":chrome_crash_user_streams",
     "//base",
+    "//base/test:test_support",
     "//build/config/compiler:compiler_buildflags",
+    "//components/crash/core/common:shared_memory_user_stream",
+    "//components/metrics:system_profile_user_stream",
     "//testing/gtest",
   ]
 }

@@ -101,13 +101,16 @@ static_library("crash") {
     "crash/crash_helper.cc",
     "crash/crash_helper.h",
   ]
+  public_deps = [
+    # chrome_crash_reporter_client_win.h holds a ChromeCrashUserStreams member.
+    "//chrome/app:chrome_crash_user_streams",
+  ]
   deps = [
     ":constants",
     "//base",  # This needs to go.  DEP of app, crash_keys, client.
     "//chrome/install_static:install_static_util",
     "//components/crash/core/app",
     "//components/crash/core/common",  # crash_keys
-    "//components/metrics:system_profile_user_stream",
     "//components/version_info:channel",
     "//sandbox/policy:win_hook_util",
     "//third_party/crashpad/crashpad/client",  # DumpWithoutCrash

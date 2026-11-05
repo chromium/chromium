@@ -5,6 +5,14 @@
 #ifndef CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_
 #define CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_
 
+#include <stdint.h>
+
+#include <optional>
+#include <vector>
+
+#include "base/containers/span.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "chrome/app/chrome_crash_user_streams.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
@@ -50,7 +58,14 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
   std::vector<base::ReadOnlySharedMemoryRegion>
   GetUserStreamSharedMemoryRegions() override;
 
+  bool WriteUserStreamData(uint32_t user_stream_type,
+                           base::span<const uint8_t> data) override;
+
   std::wstring GetWerRuntimeExceptionModule() override;
+
+ private:
+  // Created lazily, since only the browser process uses it.
+  std::optional<ChromeCrashUserStreams> user_streams_;
 };
 
 #endif  // CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_

@@ -4,95 +4,90 @@
 
 #include "components/metrics/system_profile_user_stream.h"
 
-#include <optional>
-#include <string>
-#include <string_view>
+#include <stddef.h>
+#include <stdint.h>
 
-#include "base/memory/read_only_shared_memory_region.h"
+#include <string>
+
+#include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/crash/core/common/shared_memory_user_stream_reader.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
-
-constexpr char kUserStreamOverflow[] = "UMA.SystemProfile.UserStreamOverflow";
-
-class SystemProfileUserStreamTest : public testing::Test {
- public:
-  static constexpr uint32_t kSystemProfileSlotCapacityBytes =
-      SystemProfileUserStream::kSystemProfileSlotCapacityBytes;
-
- protected:
-  base::HistogramTester histogram_tester_;
-  SystemProfileUserStream stream_;
-};
-
 namespace {
 
-TEST_F(SystemProfileUserStreamTest, InitializeAndDuplicateRegion) {
-  // Gracefully fails if not initialized.
-  EXPECT_FALSE(stream_.DuplicateSharedMemoryRegion().IsValid());
+constexpr char kUserStreamOverflowHistogram[] =
+    "UMA.SystemProfile.UserStreamOverflow";
 
-  stream_.Initialize();
+struct TestParam {
+  const char* test_name;
+  size_t payload_size;
+  bool expect_writer_called;
+  int expected_overflow_bytes;
+};
 
-  base::ReadOnlySharedMemoryRegion region1 =
-      stream_.DuplicateSharedMemoryRegion();
-  EXPECT_TRUE(region1.IsValid());
+class SystemProfileUserStreamTest : public testing::TestWithParam<TestParam> {};
 
-  // Repeated calls to Initialize should be harmless.
-  stream_.Initialize();
-  base::ReadOnlySharedMemoryRegion region2 =
-      stream_.DuplicateSharedMemoryRegion();
-  EXPECT_TRUE(region2.IsValid());
+TEST_P(SystemProfileUserStreamTest, Scenarios) {
+  const TestParam& param = GetParam();
+  base::HistogramTester histogram_tester;
 
-  // Verify that both handles point to the exact same backing shared memory.
-  EXPECT_EQ(region1.GetGUID(), region2.GetGUID());
+  const std::string payload(param.payload_size, 'A');
+
+  testing::StrictMock<
+      testing::MockFunction<bool(uint32_t, base::span<const uint8_t>)>>
+      writer;
+  if (param.expect_writer_called) {
+    EXPECT_CALL(writer,
+                Call(kSystemProfileUserStreamType,
+                     testing::ElementsAreArray(base::as_byte_span(payload))));
+  }
+
+  WriteSystemProfileUserStream(payload, writer.AsStdFunction());
+
+  histogram_tester.ExpectUniqueSample(kUserStreamOverflowHistogram,
+                                      param.expected_overflow_bytes,
+                                      /*expected_bucket_count=*/1);
 }
 
-TEST_F(SystemProfileUserStreamTest, WritePayloadSuccess) {
-  stream_.Initialize();
-  base::ReadOnlySharedMemoryRegion region =
-      stream_.DuplicateSharedMemoryRegion();
-  ASSERT_TRUE(region.IsValid());
-
-  constexpr std::string_view kPayload = "serialized_system_profile_proto_bytes";
-  stream_.WritePayload(kPayload);
-
-  base::ReadOnlySharedMemoryMapping mapping = region.Map();
-  ASSERT_TRUE(mapping.IsValid());
-
-  std::optional<crash_reporter::UserStreamData> data =
-      crash_reporter::ExtractSharedMemoryUserStreamData(
-          mapping.GetMemoryAsSpan<const uint8_t>());
-  ASSERT_TRUE(data.has_value());
-  EXPECT_EQ(data->user_stream_type, 0x4B6B0003u);
-  EXPECT_EQ(
-      std::string_view(reinterpret_cast<const char*>(data->payload.data()),
-                       data->payload.size()),
-      kPayload);
-
-  histogram_tester_.ExpectUniqueSample(kUserStreamOverflow, /*sample=*/0,
-                                       /*expected_bucket_count=*/1);
-}
-
-// Ensures that attempting to write an oversized payload does not crash.
-TEST_F(SystemProfileUserStreamTest, WritePayloadOverflow) {
-  stream_.Initialize();
-
-  const std::string kOversizedPayload(kSystemProfileSlotCapacityBytes + 1, 'X');
-  stream_.WritePayload(kOversizedPayload);
-
-  histogram_tester_.ExpectUniqueSample(kUserStreamOverflow, /*sample=*/1,
-                                       /*expected_bucket_count=*/1);
-}
-
-// Ensures that attempting to write a payload without initialization does not
-// crash.
-TEST_F(SystemProfileUserStreamTest, WritePayloadWithoutInitialization) {
-  stream_.WritePayload("payload");
-
-  histogram_tester_.ExpectTotalCount(kUserStreamOverflow, 0);
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemProfileUserStreamTest,
+    testing::Values(
+        TestParam{
+            .test_name = "EmptyPayloadWritten",
+            .payload_size = 0,
+            .expect_writer_called = true,
+            .expected_overflow_bytes = 0,
+        },
+        TestParam{
+            .test_name = "TypicalPayloadWritten",
+            .payload_size = 256,
+            .expect_writer_called = true,
+            .expected_overflow_bytes = 0,
+        },
+        TestParam{
+            .test_name = "ExactCapacityBoundaryWritten",
+            .payload_size = kSystemProfileUserStreamCapacityBytes,
+            .expect_writer_called = true,
+            .expected_overflow_bytes = 0,
+        },
+        TestParam{
+            .test_name = "OneByteOverCapacityNotWritten",
+            .payload_size = kSystemProfileUserStreamCapacityBytes + 1,
+            .expect_writer_called = false,
+            .expected_overflow_bytes = 1,
+        },
+        TestParam{
+            .test_name = "LargeOverflowNotWritten",
+            .payload_size = kSystemProfileUserStreamCapacityBytes + 7232,
+            .expect_writer_called = false,
+            .expected_overflow_bytes = 7232,
+        }),
+    [](const testing::TestParamInfo<TestParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 }  // namespace metrics

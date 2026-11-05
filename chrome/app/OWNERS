@@ -57,6 +57,7 @@ per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 per-file *.plist=file://chrome/browser/ui/cocoa/OWNERS
 
 per-file chrome_crash_reporter_client*=file://components/crash/OWNERS
+per-file chrome_crash_user_streams*=file://components/crash/OWNERS
 
 per-file chrome_exe_main_mac.cc=file://ui/base/cocoa/OWNERS
 

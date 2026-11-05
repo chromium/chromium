@@ -4,27 +4,22 @@
 
 #include "components/metrics/system_profile_user_stream.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
-#include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "components/crash/core/common/shared_memory_user_stream_writer.h"
 
 namespace metrics {
 
 namespace {
 
-// The stream type assigned to the minidump stream that holds the serialized
-// system profile proto.
-constexpr uint32_t kSystemProfileStreamType = 0x4B6B0003;
-
 // Records a histogram to monitor how often the system profile is too large to
 // be written to the user stream for Crashpad. If this starts to exceed zero for
-// a large number of clients, `kSystemProfileSlotCapacityBytes` should be
+// a large number of clients, `kSystemProfileUserStreamCapacityBytes` should be
 // increased. See metric `UMA.ProtoSize.SystemProfile` for the actual size of
 // the system profile.
 void RecordUserStreamOverflow(size_t bytes_over) {
@@ -34,56 +29,18 @@ void RecordUserStreamOverflow(size_t bytes_over) {
 
 }  // namespace
 
-// static
-SystemProfileUserStream& SystemProfileUserStream::Get() {
-  static base::NoDestructor<SystemProfileUserStream> instance;
-  return *instance;
-}
-
-SystemProfileUserStream::SystemProfileUserStream() = default;
-
-SystemProfileUserStream::~SystemProfileUserStream() = default;
-
-void SystemProfileUserStream::Initialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!user_stream_writer_) {
-    user_stream_writer_ =
-        std::make_unique<crash_reporter::SharedMemoryUserStreamWriter>(
-            kSystemProfileStreamType, kSystemProfileSlotCapacityBytes);
-  }
-}
-
-base::ReadOnlySharedMemoryRegion
-SystemProfileUserStream::DuplicateSharedMemoryRegion() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!user_stream_writer_) {
-    return base::ReadOnlySharedMemoryRegion();
-  }
-  return user_stream_writer_->DuplicateRegion();
-}
-
-void SystemProfileUserStream::WritePayload(std::string_view payload) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!user_stream_writer_) {
-    return;
-  }
-
-  if (payload.size() > kSystemProfileSlotCapacityBytes) {
-    // If the payload exceeds the slot capacity, returning early is necessary
-    // because `copy_prefix_from` would CHECK fail and crash the process if the
-    // source span is larger than the destination span. Furthermore, partially
-    // written Protobufs are often considered corrupted by the Crash server and
-    // may be discarded anyway.
-    RecordUserStreamOverflow(payload.size() - kSystemProfileSlotCapacityBytes);
+void WriteSystemProfileUserStream(std::string_view payload,
+                                  UserStreamWriter writer) {
+  if (payload.size() > kSystemProfileUserStreamCapacityBytes) {
+    RecordUserStreamOverflow(payload.size() -
+                             kSystemProfileUserStreamCapacityBytes);
+    // Not written: partially written protobufs are discarded by the crash
+    // server, so the stream keeps its previous payload.
     return;
   }
   RecordUserStreamOverflow(0);
 
-  user_stream_writer_->WriteData(
-      [&payload](base::span<uint8_t> slot_span) -> std::optional<size_t> {
-        slot_span.copy_prefix_from(base::as_byte_span(payload));
-        return payload.size();
-      });
+  writer(kSystemProfileUserStreamType, base::as_byte_span(payload));
 }
 
 }  // namespace metrics

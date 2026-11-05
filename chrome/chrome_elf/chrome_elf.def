@@ -14,6 +14,7 @@ EXPORTS
   SetUploadConsent_ExportThunk
   GetUploadConsent_ExportThunk
   GetProductInfo_ExportThunk
+  WriteUserStreamData_ExportThunk
 
   ; From chrome/chrome_elf/crash/crash_helper.cc
   SetMetricsClientId

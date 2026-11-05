@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <stddef.h>
+#include <stdint.h>
 #include <time.h>
 
 #include "build/build_config.h"
@@ -73,6 +74,13 @@ const wchar_t* GetCrashpadDatabasePath_ExportThunk();
 // This function may be invoked across module boundaries to delete reports
 // within the time range. See crash_reporter::ClearReportsBetween.
 void ClearReportsBetween_ExportThunk(time_t begin, time_t end);
+
+// This function may be invoked across module boundaries to write into an
+// embedder-managed user stream. `data` may only be `nullptr` when `size` is 0.
+// See `crash_reporter::WriteUserStreamData()`.
+bool WriteUserStreamData_ExportThunk(uint32_t user_stream_type,
+                                     const void* data,
+                                     size_t size);
 
 }  // extern "C"
 

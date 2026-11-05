@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -242,6 +243,14 @@ class CrashReporterClient {
   // managed and written via `SharedMemoryUserStreamWriter`).
   virtual std::vector<base::ReadOnlySharedMemoryRegion>
   GetUserStreamSharedMemoryRegions();
+
+  // Writes `data` into one of the streams returned by
+  // `GetUserStreamSharedMemoryRegions()`. `data` must not exceed the stream's
+  // capacity. Returns true if the write succeeded, or false if this client has
+  // no stream of `user_stream_type`. The default implementation does nothing
+  // and returns false.
+  virtual bool WriteUserStreamData(uint32_t user_stream_type,
+                                   base::span<const uint8_t> data);
 };
 
 }  // namespace crash_reporter

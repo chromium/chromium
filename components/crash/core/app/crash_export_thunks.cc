@@ -4,10 +4,15 @@
 
 #include "components/crash/core/app/crash_export_thunks.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
 #include <type_traits>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
@@ -75,4 +80,15 @@ const wchar_t* GetCrashpadDatabasePath_ExportThunk() {
 
 void ClearReportsBetween_ExportThunk(time_t begin, time_t end) {
   crash_reporter::ClearReportsBetweenImpl(begin, end);
+}
+
+bool WriteUserStreamData_ExportThunk(uint32_t user_stream_type,
+                                     const void* data,
+                                     size_t size) {
+  CHECK(data || size == 0);
+  // SAFETY: Callers pass `data()` and `size()` of a valid
+  // `base::span<const uint8_t>`. Enforced by `CHECK` above.
+  return crash_reporter::WriteUserStreamDataImpl(
+      user_stream_type,
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(data), size)));
 }

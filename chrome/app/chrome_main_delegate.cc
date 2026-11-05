@@ -173,7 +173,6 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "components/metrics/system_profile_user_stream.h"
 #include "components/crash/core/app/crashpad.h"
 #endif
 
@@ -1586,16 +1585,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_MAC)
-  if (process_type.empty()) {
-    // Initialize the shared memory that contains the `SystemProfile` only in
-    // the browser process. This must happen before Crashpad initialization
-    // since Crashpad inherits a handle to the shared memory.
-    metrics::SystemProfileUserStream::Get().Initialize();
-  }
-#endif
 
 #if BUILDFLAG(IS_POSIX)
   ChromeCrashReporterClient::Create();

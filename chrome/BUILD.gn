@@ -1342,6 +1342,7 @@ if (is_win) {
     deps = [
       ":dependencies",
       "//build:chromeos_buildflags",
+      "//chrome/app:chrome_crash_user_streams",
       "//chrome/app:command_ids",
       "//chrome/browser:chrome_browser_application_mac",
       "//chrome/browser:chrome_content_browser_client",
@@ -2138,6 +2139,9 @@ if (enable_separate_renderer_binary) {
 
       defines = [ "BUILDING_CHROME_RENDERER" ]
       deps = _chrome_renderer_deps + [ "//chrome/child" ]
+      if (is_mac) {
+        deps += [ "//chrome/app:chrome_crash_user_streams" ]
+      }
       if (is_win) {
         deps += [
           ":chrome_renderer_dll_version",
@@ -2160,6 +2164,7 @@ if (enable_separate_renderer_binary) {
                 ]
       defines = [ "BUILDING_CHROME_RENDERER" ]
       deps = _chrome_renderer_deps + [
+               "//chrome/app:chrome_crash_user_streams",
                "//chrome/child",
                "//sandbox/linux:sandbox_services",
              ]

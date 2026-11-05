@@ -29,6 +29,7 @@ source_set("app_shim") {
     "//base/allocator:early_zone_registration_apple",
     "//build:chromeos_buildflags",
     "//chrome:strings",
+    "//chrome/app:chrome_crash_user_streams",
     "//chrome/app:command_ids",
     "//chrome/browser/renderer_host:history_swiper",
     "//chrome/browser/ui/cocoa",

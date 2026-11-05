@@ -145,10 +145,7 @@ if (!is_cronet_build || is_ios) {
     public = [ "system_profile_user_stream.h" ]
     sources = [ "system_profile_user_stream.cc" ]
     configs += [ "//build/config/compiler:wglobal_constructors" ]
-    public_deps = [
-      "//base",
-      "//components/crash/core/common:shared_memory_user_stream",
-    ]
+    public_deps = [ "//base" ]
   }
 
   source_set("metrics") {
@@ -281,7 +278,6 @@ if (!is_cronet_build || is_ios) {
 
     public_deps = [
       ":metrics_component",
-      ":system_profile_user_stream",
       "//components/country_codes",
       "//components/metrics:client_info",
       "//components/metrics:metrics_pref_names",
@@ -301,7 +297,6 @@ if (!is_cronet_build || is_ios) {
       "//build:branding_buildflags",
       "//build:ios_buildflags",
       "//components/background_task_scheduler",
-      "//components/crash/core/common:shared_memory_user_stream",
       "//components/keyed_service/core",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
@@ -642,6 +637,7 @@ if (!is_cronet_build) {
       ":metrics",
       ":net",
       ":single_sample_metrics",
+      ":system_profile_user_stream",
       ":test_support",
       ":ui",
       "//base",
@@ -649,7 +645,6 @@ if (!is_cronet_build) {
       "//base/test:test_support",
       "//build:branding_buildflags",
       "//components/component_updater:test_support",
-      "//components/crash/core/common:shared_memory_user_stream",
       "//components/encrypted_messages:encrypted_message_proto",
       "//components/metrics/debug:unit_tests",
       "//components/metrics/mapping:unit_tests",

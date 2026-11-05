@@ -1055,8 +1055,8 @@ chromium-metrics-reviews@google.com.
     capacity of the user stream used to share it with Crashpad. A value of zero
     means it doesn't exceed it. It's expected that the SystemProfile varies in
     size and might sometimes exceed the capacity, but if this starts happening
-    for a large number of clients, `kSystemProfileSlotCapacityBytes` should be
-    increased.
+    for a large number of clients, `kSystemProfileUserStreamCapacityBytes`
+    should be increased.
   </summary>
 </histogram>
 

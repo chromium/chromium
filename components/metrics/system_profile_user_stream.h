@@ -7,55 +7,34 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string_view>
 
-#include "base/memory/read_only_shared_memory_region.h"
-#include "base/no_destructor.h"
-#include "base/sequence_checker.h"
-#include "components/crash/core/common/shared_memory_user_stream_writer.h"
+#include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 
 namespace metrics {
 
-// Manages the SystemProfile minidump user stream in shared memory. Exposes the
-// serialized SystemProfile to the crash handler, ensuring that all minidumps
-// contain system-profile-metadata regardless of which Chrome process crashed.
-class SystemProfileUserStream {
- public:
-  static SystemProfileUserStream& Get();
+// Minidump user stream type that carries the serialized `SystemProfileProto`.
+// Must match the stream ID expected by the crash server.
+inline constexpr uint32_t kSystemProfileUserStreamType = 0x4B6B0003;
 
-  SystemProfileUserStream(const SystemProfileUserStream&) = delete;
-  SystemProfileUserStream& operator=(const SystemProfileUserStream&) = delete;
+// Maximum payload capacity of the SystemProfile user stream. Stream owners must
+// allocate at least this much; larger payloads are never passed to the writer
+// (see `UMA.SystemProfile.UserStreamOverflow`).
+inline constexpr uint32_t kSystemProfileUserStreamCapacityBytes = 32 * 1024;
 
-  // Initializes the internal shared memory region. Embedders prioritizing
-  // SystemProfile in their minidumps call this before crash handler
-  // spawning. If skipped (e.g., if crash reporting is disabled), calls to
-  // `WritePayload` safely no-op.
-  void Initialize();
+// Callback that delivers `data` to the minidump user stream with
+// `user_stream_type`. Returns `false` if no such stream exists.
+using UserStreamWriter =
+    base::FunctionRef<bool(uint32_t user_stream_type,
+                           base::span<const uint8_t> data)>;
 
-  // Returns a read-only handle to the shared memory region to pass to Crashpad.
-  // Returns an invalid region if `Initialize()` has not been called (e.g., if
-  // crash reporting is disabled).
-  base::ReadOnlySharedMemoryRegion DuplicateSharedMemoryRegion() const;
-
-  // Writes a serialized SystemProfileProto payload into the shared memory
-  // buffer. Safely no-ops if `Initialize()` was not called (e.g., if crash
-  // reporting is disabled).
-  void WritePayload(std::string_view payload);
-
- private:
-  friend class base::NoDestructor<SystemProfileUserStream>;
-  friend class SystemProfileUserStreamTest;
-
-  static constexpr uint32_t kSystemProfileSlotCapacityBytes = 32 * 1024;
-
-  SystemProfileUserStream();
-  ~SystemProfileUserStream();
-
-  std::unique_ptr<crash_reporter::SharedMemoryUserStreamWriter>
-      user_stream_writer_;
-  SEQUENCE_CHECKER(sequence_checker_);
-};
+// Records `UMA.SystemProfile.UserStreamOverflow` and, if the serialized
+// `SystemProfileProto` `payload` fits in
+// `kSystemProfileUserStreamCapacityBytes`, writes it using `writer`. Larger
+// payloads are not written, so the stream keeps its previous payload.
+void WriteSystemProfileUserStream(std::string_view payload,
+                                  UserStreamWriter writer);
 
 }  // namespace metrics
 

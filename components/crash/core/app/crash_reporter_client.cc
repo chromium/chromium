@@ -4,10 +4,12 @@
 
 #include "components/crash/core/app/crash_reporter_client.h"
 
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
+#include <stdint.h>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 
 // On Windows don't use FilePath.
 // http://crbug.com/604923
@@ -173,6 +175,11 @@ bool CrashReporterClient::EnableBreakpadForProcess(
 std::vector<base::ReadOnlySharedMemoryRegion>
 CrashReporterClient::GetUserStreamSharedMemoryRegions() {
   return {};
+}
+
+bool CrashReporterClient::WriteUserStreamData(uint32_t user_stream_type,
+                                              base::span<const uint8_t> data) {
+  return false;
 }
 
 }  // namespace crash_reporter

@@ -9,15 +9,19 @@
 #include <windows.h>
 
 #include <assert.h>
+#include <stdint.h>
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +30,6 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/user_data_dir.h"
 #include "components/crash/core/app/crashpad.h"
-#include "components/metrics/system_profile_user_stream.h"
 #include "components/version_info/channel.h"
 
 ChromeCrashReporterClient::ChromeCrashReporterClient() = default;
@@ -57,11 +60,6 @@ void ChromeCrashReporterClient::InitializeCrashReportingForProcess() {
       install_static::GetUserDataDirectory(
           &user_data_dir, /*invalid_user_data_directory=*/nullptr,
           /*policy_set=*/nullptr);
-
-      // Initialize the shared memory that contains the `SystemProfile` only in
-      // the browser process. This must happen before Crashpad initialization
-      // since Crashpad inherits a handle to the shared memory.
-      metrics::SystemProfileUserStream::Get().Initialize();
     }
 
     // TODO(wfh): Add a DCHECK for success. See https://crbug.com/40226723.
@@ -198,18 +196,19 @@ bool ChromeCrashReporterClient::EnableBreakpadForProcess(
 
 std::vector<base::ReadOnlySharedMemoryRegion>
 ChromeCrashReporterClient::GetUserStreamSharedMemoryRegions() {
-  std::vector<base::ReadOnlySharedMemoryRegion> streams;
-
-  base::ReadOnlySharedMemoryRegion region =
-      metrics::SystemProfileUserStream::Get().DuplicateSharedMemoryRegion();
-  // `DuplicateSharedMemoryRegion()` can fail if the OS exhausts its handles.
-  // In that case, gracefully degrade by dropping the user stream rather than
-  // causing an unnecessary crash.
-  if (region.IsValid()) {
-    streams.push_back(std::move(region));
+  if (!user_streams_) {
+    user_streams_.emplace();
   }
+  return user_streams_->GetSharedMemoryRegions();
+}
 
-  return streams;
+bool ChromeCrashReporterClient::WriteUserStreamData(
+    uint32_t user_stream_type,
+    base::span<const uint8_t> data) {
+  if (!user_streams_) {
+    return false;
+  }
+  return user_streams_->Write(user_stream_type, data);
 }
 
 std::wstring ChromeCrashReporterClient::GetWerRuntimeExceptionModule() {

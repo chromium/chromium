@@ -68,6 +68,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/language/core/browser/locale_util.h"
@@ -698,7 +699,8 @@ void ChromeMetricsServiceClient::OnEnvironmentUpdate(std::string* environment) {
   // will not have an environment set.
   if (base::FeatureList::IsEnabled(
           metrics::features::kSharedMemorySystemProfileMinidump)) {
-    metrics::SystemProfileUserStream::Get().WritePayload(*environment);
+    metrics::WriteSystemProfileUserStream(*environment,
+                                          &crash_reporter::WriteUserStreamData);
     return;
   }
 

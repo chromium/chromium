@@ -5,6 +5,7 @@
 #include "components/crash/core/app/crashpad.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 #include <algorithm>
@@ -16,6 +17,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_number_conversions.h"
@@ -375,6 +377,16 @@ void ClearReportsBetween(const base::Time& begin, const base::Time& end) {
 #endif
 }
 
+bool WriteUserStreamData(uint32_t user_stream_type,
+                         base::span<const uint8_t> data) {
+#if BUILDFLAG(IS_WIN)
+  return WriteUserStreamData_ExportThunk(user_stream_type, data.data(),
+                                         data.size());
+#else
+  return WriteUserStreamDataImpl(user_stream_type, data);
+#endif
+}
+
 void GetReportsImpl(std::vector<Report>* reports) {
   reports->clear();
 
@@ -463,6 +475,11 @@ void ClearReportsBetweenImpl(time_t begin, time_t end) {
       g_database->DeleteReport(uuid);
     }
   }
+}
+
+bool WriteUserStreamDataImpl(uint32_t user_stream_type,
+                             base::span<const uint8_t> data) {
+  return GetCrashReporterClient()->WriteUserStreamData(user_stream_type, data);
 }
 
 namespace internal {

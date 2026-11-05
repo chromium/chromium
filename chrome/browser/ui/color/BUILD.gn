@@ -163,6 +163,7 @@ if (!is_android) {
       ]
 
       deps += [
+        "//chrome/app:chrome_crash_user_streams",
         "//chrome/app_shim",
         "//components/upload_list",
       ]
