@@ -46,40 +46,6 @@ BASE_FEATURE_PARAM(std::string,
                    &kRemoteActorCredentialSharingSearch,
                    "search_config_json",
                    "");
-
-// This parameter is for testing purposes only and must not be used in
-// production. It overrides the actor name displayed in the credential
-// selection dialog.
-BASE_FEATURE_PARAM(std::string,
-                   kRemoteActorCredentialSharingActorNameForTesting,
-                   &kRemoteActorCredentialSharing,
-                   "actor_name_for_testing",
-                   "Gemini");
-
-// This parameter is for testing purposes only and must not be used in
-// production. When `allowed_host_for_testing` is set, this selects which actor
-// ("gemini" or "search") the test host maps to.
-BASE_FEATURE_PARAM(std::string,
-                   kRemoteActorCredentialSharingAllowedHostActorForTesting,
-                   &kRemoteActorCredentialSharing,
-                   "allowed_host_actor_for_testing",
-                   "");
-
-// This parameter is for testing purposes only and must not be used in
-// production. It overrides the allowlisted origins with the specified host.
-BASE_FEATURE_PARAM(std::string,
-                   kRemoteActorCredentialSharingAllowedHostForTesting,
-                   &kRemoteActorCredentialSharing,
-                   "allowed_host_for_testing",
-                   "");
-
-// The OAuth2 client ID used when requesting remote actor permissions from APS.
-BASE_FEATURE_PARAM(
-    std::string,
-    kRemoteActorOAuthClientId,
-    &kRemoteActorCredentialSharing,
-    "oauth_client_id",
-    "320695880279-gnq6the97ga85scn208u5jctnk82qelk.apps.googleusercontent.com");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 bool RemoteActorCredentialSharingEnabled() {

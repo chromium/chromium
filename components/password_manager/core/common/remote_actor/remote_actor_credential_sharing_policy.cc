@@ -29,9 +29,6 @@ namespace {
 
 using ActorByOriginMap = base::flat_map<url::Origin, RemoteActorType>;
 
-constexpr char kGeminiKey[] = "gemini";
-constexpr char kSearchKey[] = "search";
-
 constexpr char kAllowedHostsJsonKey[] = "allowed_hosts";
 
 static_assert(kAllRemoteActorTypes.size() ==
@@ -59,8 +56,7 @@ bool IsActorTypeEnabled(RemoteActorType actor_type) {
 // non-HTTPS schemes, opaque origins, leading/extra slashes, user/password
 // credentials, paths, queries, and fragments.
 std::optional<url::Origin> ParseHttpsOriginOrHost(std::string_view entry) {
-  std::string_view trimmed =
-      base::TrimWhitespaceASCII(entry, base::TRIM_ALL);
+  std::string_view trimmed = base::TrimWhitespaceASCII(entry, base::TRIM_ALL);
   if (trimmed.empty()) {
     return std::nullopt;
   }
@@ -153,16 +149,6 @@ std::optional<RemoteActorType> GetConfiguredActorTypeForOrigin(
 
 }  // namespace
 
-std::string_view GetRemoteActorKey(RemoteActorType actor_type) {
-  switch (actor_type) {
-    case RemoteActorType::kGemini:
-      return kGeminiKey;
-    case RemoteActorType::kSearch:
-      return kSearchKey;
-  }
-  NOTREACHED();
-}
-
 std::string GetRemoteActorConfigJson(RemoteActorType actor_type) {
   switch (actor_type) {
     case RemoteActorType::kGemini:
@@ -178,27 +164,6 @@ std::optional<RemoteActorType> GetRemoteActorTypeForOrigin(
   if (!features::RemoteActorCredentialSharingEnabled() ||
       origin.scheme() != url::kHttpsScheme) {
     return std::nullopt;
-  }
-
-  std::string allowed_host =
-      features::kRemoteActorCredentialSharingAllowedHostForTesting.Get();
-  if (!allowed_host.empty() && origin.host() == allowed_host) {
-    // Note: For the feature flag configured allowed host parameter, we only
-    // verify the scheme and host, skipping the port check. This is necessary
-    // because in browser tests, the EmbeddedTestServer runs on a dynamically
-    // allocated random port.
-    std::string allowed_host_actor =
-        features::kRemoteActorCredentialSharingAllowedHostActorForTesting.Get();
-    for (RemoteActorType actor_type : kAllRemoteActorTypes) {
-      if (base::EqualsCaseInsensitiveASCII(allowed_host_actor,
-                                           GetRemoteActorKey(actor_type))) {
-        return IsActorTypeEnabled(actor_type) ? std::optional(actor_type)
-                                              : std::nullopt;
-      }
-    }
-    return IsActorTypeEnabled(RemoteActorType::kGemini)
-               ? std::optional(RemoteActorType::kGemini)
-               : std::nullopt;
   }
 
   std::optional<RemoteActorType> actor_type =

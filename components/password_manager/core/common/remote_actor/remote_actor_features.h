@@ -19,14 +19,6 @@ BASE_DECLARE_FEATURE(kRemoteActorCredentialSharingSearch);
 
 BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorGeminiConfigJson);
 BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorSearchConfigJson);
-BASE_DECLARE_FEATURE_PARAM(std::string,
-                           kRemoteActorCredentialSharingActorNameForTesting);
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kRemoteActorCredentialSharingAllowedHostActorForTesting);
-BASE_DECLARE_FEATURE_PARAM(std::string,
-                           kRemoteActorCredentialSharingAllowedHostForTesting);
-BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorOAuthClientId);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns whether remote actor credential sharing is enabled for at least one

@@ -7,11 +7,10 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
-#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/page_navigator.h"
@@ -28,10 +27,14 @@ namespace {
 constexpr char kRemoteActorDataHandlingHelpUrl[] =
     "https://support.google.com/gemini?p=lm_gpm_data";
 
-std::u16string GetDefaultActorName() {
-  std::string actor_name =
-      features::kRemoteActorCredentialSharingActorNameForTesting.Get();
-  return base::UTF8ToUTF16(actor_name.empty() ? "Gemini" : actor_name);
+std::u16string GetDefaultActorName(RemoteActorType actor_type) {
+  switch (actor_type) {
+    case RemoteActorType::kGemini:
+      return l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_GEMINI_NAME);
+    case RemoteActorType::kSearch:
+      return l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_SEARCH_AGENT_NAME);
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -65,6 +68,7 @@ void RemoteActorSelectionDialogController::SetActorType(
     RemoteActorType actor_type) {
   CHECK(!view_);
   actor_type_ = actor_type;
+  subtitle_link_range_ = gfx::Range();
 }
 
 void RemoteActorSelectionDialogController::SetActorName(
@@ -121,14 +125,14 @@ std::u16string RemoteActorSelectionDialogController::GetTitle() const {
       GURL(credential_domain_),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   const std::u16string actor_name =
-      actor_name_.empty() ? GetDefaultActorName() : actor_name_;
+      actor_name_.empty() ? GetDefaultActorName(actor_type_) : actor_name_;
   return l10n_util::GetStringFUTF16(IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE,
                                     actor_name, formatted_domain);
 }
 
 std::u16string RemoteActorSelectionDialogController::GetSubtitle() const {
   const std::u16string actor_name =
-      actor_name_.empty() ? GetDefaultActorName() : actor_name_;
+      actor_name_.empty() ? GetDefaultActorName(actor_type_) : actor_name_;
   std::vector<size_t> offsets;
   std::u16string subtitle = l10n_util::GetStringFUTF16(
       IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE,

@@ -156,7 +156,6 @@
 #include "components/paint_preview/features/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/payments/core/features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
@@ -5348,25 +5347,18 @@ const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Testing-only variation for GWS.
-// Note: In production, each remote actor must have its own dedicated origin
-// policy, OAuth client ID, task namespace ID, and UI strings rather than
-// overriding them globally via testing feature parameters.
-const FeatureEntry::FeatureParam kRemoteActorCredentialSharingGwsForTesting[] =
-    {
-        {"allowed_host_for_testing", "gws-prod.corp.google.com"},
-        {"actor_name_for_testing", "Search Agent"},
-        {"oauth_client_id",
-         "320695880279-gnq6the97ga85scn208u5jctnk82qelk.apps."
-         "googleusercontent.com"},
-};
-
-const FeatureEntry::FeatureVariation kRemoteActorCredentialSharingVariations[] =
-    {
-        {"for GWS", kRemoteActorCredentialSharingGwsForTesting, nullptr},
+const FeatureEntry::Choice kRemoteActorCredentialSharingChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "RemoteActorCredentialSharing,RemoteActorCredentialSharingSearch"},
+    {"Enabled (Gemini only)", switches::kEnableFeatures,
+     "RemoteActorCredentialSharing"},
+    {"Enabled (Search only)", switches::kEnableFeatures,
+     "RemoteActorCredentialSharingSearch"},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "RemoteActorCredentialSharing,RemoteActorCredentialSharingSearch"},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
-
 const FeatureEntry::Choice kPaymentHandlerCustomSizeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {"Static sizing (openWindow)", switches::kEnableFeatures,
@@ -14069,10 +14061,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"remote-actor-credential-sharing",
      flag_descriptions::kRemoteActorCredentialSharingName,
      flag_descriptions::kRemoteActorCredentialSharingDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         password_manager::features::kRemoteActorCredentialSharing,
-         kRemoteActorCredentialSharingVariations,
-         "RemoteActorCredentialSharing")},
+     MULTI_VALUE_TYPE(kRemoteActorCredentialSharingChoices)},
 
     {"autofill-gmail-otp",
      flag_descriptions::kAutofillGmailOtpPreLaunchMetricsName,

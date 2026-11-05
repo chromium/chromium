@@ -10,12 +10,10 @@
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
-#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -96,37 +94,6 @@ TEST_F(RemoteActorSelectionDialogControllerTest, Properties) {
 }
 
 TEST_F(RemoteActorSelectionDialogControllerTest,
-       PropertiesWithCustomActorNameForTesting) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemoteActorCredentialSharing,
-      {{"actor_name_for_testing", "Search Agent"}});
-
-  std::vector<std::unique_ptr<PasswordForm>> credentials;
-  credentials.push_back(std::make_unique<PasswordForm>(GetLocalForm()));
-
-  base::MockCallback<RemoteActorSelectionDialogController::OnResultCallback>
-      callback;
-
-  EXPECT_CALL(callback, Run(Eq(std::nullopt)));
-
-  RemoteActorSelectionDialogController controller(
-      web_contents(), std::move(credentials), credential_domain_,
-      callback.Get());
-
-  EXPECT_EQ(controller.GetTitle(),
-            u"Allow Search Agent to sign in to example.com for you?");
-  EXPECT_EQ(controller.GetSubtitle(),
-            u"Search Agent can use Google Password Manager to sign in for you. "
-            u"Learn how Search Agent handles your data");
-  gfx::Range link_range = controller.GetSubtitleLinkRange();
-  ASSERT_FALSE(link_range.is_empty());
-  EXPECT_EQ(controller.GetSubtitle().substr(link_range.start(),
-                                            link_range.length()),
-            u"Learn how Search Agent handles your data");
-}
-
-TEST_F(RemoteActorSelectionDialogControllerTest,
        SetActorNameAndLearnMoreUrlOverrideDefaults) {
   std::vector<std::unique_ptr<PasswordForm>> credentials;
   credentials.push_back(std::make_unique<PasswordForm>(GetLocalForm()));
@@ -144,9 +111,6 @@ TEST_F(RemoteActorSelectionDialogControllerTest,
   EXPECT_FALSE(controller.GetSubtitleLinkRange().is_empty());
 
   controller.SetActorType(RemoteActorType::kSearch);
-  controller.SetActorName(u"Search Agent");
-  controller.SetLearnMoreUrl(GURL("https://g.co/privacypolicy"));
-
   EXPECT_EQ(controller.GetActorType(), RemoteActorType::kSearch);
   EXPECT_EQ(controller.GetTitle(),
             u"Allow Search Agent to sign in to example.com for you?");
@@ -155,10 +119,28 @@ TEST_F(RemoteActorSelectionDialogControllerTest,
   EXPECT_EQ(controller.GetSubtitle(),
             u"Search Agent can use Google Password Manager to sign in for you. "
             u"Learn how Search Agent handles your data");
-  EXPECT_EQ(controller.GetSubtitle().substr(link_range.start(),
-                                            link_range.length()),
-            u"Learn how Search Agent handles your data");
+  EXPECT_EQ(
+      controller.GetSubtitle().substr(link_range.start(), link_range.length()),
+      u"Learn how Search Agent handles your data");
+
+  controller.SetActorName(u"Custom Search Agent");
+  controller.SetLearnMoreUrl(GURL("https://g.co/privacypolicy"));
+  EXPECT_EQ(controller.GetTitle(),
+            u"Allow Custom Search Agent to sign in to example.com for you?");
+  link_range = controller.GetSubtitleLinkRange();
+  ASSERT_FALSE(link_range.is_empty());
+  EXPECT_EQ(controller.GetSubtitle(),
+            u"Custom Search Agent can use Google Password Manager to sign in "
+            u"for you. Learn how Custom Search Agent handles your data");
+  EXPECT_EQ(
+      controller.GetSubtitle().substr(link_range.start(), link_range.length()),
+      u"Learn how Custom Search Agent handles your data");
   EXPECT_EQ(controller.GetLearnMoreUrl(), GURL("https://g.co/privacypolicy"));
+
+  // Empty actor name falls back to the default for `actor_type_`.
+  controller.SetActorName(u"");
+  EXPECT_EQ(controller.GetTitle(),
+            u"Allow Search Agent to sign in to example.com for you?");
 
   // Non-HTTPS URLs must be rejected and fall back to the default help URL.
   controller.SetLearnMoreUrl(GURL("http://insecure.example.com"));

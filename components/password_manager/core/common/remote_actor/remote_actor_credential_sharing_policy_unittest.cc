@@ -110,8 +110,6 @@ TEST_F(RemoteActorCredentialSharingPolicyTest,
 
 TEST_F(RemoteActorCredentialSharingPolicyTest,
        DefaultOriginsAndRejectsUnlistedOrNonHttps) {
-  EXPECT_EQ(GetRemoteActorKey(RemoteActorType::kGemini), "gemini");
-  EXPECT_EQ(GetRemoteActorKey(RemoteActorType::kSearch), "search");
   EXPECT_EQ(GetRemoteActorConfigJson(RemoteActorType::kGemini), "");
   EXPECT_EQ(GetRemoteActorConfigJson(RemoteActorType::kSearch), "");
 
@@ -148,36 +146,6 @@ TEST_F(RemoteActorCredentialSharingPolicyTest,
     SCOPED_TRACE(origin);
     EXPECT_EQ(GetRemoteActorTypeForOrigin(origin), std::nullopt);
     EXPECT_FALSE(IsRemoteActorCredentialSharingAllowedForOrigin(origin));
-  }
-}
-
-TEST_F(RemoteActorCredentialSharingPolicyTest,
-       AllowedHostForTestingMapsToGeminiOrSearch) {
-  const url::Origin localhost_origin =
-      url::Origin::Create(GURL("https://localhost:8443"));
-
-  constexpr struct {
-    const char* actor_param;
-    RemoteActorType expected_type;
-  } kCases[] = {
-      {"", RemoteActorType::kGemini},
-      {"search", RemoteActorType::kSearch},
-      {"SEARCH", RemoteActorType::kSearch},
-      {"unknown", RemoteActorType::kGemini},
-  };
-
-  for (const auto& test_case : kCases) {
-    SCOPED_TRACE(test_case.actor_param);
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kRemoteActorCredentialSharing,
-        {{"allowed_host_for_testing", "localhost"},
-         {"allowed_host_actor_for_testing", test_case.actor_param}});
-    EXPECT_EQ(GetRemoteActorTypeForOrigin(localhost_origin),
-              test_case.expected_type);
-    EXPECT_EQ(GetRemoteActorTypeForOrigin(
-                  url::Origin::Create(GURL("http://localhost:8080"))),
-              std::nullopt);
   }
 }
 
@@ -248,13 +216,11 @@ TEST_F(RemoteActorCredentialSharingPolicyTest, AdditionalAllowedHostsViaFinch) {
 }
 
 TEST_F(RemoteActorCredentialSharingPolicyTest,
-       OriginPrecedenceTestingOverFinchOverDefaults) {
+       OriginPrecedenceFinchOverDefaults) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kRemoteActorCredentialSharing,
-        {{"allowed_host_for_testing", "www.google.com"},
-         {"allowed_host_actor_for_testing", "gemini"},
-         {"gemini_config_json", R"({
+        {{"gemini_config_json", R"({
             "allowed_hosts": [
               "https://shared.example.com"
             ]
@@ -262,17 +228,12 @@ TEST_F(RemoteActorCredentialSharingPolicyTest,
        {features::kRemoteActorCredentialSharingSearch,
         {{"search_config_json", R"({
             "allowed_hosts": [
-              "https://www.google.com",
               "https://gemini.google.com",
               "https://shared.example.com"
             ]
           })"}}}},
       {});
 
-  // `allowed_host_for_testing` takes precedence over `search_config_json`.
-  EXPECT_EQ(GetRemoteActorTypeForOrigin(
-                url::Origin::Create(GURL("https://www.google.com"))),
-            RemoteActorType::kGemini);
   // `search_config_json` takes precedence over compiled-in defaults.
   EXPECT_EQ(GetRemoteActorTypeForOrigin(
                 url::Origin::Create(GURL("https://gemini.google.com"))),

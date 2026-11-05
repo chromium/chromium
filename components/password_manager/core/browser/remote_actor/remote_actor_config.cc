@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
-#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -43,7 +42,9 @@ ActorDefaultSpec GetActorDefaultSpec(RemoteActorType actor_type) {
       return {
           .display_name_message_id = IDS_REMOTE_ACTOR_GEMINI_NAME,
           .learn_more_url = "https://support.google.com/gemini?p=lm_gpm_data",
-          .oauth_client_id = features::kRemoteActorOAuthClientId.default_value,
+          .oauth_client_id =
+              "320695880279-gnq6the97ga85scn208u5jctnk82qelk."
+              "apps.googleusercontent.com",
           .task_namespace_id = kGeminiTaskNamespaceId,
       };
     case RemoteActorType::kSearch:
@@ -81,22 +82,6 @@ RemoteActorConfig GetRemoteActorConfig(RemoteActorType actor_type) {
   config.learn_more_url = GURL(defaults.learn_more_url);
   config.oauth_client_id = defaults.oauth_client_id;
   config.task_namespace_id = defaults.task_namespace_id;
-
-  if (actor_type == RemoteActorType::kGemini) {
-    if (std::string testing_actor_name =
-            features::kRemoteActorCredentialSharingActorNameForTesting.Get();
-        !testing_actor_name.empty() &&
-        testing_actor_name !=
-            features::kRemoteActorCredentialSharingActorNameForTesting
-                .default_value) {
-      config.display_name = base::UTF8ToUTF16(testing_actor_name);
-    }
-    if (std::string legacy_oauth_client_id =
-            features::kRemoteActorOAuthClientId.Get();
-        !legacy_oauth_client_id.empty()) {
-      config.oauth_client_id = std::move(legacy_oauth_client_id);
-    }
-  }
 
   std::string raw_json = GetRemoteActorConfigJson(actor_type);
   if (raw_json.empty()) {

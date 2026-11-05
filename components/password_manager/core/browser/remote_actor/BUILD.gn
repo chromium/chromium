@@ -48,7 +48,6 @@ source_set("remote_actor") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/remote_actor/protos",
-    "//components/password_manager/core/common/remote_actor:features",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings",
     "//components/sync/service",

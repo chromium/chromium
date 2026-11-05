@@ -41,11 +41,12 @@ class RemoteActorCredentialPermissionClient {
     // credential instead of all affiliated passwords.
     std::string password_client_tag_hash;
     // Optional override for the actor's OAuth client ID. If empty, falls back
-    // to `features::kRemoteActorOAuthClientId`.
+    // to the default `RemoteActorType::kGemini` OAuth client ID from
+    // `GetRemoteActorConfig(RemoteActorType::kGemini)`.
     std::string actor_oauth_client_id;
     // Optional override for the task ID namespace. Must be positive if set. If
-    // `std::nullopt`, falls back to the default Spark conversation namespace
-    // (30).
+    // `std::nullopt`, falls back to the default `RemoteActorType::kGemini` task
+    // namespace ID from `GetRemoteActorConfig(RemoteActorType::kGemini)`.
     std::optional<int> task_namespace_id;
   };
 

@@ -6,7 +6,9 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -48,17 +50,18 @@ class RemoteActorCredentialSharingBrowserTest : public InProcessBrowserTest {
  public:
   explicit RemoteActorCredentialSharingBrowserTest(
       bool enable_gemini_feature = true,
-      const std::string& allowed_host = kAllowedHost,
-      const std::string& allowed_host_actor = "",
       bool enable_search_feature = false) {
+    CHECK(ssl_server_.InitializeAndListen());
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (enable_gemini_feature) {
       enabled_features.emplace_back(
           password_manager::features::kRemoteActorCredentialSharing,
           base::FieldTrialParams{
-              {"allowed_host_for_testing", allowed_host},
-              {"allowed_host_actor_for_testing", allowed_host_actor}});
+              {"gemini_config_json",
+               base::StrCat({"{\"allowed_hosts\":[\"",
+                             ssl_server_.GetOrigin(kAllowedHost).Serialize(),
+                             "\"]}"})}});
     } else {
       disabled_features.emplace_back(
           password_manager::features::kRemoteActorCredentialSharing);
@@ -66,7 +69,12 @@ class RemoteActorCredentialSharingBrowserTest : public InProcessBrowserTest {
     if (enable_search_feature) {
       enabled_features.emplace_back(
           password_manager::features::kRemoteActorCredentialSharingSearch,
-          base::FieldTrialParams{});
+          base::FieldTrialParams{
+              {"search_config_json",
+               base::StrCat(
+                   {"{\"allowed_hosts\":[\"",
+                    ssl_server_.GetOrigin(kSearchAllowedHost).Serialize(),
+                    "\"]}"})}});
     } else {
       disabled_features.emplace_back(
           password_manager::features::kRemoteActorCredentialSharingSearch);
@@ -101,7 +109,7 @@ class RemoteActorCredentialSharingBrowserTest : public InProcessBrowserTest {
     // Start HTTPS server because remote actor credential sharing API requires a
     // secure context
     ssl_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    ASSERT_TRUE(ssl_server_.Start());
+    ssl_server_.StartAcceptingConnections();
   }
 
   void TearDownOnMainThread() override {
@@ -316,9 +324,7 @@ class RemoteActorCredentialSharingSearchBrowserTest
  public:
   RemoteActorCredentialSharingSearchBrowserTest()
       : RemoteActorCredentialSharingBrowserTest(
-            /*enable_gemini_feature=*/true,
-            /*allowed_host=*/kSearchAllowedHost,
-            /*allowed_host_actor=*/"search",
+            /*enable_gemini_feature=*/false,
             /*enable_search_feature=*/true) {}
 };
 
@@ -328,8 +334,6 @@ class RemoteActorCredentialSharingSearchDisabledBrowserTest
   RemoteActorCredentialSharingSearchDisabledBrowserTest()
       : RemoteActorCredentialSharingBrowserTest(
             /*enable_gemini_feature=*/true,
-            /*allowed_host=*/kSearchAllowedHost,
-            /*allowed_host_actor=*/"search",
             /*enable_search_feature=*/false) {}
 };
 
@@ -337,6 +341,16 @@ IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingSearchDisabledBrowserTest,
                        SearchOriginNotExposedWhenSearchFeatureDisabled) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GetURLForHost(kSearchAllowedHost, "/title1.html")));
+  EXPECT_EQ(false, content::EvalJs(
+                       GetWebContents(),
+                       "typeof chrome !== 'undefined' && typeof "
+                       "chrome.requestAgentAuthentication !== 'undefined'"));
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingSearchBrowserTest,
+                       GeminiOriginNotExposedWhenGeminiFeatureDisabled) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURLForHost(kAllowedHost, "/title1.html")));
   EXPECT_EQ(false, content::EvalJs(
                        GetWebContents(),
                        "typeof chrome !== 'undefined' && typeof "
