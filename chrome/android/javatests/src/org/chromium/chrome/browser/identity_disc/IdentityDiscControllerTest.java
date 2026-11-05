@@ -121,11 +121,7 @@ import java.io.IOException;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({
-    SigninFeatures.SIGNIN_LEVEL_UP_BUTTON,
-    ChromeFeatureList.ANDROID_BOTTOM_BAR,
-    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID // crbug.com/555414915
-})
+@DisableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, ChromeFeatureList.ANDROID_BOTTOM_BAR})
 @DisableLeakChecks("crbug.com/527131198")
 public class IdentityDiscControllerTest {
 

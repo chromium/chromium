@@ -43,7 +43,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -80,7 +79,6 @@ import org.chromium.ui.test.util.ViewUtils;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, SigninFeatures.PROFILE_DISC_ON_ALL_PAGES})
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID) // crbug.com/555414915
 public class SigninButtonCoordinatorTest {
 
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are

@@ -132,6 +132,11 @@ public class RegularNewTabPageStation extends CtaPageStation {
 
     @Override
     protected TripBuilder clickUrlBarOrSearchBarTo() {
+        // searchBoxElement is only declared for the native NTP. The WebUI NTP has no native
+        // search box, so use the toolbar URL bar instead.
+        if (searchBoxElement == null) {
+            return urlBarElement.clickTo();
+        }
         return searchBoxElement.clickTo();
     }
 }
