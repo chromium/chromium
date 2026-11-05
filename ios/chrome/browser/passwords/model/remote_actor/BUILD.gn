@@ -42,22 +42,61 @@ source_set("remote_actor") {
   ]
 }
 
+source_set("app_agent") {
+  sources = [
+    "remote_actor_app_agent.h",
+    "remote_actor_app_agent.mm",
+  ]
+  public_deps =
+      [ "//ios/chrome/app/application_delegate:observing_app_state_agent" ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//google_apis",
+    "//ios/chrome/app/application_delegate:app_init_stage",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/common/app_group",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "remote_actor_app_agent_unittest.mm",
     "remote_actor_callback_util_unittest.mm",
     "remote_actor_credential_sharing_delegate_bridge_unittest.mm",
     "remote_actor_payload_parser_unittest.mm",
   ]
   deps = [
+    ":app_agent",
     ":remote_actor",
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/remote_actor",
+    "//components/signin/public/base",
     "//crypto",
+    "//google_apis",
+    "//ios/chrome/app/application_delegate:app_init_stage",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/passwords/model/remote_actor/proto",
     "//ios/chrome/browser/passwords/model/remote_actor/test:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
     "//url",

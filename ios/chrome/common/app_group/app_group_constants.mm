@@ -111,6 +111,8 @@ NSString* const kDefault = @"Default";
 NSString* const kYoutubeBundleID = @"com.google.ios.youtube";
 
 NSString* const kPrimaryAccount = @"ios.primary_account";
+NSString* const kChromeActiveGaiaIDHashesPreference =
+    @"Chrome.ActiveGaiaIDHashes";
 
 NSString* const kChromeLikelyDefaultBrowser = @"ChromeLikelyDefaultBrowser";
 NSString* const kChromeLikelyDefaultBrowserUpdateTimestamp =

@@ -237,6 +237,10 @@ extern NSString* const kYoutubeBundleID;
 // all profiles. Empty if last operation was a sign-out.
 extern NSString* const kPrimaryAccount;
 
+// Key used to store all signed-in profiles' hashed GAIA IDs
+// (Base64-encoded SHA-256) in the common App Group NSUserDefaults.
+extern NSString* const kChromeActiveGaiaIDHashesPreference;
+
 // Key used to store whether Chrome is likely the default browser.
 extern NSString* const kChromeLikelyDefaultBrowser;
 // Key used to store the timestamp when the default browser status was updated.
