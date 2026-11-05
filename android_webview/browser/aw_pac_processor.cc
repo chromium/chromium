@@ -30,6 +30,7 @@
 #include "net/proxy_resolution/pac_file_data.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwPacProcessor_jni.h"
@@ -476,9 +477,9 @@ void AwPacProcessor::SetNetworkAndLinkAddresses(
                                 net_handle, std::move(link_addresses)));
 }
 
-static int64_t JNI_AwPacProcessor_CreateNativePacProcessor() {
-  AwPacProcessor* processor = new AwPacProcessor();
-  return reinterpret_cast<intptr_t>(processor);
+static jni_zero::JniUniquePtr<AwPacProcessor>
+JNI_AwPacProcessor_CreateNativePacProcessor() {
+  return jni_zero::MakeUnique<AwPacProcessor>();
 }
 
 static void JNI_AwPacProcessor_InitializeEnvironment() {
@@ -486,5 +487,12 @@ static void JNI_AwPacProcessor_InitializeEnvironment() {
 }
 
 }  // namespace android_webview
+
+namespace jni_zero {
+void TemplatedDeleter<android_webview::AwPacProcessor>::Destroy(
+    void* ptr) const {
+  static_cast<android_webview::AwPacProcessor*>(ptr)->DestroyNative();
+}
+}  // namespace jni_zero
 
 DEFINE_JNI(AwPacProcessor)

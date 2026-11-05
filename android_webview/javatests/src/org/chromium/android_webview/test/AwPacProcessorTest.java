@@ -8,6 +8,7 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PRO
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +48,12 @@ public class AwPacProcessorTest extends AwParameterizedTest {
     public void setUp() {
         LibraryLoader.getInstance().ensureInitialized();
 
-        mProcessor = AwPacProcessor.getInstance();
+        mProcessor = new AwPacProcessor();
+    }
+
+    @After
+    public void tearDown() {
+        mProcessor.destroy();
     }
 
     @Test

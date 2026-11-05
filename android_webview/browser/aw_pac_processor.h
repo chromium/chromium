@@ -18,6 +18,18 @@
 #include "net/log/net_log_with_source.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"
 #include "services/proxy_resolver/proxy_resolver_v8_tracing.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+namespace android_webview {
+class AwPacProcessor;
+}
+
+namespace jni_zero {
+template <>
+struct TemplatedDeleter<android_webview::AwPacProcessor> : public DeleterBase {
+  void Destroy(void* ptr) const override;
+};
+}  // namespace jni_zero
 
 namespace android_webview {
 

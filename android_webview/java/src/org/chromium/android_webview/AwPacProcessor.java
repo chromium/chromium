@@ -12,7 +12,10 @@ import android.net.Network;
 import android.net.NetworkRequest;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -34,6 +37,9 @@ import javax.annotation.concurrent.GuardedBy;
 // TODO(amalova): remove UsedByReflection
 @UsedByReflection("Android")
 public class AwPacProcessor {
+    @JniType("::android_webview::AwPacProcessor")
+    interface NativeAwPacProcessor extends JniTypeToken {}
+
     // Guards all the fields below. PAC evaluations, which can be slow, hold the read lock so that
     // they can run concurrently. destroy() and network changes hold the write lock. It's fair so
     // that new evaluations can't keep a writer waiting.
@@ -43,9 +49,9 @@ public class AwPacProcessor {
     private final Lock mReadLock = mLock.readLock();
     private final Lock mWriteLock = mLock.writeLock();
 
-    // 0 if it's already been destroyed.
+    // null if it's already been destroyed.
     @GuardedBy("mLock")
-    private long mNativePacProcessor;
+    private @Nullable JniUniquePtr<NativeAwPacProcessor> mNativePacProcessor;
 
     @GuardedBy("mLock")
     private Network mNetwork;
@@ -106,7 +112,7 @@ public class AwPacProcessor {
 
     @GuardedBy("mWriteLock")
     private void setNetworkAndLinkAddressesLocked(long networkHandle, List<String> addresses) {
-        if (mNativePacProcessor == 0) return;
+        if (mNativePacProcessor == null) return;
         AwPacProcessorJni.get()
                 .setNetworkAndLinkAddresses(mNativePacProcessor, networkHandle, addresses);
     }
@@ -148,7 +154,7 @@ public class AwPacProcessor {
         // Fail in-flight and new PAC evaluations to minimize the wait for the write lock below.
         mReadLock.lock();
         try {
-            if (mNativePacProcessor == 0) return;
+            if (mNativePacProcessor == null) return;
             AwPacProcessorJni.get().cancelJobs(mNativePacProcessor);
         } finally {
             mReadLock.unlock();
@@ -156,13 +162,13 @@ public class AwPacProcessor {
 
         mWriteLock.lock();
         try {
-            if (mNativePacProcessor == 0) return;
-            long nativePacProcessor = mNativePacProcessor;
-            mNativePacProcessor = 0;
+            if (mNativePacProcessor == null) return;
+            JniUniquePtr<NativeAwPacProcessor> nativePacProcessor = mNativePacProcessor;
+            mNativePacProcessor = null;
             unregisterNetworkCallbackLocked();
             // This deletes the native object on the PAC thread, after the tasks already posted
             // there, and doesn't wait for it.
-            AwPacProcessorJni.get().destroyNative(nativePacProcessor);
+            nativePacProcessor.destroy();
         } finally {
             mWriteLock.unlock();
         }
@@ -172,7 +178,7 @@ public class AwPacProcessor {
     public boolean setProxyScript(String script) {
         mReadLock.lock();
         try {
-            if (mNativePacProcessor == 0) return false;
+            if (mNativePacProcessor == null) return false;
             return AwPacProcessorJni.get().setProxyScript(mNativePacProcessor, script);
         } finally {
             mReadLock.unlock();
@@ -183,7 +189,7 @@ public class AwPacProcessor {
     public String makeProxyRequest(String url) {
         mReadLock.lock();
         try {
-            if (mNativePacProcessor == 0) return null;
+            if (mNativePacProcessor == null) return null;
             return AwPacProcessorJni.get().makeProxyRequest(mNativePacProcessor, url);
         } finally {
             mReadLock.unlock();
@@ -195,7 +201,7 @@ public class AwPacProcessor {
         mWriteLock.lock();
         try {
             // Don't register a network callback which would never be unregistered.
-            if (mNativePacProcessor == 0) return;
+            if (mNativePacProcessor == null) return;
             mNetwork = network;
             if (mNetwork != null) {
                 registerNetworkCallbackLocked();
@@ -227,20 +233,19 @@ public class AwPacProcessor {
     interface Natives {
         void initializeEnvironment();
 
-        long createNativePacProcessor();
+        JniUniquePtr<NativeAwPacProcessor> createNativePacProcessor();
 
-        boolean setProxyScript(long nativeAwPacProcessor, @JniType("std::string") String script);
+        boolean setProxyScript(
+                JniPtr<NativeAwPacProcessor> self, @JniType("std::string") String script);
 
         @JniType("std::optional<std::string>")
         @Nullable String makeProxyRequest(
-                long nativeAwPacProcessor, @JniType("std::string") String url);
+                JniPtr<NativeAwPacProcessor> self, @JniType("std::string") String url);
 
-        void destroyNative(long nativeAwPacProcessor);
-
-        void cancelJobs(long nativeAwPacProcessor);
+        void cancelJobs(JniPtr<NativeAwPacProcessor> self);
 
         void setNetworkAndLinkAddresses(
-                long nativeAwPacProcessor,
+                JniPtr<NativeAwPacProcessor> self,
                 long networkHandle,
                 @JniType("std::vector<std::string>") List<String> addresses);
     }
