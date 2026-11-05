@@ -934,5 +934,82 @@ TEST_F(ProtoStreamClientTest, TerminalStatusTearsDownOpenStreamImmediately) {
   client->RemoveObserver(&observer);
 }
 
+TEST_F(ProtoStreamClientTest, EmptyHttp200StreamBacksOffExponentially) {
+  ServeStream("");
+
+  std::unique_ptr<ProtoStreamClient> client = MakeClient();
+  client->Connect();
+  ASSERT_TRUE(WaitFor([this] { return requests_.size() == 1u; }));
+
+  // First empty HTTP 200 stream ends without delivering any message or status,
+  // so it backs off by the base delay (3s).
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(requests_.size(), 2u);
+
+  // Second empty HTTP 200 stream did not reset `consecutive_failed_attempts_`
+  // on headers alone, so the next retry backs off to 6s instead of 3s.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(requests_.size(), 2u);
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(requests_.size(), 3u);
+}
+
+TEST_F(ProtoStreamClientTest,
+       ObserverConnectFromDisconnectNotificationRestartsCleanly) {
+  ServeStream("body");
+
+  RecordingObserver observer;
+  std::unique_ptr<ProtoStreamClient> client = MakeClient();
+  client->AddObserver(&observer);
+  bool reconnected_from_notification = false;
+  observer.on_state_change = base::BindLambdaForTesting(
+      [&client, &reconnected_from_notification](bool connected) {
+        if (!connected && !reconnected_from_notification) {
+          reconnected_from_notification = true;
+          client->Connect();
+        }
+      });
+
+  client->Connect();
+  ASSERT_TRUE(WaitFor([this] { return requests_.size() >= 2u; }));
+  EXPECT_EQ(requests_.size(), 2u);
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest,
+       ObserverConnectFromTearDownDisconnectNotificationRestartsStream) {
+  ServeStream("body");
+  feed_handler_ = base::BindRepeating([](const std::string& chunk) {
+    StreamFramer::FeedResult result;
+    result.messages = {chunk};
+    result.status = "serialized rpc status";
+    return result;
+  });
+
+  RecordingObserver observer;
+  std::unique_ptr<ProtoStreamClient> client = MakeClient();
+  client->AddObserver(&observer);
+  bool reconnected_from_notification = false;
+  observer.on_state_change = base::BindLambdaForTesting(
+      [&client, &reconnected_from_notification](bool connected) {
+        if (!connected && !reconnected_from_notification) {
+          reconnected_from_notification = true;
+          client->Connect();
+        }
+      });
+
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&observer] { return observer.events.size() >= 8u; }));
+  EXPECT_EQ(requests_.size(), 2u);
+  EXPECT_THAT(
+      observer.events,
+      ElementsAre("connected", "message:body", "status:serialized rpc status",
+                  "disconnected", "connected", "message:body",
+                  "status:serialized rpc status", "disconnected"));
+
+  client->RemoveObserver(&observer);
+}
+
 }  // namespace
 }  // namespace browser_actuator::transport
