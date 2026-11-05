@@ -332,6 +332,8 @@ std::string FreOverrideToString(glic::mojom::FreOverride fre_override) {
       return "kTrustFirstClick";
     case glic::mojom::FreOverride::kTrustFirstInline:
       return "kTrustFirstInline";
+    case glic::mojom::FreOverride::kNativeFre:
+      return "kNativeFre";
   }
   LOG(ERROR) << "Unexpected value for FreOverride: "
              << static_cast<int>(fre_override);

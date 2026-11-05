@@ -629,6 +629,11 @@ export enum FreOverride {
   TRUST_FIRST_CLICK = 2,
   // Variation that starts with full client unlocked and shows inline consent.
   TRUST_FIRST_INLINE = 3,
+  // The host shows a native FRE overlay above the client. The client must not
+  // show its own FRE or consent UI. The overlay blocks the client until the
+  // user accepts. On accept, the host marks the FRE as completed. On decline,
+  // the host closes the panel.
+  NATIVE_FRE = 4,
 }
 
 // Entry points that can trigger the opening of the panel.
