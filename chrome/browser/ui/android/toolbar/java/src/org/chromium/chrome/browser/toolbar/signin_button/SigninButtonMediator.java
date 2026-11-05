@@ -59,7 +59,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -221,8 +220,7 @@ final class SigninButtonMediator
     @Override
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
         String primaryEmail =
-                CoreAccountInfo.getEmailFrom(
-                        assumeNonNull(mIdentityManager).getPrimaryAccountInfo());
+                AccountInfo.getEmailFrom(assumeNonNull(mIdentityManager).getPrimaryAccountInfo());
         if (profileData.getAccountEmail().equals(primaryEmail)) {
             updateButtonState();
         }
