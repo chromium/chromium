@@ -233,6 +233,35 @@ IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest,
   EXPECT_EQ(std::nullopt, region_view()->GetFocusedTabIndex());
 }
 
+IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest,
+                       AccessiblePaneViewDefaultFocusableChild) {
+  AppendTab();
+  AppendTab();
+
+  browser()->GetTabStripModel()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  views::View* active_tab_view = GetTabViewAt(1);
+  ASSERT_TRUE(active_tab_view);
+  EXPECT_EQ(active_tab_view, region_view()->GetDefaultFocusableChild());
+
+  region_view()->RequestFocus();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return active_tab_view->HasFocus(); }));
+  EXPECT_TRUE(region_view()->pane_has_focus());
+
+  active_tab_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  EXPECT_EQ(nullptr, region_view()->GetDefaultFocusableChild());
+
+  active_tab_view->SetFocusBehavior(
+      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  EXPECT_EQ(active_tab_view, region_view()->GetDefaultFocusableChild());
+
+  active_tab_view->parent()->SetVisible(false);
+  EXPECT_EQ(nullptr, region_view()->GetDefaultFocusableChild());
+}
+
 IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest, SplitTabsShareSpace) {
   TabStripModel* model = browser()->GetTabStripModel();
   AppendTab();

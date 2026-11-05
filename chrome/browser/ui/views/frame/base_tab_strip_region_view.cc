@@ -37,6 +37,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -480,6 +481,16 @@ void BaseTabStripRegionView::Layout(PassKey) {
   if (drag_handler_) {
     drag_handler_->GetDragContext()->SetBoundsRect(GetLocalBounds());
   }
+}
+
+views::View* BaseTabStripRegionView::GetDefaultFocusableChild() {
+  if (tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab()) {
+    if (views::View* view = GetTabAnchorView(active_tab->GetHandle());
+        view && view->GetViewAccessibility().IsAccessibilityFocusable()) {
+      return view;
+    }
+  }
+  return AccessiblePaneView::GetDefaultFocusableChild();
 }
 
 void BaseTabStripRegionView::OnChildrenAdded(

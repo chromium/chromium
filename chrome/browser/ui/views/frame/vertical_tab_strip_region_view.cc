@@ -524,15 +524,6 @@ void VerticalTabStripRegionView::Layout(PassKey) {
   }
 }
 
-views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
-  tabs::TabInterface* active_tab = tab_strip_model()->GetActiveTab();
-  if (active_tab) {
-    return GetTabAnchorView(active_tab->GetHandle());
-  }
-
-  return top_button_container_;
-}
-
 gfx::Size VerticalTabStripRegionView::GetMinimumSize() const {
   auto min_size = BaseTabStripRegionView::GetMinimumSize();
   min_size.set_width((state_controller_->IsCollapsed() || IsAnimatingSize())

@@ -92,6 +92,7 @@ class BaseTabStripRegionView : public TabStripRegionView {
 
   // Views::View:
   void Layout(PassKey) override;
+  views::View* GetDefaultFocusableChild() override;
 
   void DisableTabStripEditingForTesting() override;
   gfx::Rect GetLinkDropBoundsForTesting(

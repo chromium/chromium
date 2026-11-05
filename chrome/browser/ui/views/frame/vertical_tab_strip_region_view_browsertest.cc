@@ -924,14 +924,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   verify_for_width(75);
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
-                       AccessiblePaneViewDefaultFocusableChild) {
-  // Ensure the default focusable element is the VerticalTabStripTopContainer.
-  views::View* view = region_view()->GetDefaultFocusableChild();
-  ASSERT_TRUE(view);
-  EXPECT_EQ(view, GetTabViewAt(0));
-}
-
 // Simulates swapping between horizontal and vertical modes. The inactive
 // TabStrip should have no tabs.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, SwitchModes) {

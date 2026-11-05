@@ -23,9 +23,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
+#include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -360,6 +362,26 @@ class HorizontalTabStripRegionViewNewInteractiveUiTest
 
   views::View* scroll_button_container() {
     return tab_strip_view()->GetScrollButtonContainer();
+  }
+
+  void AppendTab() {
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+  }
+
+  views::LabelButton* tab_search_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::LabelButton>(
+        kTabSearchButtonElementId);
+  }
+
+  views::View* new_tab_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::View>(
+        kNewTabButtonElementId);
+  }
+
+  TabView* GetTabViewAt(int index) {
+    return views::AsViewClass<TabView>(
+        horizontal_tab_strip_region_view()->GetTabAnchorView(
+            browser()->GetTabStripModel()->GetTabAtIndex(index)->GetHandle()));
   }
 
   // Adds unpinned tabs until the unpinned tab container is scrollable. Will
@@ -1027,4 +1049,138 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewTabSearchStartsUnpinned,
                         prefs::kTabSearchPinnedToTabstrip, true);
                   }),
                   WaitForShow(kTabSearchButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       TestForwardFocus) {
+  AppendTab();
+  AppendTab();
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+
+  HorizontalTabStripRegionViewNew* region_view =
+      horizontal_tab_strip_region_view();
+  TabView* tab_0 = GetTabViewAt(0);
+  TabView* tab_1 = GetTabViewAt(1);
+  TabView* tab_2 = GetTabViewAt(2);
+  ASSERT_TRUE(tab_0);
+  ASSERT_TRUE(tab_1);
+  ASSERT_TRUE(tab_2);
+  ASSERT_TRUE(new_tab_button());
+  ASSERT_TRUE(tab_search_button());
+
+  const auto press_right = [&]() {
+    EXPECT_TRUE(region_view->AcceleratorPressed(region_view->right_key()));
+  };
+  const auto move_forward_over_tab = [&](TabView* tab) {
+    // When skipping over tabs two right presses are needed if the close button
+    // is showing.
+    if (tab->close_button_for_testing()->GetVisible()) {
+      press_right();
+    }
+    press_right();
+  };
+
+  region_view->RequestFocus();
+  EXPECT_TRUE(region_view->pane_has_focus());
+  EXPECT_TRUE(tab_1->HasFocus());
+
+  move_forward_over_tab(tab_1);
+  EXPECT_TRUE(tab_2->HasFocus());
+
+  move_forward_over_tab(tab_2);
+  EXPECT_TRUE(new_tab_button()->HasFocus());
+
+  // Advancing past the last view cycles back to the first focusable view.
+  press_right();
+  EXPECT_TRUE(tab_search_button()->HasFocus());
+  EXPECT_TRUE(region_view->pane_has_focus());
+
+  press_right();
+  EXPECT_TRUE(tab_0->HasFocus());
+
+  move_forward_over_tab(tab_0);
+  EXPECT_TRUE(tab_1->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       TestReverseFocus) {
+  AppendTab();
+  AppendTab();
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+
+  HorizontalTabStripRegionViewNew* region_view =
+      horizontal_tab_strip_region_view();
+  TabView* tab_0 = GetTabViewAt(0);
+  TabView* tab_1 = GetTabViewAt(1);
+  TabView* tab_2 = GetTabViewAt(2);
+  ASSERT_TRUE(tab_0);
+  ASSERT_TRUE(tab_1);
+  ASSERT_TRUE(tab_2);
+  ASSERT_TRUE(new_tab_button());
+  ASSERT_TRUE(tab_search_button());
+
+  const auto press_left = [&]() {
+    EXPECT_TRUE(region_view->AcceleratorPressed(region_view->left_key()));
+  };
+  const auto move_back_to_tab = [&](TabView* tab) {
+    // When skipping back to the previous tab two left presses are needed if the
+    // close button is showing.
+    if (tab->close_button_for_testing()->GetVisible()) {
+      press_left();
+    }
+    press_left();
+  };
+
+  region_view->RequestFocus();
+  EXPECT_TRUE(region_view->pane_has_focus());
+  EXPECT_TRUE(tab_1->HasFocus());
+
+  move_back_to_tab(tab_0);
+  EXPECT_TRUE(tab_0->HasFocus());
+
+  press_left();
+  EXPECT_TRUE(tab_search_button()->HasFocus());
+
+  // Reversing past the first view cycles around to the last view.
+  press_left();
+  EXPECT_TRUE(new_tab_button()->HasFocus());
+
+  move_back_to_tab(tab_2);
+  EXPECT_TRUE(tab_2->HasFocus());
+
+  move_back_to_tab(tab_1);
+  EXPECT_TRUE(tab_1->HasFocus());
+  EXPECT_TRUE(region_view->pane_has_focus());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       TestBeginEndFocus) {
+  AppendTab();
+  AppendTab();
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+
+  HorizontalTabStripRegionViewNew* region_view =
+      horizontal_tab_strip_region_view();
+  TabView* tab_1 = GetTabViewAt(1);
+  ASSERT_TRUE(tab_1);
+  ASSERT_TRUE(new_tab_button());
+  ASSERT_TRUE(tab_search_button());
+
+  region_view->RequestFocus();
+  EXPECT_TRUE(region_view->pane_has_focus());
+  EXPECT_TRUE(tab_1->HasFocus());
+
+#if !BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(region_view->AcceleratorPressed(region_view->end_key()));
+  EXPECT_TRUE(new_tab_button()->HasFocus());
+#endif  // !BUILDFLAG(IS_WIN)
+
+  EXPECT_TRUE(region_view->AcceleratorPressed(region_view->home_key()));
+  EXPECT_TRUE(tab_search_button()->HasFocus());
 }
