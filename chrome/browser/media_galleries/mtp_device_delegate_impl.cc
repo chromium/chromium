@@ -504,7 +504,9 @@ MTPDeviceDelegateImpl::MTPFileNode::MTPFileNode(uint32_t file_id,
       nodes_by_id_(nodes_by_id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   const bool ok = nodes_by_id_->try_emplace(file_id_, this).second;
-  CHECK(ok, base::NotFatalUntil::M161);
+  // TODO(crbug.com/578402457): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(ok);
 }
 
 MTPDeviceDelegateImpl::MTPFileNode::~MTPFileNode() {
