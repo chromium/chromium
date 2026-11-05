@@ -13,14 +13,13 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
@@ -46,6 +45,7 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/paint/element_id.h"
 #include "cc/paint/node_id.h"
 #include "cc/resources/ui_resource_request.h"
 #include "cc/trees/browser_controls_params.h"
@@ -65,6 +65,7 @@
 #include "cc/trees/viewport_layers.h"
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
@@ -1169,10 +1170,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
 
   scoped_refptr<HeadsUpDisplayLayer> hud_layer_;
 
-  // Layer id to Layer map.
-  std::unordered_map<int, raw_ptr<Layer, CtnExperimental>> layer_id_map_;
-
-  std::unordered_map<ElementId, raw_ptr<Layer, CtnExperimental>, ElementIdHash>
+  absl::flat_hash_map<ElementId, raw_ptr<Layer, CtnExperimental>>
       element_layers_map_;
 
   bool in_paint_layer_contents_ = false;
@@ -1186,7 +1184,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
 
   raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
 
-  std::unordered_map<int, std::pair<base::OnceCallback<void(bool)>, bool>>
+  absl::flat_hash_map<int, base::OnceCallback<void(bool)>>
       pending_image_decodes_;
 
   struct ScrollAnimationState {

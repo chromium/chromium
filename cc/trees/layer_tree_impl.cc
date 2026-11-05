@@ -3024,11 +3024,12 @@ static void FindClosestMatchingLayerForAttribution(
     const gfx::PointF& screen_space_point,
     const LayerImpl* root_layer,
     FindClosestMatchingLayerState* state) {
-  absl::flat_hash_set<ElementId, ElementIdHash> hit_visible_frame_element_ids;
+  absl::flat_hash_set<ElementId> hit_visible_frame_element_ids;
   // We want to iterate from front to back when hit testing.
   for (auto* layer : base::Reversed(*root_layer->layer_tree_impl())) {
-    if (!layer->HitTestable())
+    if (!layer->HitTestable()) {
       continue;
+    }
 
     float distance_to_intersection = 0.f;
     bool hit = false;

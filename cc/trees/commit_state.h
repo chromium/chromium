@@ -8,7 +8,6 @@
 #include <array>
 #include <memory>
 #include <tuple>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -39,6 +38,7 @@
 #include "cc/trees/viewport_property_ids.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -210,7 +210,7 @@ struct CC_EXPORT ThreadUnsafeCommitState {
   raw_ptr<MutatorHost> mutator_host;
   scoped_refptr<Layer> root_layer;
   // Layer id to Layer map.
-  std::unordered_map<int, raw_ptr<Layer, CtnExperimental>> layer_id_map;
+  absl::flat_hash_map<int, raw_ptr<Layer, CtnExperimental>> layer_id_map;
 };
 
 struct CC_EXPORT CommitTimestamps {

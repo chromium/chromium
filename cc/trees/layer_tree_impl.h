@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -1002,8 +1001,6 @@ class CC_EXPORT LayerTreeImpl {
   // support of mask layers.
 
   OwnedLayerImplList layer_list_;
-  // Maps from layer id to layer.
-  // LayerImplMap layer_id_map_;
 
   struct ScrollbarLayerIds {
     int horizontal = Layer::INVALID_ID;

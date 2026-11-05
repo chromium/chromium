@@ -12,6 +12,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/check_op.h"
 #include "cc/paint/paint_export.h"
@@ -82,6 +83,11 @@ struct CC_PAINT_EXPORT ElementId {
   InternalValue GetInternalValue() const { return id_; }
   static constexpr bool IsValidInternalValue(InternalValue value) {
     return value != kInvalidElementId && value != kDeletedElementId;
+  }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const ElementId& id) {
+    return H::combine(std::move(h), id.id_);
   }
 
  private:
