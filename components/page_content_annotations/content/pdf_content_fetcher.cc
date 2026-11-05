@@ -24,6 +24,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/pdf/browser/pdf_document_helper.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -292,11 +293,11 @@ void FetchPdfContentForWebContents(content::WebContents& web_contents,
         pdf_helper->GetPdfBytes(
             options.size_limit(),
             mojo::WrapCallbackWithDropHandler(
-                base::BindOnce(
-                    &OnReceivedPdfBytes, state,
-                    pdf_helper->render_frame_host().GetLastCommittedOrigin(),
-                    is_top_level_pdf, options.size_limit(),
-                    std::move(elapsed_timer)),
+                base::BindOnce(&OnReceivedPdfBytes, state,
+                               pdf_frame_util::GetPdfOrigin(
+                                   pdf_helper->render_frame_host()),
+                               is_top_level_pdf, options.size_limit(),
+                               std::move(elapsed_timer)),
                 base::BindOnce(&OnPdfPipeDisconnected, state)));
         break;
       }
@@ -311,10 +312,10 @@ void FetchPdfContentForWebContents(content::WebContents& web_contents,
         pdf_helper->GetPageText(
             /*page_index=*/0,
             mojo::WrapCallbackWithDropHandler(
-                base::BindOnce(
-                    &OnReceivedPdfText, state,
-                    pdf_helper->render_frame_host().GetLastCommittedOrigin(),
-                    options.size_limit(), std::move(elapsed_timer)),
+                base::BindOnce(&OnReceivedPdfText, state,
+                               pdf_frame_util::GetPdfOrigin(
+                                   pdf_helper->render_frame_host()),
+                               options.size_limit(), std::move(elapsed_timer)),
                 base::BindOnce(&OnPdfPipeDisconnected, state)));
         break;
       }

@@ -24,6 +24,7 @@ source_set("browser") {
     "//pdf/mojom",
     "//ui/base/mojom:ui_base_types",
     "//ui/touch_selection",
+    "//url",
   ]
 
   deps = [

@@ -522,6 +522,71 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPWithSandboxDoesNotBlockPDF) {
       GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
+// Tests for `pdf_frame_util::GetPdfOrigin()`, in both the OOPIF and GuestView
+// PDF viewers. Enables `features::kPdfOpaqueOrigin`, so that the PDF content
+// frame commits an opaque origin, to check that `GetPdfOrigin()` still returns
+// the origin the PDF was loaded from.
+// TODO(crbug.com/559567801): Fold these tests into PDFExtensionTest once
+// `features::kPdfOpaqueOrigin` is enabled by default and removed.
+class PDFExtensionGetPdfOriginTest : public PDFExtensionTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionTest::GetEnabledFeatures();
+    enabled.push_back({::features::kPdfOpaqueOrigin, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionGetPdfOriginTest, FullPagePdf) {
+  const GURL pdf_url = embedded_test_server()->GetURL("a.com", "/pdf/test.pdf");
+  ASSERT_TRUE(LoadPdf(pdf_url));
+  content::RenderFrameHost* pdf_content_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
+  ASSERT_TRUE(pdf_content_frame);
+
+  const url::Origin pdf_origin = url::Origin::Create(pdf_url);
+  const url::Origin content_origin =
+      pdf_content_frame->GetLastCommittedOrigin();
+  EXPECT_TRUE(content_origin.opaque());
+  EXPECT_EQ(pdf_origin.GetTupleOrPrecursorTupleIfOpaque(),
+            content_origin.GetTupleOrPrecursorTupleIfOpaque());
+
+  if (UseOopif()) {
+    EXPECT_EQ(GetActiveWebContents()->GetPrimaryMainFrame(),
+              pdf_frame_util::GetEmbedderHost(pdf_content_frame));
+  }
+  EXPECT_EQ(pdf_origin, pdf_frame_util::GetPdfOrigin(*pdf_content_frame));
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionGetPdfOriginTest, CrossOriginEmbeddedPdf) {
+  // Cross-origin PDF embedded in an iframe.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/iframe.html")));
+  const GURL pdf_url = embedded_test_server()->GetURL("b.com", "/pdf/test.pdf");
+  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
+                                           /*iframe_id=*/"test", pdf_url));
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(iframe));
+  content::RenderFrameHost* pdf_content_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
+  ASSERT_TRUE(pdf_content_frame);
+
+  const url::Origin pdf_origin = url::Origin::Create(pdf_url);
+  const url::Origin content_origin =
+      pdf_content_frame->GetLastCommittedOrigin();
+  EXPECT_TRUE(content_origin.opaque());
+  EXPECT_EQ(pdf_origin.GetTupleOrPrecursorTupleIfOpaque(),
+            content_origin.GetTupleOrPrecursorTupleIfOpaque());
+
+  if (UseOopif()) {
+    EXPECT_EQ(iframe, pdf_frame_util::GetEmbedderHost(pdf_content_frame));
+  }
+  EXPECT_EQ(pdf_origin, pdf_frame_util::GetPdfOrigin(*pdf_content_frame));
+}
+
 // This test verifies that Content-Security-Policy's frame-ancestors 'none'
 // directive is effective on a PDF response.
 // Regression test for https://crbug.com/40706958.
@@ -4994,6 +5059,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionBlobNavigationTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFPluginDisabledTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTestWithPartialLoading);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionGetPdfOriginTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionScrollTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionLinkClickTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInternalLinkClickTest);
