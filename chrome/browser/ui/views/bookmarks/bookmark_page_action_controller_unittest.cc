@@ -4,13 +4,21 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 
+#include <optional>
 #include <string_view>
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -30,8 +38,14 @@ using testing::ReturnRef;
 class BookmarkPageActionControllerTest : public testing::Test {
  public:
   BookmarkPageActionControllerTest() {
+    BookmarkModelFactory::GetInstance()->SetTestingFactory(
+        &profile_, BookmarkModelFactory::GetDefaultFactory());
+    bookmarks::test::WaitForBookmarkModelToLoad(
+        BookmarkModelFactory::GetForBrowserContext(&profile_));
+
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    BookmarkTabHelper::CreateForWebContents(web_contents_.get());
     ON_CALL(tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(user_data_host_));
     ON_CALL(tab_interface_, GetContents())
@@ -69,6 +83,8 @@ class BookmarkPageActionControllerTest : public testing::Test {
 
   tabs::MockTabInterface& tab() { return tab_interface_; }
 
+  TestingProfile& profile() { return profile_; }
+
   content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
@@ -98,8 +114,9 @@ TEST_F(BookmarkPageActionControllerTest, URLStarredChangedUpdatesImageAndName) {
               OverrideImage(kActionBookmarkThisTab, _, _, _))
       .Times(1);
 
-  bookmark_page_action_controller().URLStarredChanged(tab().GetContents(),
-                                                      false);
+  bookmark_page_action_controller().URLStarredChanged(
+      tab().GetContents(), /*starred=*/false,
+      /*is_bookmark_added_or_removed=*/false);
 
   EXPECT_CALL(page_action_controller(),
               OverrideAccessibleName(kActionBookmarkThisTab, _))
@@ -111,8 +128,9 @@ TEST_F(BookmarkPageActionControllerTest, URLStarredChangedUpdatesImageAndName) {
               OverrideImage(kActionBookmarkThisTab, _, _, _))
       .Times(1);
 
-  bookmark_page_action_controller().URLStarredChanged(tab().GetContents(),
-                                                      true);
+  bookmark_page_action_controller().URLStarredChanged(
+      tab().GetContents(), /*starred=*/true,
+      /*is_bookmark_added_or_removed=*/true);
 }
 
 TEST_F(BookmarkPageActionControllerTest, EditBookmarkPrefControlsVisibility) {
@@ -150,4 +168,40 @@ TEST_F(BookmarkPageActionControllerTest, HiddenOnNTP) {
   // Hidden on NTP page context ("chrome://new-tab-page/").
   EXPECT_CALL(page_action_controller(), Hide(kActionBookmarkThisTab)).Times(1);
   navigate_to_url(chrome::ChromeUINewTabPageURLAsGURL());
+}
+
+TEST_F(BookmarkPageActionControllerTest,
+       DoesNotAnimateOnNavigationBetweenBookmarkedAndUnbookmarkedPages) {
+  base::test::ScopedFeatureList feature_list{features::kToolbarGlowUp};
+
+  const GURL kBookmarkedUrl("https://www.google.com");
+  const GURL kUnbookmarkedUrl("chrome://dino");
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(&profile());
+  bookmark_model->AddNewURL(bookmark_model->bookmark_bar_node(), 0,
+                            u"Bookmarked", kBookmarkedUrl);
+
+  // Navigating from an unbookmarked page to a bookmarked page should update the
+  // icon without animating.
+  EXPECT_CALL(
+      page_action_controller(),
+      OverrideImage(
+          kActionBookmarkThisTab, _, _,
+          std::optional<page_actions::PageActionAnimationParams>(std::nullopt)))
+      .Times(1);
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(kBookmarkedUrl);
+  testing::Mock::VerifyAndClearExpectations(&page_action_controller());
+
+  // Navigating away from a bookmarked page to an unbookmarked page should also
+  // update the icon without animating.
+  EXPECT_CALL(
+      page_action_controller(),
+      OverrideImage(
+          kActionBookmarkThisTab, _, _,
+          std::optional<page_actions::PageActionAnimationParams>(std::nullopt)))
+      .Times(1);
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(kUnbookmarkedUrl);
 }

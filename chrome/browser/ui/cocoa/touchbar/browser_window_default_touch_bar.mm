@@ -210,7 +210,8 @@ class TouchBarNotificationBridge : public CommandObserver,
 
   // BookmarkTabHelperObserver:
   void URLStarredChanged(content::WebContents* web_contents,
-                         bool starred) override {
+                         bool starred,
+                         bool is_bookmark_added_or_removed) override {
     CHECK(web_contents == contents_, base::NotFatalUntil::M162);
     owner_.isStarred = starred;
   }

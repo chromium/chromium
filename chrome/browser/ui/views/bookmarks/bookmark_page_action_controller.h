@@ -49,7 +49,8 @@ class BookmarkPageActionController : public BookmarkTabHelperObserver,
 
   // BookmarkTabHelperObserver
   void URLStarredChanged(content::WebContents* web_contents,
-                         bool starred) override;
+                         bool starred,
+                         bool is_bookmark_added_or_removed) override;
 
  private:
   // content::WebContentsObserver:
@@ -65,7 +66,7 @@ class BookmarkPageActionController : public BookmarkTabHelperObserver,
 
   void UpdatePageActionVisibility();
   bool ShouldShowPageAction() const;
-  void SetStarred(bool starred);
+  void SetStarred(bool starred, bool should_animate = false);
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
   BooleanPrefMember edit_bookmarks_enabled_;

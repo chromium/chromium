@@ -14,8 +14,11 @@ class WebContents;
 class BookmarkTabHelperObserver {
  public:
   // Notification that the starredness of the current URL changed.
+  // `is_bookmark_added_or_removed` is true when the change was triggered by a
+  // bookmark addition or removal rather than a navigation or model load.
   virtual void URLStarredChanged(content::WebContents* web_contents,
-                                 bool starred) = 0;
+                                 bool starred,
+                                 bool is_bookmark_added_or_removed) = 0;
 
  protected:
   virtual ~BookmarkTabHelperObserver() = default;

@@ -538,7 +538,8 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
 
   // Set unstarred:
   bookmark_controller->URLStarredChanged(
-      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/false);
+      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/false,
+      /*is_bookmark_added_or_removed=*/false);
   auto states_unstarred = control.GetPageActionStates();
   auto it_unstarred = std::find_if(
       states_unstarred.begin(), states_unstarred.end(), [](const auto& state) {
@@ -558,7 +559,8 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
 
   // Set starred:
   bookmark_controller->URLStarredChanged(
-      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/true);
+      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/true,
+      /*is_bookmark_added_or_removed=*/false);
   auto states_starred = control.GetPageActionStates();
   auto it_starred = std::find_if(
       states_starred.begin(), states_starred.end(), [](const auto& state) {
@@ -601,7 +603,8 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   auto* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
   BookmarkPageActionController::From(tab)->URLStarredChanged(
-      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/true);
+      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/true,
+      /*is_bookmark_added_or_removed=*/false);
 
   page_actions::WebUIPageActionControl control(
       BrowserActions::From(browser())->root_action_item());
@@ -1167,7 +1170,8 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   ASSERT_TRUE(tab);
   auto* bookmark_controller = BookmarkPageActionController::From(tab);
   ASSERT_TRUE(bookmark_controller);
-  bookmark_controller->URLStarredChanged(web_contents, /*starred=*/true);
+  bookmark_controller->URLStarredChanged(
+      web_contents, /*starred=*/true, /*is_bookmark_added_or_removed=*/false);
   GetLocationBar()->Update(web_contents);
 
   constexpr int kBookmarkMojomId = std::to_underlying(

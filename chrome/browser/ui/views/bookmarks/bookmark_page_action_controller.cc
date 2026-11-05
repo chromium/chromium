@@ -65,8 +65,9 @@ BookmarkPageActionController* BookmarkPageActionController::From(
 
 void BookmarkPageActionController::URLStarredChanged(
     content::WebContents* web_contents,
-    bool starred) {
-  SetStarred(starred);
+    bool starred,
+    bool is_bookmark_added_or_removed) {
+  SetStarred(starred, /*should_animate=*/is_bookmark_added_or_removed);
 }
 
 void BookmarkPageActionController::ObserveBookmarkTabHelper(
@@ -112,7 +113,8 @@ bool BookmarkPageActionController::ShouldShowPageAction() const {
          edit_bookmarks_enabled_.GetValue() && url.is_valid() && !IsNTPUrl(url);
 }
 
-void BookmarkPageActionController::SetStarred(bool starred) {
+void BookmarkPageActionController::SetStarred(bool starred,
+                                              bool should_animate) {
   const std::u16string name = l10n_util::GetStringUTF16(
       starred ? IDS_TOOLTIP_STARRED : IDS_TOOLTIP_STAR);
   page_action_controller_->OverrideAccessibleName(kActionBookmarkThisTab, name);
@@ -129,7 +131,7 @@ void BookmarkPageActionController::SetStarred(bool starred) {
               : omnibox::kStarChromeRefreshOldIcon),
       starred ? page_actions::PageActionColorSource::kCascadingAccent
               : page_actions::PageActionColorSource::kForeground,
-      features::IsToolbarGlowUpEnabled()
+      should_animate && features::IsToolbarGlowUpEnabled()
           ? std::make_optional<page_actions::PageActionAnimationParams>(
                 {.resource_id = IDR_STAR_LOTTIE,
                  .start_offset = starred ? 0.0f : 0.5f,

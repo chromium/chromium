@@ -58,7 +58,8 @@ BookmarkTabHelper::BookmarkTabHelper(content::WebContents* web_contents)
   }
 }
 
-void BookmarkTabHelper::UpdateStarredStateForCurrentURL() {
+void BookmarkTabHelper::UpdateStarredStateForCurrentURL(
+    bool is_bookmark_added_or_removed) {
   const bool old_state = is_starred_;
   is_starred_ =
       (bookmark_model_ &&
@@ -66,7 +67,8 @@ void BookmarkTabHelper::UpdateStarredStateForCurrentURL() {
 
   if (is_starred_ != old_state) {
     for (auto& observer : observers_) {
-      observer.URLStarredChanged(web_contents(), is_starred_);
+      observer.URLStarredChanged(web_contents(), is_starred_,
+                                 is_bookmark_added_or_removed);
     }
   }
 }
@@ -80,7 +82,7 @@ void BookmarkTabHelper::BookmarkModelLoaded(bool ids_reassigned) {
 void BookmarkTabHelper::BookmarkNodeAdded(const BookmarkNode* parent,
                                           size_t index,
                                           bool added_by_user) {
-  UpdateStarredStateForCurrentURL();
+  UpdateStarredStateForCurrentURL(/*is_bookmark_added_or_removed=*/true);
 }
 
 void BookmarkTabHelper::BookmarkNodeRemoved(const BookmarkNode* parent,
@@ -88,7 +90,7 @@ void BookmarkTabHelper::BookmarkNodeRemoved(const BookmarkNode* parent,
                                             const BookmarkNode* node,
                                             const std::set<GURL>& removed_urls,
                                             const base::Location& location) {
-  UpdateStarredStateForCurrentURL();
+  UpdateStarredStateForCurrentURL(/*is_bookmark_added_or_removed=*/true);
 }
 
 void BookmarkTabHelper::BookmarkAllUserNodesRemoved(

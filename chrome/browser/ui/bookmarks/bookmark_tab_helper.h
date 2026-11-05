@@ -67,7 +67,8 @@ class BookmarkTabHelper
 
   // Updates the starred state from the BookmarkModel. If the state has changed,
   // the delegate is notified.
-  void UpdateStarredStateForCurrentURL();
+  void UpdateStarredStateForCurrentURL(
+      bool is_bookmark_added_or_removed = false);
 
   // Overridden from bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override;

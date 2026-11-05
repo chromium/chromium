@@ -96,7 +96,9 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
 
   ~TestBookmarkTabHelperObserver() override = default;
 
-  void URLStarredChanged(content::WebContents*, bool starred) override {
+  void URLStarredChanged(content::WebContents*,
+                         bool starred,
+                         bool is_bookmark_added_or_removed) override {
     starred_ = starred;
   }
   bool is_starred() const { return starred_; }
