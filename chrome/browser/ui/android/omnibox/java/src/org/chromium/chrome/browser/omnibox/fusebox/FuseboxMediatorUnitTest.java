@@ -38,7 +38,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
@@ -588,11 +587,9 @@ public class FuseboxMediatorUnitTest {
     }
 
     private Intent createTabPickerResultIntent(List<Integer> tabIds) {
-        Intent data = mock(Intent.class);
-        Bundle extras = mock(Bundle.class);
-        when(data.getExtras()).thenReturn(extras);
-        when(data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS))
-                .thenReturn(new ArrayList<>(tabIds));
+        Intent data = new Intent();
+        data.putIntegerArrayListExtra(
+                ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS, new ArrayList<>(tabIds));
         return data;
     }
 
