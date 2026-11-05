@@ -6328,6 +6328,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabListEditorIphController.ResolvedAnchorView"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>jkoblinsky@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records whether a fully visible tab card was found to anchor the select-tabs
+    IPH bubble. This measures how often viewport constraints prevent the IPH
+    from showing. It is recorded once when the Tab Picker opens with selectable
+    tabs from the Fusebox attachment flow. It records before the Feature
+    Engagement check, so it may emit even if the IPH is not ultimately shown. It
+    is not emitted when the Tab Picker opens with no selectable tabs, when
+    opened from non-Fusebox surfaces (such as Glic), or in other TabListEditor
+    surfaces (such as Tab Switcher or Tab Grid Dialog).
+  </summary>
+</histogram>
+
 <histogram name="Android.TabLoadingService.PendingQueueDepth" units="tabs"
     expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>

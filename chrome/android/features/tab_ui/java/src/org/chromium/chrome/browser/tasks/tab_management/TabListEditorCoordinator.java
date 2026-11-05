@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +48,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -349,6 +352,7 @@ public class TabListEditorCoordinator {
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private @Nullable TabListCoordinator mTabListCoordinator;
     private @Nullable PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
+    private @Nullable TabListEditorIphController mIphController;
     private @TabActionState int mTabActionState;
     private boolean mNeedsCleanUp;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
@@ -487,6 +491,10 @@ public class TabListEditorCoordinator {
             mTabListEditorLayoutChangeProcessor.destroy();
             mTabListEditorLayoutChangeProcessor = null;
         }
+        if (mIphController != null) {
+            mIphController.destroy();
+            mIphController = null;
+        }
 
         mTabListEditorLayout.destroy();
         mTabListEditorMediator.destroy();
@@ -577,6 +585,12 @@ public class TabListEditorCoordinator {
         if (mTabListCoordinator != null && mTabListEditorMediator.isVisible()) {
             mTabListCoordinator.attachEmptyView();
         }
+    }
+
+    /** Requests showing the select-tabs IPH on the first visible tab after layout. */
+    public void maybeShowSelectTabsIph() {
+        assert mIphController != null;
+        mIphController.maybeShowSelectTabsIph();
     }
 
     private void createTabListCoordinator() {
@@ -694,6 +708,11 @@ public class TabListEditorCoordinator {
                 containerView,
                 assumeNonNull(containerView.getAdapter()),
                 mSelectionDelegate);
+        mIphController =
+                new TabListEditorIphController(
+                        new UserEducationHelper(
+                                mActivity, regularProfile, new Handler(Looper.getMainLooper())),
+                        mTabListEditorLayout);
         mTabListEditorMediator.initializeWithTabListCoordinator(mTabListCoordinator, resetHandler);
 
         mTabListEditorLayoutChangeProcessor =
