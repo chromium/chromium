@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -95,6 +97,10 @@ public class ProfileDataCacheUnitTest {
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
         AiSubscriptionTierNamesJni.setInstanceForTesting(mTierNamesJniMock);
+        // Like the real names, without server overrides: every subscription tier is shown.
+        lenient()
+                .when(mTierNamesJniMock.shouldShowDecoration(anyInt()))
+                .thenAnswer(invocation -> (int) invocation.getArgument(0) > 0);
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
@@ -945,6 +951,26 @@ public class ProfileDataCacheUnitTest {
         DisplayableProfileData profileData =
                 mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
         Assert.assertTrue(profileData.hasAiTierRing());
+        Assert.assertEquals("", profileData.getAiTierPillName());
+        Assert.assertEquals("", profileData.getAiTierFullName());
+    }
+
+    @Test
+    public void testExcludedAiSubscriptionTierShowsNoRingOrNames() {
+        // The server can exclude a tier from being presented as an AI subscription tier.
+        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(3);
+        when(mTierNamesJniMock.shouldShowDecoration(3)).thenReturn(false);
+        // Names that the tier would have, to check that the exclusion hides them.
+        lenient().when(mTierNamesJniMock.getShortName(3)).thenReturn(TIER_SHORT_NAME);
+        lenient().when(mTierNamesJniMock.getFullName(3)).thenReturn(TIER_FULL_NAME);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        mProfileDataCache = createWithAiTierRing();
+
+        DisplayableProfileData profileData =
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
+        Assert.assertFalse(profileData.hasAiTierRing());
         Assert.assertEquals("", profileData.getAiTierPillName());
         Assert.assertEquals("", profileData.getAiTierFullName());
     }

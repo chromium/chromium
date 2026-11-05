@@ -31,6 +31,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNames;
 import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -652,8 +653,12 @@ public class ProfileDataCache
     }
 
     private boolean isEligibleForAiTierRing(int aiSubscriptionTier) {
-        // Identity errors take precedence over the ring.
-        return aiSubscriptionTier > 0 && !mHasIdentityError;
+        // Identity errors take precedence over the ring. The server can also exclude tiers. The
+        // tier is checked first so that accounts without one, the vast majority, don't call into
+        // native code.
+        return aiSubscriptionTier > 0
+                && !mHasIdentityError
+                && AiSubscriptionTierNames.shouldShowDecoration(aiSubscriptionTier);
     }
 
     /**

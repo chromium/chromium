@@ -148,8 +148,8 @@ public class DisplayableProfileData {
     /**
      * Returns the full name of the AI subscription tier, for accessibility, or an empty string if
      * there is none. Like {@link #getAiTierPillName()}, it's only available with the AI tier ring.
-     * It's also empty when the tier's short name is overridden, since the full name then wouldn't
-     * match the name in the pill.
+     * It's also empty for tiers without a full name, e.g. when the server overrides it with an
+     * empty name. Callers must then fall back to a generic membership string.
      */
     public String getAiTierFullName() {
         return mHasAiTierRing ? AiSubscriptionTierNames.getFullName(mAiSubscriptionTier) : "";
