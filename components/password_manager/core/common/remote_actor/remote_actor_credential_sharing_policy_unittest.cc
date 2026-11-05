@@ -18,7 +18,10 @@ namespace {
 class RemoteActorCredentialSharingPolicyTest : public testing::Test {
  public:
   RemoteActorCredentialSharingPolicyTest() {
-    feature_list_.InitAndEnableFeature(features::kRemoteActorCredentialSharing);
+    feature_list_.InitWithFeatures(
+        {features::kRemoteActorCredentialSharing,
+         features::kRemoteActorCredentialSharingSearch},
+        {});
   }
 
  private:
@@ -28,8 +31,13 @@ class RemoteActorCredentialSharingPolicyTest : public testing::Test {
 TEST_F(RemoteActorCredentialSharingPolicyTest,
        ReturnsNulloptWhenFeatureDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
-  disabled_feature_list.InitAndDisableFeature(
-      features::kRemoteActorCredentialSharing);
+  disabled_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoteActorCredentialSharing,
+                             features::kRemoteActorCredentialSharingSearch});
+  EXPECT_FALSE(features::RemoteActorCredentialSharingEnabled());
+  EXPECT_FALSE(features::RemoteActorCredentialSharingGeminiEnabled());
+  EXPECT_FALSE(features::RemoteActorCredentialSharingSearchEnabled());
 
   for (const char* url :
        {"https://gemini.google.com", "https://search.google.com"}) {
@@ -41,9 +49,71 @@ TEST_F(RemoteActorCredentialSharingPolicyTest,
 }
 
 TEST_F(RemoteActorCredentialSharingPolicyTest,
+       GeminiOnlyDisablesSearchOrigins) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kRemoteActorCredentialSharing,
+        {{"gemini_config_json", R"({
+            "allowed_hosts": ["https://gemini-canary.corp.google.com"]
+          })"}}}},
+      /*disabled_features=*/{features::kRemoteActorCredentialSharingSearch});
+  EXPECT_TRUE(features::RemoteActorCredentialSharingEnabled());
+  EXPECT_TRUE(features::RemoteActorCredentialSharingGeminiEnabled());
+  EXPECT_FALSE(features::RemoteActorCredentialSharingSearchEnabled());
+
+  for (const char* url : {"https://gemini.google.com",
+                          "https://gemini-canary.corp.google.com"}) {
+    const url::Origin origin = url::Origin::Create(GURL(url));
+    SCOPED_TRACE(origin);
+    EXPECT_EQ(GetRemoteActorTypeForOrigin(origin), RemoteActorType::kGemini);
+    EXPECT_TRUE(IsRemoteActorCredentialSharingAllowedForOrigin(origin));
+  }
+
+  for (const char* url :
+       {"https://search.google.com", "https://www.google.com"}) {
+    const url::Origin origin = url::Origin::Create(GURL(url));
+    SCOPED_TRACE(origin);
+    EXPECT_EQ(GetRemoteActorTypeForOrigin(origin), std::nullopt);
+    EXPECT_FALSE(IsRemoteActorCredentialSharingAllowedForOrigin(origin));
+  }
+}
+
+TEST_F(RemoteActorCredentialSharingPolicyTest,
+       SearchOnlyDisablesGeminiOrigins) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kRemoteActorCredentialSharingSearch,
+        {{"search_config_json", R"({
+            "allowed_hosts": ["https://www.google.com"]
+          })"}}}},
+      /*disabled_features=*/{features::kRemoteActorCredentialSharing});
+  EXPECT_TRUE(features::RemoteActorCredentialSharingEnabled());
+  EXPECT_FALSE(features::RemoteActorCredentialSharingGeminiEnabled());
+  EXPECT_TRUE(features::RemoteActorCredentialSharingSearchEnabled());
+
+  for (const char* url : {"https://gemini.google.com",
+                          "https://gemini-canary.corp.google.com"}) {
+    const url::Origin origin = url::Origin::Create(GURL(url));
+    SCOPED_TRACE(origin);
+    EXPECT_EQ(GetRemoteActorTypeForOrigin(origin), std::nullopt);
+    EXPECT_FALSE(IsRemoteActorCredentialSharingAllowedForOrigin(origin));
+  }
+
+  for (const char* url :
+       {"https://search.google.com", "https://www.google.com"}) {
+    const url::Origin origin = url::Origin::Create(GURL(url));
+    SCOPED_TRACE(origin);
+    EXPECT_EQ(GetRemoteActorTypeForOrigin(origin), RemoteActorType::kSearch);
+    EXPECT_TRUE(IsRemoteActorCredentialSharingAllowedForOrigin(origin));
+  }
+}
+
+TEST_F(RemoteActorCredentialSharingPolicyTest,
        DefaultOriginsAndRejectsUnlistedOrNonHttps) {
   EXPECT_EQ(GetRemoteActorKey(RemoteActorType::kGemini), "gemini");
   EXPECT_EQ(GetRemoteActorKey(RemoteActorType::kSearch), "search");
+  EXPECT_EQ(GetRemoteActorConfigJson(RemoteActorType::kGemini), "");
+  EXPECT_EQ(GetRemoteActorConfigJson(RemoteActorType::kSearch), "");
 
   for (const char* url : {
            "https://gemini.google.com",
@@ -113,16 +183,16 @@ TEST_F(RemoteActorCredentialSharingPolicyTest,
 
 TEST_F(RemoteActorCredentialSharingPolicyTest, AdditionalAllowedHostsViaFinch) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemoteActorCredentialSharing,
-      {{"actor_configs_json", R"({
-          "gemini": {
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kRemoteActorCredentialSharing,
+        {{"gemini_config_json", R"({
             "allowed_hosts": [
               "gemini-canary.corp.google.com",
               "https://gemini-dev.corp.google.com"
             ]
-          },
-          "search": {
+          })"}}},
+       {features::kRemoteActorCredentialSharingSearch,
+        {{"search_config_json", R"({
             "allowed_hosts": [
               "www.google.com",
               "/example.com",
@@ -138,8 +208,8 @@ TEST_F(RemoteActorCredentialSharingPolicyTest, AdditionalAllowedHostsViaFinch) {
               123,
               "  https://search-autopush.corp.google.com  "
             ]
-          }
-        })"}});
+          })"}}}},
+      {});
 
   // Compiled-in defaults remain active alongside Finch `allowed_hosts`.
   EXPECT_EQ(GetRemoteActorTypeForOrigin(
@@ -180,34 +250,34 @@ TEST_F(RemoteActorCredentialSharingPolicyTest, AdditionalAllowedHostsViaFinch) {
 TEST_F(RemoteActorCredentialSharingPolicyTest,
        OriginPrecedenceTestingOverFinchOverDefaults) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemoteActorCredentialSharing,
-      {{"allowed_host_for_testing", "www.google.com"},
-       {"allowed_host_actor_for_testing", "gemini"},
-       {"actor_configs_json", R"({
-          "gemini": {
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kRemoteActorCredentialSharing,
+        {{"allowed_host_for_testing", "www.google.com"},
+         {"allowed_host_actor_for_testing", "gemini"},
+         {"gemini_config_json", R"({
             "allowed_hosts": [
               "https://shared.example.com"
             ]
-          },
-          "search": {
+          })"}}},
+       {features::kRemoteActorCredentialSharingSearch,
+        {{"search_config_json", R"({
             "allowed_hosts": [
               "https://www.google.com",
               "https://gemini.google.com",
               "https://shared.example.com"
             ]
-          }
-        })"}});
+          })"}}}},
+      {});
 
-  // `allowed_host_for_testing` takes precedence over `actor_configs_json`.
+  // `allowed_host_for_testing` takes precedence over `search_config_json`.
   EXPECT_EQ(GetRemoteActorTypeForOrigin(
                 url::Origin::Create(GURL("https://www.google.com"))),
             RemoteActorType::kGemini);
-  // `actor_configs_json` takes precedence over compiled-in defaults.
+  // `search_config_json` takes precedence over compiled-in defaults.
   EXPECT_EQ(GetRemoteActorTypeForOrigin(
                 url::Origin::Create(GURL("https://gemini.google.com"))),
             RemoteActorType::kSearch);
-  // Duplicate origin across actors in `actor_configs_json` resolves in
+  // Duplicate origin across actors in config JSON resolves in
   // `kAllRemoteActorTypes` order (`kGemini` before `kSearch`).
   EXPECT_EQ(GetRemoteActorTypeForOrigin(
                 url::Origin::Create(GURL("https://shared.example.com"))),
@@ -223,16 +293,16 @@ TEST_F(RemoteActorCredentialSharingPolicyTest,
            "",
            "{not valid json",
            "[]",
-           R"({"gemini": {"allowed_hosts": "https://example.com"}})",
-           R"({"gemini": {"allowed_hosts": [123]}})",
+           R"({"allowed_hosts": "https://example.com"})",
+           R"({"allowed_hosts": [123]})",
        }) {
     SCOPED_TRACE(invalid_json);
     {
       base::test::ScopedFeatureList valid_feature_list;
       valid_feature_list.InitAndEnableFeatureWithParameters(
           features::kRemoteActorCredentialSharing,
-          {{"actor_configs_json",
-            R"({"gemini": {"allowed_hosts": ["https://example.com"]}})"}});
+          {{"gemini_config_json",
+            R"({"allowed_hosts": ["https://example.com"]})"}});
       EXPECT_EQ(GetRemoteActorTypeForOrigin(example_origin),
                 RemoteActorType::kGemini);
     }
@@ -240,7 +310,7 @@ TEST_F(RemoteActorCredentialSharingPolicyTest,
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         features::kRemoteActorCredentialSharing,
-        {{"actor_configs_json", invalid_json}});
+        {{"gemini_config_json", invalid_json}});
 
     EXPECT_EQ(GetRemoteActorTypeForOrigin(
                   url::Origin::Create(GURL("https://gemini.google.com"))),

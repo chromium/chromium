@@ -19,7 +19,10 @@ namespace {
 class RemoteActorConfigTest : public testing::Test {
  public:
   RemoteActorConfigTest() {
-    feature_list_.InitAndEnableFeature(features::kRemoteActorCredentialSharing);
+    feature_list_.InitWithFeatures(
+        {features::kRemoteActorCredentialSharing,
+         features::kRemoteActorCredentialSharingSearch},
+        {});
   }
 
  private:
@@ -54,6 +57,30 @@ TEST_F(RemoteActorConfigTest, DefaultGeminiAndSearchConfigForOrigin) {
             "apps.googleusercontent.com");
   EXPECT_EQ(search_config->task_namespace_id, 41);
 
+  {
+    base::test::ScopedFeatureList search_disabled_feature_list;
+    search_disabled_feature_list.InitAndDisableFeature(
+        features::kRemoteActorCredentialSharingSearch);
+    EXPECT_TRUE(GetRemoteActorConfigForOrigin(
+                    url::Origin::Create(GURL("https://gemini.google.com")))
+                    .has_value());
+    EXPECT_EQ(GetRemoteActorConfigForOrigin(
+                  url::Origin::Create(GURL("https://search.google.com"))),
+              std::nullopt);
+  }
+
+  {
+    base::test::ScopedFeatureList gemini_disabled_feature_list;
+    gemini_disabled_feature_list.InitAndDisableFeature(
+        features::kRemoteActorCredentialSharing);
+    EXPECT_EQ(GetRemoteActorConfigForOrigin(
+                  url::Origin::Create(GURL("https://gemini.google.com"))),
+              std::nullopt);
+    EXPECT_TRUE(GetRemoteActorConfigForOrigin(
+                    url::Origin::Create(GURL("https://search.google.com")))
+                    .has_value());
+  }
+
   EXPECT_EQ(GetRemoteActorConfigForOrigin(
                 url::Origin::Create(GURL("https://example.com"))),
             std::nullopt);
@@ -61,7 +88,7 @@ TEST_F(RemoteActorConfigTest, DefaultGeminiAndSearchConfigForOrigin) {
 
 TEST_F(RemoteActorConfigTest, FinchOverridesAndLegacyParameterPrecedence) {
   // Legacy Gemini params apply to `kGemini`, are ignored by `kSearch`, and are
-  // overridden when `actor_configs_json` also specifies values.
+  // overridden when `gemini_config_json` also specifies values.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
@@ -84,27 +111,27 @@ TEST_F(RemoteActorConfigTest, FinchOverridesAndLegacyParameterPrecedence) {
 
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kRemoteActorCredentialSharing,
-        {{"actor_name_for_testing", "Legacy Test Actor"},
-         {"oauth_client_id", "legacy-gemini-client-id"},
-         {"actor_configs_json", R"({
-            "gemini": {
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kRemoteActorCredentialSharing,
+          {{"actor_name_for_testing", "Legacy Test Actor"},
+           {"oauth_client_id", "legacy-gemini-client-id"},
+           {"gemini_config_json", R"({
               "actor_name": "Custom Gemini",
               "learn_more_url": "https://support.google.com/gemini/custom",
               "icon_url": "https://www.gstatic.com/gemini_custom.png",
               "oauth_client_id": "gemini-custom-client.apps.googleusercontent.com",
               "task_namespace_id": 35
-            },
-            "search": {
+            })"}}},
+         {features::kRemoteActorCredentialSharingSearch,
+          {{"search_config_json", R"({
               "allowed_hosts": ["https://www.google.com"],
               "actor_name": "AI Mode",
               "learn_more_url": "https://support.google.com/websearch/custom",
               "icon_url": "https://www.gstatic.com/search_custom.png",
               "oauth_client_id": "716693245890-s29c4h245s5b39r75e6vup8h0914998b.apps.googleusercontent.com",
               "task_namespace_id": 42
-            }
-          })"}});
+            })"}}}},
+        {});
 
     RemoteActorConfig gemini_config =
         GetRemoteActorConfig(RemoteActorType::kGemini);
@@ -139,29 +166,30 @@ TEST_F(RemoteActorConfigTest, InvalidFinchOverridesFallBackToSafeDefaults) {
            "{not valid json",
            "[]",
            R"json({
-             "gemini": {
-               "actor_name": "",
-               "learn_more_url": "http://insecure.example.com",
-               "icon_url": "http://insecure.example.com/icon.png",
-               "oauth_client_id": "",
-               "task_namespace_id": -1
-             },
-             "search": {
-               "actor_name": "",
-               "learn_more_url": "javascript:alert(1)",
-               "icon_url": "not a url",
-               "oauth_client_id": "",
-               "task_namespace_id": "35"
-             }
+             "actor_name": "",
+             "learn_more_url": "http://insecure.example.com",
+             "icon_url": "http://insecure.example.com/icon.png",
+             "oauth_client_id": "",
+             "task_namespace_id": -1
+           })json",
+           R"json({
+             "actor_name": "",
+             "learn_more_url": "javascript:alert(1)",
+             "icon_url": "not a url",
+             "oauth_client_id": "",
+             "task_namespace_id": "35"
            })json",
        }) {
     SCOPED_TRACE(invalid_json);
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kRemoteActorCredentialSharing,
-        {{"actor_name_for_testing", ""},
-         {"oauth_client_id", ""},
-         {"actor_configs_json", invalid_json}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kRemoteActorCredentialSharing,
+          {{"actor_name_for_testing", ""},
+           {"oauth_client_id", ""},
+           {"gemini_config_json", invalid_json}}},
+         {features::kRemoteActorCredentialSharingSearch,
+          {{"search_config_json", invalid_json}}}},
+        {});
 
     RemoteActorConfig gemini_config =
         GetRemoteActorConfig(RemoteActorType::kGemini);

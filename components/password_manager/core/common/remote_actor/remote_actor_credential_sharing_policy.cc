@@ -44,6 +44,16 @@ std::optional<RemoteActorType> FindActorTypeForOrigin(
   return it != actor_by_origin.end() ? std::optional(it->second) : std::nullopt;
 }
 
+bool IsActorTypeEnabled(RemoteActorType actor_type) {
+  switch (actor_type) {
+    case RemoteActorType::kGemini:
+      return features::RemoteActorCredentialSharingGeminiEnabled();
+    case RemoteActorType::kSearch:
+      return features::RemoteActorCredentialSharingSearchEnabled();
+  }
+  NOTREACHED();
+}
+
 // Parses `entry` (either a full HTTPS URL like "https://www.google.com" or a
 // bare hostname like "www.google.com") into an HTTPS `url::Origin`. Rejects
 // non-HTTPS schemes, opaque origins, leading/extra slashes, user/password
@@ -75,55 +85,67 @@ std::optional<url::Origin> ParseHttpsOriginOrHost(std::string_view entry) {
   return candidate_origin;
 }
 
-ActorByOriginMap ParseConfiguredAllowedOrigins(std::string_view raw_json) {
-  ActorByOriginMap actor_by_origin;
-  std::optional<base::DictValue> parsed =
+void AddConfiguredAllowedOriginsForActor(RemoteActorType actor_type,
+                                         std::string_view raw_json,
+                                         ActorByOriginMap& actor_by_origin) {
+  if (raw_json.empty()) {
+    return;
+  }
+  std::optional<base::DictValue> actor_dict =
       base::JSONReader::ReadDict(raw_json, base::JSON_PARSE_RFC);
-  if (!parsed) {
-    return actor_by_origin;
+  if (!actor_dict) {
+    return;
+  }
+  const base::ListValue* allowed_hosts =
+      actor_dict->FindList(kAllowedHostsJsonKey);
+  if (!allowed_hosts) {
+    return;
   }
 
-  for (RemoteActorType actor_type : kAllRemoteActorTypes) {
-    const base::DictValue* actor_dict =
-        parsed->FindDict(GetRemoteActorKey(actor_type));
-    if (!actor_dict) {
+  for (const base::Value& entry : *allowed_hosts) {
+    if (!entry.is_string()) {
       continue;
     }
-    const base::ListValue* allowed_hosts =
-        actor_dict->FindList(kAllowedHostsJsonKey);
-    if (!allowed_hosts) {
-      continue;
-    }
-
-    for (const base::Value& entry : *allowed_hosts) {
-      if (!entry.is_string()) {
-        continue;
-      }
-      if (std::optional<url::Origin> candidate_origin =
-              ParseHttpsOriginOrHost(entry.GetString())) {
-        actor_by_origin.try_emplace(std::move(*candidate_origin), actor_type);
-      }
+    if (std::optional<url::Origin> candidate_origin =
+            ParseHttpsOriginOrHost(entry.GetString())) {
+      actor_by_origin.try_emplace(std::move(*candidate_origin), actor_type);
     }
   }
+}
 
+ActorByOriginMap ParseConfiguredAllowedOrigins(
+    std::string_view gemini_raw_json,
+    std::string_view search_raw_json) {
+  ActorByOriginMap actor_by_origin;
+  AddConfiguredAllowedOriginsForActor(RemoteActorType::kGemini, gemini_raw_json,
+                                      actor_by_origin);
+  AddConfiguredAllowedOriginsForActor(RemoteActorType::kSearch, search_raw_json,
+                                      actor_by_origin);
   return actor_by_origin;
 }
 
 std::optional<RemoteActorType> GetConfiguredActorTypeForOrigin(
     const url::Origin& origin) {
   static base::NoDestructor<base::Lock> cache_lock;
-  static base::NoDestructor<std::string> cached_raw_json;
+  static base::NoDestructor<std::string> cached_gemini_raw_json;
+  static base::NoDestructor<std::string> cached_search_raw_json;
   static base::NoDestructor<ActorByOriginMap> cached_actor_by_origin;
 
-  std::string raw_json = features::kRemoteActorConfigsJson.Get();
-  if (raw_json.empty()) {
+  std::string gemini_raw_json =
+      GetRemoteActorConfigJson(RemoteActorType::kGemini);
+  std::string search_raw_json =
+      GetRemoteActorConfigJson(RemoteActorType::kSearch);
+  if (gemini_raw_json.empty() && search_raw_json.empty()) {
     return std::nullopt;
   }
 
   base::AutoLock auto_lock(*cache_lock);
-  if (*cached_raw_json != raw_json) {
-    *cached_actor_by_origin = ParseConfiguredAllowedOrigins(raw_json);
-    *cached_raw_json = std::move(raw_json);
+  if (*cached_gemini_raw_json != gemini_raw_json ||
+      *cached_search_raw_json != search_raw_json) {
+    *cached_actor_by_origin =
+        ParseConfiguredAllowedOrigins(gemini_raw_json, search_raw_json);
+    *cached_gemini_raw_json = std::move(gemini_raw_json);
+    *cached_search_raw_json = std::move(search_raw_json);
   }
 
   return FindActorTypeForOrigin(*cached_actor_by_origin, origin);
@@ -137,6 +159,16 @@ std::string_view GetRemoteActorKey(RemoteActorType actor_type) {
       return kGeminiKey;
     case RemoteActorType::kSearch:
       return kSearchKey;
+  }
+  NOTREACHED();
+}
+
+std::string GetRemoteActorConfigJson(RemoteActorType actor_type) {
+  switch (actor_type) {
+    case RemoteActorType::kGemini:
+      return features::kRemoteActorGeminiConfigJson.Get();
+    case RemoteActorType::kSearch:
+      return features::kRemoteActorSearchConfigJson.Get();
   }
   NOTREACHED();
 }
@@ -160,33 +192,40 @@ std::optional<RemoteActorType> GetRemoteActorTypeForOrigin(
     for (RemoteActorType actor_type : kAllRemoteActorTypes) {
       if (base::EqualsCaseInsensitiveASCII(allowed_host_actor,
                                            GetRemoteActorKey(actor_type))) {
-        return actor_type;
+        return IsActorTypeEnabled(actor_type) ? std::optional(actor_type)
+                                              : std::nullopt;
       }
     }
-    return RemoteActorType::kGemini;
+    return IsActorTypeEnabled(RemoteActorType::kGemini)
+               ? std::optional(RemoteActorType::kGemini)
+               : std::nullopt;
   }
 
-  if (std::optional<RemoteActorType> configured_actor_type =
-          GetConfiguredActorTypeForOrigin(origin)) {
-    return configured_actor_type;
+  std::optional<RemoteActorType> actor_type =
+      GetConfiguredActorTypeForOrigin(origin);
+  if (!actor_type.has_value()) {
+    static const base::NoDestructor<ActorByOriginMap> kDefaultActorByOrigin({
+        {url::Origin::Create(GURL("https://gemini.google.com")),
+         RemoteActorType::kGemini},
+        {url::Origin::Create(GURL("https://gemini.corp.google.com")),
+         RemoteActorType::kGemini},
+        {url::Origin::Create(GURL("https://gemini-preprod.corp.google.com")),
+         RemoteActorType::kGemini},
+        {url::Origin::Create(GURL("https://gemini-staging.corp.google.com")),
+         RemoteActorType::kGemini},
+        {url::Origin::Create(GURL("https://gemini-autopush.corp.google.com")),
+         RemoteActorType::kGemini},
+        {url::Origin::Create(GURL("https://search.google.com")),
+         RemoteActorType::kSearch},
+    });
+
+    actor_type = FindActorTypeForOrigin(*kDefaultActorByOrigin, origin);
   }
 
-  static const base::NoDestructor<ActorByOriginMap> kDefaultActorByOrigin({
-      {url::Origin::Create(GURL("https://gemini.google.com")),
-       RemoteActorType::kGemini},
-      {url::Origin::Create(GURL("https://gemini.corp.google.com")),
-       RemoteActorType::kGemini},
-      {url::Origin::Create(GURL("https://gemini-preprod.corp.google.com")),
-       RemoteActorType::kGemini},
-      {url::Origin::Create(GURL("https://gemini-staging.corp.google.com")),
-       RemoteActorType::kGemini},
-      {url::Origin::Create(GURL("https://gemini-autopush.corp.google.com")),
-       RemoteActorType::kGemini},
-      {url::Origin::Create(GURL("https://search.google.com")),
-       RemoteActorType::kSearch},
-  });
-
-  return FindActorTypeForOrigin(*kDefaultActorByOrigin, origin);
+  if (!actor_type.has_value() || !IsActorTypeEnabled(*actor_type)) {
+    return std::nullopt;
+  }
+  return actor_type;
 }
 
 bool IsRemoteActorCredentialSharingAllowedForOrigin(const url::Origin& origin) {

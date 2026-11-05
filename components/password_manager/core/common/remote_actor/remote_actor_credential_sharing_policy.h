@@ -7,6 +7,7 @@
 
 #include <array>
 #include <optional>
+#include <string>
 #include <string_view>
 
 namespace url {
@@ -19,12 +20,12 @@ namespace password_manager {
 //
 // In standard production use (when no Finch or test overrides are set), the
 // actor type is determined by matching the caller's HTTPS origin against the
-// built-in allowlist for each actor. When Finch (`actor_configs_json`) or test
-// (`allowed_host_for_testing`) parameters are provided, those overrides take
-// precedence in the following order:
+// built-in allowlist for each actor. When Finch (`gemini_config_json` or
+// `search_config_json`) or test (`allowed_host_for_testing`) parameters are
+// provided, those overrides take precedence in the following order:
 // 1. `allowed_host_for_testing` (plus `allowed_host_actor_for_testing`),
-// 2. `actor_configs_json` per-actor `"allowed_hosts"` lists (which augment or
-//    remap the compiled-in defaults),
+// 2. per-actor `"allowed_hosts"` lists in `gemini_config_json` and
+//    `search_config_json` (which augment or remap the compiled-in defaults),
 // 3. compiled-in default origins.
 enum class RemoteActorType {
   kGemini,
@@ -37,9 +38,13 @@ inline constexpr auto kAllRemoteActorTypes = std::to_array<RemoteActorType>({
     RemoteActorType::kSearch,
 });
 
-// Returns the canonical string identifier (e.g. "gemini", "search") used as a
-// key in `kRemoteActorConfigsJson` for `actor_type`.
+// Returns the canonical string identifier (e.g. "gemini", "search") for
+// `actor_type`.
 std::string_view GetRemoteActorKey(RemoteActorType actor_type);
+
+// Returns the raw Finch JSON configuration string (`gemini_config_json` or
+// `search_config_json`) for `actor_type`.
+std::string GetRemoteActorConfigJson(RemoteActorType actor_type);
 
 // Returns the `RemoteActorType` mapped to `origin`, or `std::nullopt` if
 // remote actor credential sharing is disabled or `origin` is not allowlisted

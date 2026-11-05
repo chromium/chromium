@@ -15,8 +15,10 @@ namespace password_manager::features {
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kRemoteActorCredentialSharing);
+BASE_DECLARE_FEATURE(kRemoteActorCredentialSharingSearch);
 
-BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorConfigsJson);
+BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorGeminiConfigJson);
+BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorSearchConfigJson);
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kRemoteActorCredentialSharingActorNameForTesting);
 BASE_DECLARE_FEATURE_PARAM(
@@ -27,9 +29,21 @@ BASE_DECLARE_FEATURE_PARAM(std::string,
 BASE_DECLARE_FEATURE_PARAM(std::string, kRemoteActorOAuthClientId);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Returns whether remote actor credential sharing is enabled. Always returns
-// false on platforms where the feature is not available.
+// Returns whether remote actor credential sharing is enabled for at least one
+// actor (`kRemoteActorCredentialSharing` or
+// `kRemoteActorCredentialSharingSearch`). Always returns false on platforms
+// where the feature is not available.
 bool RemoteActorCredentialSharingEnabled();
+
+// Returns whether remote actor credential sharing is enabled for Gemini
+// origins (`RemoteActorType::kGemini`). Always returns false on platforms
+// where the feature is not available.
+bool RemoteActorCredentialSharingGeminiEnabled();
+
+// Returns whether remote actor credential sharing is enabled for Search Agent
+// origins (`RemoteActorType::kSearch`). Always returns false on platforms
+// where the feature is not available.
+bool RemoteActorCredentialSharingSearchEnabled();
 
 }  // namespace password_manager::features
 

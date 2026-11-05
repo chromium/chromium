@@ -918,6 +918,8 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
 TEST_F(RemoteActorCredentialSharingImplTest,
        SearchOriginPlumbsSearchBrandingAndAgentParameters) {
+  base::test::ScopedFeatureList search_feature_list{
+      features::kRemoteActorCredentialSharingSearch};
   mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
       SetUpAndBindFlow(GURL("https://search.google.com"));
   SetSyncActive(true);

@@ -98,14 +98,12 @@ RemoteActorConfig GetRemoteActorConfig(RemoteActorType actor_type) {
     }
   }
 
-  std::string raw_json = features::kRemoteActorConfigsJson.Get();
+  std::string raw_json = GetRemoteActorConfigJson(actor_type);
   if (raw_json.empty()) {
     return config;
   }
-  std::optional<base::DictValue> root_dict =
+  std::optional<base::DictValue> actor_dict =
       base::JSONReader::ReadDict(raw_json, base::JSON_PARSE_RFC);
-  const base::DictValue* actor_dict =
-      root_dict ? root_dict->FindDict(GetRemoteActorKey(actor_type)) : nullptr;
   if (!actor_dict) {
     return config;
   }

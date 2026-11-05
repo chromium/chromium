@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,18 +47,32 @@ constexpr char kDisallowedHost[] = "google.com";
 class RemoteActorCredentialSharingBrowserTest : public InProcessBrowserTest {
  public:
   explicit RemoteActorCredentialSharingBrowserTest(
-      bool enable_feature = true,
+      bool enable_gemini_feature = true,
       const std::string& allowed_host = kAllowedHost,
-      const std::string& allowed_host_actor = "") {
-    if (enable_feature) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      const std::string& allowed_host_actor = "",
+      bool enable_search_feature = false) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_gemini_feature) {
+      enabled_features.emplace_back(
           password_manager::features::kRemoteActorCredentialSharing,
-          {{"allowed_host_for_testing", allowed_host},
-           {"allowed_host_actor_for_testing", allowed_host_actor}});
+          base::FieldTrialParams{
+              {"allowed_host_for_testing", allowed_host},
+              {"allowed_host_actor_for_testing", allowed_host_actor}});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.emplace_back(
           password_manager::features::kRemoteActorCredentialSharing);
     }
+    if (enable_search_feature) {
+      enabled_features.emplace_back(
+          password_manager::features::kRemoteActorCredentialSharingSearch,
+          base::FieldTrialParams{});
+    } else {
+      disabled_features.emplace_back(
+          password_manager::features::kRemoteActorCredentialSharingSearch);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -280,7 +295,8 @@ class RemoteActorCredentialSharingDisabledBrowserTest
     : public RemoteActorCredentialSharingBrowserTest {
  public:
   RemoteActorCredentialSharingDisabledBrowserTest()
-      : RemoteActorCredentialSharingBrowserTest(false) {}
+      : RemoteActorCredentialSharingBrowserTest(
+            /*enable_gemini_feature=*/false) {}
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingDisabledBrowserTest,
@@ -300,10 +316,32 @@ class RemoteActorCredentialSharingSearchBrowserTest
  public:
   RemoteActorCredentialSharingSearchBrowserTest()
       : RemoteActorCredentialSharingBrowserTest(
-            /*enable_feature=*/true,
+            /*enable_gemini_feature=*/true,
             /*allowed_host=*/kSearchAllowedHost,
-            /*allowed_host_actor=*/"search") {}
+            /*allowed_host_actor=*/"search",
+            /*enable_search_feature=*/true) {}
 };
+
+class RemoteActorCredentialSharingSearchDisabledBrowserTest
+    : public RemoteActorCredentialSharingBrowserTest {
+ public:
+  RemoteActorCredentialSharingSearchDisabledBrowserTest()
+      : RemoteActorCredentialSharingBrowserTest(
+            /*enable_gemini_feature=*/true,
+            /*allowed_host=*/kSearchAllowedHost,
+            /*allowed_host_actor=*/"search",
+            /*enable_search_feature=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingSearchDisabledBrowserTest,
+                       SearchOriginNotExposedWhenSearchFeatureDisabled) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURLForHost(kSearchAllowedHost, "/title1.html")));
+  EXPECT_EQ(false, content::EvalJs(
+                       GetWebContents(),
+                       "typeof chrome !== 'undefined' && typeof "
+                       "chrome.requestAgentAuthentication !== 'undefined'"));
+}
 
 IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingSearchBrowserTest,
                        SearchOriginExposesApiAndInvokesController) {

@@ -22,10 +22,10 @@ namespace password_manager {
 // How selection works:
 // 1. The calling origin is matched to a `RemoteActorType` via Finch
 //    `allowed_hosts` (if provided) or compiled-in domain defaults.
-// 2. Per-actor fields use Finch `actor_configs_json` overrides when present
-//    and valid (non-empty strings, HTTPS URLs, positive `task_namespace_id`),
-//    falling back to compiled-in defaults (GRD display name, learn-more URL,
-//    OAuth client ID, and task namespace ID).
+// 2. Per-actor fields use Finch `gemini_config_json` or `search_config_json`
+//    overrides when present and valid (non-empty strings, HTTPS URLs, positive
+//    `task_namespace_id`), falling back to compiled-in defaults (GRD display
+//    name, learn-more URL, OAuth client ID, and task namespace ID).
 struct RemoteActorConfig {
   RemoteActorType actor_type = RemoteActorType::kGemini;
   std::u16string display_name;
