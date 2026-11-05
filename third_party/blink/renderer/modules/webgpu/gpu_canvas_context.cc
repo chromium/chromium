@@ -245,11 +245,16 @@ GPUCanvasContext::GetOrCreateCanvasNon2DResourceProvider() {
     if (Host()->IsValidImageSize()) {
       if (SharedGpuContext::IsGpuCompositingEnabled()) {
         // This code path could be used for compositing so add the necessary
-        // shared image usage flags.
-        resource_provider_ = CanvasNon2DResourceProvider::CreateForWebGPU(
+        // shared image usage flags. Export from WebGPU into a static bitmap
+        // image in PaintRenderingResultsToSnapshot() happens via the WebGPU
+        // interface, so WEBGPU_READ and WEBGPU_WRITE usage are also needed.
+        resource_provider_ = CanvasNon2DResourceProvider::Create(
             Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
             GetColorSpace(), swap_buffers_->GetHDRMetadata(),
-            swap_buffers_->GetSharedImageUsagesForDisplay(),
+            SharedGpuContext::ContextProviderWrapper(),
+            swap_buffers_->GetSharedImageUsagesForDisplay() |
+                gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
             blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
                             WrapWeakPersistent(Host())));
       }

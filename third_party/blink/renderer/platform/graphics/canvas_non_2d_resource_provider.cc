@@ -133,32 +133,6 @@ CanvasNon2DResourceProvider::Create(
 }
 
 std::unique_ptr<CanvasNon2DResourceProvider>
-CanvasNon2DResourceProvider::CreateForWebGPU(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    base::OnceClosure context_lost_callback) {
-  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
-  // The SharedImages created by this provider serve as a means of import/export
-  // between VideoFrames/canvas and WebGPU, e.g.:
-  // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
-  //   WebGPU textures will then be read by clients)
-  // * Export from WebGPU into a static bitmap image via
-  //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
-  //   export happens via the WebGPU interface)
-  // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
-  return CanvasNon2DResourceProvider::Create(
-      size, format, alpha_type, color_space, hdr_metadata,
-      std::move(context_provider_wrapper),
-      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-      std::move(context_lost_callback));
-}
-
-std::unique_ptr<CanvasNon2DResourceProvider>
 CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
     gfx::Size size,
     viz::SharedImageFormat format,

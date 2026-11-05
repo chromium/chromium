@@ -74,15 +74,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::OnceClosure context_lost_callback = {});
 
-  static std::unique_ptr<CanvasNon2DResourceProvider> CreateForWebGPU(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      gpu::SharedImageUsageSet shared_image_usage_flags = {},
-      base::OnceClosure context_lost_callback = {});
-
   static std::unique_ptr<CanvasNon2DResourceProvider>
   CreateForSoftwareCompositor(
       gfx::Size size,
