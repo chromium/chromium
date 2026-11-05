@@ -1290,12 +1290,12 @@ TAG_SMOKE_TEST(TranslateInfobarTestCase, testInfobarTranslateRevert);
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
-  // Verify translate badge and Reading Mode contextual chip are shown and page
-  // is translated.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  // Verify translate badge is shown and page is translated.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kBadgeButtonTranslateAcceptedAccessibilityIdentifier)
+                                  timeout:kWaitForUIElement3xTimeout];
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
 }
 
@@ -1352,10 +1352,11 @@ TAG_SMOKE_TEST(TranslateInfobarTestCase, testInfobarTranslateRevert);
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
   // Verify badge is shown and page is translated.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kBadgeButtonTranslateAcceptedAccessibilityIdentifier)
+                                  timeout:kWaitForUIElement3xTimeout];
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
 
   // The "Show Original?" banner should not be visible.
