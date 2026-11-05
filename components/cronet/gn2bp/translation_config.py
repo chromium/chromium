@@ -8,8 +8,6 @@ import build.gn_helpers  # noqa: F401
 
 CRONET_LICENSE_NAME = "external_cronet_license"
 
-EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
-
 LIBCRYPTO_STRIPPED = "libcrypto"
 LIBCRYPTO_UNSTRIPPED = "libcrypto_unstripped"
 
@@ -246,8 +244,6 @@ builtin_deps.update(
 replace_deps = {
     '//third_party/boringssl:boringssl': enable_boringssl,
 }
-
-BLUEPRINTS_EXTRAS = {"": ["build = [\"Android.extras.bp\"]"]}
 
 BLUEPRINTS_MAPPING = {
     # BoringSSL's Android.bp is manually maintained and generated via a template,

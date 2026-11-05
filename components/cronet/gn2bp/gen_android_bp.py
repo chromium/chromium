@@ -269,6 +269,258 @@ def setup_libcrypto_stripping(blueprint, context):
     )
     blueprint.add_module(cronet_shared_library_copy)
 
+    # Generates a linker version script ("intersection.ld") containing the list of
+    # symbols that are shared between libhttpengine.so and libcrypto.so.
+    #
+    # Mechanism:
+    #   It calculates the intersection of:
+    #   1. Undefined symbols in the Cronet object (what Cronet needs).
+    #   2. Defined symbols in the Libcrypto (what Libcrypto provides).
+    #
+    # Why:
+    # To satisfy FIPS compliance, libcrypto must be a shared library, which defaults
+    # to exporting all symbols and prevents dead-code elimination. Because
+    # libhttpengine.so is the exclusive consumer, we generate a map of only the
+    # symbols it actually uses. This restricts the export list, enabling the
+    # linker to delete unused code and discard unused libcrypto functions.
+    #
+    # How:
+    # libhttpengine.so is initially linked against the full libcrypto.so to
+    # determine necessary symbols. These symbols are used to generate a pruned
+    # libcrypto_stripped.so. Finally, libhttpengine.so is recompiled against this
+    # stripped version to ensure link-time integrity.
+    linker_script_genrule = soong_ast.create_module(
+        "cc_genrule",
+        f"{context.module_prefix}generate_libcronet_libcrypto_symbol_linker_script",
+        "Extra-Artificial",
+        context,
+    )
+    linker_script_genrule.build_file_path = ""
+    linker_script_genrule.srcs = {
+        f":{cronet_shared_library_copy.name}",
+        f":{context.module_prefix}{translation_config.LIBCRYPTO_UNSTRIPPED}",
+    }
+    linker_script_genrule.out = {"intersection.ld"}
+    linker_script_genrule.tools = {"llvm-objdump"}
+    linker_script_genrule.tool_files = {
+        "build/android/java_home.py",
+        "components/cronet/tools/symbols_map_generator/generate_version_script_from_symbols_intersection.py",
+        "components/cronet/tools/utils.py",
+    }
+    linker_script_genrule.cmd = [
+        "python3 $(location components/cronet/tools/symbols_map_generator/generate_version_script_from_symbols_intersection.py)",
+        "--objdump $(location llvm-objdump)",
+        f"--lib-undefined $(location :{cronet_shared_library_copy.name})",
+        f"--lib-defined $(location :{context.module_prefix}{translation_config.LIBCRYPTO_UNSTRIPPED})",
+        "--out $(out)",
+    ]
+    linker_script_genrule.apex_available = {common.tethering_apex}
+    blueprint.add_module(linker_script_genrule)
+
+
+def create_extras_modules(
+    context: translation_context.TranslationContext,
+) -> List[soong_ast.Module]:
+    """Creates top-level extra Soong modules for Cronet in AOSP."""
+    modules = []
+
+    def _new_extra_module(mod_type: str, short_name: str) -> soong_ast.Module:
+        mod = soong_ast.create_module(
+            mod_type,
+            f"{context.module_prefix}{short_name}",
+            "Extra-Artificial",
+            context,
+        )
+        mod.build_file_path = ""
+        modules.append(mod)
+        return mod
+
+    license_mod = _new_extra_module("license", "license")
+    license_mod.license_kinds = {
+        "SPDX-license-identifier-Apache-2.0",
+        "SPDX-license-identifier-BSD",
+        "SPDX-license-identifier-BSD-3-Clause",
+        "SPDX-license-identifier-BSD-Source-Code",
+        "SPDX-license-identifier-BSD-2-Clause",
+        "SPDX-license-identifier-BSD-4-Clause",
+        "SPDX-license-identifier-BSL-1.0",
+        "SPDX-license-identifier-ICU",
+        "SPDX-license-identifier-ISC",
+        "SPDX-license-identifier-MIT",
+        "SPDX-license-identifier-MPL",
+        "SPDX-license-identifier-MPL-1.1",
+        "SPDX-license-identifier-MPL-2.0",
+        "SPDX-license-identifier-NCSA",
+        "SPDX-license-identifier-Zlib",
+        # "SPDX-license-identifier-GPL-2.0-with-autoconf-exception", # ICU TODO(aymanm): Reapply those once aosp/2470343 is merged
+        # "SPDX-license-identifier-GPL-3.0-with-autoconf-exception", # ICU TODO(aymanm): Reapply those once aosp/2470343 is merged
+        "SPDX-license-identifier-OpenSSL",
+        "SPDX-license-identifier-Unicode-DFS-2016",
+        "legacy_unencumbered",
+    }
+    license_mod.license_text = {"LICENSE"}
+
+    # Redirect "jni_registration" to "final_jni". This module name is being referenced
+    # in the top-level external/cronet/Android.bp file so we temporarily alias it to
+    # avoid having to coordinate an Android-side change.
+    # TODO(https://crbug.com/542041778): once the "final_jni" name exists in both tot
+    # and stable, get rid of this and adjust ../Android.bp.
+    jni_reg_testing = _new_extra_module(
+        "java_library",
+        "components_cronet_android_cronet_tests_jni_registration_java__testing",
+    )
+    jni_reg_testing.apex_available = {common.tethering_apex}
+    jni_reg_testing.defaults = {
+        f"{context.module_prefix}java_framework_defaults"
+    }
+    jni_reg_testing.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    jni_reg_testing.static_libs = {
+        f"{context.module_prefix}components_cronet_android_cronet_tests_final_jni_java__testing"
+    }
+    jni_reg_testing.visibility = {"//external/cronet:__pkg__"}
+
+    api_java = _new_extra_module("java_library", "api_java")
+    api_java.static_libs = {
+        f"{context.module_prefix}components_cronet_android_cronet_api_java"
+    }
+    api_java.sdk_version = "module_current"
+    api_java.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    api_java.visibility = {
+        "//packages/modules/Connectivity:__subpackages__",
+        "//external/cronet/android:__subpackages__",
+    }
+    api_java.apex_available = {common.tethering_apex}
+
+    java_mod = _new_extra_module("java_library", "java")
+    java_mod.static_libs = {
+        f"{context.module_prefix}components_cronet_android_cronet_build_config_java",
+        f"{context.module_prefix}components_cronet_android_cronet_impl_native_java",
+        f"{context.module_prefix}components_cronet_android_cronet_final_jni_java",
+    }
+    java_mod.sdk_version = "module_current"
+    java_mod.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    java_mod.visibility = {"//external/cronet:__subpackages__"}
+    java_mod.apex_available = {common.tethering_apex}
+
+    java_testing = _new_extra_module("java_library", "java__testing")
+    java_testing.static_libs = {
+        f"{context.module_prefix}components_cronet_android_cronet_build_config_java__testing",
+        f"{context.module_prefix}components_cronet_android_cronet_impl_native_java__testing",
+        f"{context.module_prefix}components_cronet_android_cronet_final_jni_java__testing",
+        f"{context.module_prefix}components_cronet_android_cronet_tests_final_jni_java__testing",
+    }
+    java_testing.sdk_version = "module_current"
+    java_testing.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    java_testing.visibility = {"//external/cronet:__subpackages__"}
+    java_testing.apex_available = {common.tethering_apex}
+
+    for_testing_net_java = _new_extra_module(
+        "java_library", "for_testing_net_java"
+    )
+    for_testing_net_java.static_libs = {
+        f"{context.module_prefix}net_android_net_test_support_provider_java__testing",
+        f"{context.module_prefix}net_android_net_java_test_support__testing",
+        f"{context.module_prefix}net_android_net_tests_java__testing",
+        f"{context.module_prefix}net_android_dummy_spnego_authenticator_java__testing",
+    }
+
+    net_unittests_data = _new_extra_module("filegroup", "net_unittests_data")
+    net_unittests_data.srcs = {
+        "net/data/**/*",
+        "net/base/registry_controlled_domains/**/*",
+        "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*",
+        "third_party/anonymous_tokens/src/anonymous_tokens/testdata/**/*",
+    }
+
+    javatests_resources = _new_extra_module("filegroup", "javatests_resources")
+    javatests_resources.srcs = {
+        "net/data/ssl/certificates/**/*",
+        "components/cronet/android/test/test_server/data/**/*",
+    }
+    javatests_resources.visibility = {"//external/cronet:__subpackages__"}
+
+    java_tests = _new_extra_module("android_library", "java_tests")
+    java_tests.manifest = "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml"
+    java_tests.sdk_version = "module_current"
+    java_tests.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    java_tests.static_libs = {
+        f"{context.module_prefix}components_cronet_android_cronet_javatests__testing",
+        "androidx.test.ext.junit",
+        "androidx.test.rules",
+        f"{context.module_prefix}java__testing",
+        "guava",
+        "hamcrest-library",
+        "junit",
+        "net-tests-utils",
+        "truth",
+    }
+    java_tests.libs = {
+        "android.test.base.stubs.system",
+        f"{context.module_prefix}api_java",
+        "framework-connectivity.stubs.module_lib",
+        "framework-connectivity-pre-jarjar",
+        # android.net.TrafficStats apis
+        "framework-connectivity-t.stubs.module_lib",
+        "guava",
+    }
+    java_tests.lint = {"test": True}
+    java_tests.visibility = {"//external/cronet:__subpackages__"}
+
+    java_framework_defaults = _new_extra_module(
+        "java_defaults", "java_framework_defaults"
+    )
+    java_framework_defaults.sdk_version = "module_current"
+    # LINT.IfChange
+    java_framework_defaults.java_version = "25"
+    # LINT.ThenChange(
+    #     //build/android/gradle/generate_gradle.py,
+    #     //build/android/gyp/compile_java.py
+    # )
+    java_framework_defaults.libs = {
+        "framework-annotations-lib",
+        "framework-connectivity-pre-jarjar-without-cronet",
+        "framework-connectivity.stubs.module_lib",
+        "framework-connectivity-t.stubs.module_lib",
+        "framework-location.stubs.module_lib",
+        "framework-mediaprovider.stubs.module_lib",
+        "framework-statsd.stubs.module_lib",
+        "framework-wifi.stubs.module_lib",
+        "framework-sdkextensions.stubs.module_lib",
+        "framework-conscrypt-nsc.stubs",
+    }
+    java_framework_defaults.visibility = {"//external/cronet:__subpackages__"}
+
+    # rust_bindgen modules do not have an `include_dirs` attribute. Due to that,
+    # C++ headers generated from rust_bindgen can't reference other headers
+    # through paths relative to the repository root. This is what Chromium does
+    # so, to circumvent this issue, create this module that adds the root of the
+    # repository to `include_dirs`. This will be added to all modules depending
+    # on a rust_bindgen module.
+    repo_root_anchor = _new_extra_module(
+        "cc_library_headers", "repository_root_include_dirs_anchor"
+    )
+    repo_root_anchor.host_supported = True
+    repo_root_anchor.apex_available = {common.tethering_apex}
+    repo_root_anchor.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    repo_root_anchor.export_include_dirs = {"."}
+    repo_root_anchor.visibility = {"//external/cronet:__subpackages__"}
+
+    # Bundled libc++ headers do not have file extensions (e.g. <algorithm>,
+    # <vector>, __assertion_handler, __config_site), and libc++ sources include
+    # runtime/*.ipp outside include_dirs, so Soong's default include_dirs header
+    # globs do not capture them for CC action sandboxing. Expose them via a
+    # filegroup referenced by ${GN2BP_MODULE_PREFIX}cc_defaults.
+    libcxx_headers = _new_extra_module("filegroup", "libcxx_headers")
+    libcxx_headers.srcs = {
+        "buildtools/third_party/libc++/__assertion_handler",
+        "buildtools/third_party/libc++/__config_site",
+        "third_party/libc++/src/include/**/*",
+        "third_party/libc++/src/src/support/runtime/*.ipp",
+    }
+    libcxx_headers.visibility = {"//external/cronet:__subpackages__"}
+
+    return modules
+
 
 def create_blueprint_for_targets(gn, targets, test_targets, context):
     """Generate a blueprint for a list of GN targets."""
@@ -316,6 +568,8 @@ def create_blueprint_for_targets(gn, targets, test_targets, context):
         blueprint.add_module(module)
 
     setup_libcrypto_stripping(blueprint, context)
+    for module in create_extras_modules(context):
+        blueprint.add_module(module)
     return blueprint
 
 
@@ -510,8 +764,7 @@ def finalize_package_modules(
 
     for current_path, blueprint in blueprints.items():
         if current_path == "":
-            # Don't add a package module for the top-level Android.bp, this is handled
-            # manually in Android.extras.bp.
+            # Don't add a package module for the top-level Android.bp.
             continue
 
         package_module = soong_ast.create_module(
@@ -532,7 +785,7 @@ def finalize_package_modules(
                 )
             else:
                 # No ancestor with a license found, this is most likely a non-third
-                # license, just point at Chromium's license in Android.extras.bp.
+                # license, just point at Chromium's license.
                 package_module.default_applicable_licenses.add(
                     "external_cronet_license"
                 )
@@ -559,7 +812,7 @@ def create_license_modules(
     for blueprint_path, blueprint in blueprints.items():
         if not blueprint.get_readme_location():
             # Don't generate a license for the top-level Android.bp as this is handled
-            # manually in Android.extras.bp
+            # by create_extras_modules().
             continue
 
         license_module = _maybe_create_license_module(
@@ -596,29 +849,17 @@ COPYBARA_EXCLUDED_PREFIXES = (
     "third_party/zlib/",
 )
 
-# Files and globs required by templates (Android.extras.bp.template,
-# boringssl_Android.bp.template), external/cronet/Android.bp, driver scripts
-# (run_gn2bp.py), or header-only includes without a corresponding GN target.
+# Files and globs required by templates (boringssl_Android.bp.template),
+# external/cronet/Android.bp, driver scripts (run_gn2bp.py), or header-only
+# includes without a corresponding GN target.
 COPYBARA_ADDITIONAL_PATHS = {
     # Used by run_gn2bp.py to determine the Chromium version.
     "chrome/VERSION",
-    "build/android/java_home.py",
-    "buildtools/third_party/libc++/__assertion_handler",
-    "buildtools/third_party/libc++/__config_site",
     "components/cronet/android/httpengine_combined_proguard_golden.cfg",
     "components/cronet/android/test/javatests/AndroidManifest.xml",
     "components/cronet/android/test/res/**",
-    "components/cronet/android/test/test_server/data/**",
-    "components/cronet/tools/symbols_map_generator/generate_version_script_from_symbols_intersection.py",
-    "components/cronet/tools/utils.py",
     "net/android/unittest_support/res/**",
-    "net/base/registry_controlled_domains/**",
-    "net/data/**",
-    "net/third_party/quiche/src/quiche/common/platform/api/testdir/**",
-    "third_party/anonymous_tokens/src/anonymous_tokens/testdata/**",
     "third_party/icu/android/**",
-    "third_party/libc++/src/include/**",
-    "third_party/libc++/src/src/support/runtime/*.ipp",
     # Referenced by boringssl_Android.bp.template and _gen_boringssl in run_gn2bp.py.
     "third_party/boringssl/**",
     # Included by base/rand_util_posix.cc and base/process/process_util_unittest.cc
@@ -657,11 +898,6 @@ def extract_copybara_paths(
 ) -> List[str]:
     """Extracts exact file paths and required globs for Copybara from the GN graph and blueprints."""
     paths = set(COPYBARA_ADDITIONAL_PATHS)
-    glob_prefixes = tuple(
-        p.removesuffix("**")
-        for p in COPYBARA_ADDITIONAL_PATHS
-        if p.endswith("/**")
-    )
 
     def _add_path(raw_path: Union[str, None]):
         if (
@@ -671,6 +907,8 @@ def extract_copybara_paths(
         ):
             return
         clean_path = os.path.normpath(raw_path.removeprefix("//"))
+        if clean_path.endswith("/**/*"):
+            clean_path = clean_path.removesuffix("/*")
         if clean_path in ("", ".") or clean_path.startswith(("/", "../")):
             return
         if clean_path.startswith(COPYBARA_EXCLUDED_PREFIXES):
@@ -735,6 +973,7 @@ def extract_copybara_paths(
                 "version_script",
                 "test_config",
                 "jarjar_rules",
+                "manifest",
             ):
                 _add_path(getattr(module, attr, None))
             for prop in (module, *module.target.values()):
@@ -755,6 +994,21 @@ def extract_copybara_paths(
                 ):
                     for val in getattr(prop, attr, None) or ():
                         _add_path(val)
+
+    glob_prefixes = tuple(
+        p.removesuffix("**") for p in paths if p.endswith("/**")
+    )
+    paths = {
+        p
+        for p in paths
+        if not (
+            p.endswith("/**")
+            and any(
+                p != f"{prefix}**" and p.startswith(prefix)
+                for prefix in glob_prefixes
+            )
+        )
+    }
 
     cpp_queue = [p for p in paths if p.endswith(_CPP_SOURCE_EXTENSIONS)]
     visited_cpp = set(cpp_queue)
@@ -1036,11 +1290,6 @@ def main():
         required=True,
     )
     parser.add_argument(
-        '--extras',
-        help='Extra targets to include at the end of the Blueprint file',
-        default=os.path.join(gn_utils.repo_root(), 'Android.bp.extras'),
-    )
-    parser.add_argument(
         '--output',
         help='Blueprint file to create',
         default=os.path.join(gn_utils.repo_root(), 'Android.bp'),
@@ -1138,7 +1387,6 @@ def main():
         android_bp_file.write_text(
             "\n".join(
                 [header]
-                + translation_config.BLUEPRINTS_EXTRAS.get(path, [])
                 + blueprint.to_string(
                     exclude_gn_targets=translation_config.replace_deps.keys()
                 )

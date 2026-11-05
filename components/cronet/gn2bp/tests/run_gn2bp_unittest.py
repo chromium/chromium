@@ -246,6 +246,8 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
 
         top_bp = gen_android_bp.soong_ast.Blueprint()
         ctx = gen_android_bp.translation_context.TranslationContext("tot")
+        for extra_mod in gen_android_bp.create_extras_modules(ctx):
+            top_bp.add_module(extra_mod)
         mod = gen_android_bp.soong_ast.create_module(
             "cc_genrule", "tot_cronet_prefs_gen", "//components/prefs:gen", ctx
         )
@@ -297,12 +299,19 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             )
         expected_subset = {
             "base/third_party/nspr/prtime.cc",
+            "buildtools/third_party/libc++/__assertion_handler",
+            "buildtools/third_party/libc++/__config_site",
             "chrome/VERSION",
+            "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
+            "components/cronet/android/test/test_server/data/**",
             "components/prefs/Android.bp",
             "components/prefs/pref_service.cc",
             "components/prefs/pref_service.h",
             "components/prefs/unlisted_internal.h",
+            "net/data/**",
             "third_party/empty_inc/include/**",
+            "third_party/libc++/src/include/**",
+            "third_party/libc++/src/src/support/runtime/*.ipp",
             "third_party/lss/linux_syscall_support.h",
             "third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h",
             "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/LICENSE",

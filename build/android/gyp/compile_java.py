@@ -890,7 +890,7 @@ def main(
         # LINT.ThenChange(
         #     //build/android/gyp/compile_kt.py,
         #     //build/android/gyp/turbine.py,
-        #     //components/cronet/gn2bp/templates/Android.extras.bp.template
+        #     //components/cronet/gn2bp/gen_android_bp.py
         # )
         # Chromium only allows UTF8 source files.  Being explicit avoids
         # javac pulling a default encoding from the user's environment.

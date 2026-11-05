@@ -586,6 +586,9 @@ class JavaModule(Module):
         'libs',
         'static_libs',
         'min_sdk_version',
+        'java_version',
+        'lint',
+        'manifest',
     }
 
     def __init__(
@@ -602,6 +605,9 @@ class JavaModule(Module):
         self.libs = set()
         self.static_libs = set()
         self.min_sdk_version = None
+        self.java_version = None
+        self.lint = dict()
+        self.manifest = None
 
     def add_java_dependency(self, dep_module):
         if self.java_unfiltered_module and dep_module.java_unfiltered_module:
@@ -801,7 +807,12 @@ def create_module(mod_type, name, gn_target, context, is_test=False, role=None):
         'cc_preprocess_no_configuration',
     ):
         return CcModule(mod_type, name, gn_target, context, is_test, role)
-    if mod_type in ('java_library', 'java_import', 'java_defaults'):
+    if mod_type in (
+        'java_library',
+        'java_import',
+        'java_defaults',
+        'android_library',
+    ):
         return JavaModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type in ('rust_ffi_static', 'rust_binary', 'rust_proc_macro'):
         return RustModule(mod_type, name, gn_target, context, is_test, role)

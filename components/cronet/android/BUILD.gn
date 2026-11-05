@@ -2395,7 +2395,6 @@ GN2BP_SOURCES = [
   "//components/cronet/gn2bp/soong_ast.py",
   "//components/cronet/gn2bp/targets.py",
   "//components/cronet/gn2bp/templates/boringssl_Android.bp.template",
-  "//components/cronet/gn2bp/templates/Android.extras.bp.template",
   "//components/cronet/gn2bp/templates/AndroidTest.xml.template",
   "//components/cronet/gn2bp/translation_config.py",
   "//components/cronet/gn2bp/translators.py",

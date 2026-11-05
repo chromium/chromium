@@ -201,28 +201,6 @@ def _write_desc_json(gn_out_dir: str, temp_file: tempfile.NamedTemporaryFile):
     )
 
 
-def _gen_extras_bp(import_channel: str, output_dir: str):
-    """Generate Android.extras.bp."""
-    extras_androidbp_template_path = os.path.join(
-        REPOSITORY_ROOT,
-        'components',
-        'cronet',
-        'gn2bp',
-        'templates',
-        'Android.extras.bp.template',
-    )
-    extras_androidbp_template_contents = cronet_utils.read_file(
-        extras_androidbp_template_path
-    )
-    extras_androidbp_path = os.path.join(output_dir, 'Android.extras.bp')
-    cronet_utils.write_file(
-        extras_androidbp_path,
-        string.Template(extras_androidbp_template_contents).substitute(
-            GN2BP_MODULE_PREFIX=f'{import_channel}_cronet_'
-        ),
-    )
-
-
 def _gen_androidtest_xml(import_channel: str, output_dir: str):
     """Generate AndroidTest.xml, required to run test in Android."""
     module_prefix = f'{import_channel}_cronet_'
@@ -867,7 +845,6 @@ def main():
             output_dir=_GN2BP_OUT_DIR,
         )
         _gen_boringssl(args.channel, _GN2BP_OUT_DIR)
-        _gen_extras_bp(args.channel, _GN2BP_OUT_DIR)
         _gen_androidtest_xml(args.channel, _GN2BP_OUT_DIR)
 
         print(f"Generated files have been written to {_GN2BP_OUT_DIR}")

@@ -863,11 +863,7 @@ def create_bindgen_module(
     module.bindgen_flags = get_bindgen_flags(target.common.args)
     # This ensures that any CC file that is being processed through the
     # rust_bindgen module is able to #include files relative to the root of the
-    # repository.
-    #
-    # Note: this module is not part of the generated build rules; it is expected
-    # to already be present in AOSP (currently, in Android.extras.bp). See
-    # https://r.android.com/3413202.
+    # repository. See https://r.android.com/3413202.
     module.header_libs = {
         f"{context.module_prefix}repository_root_include_dirs_anchor"
     }
