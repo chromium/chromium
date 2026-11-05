@@ -113,24 +113,12 @@ BASE_DECLARE_FEATURE(kWebAuthnCrossDeviceFallbackUrl);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnRemoteClientDataJson);
 
-// Enables to save keys from out of context ("opportunistic") retrieval.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnOpportunisticRetrieval);
-
 // Enables the fix of the logic for handling identity change (the new logic
 // might decide to not terminate the running state machine in some cases,
 // whereas the previous logic was always terminating the state machine).
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(
     kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange);
-
-// Parameter controlling the time window (in seconds) for keeping the cached
-// opportunistically retrieved key in case its Gaia Id doesn't match to primary
-// signed-in account.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds);
 
 // Prompt the user to set a new PIN when user verification is required to
 // fulfill a GPM passkey operation but no system UV or GPM PIN is available.

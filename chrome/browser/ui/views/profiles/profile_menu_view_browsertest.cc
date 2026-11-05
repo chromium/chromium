@@ -2352,10 +2352,7 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
     ProfileMenuClickTestWithPasskeyError,
     kActionableItems_PasskeyUnlockError,
     ProfileMenuClickTest_PasskeyUnlockError,
-    /*enabled_features=*/
-    std::vector<base::test::FeatureRef>(
-        {device::kPasskeyUnlockErrorUi,
-         device::kWebAuthnOpportunisticRetrieval}),
+    /*enabled_features=*/{device::kPasskeyUnlockErrorUi},
     /*disabled_features=*/{}) {
   // For ensuring that the Passkey unlock card will be displayed we need to
   // ensure that we are in signed-in state, and that the sync history is
@@ -2387,10 +2384,7 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
     ProfileMenuClickTestWithPasskeyError,
     kActionableItems_PasskeyUnlockError_WhenUnconsentedAccountSignedIn,
     ProfileMenuClickTest_PasskeyUnlockError_WhenUnconsentedAccountSignedIn,
-    /*enabled_features=*/
-    std::vector<base::test::FeatureRef>(
-        {device::kPasskeyUnlockErrorUi,
-         device::kWebAuthnOpportunisticRetrieval}),
+    /*enabled_features=*/{device::kPasskeyUnlockErrorUi},
     /*disabled_features=*/{}) {
   // Ensuring that we are in the state when sync-the-transport is enabled but
   // sync-the-feature is not enabled. In this case we can already display a

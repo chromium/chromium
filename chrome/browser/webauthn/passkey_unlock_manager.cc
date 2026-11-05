@@ -159,8 +159,7 @@ void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
 
 // static
 bool PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled() {
-  return base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi) &&
-         base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval);
+  return base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi);
 }
 
 void PasskeyUnlockManager::NotifyObserversForTesting() {

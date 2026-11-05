@@ -611,19 +611,6 @@ void ExecJsSetClientEncryptionKeysForMultipleSecurityDomains(
 // signed-in user with a Gaia-id: `kSyncGaiaId`.
 class TrustedVaultEncryptionKeysTabHelperBrowserTestWithEnclaveAuthenticator
     : public EnclaveAuthenticatorTestBase {
- public:
-  TrustedVaultEncryptionKeysTabHelperBrowserTestWithEnclaveAuthenticator() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {// This flag is needed for enabling the logic of storing
-         // opportunistically retrieved passkey secrets.
-         device::kWebAuthnOpportunisticRetrieval,
-         // This flag is needed for enabling the logic of storing
-         // opportunistically retrieved passkey secrets.
-         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
-        /*disabled_features=*/{});
-  }
-
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Override the sign-in URL so that it includes correct port from the test
@@ -647,7 +634,10 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTestWithEnclaveAuthenticator
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  // This flag is needed for enabling the logic of storing
+  // opportunistically retrieved passkey secrets.
+  base::test::ScopedFeatureList feature_list_{
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange};
 };
 
 IN_PROC_BROWSER_TEST_F(

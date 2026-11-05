@@ -3802,13 +3802,6 @@ class MockPasskeyUnlockManager : public webauthn::PasskeyUnlockManager {
 class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  public:
-  AvatarToolbarButtonPasskeyUnlockErrorBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{device::kPasskeyUnlockErrorUi,
-                              device::kWebAuthnOpportunisticRetrieval},
-        /*disabled_features=*/{});
-  }
-
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     AvatarToolbarButtonBrowserTest::SetUpBrowserContextKeyedServices(context);
@@ -3845,7 +3838,8 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
   }
 
   raw_ptr<MockPasskeyUnlockManager> mock_passkey_unlock_manager_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kPasskeyUnlockErrorUi};
 };
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,

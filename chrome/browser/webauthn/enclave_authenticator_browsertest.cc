@@ -1759,16 +1759,9 @@ IN_PROC_BROWSER_TEST_F(
 
 class OpportunisticKeyRetrievalEnclaveAuthenticatorBrowserTest
     : public EnclaveAuthenticatorBrowserTest {
- public:
-  OpportunisticKeyRetrievalEnclaveAuthenticatorBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnOpportunisticRetrieval,
-         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange};
 };
 
 // Regression test for https://crbug.com/465139934 ("Chrome crashes after

@@ -3075,16 +3075,9 @@ TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsNotAvailable) {
 }
 
 class OpportunisticKeyRetrievalEnclaveManagerTest : public EnclaveManagerTest {
- public:
-  OpportunisticKeyRetrievalEnclaveManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnOpportunisticRetrieval,
-         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange};
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -3209,16 +3202,9 @@ class EnclaveManagerMockTimeTest : public EnclaveManagerTest {
 
 class OpportunisticKeyRetrievalEnclaveManagerMockTimeTest
     : public EnclaveManagerMockTimeTest {
- public:
-  OpportunisticKeyRetrievalEnclaveManagerMockTimeTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnOpportunisticRetrieval,
-         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange};
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -3240,12 +3226,10 @@ TEST_F(OpportunisticKeyRetrievalEnclaveManagerMockTimeTest,
           kStoreKeysFromOpportunisticFlowCachedKeysBecauseAccountDoesNotMatch,
       1);
 
-  int ttl_seconds =
-      device::kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds.Get();
-
   // Move to the point in time before the timeout. The cached key should not be
   // discarded before the timeout.
-  task_env_.FastForwardBy(base::Seconds(ttl_seconds - 1));
+  task_env_.FastForwardBy(EnclaveManager::kOpportunisticRetrievalKeyTTL -
+                          base::Seconds(1));
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.CachedOpportunisticallyRetrievedKeyEvent",
       webauthn::metrics::
@@ -3280,12 +3264,10 @@ TEST_F(OpportunisticKeyRetrievalEnclaveManagerMockTimeTest,
           kStoreKeysFromOpportunisticFlowCachedKeysBecauseAccountDoesNotMatch,
       1);
 
-  int ttl_seconds =
-      device::kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds.Get();
-
   // Move to the point in time before the timeout, and overwrite the cached key
   // with another opportunistically retrieved key.
-  task_env_.FastForwardBy(base::Seconds(ttl_seconds - 1));
+  task_env_.FastForwardBy(EnclaveManager::kOpportunisticRetrievalKeyTTL -
+                          base::Seconds(1));
   std::vector<uint8_t> key_2(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(GaiaId("some_other_account_id_2"),
                      {trusted_vault::TrustedVaultKeyAndVersion(std::move(key_2),
@@ -3307,7 +3289,8 @@ TEST_F(OpportunisticKeyRetrievalEnclaveManagerMockTimeTest,
 
   // Move to the point in time before the timeout of the newly cached key. This
   // key should not be discarded before its TTL timeout.
-  task_env_.FastForwardBy(base::Seconds(ttl_seconds - 1));
+  task_env_.FastForwardBy(EnclaveManager::kOpportunisticRetrievalKeyTTL -
+                          base::Seconds(1));
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.CachedOpportunisticallyRetrievedKeyEvent",
       webauthn::metrics::
@@ -3605,16 +3588,9 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
 }
 
 class OpportunisticKeyRetrievalEnclaveUVTest : public EnclaveUVTest {
- public:
-  OpportunisticKeyRetrievalEnclaveUVTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnOpportunisticRetrieval,
-         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange};
 };
 
 TEST_F(OpportunisticKeyRetrievalEnclaveUVTest, OpportunisticStoreKeys) {
@@ -3693,43 +3669,6 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
       EnclaveManager::ActionOutcome::
           kDoJoiningDomainFailedTrustedVaultRegistrationError,
       1);
-}
-
-class NoOpportunisticKeyRetrievalEnclaveUVTest : public EnclaveUVTest {
- public:
-  NoOpportunisticKeyRetrievalEnclaveUVTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        device::kWebAuthnOpportunisticRetrieval);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(NoOpportunisticKeyRetrievalEnclaveUVTest,
-       OpportunisticStoreKeysAreIgnoredWhenFeatureIsDisabled) {
-  security_domain_service_->pretend_there_are_members();
-  ASSERT_FALSE(manager_.IsRegistered());
-  EXPECT_EQ(manager_.store_keys_count(), 0u);
-
-  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  base::HistogramTester histogram_tester;
-  manager_.StoreKeys(gaia_id_,
-                     {trusted_vault::TrustedVaultKeyAndVersion(std::move(key),
-                                                               kSecretVersion)},
-                     /*user_action_trigger=*/std::nullopt);
-  histogram_tester.ExpectBucketCount(
-      "WebAuthentication.GPM.RecoveryEvent",
-      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
-          kStoreKeysFromOpportunisticFlowStarted,
-      0);
-  histogram_tester.ExpectBucketCount(
-      "WebAuthentication.GPM.RecoveryEvent",
-      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
-          kStoreKeysFromOpportunisticFlowSucceeded,
-      0);
-  EXPECT_EQ(manager_.store_keys_count(), 1u);
-  EXPECT_FALSE(manager_.IsRegistered());
 }
 
 TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,

@@ -4273,9 +4273,6 @@ void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
                 kStoreKeysFromOpportunisticFlowCachedKeysHaveBeenOverwritten);
   }
   opportunistic_pending_keys_ = std::move(store_keys_args);
-  // Ensure that the cached keys could be discarded after the timeout.
-  int ttl_seconds =
-      device::kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds.Get();
   // Configuring the task for invalidating the cached key (if we overwrote the
   // cached key - the previous key invalidation task will be cancelled at this
   // point).
@@ -4292,15 +4289,12 @@ void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
       weak_ptr_factory_.GetWeakPtr()));
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, opportunistic_pending_keys_invalidation_task_.callback(),
-      base::Seconds(ttl_seconds));
+      kOpportunisticRetrievalKeyTTL);
 }
 
 bool EnclaveManager::IsStoringKeysFromOutOfContextRetrievalEnabled() {
   return base::FeatureList::IsEnabled(
-             device::kWebAuthnOpportunisticRetrieval) &&
-         base::FeatureList::IsEnabled(
-             device::
-                 kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange);
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange);
 }
 
 void EnclaveManager::StoreKeys(

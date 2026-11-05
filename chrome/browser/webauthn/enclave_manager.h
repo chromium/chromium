@@ -109,6 +109,10 @@ class EnclaveManager : public EnclaveManagerInterface {
       MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING
                                  ".webauthn-uvk";
 #endif  // BUILDFLAG(IS_MAC)
+  // The timeout for keeping cached opportunistically retrieved keys.
+  static constexpr base::TimeDelta kOpportunisticRetrievalKeyTTL =
+      base::Minutes(5);
+
   struct StoreKeysArgs;
 
   struct UVKeyOptions {
