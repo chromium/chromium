@@ -41,6 +41,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_impl.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/platform_window/fuchsia/view_ref_pair.h"
 #include "ui/wm/core/focus_controller.h"
 #include "url/gurl.h"
@@ -326,7 +327,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

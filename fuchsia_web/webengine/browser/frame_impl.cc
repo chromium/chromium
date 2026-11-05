@@ -81,6 +81,7 @@
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -634,7 +635,7 @@ content::WebContents* FrameImpl::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -642,11 +643,11 @@ content::WebContents* FrameImpl::AddNewContents(
 
   // TODO(crbug.com/41476982): Add window disposition to the FIDL interface.
   switch (disposition) {
-    case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kNewPictureInPicture:
-    case WindowOpenDisposition::kNewPopup:
-    case WindowOpenDisposition::kNewWindow: {
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewPictureInPicture:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewWindow: {
       if (url_request_rewrite_rules_manager_.GetCachedRules()) {
         // There is no support for URL request rules rewriting with popups.
         *was_blocked = true;
@@ -688,14 +689,14 @@ content::WebContents* FrameImpl::AddNewContents(
     }
 
     // These kinds of windows don't produce Frames.
-    case WindowOpenDisposition::kCurrentTab:
-    case WindowOpenDisposition::kSingletonTab:
-    case WindowOpenDisposition::kSaveToDisk:
-    case WindowOpenDisposition::kOffTheRecord:
-    case WindowOpenDisposition::kIgnoreAction:
-    case WindowOpenDisposition::kSwitchToTab:
-    case WindowOpenDisposition::kNewSplitView:
-    case WindowOpenDisposition::kUnknown:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kSingletonTab:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord:
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kSwitchToTab:
+    case ui::mojom::WindowOpenDisposition::kNewSplitView:
+    case ui::mojom::WindowOpenDisposition::kUnknown:
       NOTIMPLEMENTED() << "Dropped new web contents (disposition: "
                        << static_cast<int>(disposition) << ")";
       return nullptr;
