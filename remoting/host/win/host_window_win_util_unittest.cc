@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_gdi_object.h"
 #include "remoting/host/win/core_resource.h"
@@ -68,6 +69,9 @@ TEST(HostWindowWinUtilTest, ReadsFullWindowTextAndMeasuresWidth) {
 }
 
 TEST(HostWindowWinUtilTest, AppliesCaptureExclusionToLayeredPopupWindow) {
+  base::AutoReset<bool> allow_capture_exclusion_failure =
+      ScopedAllowCaptureExclusionFailureForTesting();
+
   HWND hwnd =
       CreateWindowExW(WS_EX_LAYERED, L"STATIC", L"Layered Popup", WS_POPUP, 0,
                       0, 100, 100, nullptr, nullptr, CURRENT_MODULE(), nullptr);
@@ -89,6 +93,38 @@ TEST(HostWindowWinUtilTest, AppliesCaptureExclusionToLayeredPopupWindow) {
   }
 
   DestroyWindow(hwnd);
+}
+
+TEST(HostWindowWinUtilTest,
+     ApplyCaptureExclusionFailsClosedByDefaultAndHonorsTestingOverride) {
+  HWND parent_hwnd =
+      CreateWindowExW(0, L"STATIC", L"Parent Popup", WS_POPUP, 0, 0, 100, 100,
+                      nullptr, nullptr, CURRENT_MODULE(), nullptr);
+  ASSERT_NE(parent_hwnd, nullptr);
+
+  // `SetWindowDisplayAffinity()` only accepts top-level windows and
+  // deterministically fails with `ERROR_INVALID_PARAMETER` on `WS_CHILD`
+  // controls regardless of display driver.
+  HWND child_hwnd =
+      CreateWindowExW(0, L"STATIC", L"Child Control", WS_CHILD, 0, 0, 50, 50,
+                      parent_hwnd, nullptr, CURRENT_MODULE(), nullptr);
+  ASSERT_NE(child_hwnd, nullptr);
+
+  EXPECT_FALSE(ApplyCaptureExclusion(child_hwnd));
+  EXPECT_FALSE(ApplyCaptureExclusion(nullptr));
+
+  {
+    base::AutoReset<bool> allow_capture_exclusion_failure =
+        ScopedAllowCaptureExclusionFailureForTesting();
+    EXPECT_TRUE(ApplyCaptureExclusion(child_hwnd));
+    // `nullptr` fails with `ERROR_INVALID_WINDOW_HANDLE`, which must still fail
+    // closed even when the headless-bot override is active.
+    EXPECT_FALSE(ApplyCaptureExclusion(nullptr));
+  }
+
+  EXPECT_FALSE(ApplyCaptureExclusion(child_hwnd));
+
+  DestroyWindow(parent_hwnd);
 }
 
 }  // namespace

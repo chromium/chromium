@@ -28,6 +28,8 @@ namespace remoting {
 
 namespace {
 
+bool g_allow_capture_exclusion_failure_for_testing = false;
+
 // Callback for `EnumDisplayMonitors()` that collects the virtual-screen
 // bounding rectangle of each active physical display.
 BOOL CALLBACK EnumMonitorsCallback(HMONITOR monitor,
@@ -130,11 +132,17 @@ bool ApplyCaptureExclusion(HWND hwnd) {
   SetLastError(error);
   PLOG(ERROR) << "SetWindowDisplayAffinity(WDA_EXCLUDEFROMCAPTURE) failed";
 
-  if (error == ERROR_INVALID_PARAMETER || error == ERROR_NOT_SUPPORTED ||
-      error == ERROR_ACCESS_DENIED) {
+  if (g_allow_capture_exclusion_failure_for_testing &&
+      (error == ERROR_INVALID_PARAMETER || error == ERROR_NOT_SUPPORTED ||
+       error == ERROR_ACCESS_DENIED)) {
     return true;
   }
   return false;
+}
+
+base::AutoReset<bool> ScopedAllowCaptureExclusionFailureForTesting() {
+  return base::AutoReset<bool>(&g_allow_capture_exclusion_failure_for_testing,
+                               true);
 }
 
 std::vector<RECT> GetActiveMonitorRects() {

@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "base/win/scoped_gdi_object.h"
 
@@ -86,13 +87,15 @@ UINT GetMonitorDpi(HMONITOR monitor, HWND hwnd);
 bool IsHighContrastEnabled();
 
 // Applies `WDA_EXCLUDEFROMCAPTURE` to `hwnd` so the window is excluded from
-// screen capture on a real display driver. On headless virtual display drivers
-// (such as Windows CQ test bots) where `SetWindowDisplayAffinity()` returns
-// FALSE with `ERROR_INVALID_PARAMETER`, `ERROR_NOT_SUPPORTED`, or
-// `ERROR_ACCESS_DENIED`, logs an error and allows the window to proceed; on
-// real display drivers where exclusion unexpectedly fails, returns false to
-// fail closed rather than capturing the opaque curtain.
+// screen capture. In production, returns false whenever capture exclusion fails
+// so `PrivacyOverlayWin` fails closed rather than displaying an opaque curtain
+// that would be captured and streamed to the remote client.
 bool ApplyCaptureExclusion(HWND hwnd);
+
+// Allows `ApplyCaptureExclusion()` to succeed in unit tests running on headless
+// bots where `SetWindowDisplayAffinity(WDA_EXCLUDEFROMCAPTURE)` fails with
+// `ERROR_INVALID_PARAMETER`, `ERROR_NOT_SUPPORTED`, or `ERROR_ACCESS_DENIED`.
+base::AutoReset<bool> ScopedAllowCaptureExclusionFailureForTesting();
 
 // Enumerates the virtual-screen bounding rectangles of all active physical
 // displays, falling back to `GetSystemMetrics` virtual/primary screen metrics

@@ -226,15 +226,32 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
     local_input_monitor_->StartMonitoringForClientSession(
         client_session_control);
 
-    // Create the disconnect window.
+    // Create the disconnect window or privacy overlay.
+#if BUILDFLAG(IS_WIN)
+    if (desktop_environment_options().enable_privacy_overlay() &&
+        base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+      disconnect_window_ = HostWindow::CreatePrivacyOverlay(
+          interaction_strategy().CreateLocalInputMonitor());
+    } else {
+      if (desktop_environment_options().enable_privacy_overlay()) {
+        LOG(WARNING) << "Privacy overlay requires Windows 10 version 2004 "
+                        "(Build 19041) or later; falling back to standard "
+                        "disconnect window.";
+      }
+      disconnect_window_ = HostWindow::CreateAutoHidingDisconnectWindow(
+          interaction_strategy().CreateLocalInputMonitor());
+    }
+#elif BUILDFLAG(IS_MAC)
     if (desktop_environment_options().enable_privacy_overlay()) {
       // TODO(crbug.com/451238243): Hook up HostWindow::CreatePrivacyOverlay().
       NOTIMPLEMENTED();
     }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     disconnect_window_ = HostWindow::CreateAutoHidingDisconnectWindow(
         interaction_strategy().CreateLocalInputMonitor());
 #else
+    if (desktop_environment_options().enable_privacy_overlay()) {
+      NOTIMPLEMENTED();
+    }
     disconnect_window_ = HostWindow::CreateDisconnectWindow();
 #endif
     disconnect_window_ = std::make_unique<HostWindowProxy>(

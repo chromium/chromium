@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -215,6 +216,8 @@ class PrivacyOverlayWinTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::AutoReset<bool> allow_capture_exclusion_failure_ =
+      ScopedAllowCaptureExclusionFailureForTesting();
   testing::NiceMock<FakeClientSessionControl> client_session_control_{
       "user@domain/rest-of-jid"};
   LocalInputMonitor::PointerMoveCallback pointer_callback_;
