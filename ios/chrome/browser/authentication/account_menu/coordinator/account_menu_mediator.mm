@@ -348,7 +348,7 @@
                  }];
 }
 
-- (void)accountTappedWithGaiaID:(const GaiaId*)gaiaID
+- (void)accountTappedWithGaiaID:(const GaiaId&)gaiaID
                      targetRect:(CGRect)targetRect {
   if (self.userInteractionsBlocked) {
     return;
@@ -356,7 +356,7 @@
 
   id<SystemIdentity> identityToSignin = nil;
   for (id<SystemIdentity> identity : _identities) {
-    if (identity.gaiaId == *gaiaID) {
+    if (identity.gaiaId == gaiaID) {
       identityToSignin = identity;
       break;
     }

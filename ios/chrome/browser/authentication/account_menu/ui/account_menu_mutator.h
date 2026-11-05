@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class AccountMenuViewController;
+class GaiaId;
 
 // Mutator for account menu.
 @protocol AccountMenuMutator <NSObject>
@@ -20,8 +21,8 @@
 // Does nothing if the current scene is blocked.
 - (void)signOutFromTargetRect:(CGRect)targetRect;
 
-// The user tapped on the `index`-th account.
-- (void)accountTappedWithGaiaID:(const GaiaId*)gaiaID
+// The user tapped on the account with `gaiaID`.
+- (void)accountTappedWithGaiaID:(const GaiaId&)gaiaID
                      targetRect:(CGRect)targetRect;
 
 // The user tapped on the error button.

@@ -417,10 +417,11 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
         return mediator_ == value;
       }]]);
   OCMExpect([authentication_flow_mock_ startSignIn]);
-  auto gaiaId2 = kSecondaryIdentity.gaiaId;
-  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaId
+                          targetRect:target];
   // Simulate a double tap. The second tap should be ignored.
-  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaId
+                          targetRect:target];
   VerifyMock();
 
   OCMExpect([consumer_mock_ switchingStopped]);
@@ -463,10 +464,11 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
       }]]);
   // Simulate account switching.
   OCMExpect([authentication_flow_mock_ startSignIn]);
-  auto gaiaId2 = kSecondaryIdentity.gaiaId;
-  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaId
+                          targetRect:target];
   // Simulate a double tap. The second tap should be ignored.
-  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaId
+                          targetRect:target];
 
   // Expect that the consumer unlocks the UI.
   OCMExpect([consumer_mock_ switchingStopped]);
@@ -507,10 +509,11 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
         return mediator_ == value;
       }]]);
   OCMExpect([authentication_flow_mock_ startSignIn]);
-  auto gaiaId2 = kSecondaryIdentity.gaiaId;
-  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaId
+                          targetRect:target];
   // Simulate a double tap. The second tap should be ignored.
-  [mediator_ accountTappedWithGaiaID:&gaiaId2 targetRect:target];
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaId
+                          targetRect:target];
   VerifyMock();
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_

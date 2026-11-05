@@ -337,9 +337,7 @@ TEST_F(AccountMenuViewControllerTest, TestAccountMenuWithoutEllipsis) {
 
 // Tests tapping on the secondary account cell.
 TEST_F(AccountMenuViewControllerTest, TestTapSecondaryAccount) {
-  OCMExpect([mutator_
-                accountTappedWithGaiaID:ios::OCM::AnyPointer<const GaiaId>()
-                             targetRect:CGRect()])
+  OCMExpect([mutator_ accountTappedWithGaiaID:GaiaId() targetRect:CGRect()])
       .ignoringNonObjectArgs()
       .andCompareObjectAtIndex(kSecondaryIdentity.gaiaId, 0);
   SelectCell(path_for_secondary_account_);

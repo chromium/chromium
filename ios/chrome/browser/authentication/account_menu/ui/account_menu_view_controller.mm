@@ -625,8 +625,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::UserMetricsAction("Signin_AccountMenu_SelectAccount"));
     CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
     _selectedIndexPath = indexPath;
-    GaiaId gaiaId(gaiaIDString);
-    [self.mutator accountTappedWithGaiaID:&gaiaId targetRect:cellRect];
+    [self.mutator accountTappedWithGaiaID:GaiaId(gaiaIDString)
+                               targetRect:cellRect];
   } else {
     // Otherwise `itemIdentifier` is a `RowIdentifier`.
     RowIdentifier rowIdentifier = static_cast<RowIdentifier>(
