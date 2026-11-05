@@ -6786,9 +6786,20 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
                 'BASE_FEATURE(kMyMultilineToggle,',
                 '    base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
-            MockAffectedFile(
-                'valid_complex_arg.cc',
-                ['BASE_FEATURE(kMyToggle, GetDefaultState(vector<int>(1)));']),
+            MockAffectedFile('valid_complex_arg.cc', [
+                '#if BUILDFLAG(IS_ANDROID)',
+                'BASE_FEATURE(kMyToggle, '
+                'base::FEATURE_ENABLED_BY_DEFAULT);',
+                '#else',
+                'BASE_FEATURE(kMyToggle, '
+                'base::FEATURE_DISABLED_BY_DEFAULT);',
+                '#endif',
+                'BASE_FEATURE(kMyConditionalToggle,',
+                '    BUILDFLAG(IS_ANDROID) ? '
+                'base::FEATURE_ENABLED_BY_DEFAULT',
+                '                          : '
+                'base::FEATURE_DISABLED_BY_DEFAULT);',
+            ]),
             MockAffectedFile('valid_comment.cc', [
                 '// BASE_FEATURE(invalidToggle, '
                 'base::FEATURE_ENABLED_BY_DEFAULT);'
@@ -6806,8 +6817,13 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
                 '    base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
             MockAffectedFile('valid_complex_arg_runtime_mutable.cc', [
+                '#if BUILDFLAG(IS_ANDROID)',
                 'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle,'
-                ' GetDefaultState(vector<int>(1)));'
+                ' base::FEATURE_ENABLED_BY_DEFAULT);',
+                '#else',
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle,'
+                ' base::FEATURE_DISABLED_BY_DEFAULT);',
+                '#endif',
             ]),
             MockAffectedFile('valid_comment_runtime_mutable.cc', [
                 '// BASE_RUNTIME_MUTABLE_FEATURE(invalidToggle, '
@@ -6946,6 +6962,71 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
 
         self.assertEqual(len(expected_warnings), len(warnings))
         self.assertCountEqual(expected_warnings, warnings)
+
+    def testBaseFeatureMacroInvalidState(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('invalid_ternary.cc', [
+                'BASE_FEATURE(kMyToggle,',
+                '    BUILDFLAG(IS_UNSUPPORTED_PLATFORM) ? '
+                'base::FEATURE_DISABLED_BY_DEFAULT',
+                '                                       : '
+                'base::FEATURE_ENABLED_BY_DEFAULT);',
+            ]),
+            MockAffectedFile(
+                'invalid_function.cc',
+                ['BASE_FEATURE(kMyToggle, GetDefaultState(vector<int>(1)));']),
+        ]
+        results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
+                                                  MockOutputApi())
+
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertEqual('BASE_FEATURE() default state:', results[0].message)
+        errors = results[0].items
+
+        expected_errors = [
+            '    invalid_ternary.cc:1: Unable to parse default state for '
+            'feature "MyToggle". Default state must be a literal constant '
+            '(e.g. base::FEATURE_ENABLED_BY_DEFAULT or '
+            'base::FEATURE_DISABLED_BY_DEFAULT); use #if/#else preprocessor '
+            'blocks instead of ternary or helper expressions.',
+            '    invalid_function.cc:1: Unable to parse default state for '
+            'feature "MyToggle". Default state must be a literal constant '
+            '(e.g. base::FEATURE_ENABLED_BY_DEFAULT or '
+            'base::FEATURE_DISABLED_BY_DEFAULT); use #if/#else preprocessor '
+            'blocks instead of ternary or helper expressions.',
+        ]
+        self.assertEqual(expected_errors, errors)
+
+    def testBaseFeatureMacroInvalidStateExistingFeature(self):
+        # Editing an existing feature that the parser can't read only warns,
+        # while adding a new one in the same file is an error.
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                'existing.cc',
+                [
+                    'BASE_FEATURE(kOldToggle, GetDefaultState(2));',
+                    'BASE_FEATURE(kNewToggle, GetDefaultState(1));',
+                ],
+                old_contents=['BASE_FEATURE(kOldToggle, GetDefaultState(1));'],
+            ),
+        ]
+        results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
+                                                  MockOutputApi())
+
+        self.assertEqual(2, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertEqual('BASE_FEATURE() default state:', results[0].message)
+        self.assertEqual(1, len(results[0].items))
+        self.assertIn('existing.cc:2:', results[0].items[0])
+        self.assertIn('"NewToggle"', results[0].items[0])
+        self.assertEqual('warning', results[1].type)
+        self.assertEqual('BASE_FEATURE() default state:', results[1].message)
+        self.assertEqual(1, len(results[1].items))
+        self.assertIn('existing.cc:1:', results[1].items[0])
+        self.assertIn('"OldToggle"', results[1].items[0])
 
     def testNoBaseFeatureInContents(self):
         mock_input_api = MockInputApi()

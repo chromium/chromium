@@ -91,6 +91,10 @@ group("metrics_python_tests") {
 
     "//tools/metrics/common/codegen_shared_test.py",
     "//tools/metrics/common/codegen_shared.py",
+    "//tools/metrics/common/cpp_feature_parser.py",
+    "//tools/metrics/common/cpp_feature_parser_test.py",
+    "//tools/metrics/common/cpp_preprocessor.py",
+    "//tools/metrics/common/cpp_preprocessor_test.py",
     "//tools/metrics/common/diff_util.py",
     "//tools/metrics/common/model_shared.py",
     "//tools/metrics/common/models.py",
