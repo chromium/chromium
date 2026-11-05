@@ -22,17 +22,17 @@ CaptureController* CaptureController::instance_ = nullptr;
 
 CaptureController::CaptureController()
     : capture_window_(nullptr), capture_delegate_(nullptr) {
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = this;
 }
 
 CaptureController::~CaptureController() {
-  DCHECK_EQ(instance_, this);
+  CHECK_EQ(instance_, this, base::NotFatalUntil::M163);
   instance_ = nullptr;
 }
 
 void CaptureController::Attach(aura::Window* root) {
-  DCHECK_EQ(0u, delegates_.count(root));
+  CHECK_EQ(0u, delegates_.count(root), base::NotFatalUntil::M163);
   delegates_[root] = root->GetHost()->dispatcher();
   aura::client::SetCaptureClient(root, this);
 }
@@ -43,7 +43,7 @@ void CaptureController::Detach(aura::Window* root) {
 }
 
 void CaptureController::PrepareForShutdown() {
-  DCHECK(!destroying_);
+  CHECK(!destroying_, base::NotFatalUntil::M163);
   SetCapture(nullptr);
   destroying_ = true;
 }
@@ -61,8 +61,10 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
   }
 
   // Make sure window has a root window.
-  DCHECK(!new_capture_window || new_capture_window->GetRootWindow());
-  DCHECK(!capture_window_ || capture_window_->GetRootWindow());
+  CHECK(!new_capture_window || new_capture_window->GetRootWindow(),
+        base::NotFatalUntil::M163);
+  CHECK(!capture_window_ || capture_window_->GetRootWindow(),
+        base::NotFatalUntil::M163);
 
   aura::Window* old_capture_window = capture_window_.get();
   aura::client::CaptureDelegate* old_capture_delegate = capture_delegate_;
@@ -161,7 +163,7 @@ ScopedCaptureClient::~ScopedCaptureClient() {
 }
 
 void ScopedCaptureClient::OnWindowDestroyed(aura::Window* window) {
-  DCHECK_EQ(window, root_window_);
+  CHECK_EQ(window, root_window_, base::NotFatalUntil::M163);
   Shutdown();
 }
 

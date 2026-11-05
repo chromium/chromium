@@ -24,7 +24,7 @@ ui::test::ScopedFakeFullKeyboardAccess* g_instance = nullptr;
 @implementation FakeNSAppKeyboardAccessDonor
 
 - (BOOL)isFullKeyboardAccessEnabled {
-  DCHECK(g_instance);
+  CHECK(g_instance, base::NotFatalUntil::M163);
   return g_instance->full_keyboard_access_state();
 }
 
@@ -44,7 +44,7 @@ ScopedFakeFullKeyboardAccess::ScopedFakeFullKeyboardAccess()
 }
 
 ScopedFakeFullKeyboardAccess::~ScopedFakeFullKeyboardAccess() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M163);
   g_instance = nullptr;
 }
 

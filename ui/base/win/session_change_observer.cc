@@ -31,7 +31,7 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
   }
 
   WtsRegistrationNotificationManager() {
-    DCHECK(!hwnd_subscription_);
+    CHECK(!hwnd_subscription_, base::NotFatalUntil::M163);
     hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
         base::BindRepeating(&WtsRegistrationNotificationManager::OnWndProc,
                             base::Unretained(this)));
@@ -53,7 +53,7 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
   ~WtsRegistrationNotificationManager() { ResetHwndSubscription(); }
 
   void AddObserver(SessionChangeObserver* observer) {
-    DCHECK(hwnd_subscription_);
+    CHECK(hwnd_subscription_, base::NotFatalUntil::M163);
     observer_list_.AddObserver(observer);
   }
 
@@ -112,7 +112,7 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
 
 SessionChangeObserver::SessionChangeObserver(const WtsCallback& callback)
     : callback_(callback) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M163);
   WtsRegistrationNotificationManager::GetInstance()->AddObserver(this);
 }
 

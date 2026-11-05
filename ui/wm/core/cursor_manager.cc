@@ -274,7 +274,7 @@ void CursorManager::LockCursor() {
 
 void CursorManager::UnlockCursor() {
   cursor_lock_count_--;
-  DCHECK_GE(cursor_lock_count_, 0);
+  CHECK_GE(cursor_lock_count_, 0, base::NotFatalUntil::M163);
   if (cursor_lock_count_ > 0)
     return;
 
@@ -413,7 +413,7 @@ void CursorManager::SetMouseVanishEnabledForTesting(bool enabled) {
 #endif
 
 void CursorManager::CommitSystemCursorVisibility(bool visible) {
-  DCHECK(features::ShouldUseCursorEventHook());
+  CHECK(features::ShouldUseCursorEventHook(), base::NotFatalUntil::M163);
   // Take cursor type kNone as visible. This is to handle the case where
   // the cursor is reported invisible by Windows after set kNone (e.g. during
   // fullscreen video playback). In this case, we should not force locking the

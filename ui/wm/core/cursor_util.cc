@@ -110,8 +110,9 @@ void RotateCursorBitmapAndHotpoint(display::Display::Rotation rotation,
   }
 
   // SkBitmapOperations::Rotate() needs the bitmap to have premultiplied alpha.
-  DCHECK(rotation == display::Display::ROTATE_0 ||
-         bitmap_in_out->info().alphaType() != kUnpremul_SkAlphaType);
+  CHECK(rotation == display::Display::ROTATE_0 ||
+            bitmap_in_out->info().alphaType() != kUnpremul_SkAlphaType,
+        base::NotFatalUntil::M163);
 
   switch (rotation) {
     case display::Display::ROTATE_0:
@@ -283,7 +284,7 @@ std::optional<ui::CursorData> GetCursorData(
     display::Display::Rotation rotation,
     SkColor color,
     std::optional<SkColor> outline_color) {
-  DCHECK_NE(type, CursorType::kCustom);
+  CHECK_NE(type, CursorType::kCustom, base::NotFatalUntil::M163);
 
   int resource_id;
   gfx::Point hotspot;
@@ -291,7 +292,7 @@ std::optional<ui::CursorData> GetCursorData(
   if (!GetCursorDataFor(type, &resource_id, &hotspot, &is_animated)) {
     return std::nullopt;
   }
-  DCHECK_NE(type, CursorType::kNone);
+  CHECK_NE(type, CursorType::kNone, base::NotFatalUntil::M163);
 
   cc::SkottieColorMap colormap = {};
   if (color != ui::kDefaultCursorColor) {
@@ -402,7 +403,7 @@ bool GetCursorDataFor(CursorType type,
                       int* resource_id,
                       gfx::Point* point,
                       bool* is_animated) {
-  DCHECK_NE(type, CursorType::kCustom);
+  CHECK_NE(type, CursorType::kCustom, base::NotFatalUntil::M163);
 
   // TODO(https://crbug.com/1270302: temporary check until GetCursorDataFor is
   // replaced by GetCursorData, which is only used internally by CursorLoader.
@@ -418,7 +419,7 @@ bool GetCursorDataFor(CursorType type,
     return false;
   }
 
-  DCHECK_EQ(resource->type, t);
+  CHECK_EQ(resource->type, t, base::NotFatalUntil::M163);
   *resource_id = resource->id;
   *point = resource->hotspot;
   *is_animated = resource->is_animated;

@@ -80,9 +80,11 @@ bool SendKeyEvents(gfx::NativeWindow window,
 
   // Make sure `key_event_types` abd `accelerator_state` is valid.
   // `key_event_types` must include at least one key event type.
-  DCHECK(key_event_types > 0 && key_event_types <= (kKeyPress | kKeyRelease));
-  DCHECK(accelerator_state >= 0 &&
-         accelerator_state <= (kShift | kControl | kAlt | kCommand));
+  CHECK(key_event_types > 0 && key_event_types <= (kKeyPress | kKeyRelease),
+        base::NotFatalUntil::M163);
+  CHECK(accelerator_state >= 0 &&
+            accelerator_state <= (kShift | kControl | kAlt | kCommand),
+        base::NotFatalUntil::M163);
 
   return g_instance->SendKeyEvents(window, key, key_event_types,
                                    accelerator_state);
@@ -98,9 +100,11 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
 
   // Make sure `key_event_types` abd `accelerator_state` is valid.
   // `key_event_types` must include at least one key event type.
-  DCHECK(key_event_types > 0 && key_event_types <= (kKeyPress | kKeyRelease));
-  DCHECK(accelerator_state >= 0 &&
-         accelerator_state <= (kShift | kControl | kAlt | kCommand));
+  CHECK(key_event_types > 0 && key_event_types <= (kKeyPress | kKeyRelease),
+        base::NotFatalUntil::M163);
+  CHECK(accelerator_state >= 0 &&
+            accelerator_state <= (kShift | kControl | kAlt | kCommand),
+        base::NotFatalUntil::M163);
 
   return g_instance->SendKeyEventsNotifyWhenDone(
       window, key, key_event_types, std::move(task), accelerator_state,

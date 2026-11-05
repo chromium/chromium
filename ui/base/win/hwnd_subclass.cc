@@ -54,7 +54,7 @@ class HWNDSubclass::HWNDSubclassFactory {
   // Returns a non-null HWNDSubclass corresponding to the HWND |target|. Creates
   // one if none exists. Retains ownership of the returned pointer.
   HWNDSubclass* GetHwndSubclassForTarget(HWND target) {
-    DCHECK(target);
+    CHECK(target, base::NotFatalUntil::M163);
     HWNDSubclass* subclass = reinterpret_cast<HWNDSubclass*>(
         ui::ViewProp::GetValue(target, kHWNDSubclassKey));
     if (!subclass) {
@@ -95,7 +95,7 @@ HWNDSubclass* HWNDSubclass::GetHwndSubclassForTarget(HWND target) {
 }
 
 void HWNDSubclass::AddFilter(HWNDMessageFilter* filter) {
-  DCHECK(filter);
+  CHECK(filter, base::NotFatalUntil::M163);
   if (!std::ranges::contains(filters_, filter)) {
     filters_.push_back(filter);
   }

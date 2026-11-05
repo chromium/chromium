@@ -80,15 +80,16 @@ void TransientWindowManager::RemoveObserver(TransientWindowObserver* observer) {
 void TransientWindowManager::AddTransientChild(Window* child) {
   // TransientWindowStackingClient does the stacking of transient windows. If it
   // isn't installed stacking is going to be wrong.
-  DCHECK(TransientWindowStackingClient::instance_);
+  CHECK(TransientWindowStackingClient::instance_, base::NotFatalUntil::M163);
 
   // Self-owning windows break things, shouldn't happen.
-  DCHECK_NE(this->window_, child);
+  CHECK_NE(this->window_, child, base::NotFatalUntil::M163);
 
   TransientWindowManager* child_manager = GetOrCreate(child);
   if (child_manager->transient_parent_)
     GetOrCreate(child_manager->transient_parent_)->RemoveTransientChild(child);
-  DCHECK(!std::ranges::contains(transient_children_, child));
+  CHECK(!std::ranges::contains(transient_children_, child),
+        base::NotFatalUntil::M163);
   transient_children_.push_back(child);
   child_manager->transient_parent_ = window_;
 
@@ -116,7 +117,8 @@ void TransientWindowManager::RemoveTransientChild(Window* child) {
   CHECK(i != transient_children_.end());
   transient_children_.erase(i);
   TransientWindowManager* child_manager = GetOrCreate(child);
-  DCHECK_EQ(window_, child_manager->transient_parent_);
+  CHECK_EQ(window_, child_manager->transient_parent_,
+           base::NotFatalUntil::M163);
   child_manager->transient_parent_ = nullptr;
 
   TransientWindowController::Get()->observers_.Notify(
@@ -270,17 +272,18 @@ void TransientWindowManager::OnWindowVisibilityChanged(Window* window,
     show_on_parent_visible_ = true;
     window_->Hide();
   } else if (!visible) {
-    DCHECK(!show_on_parent_visible_);
+    CHECK(!show_on_parent_visible_, base::NotFatalUntil::M163);
   }
 }
 
 void TransientWindowManager::OnWindowStackingChanged(Window* window) {
-  DCHECK_EQ(window_, window);
+  CHECK_EQ(window_, window, base::NotFatalUntil::M163);
   // Do nothing if we initiated the stacking change.
   const TransientWindowManager* transient_manager = GetIfExists(window);
   if (transient_manager && transient_manager->stacking_target_) {
     auto window_i = std::ranges::find(window->parent()->children(), window);
-    DCHECK(window_i != window->parent()->children().end());
+    CHECK(window_i != window->parent()->children().end(),
+          base::NotFatalUntil::M163);
     if (window_i != window->parent()->children().begin() &&
         (*(window_i - 1) == transient_manager->stacking_target_))
       return;

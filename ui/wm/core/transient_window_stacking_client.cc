@@ -33,10 +33,10 @@ bool GetAllTransientAncestors(Window* window, Window::Windows* ancestors) {
 // are still siblings (have a common transient parent).  |window1| and |window2|
 // are not modified if such ancestors cannot be found.
 void FindCommonTransientAncestor(Window** window1, Window** window2) {
-  DCHECK(window1);
-  DCHECK(window2);
-  DCHECK(*window1);
-  DCHECK(*window2);
+  CHECK(window1, base::NotFatalUntil::M163);
+  CHECK(window2, base::NotFatalUntil::M163);
+  CHECK(*window1, base::NotFatalUntil::M163);
+  CHECK(*window2, base::NotFatalUntil::M163);
   // Assemble chains of ancestors of both windows.
   Window::Windows ancestors1;
   Window::Windows ancestors2;

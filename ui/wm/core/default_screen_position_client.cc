@@ -14,7 +14,7 @@ namespace wm {
 DefaultScreenPositionClient::DefaultScreenPositionClient(
     aura::Window* root_window)
     : root_window_(root_window) {
-  DCHECK(root_window_);
+  CHECK(root_window_, base::NotFatalUntil::M163);
   aura::client::SetScreenPositionClient(root_window_, this);
 }
 

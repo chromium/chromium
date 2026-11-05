@@ -172,8 +172,8 @@ scoped_refptr<PlatformCursor> WinCursorFactory::GetDefaultCursor(
 
 std::optional<CursorData> WinCursorFactory::GetCursorData(
     mojom::CursorType type) {
-  DCHECK_NE(type, mojom::CursorType::kNone);
-  DCHECK_NE(type, mojom::CursorType::kCustom);
+  CHECK_NE(type, mojom::CursorType::kNone, base::NotFatalUntil::M163);
+  CHECK_NE(type, mojom::CursorType::kCustom, base::NotFatalUntil::M163);
 
   auto cursor = GetDefaultCursor(type);
   if (!cursor) {

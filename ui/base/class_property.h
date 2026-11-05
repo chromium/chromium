@@ -276,7 +276,7 @@ template <typename T, typename U>
   requires(std::convertible_to<U*, T*>)
 T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
                                 std::unique_ptr<U> value) {
-  DCHECK(property->deallocator);
+  CHECK(property->deallocator, base::NotFatalUntil::M163);
   return subtle::PropertyHelper::Set<T*>(this, property, value.release());
 }
 

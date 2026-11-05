@@ -101,7 +101,7 @@ void CursorLoader::SetColor(SkColor color) {
 }
 
 void CursorLoader::SetPlatformCursor(ui::Cursor* cursor) {
-  DCHECK(cursor);
+  CHECK(cursor, base::NotFatalUntil::M163);
 
   // The platform cursor was already set via WebCursor::GetNativeCursor.
   if (cursor->type() == CursorType::kCustom) {

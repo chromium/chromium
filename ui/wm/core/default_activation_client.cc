@@ -33,7 +33,7 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
 
   // Overridden from WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {
-    DCHECK_EQ(window, root_window_);
+    CHECK_EQ(window, root_window_, base::NotFatalUntil::M163);
     root_window_->RemoveObserver(this);
     root_window_ = nullptr;
     client_.reset();

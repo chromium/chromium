@@ -79,60 +79,60 @@ void SynthesizeKeyEventsSequence(NSWindow* window,
     if (accelerator_state & ui_controls::kControl) {
       flags |= NSEventModifierFlagControl;
       event = SynthesizeKeyEvent(window, true, ui::VKEY_CONTROL, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
     if (accelerator_state & ui_controls::kShift) {
       flags |= NSEventModifierFlagShift;
       event = SynthesizeKeyEvent(window, true, ui::VKEY_SHIFT, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
     if (accelerator_state & ui_controls::kAlt) {
       flags |= NSEventModifierFlagOption;
       event = SynthesizeKeyEvent(window, true, ui::VKEY_MENU, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
     if (accelerator_state & ui_controls::kCommand) {
       flags |= NSEventModifierFlagCommand;
       event = SynthesizeKeyEvent(window, true, ui::VKEY_COMMAND, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
 
     event = SynthesizeKeyEvent(window, true, keycode, flags);
-    DCHECK(event);
+    CHECK(event, base::NotFatalUntil::M163);
     events->push_back(event);
   }
 
   if (key_event_types & ui_controls::kKeyRelease) {
     event = SynthesizeKeyEvent(window, false, keycode, flags);
-    DCHECK(event);
+    CHECK(event, base::NotFatalUntil::M163);
     events->push_back(event);
 
     if (accelerator_state & ui_controls::kCommand) {
       flags &= ~NSEventModifierFlagCommand;
       event = SynthesizeKeyEvent(window, false, ui::VKEY_COMMAND, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
     if (accelerator_state & ui_controls::kAlt) {
       flags &= ~NSEventModifierFlagOption;
       event = SynthesizeKeyEvent(window, false, ui::VKEY_MENU, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
     if (accelerator_state & ui_controls::kShift) {
       flags &= ~NSEventModifierFlagShift;
       event = SynthesizeKeyEvent(window, false, ui::VKEY_SHIFT, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
     if (accelerator_state & ui_controls::kControl) {
       flags &= ~NSEventModifierFlagControl;
       event = SynthesizeKeyEvent(window, false, ui::VKEY_CONTROL, flags);
-      DCHECK(event);
+      CHECK(event, base::NotFatalUntil::M163);
       events->push_back(event);
     }
   }
@@ -574,7 +574,7 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
                                  base::OnceClosure task,
                                  int accelerator_state) {
   CheckUIControlsEnabled();
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
   std::vector<NSEvent*> events;
   SynthesizeKeyEventsSequence(window.GetNativeNSWindow(), key, key_event_types,

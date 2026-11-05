@@ -249,7 +249,7 @@ void CompoundEventFilter::OnTouchEvent(ui::TouchEvent* event) {
   FilterTouchEvent(event);
   if (!event->handled() && event->type() == ui::EventType::kTouchPressed) {
     aura::Window* target = static_cast<aura::Window*>(event->target());
-    DCHECK(target);
+    CHECK(target, base::NotFatalUntil::M163);
     auto* client = aura::client::GetCursorClient(target->GetRootWindow());
     if (client && client->ShouldHideCursorOnTouchEvent(*event) &&
         !aura::Env::GetInstance()->IsMouseButtonDown()) {

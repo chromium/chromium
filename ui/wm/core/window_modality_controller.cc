@@ -113,7 +113,7 @@ WindowModalityController::WindowModalityController(
     aura::Env* env)
     : env_(env ? env : aura::Env::GetInstance()), event_target_(event_target) {
   env_->AddObserver(this);
-  DCHECK(event_target->IsPreTargetListEmpty());
+  CHECK(event_target->IsPreTargetListEmpty(), base::NotFatalUntil::M163);
   event_target_->AddPreTargetHandler(this);
 }
 
@@ -225,7 +225,7 @@ bool WindowModalityController::ProcessLocatedEvent(aura::Window* target,
     // Activate top window if transient child window is window modal.
     if (TransientChildIsWindowModal(modal_transient_child)) {
       aura::Window* toplevel = GetToplevelWindow(target);
-      DCHECK(toplevel);
+      CHECK(toplevel, base::NotFatalUntil::M163);
       ActivateWindow(toplevel);
     }
 

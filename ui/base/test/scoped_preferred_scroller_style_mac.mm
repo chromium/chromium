@@ -64,7 +64,7 @@ ScopedPreferredScrollerStyle::ScopedPreferredScrollerStyle(bool overlay)
                           ? [FakeNSScrollerPreferredStyleOverlayDonor class]
                           : [FakeNSScrollerPreferredStyleLegacyDonor class];
 
-  DCHECK(!g_swizzling);
+  CHECK(!g_swizzling, base::NotFatalUntil::M163);
   g_swizzling = true;
   swizzler_ = std::make_unique<ScopedObjCClassSwizzler>(
       [NSScroller class], style_class, @selector(preferredScrollerStyle));
@@ -75,7 +75,7 @@ ScopedPreferredScrollerStyle::ScopedPreferredScrollerStyle(bool overlay)
 
 ScopedPreferredScrollerStyle::~ScopedPreferredScrollerStyle() {
   swizzler_.reset();
-  DCHECK(g_swizzling);
+  CHECK(g_swizzling, base::NotFatalUntil::M163);
   g_swizzling = false;
 
   if ([NSScroller preferredScrollerStyle] != GetScrollerStyle(overlay_))

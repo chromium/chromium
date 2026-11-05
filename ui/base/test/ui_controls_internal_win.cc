@@ -470,7 +470,7 @@ void InputDispatcher::MatchingMessageProcessed(bool definitively_done) {
       flushing_messages_ = true;
       auto weak_ptr = weak_factory_.GetWeakPtr();
       base::RunLoop().RunUntilIdle();
-      DCHECK(weak_ptr);
+      CHECK(weak_ptr, base::NotFatalUntil::M163);
     }
   }
 
@@ -946,7 +946,7 @@ bool SendMouseEventsImpl(MouseButton type,
 
 bool SendTouchEventsImpl(int action, int num, int x, int y) {
   const int kTouchesLengthCap = 16;
-  DCHECK_LE(num, kTouchesLengthCap);
+  CHECK_LE(num, kTouchesLengthCap, base::NotFatalUntil::M163);
 
   using InitializeTouchInjectionFn = BOOL(WINAPI*)(UINT32, DWORD);
   static const auto initialize_touch_injection =

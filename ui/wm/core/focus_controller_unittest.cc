@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -28,16 +29,6 @@
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
-
-// EXPECT_DCHECK executes statement and expects a DCHECK death when DCHECK is
-// enabled.
-#if DCHECK_IS_ON()
-#define EXPECT_DCHECK(statement, regex) \
-  EXPECT_DEATH_IF_SUPPORTED(statement, regex)
-#else
-#define EXPECT_DCHECK(statement, regex) \
-  { statement; }
-#endif
 
 namespace wm {
 
@@ -1278,13 +1269,13 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
       ActivateWhileActivatingObserver observer(/*to_observe=*/w2,
                                                /*to_activate=*/w1,
                                                /*to_focus=*/nullptr);
-      // This should hit a DCHECK.
-      EXPECT_DCHECK(
+      // This should hit a CHECK.
+      EXPECT_CHECK_DEATH(
           {
             ActivateWindow(w2);
             EXPECT_EQ(2, GetActiveWindowId());
           },
-          "");
+          base::NotFatalUntil::M163);
     }
   }
 

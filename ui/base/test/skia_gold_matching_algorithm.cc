@@ -64,10 +64,10 @@ FuzzySkiaGoldMatchingAlgorithm::FuzzySkiaGoldMatchingAlgorithm(
     : max_different_pixels_(max_different_pixels),
       pixel_delta_threshold_(pixel_delta_threshold),
       ignored_border_thickness_(ignored_border_thickness) {
-  DCHECK_GT(max_different_pixels, 0);
-  DCHECK_GT(pixel_delta_threshold, 0);
-  DCHECK_LE(pixel_delta_threshold, 255 * 4);
-  DCHECK_GE(ignored_border_thickness, 0);
+  CHECK_GT(max_different_pixels, 0, base::NotFatalUntil::M163);
+  CHECK_GT(pixel_delta_threshold, 0, base::NotFatalUntil::M163);
+  CHECK_LE(pixel_delta_threshold, 255 * 4, base::NotFatalUntil::M163);
+  CHECK_GE(ignored_border_thickness, 0, base::NotFatalUntil::M163);
 }
 
 void FuzzySkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(
@@ -109,8 +109,8 @@ SobelSkiaGoldMatchingAlgorithm::SobelSkiaGoldMatchingAlgorithm(
                                      pixel_delta_threshold,
                                      ignored_border_thickness),
       edge_threshold_(edge_threshold) {
-  DCHECK_GE(edge_threshold, 0);
-  DCHECK_LE(edge_threshold, 255);
+  CHECK_GE(edge_threshold, 0, base::NotFatalUntil::M163);
+  CHECK_LE(edge_threshold, 255, base::NotFatalUntil::M163);
 }
 
 void SobelSkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(

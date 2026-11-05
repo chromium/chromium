@@ -164,7 +164,8 @@ bool ShadowController::Impl::IsShadowVisibleForWindow(aura::Window* window) {
 }
 
 void ShadowController::Impl::UpdateShadowForWindow(aura::Window* window) {
-  DCHECK(observation_manager_.IsObservingSource(window));
+  CHECK(observation_manager_.IsObservingSource(window),
+        base::NotFatalUntil::M163);
   HandlePossibleShadowVisibilityChange(window);
 }
 
@@ -172,8 +173,8 @@ void ShadowController::Impl::OnWindowInitialized(aura::Window* window) {
   if (delegate_ && !delegate_->ShouldObserveWindow(window)) {
     return;
   }
-  DCHECK(!window->parent());
-  DCHECK(!window->TargetVisibility());
+  CHECK(!window->parent(), base::NotFatalUntil::M163);
+  CHECK(!window->TargetVisibility(), base::NotFatalUntil::M163);
   observation_manager_.AddObservation(window);
 }
 
@@ -286,7 +287,8 @@ bool ShadowController::Impl::ShouldShowShadowForWindow(
   if (delegate_) {
     const bool should_show = delegate_->ShouldShowShadowForWindow(window);
     if (should_show)
-      DCHECK(GetShadowElevationConvertDefault(window) > 0);
+      CHECK(GetShadowElevationConvertDefault(window) > 0,
+            base::NotFatalUntil::M163);
     return should_show;
   }
 
@@ -347,7 +349,7 @@ void ShadowController::Impl::HandlePossibleShadowVisibilityChange(
 }
 
 void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
-  DCHECK(!window->IsRootWindow());
+  CHECK(!window->IsRootWindow(), base::NotFatalUntil::M163);
   ui::decoration::Shadow::Style style =
       ui::decoration::Shadow::Style::kMaterialDesign;
 #if BUILDFLAG(IS_CHROMEOS)

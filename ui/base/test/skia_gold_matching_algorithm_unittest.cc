@@ -62,11 +62,16 @@ TEST_F(SkiaGoldMatchingAlgorithmTest, SobelMatching) {
 }
 
 TEST_F(SkiaGoldMatchingAlgorithmTest, InvalidInput) {
-  EXPECT_DCHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(-1, 2, 3, 4));
-  EXPECT_DCHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, -1, 3, 4));
-  EXPECT_DCHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, 2, -1, 4));
-  EXPECT_DCHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, 2, 3, -1));
-  EXPECT_DCHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, 2, 256, 4));
+  EXPECT_CHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(-1, 2, 3, 4),
+                     base::NotFatalUntil::M163);
+  EXPECT_CHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, -1, 3, 4),
+                     base::NotFatalUntil::M163);
+  EXPECT_CHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, 2, -1, 4),
+                     base::NotFatalUntil::M163);
+  EXPECT_CHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, 2, 3, -1),
+                     base::NotFatalUntil::M163);
+  EXPECT_CHECK_DEATH(SobelSkiaGoldMatchingAlgorithm(1, 2, 256, 4),
+                     base::NotFatalUntil::M163);
 }
 
 }  // namespace test

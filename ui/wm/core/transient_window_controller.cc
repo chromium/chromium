@@ -15,12 +15,12 @@ namespace wm {
 TransientWindowController* TransientWindowController::instance_ = nullptr;
 
 TransientWindowController::TransientWindowController() {
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = this;
 }
 
 TransientWindowController::~TransientWindowController() {
-  DCHECK_EQ(instance_, this);
+  CHECK_EQ(instance_, this, base::NotFatalUntil::M163);
   instance_ = nullptr;
 }
 

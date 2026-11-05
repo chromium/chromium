@@ -17,13 +17,15 @@ DEFINE_UI_CLASS_PROPERTY_KEY(void*, kTooltipIdKey, NULL)
 DEFINE_UI_CLASS_PROPERTY_KEY(std::u16string*, kTooltipTextKey, NULL)
 
 void SetTooltipClient(aura::Window* root_window, TooltipClient* client) {
-  DCHECK_EQ(root_window->GetRootWindow(), root_window);
+  CHECK_EQ(root_window->GetRootWindow(), root_window,
+           base::NotFatalUntil::M163);
   root_window->SetProperty(kRootWindowTooltipClientKey, client);
 }
 
 TooltipClient* GetTooltipClient(aura::Window* root_window) {
   if (root_window)
-    DCHECK_EQ(root_window->GetRootWindow(), root_window);
+    CHECK_EQ(root_window->GetRootWindow(), root_window,
+             base::NotFatalUntil::M163);
   return root_window ?
       root_window->GetProperty(kRootWindowTooltipClientKey) : NULL;
 }

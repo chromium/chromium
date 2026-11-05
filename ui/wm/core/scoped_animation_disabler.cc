@@ -21,7 +21,8 @@ ScopedAnimationDisabler::ScopedAnimationDisabler(aura::Window* window)
 
 ScopedAnimationDisabler::~ScopedAnimationDisabler() {
   if (window_ && was_animation_enabled_) {
-    DCHECK_EQ(window_->GetProperty(aura::client::kAnimationsDisabledKey), true);
+    CHECK_EQ(window_->GetProperty(aura::client::kAnimationsDisabledKey), true,
+             base::NotFatalUntil::M163);
     window_->ClearProperty(aura::client::kAnimationsDisabledKey);
   }
 }

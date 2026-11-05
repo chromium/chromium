@@ -16,7 +16,7 @@ ForegroundHelper::~ForegroundHelper() = default;
 
 // static
 HRESULT ForegroundHelper::SetForeground(HWND window) {
-  DCHECK(::IsWindow(window));
+  CHECK(::IsWindow(window), base::NotFatalUntil::M163);
   ForegroundHelper foreground_helper;
   return foreground_helper.ForegroundHotKey(window);
 }

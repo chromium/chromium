@@ -61,19 +61,19 @@ void MirrorChildren(ui::Layer* to_mirror,
 namespace wm {
 
 void ActivateWindow(aura::Window* window) {
-  DCHECK(window);
-  DCHECK(window->GetRootWindow());
+  CHECK(window, base::NotFatalUntil::M163);
+  CHECK(window->GetRootWindow(), base::NotFatalUntil::M163);
   GetActivationClient(window->GetRootWindow())->ActivateWindow(window);
 }
 
 void DeactivateWindow(aura::Window* window) {
-  DCHECK(window);
-  DCHECK(window->GetRootWindow());
+  CHECK(window, base::NotFatalUntil::M163);
+  CHECK(window->GetRootWindow(), base::NotFatalUntil::M163);
   GetActivationClient(window->GetRootWindow())->DeactivateWindow(window);
 }
 
 bool IsActiveWindow(const aura::Window* window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   if (!window->GetRootWindow())
     return false;
   const ActivationClient* client = GetActivationClient(window->GetRootWindow());
@@ -81,7 +81,7 @@ bool IsActiveWindow(const aura::Window* window) {
 }
 
 bool CanActivateWindow(const aura::Window* window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   if (!window->GetRootWindow())
     return false;
   const ActivationClient* client = GetActivationClient(window->GetRootWindow());
@@ -91,9 +91,10 @@ bool CanActivateWindow(const aura::Window* window) {
 void SetWindowFullscreen(aura::Window* window,
                          bool fullscreen,
                          int64_t target_display_id) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   // Should only specify display id when entering fullscreen.
-  DCHECK(target_display_id == display::kInvalidDisplayId || fullscreen);
+  CHECK(target_display_id == display::kInvalidDisplayId || fullscreen,
+        base::NotFatalUntil::M163);
 
   ui::mojom::WindowShowState current_show_state =
       window->GetProperty(aura::client::kShowStateKey);
@@ -160,8 +161,8 @@ void Restore(aura::Window* window) {
 }
 
 void Unminimize(aura::Window* window) {
-  DCHECK_EQ(window->GetProperty(aura::client::kShowStateKey),
-            ui::mojom::WindowShowState::kMinimized);
+  CHECK_EQ(window->GetProperty(aura::client::kShowStateKey),
+           ui::mojom::WindowShowState::kMinimized, base::NotFatalUntil::M163);
   Restore(window);
 }
 
@@ -181,7 +182,7 @@ const aura::Window* GetToplevelWindow(const aura::Window* window) {
 }
 
 std::unique_ptr<ui::LayerTreeOwner> RecreateLayers(ui::LayerOwner* root) {
-  DCHECK(root->OwnsLayer());
+  CHECK(root->OwnsLayer(), base::NotFatalUntil::M163);
   return RecreateLayersWithClosure(
       root, base::BindRepeating(
                 [](ui::LayerOwner* owner) { return owner->RecreateLayer(); }));
@@ -190,7 +191,7 @@ std::unique_ptr<ui::LayerTreeOwner> RecreateLayers(ui::LayerOwner* root) {
 std::unique_ptr<ui::LayerTreeOwner> RecreateLayersWithClosure(
     ui::LayerOwner* root,
     const MapLayerFunc& map_func) {
-  DCHECK(root->OwnsLayer());
+  CHECK(root->OwnsLayer(), base::NotFatalUntil::M163);
   auto layer = map_func.Run(root);
   if (!layer)
     return nullptr;

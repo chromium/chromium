@@ -44,7 +44,7 @@ bool AcceleratorFilter::ShouldFilter(ui::KeyEvent* event) {
 // AcceleratorFilter, EventFilter implementation:
 
 void AcceleratorFilter::OnKeyEvent(ui::KeyEvent* event) {
-  DCHECK(event->target());
+  CHECK(event->target(), base::NotFatalUntil::M163);
   if (ShouldFilter(event))
     return;
 

@@ -81,17 +81,18 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
     window_->SetProperty(
         kWindowHidingAnimationCountKey,
         window_->GetProperty(kWindowHidingAnimationCountKey) - 1);
-    DCHECK_GE(window_->GetProperty(kWindowHidingAnimationCountKey), 0);
+    CHECK_GE(window_->GetProperty(kWindowHidingAnimationCountKey), 0,
+             base::NotFatalUntil::M163);
   }
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK_EQ(window, window_);
+    CHECK_EQ(window, window_, base::NotFatalUntil::M163);
     WindowInvalid();
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    DCHECK_EQ(window, window_);
+    CHECK_EQ(window, window_, base::NotFatalUntil::M163);
     WindowInvalid();
   }
 
@@ -282,8 +283,9 @@ void AugmentWindowSize(aura::Window* window,
       union_in_window_space.y() + union_in_window_space.height() -
           (world_at_start.y() + world_at_start.height()));
 
-  DCHECK(top_left_delta.x() >= 0 && top_left_delta.y() >= 0 &&
-         bottom_right_delta.x() >= 0 && bottom_right_delta.y() >= 0);
+  CHECK(top_left_delta.x() >= 0 && top_left_delta.y() >= 0 &&
+            bottom_right_delta.x() >= 0 && bottom_right_delta.y() >= 0,
+        base::NotFatalUntil::M163);
 
   animation_host->SetHostTransitionOffsets(top_left_delta, bottom_right_delta);
 }

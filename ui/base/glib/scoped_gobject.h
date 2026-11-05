@@ -79,7 +79,7 @@ class ScopedGObject {
 
   void Ref() {
     if (obj_) {
-      DCHECK(!g_object_is_floating(obj_));
+      CHECK(!g_object_is_floating(obj_), base::NotFatalUntil::M163);
       g_object_ref(obj_);
     }
   }
