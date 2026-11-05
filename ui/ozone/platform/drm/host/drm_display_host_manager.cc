@@ -55,8 +55,11 @@ const int kAuthFailSleepMs = 100;
 const int kLogAuthFailDelayMs = 1000;
 
 // Maximum number of attempts to authenticate the DRM device before proceeding.
-// With kAuthFailSleepMs = 100, 50 attempts corresponds to ~5 seconds.
-constexpr int kMaxAuthAttempts = 50;
+// With kAuthFailSleepMs = 100, 300 attempts corresponds to ~30 seconds. On cold
+// boot, Chrome must wait long enough for frecon's boot splash and hotplug
+// rescans to release DRM master so open() implicitly acquires master (chronos
+// lacks CAP_SYS_ADMIN to call drmSetMaster() later on an unauthenticated FD).
+constexpr int kMaxAuthAttempts = 300;
 
 constexpr std::array<std::string_view, 3> kDisplayActionString = {
     "ADD",
