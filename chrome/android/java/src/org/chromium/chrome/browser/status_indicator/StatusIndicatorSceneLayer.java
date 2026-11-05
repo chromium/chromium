@@ -4,12 +4,19 @@
 
 package org.chromium.chrome.browser.status_indicator;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.RectF;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -23,8 +30,11 @@ import org.chromium.ui.resources.ResourceManager;
 @JNINamespace("android")
 @NullMarked
 class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+    @JniType("::android::StatusIndicatorSceneLayer")
+    interface NativeStatusIndicatorSceneLayer extends JniTypeToken {}
+
     /** Handle to the native side of this class. */
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeStatusIndicatorSceneLayer> mNativePtr;
 
     /** The resource ID used to reference the view bitmap in native. */
     private int mResourceId;
@@ -61,15 +71,23 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
+        if (mNativePtr == null) {
             mNativePtr = StatusIndicatorSceneLayerJni.get().init(this);
         }
-        assert mNativePtr != 0;
+        assert mNativePtr != null;
+    }
+
+    @Override
+    public void destroy() {
+        if (mNativePtr == null) return;
+        mNativePtr.release();
+        mNativePtr = null;
+        super.destroy();
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        StatusIndicatorSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
+        StatusIndicatorSceneLayerJni.get().setContentTree(assumeNonNull(mNativePtr), contentTree);
     }
 
     @Override
@@ -77,7 +95,8 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         final int offset = mBrowserControlsStateProvider.getTopControlsMinHeightOffset();
         StatusIndicatorSceneLayerJni.get()
-                .updateStatusIndicatorLayer(mNativePtr, resourceManager, mResourceId, offset);
+                .updateStatusIndicatorLayer(
+                        assumeNonNull(mNativePtr), resourceManager, mResourceId, offset);
 
         return this;
     }
@@ -93,12 +112,12 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
 
     @NativeMethods
     interface Natives {
-        long init(StatusIndicatorSceneLayer self);
+        JniRawPtr<NativeStatusIndicatorSceneLayer> init(StatusIndicatorSceneLayer self);
 
-        void setContentTree(long nativeStatusIndicatorSceneLayer, SceneLayer contentTree);
+        void setContentTree(JniPtr<NativeStatusIndicatorSceneLayer> self, SceneLayer contentTree);
 
         void updateStatusIndicatorLayer(
-                long nativeStatusIndicatorSceneLayer,
+                JniPtr<NativeStatusIndicatorSceneLayer> self,
                 ResourceManager resourceManager,
                 int viewResourceId,
                 int offset);

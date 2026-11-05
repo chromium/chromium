@@ -6,6 +6,7 @@
 
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/StatusIndicatorSceneLayer_jni.h"
@@ -83,13 +84,10 @@ bool StatusIndicatorSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static int64_t JNI_StatusIndicatorSceneLayer_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& jobj) {
+static jni_zero::JniRawPtr<StatusIndicatorSceneLayer>
+JNI_StatusIndicatorSceneLayer_Init(JNIEnv* env, const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
-  StatusIndicatorSceneLayer* scene_layer =
-      new StatusIndicatorSceneLayer(env, jobj);
-  return reinterpret_cast<intptr_t>(scene_layer);
+  return jni_zero::MakeRaw(new StatusIndicatorSceneLayer(env, jobj));
 }
 
 }  // namespace android

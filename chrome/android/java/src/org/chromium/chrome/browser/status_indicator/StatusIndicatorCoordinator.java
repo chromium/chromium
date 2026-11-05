@@ -116,6 +116,7 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
         if (mResourceRegistered) unregisterResource();
         mMediator.destroy();
         mTopControlsStacker.removeControl(this);
+        mSceneLayer.destroy();
     }
 
     /**
