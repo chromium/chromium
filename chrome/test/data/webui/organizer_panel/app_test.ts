@@ -779,4 +779,69 @@ suite('OrganizerPanelAppTest', () => {
             'Tabs.Organizer.CloseAction',
             OrganizerPanelCloseAction.OPEN_CROSS_DEVICE_PROMO));
   });
+
+  test('records num tabs closed per instance on hidden', () => {
+    const triggerClose = () => {
+      Object.defineProperty(
+          document, 'visibilityState', {value: 'hidden', writable: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+      Object.defineProperty(
+          document, 'visibilityState', {value: 'visible', writable: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+    };
+
+    // Records 0 when closed without closing any tabs.
+    triggerClose();
+    assertEquals(
+        1, metrics.count('Tabs.Organizer.NumTabsClosedPerInstance', 0));
+
+    const openTabsDelegate =
+        app.$.list.sectionDelegates.find(d => d instanceof OpenTabsDelegate) as
+        OpenTabsDelegate;
+    assertTrue(!!openTabsDelegate);
+
+    const dummyTabItem = {
+      title: ['Open Tab'],
+      data: {
+        type: OpenTabsItemType.TAB as const,
+        tab: {tabId: 1, alertStates: []} as unknown as Tab,
+      },
+    };
+    const dummySplitTabItem = {
+      title: ['Split View'],
+      data: {
+        type: OpenTabsItemType.SPLIT_TAB as const,
+        tabs: [
+          {tabId: 2, alertStates: []} as unknown as Tab,
+          {tabId: 3, alertStates: []} as unknown as Tab,
+        ] as [Tab, Tab],
+      },
+    };
+
+    // Closing a single tab records 1.
+    openTabsDelegate.onItemActionButtonClicked(dummyTabItem);
+    triggerClose();
+    assertEquals(
+        1, metrics.count('Tabs.Organizer.NumTabsClosedPerInstance', 1));
+
+    // Closing a split tab records 2.
+    openTabsDelegate.onItemActionButtonClicked(dummySplitTabItem);
+    triggerClose();
+    assertEquals(
+        1, metrics.count('Tabs.Organizer.NumTabsClosedPerInstance', 2));
+
+    // Closing multiple tabs and then switching to a tab still records the
+    // total number of tabs closed in the session.
+    openTabsDelegate.onItemActionButtonClicked(dummyTabItem);
+    openTabsDelegate.onItemActionButtonClicked(dummySplitTabItem);
+    openTabsDelegate.onItemClick(dummyTabItem);
+    triggerClose();
+    assertEquals(
+        1, metrics.count('Tabs.Organizer.NumTabsClosedPerInstance', 3));
+
+    // Resets to 0 on subsequent close without closing tabs.
+    triggerClose();
+    assertEquals(
+        2, metrics.count('Tabs.Organizer.NumTabsClosedPerInstance', 0));
+  });
 });

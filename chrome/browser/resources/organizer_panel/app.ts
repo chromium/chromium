@@ -21,7 +21,7 @@ import {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';
 import {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
 import type {OrganizerListElement} from './organizer_list.js';
 import type {OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
-import {OrganizerPanelCloseAction, recordCloseAction, setCloseAction} from './organizer_list_section_delegate.js';
+import {recordCloseMetrics, resetCloseMetrics} from './organizer_list_section_delegate.js';
 import type {BrowserProxy} from './organizer_panel.mojom-webui.js';
 import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
 
@@ -107,7 +107,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
   };
   private onVisibilityChange_: () => void = () => {
     if (document.visibilityState === 'hidden') {
-      recordCloseAction();
+      recordCloseMetrics();
       this.$.searchField.setValue('');
       this.searchQuery_ = '';
       this.$.list.scrollTop = 0;
@@ -116,7 +116,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    setCloseAction(OrganizerPanelCloseAction.NO_ACTION);
+    resetCloseMetrics();
     ColorChangeUpdater.forDocument().start();
     this.addEventListener('keydown', this.onKeydown_);
     window.addEventListener('focus', this.onWindowFocused_);

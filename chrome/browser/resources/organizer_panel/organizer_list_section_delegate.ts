@@ -27,16 +27,28 @@ export enum OrganizerPanelCloseAction {
 
 let pendingCloseAction: OrganizerPanelCloseAction =
     OrganizerPanelCloseAction.NO_ACTION;
+let numTabsClosed: number = 0;
 
 export function setCloseAction(action: OrganizerPanelCloseAction) {
   pendingCloseAction = action;
 }
 
-export function recordCloseAction() {
+export function incrementNumTabsClosed(count: number = 1) {
+  numTabsClosed += count;
+}
+
+export function resetCloseMetrics() {
+  pendingCloseAction = OrganizerPanelCloseAction.NO_ACTION;
+  numTabsClosed = 0;
+}
+
+export function recordCloseMetrics() {
   chrome.histograms.recordEnumerationValue(
       'Tabs.Organizer.CloseAction', pendingCloseAction,
       OrganizerPanelCloseAction.COUNT);
-  pendingCloseAction = OrganizerPanelCloseAction.NO_ACTION;
+  chrome.histograms.recordSmallCount(
+      'Tabs.Organizer.NumTabsClosedPerInstance', numTabsClosed);
+  resetCloseMetrics();
 }
 
 // Interface implemented by the section element to receive update events.

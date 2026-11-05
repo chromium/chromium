@@ -10,7 +10,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
-import {OrganizerPanelCloseAction, setCloseAction} from '../organizer_list_section_delegate.js';
+import {incrementNumTabsClosed, OrganizerPanelCloseAction, setCloseAction} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import type {OrganizerListSectionItemDescriptionPart} from '../organizer_list_section_item_description.js';
 import type {BrowserProxy, ProfileData, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
@@ -130,9 +130,11 @@ export class OpenTabsDelegate implements
     const data = item.data;
     assert(data);
     if (isSplitTab(data)) {
-      this.browserProxy_.handler.closeTabs(
-          [data.tabs[0].tabId, data.tabs[1].tabId]);
+      const tabIds = [data.tabs[0].tabId, data.tabs[1].tabId];
+      incrementNumTabsClosed(tabIds.length);
+      this.browserProxy_.handler.closeTabs(tabIds);
     } else {
+      incrementNumTabsClosed();
       this.browserProxy_.handler.closeTab(data.tab.tabId);
     }
   }

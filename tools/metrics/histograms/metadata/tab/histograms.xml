@@ -2613,6 +2613,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.Organizer.NumTabsClosedPerInstance" units="tabs"
+    expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the number of tabs closed from within the Organizer panel during a
+    single session (between when the panel is opened and when it is closed).
+    Emitted when the Organizer panel UI is closed.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.Organizer.Section.{Section}.MenuAction"
     enum="OrganizerSectionMenuOption" expires_after="2027-05-02">
   <owner>agale@chromium.org</owner>
