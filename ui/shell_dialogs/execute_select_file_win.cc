@@ -398,7 +398,9 @@ bool ExecuteSaveFile(HWND owner,
   CHECK(path, base::NotFatalUntil::M163);
   // Having an empty filter for a bad user experience. We should always
   // specify a filter when saving.
-  CHECK(!filter.empty(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/580851702): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!filter.empty());
 
   DWORD dialog_options = FOS_OVERWRITEPROMPT;
 
