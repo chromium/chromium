@@ -31,8 +31,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #import "ui/base/cocoa/base_view.h"
+#include "ui/base/cocoa/cursor_utils.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
 #include "ui/base/cocoa/remote_layer_api.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -48,35 +50,203 @@
 // moved events unless an active tracking area is installed on a view within the
 // window. BaseView funnels mouse and key events to -mouseEvent: and -keyEvent:,
 // which route events to the owner.
+//
+// The view also sets the renderer cursor itself; see
+// UnboundedSurfaceWindowMac::DisplayCursor() for why. Whether the pointer is
+// inside is tracked from the event stream (and synced with
+// NSEvent.mouseLocation when SetBounds() moves or resizes the window) so that
+// synthesized events in tests behave like real ones.
 @interface UnboundedNSView : BaseView {
   raw_ptr<content::UnboundedSurfaceWindowMac> _owner;
+  RenderWidgetHostViewCocoa* __weak _ownerCocoaView;
+  NSCursor* __strong _currentCursor;
+  NSWindow* __weak _cursorRectsDisabledWindow;
+  BOOL _pointerInside;
 }
+// Whether the pointer is over the view according to the mouse events seen.
+@property(nonatomic, readonly, getter=isPointerInside) BOOL pointerInside;
 - (instancetype)initWithFrame:(NSRect)frame
-                        owner:(content::UnboundedSurfaceWindowMac*)owner;
+                        owner:(content::UnboundedSurfaceWindowMac*)owner
+               ownerCocoaView:(RenderWidgetHostViewCocoa*)ownerCocoaView;
 - (void)clearOwner;
+- (void)updateCursor:(NSCursor*)cursor;
+- (void)updatePointerInsideFromMouseLocation;
 @end
 
 @implementation UnboundedNSView
+@synthesize pointerInside = _pointerInside;
+
 - (instancetype)initWithFrame:(NSRect)frame
-                        owner:(content::UnboundedSurfaceWindowMac*)owner {
+                        owner:(content::UnboundedSurfaceWindowMac*)owner
+               ownerCocoaView:(RenderWidgetHostViewCocoa*)ownerCocoaView {
   if (self = [super initWithFrame:frame tracking:YES]) {
     _owner = owner;
+    _ownerCocoaView = ownerCocoaView;
+    _currentCursor = NSCursor.arrowCursor;
   }
   return self;
 }
 
+- (void)dealloc {
+  [_cursorRectsDisabledWindow enableCursorRects];
+}
+
 - (void)clearOwner {
+  const BOOL should_reset_cursor = [self shouldChangeCurrentCursor];
+  [self setPointerInside:NO];
   _owner = nullptr;
+  // The window goes away without a mouse exit, so hand the cursor back to
+  // the default here when the surface was controlling it. The view under the
+  // pointer re-applies its own cursor on the next mouse move.
+  if (should_reset_cursor) {
+    [NSCursor.arrowCursor set];
+  }
+}
+
+- (void)setPointerInside:(BOOL)pointerInside {
+  if (_pointerInside == pointerInside) {
+    return;
+  }
+  const BOOL could_change_cursor = [self shouldChangeCurrentCursor];
+  _pointerInside = pointerInside;
+  // -[RenderWidgetHostViewCocoa updateCursor:] calls
+  // invalidateCursorRectsForView: on the parent window, which schedules
+  // AppKit's run-loop observer to reset the cursor from the parent window's
+  // cursor rects when the run loop sleeps. Disable cursor rects on the parent
+  // window while the pointer is over the surface so parts of the surface
+  // extending outside RenderWidgetHostViewCocoa do not get reset to the arrow.
+  //
+  // -[NSWindow disableCursorRects] and -enableCursorRects toggle a boolean
+  // flag (areCursorRectsEnabled) on NSWindow rather than maintaining a
+  // reference count, so this toggle must stay balanced: only disable cursor
+  // rects when they are currently enabled on the parent window, and re-enable
+  // them on that same saved window on exit or teardown.
+  if (_pointerInside) {
+    DCHECK(!_cursorRectsDisabledWindow);
+    NSWindow* parent_window = self.window.parentWindow;
+    if (parent_window.areCursorRectsEnabled) {
+      _cursorRectsDisabledWindow = parent_window;
+      [_cursorRectsDisabledWindow disableCursorRects];
+    }
+  } else if (_cursorRectsDisabledWindow) {
+    NSCursor* preserved_cursor =
+        could_change_cursor ? nil : [NSCursor currentCursor];
+    [_cursorRectsDisabledWindow enableCursorRects];
+    _cursorRectsDisabledWindow = nil;
+    if (preserved_cursor && [NSCursor currentCursor] != preserved_cursor) {
+      [preserved_cursor set];
+    }
+  }
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent*)theEvent {
   return YES;
 }
 
-- (void)mouseEvent:(NSEvent*)theEvent {
-  if (_owner) {
-    _owner->RouteMouseEvent(theEvent);
+- (BOOL)shouldChangeCurrentCursor {
+  // Only change the cursor while the pointer is over the surface and the
+  // owning RenderWidgetHostViewCocoa permits cursor updates (its
+  // keyTrackingWindow is key, covering immersive fullscreen, and neither
+  // cursor autohide nor a context menu is active).
+  if (!_pointerInside) {
+    return NO;
   }
+  if (_ownerCocoaView) {
+    return [_ownerCocoaView canChangeCurrentCursor];
+  }
+  return self.window.parentWindow.isKeyWindow;
+}
+
+- (BOOL)isMouseLocationInBounds {
+  if (!self.window) {
+    return NO;
+  }
+  NSPoint location = [self.window convertPointFromScreen:NSEvent.mouseLocation];
+  location = [self convertPoint:location fromView:nil];
+  return [self mouse:location inRect:[self bounds]];
+}
+
+- (void)updatePointerInsideFromMouseLocation {
+  const BOOL is_inside = [self isMouseLocationInBounds];
+  if (_pointerInside == is_inside) {
+    return;
+  }
+  if (is_inside) {
+    [self setPointerInside:YES];
+    if ([self shouldChangeCurrentCursor]) {
+      [_currentCursor set];
+    }
+  } else {
+    const BOOL should_reset_cursor = [self shouldChangeCurrentCursor];
+    [self setPointerInside:NO];
+    if (should_reset_cursor) {
+      [NSCursor.arrowCursor set];
+    }
+  }
+}
+
+- (void)updateCursor:(NSCursor*)cursor {
+  _currentCursor = cursor ?: NSCursor.arrowCursor;
+  if ([self shouldChangeCurrentCursor]) {
+    [_currentCursor set];
+  }
+}
+
+// Keeps `_pointerInside` and the displayed cursor in sync with `event`. Mouse
+// moves and presses count as entry because AppKit delivers the first mouse
+// event without a mouse enter when the window appears under a stationary
+// pointer.
+- (void)trackCursorForMouseEvent:(NSEvent*)event {
+  switch (event.type) {
+    case NSEventTypeMouseEntered:
+      [self setPointerInside:YES];
+      // Apply the cursor remembered while the pointer was outside.
+      if ([self shouldChangeCurrentCursor]) {
+        [_currentCursor set];
+      }
+      break;
+    case NSEventTypeMouseExited: {
+      const BOOL should_reset_cursor = [self shouldChangeCurrentCursor];
+      [self setPointerInside:NO];
+      // -updateCursor: changed the current cursor, so reset it to the default
+      // on exit when the surface was allowed to change it. The view the
+      // pointer moved to sets its own cursor afterwards.
+      if (should_reset_cursor) {
+        [NSCursor.arrowCursor set];
+      }
+      break;
+    }
+    case NSEventTypeMouseMoved:
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeOtherMouseDown:
+      [self setPointerInside:YES];
+      [[fallthrough]];
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeOtherMouseDragged:
+      // AppKit resets the cursor to the arrow on its own in some situations
+      // (for example when the pointer crosses certain window boundaries), and
+      // the exit from the owning view may be delivered after the entry into
+      // this window. Re-apply the renderer cursor whenever the application or
+      // system cursor diverged from it.
+      if ([self shouldChangeCurrentCursor] &&
+          ([NSCursor currentCursor] != _currentCursor ||
+           [NSCursor currentSystemCursor] != _currentCursor)) {
+        [_currentCursor set];
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+- (void)mouseEvent:(NSEvent*)theEvent {
+  if (!_owner) {
+    return;
+  }
+  [self trackCursorForMouseEvent:theEvent];
+  _owner->RouteMouseEvent(theEvent);
 }
 
 - (void)scrollWheel:(NSEvent*)theEvent {
@@ -104,6 +274,13 @@
 
 - (BOOL)canBecomeMainWindow {
   return NO;
+}
+
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
+  // AppKit's default implementation pushes child windows down below the menu
+  // bar. Return `frameRect` unchanged so unbounded surfaces can be positioned
+  // anywhere on screen.
+  return frameRect;
 }
 @end
 
@@ -271,10 +448,16 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
   [window_ setLevel:NSFloatingWindowLevel];
   [window_ setAcceptsMouseMovedEvents:YES];
 
+  auto* parent_view_mac =
+      static_cast<RenderWidgetHostViewMac*>(parent_view_.get());
+  RenderWidgetHostViewCocoa* owner_cocoa_view =
+      parent_view_mac ? parent_view_mac->GetInProcessNSView() : nil;
   NSRect client_rect =
       NSMakeRect(0, 0, ns_rect.size.width, ns_rect.size.height);
   UnboundedNSView* content_view =
-      [[UnboundedNSView alloc] initWithFrame:client_rect owner:this];
+      [[UnboundedNSView alloc] initWithFrame:client_rect
+                                       owner:this
+                              ownerCocoaView:owner_cocoa_view];
   [content_view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 
   CALayer* background_layer = [CALayer layer];
@@ -335,11 +518,8 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
       bounds_in_screen.size(), cc::DeadlinePolicy::UseDefaultDeadline(),
       /*stretch_content_to_fill_bounds=*/false);
 
-  auto* parent_view_mac =
-      static_cast<RenderWidgetHostViewMac*>(parent_view_.get());
-  if (parent_view_mac && parent_view_mac->GetInProcessNSView()) {
-    if (NSWindow* parent_window =
-            [parent_view_mac->GetInProcessNSView() window]) {
+  if (owner_cocoa_view) {
+    if (NSWindow* parent_window = [owner_cocoa_view window]) {
       [parent_window addChildWindow:window_ ordered:NSWindowAbove];
       [window_ setLevel:[parent_window level] + 1];
     }
@@ -379,9 +559,15 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
 void UnboundedSurfaceWindowMac::SetBounds(const gfx::Rect& bounds_in_screen) {
   if (window_) {
     NSRect ns_rect = gfx::ScreenRectToNSRect(bounds_in_screen);
+    const bool frame_changed = !NSEqualRects([window_ frame], ns_rect);
     [window_ setFrame:ns_rect display:YES];
     [window_.contentView
         setFrame:NSMakeRect(0, 0, ns_rect.size.width, ns_rect.size.height)];
+    if (frame_changed) {
+      UnboundedNSView* view =
+          base::apple::ObjCCast<UnboundedNSView>([window_ contentView]);
+      [view updatePointerInsideFromMouseLocation];
+    }
     local_surface_id_allocator_.GenerateId();
 
     if (root_layer_) {
@@ -496,6 +682,15 @@ void UnboundedSurfaceWindowMac::RouteWheelEvent(NSEvent* ns_event) {
     return;
   }
   target_view->ProcessMouseWheelEvent(web_event, ui::LatencyInfo());
+}
+
+void UnboundedSurfaceWindowMac::DisplayCursor(const ui::Cursor& cursor) {
+  if (!window_) {
+    return;
+  }
+  UnboundedNSView* view =
+      base::apple::ObjCCast<UnboundedNSView>([window_ contentView]);
+  [view updateCursor:ui::GetNativeCursor(cursor)];
 }
 
 void UnboundedSurfaceWindowMac::RouteKeyboardEvent(NSEvent* ns_event) {

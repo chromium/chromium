@@ -76,6 +76,9 @@ CONTENT_EXPORT
 // Confirm ongoing composition.
 - (void)finishComposingText;
 - (void)updateCursor:(NSCursor*)cursor;
+// Returns YES when the key-tracking window is key and neither cursor
+// autohide nor a context menu suppresses cursor updates.
+- (BOOL)canChangeCurrentCursor;
 - (void)tabletEvent:(NSEvent*)theEvent;
 - (void)quickLookWithEvent:(NSEvent*)event;
 - (void)showLookUpDictionaryOverlayFromRange:(NSRange)range;
