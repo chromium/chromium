@@ -182,8 +182,6 @@ class TextIteratorAlgorithm {
     return behavior_.SkipsUnselectableContent();
   }
 
-  bool IsBetweenSurrogatePair(wtf_size_t position) const;
-
   // Ensure container node of current text run for computing position.
   void EnsurePositionContainer() const;
 

@@ -59,10 +59,6 @@ DomSelection::DomSelection(const TreeScope* tree_scope)
     : ExecutionContextClient(tree_scope->RootNode().GetExecutionContext()),
       tree_scope_(tree_scope) {}
 
-void DomSelection::ClearTreeScope() {
-  tree_scope_ = nullptr;
-}
-
 FrameSelection& DomSelection::Selection() const {
   DCHECK(DomWindow());
   return DomWindow()->GetFrame()->Selection();

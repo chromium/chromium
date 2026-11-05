@@ -176,12 +176,6 @@ void TouchEvent::preventDefault() {
   }
 }
 
-bool TouchEvent::IsTouchStartOrFirstTouchMove() const {
-  if (!native_event_)
-    return false;
-  return GetWebTouchEvent(*native_event_)->touch_start_or_first_touch_move;
-}
-
 void TouchEvent::Trace(Visitor* visitor) const {
   visitor->Trace(touches_);
   visitor->Trace(target_touches_);

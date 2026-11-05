@@ -113,7 +113,6 @@ class CORE_EXPORT IdleSpellCheckController final
 
   // Functions for cold mode.
   void ColdModeTimerFired();
-  void ColdModeInvocation(IdleDeadline*);
 
   // Implements |ExecutionContextLifecycleObserver|.
   void ContextDestroyed() final;

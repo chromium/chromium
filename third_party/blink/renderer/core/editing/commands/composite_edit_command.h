@@ -96,7 +96,6 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   // Append undo step from an already applied command.
   void AppendCommandToUndoStep(CompositeEditCommand*);
 
-  virtual bool IsReplaceSelectionCommand() const;
   virtual bool IsTypingCommand() const;
   virtual bool IsCommandGroupWrapper() const;
   virtual bool IsDragAndDropCommand() const;

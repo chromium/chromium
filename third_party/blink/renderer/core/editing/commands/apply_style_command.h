@@ -191,7 +191,6 @@ enum ShouldStyleAttributeBeEmpty {
 };
 bool IsEmptyFontTag(const Element*,
                     ShouldStyleAttributeBeEmpty = kStyleAttributeShouldBeEmpty);
-bool IsLegacyAppleHTMLSpanElement(const Node*);
 bool IsStyleSpanOrSpanWithOnlyStyleAttribute(const Element*);
 
 }  // namespace blink

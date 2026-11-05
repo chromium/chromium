@@ -332,15 +332,6 @@ EphemeralRangeInFlatTree TextOffsetMapping::ComputeRange(wtf_size_t start,
                                   GetPositionAfter(end));
 }
 
-wtf_size_t TextOffsetMapping::FindNonWhitespaceCharacterFrom(
-    wtf_size_t offset) const {
-  for (wtf_size_t runner = offset; runner < text16_.length(); ++runner) {
-    if (!IsWhitespace(text16_[runner]))
-      return runner;
-  }
-  return text16_.length();
-}
-
 // static
 TextOffsetMapping::BackwardRange TextOffsetMapping::BackwardRangeOf(
     const PositionInFlatTree& position) {

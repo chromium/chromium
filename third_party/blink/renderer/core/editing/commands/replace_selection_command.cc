@@ -2667,10 +2667,6 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
   return true;
 }
 
-bool ReplaceSelectionCommand::IsReplaceSelectionCommand() const {
-  return true;
-}
-
 EphemeralRange ReplaceSelectionCommand::InsertedRange() const {
   if (start_of_inserted_range_.IsNull() || end_of_inserted_range_.IsNull()) {
     return EphemeralRange();

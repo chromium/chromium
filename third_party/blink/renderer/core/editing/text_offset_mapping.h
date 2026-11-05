@@ -191,11 +191,6 @@ class CORE_EXPORT TextOffsetMapping final {
   // Returns a range specified by |start| and |end| offset in |text16_|.
   EphemeralRangeInFlatTree ComputeRange(wtf_size_t start, wtf_size_t end) const;
 
-  // Returns an offset in |text16_| before non-whitespace character from
-  // |offset|, inclusive, otherwise returns |text16_.length()|.
-  // This function is used for computing trailing whitespace after word.
-  wtf_size_t FindNonWhitespaceCharacterFrom(wtf_size_t offset) const;
-
   // Helper functions to construct |TextOffsetMapping|.
 
   // Returns a |BackwardRange| for backward iteration of |InlineContents|

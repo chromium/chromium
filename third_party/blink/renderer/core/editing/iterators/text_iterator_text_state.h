@@ -63,14 +63,6 @@ class CORE_EXPORT TextIteratorTextState {
                                 const ContainerNode& container_node);
   void EmitChar16BeforeNode(UChar code_unit, const Node& node);
 
-  // Emits |code_unit| before |offset| in |text_node|.
-  void EmitChar16Before(UChar code_unit,
-                        const Text& text_node,
-                        wtf_size_t offset);
-  // Emits |code_unit| as replacement of code unit at |offset| in |text_node|.
-  void EmitReplacmentCodeUnit(UChar code_unit,
-                              const Text& text_node,
-                              wtf_size_t offset);
   void EmitText(const Text&,
                 wtf_size_t position_start_offset,
                 wtf_size_t position_end_offset,

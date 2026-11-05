@@ -147,13 +147,6 @@ TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior() {
 }
 
 // static
-TextIteratorBehavior TextIteratorBehavior::IgnoresStyleVisibilityBehavior() {
-  return TextIteratorBehavior::Builder()
-      .SetIgnoresStyleVisibility(true)
-      .Build();
-}
-
-// static
 TextIteratorBehavior TextIteratorBehavior::DefaultRangeLengthBehavior() {
   return TextIteratorBehavior::Builder()
       .SetEmitsObjectReplacementCharacter(true)

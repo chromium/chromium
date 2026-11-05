@@ -102,8 +102,6 @@ class CORE_EXPORT TouchEvent final : public UIEventWithKeyState {
   void Trace(Visitor*) const override;
 
  private:
-  bool IsTouchStartOrFirstTouchMove() const;
-
   Member<TouchList> touches_;
   Member<TouchList> target_touches_;
   Member<TouchList> changed_touches_;

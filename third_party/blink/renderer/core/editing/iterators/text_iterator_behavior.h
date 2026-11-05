@@ -72,7 +72,6 @@ class CORE_EXPORT TextIteratorBehavior final {
   }
 
   static TextIteratorBehavior EmitsObjectReplacementCharacterBehavior();
-  static TextIteratorBehavior IgnoresStyleVisibilityBehavior();
   static TextIteratorBehavior DefaultRangeLengthBehavior();
   static TextIteratorBehavior AllVisiblePositionsRangeLengthBehavior();
   static TextIteratorBehavior

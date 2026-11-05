@@ -236,10 +236,6 @@ bool CompositeEditCommand::IsDragAndDropCommand() const {
   return false;
 }
 
-bool CompositeEditCommand::IsReplaceSelectionCommand() const {
-  return false;
-}
-
 //
 // sugary-sweet convenience functions to help create and apply edit commands in
 // composite commands

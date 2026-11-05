@@ -363,21 +363,6 @@ int16_t ComparePositionsInDomTree(const Node* container_a,
       container_a, offset_a, container_b, offset_b, disconnected);
 }
 
-int16_t ComparePositionsInFlatTree(const Node* container_a,
-                                   int offset_a,
-                                   const Node* container_b,
-                                   int offset_b,
-                                   bool* disconnected) {
-  if (container_a->IsShadowRoot()) {
-    container_a = container_a->OwnerShadowHost();
-  }
-  if (container_b->IsShadowRoot()) {
-    container_b = container_b->OwnerShadowHost();
-  }
-  return Comparator<FlatTreeTraversal>::ComparePositions(
-      container_a, offset_a, container_b, offset_b, disconnected);
-}
-
 int16_t ComparePositions(const Position& position_a,
                          const Position& position_b) {
   DCHECK(position_a.IsNotNull());

@@ -58,8 +58,6 @@ class CORE_EXPORT DomSelection final : public ScriptWrappable,
  public:
   explicit DomSelection(const TreeScope*);
 
-  void ClearTreeScope();
-
   // Safari Selection Object API
   // These methods return the valid equivalents of internal editing positions.
   Node* baseNode() const;

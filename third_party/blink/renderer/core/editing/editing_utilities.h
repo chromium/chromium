@@ -265,11 +265,6 @@ int16_t ComparePositionsInDomTree(const Node* container_a,
                                   const Node* container_b,
                                   int offset_b,
                                   bool* disconnected = nullptr);
-int16_t ComparePositionsInFlatTree(const Node* container_a,
-                                   int offset_a,
-                                   const Node* container_b,
-                                   int offset_b,
-                                   bool* disconnected = nullptr);
 // TODO(yosin): We should replace `ComparePositions()` by `Position::
 // operator<()` to utilize `DCHECK_XX()`.
 int16_t ComparePositions(const Position&, const Position&);
