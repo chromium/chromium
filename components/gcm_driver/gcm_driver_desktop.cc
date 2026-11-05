@@ -588,19 +588,8 @@ void GCMDriverDesktop::RemoveConnectionObserver(
 void GCMDriverDesktop::Stop() {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
-  const bool gcm_was_started = std::exchange(gcm_started_, false);
-
-  for (auto& [tuple, callback] : std::exchange(get_token_callbacks_, {})) {
-    std::move(callback).Run(std::string(), GCMClient::GCM_DISABLED);
-  }
-  for (auto& [tuple, callback] : std::exchange(delete_token_callbacks_, {})) {
-    std::move(callback).Run(GCMClient::GCM_DISABLED);
-  }
-
   // No need to stop GCM service if not started yet.
-  // TODO(crbug.com/581834397): Also clean up `delayed_task_controller_` if
-  // `Stop()` is called before `GCMClientReady()` completes.
-  if (!gcm_was_started) {
+  if (!gcm_started_) {
     return;
   }
 
