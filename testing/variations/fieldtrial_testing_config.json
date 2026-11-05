@@ -11246,7 +11246,6 @@
                         "session_rate_impact": "none"
                     },
                     "enable_features": [
-                        "AutofillEnableOffersInClankKeyboardAccessory",
                         "IPH_KeyboardAccessoryPaymentOffer"
                     ]
                 }

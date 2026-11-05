@@ -1198,13 +1198,6 @@ inline constexpr char
         "the Payments settings page into a new Offers and loyalty cards "
         "settings page, with a separate toggle to control them.";
 
-inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
-    "Enable Autofill offers in keyboard accessory";
-inline constexpr char
-    kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
-        "When enabled, offers will be displayed in the keyboard accessory when "
-        "available.";
-
 inline constexpr char kAutofillEnableOmniboxAutofillName[] =
     "Enable Omnibox Autofill chip for payments";
 inline constexpr char kAutofillEnableOmniboxAutofillDescription[] =

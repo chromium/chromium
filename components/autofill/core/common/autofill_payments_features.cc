@@ -231,11 +231,6 @@ BASE_FEATURE(kAutofillEnableOAuth2TokenFix, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillEnableOffersAndLoyaltyCardsSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, offers will be displayed in the Clank keyboard accessory during
-// downstream.
-BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, an "Autofill payments" omnibox chip will appear for relevant
 // payment checkout forms.
 BASE_FEATURE(kAutofillEnableOmniboxAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
