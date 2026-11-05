@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -40,6 +42,8 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -59,11 +63,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
-/**
- * Render tests for the Tab Strip.
- *
- * <p>TODO(crbug.com/574104536): Add render tests for other tab strip behaviors.
- */
+/** Render tests for the Tab Strip. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -84,8 +84,17 @@ public class TabStripRenderTest {
     private static final String RENDER_TEST_ID_WITH_NOTIFICATION_BUBBLE =
             "shared_tab_group_avatar_notification_bubble";
     private static final String RENDER_TEST_ID_RTL = "shared_tab_group_avatar_rtl";
+    private static final String RENDER_TEST_ID_FILLED_STRIP_PINNED_AND_UNPINNED =
+            "tab_strip_filled_pinned_and_unpinned";
+    private static final String RENDER_TEST_ID_COLLAPSED_GROUP = "tab_strip_collapsed_group";
+    private static final String RENDER_TEST_ID_REORDER = "tab_strip_reorder";
+    private static final String RENDER_TEST_ID_HOVER_HIGHLIGHT = "tab_strip_hover_highlight";
+    private static final String RENDER_TEST_ID_KEYBOARD_FOCUS = "tab_strip_keyboard_focus";
 
     private static final int AVATAR_BITMAP_SIZE_PX = 50;
+    // Extra tabs opened after the strip first becomes scrollable (2 to offset the width reduction
+    // from pinning the first two tabs, and 2 so tabs overflow on both the left and right edges).
+    private static final int EXTRA_TABS_PAST_SCROLL_LIMIT = 4;
 
     private static final GroupMember GROUP_MEMBER1 = SharedGroupTestHelper.GROUP_MEMBER1;
     private static final GroupMember GROUP_MEMBER2 = SharedGroupTestHelper.GROUP_MEMBER2;
@@ -144,6 +153,21 @@ public class TabStripRenderTest {
                         })
                 .when(mDataSharingUiDelegate)
                 .getAvatarBitmap(any());
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeTabbedActivity activity = mCtaTestRule.getActivity();
+                    if (activity == null) return;
+                    StripLayoutHelper stripLayoutHelper =
+                            TabStripTestUtils.getActiveStripLayoutHelper(activity);
+                    if (stripLayoutHelper == null) return;
+                    stripLayoutHelper.stopReorderMode(/* isDragCancelled= */ false);
+                    stripLayoutHelper.onHoverExit(/* inTabStrip= */ false);
+                    stripLayoutHelper.getNewTabButton().setKeyboardFocused(false);
+                });
     }
 
     @Test
@@ -249,7 +273,25 @@ public class TabStripRenderTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testSharedGroupAvatar_rtl() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(true));
+        ResettersForTesting.register(
+                () ->
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> {
+                                    ChromeTabbedActivity activity = mCtaTestRule.getActivity();
+                                    if (activity != null) {
+                                        TabStripUtils.getStripLayoutHelperManager(activity)
+                                                .updateHelperEndMargins();
+                                    }
+                                }));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalizationUtils.setRtlForTesting(true);
+                    ChromeTabbedActivity activity = mCtaTestRule.getActivity();
+                    if (activity != null) {
+                        TabStripUtils.getStripLayoutHelperManager(activity)
+                                .updateHelperEndMargins();
+                    }
+                });
         StripLayoutHelper stripLayoutHelper = setupSharedGroup(GROUP_MEMBER1, GROUP_MEMBER2);
 
         // Show notification bubble to verify full mirroring: [ Bubble | Title | Avatars ].
@@ -261,6 +303,156 @@ public class TabStripRenderTest {
                 });
         settleLayout(stripLayoutHelper);
         mRenderTestRule.compareForResult(captureBitmap(), RENDER_TEST_ID_RTL);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testFilledStrip_withPinnedAndUnpinnedTabs() throws Exception {
+        CtaPageStation page = mCtaTestRule.startOnBlankPage();
+        ChromeTabbedActivity activity = page.getActivity();
+        StripLayoutHelper stripLayoutHelper =
+                TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        while (ThreadUtils.runOnUiThreadBlocking(
+                        () -> stripLayoutHelper.getScrollOffsetLimitForTesting())
+                == 0) {
+            page = page.openNewTabFast();
+        }
+        for (int i = 0; i < EXTRA_TABS_PAST_SCROLL_LIMIT; i++) {
+            page = page.openNewTabFast();
+        }
+        settleLayout(stripLayoutHelper);
+
+        // Pin the first two tabs, select a middle unpinned tab, and scroll halfway so both
+        // left/right fades and pinned-over-unpinned layer z-ordering are exercised.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel = activity.getCurrentTabModel();
+                    tabModel.pinTab(tabModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
+                    tabModel.pinTab(tabModel.getTabAt(1).getId(), /* showUngroupDialog= */ false);
+                    TabModelUtils.setIndex(tabModel, 5);
+                    stripLayoutHelper.updateLayout(0);
+                    stripLayoutHelper.finishAnimations();
+                    float midScrollOffset = stripLayoutHelper.getScrollOffsetLimitForTesting() / 2f;
+                    stripLayoutHelper.setScrollOffsetForTesting(midScrollOffset);
+                });
+        settleLayout(stripLayoutHelper);
+        mRenderTestRule.compareForResult(
+                captureBitmap(), RENDER_TEST_ID_FILLED_STRIP_PINNED_AND_UNPINNED);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testCollapsedTabGroup() throws Exception {
+        CtaPageStation page = mCtaTestRule.startOnBlankPage();
+        page = page.openNewTabFast();
+        page = page.openNewTabFast();
+        page = page.openNewTabFast();
+        ChromeTabbedActivity activity = page.getActivity();
+        StripLayoutHelper stripLayoutHelper =
+                TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        settleLayout(stripLayoutHelper);
+
+        // Group tabs [2, 3] first, then group tabs [0, 1].
+        TabStripTestUtils.createTabGroup(activity, /* isIncognito= */ false, 2, 3);
+        TabStripTestUtils.createTabGroup(activity, /* isIncognito= */ false, 0, 1);
+        settleLayout(stripLayoutHelper);
+
+        // Select tab 2 in the expanded group and collapse the first group.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel = activity.getCurrentTabModel();
+                    TabModelUtils.setIndex(tabModel, 2);
+                    StripLayoutGroupTitle firstGroupTitle = getFirstGroupTitle(stripLayoutHelper);
+                    tabModel.setTabGroupCollapsed(
+                            firstGroupTitle.getTabGroupId(),
+                            /* isCollapsed= */ true,
+                            /* animate= */ false);
+                });
+        settleLayout(stripLayoutHelper);
+        mRenderTestRule.compareForResult(captureBitmap(), RENDER_TEST_ID_COLLAPSED_GROUP);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testReorderMode() throws Exception {
+        CtaPageStation page = mCtaTestRule.startOnBlankPage();
+        page = page.openNewTabFast();
+        page = page.openNewTabFast();
+        ChromeTabbedActivity activity = page.getActivity();
+        StripLayoutHelper stripLayoutHelper =
+                TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        settleLayout(stripLayoutHelper);
+
+        // Group the first two tabs and leave the third tab ungrouped.
+        TabStripTestUtils.createTabGroup(activity, /* isIncognito= */ false, 0, 1);
+        settleLayout(stripLayoutHelper);
+
+        // Start reorder mode on the first grouped tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel = activity.getCurrentTabModel();
+                    TabModelUtils.setIndex(tabModel, 0);
+                    stripLayoutHelper.startReorderModeAtIndexForTesting(0);
+                });
+        settleLayout(stripLayoutHelper);
+        mRenderTestRule.compareForResult(captureBitmap(), RENDER_TEST_ID_REORDER);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testHoverHighlight() throws Exception {
+        CtaPageStation page = mCtaTestRule.startOnBlankPage();
+        page = page.openNewTabFast();
+        page = page.openNewTabFast();
+        ChromeTabbedActivity activity = page.getActivity();
+        StripLayoutHelper stripLayoutHelper =
+                TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        settleLayout(stripLayoutHelper);
+
+        // Hover over the unselected first tab and its close button so both the tab hover
+        // container and the close button hover highlight are rendered.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    StripLayoutTab firstTab = stripLayoutHelper.getStripLayoutTabsForTesting()[0];
+                    stripLayoutHelper.setLastHoveredTabForTesting(firstTab);
+                    firstTab.setCloseHovered(true);
+                });
+        settleLayout(stripLayoutHelper);
+        mRenderTestRule.compareForResult(captureBitmap(), RENDER_TEST_ID_HOVER_HIGHLIGHT);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testKeyboardFocus() throws Exception {
+        CtaPageStation page = mCtaTestRule.startOnBlankPage();
+        page = page.openNewTabFast();
+        page = page.openNewTabFast();
+        ChromeTabbedActivity activity = page.getActivity();
+        StripLayoutHelper stripLayoutHelper =
+                TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        settleLayout(stripLayoutHelper);
+
+        // Group the first two tabs so tab 0 is a grouped tab and tab 2 is an ungrouped tab.
+        TabStripTestUtils.createTabGroup(activity, /* isIncognito= */ false, 0, 1);
+        settleLayout(stripLayoutHelper);
+
+        // Apply keyboard focus across each focusable compositor target type.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    StripLayoutGroupTitle groupTitle = getFirstGroupTitle(stripLayoutHelper);
+                    StripLayoutTab[] tabs = stripLayoutHelper.getStripLayoutTabsForTesting();
+                    groupTitle.setKeyboardFocused(true);
+                    tabs[0].setKeyboardFocused(true);
+                    tabs[1].getCloseButton().setKeyboardFocused(true);
+                    stripLayoutHelper.getNewTabButton().setKeyboardFocused(true);
+                });
+        settleLayout(stripLayoutHelper);
+        mRenderTestRule.compareForResult(captureBitmap(), RENDER_TEST_ID_KEYBOARD_FOCUS);
     }
 
     private StripLayoutHelper setupSharedGroup(GroupMember... members) throws Exception {
@@ -319,34 +511,15 @@ public class TabStripRenderTest {
 
     private void settleLayout(StripLayoutHelper stripLayoutHelper) {
         TabStripUtils.settleDownCompositor(stripLayoutHelper);
-        boolean hasGroupTitle =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            mCtaTestRule
-                                    .getActivity()
-                                    .getLayoutManager()
-                                    .getStripLayoutHelperManager()
-                                    .updateHelperEndMargins();
-                            stripLayoutHelper.finishAnimations();
-                            stripLayoutHelper.finishScrollForTesting();
-                            stripLayoutHelper.updateLayout(0);
-                            stripLayoutHelper.finishAnimations();
-                            stripLayoutHelper.updateLayout(0);
-                            return findFirstGroupTitle(stripLayoutHelper) != null;
-                        });
-        if (hasGroupTitle) {
-            waitForFrameSwapped(stripLayoutHelper);
-        }
+        ThreadUtils.runOnUiThreadBlocking(() -> stripLayoutHelper.updateLayout(0));
+        waitForFrameSwapped(stripLayoutHelper);
     }
 
     private void waitForFrameSwapped(StripLayoutHelper stripLayoutHelper) {
         CallbackHelper onFrameSwapped = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    StripLayoutGroupTitle groupTitle = findFirstGroupTitle(stripLayoutHelper);
-                    if (groupTitle != null) {
-                        stripLayoutHelper.updateGroupTextAndSharedState(groupTitle.getTabGroupId());
-                    }
+                    refreshTitleLayer(stripLayoutHelper);
                     mCtaTestRule
                             .getActivity()
                             .getLayoutManager()
@@ -355,13 +528,26 @@ public class TabStripRenderTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     if (onFrameSwapped.getCallCount() > 0) return true;
-                    StripLayoutGroupTitle groupTitle = findFirstGroupTitle(stripLayoutHelper);
-                    if (groupTitle != null) {
-                        stripLayoutHelper.updateGroupTextAndSharedState(groupTitle.getTabGroupId());
-                    }
+                    refreshTitleLayer(stripLayoutHelper);
                     mCtaTestRule.getActivity().getLayoutManager().requestUpdate();
                     return false;
                 });
+    }
+
+    // LayoutManagerImpl#requestUpdate(Runnable) only invokes the frame-swap callback when a frame
+    // has non-empty damage and swaps buffers. Dirty a title resource in LayerTitleCache (with
+    // identical pixels) so the damage rect is never empty and the swap callback always fires,
+    // even if a prior vsync already drew the latest state.
+    // TODO(crbug.com/574104536): Replace with a direct test-only compositor damage or idle signal.
+    private void refreshTitleLayer(StripLayoutHelper stripLayoutHelper) {
+        StripLayoutGroupTitle groupTitle = findFirstGroupTitle(stripLayoutHelper);
+        if (groupTitle != null) {
+            stripLayoutHelper.updateGroupTextAndSharedState(groupTitle.getTabGroupId());
+        } else if (mCtaTestRule.getActivity().getActivityTab() != null) {
+            stripLayoutHelper
+                    .getLayerTitleCacheForTesting()
+                    .getUpdatedTitle(mCtaTestRule.getActivity().getActivityTab(), "");
+        }
     }
 
     private Bitmap captureBitmap() {
