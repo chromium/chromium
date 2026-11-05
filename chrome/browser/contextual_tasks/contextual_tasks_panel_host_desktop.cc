@@ -177,6 +177,20 @@ void ContextualTasksPanelHostDesktop::SetWebContents(
   }
 }
 
+void ContextualTasksPanelHostDesktop::SetErrorPageVisible(bool visible) {
+  is_error_page_visible_ = visible && GetIsProtectedPageErrorEnabled();
+  if (web_view_) {
+    web_view_->SetErrorPageVisible(is_error_page_visible_);
+  }
+}
+
+bool ContextualTasksPanelHostDesktop::IsErrorPageVisible() const {
+  if (web_view_) {
+    return web_view_->IsErrorPageVisible();
+  }
+  return is_error_page_visible_;
+}
+
 void ContextualTasksPanelHostDesktop::OnEntryShown(SidePanelEntry* entry) {
   NotifySurfaceStateChanged(
       ContextualTasksPanelHost::SurfaceState::kVisible,
@@ -200,6 +214,7 @@ ContextualTasksPanelHostDesktop::CreateSidePanelView(
   web_view->SetPaintToLayer();
   web_view->layer()->SetFillsBoundsOpaquely(false);
   web_view_ = web_view->GetWeakPtr();
+  web_view->SetErrorPageVisible(is_error_page_visible_);
 
   NotifySurfaceStateChanged(
       ContextualTasksPanelHost::SurfaceState::kVisible,

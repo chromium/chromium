@@ -75,6 +75,8 @@ class MockContextualTasksPanelController
               (),
               (const, override));
   MOCK_METHOD(bool, IsOnboardingTooltipVisible, (), (const, override));
+  MOCK_METHOD(void, SetErrorPageVisible, (bool visible), (override));
+  MOCK_METHOD(bool, IsErrorPageVisible, (), (const, override));
   MOCK_METHOD(std::optional<tabs::TabHandle>,
               GetAutoSuggestedTabHandle,
               (),

@@ -93,6 +93,12 @@ class ContextualTasksPanelHost {
 
   // Configures the panel to display the provided WebContents.
   virtual void SetWebContents(content::WebContents* web_contents) = 0;
+
+  // Toggles the visibility of the protected page error scrim over the panel.
+  virtual void SetErrorPageVisible(bool visible);
+
+  // Returns whether the protected page error scrim is currently visible.
+  virtual bool IsErrorPageVisible() const;
 };
 
 }  // namespace contextual_tasks

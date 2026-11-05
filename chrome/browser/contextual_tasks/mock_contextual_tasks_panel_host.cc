@@ -10,4 +10,12 @@ MockContextualTasksPanelHost::MockContextualTasksPanelHost() = default;
 
 MockContextualTasksPanelHost::~MockContextualTasksPanelHost() = default;
 
+void MockContextualTasksPanelHost::SetErrorPageVisible(bool visible) {
+  is_error_page_visible_ = visible;
+}
+
+bool MockContextualTasksPanelHost::IsErrorPageVisible() const {
+  return is_error_page_visible_;
+}
+
 }  // namespace contextual_tasks

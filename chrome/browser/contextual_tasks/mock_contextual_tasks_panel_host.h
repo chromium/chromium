@@ -36,9 +36,12 @@ class MockContextualTasksPanelHost : public ContextualTasksPanelHost {
   void SetWebContents(content::WebContents* web_contents) override {
     web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
   }
+  void SetErrorPageVisible(bool visible) override;
+  bool IsErrorPageVisible() const override;
 
  private:
   base::WeakPtr<content::WebContents> web_contents_ = nullptr;
+  bool is_error_page_visible_ = false;
 };
 
 }  // namespace contextual_tasks

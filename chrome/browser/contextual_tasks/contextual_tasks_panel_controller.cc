@@ -4,9 +4,17 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
+
 namespace contextual_tasks {
 
 bool ContextualTasksPanelController::IsOnboardingTooltipVisible() const {
+  return false;
+}
+
+void ContextualTasksPanelHost::SetErrorPageVisible(bool visible) {}
+
+bool ContextualTasksPanelHost::IsErrorPageVisible() const {
   return false;
 }
 
