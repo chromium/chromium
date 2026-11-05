@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/accessibility_prefs_merge_conflict_controller.h"
 
+#include <utility>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_prefs_custom_associator.h"
 #include "ash/accessibility/accessibility_sync_prefs_utils.h"
@@ -119,7 +121,7 @@ void AccessibilityPrefsMergeConflictController::UpdateConflict(
   for (auto& conflict : conflicts_) {
     if (conflict.pref_name == pref_name) {
       conflict.local_value = value.Clone();
-      prefs->Set(pref_name, value);
+      prefs->Set(pref_name, std::move(value));
       return;
     }
   }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/settings/owner_pending_setting_controller.h"
 
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -47,7 +48,7 @@ void OwnerPendingSettingController::Set(Profile* profile, base::Value value) {
     // See OnOwnershipTaken.
     VLOG(1) << "Pending owner; setting pending pref name: "
             << pending_pref_name_;
-    local_state_->Set(pending_pref_name_, value);
+    local_state_->Set(pending_pref_name_, std::move(value));
     NotifyObservers();
   }
 }
