@@ -10,9 +10,11 @@
 #include <wrl/client.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/webview2/include/WebView2.h"
 
@@ -45,7 +47,8 @@ class WebView2UI {
   void Resize(const RECT& rect);
 
   // Executes javascript asynchronously. The result if any is passed to the
-  // callback as a JSON string.
+  // callback as a JSON string, or an empty string on failure. Pending callbacks
+  // are canceled when this object is destroyed.
   HRESULT ExecuteScript(const std::wstring& script,
                         base::OnceCallback<void(const std::wstring&)>
                             on_complete = base::DoNothing());
@@ -55,9 +58,17 @@ class WebView2UI {
   void SetWebMessageHandler(
       base::RepeatingCallback<void(const std::wstring&)> handler);
 
+  // Reports recoverable COM/navigation/process errors on the owning thread.
+  // The handler must defer destruction until the WebView2 callback returns.
+  void SetFailureHandler(base::RepeatingCallback<void(HRESULT)> handler);
+
   ICoreWebView2* GetWebView() const { return webview_.Get(); }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebView2UITest, ProcessFailuresAreClassified);
+  FRIEND_TEST_ALL_PREFIXES(WebView2UITest, NavigationFailuresAreReported);
+  FRIEND_TEST_ALL_PREFIXES(WebView2UITest, ScriptErrorsCompleteCallback);
+
   HRESULT OnEnvironmentCreated(HRESULT result,
                                ICoreWebView2Environment* env,
                                const RECT& rect);
@@ -68,6 +79,16 @@ class WebView2UI {
   HRESULT InitializeWebView();
 
   void ReportCreationResult(HRESULT result);
+  void ReportFailure(HRESULT result, std::string_view operation);
+  void OnScriptExecuted(
+      base::OnceCallback<void(const std::wstring&)> on_complete,
+      HRESULT result,
+      LPCWSTR json);
+  HRESULT OnProcessFailed(ICoreWebView2* sender,
+                          ICoreWebView2ProcessFailedEventArgs* args);
+  HRESULT OnNavigationCompleted(
+      ICoreWebView2* sender,
+      ICoreWebView2NavigationCompletedEventArgs* args);
 
   HRESULT OnWebMessageReceived(ICoreWebView2* sender,
                                ICoreWebView2WebMessageReceivedEventArgs* args);
@@ -90,6 +111,9 @@ class WebView2UI {
   base::OnceCallback<void(HRESULT)> on_created_;
 
   base::RepeatingCallback<void(const std::wstring&)> web_message_handler_;
+  base::RepeatingCallback<void(HRESULT)> failure_handler_;
+  EventRegistrationToken process_failed_token_ = {};
+  EventRegistrationToken navigation_completed_token_ = {};
   EventRegistrationToken web_message_token_ = {};
   EventRegistrationToken navigation_starting_token_ = {};
   EventRegistrationToken frame_navigation_starting_token_ = {};

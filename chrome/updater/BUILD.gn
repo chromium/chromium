@@ -1108,6 +1108,7 @@ if (is_win || is_mac || is_linux) {
         "win/ui/resources",
         "//components/named_mojo_ipc_server",
         "//mojo/public/cpp/system",
+        "//ui/gfx/geometry",
       ]
 
       data_deps += [

@@ -33,8 +33,25 @@ void WebView2UI::ReportCreationResult(HRESULT result) {
   }
 }
 
+void WebView2UI::ReportFailure(HRESULT result, std::string_view operation) {
+  LOG(ERROR) << "WebView2 " << operation << " failed: " << std::hex << result;
+  if (failure_handler_) {
+    failure_handler_.Run(result);
+  }
+}
+
 WebView2UI::~WebView2UI() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  failure_handler_.Reset();
+  web_message_handler_.Reset();
+  on_created_.Reset();
   if (webview_) {
+    if (process_failed_token_.value != 0) {
+      webview_->remove_ProcessFailed(process_failed_token_);
+    }
+    if (navigation_completed_token_.value != 0) {
+      webview_->remove_NavigationCompleted(navigation_completed_token_);
+    }
     if (web_message_token_.value != 0) {
       webview_->remove_WebMessageReceived(web_message_token_);
     }
@@ -106,8 +123,8 @@ HRESULT WebView2UI::Create(HWND hwnd_parent,
 HRESULT WebView2UI::OnEnvironmentCreated(HRESULT result,
                                          ICoreWebView2Environment* env,
                                          const RECT& rect) {
-  if (FAILED(result)) {
-    ReportCreationResult(result);
+  if (FAILED(result) || !env) {
+    ReportCreationResult(FAILED(result) ? result : E_POINTER);
     return S_OK;
   }
   webview_env_ = env;
@@ -140,8 +157,8 @@ HRESULT WebView2UI::OnEnvironmentCreated(HRESULT result,
 HRESULT WebView2UI::OnControllerCreated(HRESULT result,
                                         ICoreWebView2Controller* controller,
                                         const RECT& rect) {
-  if (FAILED(result)) {
-    ReportCreationResult(result);
+  if (FAILED(result) || !controller) {
+    ReportCreationResult(FAILED(result) ? result : E_POINTER);
     return S_OK;
   }
 
@@ -152,8 +169,7 @@ HRESULT WebView2UI::OnControllerCreated(HRESULT result,
     return S_OK;
   }
 
-  Resize(rect);
-  ReportCreationResult(S_OK);
+  ReportCreationResult(webview_controller_->put_Bounds(rect));
   return S_OK;
 }
 
@@ -287,6 +303,23 @@ HRESULT WebView2UI::InitializeWebView() {
     return hr;
   }
 
+  hr = webview_->add_ProcessFailed(
+      Microsoft::WRL::Callback<ICoreWebView2ProcessFailedEventHandler>(
+          this, &WebView2UI::OnProcessFailed)
+          .Get(),
+      &process_failed_token_);
+  if (FAILED(hr)) {
+    return hr;
+  }
+  hr = webview_->add_NavigationCompleted(
+      Microsoft::WRL::Callback<ICoreWebView2NavigationCompletedEventHandler>(
+          this, &WebView2UI::OnNavigationCompleted)
+          .Get(),
+      &navigation_completed_token_);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
   // Expose WebMessage handler.
   hr = webview_->add_WebMessageReceived(
       Microsoft::WRL::Callback<ICoreWebView2WebMessageReceivedEventHandler>(
@@ -305,9 +338,59 @@ HRESULT WebView2UI::OnWebMessageReceived(
     ICoreWebView2WebMessageReceivedEventArgs* args) {
   if (web_message_handler_) {
     base::win::ScopedCoMem<WCHAR> message;
-    if (SUCCEEDED(args->TryGetWebMessageAsString(&message)) && message) {
+    const HRESULT hr =
+        args ? args->TryGetWebMessageAsString(&message) : E_POINTER;
+    if (FAILED(hr) || !message) {
+      ReportFailure(FAILED(hr) ? hr : E_POINTER, "message decoding");
+    } else {
       web_message_handler_.Run(message.get());
     }
+  }
+  return S_OK;
+}
+
+HRESULT WebView2UI::OnProcessFailed(ICoreWebView2* sender,
+                                    ICoreWebView2ProcessFailedEventArgs* args) {
+  COREWEBVIEW2_PROCESS_FAILED_KIND kind =
+      COREWEBVIEW2_PROCESS_FAILED_KIND_UNKNOWN_PROCESS_EXITED;
+  const HRESULT hr = args ? args->get_ProcessFailedKind(&kind) : E_POINTER;
+  if (FAILED(hr)) {
+    ReportFailure(hr, "process failure inspection");
+    return S_OK;
+  }
+  // Only failures of the browser or main renderer require this page to recover.
+  // Other process exits do not invalidate the top-level document.
+  switch (kind) {
+    case COREWEBVIEW2_PROCESS_FAILED_KIND_BROWSER_PROCESS_EXITED:
+      ReportFailure(E_FAIL, "browser process exit");
+      break;
+    case COREWEBVIEW2_PROCESS_FAILED_KIND_RENDER_PROCESS_EXITED:
+      ReportFailure(E_FAIL, "main renderer exit");
+      break;
+    case COREWEBVIEW2_PROCESS_FAILED_KIND_RENDER_PROCESS_UNRESPONSIVE:
+      ReportFailure(E_FAIL, "main renderer unresponsiveness");
+      break;
+    default:
+      VLOG(1) << "WebView2 auxiliary process failure kind: " << kind;
+      break;
+  }
+  return S_OK;
+}
+
+HRESULT WebView2UI::OnNavigationCompleted(
+    ICoreWebView2* sender,
+    ICoreWebView2NavigationCompletedEventArgs* args) {
+  BOOL success = FALSE;
+  const HRESULT hr = args ? args->get_IsSuccess(&success) : E_POINTER;
+  if (FAILED(hr)) {
+    ReportFailure(hr, "navigation result inspection");
+  } else if (!success) {
+    COREWEBVIEW2_WEB_ERROR_STATUS status =
+        COREWEBVIEW2_WEB_ERROR_STATUS_UNKNOWN;
+    if (SUCCEEDED(args->get_WebErrorStatus(&status))) {
+      VLOG(1) << "WebView2 navigation error status: " << status;
+    }
+    ReportFailure(E_FAIL, "navigation");
   }
   return S_OK;
 }
@@ -320,12 +403,15 @@ HRESULT WebView2UI::OnNavigationStarting(
       << "Failed to get navigation URI.";
 
   std::wstring_view uri_str(uri.get());
-  VLOG(1) << "WebView2 NavigationStarting: " << uri_str;
+  const bool is_blank =
+      base::EqualsCaseInsensitiveASCII(uri_str, L"about:blank");
+  // NavigateToString may include the entire document in a data URL.
+  VLOG(1) << "WebView2 navigation starting: "
+          << (is_blank ? "about:blank" : "embedded HTML");
 
   const bool allow =
-      base::EqualsCaseInsensitiveASCII(uri_str, L"about:blank") ||
-      base::StartsWith(uri_str, L"data:text/html",
-                       base::CompareCase::INSENSITIVE_ASCII);
+      is_blank || base::StartsWith(uri_str, L"data:text/html",
+                                   base::CompareCase::INSENSITIVE_ASCII);
 
   // The UI is built from a static HTML page in memory and does not navigate
   // to external URLs. Any navigation other than the allowed blank or
@@ -365,34 +451,41 @@ HRESULT WebView2UI::OnPermissionRequested(
   return S_OK;
 }
 
+void WebView2UI::OnScriptExecuted(
+    base::OnceCallback<void(const std::wstring&)> on_complete,
+    HRESULT result,
+    LPCWSTR json) {
+  if (FAILED(result)) {
+    ReportFailure(result, "script execution");
+  }
+  if (on_complete) {
+    std::move(on_complete).Run(SUCCEEDED(result) && json ? json : L"");
+  }
+}
+
 HRESULT WebView2UI::ExecuteScript(
     const std::wstring& script,
     base::OnceCallback<void(const std::wstring&)> on_complete) {
   if (!webview_) {
+    OnScriptExecuted(std::move(on_complete), E_POINTER, nullptr);
     return E_POINTER;
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(on_complete));
-  HRESULT hr = webview_->ExecuteScript(
+  const HRESULT hr = webview_->ExecuteScript(
       script.c_str(),
       Microsoft::WRL::Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
-          [on_complete = std::move(split_callback.first)](
-              HRESULT error_code,
-              LPCWSTR result_object_as_json) mutable -> HRESULT {
-            if (on_complete) {
-              // WebView2 returns the result as a JSON string (e.g., "42",
-              // "true", or "{\"foo\":\"bar\"}")
-              std::move(on_complete)
-                  .Run(result_object_as_json ? result_object_as_json : L"");
+          [weak_this = weak_ptr_factory_.GetWeakPtr(),
+           on_complete = std::move(split_callback.first)](
+              HRESULT result, LPCWSTR json) mutable -> HRESULT {
+            if (weak_this) {
+              weak_this->OnScriptExecuted(std::move(on_complete), result, json);
             }
             return S_OK;
           })
           .Get());
-
   if (FAILED(hr)) {
-    if (split_callback.second) {
-      std::move(split_callback.second).Run(L"");
-    }
+    OnScriptExecuted(std::move(split_callback.second), hr, nullptr);
   }
   return hr;
 }
@@ -402,23 +495,41 @@ void WebView2UI::SetWebMessageHandler(
   web_message_handler_ = std::move(handler);
 }
 
+void WebView2UI::SetFailureHandler(
+    base::RepeatingCallback<void(HRESULT)> handler) {
+  failure_handler_ = std::move(handler);
+}
+
 HRESULT WebView2UI::Navigate(const std::wstring& url) {
   if (!webview_) {
+    ReportFailure(E_POINTER, "navigation without a WebView");
     return E_POINTER;
   }
-  return webview_->Navigate(url.c_str());
+  const HRESULT hr = webview_->Navigate(url.c_str());
+  if (FAILED(hr)) {
+    ReportFailure(hr, "starting navigation");
+  }
+  return hr;
 }
 
 HRESULT WebView2UI::NavigateToString(const std::wstring& html_content) {
   if (!webview_) {
+    ReportFailure(E_POINTER, "HTML navigation without a WebView");
     return E_POINTER;
   }
-  return webview_->NavigateToString(html_content.c_str());
+  const HRESULT hr = webview_->NavigateToString(html_content.c_str());
+  if (FAILED(hr)) {
+    ReportFailure(hr, "starting HTML navigation");
+  }
+  return hr;
 }
 
 void WebView2UI::Resize(const RECT& rect) {
   if (webview_controller_) {
-    webview_controller_->put_Bounds(rect);
+    const HRESULT hr = webview_controller_->put_Bounds(rect);
+    if (FAILED(hr)) {
+      ReportFailure(hr, "resizing");
+    }
   }
 }
 

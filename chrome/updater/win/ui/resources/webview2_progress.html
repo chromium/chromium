@@ -87,6 +87,15 @@
     </div>
 
     <script>
+        let pageFailed = false;
+        const reportPageFailure = () => {
+            if (!pageFailed) {
+                pageFailed = true;
+                window.chrome?.webview?.postMessage('ui_failed');
+            }
+        };
+        window.addEventListener('error', reportPageFailure);
+        window.addEventListener('unhandledrejection', reportPageFailure);
         const statusText = document.getElementById('status-text');
         const cancelButton = document.getElementById('cancel-btn');
         const bar = document.getElementById('progress-bar');
@@ -98,6 +107,9 @@
         window.updateUI = ({statusText: text, title, language, textDirection,
                             cancelText, cancelingText: canceling, progress,
                             isMarquee, complete, appName}) => {
+            if (pageFailed) {
+                return false;
+            }
             document.documentElement.lang = language;
             document.documentElement.dir = textDirection;
             document.title = title;
@@ -118,6 +130,7 @@
             appNameText.textContent = appName || '';
             appNameText.hidden = !appName || complete;
             document.body.hidden = false;
+            return true;
         };
 
         cancelButton.addEventListener('click', () => {

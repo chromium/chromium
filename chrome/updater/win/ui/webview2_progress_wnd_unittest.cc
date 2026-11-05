@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base_paths_win.h"
 #include "base/command_line.h"
@@ -34,12 +35,93 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace updater::ui {
 namespace {
+constexpr base::TimeDelta kHangGuard = base::Seconds(5);
+
+// Exercises real HWND dispatch and timers, but never starts WebView2 processes.
+class RecoveryTestWindow : public WebView2ProgressWnd {
+ public:
+  ~RecoveryTestWindow() override { Close(); }
+
+  void Close() {
+    if (::IsWindow(hwnd())) {
+      ::DestroyWindow(hwnd());
+      // Normal WM_DESTROY posts quit. Do not leave that message on a pooled
+      // STA worker after a test that doesn't run a native MessageLoop.
+      MSG msg = {};
+      while (::PeekMessage(&msg, nullptr, WM_QUIT, WM_QUIT, PM_REMOVE)) {
+      }
+    }
+  }
+
+  int RunNativeLoop() {
+    if (!::SetTimer(hwnd(), kGuardTimerId,
+                    static_cast<UINT>(kHangGuard.InMilliseconds()), nullptr)) {
+      ADD_FAILURE() << "Could not start test hang guard";
+      return 1;
+    }
+    MessageLoop loop;
+    const int result = loop.Run();
+    ::KillTimer(hwnd(), kGuardTimerId);
+    return result;
+  }
+
+  void CompleteScript(const std::wstring& result) {
+    ASSERT_TRUE(completion);
+    std::move(completion).Run(result);
+  }
+
+  BOOL ProcessWindowMessage(HWND hwnd,
+                            UINT message,
+                            WPARAM wparam,
+                            LPARAM lparam,
+                            LRESULT& result,
+                            DWORD map_id = 0) override {
+    if (message == WM_TIMER && wparam == kGuardTimerId) {
+      ::PostQuitMessage(1);
+      result = 0;
+      return TRUE;
+    }
+    const BOOL handled = WebView2ProgressWnd::ProcessWindowMessage(
+        hwnd, message, wparam, lparam, result, map_id);
+    if (message == WM_DESTROY) {
+      destroy_handled = handled;
+    }
+    return handled;
+  }
+
+  bool destroy_handled = true;
+  HRESULT create_result = S_OK;
+  int creates = 0;
+  std::vector<std::wstring> scripts;
+  base::OnceCallback<void(const std::wstring&)> completion;
+
+ protected:
+  HRESULT CreateBrowser() override {
+    ++creates;
+    return create_result;
+  }
+  HRESULT ExecuteUIUpdate(
+      const std::wstring& script,
+      base::OnceCallback<void(const std::wstring&)> on_complete) override {
+    EXPECT_FALSE(completion);  // At most one update may be in flight.
+    scripts.push_back(script);
+    completion = std::move(on_complete);
+    return S_OK;
+  }
+
+ private:
+  static constexpr UINT_PTR kGuardTimerId = 0x7fff;
+};
+
+}  // namespace
 
 class WebView2ProgressWndTest : public ::testing::Test {
  protected:
@@ -55,6 +137,175 @@ class WebView2ProgressWndTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 };
+
+TEST_F(WebView2ProgressWndTest, InitializationTimeoutFallsBack) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(base::BindOnce(
+        [](int* count) {
+          ++*count;
+          ::PostQuitMessage(0);
+        },
+        &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    ASSERT_EQ(wnd.creates, 1);
+    ASSERT_TRUE(
+        ::SetTimer(wnd.hwnd(), wnd.kInitTimerId, USER_TIMER_MINIMUM, nullptr));
+    EXPECT_EQ(wnd.RunNativeLoop(), 0);
+    EXPECT_EQ(fallbacks, 1);
+  }));
+}
+
+TEST_F(WebView2ProgressWndTest, CreationFailureIsDeferred) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    wnd.create_result = E_FAIL;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(base::BindOnce(
+        [](int* count) {
+          ++*count;
+          ::PostQuitMessage(0);
+        },
+        &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    EXPECT_EQ(fallbacks, 0);
+    EXPECT_EQ(wnd.RunNativeLoop(), 0);
+    EXPECT_EQ(fallbacks, 1);
+  }));
+}
+
+TEST_F(WebView2ProgressWndTest, FailedUpdateFallsBackOnce) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(base::BindOnce(
+        [](int* count) {
+          ++*count;
+          ::PostQuitMessage(0);
+        },
+        &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    wnd.OnWebMessageReceived(L"ui_ready");
+    ASSERT_EQ(wnd.scripts.size(), 1u);
+    wnd.CompleteScript(L"null");
+    wnd.ScheduleFallback(E_ABORT);  // Duplicate notification.
+    EXPECT_EQ(fallbacks, 0);  // Must leave the callback before handing off.
+    EXPECT_EQ(wnd.RunNativeLoop(), 0);
+    EXPECT_EQ(fallbacks, 1);
+    wnd.ScheduleFallback(E_FAIL);
+    wnd.OnWebViewCreated(E_FAIL);  // Late creation callback must be ignored.
+    EXPECT_EQ(fallbacks, 1);
+    wnd.Close();
+    EXPECT_FALSE(wnd.destroy_handled);
+  }));
+}
+
+TEST_F(WebView2ProgressWndTest, UpdatesAreCoalesced) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(
+        base::BindOnce([](int* count) { ++*count; }, &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    wnd.OnWebMessageReceived(L"ui_ready");
+    wnd.OnDownloading("app", u"First", std::nullopt, 20);
+    wnd.OnInstalling("app", u"Latest", std::nullopt, 88);
+    EXPECT_EQ(wnd.scripts.size(), 1u);
+    wnd.CompleteScript(L"true");
+    ASSERT_EQ(wnd.scripts.size(), 2u);
+    EXPECT_NE(wnd.scripts.back().find(L"\"progress\":88"), std::wstring::npos);
+    EXPECT_NE(wnd.scripts.back().find(L"Latest"), std::wstring::npos);
+    wnd.CompleteScript(L"true");
+    // A stale initialization timer cannot cause fallback after rendering.
+    ::SendMessage(wnd.hwnd(), WM_TIMER, wnd.kInitTimerId, 0);
+    ::SendMessage(wnd.hwnd(), WM_TIMER, wnd.kUpdateTimerId, 0);
+    wnd.OnWebMessageReceived(L"ui_ready");  // Duplicate readiness.
+    EXPECT_EQ(wnd.scripts.size(), 2u);
+    EXPECT_EQ(fallbacks, 0);
+  }));
+}
+
+TEST_F(WebView2ProgressWndTest, ProgressTimeoutIsNotPostponed) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(base::BindOnce(
+        [](int* count) {
+          ++*count;
+          ::PostQuitMessage(0);
+        },
+        &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    wnd.OnWebMessageReceived(L"ui_ready");
+    wnd.CompleteScript(L"true");
+    wnd.OnDownloading("app", u"App", std::nullopt, 10);
+    // Shorten the outstanding timer. Coalescing another update must not
+    // rearm it with the production timeout (longer than the hang guard).
+    ASSERT_TRUE(::SetTimer(wnd.hwnd(), wnd.kUpdateTimerId, USER_TIMER_MINIMUM,
+                           nullptr));
+    wnd.OnDownloading("app", u"App", std::nullopt, 20);
+    EXPECT_EQ(wnd.scripts.size(), 2u);
+    EXPECT_EQ(wnd.RunNativeLoop(), 0);
+    EXPECT_EQ(fallbacks, 1);
+    wnd.CompleteScript(L"true");  // Late completion after handoff.
+    EXPECT_EQ(wnd.scripts.size(), 2u);
+    EXPECT_EQ(fallbacks, 1);
+  }));
+}
+
+TEST_F(WebView2ProgressWndTest, PageFailureFallsBack) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(base::BindOnce(
+        [](int* count) {
+          ++*count;
+          ::PostQuitMessage(0);
+        },
+        &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    wnd.OnWebMessageReceived(L"ui_failed");
+    EXPECT_EQ(fallbacks, 0);
+    EXPECT_EQ(wnd.RunNativeLoop(), 0);
+    EXPECT_EQ(fallbacks, 1);
+  }));
+}
+
+TEST_F(WebView2ProgressWndTest, ClosingCancelsRecovery) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(
+        base::BindOnce([](int* count) { ++*count; }, &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    wnd.OnWebMessageReceived(L"ui_ready");
+    wnd.Close();
+    EXPECT_FALSE(wnd.destroy_handled);
+    wnd.CompleteScript(L"");
+    wnd.ScheduleFallback(E_FAIL);
+    EXPECT_EQ(fallbacks, 0);
+  }));
+}
+
+TEST_F(WebView2ProgressWndTest, CancellationPreventsRecovery) {
+  RunOnSTAThread(base::BindOnce([] {
+    RecoveryTestWindow wnd;
+    int fallbacks = 0;
+    wnd.set_creation_failed_callback(
+        base::BindOnce([](int* count) { ++*count; }, &fallbacks));
+    wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+    wnd.OnWebMessageReceived(L"ui_ready");
+    wnd.OnWebMessageReceived(L"cancel_installation");
+    wnd.ScheduleFallback(E_FAIL);
+    ::SendMessage(wnd.hwnd(), WM_TIMER, wnd.kInitTimerId, 0);
+    ::SendMessage(wnd.hwnd(), WM_TIMER, wnd.kUpdateTimerId, 0);
+    wnd.CompleteScript(L"null");
+    EXPECT_EQ(fallbacks, 0);
+    wnd.Close();
+    EXPECT_FALSE(wnd.destroy_handled);
+  }));
+}
 
 TEST_F(WebView2ProgressWndTest, RetainsApplicationNameBeforePageIsReady) {
   RunOnSTAThread(base::BindOnce([] {
@@ -304,5 +555,4 @@ TEST_F(WebView2ProgressWndTest, InitializeDependsOnProcessPrivilege) {
       expected_user_data_dir, program_files, is_admin));
 }
 
-}  // namespace
 }  // namespace updater::ui

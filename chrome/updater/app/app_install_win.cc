@@ -427,7 +427,7 @@ class AppInstallControllerImpl : public AppInstallController,
   // be created, the install proceeds silently, and null is returned.
   HWND ShowNativeProgressWnd();
 
-  // Called when the WebView2 UI fails to initialize after it has been shown.
+  // Called when the WebView2 UI fails after it has been shown.
   // Falls back to the native UI.
   void OnWebViewUIFailed();
 
@@ -486,9 +486,9 @@ class AppInstallControllerImpl : public AppInstallController,
   // The UI. Owned by the UI thread: created, replaced, and destroyed there.
   std::unique_ptr<AppInstallProgress> observer_;
 
-  // The WebView2 UI which failed to initialize and was replaced by the native
-  // UI. It is replaced from within one of its own callbacks, so it can't be
-  // destroyed at that time. It is kept alive until the UI thread tears down.
+  // The WebView2 UI replaced by the native UI after a failure. Replacement
+  // runs from its window message handler, so keep it alive until the UI
+  // thread tears down.
   std::unique_ptr<AppInstallProgress> superseded_observer_;
 
   // The window handle of the UI, used by the main updater sequence to set the
@@ -1070,8 +1070,8 @@ void AppInstallControllerImpl::InitializeUI() {
     auto wnd = std::make_unique<ui::WebView2ProgressWnd>();
     const HRESULT hr = InitializeProgressWnd(*wnd);
     if (SUCCEEDED(hr)) {
-      // The WebView2 is created asynchronously after the window is shown. If
-      // that fails, the native UI takes over.
+      // The native UI takes over if asynchronous creation or runtime use of
+      // WebView2 fails.
       wnd->set_creation_failed_callback(
           base::BindOnce(&AppInstallControllerImpl::OnWebViewUIFailed, this));
       observer_hwnd_ = ShowProgressWnd(std::move(wnd));
@@ -1139,10 +1139,7 @@ void AppInstallControllerImpl::OnWebViewUIFailed() {
   CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   CHECK(observer_);
 
-  LOG(WARNING) << "WebView2 UI failed to initialize. "
-               << "Falling back to the native UI.";
-
-  // This runs from within a callback of the WebView2 window, which is still
+  // This runs from a posted message of the WebView2 window, which is still
   // visible so that the native window can take the foreground, and which
   // closes itself afterwards. The window can't be destroyed here, so keep it
   // alive until the UI thread tears down.
