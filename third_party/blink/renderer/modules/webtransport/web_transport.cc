@@ -2386,13 +2386,16 @@ void WebTransport::Init(const String& url_for_diagnostics,
         connector_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
 
+    std::optional<base::UnguessableToken> devtools_throttling_token;
+    probe::WillCreateWebTransport(execution_context,
+                                  &devtools_throttling_token);
     connector_->Connect(
         url_, std::move(fingerprints),
         options.hasProtocols() ? options.protocols() : Vector<String>(),
         BlinkCongestionControlToMojo(congestion_control_),
         anticipated_concurrent_incoming_unidirectional_streams_,
         anticipated_concurrent_incoming_bidirectional_streams_,
-        std::move(additional_headers),
+        std::move(additional_headers), devtools_throttling_token,
         handshake_client_receiver_.BindNewPipeAndPassRemote(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
 

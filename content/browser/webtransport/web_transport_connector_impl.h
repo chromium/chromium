@@ -55,6 +55,7 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_bidirectional_streams,
       std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
           additional_headers,
+      const std::optional<base::UnguessableToken>& throttling_profile_id,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client) override;
 
@@ -71,6 +72,7 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_bidirectional_streams,
       std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
           additional_headers,
+      std::optional<base::UnguessableToken> throttling_profile_id,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::unique_ptr<WebTransportThrottleContext::Tracker> tracker);
@@ -87,6 +89,7 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_bidirectional_streams,
       std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
           additional_headers,
+      std::optional<base::UnguessableToken> throttling_profile_id,
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       network::mojom::ClientSecurityStatePtr client_security_state,

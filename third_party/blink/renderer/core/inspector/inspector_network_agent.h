@@ -220,6 +220,8 @@ class CORE_EXPORT InspectorNetworkAgent final
                                base::span<const uint8_t> payload);
   void DidReceiveWebSocketMessageError(uint64_t identifier, const String&);
 
+  void WillCreateWebTransport(
+      std::optional<base::UnguessableToken>* devtools_throttling_token);
   void WebTransportCreated(ExecutionContext*,
                            uint64_t transport_id,
                            const KURL& request_url);

@@ -153,6 +153,7 @@ interface CoreProbes {
   void DidReceiveWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const Vector<base::span<const uint8_t>>& data);
   void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, base::span<const uint8_t> payload);
   void DidReceiveWebSocketMessageError(ExecutionContext*, uint64_t identifier, const String& error_message);
+  void WillCreateWebTransport(ExecutionContext*, std::optional<base::UnguessableToken>* devtools_token);
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
   void WebTransportClosed(ExecutionContext*, uint64_t transport_id);

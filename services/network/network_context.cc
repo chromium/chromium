@@ -180,6 +180,7 @@
 #include "services/network/ssl_config_service_mojo.h"
 #include "services/network/throttling/network_conditions.h"
 #include "services/network/throttling/throttling_controller.h"
+#include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/throttling/throttling_network_transaction_factory.h"
 #include "services/network/trust_tokens/expiry_inspecting_record_expiry_delegate.h"
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
@@ -2095,6 +2096,12 @@ void NetworkContext::SetNetworkConditions(
   ThrottlingController::SetConditions(throttling_profile_id,
                                       throttling_client_id,
                                       std::move(network_conditions));
+
+  // A WebTransport tears down synchronously but posts its removal from this
+  // collection, so the iteration remains valid.
+  for (const auto& web_transport : web_transports_) {
+    web_transport->NetworkConditionsUpdated(throttling_profile_id);
+  }
 }
 
 NetworkContext::IsolatedSession::IsolatedSession() = default;
@@ -2570,6 +2577,7 @@ void NetworkContext::CreateWebTransport(
     std::optional<uint16_t>
         anticipated_concurrent_incoming_bidirectional_streams,
     std::vector<net::HttpRequestHeaders::HeaderKeyValuePair> additional_headers,
+    const std::optional<base::UnguessableToken>& throttling_profile_id,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -2584,11 +2592,23 @@ void NetworkContext::CreateWebTransport(
         net::WebTransportError(net::ERR_NETWORK_ACCESS_REVOKED));
     return;
   }
+  if (throttling_profile_id) {
+    auto* interceptor = ThrottlingController::GetInterceptorForProfile(
+        *throttling_profile_id, url);
+    if (interceptor && interceptor->IsOffline()) {
+      mojo::Remote<mojom::WebTransportHandshakeClient> remote_handshake_client(
+          std::move(pending_handshake_client));
+      remote_handshake_client->OnHandshakeFailed(
+          net::WebTransportError(net::ERR_INTERNET_DISCONNECTED));
+      return;
+    }
+  }
   web_transports_.insert(std::make_unique<WebTransport>(
       url, origin, key, fingerprints, application_protocols, congestion_control,
       anticipated_concurrent_incoming_unidirectional_streams,
       anticipated_concurrent_incoming_bidirectional_streams,
-      std::move(additional_headers), this, std::move(pending_handshake_client),
+      std::move(additional_headers), throttling_profile_id, this,
+      std::move(pending_handshake_client),
       std::move(url_loader_network_observer),
       std::move(client_security_state)));
 }

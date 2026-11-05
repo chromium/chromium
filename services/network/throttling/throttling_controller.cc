@@ -44,6 +44,17 @@ ThrottlingNetworkInterceptor* ThrottlingController::GetInterceptor(
   return instance().FindInterceptor(net_log_source_id, url);
 }
 
+// static
+ThrottlingNetworkInterceptor* ThrottlingController::GetInterceptorForProfile(
+    const base::UnguessableToken& throttling_profile_id,
+    const GURL& url) {
+  ThrottlingController& controller = instance();
+  DCHECK_CALLED_ON_VALID_THREAD(controller.thread_checker_);
+  auto it = controller.interceptors_.find(throttling_profile_id);
+  return it != controller.interceptors_.end() ? it->second.FindInterceptor(url)
+                                              : nullptr;
+}
+
 #if BUILDFLAG(IS_P2P_ENABLED)
 // static
 ThrottlingP2PNetworkInterceptor* ThrottlingController::GetP2PInterceptor(

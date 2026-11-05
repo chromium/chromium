@@ -75,6 +75,7 @@ class TestWebTransportCreator final
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
       net::HttpRequestHeaders::HeaderVector additional_headers,
+      const std::optional<base::UnguessableToken>& throttling_profile_id,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>)
       override;
 

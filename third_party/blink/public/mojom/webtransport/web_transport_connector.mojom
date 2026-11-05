@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/web_transport.mojom";
 import "url/mojom/url.mojom";
 
@@ -13,12 +14,13 @@ interface WebTransportConnector {
   // Starts an opening handshake.
   // It is recommended to detect mojo connection errors on |client|.
   Connect(
-    url.mojom.Url url,
-    array<network.mojom.WebTransportCertificateFingerprint> fingerprints,
-    array<string> application_protocols,
-    network.mojom.WebTransportCongestionControl congestion_control,
-    uint16? anticipated_concurrent_incoming_unidirectional_streams,
-    uint16? anticipated_concurrent_incoming_bidirectional_streams,
-    network.mojom.WebTransportHttpRequestHeaders additional_headers,
-    pending_remote<network.mojom.WebTransportHandshakeClient> client);
+      url.mojom.Url url,
+      array<network.mojom.WebTransportCertificateFingerprint> fingerprints,
+      array<string> application_protocols,
+      network.mojom.WebTransportCongestionControl congestion_control,
+      uint16? anticipated_concurrent_incoming_unidirectional_streams,
+      uint16? anticipated_concurrent_incoming_bidirectional_streams,
+      network.mojom.WebTransportHttpRequestHeaders additional_headers,
+      mojo_base.mojom.UnguessableToken? throttling_profile_id,
+      pending_remote<network.mojom.WebTransportHandshakeClient> client);
 };

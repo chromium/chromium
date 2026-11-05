@@ -1,6 +1,8 @@
 This is a wdspec test.
 [FAIL] test_navigator_online
   assert False
+[FAIL] test_webtransport_disconnected
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: WebTransportError: Opening handshake failed.
 [FAIL] test_window_offline_online_events
   asyncio.exceptions.CancelledError
 Harness: the test ran to completion.

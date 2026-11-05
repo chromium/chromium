@@ -221,6 +221,7 @@
         "ShouldBlockRequest",
         "ShouldBypassServiceWorker",
         "ShouldForceCorsPreflight",
+        "WillCreateWebTransport",
         "WebTransportCreated",
         "WebTransportConnectionEstablished",
         "WebTransportClosed",

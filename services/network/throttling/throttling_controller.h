@@ -55,6 +55,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
       uint32_t net_log_source_id,
       const GURL& url);
 
+  // Returns the interceptor that currently matches `url` in the specified
+  // throttling profile. This is used by transports which do not issue a
+  // URLRequest and therefore have no NetLog source to register.
+  static ThrottlingNetworkInterceptor* GetInterceptorForProfile(
+      const base::UnguessableToken& throttling_profile_id,
+      const GURL& url);
+
 #if BUILDFLAG(IS_P2P_ENABLED)
   static ThrottlingP2PNetworkInterceptor* GetP2PInterceptor(
       uint32_t net_log_source_id);

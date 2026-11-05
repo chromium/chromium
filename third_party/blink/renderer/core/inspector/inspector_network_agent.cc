@@ -2191,6 +2191,11 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessageError(
       base::TimeTicks::Now().since_origin().InSecondsF(), error_message);
 }
 
+void InspectorNetworkAgent::WillCreateWebTransport(
+    std::optional<base::UnguessableToken>* devtools_throttling_token) {
+  *devtools_throttling_token = devtools_throttling_token_;
+}
+
 void InspectorNetworkAgent::WebTransportCreated(
     ExecutionContext* execution_context,
     uint64_t transport_id,

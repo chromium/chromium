@@ -255,6 +255,7 @@ class TestNetworkContext : public mojom::NetworkContext {
           anticipated_concurrent_incoming_bidirectional_streams,
       std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
           additional_headers,
+      const std::optional<base::UnguessableToken>& throttling_profile_id,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
