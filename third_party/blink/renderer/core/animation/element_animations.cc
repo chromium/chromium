@@ -115,11 +115,12 @@ void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
     return;
   }
 
-  if (background_color_npw_data_) {
+  if (background_color_npw_data_ &&
+      (properties & Animation::kBackgroundColorPaintWorklet)) {
     background_color_npw_data_->MaybeSetNeedsKeyframeSnapshot(
         element, new_style, force_update);
   }
-  if (clip_path_npw_data_) {
+  if (clip_path_npw_data_ && (properties & Animation::kClipPathPaintWorklet)) {
     clip_path_npw_data_->MaybeSetNeedsKeyframeSnapshot(element, new_style,
                                                        force_update);
   }

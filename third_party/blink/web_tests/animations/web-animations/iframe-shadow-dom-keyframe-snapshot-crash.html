@@ -64,6 +64,28 @@ window.onload = async () => {
     item2.slot = 'b';
     target.style.color = 'rgb(4, 5, 6)';
     getComputedStyle(target).color;
+
+    // Also verify the reverse ordering (slot reassignment before retargeting)
+    // and cross-document timeline attachment across frames.
+    const anim3 = item3.getAnimations()[0];
+    anim3.effect.target = target;
+    const anim4 = target.animate(
+        [
+          { backgroundColor: 'currentcolor' },
+          { backgroundColor: 'currentcolor' }
+        ],
+        { duration: 1e7, easing: 'steps(1, end)' });
+    anim4.currentTime = -1e7;
+    await anim4.ready;
+    await frame(); await frame();
+    target.style.color = 'rgb(7, 8, 9)';
+    getComputedStyle(target).color;
+    item3.slot = 'b';
+    anim4.effect.target = item1;
+    anim4.timeline = child_doc.timeline;
+    target.style.color = 'rgb(11, 12, 13)';
+    getComputedStyle(target).color;
+    await frame();
     document.documentElement.classList.remove('testwait');
   }, 'Cross-document animation target changes with shadow DOM slot ' +
      'reassignment do not crash');

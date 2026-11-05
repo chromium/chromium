@@ -57,6 +57,7 @@ bool IsStyleDependent(const CSSValue* css_value) {
 
 bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
                                                  ValueFilter value_filter) {
+  CHECK(animation);
   const KeyframeEffect* effect = To<KeyframeEffect>(animation->effect());
   const KeyframeEffectModelBase* model = effect->Model();
   // The CheckCanStart... call from Animation::PreCommit will force a main
@@ -79,11 +80,17 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
       if (!value_filter(element, PropertyName(), css_value, nullptr)) {
         return false;
       }
+      // Resolving a keyframe value may trigger a synchronous slot assignment
+      // recalculation that detaches the element from the layout tree.
+      const CSSValue* computed_value =
+          StyleResolver::ComputeValue(element, property_name_, *css_value);
+      if (!computed_value || !element->GetComputedStyle() ||
+          effect->EffectTarget() != element) {
+        return false;
+      }
       if (IsStyleDependent(css_value)) {
         style_dependent_keyframe_indices_.push_back(Size());
       }
-      const CSSValue* computed_value = StyleResolver::ComputeValue(
-          effect->EffectTarget(), property_name_, *css_value);
       AddKeyframe(offset, timing_function, computed_value);
     } else {
       DCHECK(frame->IsTransitionPropertySpecificKeyframe());
@@ -116,17 +123,30 @@ CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
   }
 #endif
 
+  CHECK(animation);
   KeyframeEffect* effect = To<KeyframeEffect>(animation->effect());
   const KeyframeEffectModelBase* model = effect->Model();
   const PropertySpecificKeyframeVector* frames =
       model->GetPropertySpecificKeyframes(PropertyHandle(PropertyName()));
   Element* element = effect->EffectTarget();
+  if (!element->GetComputedStyle()) {
+    // The computed style can be null if "display: none" was set during the last
+    // style update.
+    return nullptr;
+  }
   scoped_refptr<CompositorAnimationCurve> maybe_copy = nullptr;
   for (wtf_size_t index : style_dependent_keyframe_indices_) {
-    const CSSValue* css_value =
-        To<CSSPropertySpecificKeyframe>(frames->at(index).Get())->Value();
+    const auto* css_keyframe =
+        DynamicTo<CSSPropertySpecificKeyframe>(frames->at(index).Get());
+    const CSSValue* css_value = css_keyframe->Value();
     const CSSValue* computed_value =
         StyleResolver::ComputeValue(element, property_name_, *css_value);
+    // Computing the value can trigger a synchronous slot assignment
+    // recalculation that detaches the element or changes the effect target.
+    if (!computed_value || !element->GetComputedStyle() ||
+        effect->EffectTarget() != element) {
+      return nullptr;
+    }
     UpdateKeyframe(maybe_copy, index, computed_value);
   }
 

@@ -1382,4 +1382,57 @@ TEST_F(BackgroundColorPaintDefinitionTest, EnforceCompositingDecision) {
   EXPECT_FALSE(fade_animation->HasActiveAnimationsOnCompositor());
 }
 
+TEST_F(BackgroundColorPaintDefinitionTest,
+       DeferredKeyframeSnapshotUpdateAcrossStyleRecalcs) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        from { background-color: currentcolor; }
+        to   { background-color: white; }
+      }
+      #target {
+        animation: colorize 1s forwards;
+        height: 100px;
+        width: 100px;
+        color: rgb(10, 20, 30);
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  NativePaintWorkletData* npw_data =
+      element_animations->GetBackgroundColorNpwData();
+  ASSERT_TRUE(npw_data);
+  EXPECT_FALSE(npw_data->NeedsKeyframeSnapshotUpdate());
+
+  // First style recalc changes color without running paint. The keyframe
+  // snapshot update should remain deferred until paint / curve retrieval.
+  element->style()->setProperty(
+      element->GetExecutionContext(),
+      CSSPropertyName(CSSPropertyID::kColor).ToAtomicString(), "rgb(1, 2, 3)",
+      "", ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(npw_data->NeedsKeyframeSnapshotUpdate());
+
+  // A subsequent style recalc for another property before paint must not
+  // prematurely evaluate or clear the deferred keyframe snapshot update.
+  element->style()->setProperty(
+      element->GetExecutionContext(),
+      CSSPropertyName(CSSPropertyID::kWidth).ToAtomicString(), "120px", "",
+      ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(npw_data->NeedsKeyframeSnapshotUpdate());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(npw_data->NeedsKeyframeSnapshotUpdate());
+  Animation* animation = GetAnimation(element);
+  ASSERT_TRUE(animation);
+  scoped_refptr<CompositorAnimationColorCurve> curve = ColorCurve(animation);
+  ASSERT_TRUE(curve);
+  EXPECT_EQ(curve->GetTypedKeyframe(0).value, Color(1, 2, 3));
+}
+
 }  // namespace blink

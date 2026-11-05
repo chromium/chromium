@@ -2476,11 +2476,11 @@ void Animation::ClearOutdated() {
 }
 
 void Animation::SetOutdated() {
-  if (outdated_)
-    return;
-  outdated_ = true;
-  if (timeline_) {
-    timeline_->SetOutdatedAnimation(this);
+  if (!outdated_) {
+    outdated_ = true;
+    if (timeline_) {
+      timeline_->SetOutdatedAnimation(this);
+    }
   }
   KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
   Element* target = keyframe_effect ? keyframe_effect->EffectTarget() : nullptr;

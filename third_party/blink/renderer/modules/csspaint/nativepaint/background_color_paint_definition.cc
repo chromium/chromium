@@ -155,11 +155,14 @@ Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     // The keyframes have already been validated.
     return candidate;
   }
+  if (npw_data->GetAnimation() != candidate) {
+    return nullptr;
+  }
 
   scoped_refptr<CompositorAnimationColorCurve> color_curve =
       CompositorAnimationColorCurve::Create(
           candidate, CSSPropertyName(CSSPropertyID::kBackgroundColor));
-  if (color_curve) {
+  if (color_curve && npw_data->GetAnimation() == candidate) {
     npw_data->SetAnimationCurve(std::move(color_curve));
     return candidate;
   }

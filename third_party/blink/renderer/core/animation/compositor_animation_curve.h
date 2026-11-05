@@ -55,7 +55,8 @@ class CORE_EXPORT CompositorAnimationCurve
   virtual void UpdateStyleDependencies(const Element& element) {}
 
   // Updates style dependent keyframe values. A new curve is created if any
-  // of the keyframe values were altered.
+  // of the keyframe values were altered. Returns nullptr if the animation or
+  // target element is detached or lacks a computed style.
   scoped_refptr<CompositorAnimationCurve> UpdateKeyframeSnapshot(
       Animation* animation);
 

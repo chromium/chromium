@@ -72,7 +72,8 @@ class CORE_EXPORT NativePaintWorkletData
   scoped_refptr<CompositorAnimationCurve> GetAnimationCurve();
 
   void SetAnimationCurve(scoped_refptr<CompositorAnimationCurve> curve) {
-    animation_curve_ = std::move(curve);
+    animation_curve_ = animation_ ? std::move(curve) : nullptr;
+    needs_keyframes_snapshot_update_ = false;
   }
 
   bool NeedsKeyframeSnapshotUpdate() {

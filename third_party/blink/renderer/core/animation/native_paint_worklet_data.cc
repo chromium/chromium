@@ -28,21 +28,18 @@ CalculateStatusFromNativePaintReasons(
 }  // namespace
 
 bool NativePaintWorkletData::SetStatus(CompositedPaintStatus status) {
-  if (composited_paint_status_ != status) {
-    composited_paint_status_ = status;
-    if (status == CompositedPaintStatus::kNotComposited ||
-        status == CompositedPaintStatus::kNoAnimation) {
-      if (animation_ && animation_->HasActiveAnimationsOnCompositor()) {
-        animation_->SetCompositorPending(
-            Animation::CompositorPendingReason::kPendingDowngrade);
-      }
-      animation_ = nullptr;
-      SetAnimationCurve(nullptr);
+  bool changed = composited_paint_status_ != status;
+  composited_paint_status_ = status;
+  if (status == CompositedPaintStatus::kNotComposited ||
+      status == CompositedPaintStatus::kNoAnimation) {
+    if (animation_ && animation_->HasActiveAnimationsOnCompositor()) {
+      animation_->SetCompositorPending(
+          Animation::CompositorPendingReason::kPendingDowngrade);
     }
-    return true;
+    animation_ = nullptr;
+    SetAnimationCurve(nullptr);
   }
-
-  return false;
+  return changed;
 }
 
 void NativePaintWorkletData::TriggerPaintInvalidation() {
@@ -72,14 +69,13 @@ void NativePaintWorkletData::MaybeSetNeedsKeyframeSnapshot(
     const Element& element,
     const ComputedStyle& new_style,
     bool forced_update) {
-  if (forced_update) {
+  if (forced_update || needs_keyframes_snapshot_update_) {
     SetNeedsKeyframeSnapshot();
     return;
   }
 
-  scoped_refptr<CompositorAnimationCurve> curve = GetAnimationCurve();
-  if (curve &&
-      curve->NeedsKeyframeSnapshotUpdate(element.GetDocument(), new_style)) {
+  if (animation_curve_ && animation_curve_->NeedsKeyframeSnapshotUpdate(
+                              element.GetDocument(), new_style)) {
     SetNeedsKeyframeSnapshot();
   }
 }
@@ -106,7 +102,8 @@ void NativePaintWorkletData::SetAnimation(Animation* animation) {
 
 scoped_refptr<CompositorAnimationCurve>
 NativePaintWorkletData::GetAnimationCurve() {
-  if (!animation_curve_) {
+  if (!animation_curve_ || !animation_ || !element_ ||
+      !element_->GetComputedStyle()) {
     return nullptr;
   }
 
@@ -125,13 +122,29 @@ NativePaintWorkletData::GetAnimationCurve() {
   }
 #endif
 
+  scoped_refptr<CompositorAnimationCurve> prior_curve = animation_curve_;
   scoped_refptr<CompositorAnimationCurve> updated =
-      animation_curve_->UpdateKeyframeSnapshot(GetAnimation());
+      prior_curve->UpdateKeyframeSnapshot(GetAnimation());
+
+  // Updating the keyframe snapshot can synchronously trigger slot assignment
+  // recalculation and layout tree detachment, which can cancel animations and
+  // reset or replace `animation_curve_`, or detach `element_`.
+  if (!animation_ || !element_ || !element_->GetComputedStyle()) {
+    SetAnimationCurve(nullptr);
+    return nullptr;
+  }
+  if (animation_curve_ != prior_curve) {
+    return animation_curve_;
+  }
+  if (!updated) {
+    SetAnimationCurve(nullptr);
+    return nullptr;
+  }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  DCHECK(update_expected || animation_curve_.get() == updated.get())
+  DCHECK(update_expected || prior_curve.get() == updated.get())
       << "Unexpected change to a "
-      << (animation_curve_->HasStyleDependency() ? "" : "non-")
+      << (prior_curve->HasStyleDependency() ? "" : "non-")
       << "style-dependent keyframe curve.";
 #endif
 

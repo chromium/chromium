@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -772,26 +773,42 @@ void KeyframeEffect::InvalidateEffectTargetStyle() {
     return;
   }
 
-  // Guard against a change in a child document synchronously invalidating the style of an
-  // ancestor document, as it would create a lifecycle violation. If the ancestor is already
-  // marked as having a clean style, then defer dirtying the style bit until the next
-  // update cycle. This is similar to how we don't allow script execution during style and
-  // layout, as the script could invaldiate the lifecycle state (crbug.com/574193110).
-  auto is_upstream = [&target_document](const Document* doc) {
-    return doc && doc != &target_document && doc->GetFrame() &&
-           target_document.GetFrame() &&
-           doc->GetFrame()->Tree().IsDescendantOf(target_document.GetFrame());
-  };
-  Animation* animation = GetAnimation();
-  const Document* animation_document =
-      animation ? animation->GetDocument() : nullptr;
-  const Document* owning_document =
-      (animation && animation->OwningElement())
-          ? &animation->OwningElement()->GetDocument()
-          : nullptr;
-  if (target_document.Lifecycle().GetState() >=
-          DocumentLifecycle::kStyleClean &&
-      (is_upstream(animation_document) || is_upstream(owning_document))) {
+  // Guard against a change in a cross-document animation synchronously
+  // invalidating the style of a document that has already completed style
+  // recalculation, as it would create a lifecycle violation. If the target
+  // document is already marked as having a clean style (or is rebuilding its
+  // layout tree), defer dirtying the style bit until the next update cycle.
+  bool should_defer = target_document.GetStyleEngine().InRebuildLayoutTree();
+  if (!should_defer && target_document.Lifecycle().GetState() >=
+                           DocumentLifecycle::kStyleClean) {
+    auto should_defer_for_doc = [&target_document](const Document* doc) {
+      if (!doc || doc == &target_document) {
+        return false;
+      }
+      if (doc->Lifecycle().InDetach() || doc->InStyleRecalc() ||
+          !doc->Lifecycle().StateAllowsTreeMutations() ||
+          !doc->GetStyleEngine().MarkStyleDirtyAllowed()) {
+        return true;
+      }
+      return doc->GetFrame() && target_document.GetFrame() &&
+             doc->GetFrame()->Tree().IsDescendantOf(target_document.GetFrame());
+    };
+    Animation* animation = GetAnimation();
+    const Document* animation_document =
+        animation ? animation->GetDocument() : nullptr;
+    const Document* owning_document =
+        (animation && animation->OwningElement())
+            ? &animation->OwningElement()->GetDocument()
+            : nullptr;
+    const Document* timeline_document =
+        (animation && animation->TimelineInternal())
+            ? animation->TimelineInternal()->GetDocument()
+            : nullptr;
+    should_defer = should_defer_for_doc(animation_document) ||
+                   should_defer_for_doc(owning_document) ||
+                   should_defer_for_doc(timeline_document);
+  }
+  if (should_defer) {
     target_document.GetAgent().event_loop()->EnqueueMicrotask(
         BindOnce(&Element::SetNeedsAnimationStyleRecalc,
                  WrapWeakPersistent(effect_target_.Get())));
