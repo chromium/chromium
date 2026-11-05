@@ -2995,19 +2995,6 @@ const char* MainThreadSchedulerImpl::RAILModeToString(RAILMode rail_mode) {
   NOTREACHED();
 }
 
-// static
-const char* MainThreadSchedulerImpl::TimeDomainTypeToString(
-    TimeDomainType domain_type) {
-  switch (domain_type) {
-    case TimeDomainType::kReal:
-      return "real";
-    case TimeDomainType::kVirtual:
-      return "virtual";
-    default:
-      NOTREACHED();
-  }
-}
-
 Vector<base::OnceClosure>&
 MainThreadSchedulerImpl::GetOnTaskCompletionCallbacks() {
   return main_thread_only().on_task_completion_callbacks;

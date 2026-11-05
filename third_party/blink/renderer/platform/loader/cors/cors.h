@@ -21,11 +21,6 @@ class KURL;
 class ResourceResponse;
 class SecurityOrigin;
 
-enum class CorsFlag : uint8_t {
-  Unset,
-  Set,
-};
-
 // CORS related utility functions.
 namespace cors {
 

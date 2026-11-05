@@ -40,8 +40,6 @@ class PLATFORM_EXPORT FontFormatCheck {
 
   static VariableFontSubType ProbeVariableFont(sk_sp<SkTypeface>);
 
-  enum class COLRVersion { kCOLRV0, kCOLRV1, kNoCOLR };
-
  private:
   font_format::FontFormatInfo format_info_;
 };

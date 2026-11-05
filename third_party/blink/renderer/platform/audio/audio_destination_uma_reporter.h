@@ -64,10 +64,6 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
   // Returns the percentage (0-100).
   int PercentOfCallbackInterval(base::TimeDelta duration);
 
-  // Indicates what period samples are aggregated over. kShort means entire
-  // streams of less than 1000 callbacks, kIntervals means exactly 1000
-  // callbacks.
-  enum class SamplingPeriod { kShort, kIntervals };
   int callback_count_ = 0;
   int fifo_underrun_count_ = 0;
   int unexpected_fifo_underrun_count_ = 0;

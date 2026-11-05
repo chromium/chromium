@@ -81,10 +81,6 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
   class GCSupport;
   class SimpleThreadImpl final : public base::SimpleThread {
    public:
-    using NonMainThreadSchedulerFactory = base::OnceCallback<
-        std::unique_ptr<scheduler::NonMainThreadSchedulerBase>(
-            base::sequence_manager::SequenceManager*)>;
-
     explicit SimpleThreadImpl(const String& name_prefix,
                               const base::SimpleThread::Options& options,
                               base::TimeDelta realtime_period,

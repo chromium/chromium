@@ -189,7 +189,6 @@ class Deque {
   };
 
   using TypeOperations = VectorTypeOperations<T, Allocator>;
-  using IteratorBase = DequeIteratorBase<T, kInlineCapacity, Allocator>;
 
   void erase(wtf_size_t position);
   void DestroyAll();

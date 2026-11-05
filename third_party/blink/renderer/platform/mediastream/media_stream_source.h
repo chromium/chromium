@@ -189,8 +189,6 @@ class PLATFORM_EXPORT MediaStreamSource final
   std::optional<bool> voice_isolation_;
 };
 
-typedef HeapVector<Member<MediaStreamSource>> MediaStreamSourceVector;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_SOURCE_H_

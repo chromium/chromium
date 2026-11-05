@@ -184,8 +184,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   void ReportNotDefGlyph() const;
 
  private:
-  enum ForTextEmphasisOrNot { kNotForTextEmphasis, kForTextEmphasis };
-
   GlyphData GetEmphasisMarkGlyphData(const AtomicString&) const;
 
   std::pair<float, bool> TabWidthInternal(const SimpleFontData* font_data,

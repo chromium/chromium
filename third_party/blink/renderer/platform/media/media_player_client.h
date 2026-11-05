@@ -60,26 +60,6 @@ class PLATFORM_EXPORT MediaPlayerClient : public WebMediaPlayerClient,
                                           public media::TrackManager,
                                           public GarbageCollectedMixin {
  public:
-  enum VideoTrackKind {
-    kVideoTrackKindNone,
-    kVideoTrackKindAlternative,
-    kVideoTrackKindCaptions,
-    kVideoTrackKindMain,
-    kVideoTrackKindSign,
-    kVideoTrackKindSubtitles,
-    kVideoTrackKindCommentary
-  };
-
-  enum AudioTrackKind {
-    kAudioTrackKindNone,
-    kAudioTrackKindAlternative,
-    kAudioTrackKindDescriptions,
-    kAudioTrackKindMain,
-    kAudioTrackKindMainDescriptions,
-    kAudioTrackKindTranslation,
-    kAudioTrackKindCommentary
-  };
-
   static const int kMediaRemotingStopNoText = -1;
 
   virtual void NetworkStateChanged() = 0;

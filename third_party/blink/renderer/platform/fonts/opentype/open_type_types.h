@@ -64,7 +64,6 @@ struct UInt32 {
 
 using Fixed = UInt32;
 using Offset = UInt16;
-using GlyphID = UInt16;
 
 template <typename T>
 static const T* ValidateTable(const Vector<char>& buffer, size_t count = 1) {

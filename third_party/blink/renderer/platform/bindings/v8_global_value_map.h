@@ -95,26 +95,6 @@ class V8GlobalValueMapTraits {
       const v8::WeakCallbackInfo<WeakCallbackDataType>& data) {}
 };
 
-/**
- * A map for safely storing persistent V8 values, based on
- * v8::GlobalValueMap.
- */
-template <typename KeyType, typename ValueType>
-class V8GlobalValueMap
-    : public v8::GlobalValueMap<
-          KeyType,
-          ValueType,
-          V8GlobalValueMapTraits<KeyType, ValueType, v8::kNotWeak>> {
-  DISALLOW_NEW();
-
- public:
-  typedef V8GlobalValueMapTraits<KeyType, ValueType, v8::kNotWeak> Traits;
-  explicit V8GlobalValueMap(v8::Isolate* isolate)
-      : v8::GlobalValueMap<KeyType, ValueType, Traits>(isolate) {}
-  V8GlobalValueMap(v8::Isolate* isolate, const char* label)
-      : v8::GlobalValueMap<KeyType, ValueType, Traits>(isolate, label) {}
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_GLOBAL_VALUE_MAP_H_

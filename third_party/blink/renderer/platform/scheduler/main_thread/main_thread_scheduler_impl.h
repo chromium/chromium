@@ -433,11 +433,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
       CanExceedIdleDeadlineIfRequired);
 
-  enum class TimeDomainType {
-    kReal,
-    kVirtual,
-  };
-
   // WebThreadScheduler private implementation:
   WebThreadScheduler* ToWebMainThreadScheduler() override;
 
@@ -447,8 +442,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void OnVirtualTimeDisabled() override;
   void OnVirtualTimePaused() override;
   void OnVirtualTimeResumed() override;
-
-  static const char* TimeDomainTypeToString(TimeDomainType domain_type);
 
   void AddAgentGroupScheduler(AgentGroupSchedulerImpl*);
 

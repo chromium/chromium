@@ -156,20 +156,6 @@ struct CachedMetadataHeaderWithHash {
   uint8_t hash[kSha256Bytes] = {};
 };
 
-// Describes a few interesting states of the ScriptCachedMetadataHandler when
-// GetCachedMetadata() is called. These values are written to logs. New enum
-// values can be added, but existing enums must never be renumbered or deleted
-// and reused.
-enum class StateOnGet : int {
-  kPresent = 0,
-  kDataTypeMismatch = 1,
-  kWasNeverPresent = 2,
-  kWasDiscarded = 3,
-
-  // Must be equal to the greatest among enumeraiton values.
-  kMaxValue = kWasDiscarded
-};
-
 // `SourceKeyedCachedMetadataHandler` is created by taking `source_text`, being
 // independent from any `Resource`.
 class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler

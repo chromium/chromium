@@ -98,7 +98,7 @@ class FontFaceCreationParams {
       // encoding and endianness. However, since the hash is not transferred
       // over a network or permanently stored and only used for the runtime of
       // Chromium, this is not a concern.
-      struct HashData {
+      struct {
         int index;
         int id;
         uint64_t filename_hash;
