@@ -477,12 +477,10 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
   if (IsSoftware()) {
     software_resource->UploadSoftwareRenderingResults(GetSkSurface());
 
-    return base::MakeRefCounted<ExportedCanvasResource>(
-        std::move(software_resource));
+    return CreateExportedResource(std::move(software_resource));
   }
 
-  return resource_ ? base::MakeRefCounted<ExportedCanvasResource>(resource_)
-                   : nullptr;
+  return resource_ ? CreateExportedResource(resource_) : nullptr;
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -523,6 +521,12 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
 }
 
 scoped_refptr<ExportedCanvasResource>
+CanvasNon2DResourceProvider::CreateExportedResource(
+    scoped_refptr<CanvasResourceSharedImage> resource) {
+  return base::MakeRefCounted<ExportedCanvasResource>(std::move(resource));
+}
+
+scoped_refptr<ExportedCanvasResource>
 CanvasNon2DResourceProvider::ProduceCanvasResource() {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::ProduceCanvasResource");
   if (IsSoftware()) {
@@ -535,15 +539,14 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
 
     output_resource->UploadSoftwareRenderingResults(GetSkSurface());
 
-    return base::MakeRefCounted<ExportedCanvasResource>(output_resource);
+    return CreateExportedResource(std::move(output_resource));
   }
 
   if (IsGpuContextLost()) {
     return nullptr;
   }
 
-  return resource_ ? base::MakeRefCounted<ExportedCanvasResource>(resource_)
-                   : nullptr;
+  return resource_ ? CreateExportedResource(resource_) : nullptr;
 }
 
 scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {

@@ -401,6 +401,9 @@ class MODULES_EXPORT BaseRenderingContext2D
   bool context_restorable_{true};
 
  private:
+  scoped_refptr<ExportedCanvasResource> CreateExportedResource(
+      scoped_refptr<CanvasResourceSharedImage> resource);
+
   void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
   virtual void EnableAccelerationIfPossible() {}

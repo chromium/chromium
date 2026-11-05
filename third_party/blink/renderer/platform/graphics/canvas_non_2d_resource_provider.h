@@ -194,6 +194,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   void EnsureResourceReadyForDraw();
 
+  scoped_refptr<ExportedCanvasResource> CreateExportedResource(
+      scoped_refptr<CanvasResourceSharedImage> resource);
+
   const gfx::Size size_;
   const viz::SharedImageFormat format_;
   const SkAlphaType alpha_type_;

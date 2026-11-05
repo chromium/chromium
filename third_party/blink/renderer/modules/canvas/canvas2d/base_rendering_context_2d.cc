@@ -1016,6 +1016,12 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
 }
 
 scoped_refptr<ExportedCanvasResource>
+BaseRenderingContext2D::CreateExportedResource(
+    scoped_refptr<CanvasResourceSharedImage> resource) {
+  return base::MakeRefCounted<ExportedCanvasResource>(std::move(resource));
+}
+
+scoped_refptr<ExportedCanvasResource>
 BaseRenderingContext2D::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
@@ -1033,8 +1039,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
 
     output_resource->UploadSoftwareRenderingResults(surface_.get());
 
-    return base::MakeRefCounted<ExportedCanvasResource>(
-        std::move(output_resource));
+    return CreateExportedResource(std::move(output_resource));
   }
 
   if (shared_image_provider_->IsGpuContextLost()) {
@@ -1047,8 +1052,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
   EndWriteAccess();
 
   return shared_image_provider_->resource_
-             ? base::MakeRefCounted<ExportedCanvasResource>(
-                   shared_image_provider_->resource_)
+             ? CreateExportedResource(shared_image_provider_->resource_)
              : nullptr;
 }
 
