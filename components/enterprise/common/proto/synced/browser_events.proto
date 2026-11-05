@@ -124,6 +124,38 @@ message BrowserFeatureInfo {
   FeatureType feature_type = 1;
 }
 
+// In-browser AI agent (e.g., Gemini in Chrome) that was controlling the
+// target tab at event time.
+message BrowserAgentInfo {
+  enum AgentType {
+    AGENT_TYPE_UNSPECIFIED = 0;
+    // Gemini in Chrome (Glic) only. Gemini Enterprise in Chrome (GEiC) will
+    // get its own value once it can act on tabs.
+    AGENT_TYPE_GEMINI_IN_CHROME = 1;
+  }
+
+  AgentType agent_type = 1;
+
+  // ID of the agent task that was controlling the tab. Use it to group events
+  // from the same task; it is not unique across browser restarts.
+  string task_id = 2
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_SESSION_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // ID of the agent conversation that started the task, if the agent has one.
+  string conversation_id = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_SESSION_ID
+      // ]
+      // copybara:datapol_end
+      ;
+}
+
 // Represents the entity or browser surface that initiated the event or was
 // active/attached on the target tab at event time.
 message EventInitiatorInfo {
@@ -144,6 +176,11 @@ message EventInitiatorInfo {
     // grace window). Precedence: external_process_info takes priority over
     // browser_feature_info if both conditions are met on the tab.
     BrowserFeatureInfo browser_feature_info = 3;
+
+    // Populated when an in-browser AI agent (e.g., Gemini in Chrome) was
+    // controlling the target tab at event time. Precedence: lowest; set only
+    // when none of the other initiators apply.
+    BrowserAgentInfo browser_agent_info = 4;
   }
 }
 
