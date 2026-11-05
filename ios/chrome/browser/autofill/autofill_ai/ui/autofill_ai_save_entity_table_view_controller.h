@@ -9,9 +9,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
-@class AutofillLegalMessageLine;
-@protocol AutofillCommands;
-@protocol AutofillAISaveEntityMutator;
+@class CrURL;
 
 // View controller for the Autofill AI entity save and update detailed UI.
 @interface AutofillAISaveEntityTableViewController : ChromeTableViewController
@@ -23,14 +21,11 @@
 // Sets the entities to be displayed. Called by the parent container view
 // controller.
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
-           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-           userEmail:(const std::u16string&)userEmail;
+           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity;
 
-// Sets whether the entity to be saved is a private wallet pass.
-- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass;
-
-// Sets the legal message lines to be displayed in the footer.
-- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
+// Sets the footer text (with "BEGIN_LINK"/"END_LINK" delimiters) and the
+// corresponding tappable link URLs.
+- (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls;
 
 @end
 

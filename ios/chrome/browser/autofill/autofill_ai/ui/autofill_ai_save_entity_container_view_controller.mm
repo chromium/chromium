@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller_delegate.h"
-#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -125,12 +124,9 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
             oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-            userEmail:(const std::u16string&)userEmail
     saveIsSynchronous:(BOOL)saveIsSynchronous {
   // Forward the data to the table view controller for display.
-  [_tableViewController setNewEntity:newEntity
-                           oldEntity:oldEntity
-                           userEmail:userEmail];
+  [_tableViewController setNewEntity:newEntity oldEntity:oldEntity];
 
   autofill::EntityTypeName typeName = newEntity.type().name();
   NSString* titleString =
@@ -157,8 +153,8 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   }
 }
 
-- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass {
-  [_tableViewController setIsPrivateWalletPass:isPrivateWalletPass];
+- (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls {
+  [_tableViewController setFooterText:footerText urls:urls];
 }
 
 - (void)setShowsExplicitDeclineButton:(BOOL)showsExplicitDeclineButton {
@@ -205,10 +201,6 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 
   self.navigationItem.leftBarButtonItem.enabled = NO;
   self.modalInPresentation = NO;
-}
-
-- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
-  [_tableViewController setLegalMessages:legalMessages];
 }
 
 #pragma mark - Private

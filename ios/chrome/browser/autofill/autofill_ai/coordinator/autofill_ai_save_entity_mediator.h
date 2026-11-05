@@ -14,6 +14,7 @@ namespace autofill {
 class EntityDataManager;
 }  // namespace autofill
 
+@class CrURL;
 @protocol AutofillAISaveEntityConsumer;
 @protocol AutofillCommands;
 
@@ -32,6 +33,9 @@ class EntityDataManager;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Called when a link in the footer is tapped.
+- (void)didTapFooterLinkURL:(CrURL*)URL;
 
 // Disconnects the mediator and handles any cleanup.
 - (void)disconnect;

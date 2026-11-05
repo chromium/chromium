@@ -66,10 +66,12 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:test_support",
     "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/autofill_ai/ui",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/web/model:web_internal",
@@ -77,5 +79,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
+    "//url",
   ]
 }

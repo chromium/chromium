@@ -4,12 +4,10 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_container_view_controller.h"
 
-#import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller_delegate.h"
-#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -53,61 +51,53 @@ class AutofillAISaveEntityContainerViewControllerTest : public PlatformTest {
     options.make = u"Car Maker";
     [controller_ setNewEntity:autofill::test::GetVehicleEntityInstance(options)
                     oldEntity:std::nullopt
-                    userEmail:u"test@example.com"
             saveIsSynchronous:YES];
   }
 
   AutofillAISaveEntityContainerViewController* controller_;
 };
 
-// Tests that legal disclosure text view is displayed when legal messages are
-// set.
+// Tests that the footer text view is displayed when `footerText` is set.
 TEST_F(AutofillAISaveEntityContainerViewControllerTest,
-       LegalDisclosureShownWhenLegalMessagesPresent) {
-  autofill::LegalMessageLines lines = {
-      autofill::TestLegalMessageLine("Test legal disclosure")};
-  NSArray<AutofillLegalMessageLine*>* messages =
-      [AutofillLegalMessageLine convertFrom:lines];
-
-  [controller_ setLegalMessages:messages];
+       FooterShownWhenFooterTextSet) {
+  [controller_ setFooterText:@"Test footer disclosure" urls:@[]];
   [controller_ loadViewIfNeeded];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_NE(nil, chrome_test_util::FindViewById(
-                     controller_.view, kAutofillAISaveEntityLegalDisclosureId));
+  UITextView* textView =
+      chrome_test_util::FindViewByClass<UITextView>(controller_.view);
+  ASSERT_NE(nil, textView);
+  EXPECT_NSEQ(@"Test footer disclosure", textView.attributedText.string);
 }
 
-// Tests that legal disclosure text view is not displayed when no legal messages
-// are set.
+// Tests that no footer text view is displayed when `footerText` is not set.
 TEST_F(AutofillAISaveEntityContainerViewControllerTest,
-       LegalDisclosureNotShownWhenLegalMessagesNotPresent) {
+       FooterNotShownWhenFooterTextNotSet) {
   [controller_ loadViewIfNeeded];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_EQ(nil, chrome_test_util::FindViewById(
-                     controller_.view, kAutofillAISaveEntityLegalDisclosureId));
+  EXPECT_EQ(nil,
+            chrome_test_util::FindViewByClass<UITextView>(controller_.view));
 }
 
-// Tests that legal disclosure text view is added dynamically when legal
-// messages are set after the view is already loaded.
+// Tests that the footer text view is added dynamically when `setFooterText:`
+// is called after the view is already loaded.
 TEST_F(AutofillAISaveEntityContainerViewControllerTest,
-       LegalDisclosureAddedDynamicallyAfterViewLoaded) {
+       FooterAddedDynamicallyAfterViewLoaded) {
   [controller_ loadViewIfNeeded];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_EQ(nil, chrome_test_util::FindViewById(
-                     controller_.view, kAutofillAISaveEntityLegalDisclosureId));
+  EXPECT_EQ(nil,
+            chrome_test_util::FindViewByClass<UITextView>(controller_.view));
 
-  autofill::LegalMessageLines lines = {
-      autofill::TestLegalMessageLine("Test dynamic legal disclosure")};
-  NSArray<AutofillLegalMessageLine*>* messages =
-      [AutofillLegalMessageLine convertFrom:lines];
-
-  [controller_ setLegalMessages:messages];
+  [controller_ setFooterText:@"Test dynamic footer disclosure" urls:@[]];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_NE(nil, chrome_test_util::FindViewById(
-                     controller_.view, kAutofillAISaveEntityLegalDisclosureId));
+  UITextView* textView =
+      chrome_test_util::FindViewByClass<UITextView>(controller_.view);
+  ASSERT_NE(nil, textView);
+  EXPECT_NSEQ(@"Test dynamic footer disclosure",
+              textView.attributedText.string);
 }
 
 // Tests that tapping a link in the disclosure notifies the delegate.

@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#include <string>
+#include <vector>
+
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #import "url/gurl.h"
@@ -15,6 +18,19 @@
 @class CrURL;
 
 namespace autofill {
+
+class EntityInstance;
+
+// Encapsulates the complete footer UI state for an Autofill AI entity.
+struct AutofillAiEntityFooterContent {
+  // The full footer text with link tags.
+  NSString* text = nil;
+  // All link URLs appearing in `text`, in tag order, for UI consumption.
+  NSArray<CrURL*>* urls = nil;
+  // The subset of link URLs originating from legal disclosure messages, used
+  // for funnel metrics logging.
+  std::vector<GURL> legal_message_urls;
+};
 
 // Returns the default icon for the Autofill AI entity type.
 UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
@@ -56,21 +72,46 @@ NSString* WrapInLinkTags(NSString* text);
 // invalid or that overlap a previous one, as well as links with an invalid URL,
 // are emitted as plain text so that the number of tags always matches the
 // number of appended URLs.
+// TODO(crbug.com/573949431): Refactor to take `std::vector<GURL>&` instead of
+// `NSMutableArray<CrURL*>*` once AutofillAIEntityEditTableViewController is
+// refactored.
 NSString* TextForDisclosureLegalMessageAppendingURLsTo(
     AutofillLegalMessageLine* legal_message,
     NSMutableArray<CrURL*>* urls);
 
-// Returns the footer text for saving an entity to Wallet, formatted with the
-// user's email, and appends the corresponding link URLs to `urls` (if non-nil)
+// Returns the complete footer content for `entity`: combines the storage notice
+// and any formatted `legal_messages` separated by a blank line, and returns
+// both the complete list of link `urls` and the subset of GURL belonging to
+// `legal_messages`.
+AutofillAiEntityFooterContent GetEntityFooterContent(
+    const EntityInstance& entity,
+    bool is_update,
+    const std::u16string& user_email,
+    NSArray<AutofillLegalMessageLine*>* legal_messages);
+
+// Returns the footer text for saving an entity to Wallet, formatted with
+// `user_email`, and appends the corresponding link URLs to `urls` (if non-nil)
 // in the order their tags appear in the returned string.
+NSString* GetSaveEntityToWalletFooterTextAppendingURLsTo(
+    const std::u16string& user_email,
+    bool is_private_pass,
+    NSMutableArray<CrURL*>* urls);
+// TODO(crbug.com/573949431): Remove this overload once
+// AutofillAIEntityEditTableViewController is refactored.
 NSString* GetSaveEntityToWalletFooterTextAppendingURLsTo(
     NSString* user_email,
     bool is_private_pass,
     NSMutableArray<CrURL*>* urls);
 
 // Returns the footer text for updating an entity saved in Wallet, formatted
-// with the user's email.
-NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email);
+// with `user_email`, and appends the corresponding link URL to `urls` (if
+// non-nil).
+NSString* GetUpdateEntitySavedInWalletFooterTextAppendingURLsTo(
+    const std::u16string& user_email,
+    NSMutableArray<CrURL*>* urls);
+NSString* GetUpdateEntitySavedInWalletFooterTextAppendingURLsTo(
+    NSString* user_email,
+    NSMutableArray<CrURL*>* urls);
 
 // Returns the URL for "manage your info" link for save to wallet footer.
 GURL GetManageYourInfoURL();

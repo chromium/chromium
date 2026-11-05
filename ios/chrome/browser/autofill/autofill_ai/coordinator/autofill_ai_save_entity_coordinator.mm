@@ -98,6 +98,8 @@
 #pragma mark - AutofillAISaveEntityContainerViewControllerDelegate
 
 - (void)didTapLinkWithURL:(CrURL*)url {
+  [_mediator didTapFooterLinkURL:url];
+
   // Dismiss the save entity UI before opening the new tab.
   // Since it is not possible to display a web page over the save entity UI yet,
   // we need to dismiss the save entity UI before opening the new tab.

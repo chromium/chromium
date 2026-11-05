@@ -8,11 +8,10 @@
 #import <Foundation/Foundation.h>
 
 #import <optional>
-#import <string>
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
-@class AutofillLegalMessageLine;
+@class CrURL;
 
 // Consumer for the Autofill AI entity save and update UI.
 @protocol AutofillAISaveEntityConsumer <NSObject>
@@ -20,18 +19,15 @@
 // Sets the entities to be displayed and managed by the consumer.
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
             oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-            userEmail:(const std::u16string&)userEmail
     saveIsSynchronous:(BOOL)saveIsSynchronous;
 
-// Sets whether the entity being saved is a private wallet pass.
-- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass;
+// Sets the footer text (with "BEGIN_LINK"/"END_LINK" delimiters) and the
+// corresponding tappable link URLs.
+- (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls;
 
 // Sets whether an explicit decline button ("No thanks") should be displayed in
 // the button stack instead of the navigation bar cancel button.
 - (void)setShowsExplicitDeclineButton:(BOOL)showsExplicitDeclineButton;
-
-// Sets the legal message lines for the disclosure.
-- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
 
 // Updates the UI to show the progress of the entity upload via the loading
 // state.

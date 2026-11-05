@@ -9,11 +9,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/filling/field_filling_util.h"
-#import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
-#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_date_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -21,24 +19,35 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Returns whether two arrays of `CrURL` are equal by comparing their `GURL`
+// values.
+BOOL AreCrURLArraysEqual(NSArray<CrURL*>* array1, NSArray<CrURL*>* array2) {
+  if (array1 == array2) {
+    return YES;
+  }
+  if (!array1 || !array2) {
+    return NO;
+  }
+  if (array1.count != array2.count) {
+    return NO;
+  }
+  for (NSUInteger i = 0; i < array1.count; ++i) {
+    if (array1[i].gurl != array2[i].gurl) {
+      return NO;
+    }
+  }
+  return YES;
+}
 
 constexpr CGFloat kSaveFormTopPadding = 16.0;
 constexpr CGFloat kUpdateFormSectionSpacing = 32.0;
 
 // 16pt padding between attributes and the footer text.
 constexpr CGFloat kFooterTopExtraPadding = 16.0;
-
-// Blank line separating the storage notice from the disclosure legal messages
-// in the footer text.
-NSString* const kStorageNoticeSeparator = @"\n\n";
-
-// Line break separating consecutive disclosure legal messages in the footer
-// text.
-NSString* const kDisclosureLegalMessageSeparator = @"\n";
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierNewEntity = 0,
@@ -113,7 +122,6 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   return header;
 }
 
-
 }  // namespace
 
 @interface AutofillAISaveEntityTableViewController () <
@@ -127,19 +135,9 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   // Old entity to compare against.
   std::optional<autofill::EntityInstance> _oldEntity;
 
-  // User email to display in the footer.
-  std::u16string _userEmail;
-
-  // Legal message lines to display in the footer.
-  NSArray<AutofillLegalMessageLine*>* _legalMessages;
-
-  // Denotes whether the entity is a private wallet pass.
-  BOOL _isPrivateWalletPass;
-
-  // Cached footer text and URLs computed when the model updates.
-  NSString* _cachedFooterText;
-  NSArray<CrURL*>* _cachedFooterURLs;
-  NSArray<CrURL*>* _cachedLegalMessageURLs;
+  // Footer text and tappable link URLs pushed by the mediator.
+  NSString* _footerText;
+  NSArray<CrURL*>* _footerURLs;
 
   // Diffable data source for the table view.
   UITableViewDiffableDataSource<NSNumber*, TableViewItem*>* _dataSource;
@@ -204,32 +202,21 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 #pragma mark - Public Methods
 
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
-           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-           userEmail:(const std::u16string&)userEmail {
+           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity {
   _newEntity = std::move(newEntity);
   _oldEntity = std::move(oldEntity);
-  _userEmail = userEmail;
-  [self updateCachedFooter];
   if (self.viewLoaded) {
     [self loadModel];
   }
 }
 
-- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass {
-  if (_isPrivateWalletPass == isPrivateWalletPass) {
+- (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls {
+  if ((footerText == _footerText || [_footerText isEqualToString:footerText]) &&
+      AreCrURLArraysEqual(_footerURLs, urls)) {
     return;
   }
-  _isPrivateWalletPass = isPrivateWalletPass;
-  [self updateCachedFooter];
-}
-
-- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
-  _legalMessages = legalMessages;
-  if (_legalMessages.count > 0) {
-    autofill::LogWalletNoticeFunnelEvent(
-        autofill::AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown);
-  }
-  [self updateCachedFooter];
+  _footerText = [footerText copy];
+  _footerURLs = [urls copy];
   if (self.viewLoaded && _dataSource) {
     NSDiffableDataSourceSnapshot<NSNumber*, TableViewItem*>* snapshot =
         _dataSource.snapshot;
@@ -265,13 +252,13 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   SectionIdentifier sectionIdentifier =
       [self sectionIdentifierForSection:section];
 
-  if (sectionIdentifier == SectionIdentifierFooter) {
+  if (sectionIdentifier == SectionIdentifierFooter && _footerText.length > 0) {
     TableViewLinkHeaderFooterView* footer =
         DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
     footer.delegate = self;
-    footer.accessibilityIdentifier =
-        _legalMessages.count > 0 ? kAutofillAISaveEntityLegalDisclosureId : nil;
-    [self configureFooterView:footer];
+    footer.urls = _footerURLs;
+    [footer setText:_footerText
+          withColor:[UIColor colorNamed:kTextSecondaryColor]];
     return footer;
   }
 
@@ -334,85 +321,9 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   return _oldEntity.has_value();
 }
 
-- (BOOL)isSaveToWallet {
-  return _newEntity.has_value() &&
-         _newEntity->record_type() ==
-             autofill::EntityInstance::RecordType::kServerWallet;
-}
-
-// Returns the storage notice text shown at the top of the footer, which
-// explains where the entity is saved (this device or Google Wallet). This text
-// is authored by Chrome, as opposed to the disclosure legal messages below it,
-// which come from the server. Appends the URL it links to, if any, to `urls`.
-- (NSString*)textForStorageNoticeAppendingURLsTo:(NSMutableArray<CrURL*>*)urls {
-  if (![self isSaveToWallet]) {
-    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE);
-  }
-
-  NSString* email = base::SysUTF16ToNSString(_userEmail);
-  if ([self isUpdateDialog]) {
-    [urls addObject:[[CrURL alloc]
-                        initWithGURL:autofill::GetGoogleWalletPassesURL()]];
-    return autofill::GetUpdateEntitySavedInWalletFooterText(email);
-  }
-
-  return autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
-      email, _isPrivateWalletPass, urls);
-}
-
-// Computes and caches the footer text and URLs based on current model data.
-- (void)updateCachedFooter {
-  // `urls` must be populated in the exact order the link tags appear in the
-  // text so that `ParseStringWithLinks()` correctly associates each tagged
-  // range with its corresponding URL. Therefore, the storage notice URLs are
-  // added before the disclosure legal message URLs.
-  NSMutableArray<CrURL*>* urls = [NSMutableArray array];
-  NSString* storageNoticeText = [self textForStorageNoticeAppendingURLsTo:urls];
-
-  NSMutableArray<CrURL*>* legalMessageURLs = [NSMutableArray array];
-  NSMutableArray<NSString*>* disclosureLegalMessageTexts =
-      [NSMutableArray array];
-  for (AutofillLegalMessageLine* disclosureLegalMessage in _legalMessages) {
-    [disclosureLegalMessageTexts
-        addObject:autofill::TextForDisclosureLegalMessageAppendingURLsTo(
-                      disclosureLegalMessage, legalMessageURLs)];
-  }
-  [urls addObjectsFromArray:legalMessageURLs];
-
-  // The disclosure legal messages form a single block, separated from the
-  // storage notice by a blank line.
-  NSString* text = storageNoticeText;
-  if (disclosureLegalMessageTexts.count > 0) {
-    text = [NSString
-        stringWithFormat:
-            @"%@%@%@", storageNoticeText, kStorageNoticeSeparator,
-            [disclosureLegalMessageTexts
-                componentsJoinedByString:kDisclosureLegalMessageSeparator]];
-  }
-
-  _cachedFooterText = text;
-  _cachedFooterURLs = urls;
-  _cachedLegalMessageURLs = legalMessageURLs;
-}
-
-// Configures the footer view with the cached storage notice, disclosure legal
-// messages, and URLs.
-- (void)configureFooterView:(TableViewLinkHeaderFooterView*)footer {
-  if (!_cachedFooterText) {
-    [self updateCachedFooter];
-  }
-  footer.urls = _cachedFooterURLs;
-  [footer setText:_cachedFooterText
-        withColor:[UIColor colorNamed:kTextSecondaryColor]];
-}
-
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
-  if ([_cachedLegalMessageURLs containsObject:URL]) {
-    autofill::LogWalletNoticeFunnelEvent(
-        autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked);
-  }
   [self.delegate didTapLinkWithURL:URL];
 }
 
