@@ -645,6 +645,16 @@ class ContextualTasksContextManagementInteractiveTestBase
     input_cleared.test_function = "el => !el.value || el.value === ''";
     input_cleared.event = kInputClearedEvent;
 
+    StateChange tabs_submitted;
+    tabs_submitted.type = StateChange::Type::kExistsAndConditionTrue;
+    tabs_submitted.where = kComposeboxContainer;
+    tabs_submitted.test_function = R"(el => {
+      const count = el.addedTabsIds ? el.addedTabsIds.size : 0;
+      const restored = el.aimThreadRestoredTabs || [];
+      return restored.length >= count;
+    })";
+    tabs_submitted.event = kUploadsCompleteEvent;
+
     return Steps(WaitForElementExists(contents_id, kComposeboxInput),
                  ExecuteJsAt(contents_id, kComposeboxInput,
                              base::StringPrintf(
@@ -656,7 +666,8 @@ class ContextualTasksContextManagementInteractiveTestBase
                                  base::GetQuotedJSONString(query).c_str())),
                  WaitForStateChange(contents_id, submit_enabled),
                  ExecuteJsAt(contents_id, kSubmitButton, "el => el.click()"),
-                 WaitForStateChange(contents_id, input_cleared));
+                 WaitForStateChange(contents_id, input_cleared),
+                 WaitForStateChange(contents_id, tabs_submitted));
   }
 
   // Commits an AIM thread URL with `q` and `mtid` inside `#threadFrame` so
@@ -677,7 +688,10 @@ class ContextualTasksContextManagementInteractiveTestBase
     StateChange non_zero_state;
     non_zero_state.type = StateChange::Type::kExistsAndConditionTrue;
     non_zero_state.where = {"contextual-tasks-app"};
-    non_zero_state.test_function = "el => el.isZeroState_ === false";
+    non_zero_state.test_function = base::StringPrintf(
+        "el => el.isZeroState_ === false && !el.isFrameLoading && "
+        "window.location.href.includes(%s)",
+        base::GetQuotedJSONString("mtid=" + thread_id).c_str());
     non_zero_state.event = kZeroStateChangedEvent;
 
     const std::string thread_url =
@@ -699,8 +713,11 @@ class ContextualTasksContextManagementInteractiveTestBase
     StateChange zero_state;
     zero_state.type = StateChange::Type::kExistsAndConditionTrue;
     zero_state.where = {"contextual-tasks-app"};
-    zero_state.test_function = "el => el.isZeroState_ === true";
+    zero_state.test_function =
+        "el => el.isZeroState_ === true && !el.isFrameLoading && "
+        "!el.pendingUrl_";
     zero_state.event = kZeroStateChangedEvent;
+    zero_state.continue_across_navigation = true;
 
     return Steps(WaitForElementExists(contents_id, kNewThreadButton),
                  ExecuteJsAt(contents_id, kNewThreadButton, "el => el.click()"),
