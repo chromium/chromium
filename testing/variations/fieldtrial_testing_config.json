@@ -15885,6 +15885,27 @@
             ]
         }
     ],
+    "ResourceMemoryAccounting": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Both",
+                    "enable_features": [
+                        "FontResourceDecodedMemoryAccounting",
+                        "ResourceEncodedMemoryAccounting"
+                    ]
+                }
+            ]
+        }
+    ],
     "ResourcePoolResize": [
         {
             "platforms": [
