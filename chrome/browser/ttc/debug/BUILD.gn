@@ -5,18 +5,30 @@
 # Browser-side support for the TTC debug tools.
 source_set("debug") {
   sources = [
+    "ttc_debug_session.cc",
+    "ttc_debug_session.h",
     "ttc_session_audio_recorder.cc",
     "ttc_session_audio_recorder.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/ttc/app/public",
+  ]
+  deps = [ "//components/actor/core" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ttc_session_audio_recorder_unittest.cc" ]
+  sources = [
+    "ttc_debug_session_unittest.cc",
+    "ttc_session_audio_recorder_unittest.cc",
+  ]
   deps = [
     ":debug",
     "//base/test:test_support",
+    "//components/actor/core:journal",
+    "//components/actor/public/mojom:mojo_bindings_shared",
+    "//components/ttc/app/public",
     "//testing/gmock",
     "//testing/gtest",
   ]
