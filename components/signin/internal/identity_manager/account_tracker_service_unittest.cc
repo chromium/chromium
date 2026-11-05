@@ -971,6 +971,25 @@ TEST_F(AccountTrackerServiceTest, GetAccountInfo_Empty) {
 }
 
 TEST_F(AccountTrackerServiceTest, GetAccountInfo_TokenAvailable) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kGaiaAccountIdEnforcement);
+
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  AccountInfo info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.GetAccountId());
+  EXPECT_EQ(AccountKeyToGaiaId(kAccountKeyAlpha), info.GetGaiaId());
+  EXPECT_EQ(std::string(), info.GetEmail());
+}
+
+TEST_F(AccountTrackerServiceTest,
+       GetAccountInfo_TokenAvailable_GaiaIdEnforcementDisabled) {
+  // TODO(crbug.com/502237328): Remove this test after launching
+  // kGaiaAccountIdEnforcement.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
+
   SimulateTokenAvailable(kAccountKeyAlpha);
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));

@@ -37,6 +37,22 @@ TEST_F(AccountInfoTest, IsEmpty) {
   }
   {
     CoreAccountInfo core_info;
+    core_info.gaia = GaiaId("test_gaia");
+    AccountInfo info_with_gaia = AccountInfo::Builder(core_info).Build();
+    EXPECT_FALSE(info_with_gaia.IsEmpty());
+  }
+}
+
+TEST_F(AccountInfoTest, IsEmptyWithoutGaiaIdEnforcement) {
+  // TODO(crbug.com/502237328): Remove this test after launching
+  // kGaiaAccountIdEnforcement, as `AccountInfo` can't be created without a
+  // `GaiaId` when the feature is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
+
+  {
+    CoreAccountInfo core_info;
     core_info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
     AccountInfo info_with_account_id = AccountInfo::Builder(core_info).Build();
     EXPECT_FALSE(info_with_account_id.IsEmpty());
@@ -46,12 +62,6 @@ TEST_F(AccountInfoTest, IsEmpty) {
     core_info.email = "test_email@email.com";
     AccountInfo info_with_email = AccountInfo::Builder(core_info).Build();
     EXPECT_FALSE(info_with_email.IsEmpty());
-  }
-  {
-    CoreAccountInfo core_info;
-    core_info.gaia = GaiaId("test_gaia");
-    AccountInfo info_with_gaia = AccountInfo::Builder(core_info).Build();
-    EXPECT_FALSE(info_with_gaia.IsEmpty());
   }
 }
 
