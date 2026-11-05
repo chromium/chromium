@@ -1277,6 +1277,133 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
         results = PRESUBMIT.CheckChangeOnCommit(input_api, MockOutputApi())
         self.assertEqual(0, len(results))
 
+    _UI_FORMAT_OLD = [
+        '@IntDef({',
+        '    UiFormat.UNKNOWN,',
+        '    UiFormat.DIALOG,',
+        '})',
+        'public @interface UiFormat {',
+        '    int UNKNOWN = 0;',
+        '    int DIALOG = 10;',
+        '}',
+    ]
+    _UI_FORMAT_NEW = [
+        '@IntDef({',
+        '    UiFormat.UNKNOWN,',
+        '    UiFormat.DIALOG,',
+        '    UiFormat.TOAST,',
+        '})',
+        'public @interface UiFormat {',
+        '    int UNKNOWN = 0;',
+        '    int DIALOG = 10;',
+        '    int TOAST = 11;',
+        '}',
+    ]
+
+    def _UiFormatAddition(
+        self,
+        tag=True,
+        feature_properties_cases=1,
+        tracker_impl_cases=2,
+        new_contents=None,
+    ):
+        input_api = MockInputApi()
+        if tag:
+            input_api.change.description = (
+                '[UserEducation.NewUiFormat]=Toasts are non-interruptive'
+            )
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._UI_FORMAT_JAVA_PATH,
+                new_contents=new_contents or self._UI_FORMAT_NEW,
+                old_contents=self._UI_FORMAT_OLD,
+            ),
+        ]
+        if feature_properties_cases is not None:
+            input_api.files.append(
+                MockFile(
+                    PRESUBMIT._FEATURE_PROPERTIES_JAVA_PATH,
+                    new_contents=['case UiFormat.TOAST:']
+                    * feature_properties_cases,
+                    old_contents=['case UiFormat.DIALOG:'],
+                )
+            )
+        if tracker_impl_cases is not None:
+            input_api.files.append(
+                MockFile(
+                    PRESUBMIT._TRACKER_IMPL_JAVA_PATH,
+                    new_contents=['case UiFormat.TOAST:'] * tracker_impl_cases,
+                    old_contents=['case UiFormat.DIALOG:'],
+                )
+            )
+        return input_api
+
+    def testUiFormatAdditions_NoNewConstantPasses(self):
+        input_api = self._UiFormatAddition(
+            tag=False,
+            feature_properties_cases=None,
+            tracker_impl_cases=None,
+            new_contents=self._UI_FORMAT_OLD + ['// trailing comment'],
+        )
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testUiFormatAdditions_InitialCreationIgnored(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._UI_FORMAT_JAVA_PATH,
+                new_contents=self._UI_FORMAT_NEW,
+                old_contents=[],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testUiFormatAdditions_MissingSwitchUpdatesBlocked(self):
+        input_api = self._UiFormatAddition(
+            feature_properties_cases=None, tracker_impl_cases=None
+        )
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('FeatureProperties.formatToString()', errors[0].message)
+        self.assertIn('TrackerImpl.getCooldownFeature()', errors[0].message)
+        self.assertIn('UiFormat.TOAST', errors[0].message)
+
+    def testUiFormatAdditions_MissingSecondTrackerImplSwitchBlocked(self):
+        input_api = self._UiFormatAddition(tracker_impl_cases=1)
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('2 case label(s) expected', errors[0].message)
+        self.assertIn('found 1', errors[0].message)
+        self.assertNotIn(
+            'FeatureProperties.formatToString()', errors[0].message
+        )
+
+    def testUiFormatAdditions_MissingIntDefEntryBlocked(self):
+        new_contents = [
+            line for line in self._UI_FORMAT_NEW if line != '    UiFormat.TOAST,'
+        ]
+        input_api = self._UiFormatAddition(new_contents=new_contents)
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('missing from the @IntDef list', errors[0].message)
+
+    def testUiFormatAdditions_MissingJustificationTagBlocked(self):
+        input_api = self._UiFormatAddition(tag=False)
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('[UserEducation.NewUiFormat]=', errors[0].message)
+
+    def testUiFormatAdditions_CompleteUpdateWithTagPasses(self):
+        input_api = self._UiFormatAddition()
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
     def testNoUnauthorizedTrackerJni_BlocksCustomBridge(self):
         input_api = MockInputApi()
         input_api.files = [

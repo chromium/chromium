@@ -80,6 +80,7 @@ public class FeatureProperties {
                 + "}";
     }
 
+    // LINT.IfChange(UiFormat)
     private static String formatToString(@UiFormat int format) {
         switch (format) {
             case UiFormat.UNKNOWN:
@@ -108,4 +109,5 @@ public class FeatureProperties {
                 return Integer.toString(format);
         }
     }
+    // LINT.ThenChange(//components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/UiFormat.java:UiFormat)
 }

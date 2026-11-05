@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+// LINT.IfChange(UiFormat)
 /** UI format types for in-product help and user education surfaces on Android. */
 @IntDef({
     UiFormat.UNKNOWN,
@@ -40,3 +41,4 @@ public @interface UiFormat {
     int INLINE_PROMO = 9;
     int DIALOG = 10;
 }
+// LINT.ThenChange(//components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/FeatureProperties.java:UiFormat, //components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java:UiFormatCooldownFeature, //components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java:UiFormatCooldownTriggerEvent)

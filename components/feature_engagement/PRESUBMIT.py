@@ -32,6 +32,12 @@ _ENTERPRISE_POLICY_ALLOWLIST_PATH = (
 _TRACKER_IMPL_JAVA_PATH = (
     'components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java'
 )
+_UI_FORMAT_JAVA_PATH = (
+    'components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/UiFormat.java'
+)
+_FEATURE_PROPERTIES_JAVA_PATH = (
+    'components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/FeatureProperties.java'
+)
 _ACTIONS_XML_PATH = (
     'tools/metrics/actions/actions.xml'
 )
@@ -44,6 +50,12 @@ _BYPASS_POLICY_TAG = (
 )
 _BYPASS_POLICY_TAG_RE = (
     r'^\s*\[UserEducation\.BypassPolicyCheck\]\s*=\s*\S.*$'
+)
+_NEW_UI_FORMAT_TAG = (
+    '[UserEducation.NewUiFormat]'
+)
+_NEW_UI_FORMAT_TAG_RE = (
+    r'^\s*\[UserEducation\.NewUiFormat\]\s*=\s*\S.*$'
 )
 
 _USER_EDUCATION_JAVA_POLICY_OWNERS = (
@@ -81,6 +93,7 @@ def _CommonChecks(input_api, output_api):
     results.extend(_CheckEventConfigComparatorAndWindow(input_api, output_api))
     results.extend(_CheckNewFlagsHaveMetrics(input_api, output_api))
     results.extend(_CheckEnterprisePolicyBypass(input_api, output_api))
+    results.extend(_CheckUiFormatAdditions(input_api, output_api))
     results.extend(_CheckNoUnauthorizedTrackerJni(input_api, output_api))
     return results
 
@@ -490,15 +503,15 @@ def _CheckNewFlagsHaveMetrics(input_api, output_api):
     return [output_api.PresubmitError(message)]
 
 
-def _HasValidBypassPolicyTag(input_api):
-    """Checks whether the CL description includes a valid bypass policy tag."""
+def _HasValidTag(input_api, tag_re):
+    """Checks whether the CL description matches the given tag regex."""
     description = ''
     if hasattr(input_api, 'change') and hasattr(
         input_api.change, 'DescriptionText'
     ):
         description = input_api.change.DescriptionText() or ''
-    tag_re = input_api.re.compile(_BYPASS_POLICY_TAG_RE, input_api.re.MULTILINE)
-    return bool(tag_re.search(description))
+    compiled_re = input_api.re.compile(tag_re, input_api.re.MULTILINE)
+    return bool(compiled_re.search(description))
 
 
 def _IsCommitting(input_api):
@@ -568,7 +581,7 @@ def _CheckEnterprisePolicyBypass(input_api, output_api):
     """Enforces allowlist and CL tag rules for bypassing PromotionsEnabled."""
     results = []
     feature_re = input_api.re.compile(r'\bFeatureConstants\.([A-Z0-9_]+)\b')
-    has_bypass_tag = _HasValidBypassPolicyTag(input_api)
+    has_bypass_tag = _HasValidTag(input_api, _BYPASS_POLICY_TAG_RE)
     owners = ', '.join(_USER_EDUCATION_JAVA_POLICY_OWNERS)
 
     # 1. Check modifications to EnterprisePolicyBypassAllowlist.java.
@@ -647,6 +660,100 @@ def _CheckEnterprisePolicyBypass(input_api, output_api):
 
     if has_bypass_tag:
         results.extend(_PolicyBypassReviewResults(input_api, output_api))
+    return results
+
+
+def _CheckUiFormatAdditions(input_api, output_api):
+    """Requires new @UiFormat constants to be mapped, exhaustive and justified.
+
+    All three switches over @UiFormat (formatToString in FeatureProperties,
+    getCooldownFeature and getCooldownTriggerEvent in TrackerImpl) have a
+    default branch, so the compiler will not notice a new format that falls
+    outside every cooldown group. A new constant therefore has to be listed
+    in the @IntDef, handled in all three switches in the same CL, and
+    justified in the CL description.
+    """
+    results = []
+    constant_re = input_api.re.compile(
+        r'^\s*int\s+([A-Z][A-Z0-9_]*)\s*=\s*\d+\s*;', input_api.re.MULTILINE
+    )
+
+    added_formats = []
+    new_ui_format_text = ''
+    for f in input_api.AffectedFiles():
+        if f.UnixLocalPath() != _UI_FORMAT_JAVA_PATH:
+            continue
+        new_ui_format_text = '\n'.join(f.NewContents())
+        old_text = '\n'.join(f.OldContents())
+        # Skip initial creation; the whole file is reviewed by that CL.
+        if not old_text:
+            continue
+        old_formats = set(constant_re.findall(old_text))
+        new_formats = set(constant_re.findall(new_ui_format_text))
+        added_formats = sorted(new_formats - old_formats)
+
+    if not added_formats:
+        return results
+
+    names = ', '.join(added_formats)
+    new_contents_by_path = {
+        f.UnixLocalPath(): '\n'.join(f.NewContents())
+        for f in input_api.AffectedFiles()
+    }
+    intdef_match = input_api.re.search(
+        r'@IntDef\(\{(.*?)\}\)', new_ui_format_text, input_api.re.DOTALL
+    )
+    intdef_text = intdef_match.group(1) if intdef_match else None
+    # (path, label, minimum number of `case UiFormat.<NAME>:` labels).
+    required_switches = (
+        (_FEATURE_PROPERTIES_JAVA_PATH, 'FeatureProperties.formatToString()', 1),
+        (
+            _TRACKER_IMPL_JAVA_PATH,
+            'TrackerImpl.getCooldownFeature() and '
+            'TrackerImpl.getCooldownTriggerEvent()',
+            2,
+        ),
+    )
+
+    missing = []
+    for name in added_formats:
+        if intdef_text is not None and f'UiFormat.{name}' not in intdef_text:
+            missing.append(f'UiFormat.{name} is missing from the @IntDef list')
+        case_re = input_api.re.compile(r'\bcase\s+UiFormat\.' + name + r'\s*:')
+        for path, label, min_count in required_switches:
+            count = len(case_re.findall(new_contents_by_path.get(path, '')))
+            if count < min_count:
+                missing.append(
+                    f'{label} must handle UiFormat.{name} '
+                    f'({min_count} case label(s) expected in {path}, '
+                    f'found {count})'
+                )
+
+    if missing:
+        formatted = '\n'.join(f'  - {item}' for item in missing)
+        results.append(
+            output_api.PresubmitError(
+                f'You are adding new @UiFormat constants ({names}) to '
+                f'{_UI_FORMAT_JAVA_PATH} but the following required updates '
+                f'are missing:\n'
+                f'{formatted}\n\n'
+                f'Every UI format must be listed in the @IntDef, mapped to a '
+                f'cooldown group (or explicitly to none) in TrackerImpl, and '
+                f'given a name in FeatureProperties so the cooldown rules and '
+                f'logging stay exhaustive.'
+            )
+        )
+
+    if not _HasValidTag(input_api, _NEW_UI_FORMAT_TAG_RE):
+        results.append(
+            output_api.PresubmitError(
+                f'Adding a new @UiFormat ({names}) requires an explanation of '
+                f'what the new surface is and how it participates in the '
+                f'interruptive or blue bubble cooldown groups. Include the '
+                f'following line in your CL description:\n'
+                f'  {_NEW_UI_FORMAT_TAG}=<justification and cooldown behavior>'
+            )
+        )
     return results
 
 

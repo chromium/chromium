@@ -293,6 +293,7 @@ public class TrackerImpl implements Tracker {
         }
     }
 
+    // LINT.IfChange(UiFormatCooldownFeature)
     /**
      * Returns the FET cooldown group feature name for the given {@link UiFormat}, or {@code null}
      * if the format does not belong to a cooldown group.
@@ -320,6 +321,9 @@ public class TrackerImpl implements Tracker {
         }
     }
 
+    // LINT.ThenChange(//components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/UiFormat.java:UiFormat)
+
+    // LINT.IfChange(UiFormatCooldownTriggerEvent)
     /**
      * Returns the FET trigger event name for the given {@link UiFormat}'s cooldown group, or {@code
      * null} if the format does not belong to a cooldown group.
@@ -346,6 +350,8 @@ public class TrackerImpl implements Tracker {
                 return null;
         }
     }
+
+    // LINT.ThenChange(//components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/UiFormat.java:UiFormat)
 
     @Override
     public boolean wouldTriggerHelpUi(String feature) {
