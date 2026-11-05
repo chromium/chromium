@@ -19,13 +19,13 @@
 
 #include <stdio.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -167,18 +167,17 @@ class PipeReaderBase : public PipeIOBase {
 
   virtual void ReadLoopInternal() = 0;
 
-  size_t ReadBytes(void* buffer, size_t size, bool exact_size) {
+  size_t ReadBytes(base::span<uint8_t> buffer, bool exact_size) {
     size_t bytes_read = 0;
-    while (bytes_read < size) {
+    while (bytes_read < buffer.size()) {
+      base::span<uint8_t> remaining = buffer.subspan(bytes_read);
 #if BUILDFLAG(IS_WIN)
       DWORD size_read = 0;
-      bool had_error = UNSAFE_TODO(
-          !ReadFile(read_handle_, static_cast<char*>(buffer) + bytes_read,
-                    size - bytes_read, &size_read, nullptr));
+      bool had_error =
+          !ReadFile(read_handle_, remaining.data(),
+                    static_cast<DWORD>(remaining.size()), &size_read, nullptr);
 #else
-      int size_read =
-          UNSAFE_TODO(read(read_fd_, static_cast<char*>(buffer) + bytes_read,
-                           size - bytes_read));
+      int size_read = read(read_fd_, remaining.data(), remaining.size());
       if (size_read < 0 && errno == EINTR)
         continue;
       bool had_error = size_read <= 0;
@@ -251,20 +250,19 @@ class PipeWriterBase : public PipeIOBase {
 
   virtual void WriteIntoPipe(std::string message) = 0;
 
-  void WriteBytes(const char* bytes, size_t size) {
+  void WriteBytes(base::span<const uint8_t> bytes) {
     size_t total_written = 0;
-    while (total_written < size) {
-      size_t length = size - total_written;
-      if (length > kWritePacketSize)
-        length = kWritePacketSize;
+    while (total_written < bytes.size()) {
+      base::span<const uint8_t> remaining = bytes.subspan(total_written);
+      base::span<const uint8_t> packet =
+          remaining.first(std::min(remaining.size(), kWritePacketSize));
 #if BUILDFLAG(IS_WIN)
       DWORD bytes_written = 0;
-      bool had_error = UNSAFE_TODO(
-          !WriteFile(write_handle_, bytes + total_written,
-                     static_cast<DWORD>(length), &bytes_written, nullptr));
+      bool had_error = !WriteFile(write_handle_, packet.data(),
+                                  static_cast<DWORD>(packet.size()),
+                                  &bytes_written, nullptr);
 #else
-      int bytes_written =
-          UNSAFE_TODO(write(write_fd_, bytes + total_written, length));
+      int bytes_written = write(write_fd_, packet.data(), packet.size());
       if (bytes_written < 0 && errno == EINTR)
         continue;
       bool had_error = bytes_written <= 0;
@@ -292,8 +290,9 @@ class PipeWriterASCIIZ : public PipeWriterBase {
   explicit PipeWriterASCIIZ(int write_fd) : PipeWriterBase(write_fd) {}
 
   void WriteIntoPipe(std::string message) override {
-    WriteBytes(message.data(), message.size());
-    WriteBytes("\0", 1);
+    static constexpr uint8_t kNullTerminator = 0;
+    WriteBytes(base::as_byte_span(message));
+    WriteBytes(base::span_from_ref(kNullTerminator));
   }
 };
 
@@ -304,7 +303,7 @@ class PipeWriterCBOR : public PipeWriterBase {
   void WriteIntoPipe(std::string message) override {
     CHECK(crdtp::cbor::IsCBORMessage(crdtp::SpanFrom(message)),
           base::NotFatalUntil::M159);
-    WriteBytes(message.data(), message.size());
+    WriteBytes(base::as_byte_span(message));
   }
 };
 
@@ -326,8 +325,8 @@ class PipeReaderASCIIZ : public PipeReaderBase {
         break;
       }
 
-      size_t bytes_read = ReadBytes(read_buffer_->data(),
-                                    read_buffer_->RemainingCapacity(), false);
+      // `span()` covers the remaining capacity past the already-read bytes.
+      size_t bytes_read = ReadBytes(read_buffer_->span(), false);
       if (!bytes_read)
         break;
       read_buffer_->DidRead(bytes_read);
@@ -369,8 +368,9 @@ class PipeReaderCBOR : public PipeReaderBase {
       const size_t kPeekSize =
           8;  // tag tag_type? byte_string length*4 map_start
       std::vector<uint8_t> buffer(kPeekSize);
-      if (!ReadBytes(&buffer.front(), kPeekSize, true))
+      if (!ReadBytes(buffer, true)) {
         break;
+      }
       auto status_or_header = crdtp::cbor::EnvelopeHeader::ParseFromFragment(
           crdtp::SpanFrom(buffer));
       if (!status_or_header.ok()) {
@@ -381,8 +381,7 @@ class PipeReaderCBOR : public PipeReaderBase {
       const size_t msg_size = (*status_or_header).outer_size();
       CHECK_GT(msg_size, kPeekSize);
       buffer.resize(msg_size);
-      if (!ReadBytes(UNSAFE_TODO(&buffer.front() + kPeekSize),
-                     msg_size - kPeekSize, true)) {
+      if (!ReadBytes(base::span(buffer).subspan(kPeekSize), true)) {
         return;
       }
       HandleMessage(std::move(buffer));
