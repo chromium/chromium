@@ -17,6 +17,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/process_lock.h"
@@ -807,6 +808,20 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
 void SharedWorkerHost::CreateBucketManagerHost(
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
   GetProcessHost()->BindBucketManagerHost(AsWeakPtr(), std::move(receiver));
+}
+
+void SharedWorkerHost::CreateFileSystemAccessManager(
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetStoragePartitionImpl()->GetFileSystemAccessManager()->BindReceiver(
+      FileSystemAccessManagerImpl::BindingContext(
+          GetWorkerStorageKey(),
+          // TODO(crbug.com/41473757): Obtain and use a better URL for workers
+          // instead of the origin as source url. This URL will be used for
+          // SafeBrowsing checks and for the Quarantine Service.
+          GetWorkerStorageKey().origin().GetURL(),
+          GetProcessHost()->GetDeprecatedID()),
+      std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)

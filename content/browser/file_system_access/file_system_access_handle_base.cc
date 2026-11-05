@@ -899,15 +899,15 @@ FileSystemAccessHandleBase::GetPermissionStatusForMode(
 
 bool FileSystemAccessHandleBase::IsThirdPartyContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsThirdPartyContext(url_, context_.storage_key);
+  return IsThirdPartyContext(url_, context_);
 }
 
 // static
 bool FileSystemAccessHandleBase::IsThirdPartyContext(
     const storage::FileSystemURL& url,
-    const blink::StorageKey& storage_key) {
+    const BindingContext& context) {
   return url.type() != storage::kFileSystemTypeTemporary &&
-         storage_key.IsThirdPartyContext();
+         context.storage_key.IsThirdPartyContext();
 }
 
 }  // namespace content

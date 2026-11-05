@@ -11,6 +11,7 @@
 #include "content/browser/cross_origin_storage/cross_origin_storage_registry.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
@@ -29,8 +30,7 @@ SharedHandleState GetEffectiveHandleStateForContext(
     const storage::FileSystemURL& url,
     const FileSystemAccessManagerImpl::BindingContext& binding_context,
     const SharedHandleState& handle_state) {
-  if (url.type() != storage::kFileSystemTypeTemporary &&
-      binding_context.storage_key.IsThirdPartyContext()) {
+  if (FileSystemAccessHandleBase::IsThirdPartyContext(url, binding_context)) {
     auto denied_grant =
         base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
             blink::mojom::PermissionStatus::DENIED, PathInfo(url.path()));

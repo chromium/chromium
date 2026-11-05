@@ -1799,6 +1799,9 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &CreateReportingServiceProxyForSharedWorker, base::Unretained(host)));
   map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
       &SharedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
+  map->Add<blink::mojom::FileSystemAccessManager>(
+      base::BindRepeating(&SharedWorkerHost::CreateFileSystemAccessManager,
+                          base::Unretained(host)));
   map->Add<blink::mojom::AIManager>(
       base::BindRepeating(&ContentBrowserClient::BindAIManager,
                           base::Unretained(GetContentClient()->browser()),
@@ -1851,9 +1854,6 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &RenderProcessHostImpl::BindWebrtcVideoPerfHistory, host));
 
   // RenderProcessHost binders taking a StorageKey
-  map->Add<blink::mojom::FileSystemAccessManager>(
-      BindWorkerReceiverForStorageKey(
-          &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindFileSystemManager, host));
   map->Add<blink::mojom::IDBFactory>(

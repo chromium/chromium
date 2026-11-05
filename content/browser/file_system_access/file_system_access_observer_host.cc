@@ -87,8 +87,8 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
     return;
   }
 
-  if (FileSystemAccessHandleBase::IsThirdPartyContext(
-          resolved_token->url(), binding_context_.storage_key)) {
+  if (FileSystemAccessHandleBase::IsThirdPartyContext(resolved_token->url(),
+                                                      binding_context_)) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kSecurityError,

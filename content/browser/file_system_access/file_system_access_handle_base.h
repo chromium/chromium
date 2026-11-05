@@ -108,12 +108,12 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   base::expected<void, blink::mojom::FileSystemAccessErrorPtr>
   CheckReadAccess();
 
-  // Checks whether a file system URL and storage key represent a non-sandboxed
-  // file system path bound to a third-party execution context. Sandboxed file
-  // systems (OPFS) are partitioned by storage key and exempt from third-party
-  // restrictions.
+  // Checks whether a file system URL and binding context represent a
+  // non-sandboxed file system path bound to a third-party execution context.
+  // Sandboxed file systems (OPFS) are partitioned by storage key and exempt
+  // from third-party restrictions.
   static bool IsThirdPartyContext(const storage::FileSystemURL& url,
-                                  const blink::StorageKey& storage_key);
+                                  const BindingContext& context);
   storage::FileSystemURL GetParentURLForTesting() { return GetParentURL(); }
 
   // Implementation for the GetPermissionStatus method in the
