@@ -996,6 +996,12 @@ inline constexpr char kAutofillAiServerModelDescription[] =
     "Allows the client to trigger the server model for Autofill AI type "
     "predictions.";
 
+inline constexpr char kAutofillAiSpiiVerificationName[] =
+    "Autofill AI SPII Verification";
+inline constexpr char kAutofillAiSpiiVerificationDescription[] =
+    "Enables in-context source verification when filling sensitive personal "
+    "context entities.";
+
 inline constexpr char kAutofillAiValuablesIPHName[] =
     "IPH Autofill AI Valuables";
 inline constexpr char kAutofillAiValuablesIPHDescription[] =

@@ -15652,6 +15652,7 @@ from previous Chrome versions.
   <int value="184274661" label="LensAimSuggestions:enabled"/>
   <int value="185146045" label="TabClosureCommittedMethodRefactor:disabled"/>
   <int value="185991204" label="enable-webrtc-srtp-encrypted-headers"/>
+  <int value="186277902" label="AutofillAiSpiiVerification:enabled"/>
   <int value="186385247"
       label="CompositorViewShrinkWhenKeyboardHidden:enabled"/>
   <int value="186463628" label="DnsOverHttps:disabled"/>
@@ -18147,6 +18148,7 @@ from previous Chrome versions.
   <int value="937805280"
       label="ApplyClientsideModelPredictionsForPasswordTypes:disabled"/>
   <int value="938191241" label="VrShell:enabled"/>
+  <int value="938414722" label="AutofillAiSpiiVerification:disabled"/>
   <int value="938846889" label="EnableShouldShowPromotion:disabled"/>
   <int value="938982717"
       label="DevToolsSourceMapScopesInSourcesPanel:disabled"/>

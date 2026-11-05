@@ -336,6 +336,9 @@ BASE_FEATURE(kAutofillAiShowServerWalletFillingYourInfoDialog,
 BASE_FEATURE(kAutofillAiShowWalletDisabledBanner,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shows in-context source attribution verification UI.
+BASE_FEATURE(kAutofillAiSpiiVerification, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, the entity editor on Android uses the date picker from the
 // material design library instead of the ad-hoc date picker implementation.
