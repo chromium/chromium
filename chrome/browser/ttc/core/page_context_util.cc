@@ -75,10 +75,4 @@ void IsUrlSupportedForPageContext(
                 }).Then(std::move(callback)));
 }
 
-void IsUrlSupportedForPageContext(const GURL& url,
-                                  base::OnceCallback<void(bool)> callback) {
-  IsUrlSupportedForPageContext(url, /*enterprise_policy_checker=*/nullptr,
-                               std::move(callback));
-}
-
 }  // namespace ttc

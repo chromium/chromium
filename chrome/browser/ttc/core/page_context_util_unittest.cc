@@ -129,20 +129,6 @@ TEST_F(PageContextUtilTest, EnterprisePolicy) {
   EXPECT_FALSE(IsUrlSupported(GURL("chrome://settings/"), &policy_checker));
 }
 
-// Convenience overload without EnterprisePolicyChecker passes nullptr and
-// works.
-TEST_F(PageContextUtilTest, ConvenienceOverloadWithoutPolicyChecker) {
-  base::test::TestFuture<bool> supported;
-  IsUrlSupportedForPageContext(GURL("https://example.com/"),
-                               supported.GetCallback());
-  EXPECT_TRUE(supported.Get());
-
-  base::test::TestFuture<bool> unsupported;
-  IsUrlSupportedForPageContext(GURL("chrome://settings/"),
-                               unsupported.GetCallback());
-  EXPECT_FALSE(unsupported.Get());
-}
-
 // Enterprise policy takes precedence over safety lists.
 TEST_F(PageContextUtilTest, EnterprisePolicyAndSafetyListInteraction) {
   actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),

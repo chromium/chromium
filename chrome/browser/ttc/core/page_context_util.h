@@ -30,11 +30,6 @@ void IsUrlSupportedForPageContext(
     const actor::EnterprisePolicyChecker* enterprise_policy_checker,
     base::OnceCallback<void(bool)> callback);
 
-// Convenience overload that performs page context checks without enterprise
-// policy evaluation.
-void IsUrlSupportedForPageContext(const GURL& url,
-                                  base::OnceCallback<void(bool)> callback);
-
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_UTIL_H_

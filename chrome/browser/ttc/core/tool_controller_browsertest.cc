@@ -27,6 +27,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_annotation_manager.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
@@ -97,7 +99,6 @@
 #else
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
@@ -2108,6 +2109,62 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       GetScreenshotBlockedByEnterprisePolicy) {
+  ttc_service().SetEnterprisePolicyCheckerForTesting(
+      std::make_unique<actor::MockPolicyChecker>(
+          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked));
+  const GURL blocked_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/title1.html");
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       OpenUrlBlockedByEnterprisePolicy) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  ttc_service().SetEnterprisePolicyCheckerForTesting(
+      std::make_unique<actor::MockPolicyChecker>(
+          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked));
+  const GURL blocked_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/title2.html");
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
+                             blocked_url.spec());
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(
+      response,
+      actor::mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

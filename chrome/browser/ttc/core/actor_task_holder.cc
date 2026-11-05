@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
@@ -61,7 +60,7 @@ actor::TaskId ActorTaskHolder::EnsureTaskCreated() {
 
   task_id_ = actor_service->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
-      actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
+      ttc_service->enterprise_policy_checker(), /*options=*/nullptr,
       task_delegate_.GetWeakPtr(), &ttc_service->actor_ui_state_manager(),
       /*initial_invocation_source=*/std::nullopt,
       actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);

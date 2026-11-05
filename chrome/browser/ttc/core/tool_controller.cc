@@ -46,6 +46,7 @@
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -646,11 +647,15 @@ void ToolController::GetScreenshot(ToolResponseCallback callback) {
 
   content::Page& page = contents->GetPrimaryPage();
   const GURL& url = page.GetMainDocument().GetLastCommittedURL();
+  // The session this controller belongs to is owned by the TtcKeyedService.
+  const TtcKeyedService& ttc_service =
+      CHECK_DEREF(TtcKeyedService::Get(GetProfile()));
 
   IsUrlSupportedForPageContext(
-      url, base::BindOnce(&ToolController::OnGetScreenshotUrlChecked,
-                          weak_factory_.GetWeakPtr(), page.GetWeakPtr(),
-                          std::move(callback)));
+      url, ttc_service.enterprise_policy_checker(),
+      base::BindOnce(&ToolController::OnGetScreenshotUrlChecked,
+                     weak_factory_.GetWeakPtr(), page.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void ToolController::OnGetScreenshotUrlChecked(
