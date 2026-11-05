@@ -348,7 +348,6 @@ source_set("policy_specific_browser_tests") {
     "test/safe_browsing_policy_browsertest.cc",
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
     "test/standardized_browser_zoom_browsertest.cc",
-    "test/url_keyed_anonymized_data_collection_enabled_browsertest.cc",
     "test/web_rtc_udp_port_range_policy_browsertest.cc",
     "test/xslt_policy_browsertest.cc",
   ]
@@ -380,7 +379,6 @@ source_set("policy_specific_browser_tests") {
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/site_isolation",
     "//components/skills/public",
-    "//components/unified_consent",
     "//content/test:test_support",
     "//media",
     "//services/cert_verifier/public/mojom",
