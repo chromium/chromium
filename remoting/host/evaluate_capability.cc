@@ -74,9 +74,6 @@ base::FilePath BuildHostBinaryPath() {
   return directory.Append(FILE_PATH_LITERAL(
       "remoting_me2me_host.app/Contents/MacOS/remoting_me2me_host"));
 #elif BUILDFLAG(IS_WIN)
-  if (path.BaseName().value() == FILE_PATH_LITERAL("remoting_console.exe")) {
-    return path;
-  }
   if (path.BaseName().value() == FILE_PATH_LITERAL("remoting_desktop.exe")) {
     return path;
   }

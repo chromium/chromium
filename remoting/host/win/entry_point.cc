@@ -27,9 +27,4 @@ int WINAPI wWinMain(HINSTANCE hInstance,
   HostEntryPoint();
   return 0;
 }
-
-int wmain() {
-  HostEntryPoint();
-  return 0;
-}
 #endif

@@ -37,10 +37,10 @@ class HostService : public WtsTerminalMonitor {
   HostService(const HostService&) = delete;
   HostService& operator=(const HostService&) = delete;
 
-  // This function parses the command line and selects the action routine.
+  // Validates the command line for the service.
   bool InitWithCommandLine(const base::CommandLine* command_line);
 
-  // Invoke the choosen action routine.
+  // Handshakes with the service control manager and starts the service.
   int Run();
 
   // WtsTerminalMonitor implementation
@@ -58,29 +58,13 @@ class HostService : public WtsTerminalMonitor {
   // Creates the process launcher.
   void CreateLauncher(scoped_refptr<AutoThreadTaskRunner> task_runner);
 
-  // This function handshakes with the service control manager and starts
-  // the service.
-  int RunAsService();
-
   // Runs the service on the service thread. A separate routine is used to make
-  // sure all local objects are destoyed by the time |stopped_event_| is
+  // sure all local objects are destroyed by the time |stopped_event_| is
   // signalled.
   void RunAsServiceImpl();
 
-  // This function starts the service in interactive mode (i.e. as a plain
-  // console application).
-  int RunInConsole();
-
   // Stops and deletes |daemon_process_|.
   void StopDaemonProcess(int exit_code);
-
-  // Handles WM_WTSSESSION_CHANGE messages.
-  bool HandleMessage(UINT message,
-                     WPARAM wparam,
-                     LPARAM lparam,
-                     LRESULT* result);
-
-  static BOOL WINAPI ConsoleControlHandler(DWORD event);
 
   // The control handler of the service.
   static DWORD WINAPI ServiceControlHandler(DWORD control,
@@ -110,11 +94,8 @@ class HostService : public WtsTerminalMonitor {
   std::unique_ptr<DaemonProcess> daemon_process_;
 
   // Service message loop. |main_task_runner_| must be valid as long as the
-  // Control+C or service notification handler is registered.
+  // service notification handler is registered.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  // The action routine to be executed.
-  int (HostService::*run_routine_)();
 
   // The service status handle.
   SERVICE_STATUS_HANDLE service_status_handle_;

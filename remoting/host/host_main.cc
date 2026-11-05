@@ -135,7 +135,6 @@ void Usage(const base::FilePath& program_name) {
       "UID.\n"
 #endif  // BUILDFLAG(IS_APPLE)
 
-      "  --console                - Runs the daemon interactively.\n"
       "  --elevate=<binary>       - Runs <binary> elevated.\n"
       "  --host-config=<config>   - Specifies the host configuration.\n"
       "  --help, -?               - Prints this message.\n"

@@ -12,7 +12,7 @@ assert(is_win)
 host_predefines = [
   "BINARY_CORE=1",  # For remoting_core
   "BINARY_DESKTOP=2",  # For remoting_desktop
-  "BINARY_HOST_ME2ME=3",  # For remoting_console and remoting_me2me_host
+  "BINARY_HOST_ME2ME=3",  # For remoting_me2me_host
   "BINARY_NATIVE_MESSAGING_HOST=4",  # For remoting_native_messaging_host
   "BINARY_REMOTE_ASSISTANCE_HOST=5",  # For remote_assistance_host
   "BINARY_REMOTE_SECURITY_KEY=6",  # For remote_security_key
