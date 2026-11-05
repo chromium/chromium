@@ -981,11 +981,7 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(current_version);
   VariationsLayers layers(seed, *entropy_providers_);
-  // Filter for studies that are explicitly declared as runtime mutable, as it
-  // is an opt-in functionality.
-  auto filtered_studies = FilterAndValidateStudies(
-      seed, *client_state, layers,
-      [](const Study& study) { return study.runtime_mutable(); });
+  auto filtered_studies = FilterAndValidateStudies(seed, *client_state, layers);
 
   DVLOG(1) << "VariationsService: SimulateAndApplyRuntimeMutableChanges "
            << "found " << filtered_studies.size() << " mutable studies.";
@@ -993,6 +989,9 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
   // Get all runtime mutable changes to apply.
   std::vector<RuntimeMutableChanges> prepared_changes;
   for (const ProcessedStudy& study : filtered_studies) {
+    // Non-runtime-mutable studies are filtered out upstream in
+    // `SimulateAndApplyRuntimeMutableChanges()`.
+    CHECK(study.study()->runtime_mutable());
     DVLOG(1) << "VariationsService: Simulating / preparing runtime mutable "
              << "changes for study: " << study.study()->name();
     // Simulate group assignment for the study, and prepare changes if eligible.
