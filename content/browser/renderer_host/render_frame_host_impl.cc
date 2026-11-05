@@ -279,6 +279,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -721,66 +722,16 @@ void StartDownload(
 // information sources say that the policy is enabled.
 network::mojom::TrustTokenOperationPolicyVerdict
 DetermineWhetherToForbidTrustTokenOperation(
-    const RenderFrameHostImpl* frame,
-    const blink::mojom::CommitNavigationParams& commit_params,
-    const url::Origin& subframe_origin,
-    const network::mojom::TrustTokenOperationType& operation) {
-  std::unique_ptr<network::PermissionsPolicy> subframe_policy;
-  // TODO(crbug.com/40263106): Add WPT to test how TrustTokens behave in
-  // a FencedFrame's subframe.
-  if (frame->IsFencedFrameRoot()) {
-    const std::optional<FencedFrameProperties>& fenced_frame_properties =
-        frame->frame_tree_node()->GetFencedFrameProperties();
-    if (!fenced_frame_properties) {
-      // Without fenced frame properties, there won't be a list of
-      // effective enabled permissions or information about the embedder's
-      // permissions policies, so we create a permissions policy with every
-      // permission disabled.
-      subframe_policy = network::PermissionsPolicy::CreateFixedForFencedFrame(
-          subframe_origin, /*header_policy=*/{}, {});
-    } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
-      // Fenced frames with flexible permissions are allowed to inherit certain
-      // permissions from their parent's permissions policy.
-      const network::PermissionsPolicy* parent_policy =
-          frame->GetParentOrOuterDocument()->GetPermissionsPolicy();
-      network::ParsedPermissionsPolicy container_policy =
-          commit_params.frame_policy.container_policy;
-      subframe_policy =
-          network::PermissionsPolicy::CreateFlexibleForFencedFrame(
-              parent_policy, /*header_policy=*/{}, container_policy,
-              subframe_origin);
-    } else {
-      // Fenced frames with fixed permissions have a list of required permission
-      // policies to load and can't be granted extra policies, so use the
-      // required policies instead of inheriting from its parent. Note that the
-      // parent policies must allow the required policies, which is checked
-      // separately in
-      // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-      subframe_policy = network::PermissionsPolicy::CreateFixedForFencedFrame(
-          subframe_origin, /*header_policy=*/{},
-          fenced_frame_properties->effective_enabled_permissions());
-    }
-  } else {
-    // For main frame loads, the frame's permissions policy is determined
-    // entirely by response headers, which are provided by the renderer.
-    if (!frame->GetParent()) {
-      return network::mojom::TrustTokenOperationPolicyVerdict::
-          kPotentiallyPermit;
-    }
-
-    const network::PermissionsPolicy* parent_policy =
-        frame->GetParent()->GetPermissionsPolicy();
-    network::ParsedPermissionsPolicy container_policy =
-        commit_params.frame_policy.container_policy;
-
-    subframe_policy = network::PermissionsPolicy::CreateFromParentPolicy(
-        parent_policy, /*header_policy=*/{}, container_policy, subframe_origin);
+    const network::PermissionsPolicy* permissions_policy,
+    network::mojom::TrustTokenOperationType operation) {
+  if (!permissions_policy) {
+    return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
   }
 
   switch (operation) {
     case network::mojom::TrustTokenOperationType::kRedemption:
     case network::mojom::TrustTokenOperationType::kSigning:
-      if (subframe_policy->IsFeatureEnabled(
+      if (permissions_policy->IsFeatureEnabled(
               network::mojom::PermissionsPolicyFeature::
                   kTrustTokenRedemption)) {
         return network::mojom::TrustTokenOperationPolicyVerdict::
@@ -788,7 +739,7 @@ DetermineWhetherToForbidTrustTokenOperation(
       }
       return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
     case network::mojom::TrustTokenOperationType::kIssuance:
-      if (subframe_policy->IsFeatureEnabled(
+      if (permissions_policy->IsFeatureEnabled(
               network::mojom::PermissionsPolicyFeature::
                   kPrivateStateTokenIssuance)) {
         return network::mojom::TrustTokenOperationPolicyVerdict::
@@ -2169,46 +2120,64 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
           network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
       result.trust_token_issuance_policy_ =
           network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
-    } else {
-      result.isolation_info_ =
-          navigation_request.isolation_info_for_subresources();
-      if (navigation_request.coep_reporter()) {
-        navigation_request.coep_reporter()->Clone(
-            result.coep_reporter_.BindNewPipeAndPassReceiver());
-      }
-      if (navigation_request.dip_reporter()) {
-        navigation_request.dip_reporter()->Clone(
-            result.dip_reporter_.BindNewPipeAndPassReceiver());
-      }
-      result.trust_token_redemption_policy_ =
-          DetermineWhetherToForbidTrustTokenOperation(
-              navigation_request.GetRenderFrameHost(),
-              navigation_request.commit_params(), result.origin(),
-              network::mojom::TrustTokenOperationType::kRedemption);
-      result.trust_token_issuance_policy_ =
-          DetermineWhetherToForbidTrustTokenOperation(
-              navigation_request.GetRenderFrameHost(),
-              navigation_request.commit_params(), result.origin(),
-              network::mojom::TrustTokenOperationType::kIssuance);
-
-      // Determine if the frame's sandboxing policy contains the
-      // `allow-same-site-none-cookies` value and a CookieSettingOverride should
-      // be applied so SameSite=None cookies are included in requests from this
-      // context. See
-      // https://github.com/explainers-by-googlers/csp-sandbox-allow-same-site-none-cookies
-      if (!navigation_request.IsSameDocument() &&
-          IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
-              navigation_request.SandboxFlagsToCommit()) &&
-          navigation_request.GetRenderFrameHost()
-              ->AncestorsAllowSameSiteNoneCookiesOverride(result.origin())) {
-        result.cookie_setting_overrides_.Put(
-            net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
-      }
-
-      result.renderer_accessible_http_cache_write_enabled_ =
-          !!navigation_request
-                .GetNetworkIsolationKeyForRendererAccessibleHttpCache();
+      return result;
     }
+
+    result.isolation_info_ =
+        navigation_request.isolation_info_for_subresources();
+    if (navigation_request.coep_reporter()) {
+      navigation_request.coep_reporter()->Clone(
+          result.coep_reporter_.BindNewPipeAndPassReceiver());
+    }
+    if (navigation_request.dip_reporter()) {
+      navigation_request.dip_reporter()->Clone(
+          result.dip_reporter_.BindNewPipeAndPassReceiver());
+    }
+    std::unique_ptr<network::PermissionsPolicy> pending_permissions_policy;
+    const network::PermissionsPolicy* permissions_policy = nullptr;
+    if (navigation_request.IsSameDocument()) {
+      permissions_policy =
+          navigation_request.GetRenderFrameHost()->GetPermissionsPolicy();
+    } else {
+      RenderFrameHostImpl* parent_frame_host =
+          navigation_request.GetParentFrame();
+      const network::PermissionsPolicy* parent_policy =
+          parent_frame_host ? parent_frame_host->GetPermissionsPolicy()
+                            : nullptr;
+
+      pending_permissions_policy =
+          network::PermissionsPolicy::CreateFromParentPolicy(
+              parent_policy, /*header_policy=*/{},
+              navigation_request.commit_params().frame_policy.container_policy,
+              result.origin());
+      permissions_policy = pending_permissions_policy.get();
+    }
+    result.trust_token_redemption_policy_ =
+        DetermineWhetherToForbidTrustTokenOperation(
+            permissions_policy,
+            network::mojom::TrustTokenOperationType::kRedemption);
+    result.trust_token_issuance_policy_ =
+        DetermineWhetherToForbidTrustTokenOperation(
+            permissions_policy,
+            network::mojom::TrustTokenOperationType::kIssuance);
+
+    // Determine if the frame's sandboxing policy contains the
+    // `allow-same-site-none-cookies` value and a CookieSettingOverride should
+    // be applied so SameSite=None cookies are included in requests from this
+    // context. See
+    // https://github.com/explainers-by-googlers/csp-sandbox-allow-same-site-none-cookies
+    if (!navigation_request.IsSameDocument() &&
+        IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
+            navigation_request.SandboxFlagsToCommit()) &&
+        navigation_request.GetRenderFrameHost()
+            ->AncestorsAllowSameSiteNoneCookiesOverride(result.origin())) {
+      result.cookie_setting_overrides_.Put(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+    }
+
+    result.renderer_accessible_http_cache_write_enabled_ =
+        !!navigation_request
+              .GetNetworkIsolationKeyForRendererAccessibleHttpCache();
 
     return result;
   }
@@ -15138,43 +15107,7 @@ void RenderFrameHostImpl::CreateWebUsbService(
 
 void RenderFrameHostImpl::ResetPermissionsPolicy(
     const network::ParsedPermissionsPolicy& header_policy) {
-  if (IsFencedFrameRoot()) {
-    const std::optional<FencedFrameProperties>& fenced_frame_properties =
-        frame_tree_node()->GetFencedFrameProperties();
-    if (!fenced_frame_properties) {
-      // Without fenced frame properties, there won't be a list of
-      // effective enabled permissions or information about the embedder's
-      // permissions policies, so we create a permissions policy with every
-      // permission disabled.
-      permissions_policy_ =
-          network::PermissionsPolicy::CreateFixedForFencedFrame(
-              last_committed_origin_, header_policy, {});
-    } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
-      // Fenced frames with flexible permissions are allowed to inherit certain
-      // permissions from their parent's permissions policy.
-      const network::PermissionsPolicy* parent_policy =
-          GetParentOrOuterDocument()->GetPermissionsPolicy();
-      network::ParsedPermissionsPolicy container_policy =
-          browsing_context_state_->effective_frame_policy().container_policy;
-      permissions_policy_ =
-          network::PermissionsPolicy::CreateFlexibleForFencedFrame(
-              parent_policy, header_policy, container_policy,
-              last_committed_origin_);
-    } else {
-      // Fenced frames with fixed permissions have a list of required permission
-      // policies to load and can't be granted extra policies, so use the
-      // required policies instead of inheriting from its parent. Note that the
-      // parent policies must allow the required policies, which is checked
-      // separately in
-      // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-      permissions_policy_ =
-          network::PermissionsPolicy::CreateFixedForFencedFrame(
-              last_committed_origin_, header_policy,
-              fenced_frame_properties->effective_enabled_permissions());
-    }
-    return;
-  }
-
+  CHECK(!IsFencedFrameRoot());
   if (IsOutermostMainFrame() && GetSiteInstance()
                                     ->GetWebExposedIsolationInfo()
                                     .is_isolated_application()) {
