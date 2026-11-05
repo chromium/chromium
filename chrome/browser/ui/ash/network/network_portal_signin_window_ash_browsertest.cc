@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -30,18 +29,7 @@
 
 namespace ash {
 
-class NetworkPortalSigninWindowAshBrowserTest : public InProcessBrowserTest {
- public:
-  NetworkPortalSigninWindowAshBrowserTest() {
-    // TODO(crbug.com/452061489): Fix the tests that fail when WebUI Omnibox is
-    // enabled and then remove this.
-    webui_omnibox_feature_list_.InitFromCommandLine(
-        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
-  }
-
- protected:
-  base::test::ScopedFeatureList webui_omnibox_feature_list_;
-};
+using NetworkPortalSigninWindowAshBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
                        IsCaptivePortalWindow) {
@@ -99,17 +87,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
 
 class NetworkPortalSigninWindowAshGuestBrowserTest
     : public MixinBasedInProcessBrowserTest {
- public:
-  NetworkPortalSigninWindowAshGuestBrowserTest() {
-    // TODO(crbug.com/452061489): Fix the tests that fail when WebUI Omnibox is
-    // enabled and then remove this.
-    webui_omnibox_feature_list_.InitFromCommandLine(
-        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
-  }
-
  protected:
   GuestSessionMixin guest_session_{&mixin_host_};
-  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshGuestBrowserTest,
