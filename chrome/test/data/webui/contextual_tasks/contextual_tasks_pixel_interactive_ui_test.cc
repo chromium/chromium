@@ -43,7 +43,6 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -96,11 +95,7 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
         /*disabled_features=*/
         {contextual_tasks::kContextualTasksRearchitecture,
          contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         contextual_tasks::kContextualTasksAnimatedCaret,
-         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
-         // Omnibox is enabled and then remove these two Features.
-         omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+         contextual_tasks::kContextualTasksAnimatedCaret});
     WebUIComposeBoxPixelTest::SetUp();
   }
 
@@ -705,11 +700,7 @@ class ContextualTasksToolbarPixelTest
         {contextual_tasks::kContextualTasksContextMenu, {}}};
     std::vector<base::test::FeatureRef> disabled_features = {
         contextual_tasks::kContextualTasksRearchitecture,
-        contextual_tasks::kContextualTasksAnimatedCaret,
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
-        // Omnibox is enabled and then remove these two Features.
-        omnibox::internal::kWebUIOmniboxPopup,
-        omnibox::internal::kWebUIOmniboxAimPopup};
+        contextual_tasks::kContextualTasksAnimatedCaret};
     if (GetParam().is_post_rearchitecture) {
       enabled_features.push_back(
           {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}});
@@ -864,9 +855,7 @@ class ContextualTasksLensChipPixelTest
          {contextual_tasks::kContextualTasksRearchitecture, {}},
          {extensions_features::kApiContextualTasksPrivate, {}}},
         /*disabled_features=*/
-        {contextual_tasks::kContextualTasksAnimatedCaret,
-         omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+        {contextual_tasks::kContextualTasksAnimatedCaret});
     WebUIComposeBoxPixelTest::SetUp();
   }
 

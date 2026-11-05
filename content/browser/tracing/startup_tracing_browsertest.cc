@@ -190,12 +190,7 @@ class StartupTracingTest
       public testing::WithParamInterface<
           std::tuple<FinishType, OutputType, OutputLocation>> {
  public:
-  StartupTracingTest() {
-    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
-    // enabled and then remove this.
-    scoped_feature_list_.InitFromCommandLine(
-        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
-  }
+  StartupTracingTest() = default;
 
   StartupTracingTest(const StartupTracingTest&) = delete;
   StartupTracingTest& operator=(const StartupTracingTest&) = delete;
@@ -314,7 +309,6 @@ class StartupTracingTest
  private:
   base::test::ScopedRunLoopTimeout increased_timeout_{
       FROM_HERE, TestTimeouts::test_launcher_timeout()};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -308,14 +307,9 @@ class ContextualTasksComposeboxHandlerTest
   explicit ContextualTasksComposeboxHandlerTest(
       const std::map<std::string, std::string>& parameters) {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
         {{contextual_tasks::kContextualTasks, parameters},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
-        /*disabled_features=*/
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove these two Features.
-        {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+        {});
   }
   ~ContextualTasksComposeboxHandlerTest() override = default;
 

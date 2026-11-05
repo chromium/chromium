@@ -21,7 +21,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -186,8 +185,6 @@ ContextualTasksInteractiveTestBase::GetDefaultDisabledFeatures() {
       kContextualTasksRearchitecture,
       kContextualTasksSidePanelRearchitecture,
       lens::features::kLensSendRawFileMediaTypes,
-      omnibox::internal::kWebUIOmniboxPopup,
-      omnibox::internal::kWebUIOmniboxAimPopup,
       features::kNonBlockingOsClipboardReads,
   };
 }
