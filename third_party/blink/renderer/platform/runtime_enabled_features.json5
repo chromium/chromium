@@ -6913,12 +6913,6 @@
       depends_on: ["TextSpacingTrimFallback"],
       status: "stable",
     },
-
-    {
-      // crbug.com/514448226
-      name: "TextStreamMethod",
-      status: "stable",
-    },
     {
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "TimelineTrigger",
