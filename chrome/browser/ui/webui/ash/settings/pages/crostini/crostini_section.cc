@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/guest_os_handler.h"
@@ -32,6 +31,7 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -199,7 +199,12 @@ base::span<const SearchConcept> GetCrostiniDiskResizingSearchConcepts() {
 }
 
 bool IsProfileManaged(Profile* profile) {
-  return profile->GetProfilePolicyConnector()->IsManaged();
+  // The user's policy status is known once its Profile has been added, which
+  // happened before it could open settings. If it isn't, treat the user as
+  // unmanaged, matching ProfileUserManagerController's default.
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  return user.is_managed().value_or(false);
 }
 
 bool IsDeviceManaged() {

@@ -17,7 +17,6 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/enterprise/browser_management",
-  "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bruschetta",
   "+chrome/browser/ui/views/crostini",
