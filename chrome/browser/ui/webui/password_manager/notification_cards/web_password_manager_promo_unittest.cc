@@ -6,21 +6,14 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class WebPasswordManagerPromoTest
     : public testing::TestWithParam<signin::ConsentLevel> {
  public:
-  void SetUp() override {
-    feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSignInPromos,
-        GetParam() == signin::ConsentLevel::kSignin);
-    sync_service_.SetSignedIn(GetParam());
-  }
+  void SetUp() override { sync_service_.SetSignedIn(GetParam()); }
 
  protected:
   bool ShouldShowCard() {
@@ -30,9 +23,6 @@ class WebPasswordManagerPromoTest
   }
 
   syncer::TestSyncService sync_service_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(WebPasswordManagerPromoTest, ShownWithNormalEncryption) {

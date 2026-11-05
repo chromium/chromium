@@ -94,7 +94,6 @@ source_set("unit_tests") {
       "//components/password_manager/core/browser/features:password_features",
       "//components/signin/public/base",
       "//components/sync:test_support",
-      "//components/sync/base",
     ]
   }
 
