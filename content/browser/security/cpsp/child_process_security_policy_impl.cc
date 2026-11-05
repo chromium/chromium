@@ -2509,6 +2509,20 @@ bool ChildProcessSecurityPolicyImpl::MatchesCommittedOriginForTesting(
     ChildProcessId child_id,
     const GURL& url,
     bool url_is_for_precursor_origin) {
+  RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
+      rust::child_process_security_policy::
+          matches_committed_origin_for_testing(  // IN-TEST
+              child_id,
+              // Make a copy for Rust to own.
+              std::make_unique<GURL>(url), url_is_for_precursor_origin),
+      MatchesCommittedOriginForTesting_Cpp(  // IN-TEST
+          child_id, url, url_is_for_precursor_origin));
+}
+
+bool ChildProcessSecurityPolicyImpl::MatchesCommittedOriginForTesting_Cpp(
+    ChildProcessId child_id,
+    const GURL& url,
+    bool url_is_for_precursor_origin) {
   base::AutoLock lock(lock_);
 
   if (auto* process_state = process_states_.GetProcessStateForQuery(child_id)) {
@@ -2519,6 +2533,15 @@ bool ChildProcessSecurityPolicyImpl::MatchesCommittedOriginForTesting(
 }
 
 size_t ChildProcessSecurityPolicyImpl::GetCommittedOriginCountForTesting(
+    ChildProcessId child_id) {
+  RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
+      rust::child_process_security_policy::
+          committed_origin_count_for_testing(  // IN-TEST
+              child_id),
+      GetCommittedOriginCountForTesting_Cpp(child_id));  // IN-TEST
+}
+
+size_t ChildProcessSecurityPolicyImpl::GetCommittedOriginCountForTesting_Cpp(
     ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
@@ -4695,6 +4718,24 @@ void ChildProcessSecurityPolicyImpl::AddCommittedOrigin(
     int child_id,
     const url::Origin& origin) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
+    rust::child_process_security_policy::add_committed_origin(
+        // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+        ChildProcessId::FromUnsafeValue(child_id),
+        // Make a copy for Rust to own.
+        std::make_unique<url::Origin>(origin));
+  }
+
+  // Note: We explicitly continue with C++ state update as well even when in
+  // Rust-only mode, since CanAccessMaybeOpaqueOrigin() has not yet been
+  // implemented in Rust. Once it is supported in Rust, this should be combined
+  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  AddCommittedOrigin_Cpp(child_id, origin);
+}
+
+void ChildProcessSecurityPolicyImpl::AddCommittedOrigin_Cpp(
+    int child_id,
+    const url::Origin& origin) {
   base::AutoLock lock(lock_);
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   auto* state = process_states_.GetProcessStateForMutation(
