@@ -25,8 +25,9 @@ TEST(VoiceIsolationWindowedFftTest, WindowOlaProperty) {
   constexpr size_t kNumHopsPerBlock = 2;
   WindowedFft windowed_fft(/*fft_size=*/kFftSize);
 
-  const std::vector<float>& window = windowed_fft.fft_window_;
-  const std::vector<float>& inv_window = windowed_fft.inv_fft_window_;
+  base::span<const float> window = windowed_fft.fft_window_for_testing();
+  base::span<const float> inv_window =
+      windowed_fft.inv_fft_window_for_testing();
 
   ASSERT_EQ(window.size(), kFftSize);
   ASSERT_EQ(window.size(), inv_window.size());

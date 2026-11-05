@@ -165,10 +165,14 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
     return audio_processor_->needs_playout_reference();
   }
 
- private:
-  friend class InputControllerTestHelper;
-  friend class AudioProcessorHandlerTest;
+  ProcessingAudioFifo* processing_fifo_for_testing() const {
+    return processing_fifo_.get();
+  }
+  const VoiceIsolationHandler* voice_isolation_handler_for_testing() const {
+    return voice_isolation_handler_.get();
+  }
 
+ private:
   // Used in the mojom::AudioProcessorControls implementation.
   using GetStatsCallback =
       base::OnceCallback<void(const media::AudioProcessingStats& stats)>;

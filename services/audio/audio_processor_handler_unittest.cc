@@ -77,22 +77,26 @@ class AudioProcessorHandlerTest : public ::testing::Test {
       error_callback_;
 
   bool HasVoiceIsolationHandler(const AudioProcessorHandler& handler) {
-    return handler.voice_isolation_handler_ != nullptr;
+    return handler.voice_isolation_handler_for_testing() != nullptr;
   }
 
   bool HasProcessingFifo(const AudioProcessorHandler& handler) {
-    return handler.processing_fifo_ != nullptr;
+    return handler.processing_fifo_for_testing() != nullptr;
   }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   bool VoiceIsolationHasProcessingThread(const AudioProcessorHandler& handler) {
-    return handler.voice_isolation_handler_ &&
-           handler.voice_isolation_handler_->HasProcessingThread();
+    const VoiceIsolationHandler* voice_isolation_handler =
+        handler.voice_isolation_handler_for_testing();
+    return voice_isolation_handler &&
+           voice_isolation_handler->HasProcessingThread();
   }
 
   int GetVoiceIsolationFifoSize(const AudioProcessorHandler& handler) {
-    return handler.voice_isolation_handler_
-               ? handler.voice_isolation_handler_->GetFifoSizeForTesting()
+    const VoiceIsolationHandler* voice_isolation_handler =
+        handler.voice_isolation_handler_for_testing();
+    return voice_isolation_handler
+               ? voice_isolation_handler->GetFifoSizeForTesting()
                : 0;
   }
 

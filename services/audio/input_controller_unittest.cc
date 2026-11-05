@@ -550,25 +550,27 @@ class InputControllerTestHelper {
 
   bool IsUsingProcessingThread() {
     return controller_->audio_processor_handler_ &&
-           controller_->audio_processor_handler_->processing_fifo_;
+           controller_->audio_processor_handler_->processing_fifo_for_testing();
   }
 
   bool HasVoiceIsolation() {
-    auto* handler = controller_->audio_processor_handler_.get();
-    return handler && handler->voice_isolation_handler_ != nullptr;
+    const AudioProcessorHandler* handler =
+        controller_->audio_processor_handler_.get();
+    return handler && handler->voice_isolation_handler_for_testing() != nullptr;
   }
 
   // Adds a callback that will be run immediately after processing is done, in
   // the same sequence as the processing callback.
   // Should be called before starting the processing thread.
   void AttachOnProcessedCallback(base::RepeatingClosure on_processed_callback) {
-    controller_->audio_processor_handler_->processing_fifo_
+    controller_->audio_processor_handler_->processing_fifo_for_testing()
         ->AttachOnProcessedCallbackForTesting(std::move(on_processed_callback));
   }
 
   int FifoSize() {
     CHECK(IsUsingProcessingThread());
-    return controller_->audio_processor_handler_->processing_fifo_->fifo_size();
+    return controller_->audio_processor_handler_->processing_fifo_for_testing()
+        ->fifo_size();
   }
 
   // Simulates the AudioProcessorHandler receiving an error.
