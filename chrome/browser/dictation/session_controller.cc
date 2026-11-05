@@ -32,6 +32,9 @@
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
@@ -68,6 +71,10 @@ SessionController::~SessionController() {
         (!attached_stream_provider_ && finalizing_stream_providers_.empty()));
   if (attached_stream_provider_) {
     EndDictationStream(DictationStreamEndTrigger::kDestructor);
+  }
+  if (is_wake_lock_active_) {
+    GetWakeLock()->CancelWakeLock();
+    is_wake_lock_active_ = false;
   }
   VT_LOG(GetBrowserContext()) << "=== Session Ended";
 }
@@ -401,6 +408,12 @@ SessionController::AddSessionStateChangedCallback(
   return session_state_changed_callback_list_.Add(std::move(callback));
 }
 
+void SessionController::FlushWakeLockForTesting() {
+  if (wake_lock_) {
+    wake_lock_.FlushForTesting();  // IN-TEST
+  }
+}
+
 void SessionController::MoveToState(SessionState new_state) {
   if (new_state == state_) {
     return;
@@ -422,6 +435,8 @@ void SessionController::MoveToState(SessionState new_state) {
 #endif  // DCHECK_IS_ON()
   const SessionState old_state = state_;
   state_ = new_state;
+
+  UpdateWakeLock();
 
   if (old_state == kStreamInitializing) {
     const base::TimeDelta elapsed =
@@ -451,6 +466,45 @@ void SessionController::MoveToState(SessionState new_state) {
       EndSessionAsynchronously();
     }
   }
+}
+
+void SessionController::UpdateWakeLock() {
+  bool should_hold_wake_lock = false;
+  switch (state_) {
+    case SessionState::kInactive:
+    case SessionState::kEnded:
+      should_hold_wake_lock = false;
+      break;
+    case SessionState::kStreamInitializing:
+    case SessionState::kTranscribing:
+    case SessionState::kFinalizing:
+      should_hold_wake_lock = true;
+      break;
+  }
+  if (should_hold_wake_lock && !is_wake_lock_active_) {
+    GetWakeLock()->RequestWakeLock();
+    is_wake_lock_active_ = true;
+  } else if (!should_hold_wake_lock && is_wake_lock_active_) {
+    GetWakeLock()->CancelWakeLock();
+    is_wake_lock_active_ = false;
+  }
+}
+
+device::mojom::WakeLock* SessionController::GetWakeLock() {
+  // Lazy binding; does not reconnect after connection error.
+  if (!wake_lock_) {
+    mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
+    delegate_->BindWakeLockProvider(
+        wake_lock_provider.BindNewPipeAndPassReceiver());
+    // Although we could attribute the lock to the associated WebContents, it
+    // does not make a difference on any platform where this feature is enabled,
+    // and so is omitted for simplicity.
+    wake_lock_provider->GetWakeLockWithoutContext(
+        device::mojom::WakeLockType::kPreventDisplaySleep,
+        device::mojom::WakeLockReason::kOther, "Dictation",
+        wake_lock_.BindNewPipeAndPassReceiver());
+  }
+  return wake_lock_.get();
 }
 
 void SessionController::EndSessionAsynchronously() {

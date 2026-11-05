@@ -33,6 +33,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/device_service.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -242,6 +243,11 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
   CHECK(tab);
   return std::make_unique<SessionUiImpl>(*tab, controller,
                                          ConsumeShowReviewingPageStatus());
+}
+
+void DictationKeyedService::BindWakeLockProvider(
+    mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) {
+  content::GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
 bool DictationKeyedService::ConsumeShowReviewingPageStatus() const {

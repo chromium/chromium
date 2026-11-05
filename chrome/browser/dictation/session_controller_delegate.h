@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
@@ -31,6 +33,8 @@ class SessionControllerDelegate {
       SessionController& controller) const = 0;
   virtual std::unique_ptr<SessionUi> CreateUi(
       SessionController& controller) const = 0;
+  virtual void BindWakeLockProvider(
+      mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) = 0;
 
   // Ends the current session. No-op if there is no existing session. Note: this
   // may destroy the session controller synchronously.

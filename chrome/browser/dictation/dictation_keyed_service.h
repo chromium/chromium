@@ -24,6 +24,8 @@
 #include "chrome/browser/dictation/target.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom-forward.h"
 
 class Profile;
 
@@ -62,6 +64,8 @@ class DictationKeyedService : public KeyedService,
       SessionController& controller) const override;
   std::unique_ptr<SessionUi> CreateUi(
       SessionController& controller) const override;
+  void BindWakeLockProvider(
+      mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
   // Destroys the session. Only called by
   // `SessionController::EndSessionSynchronously()`, once it is `kEnded`.
   void EndSession() override;

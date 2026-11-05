@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
@@ -44,12 +45,16 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/device_service.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -92,6 +97,20 @@ class DictationKeyedServiceBrowserTest
                                       std::string_view expected) {
     return dictation::GetEditableExpectedText(
         web_contents()->GetPrimaryMainFrame(), selector, expected);
+  }
+
+  int32_t GetActiveDisplayWakeLocks() {
+    if (SessionController* controller = session_controller()) {
+      controller->FlushWakeLockForTesting();
+    }
+    mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
+    content::GetDeviceService().BindWakeLockProvider(
+        wake_lock_provider.BindNewPipeAndPassReceiver());
+    base::test::TestFuture<int32_t> future;
+    wake_lock_provider->GetActiveWakeLocksForTests(
+        device::mojom::WakeLockType::kPreventDisplaySleep,
+        future.GetCallback());
+    return future.Get();
   }
 };
 
@@ -881,6 +900,48 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   // followed by the additional typed character, followed by the transcription
   // (separated by a space due to whitespace insertion behavior).
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "ab c");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
+                       AcquiresDisplayWakeLockWhileActive) {
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_EQ(GetActiveDisplayWakeLocks(), 0);
+
+  std::optional<int> dom_node_id =
+      content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
+  ASSERT_TRUE(dom_node_id.has_value());
+
+  StartSession(TargetDetails(content::GlobalDOMNodeId{
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(dom_node_id.value())}));
+
+  SessionController* controller = session_controller();
+  ASSERT_NE(controller, nullptr);
+  ASSERT_EQ(controller->GetState(), SessionState::kStreamInitializing);
+  EXPECT_EQ(GetActiveDisplayWakeLocks(), 1);
+
+  ListenerStreamProvider* provider = attached_stream();
+  ASSERT_NE(provider, nullptr);
+  const auto stream_id = provider->stream_id_for_testing();
+
+  ExtensionWaitForStreamStart(profile(), stream_id);
+  ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                 ExtensionStreamState::kTranscribing);
+  ASSERT_EQ(controller->GetState(), SessionState::kTranscribing);
+  EXPECT_EQ(GetActiveDisplayWakeLocks(), 1);
+
+  controller->EndDictationStream(DictationStreamEndTrigger::kTest);
+  ASSERT_EQ(controller->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(GetActiveDisplayWakeLocks(), 1);
+
+  ExtensionWaitForStreamEnd(profile(), stream_id);
+  ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                 ExtensionStreamState::kComplete);
+  WaitForSessionState(SessionState::kInactive);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return GetActiveDisplayWakeLocks() == 0; }));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

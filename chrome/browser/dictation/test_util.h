@@ -23,6 +23,9 @@
 #include "chrome/browser/dictation/target.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/cpp/test/test_wake_lock_provider.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -187,7 +190,18 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
               CreateUi,
               (SessionController & controller),
               (const, override));
+  MOCK_METHOD(void,
+              BindWakeLockProvider,
+              (mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver),
+              (override));
   MOCK_METHOD(void, EndSession, (), (override));
+
+  device::TestWakeLockProvider& wake_lock_provider() {
+    return wake_lock_provider_;
+  }
+
+ private:
+  device::TestWakeLockProvider wake_lock_provider_;
 };
 
 // A ui::GlobalAcceleratorListener that doesn't touch the OS. Use with
@@ -257,15 +271,21 @@ class MockDictationKeyedService : public DictationKeyedService {
       SessionController& controller) const override;
   std::unique_ptr<SessionUi> CreateUi(
       SessionController& controller) const override;
+  void BindWakeLockProvider(
+      mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
 
   MOCK_METHOD(void, ToggleHotkeyHandler, (), (override));
 
   FakeGlobalAcceleratorListener& fake_global_listener() {
     return fake_global_listener_.listener();
   }
+  device::TestWakeLockProvider& wake_lock_provider() {
+    return wake_lock_provider_;
+  }
 
  private:
   ScopedFakeGlobalAcceleratorListener fake_global_listener_{*this};
+  device::TestWakeLockProvider wake_lock_provider_;
 };
 
 }  // namespace dictation

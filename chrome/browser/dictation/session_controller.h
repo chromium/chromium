@@ -22,6 +22,8 @@
 #include "chrome/browser/dictation/target.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace dictation {
@@ -103,8 +105,12 @@ class SessionController : public SessionUiDelegate,
     return auto_session_end_timer_.IsRunning();
   }
 
+  void FlushWakeLockForTesting();
+
  private:
   void MoveToState(SessionState new_state);
+  void UpdateWakeLock();
+  device::mojom::WakeLock* GetWakeLock();
   void EndSessionAsynchronously();
   void PurgeToDeleteStreamProviders();
   content::BrowserContext* GetBrowserContext() const;
@@ -141,6 +147,14 @@ class SessionController : public SessionUiDelegate,
   // Timer for delayed session shutdown when `kSessionEndsOnStreamEnd` is
   // enabled.
   base::OneShotTimer auto_session_end_timer_;
+
+  // Display wake lock held whenever `state_` is not `SessionState::kInactive`
+  // so the screen does not go to sleep during long dictations.
+  // TODO(https://crbug.com/581952682): Consider still allowing the screen to
+  // dim during periods of silence on platforms where that kind of wake lock is
+  // supported.
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
+  bool is_wake_lock_active_ = false;
 
   base::WeakPtrFactory<SessionController> weak_ptr_factory_{this};
 };
