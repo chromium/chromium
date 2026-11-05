@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -846,7 +847,17 @@ void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
       blink::BindRepeating(
           &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
           WrapWeakPersistent(this));
-  skia_canvas.drawPicture(std::move(last_recording), custom_callback);
+  {
+    // Software PaintRecord playback allocates short-lived Skia rasterization
+    // scratch buffers that churn PartitionAlloc's quarantine. Keep safety
+    // checks active when discardable images may trigger image decoding.
+    // TODO(crbug.com/582017429): Optimize and remove if possible.
+    std::optional<base::ScopedSafetyChecksExclusion> excluded;
+    if (!last_recording.has_discardable_images()) {
+      excluded.emplace();
+    }
+    skia_canvas.drawPicture(std::move(last_recording), custom_callback);
+  }
   canvas_image_provider_->ReleaseLockedImages();
   canvas_image_provider_->UnbindTextureBackedImages();
 }
