@@ -80,10 +80,18 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    if (changedProperties.has('fontSize') && this.pendingAnnouncement_) {
+    if (!changedProperties.has('fontSize')) {
+      return;
+    }
+
+    if (this.pendingAnnouncement_) {
       this.announceSizeChange_(this.pendingAnnouncement_);
       this.pendingAnnouncement_ = null;
     }
+
+    // Keep focus on the active button when it becomes disabled, per
+    // accessibility recommendation.
+    this.keepFocus_();
   }
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
@@ -121,8 +129,6 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
   protected onResetClick_() {
     this.pendingAnnouncement_ = null;
     this.fire(ToolbarEvent.FONT_SIZE_RESET);
-    // TODO(crbug.com/441561417): Keep focus on the button when it becomes
-    // disabled.
   }
 
   private updateFontSize_(increase: boolean) {
@@ -130,8 +136,17 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
         increase ? 'increaseFontSizeAnnouncement' :
                    'decreaseFontSizeAnnouncement');
     this.fire(ToolbarEvent.FONT_SIZE, {data: increase});
-    // TODO(crbug.com/441561417): Keep focus on the button when it becomes
-    // disabled.
+  }
+
+  private async keepFocus_() {
+    const focusedElement = this.shadowRoot?.activeElement;
+    if (focusedElement instanceof CrLitElement) {
+      await this.$.lazyMenu.updateComplete;
+      await focusedElement.updateComplete;
+      if ('disabled' in focusedElement && focusedElement.disabled) {
+        focusedElement.focus();
+      }
+    }
   }
 
   private announceSizeChange_(text: string) {

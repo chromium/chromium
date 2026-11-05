@@ -174,11 +174,15 @@ suite('FontSize', () => {
             resetButton.disabled,
             'Reset button should be enabled when font size changes');
 
+        resetButton.focus();
+        resetButton.click();
         toolbar.fontSize = visualBrowserProxy.defaultFontSize;
         await microtasksFinished();
         assertTrue(
             resetButton.disabled,
             'Reset button should become disabled after resetting font size');
+        assertEquals(
+            resetButton, toolbar.$.fontSizeMenu.shadowRoot.activeElement);
       });
 
   test('decrease button disabled at min font size', async () => {
@@ -190,8 +194,11 @@ suite('FontSize', () => {
     assertFalse(decreaseButton.disabled);
 
     toolbar.fontSize = visualBrowserProxy.minFontSize + 1;
+    decreaseButton.focus();
     await clickDecrease();
     assertTrue(decreaseButton.disabled);
+    assertEquals(
+        decreaseButton, toolbar.$.fontSizeMenu.shadowRoot.activeElement);
 
     await clickIncrease();
     assertFalse(decreaseButton.disabled);
@@ -206,8 +213,11 @@ suite('FontSize', () => {
     assertFalse(increaseButton.disabled);
 
     toolbar.fontSize = visualBrowserProxy.maxFontSize - 1;
+    increaseButton.focus();
     await clickIncrease();
     assertTrue(increaseButton.disabled);
+    assertEquals(
+        increaseButton, toolbar.$.fontSizeMenu.shadowRoot.activeElement);
 
     await clickDecrease();
     assertFalse(increaseButton.disabled);
