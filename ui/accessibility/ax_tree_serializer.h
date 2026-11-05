@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_error_types.h"
 #include "ui/accessibility/ax_export.h"
@@ -236,7 +237,7 @@ class AXTreeSerializer {
   raw_ptr<ClientTreeNode, DanglingUntriaged> client_root_ = nullptr;
 
   // A map from IDs to nodes in the client tree.
-  std::map<AXNodeID, ClientTreeNode*> client_id_map_;
+  absl::flat_hash_map<AXNodeID, ClientTreeNode*> client_id_map_;
 
   // The maximum number of nodes to serialize in a given call to
   // SerializeChanges, or 0 if there's no maximum.
@@ -394,9 +395,10 @@ std::vector<AXNodeID> AXTreeSerializer<AXSourceNode,
                                        AXNodeDataType>::ClientTreeNodeIds()
     const {
   std::vector<AXNodeID> keys;
-  std::transform(
-      client_id_map_.begin(), client_id_map_.end(), std::back_inserter(keys),
-      [](std::pair<AXNodeID, ClientTreeNode*> item) { return item.first; });
+  keys.reserve(client_id_map_.size());
+  for (const auto& item : client_id_map_) {
+    keys.push_back(item.first);
+  }
   return keys;
 }
 
@@ -627,9 +629,10 @@ AXTreeSerializer<AXSourceNode,
                  AXTreeUpdateType,
                  AXTreeDataType,
                  AXNodeDataType>::ClientTreeNodeById(AXNodeID id) {
-  std::map<AXNodeID, ClientTreeNode*>::iterator iter = client_id_map_.find(id);
-  if (iter != client_id_map_.end())
+  auto iter = client_id_map_.find(id);
+  if (iter != client_id_map_.end()) {
     return iter->second;
+  }
   return nullptr;
 }
 

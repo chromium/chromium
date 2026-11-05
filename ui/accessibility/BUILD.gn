@@ -224,6 +224,7 @@ component("accessibility_internal") {
   public_deps = [
     ":ax_base",
     "//skia",
+    "//third_party/abseil-cpp:absl",
   ]
 
   if (is_fuchsia) {
