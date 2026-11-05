@@ -17,11 +17,14 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/passwords/manage_passwords_auto_signin_toast_delegate.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -33,8 +36,16 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/view_utils.h"
 
 using base::StartsWith;
 
@@ -370,6 +381,94 @@ IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, TabSwitch) {
 
   // Verify Icon is now VISIBLE on Tab 0.
   WaitForIconVisibility(true);
+}
+
+// Regression test for crbug.com/572501958: closing the originating tab while
+// the auto sign-in toast's 3-dot menu is open destroys the tab-scoped
+// `ManagePasswordsAutoSigninToastDelegate` while `ToastView` defers closing
+// until the menu closes. Activating the menu item afterwards must not crash.
+IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest,
+                       TabClosedWhileToastMenuOpen) {
+  if (!IsParamFeatureEnabled()) {
+    return;
+  }
+
+  // `ManagePasswordsTest::SetUpOnMainThread()` opens a second tab at index 0,
+  // so closing the active tab keeps the browser window alive.
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  ASSERT_GE(initial_tab_count, 2);
+  const int auto_signin_tab_index =
+      browser()->GetTabStripModel()->active_index();
+
+  test_form()->url = GURL("https://example.com");
+  test_form()->display_name = u"test_user";
+  test_form()->username_value = u"test_user@gmail.com";
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials;
+  local_credentials.push_back(
+      std::make_unique<password_manager::PasswordForm>(*test_form()));
+
+  SetupAutoSignin(std::move(local_credentials));
+  ASSERT_TRUE(GetToastController()->IsShowingToast());
+  ASSERT_EQ(GetToastController()->GetCurrentToastId(), ToastId::kAutoSignIn);
+
+  // Open the toast's 3-dot More Actions menu.
+  toasts::ToastView* toast_view =
+      GetToastController()->GetToastViewForTesting();
+  ASSERT_NE(toast_view, nullptr);
+  views::View* menu_button =
+      toast_view->GetViewByElementId(toasts::ToastView::kToastMenuButton);
+  ASSERT_NE(menu_button, nullptr);
+  menu_button->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed,
+                                         ui::VKEY_SPACE, ui::EF_NONE,
+                                         ui::EventTimeForNow()));
+  menu_button->OnKeyReleased(ui::KeyEvent(ui::EventType::kKeyReleased,
+                                          ui::VKEY_SPACE, ui::EF_NONE,
+                                          ui::EventTimeForNow()));
+
+  views::MenuController* menu_controller =
+      views::MenuController::GetForOwnerWidget(
+          GetToastController()->GetToastWidgetForTesting());
+  ASSERT_NE(menu_controller, nullptr);
+
+  base::test::TestFuture<void> toast_destroyed;
+  auto subscription = GetToastController()->RegisterOnWidgetDestroyed(
+      base::BindLambdaForTesting([&](ToastId toast_id) {
+        if (toast_id == ToastId::kAutoSignIn) {
+          toast_destroyed.SetValue();
+        }
+      }));
+
+  // Close the originating tab while the menu is open. `ToastView::Close` defers
+  // closing while `menu_runner_` is active, whereas the closed tab's
+  // `TabFeatures` and `ManagePasswordsAutoSigninToastDelegate` are destroyed
+  // immediately.
+  content::WebContentsDestroyedWatcher tab_destroyed_watcher(
+      browser()->GetTabStripModel()->GetWebContentsAt(auto_signin_tab_index));
+  browser()->GetTabStripModel()->CloseWebContentsAt(auto_signin_tab_index,
+                                                    TabCloseTypes::CLOSE_NONE);
+  tab_destroyed_watcher.Wait();
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count - 1);
+  ASSERT_TRUE(GetToastController()->IsShowingToast());
+
+  // Activate the "Manage" menu item after the originating tab has been closed.
+  auto* manage_item = views::AsViewClass<views::MenuItemView>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          ManagePasswordsAutoSigninToastDelegate::
+              kOpenPasswordManagerSettingsMenuItem,
+          views::ElementTrackerViews::GetContextForView(toast_view)));
+  ASSERT_NE(manage_item, nullptr);
+  menu_controller->SelectItemAndOpenSubmenu(manage_item);
+  ui::KeyEvent activate_event(ui::EventType::kKeyPressed,
+#if BUILDFLAG(IS_MAC)
+                              ui::VKEY_SPACE,
+#else
+                              ui::VKEY_RETURN,
+#endif
+                              ui::EF_NONE, ui::EventTimeForNow());
+  menu_controller->OnWillDispatchKeyEvent(&activate_event);
+
+  EXPECT_TRUE(toast_destroyed.Wait());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordAutoSignInToastTest);
