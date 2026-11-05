@@ -4,11 +4,35 @@
 
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace actor {
+
+namespace {
+
+// LINT.IfChange(AttemptOtpFillingStepSuffix)
+
+// Histogram suffix for `step`.
+std::string_view GetUmaSuffix(AttemptOtpFillingStep step) {
+  switch (step) {
+    case AttemptOtpFillingStep::kTimeOfUse:
+      return "TimeOfUse";
+    case AttemptOtpFillingStep::kAfterOtpRetrieved:
+      return "AfterOtpRetrieved";
+    case AttemptOtpFillingStep::kAfterConfirmation:
+      return "AfterConfirmation";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/histograms.xml:AttemptOtpFillingStep)
+
+}  // namespace
 
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event) {
   base::UmaHistogramEnumeration(kAttemptOtpFillingToolHistogram, event);
@@ -37,6 +61,14 @@ void RecordGmailAndGoogleSmartFeaturesConsent(
                                 consent);
 }
 
+void RecordFormFillingContextValidationResult(
+    AttemptOtpFillingStep step,
+    autofill::FormFillingContextValidationResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({kAttemptOtpFillingValidateFormFillingContextHistogram, ".",
+                    GetUmaSuffix(step)}),
+      result);
+}
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
     ukm::SourceId ukm_source_id) {

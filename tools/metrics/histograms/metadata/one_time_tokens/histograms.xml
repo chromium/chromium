@@ -19,6 +19,20 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.cc:AttemptOtpFillingPredictedOtpTypeSuffix) -->
 
+<!-- LINT.IfChange(AttemptOtpFillingStep) -->
+
+<variants name="AttemptOtpFillingStep">
+  <variant name="AfterConfirmation"
+      summary="third, only if confirmation is required, after the user
+               approves it"/>
+  <variant name="AfterOtpRetrieved"
+      summary="second, after the OTP is retrieved, before the confirmation
+               dialog or filling"/>
+  <variant name="TimeOfUse" summary="first, before the OTP is requested"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.cc:AttemptOtpFillingStepSuffix) -->
+
 <variants name="GmailOtpTokenSource">
   <variant name="Cached" summary="a cached"/>
   <variant name="Received" summary="a received (fresh)"/>
@@ -96,6 +110,24 @@ found in the LICENSE file.
     the task is stopped, paused or cancelled, or the tab is closed) before the
     named asynchronous step completes. Recorded at most once per attempt.
   </summary>
+</histogram>
+
+<histogram
+    name="OneTimeTokens.Actor.AttemptOtpFilling.ValidateFormFillingContext.{Step}"
+    enum="ActorOtpFormFillingContextValidationResult"
+    expires_after="2027-06-30">
+  <owner>salmaabdelaziz@google.com</owner>
+  <owner>passwordmanager-mobile-eng@google.com</owner>
+  <summary>
+    Records the outcome of the form filling context validation that the
+    AttemptOtpFilling tool runs {Step}: Secure, or the first check that failed
+    (e.g. no tab, an insecure page, a missing form or trigger field, a form that
+    submits to an insecure action, OTP fields from different origins, or a frame
+    that is missing or may not be filled). Recorded once per validation. Not
+    recorded when the attempt ends before reaching this validation, e.g. when an
+    earlier validation or the OTP retrieval fails.
+  </summary>
+  <token key="Step" variants="AttemptOtpFillingStep"/>
 </histogram>
 
 <histogram name="OneTimeTokens.Actor.AttemptOtpFilling.VerifyIsActorLoginFlow"

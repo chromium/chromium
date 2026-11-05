@@ -27,6 +27,7 @@ class RenderFrameHost;
 
 namespace autofill {
 
+// LINT.IfChange(FormFillingContextValidationResult)
 // Detailed result of a `ValidateFormFillingContext()` call: secure, or the
 // first check that failed.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -54,6 +55,7 @@ enum class FormFillingContextValidationResult {
   kInvalidFrameOrOrigin = 10,
   kMaxValue = kInvalidFrameOrOrigin,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOtpFormFillingContextValidationResult)
 
 // Interface for the Actor tooling to interact with One-Time Tokens (OTT) or
 // one-time passwords (OTP) filling.

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -387,6 +388,11 @@ using optimization_guide::DocumentIdentifierUserData;
 using optimization_guide::proto::AnnotatedPageContent;
 using webui::mojom::GmailOtpErrorReason;
 using webui::mojom::GmailOtpOptInResult;
+
+std::string ValidateFormFillingContextHistogram(std::string_view step) {
+  return base::StrCat(
+      {kAttemptOtpFillingValidateFormFillingContextHistogram, ".", step});
+}
 
 void ExpectNoCancellationRecorded(const base::HistogramTester& tester) {
   for (AttemptOtpFillingToolEvent event : {
@@ -883,6 +889,9 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_InsecureContext) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFormFillingStatusInsecureContext, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("TimeOfUse"),
+      autofill::FormFillingContextValidationResult::kInsecurePage, 1);
 }
 
 // `Invoke()` returns `kOk` when all conditions are met.
@@ -1536,6 +1545,12 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("TimeOfUse"),
+      autofill::FormFillingContextValidationResult::kSecure, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("AfterOtpRetrieved"),
+      autofill::FormFillingContextValidationResult::kInsecurePage, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_FormNotFoundBeforeFilling) {
@@ -1629,11 +1644,13 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
       .WillOnce(RunOnceCallback<5>("123456"));
-  // ValidateFormFillingContext is called twice: once in TimeOfUseValidation,
-  // once before FillOtp
+  // `ValidateFormFillingContext()` is called once per step: in
+  // `TimeOfUseValidation()`, after the OTP is retrieved, and after the
+  // confirmation dialog is approved.
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      .WillRepeatedly(
-          Return(autofill::FormFillingContextValidationResult::kSecure));
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure));
 
   // The confirmation dialog is shown. User approves it.
   webui::mojom::GmailOtpConfirmationResponsePtr response =
@@ -1662,7 +1679,59 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
   histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kPermissionGranted, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("TimeOfUse"),
+      autofill::FormFillingContextValidationResult::kSecure, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("AfterOtpRetrieved"),
+      autofill::FormFillingContextValidationResult::kSecure, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("AfterConfirmation"),
+      autofill::FormFillingContextValidationResult::kSecure, 1);
 }
+
+// A failed validation after the user approves the confirmation dialog is
+// recorded for that step, with the check that failed.
+TEST_F(AttemptOtpFillingToolTest, Invoke_ValidationFailsAfterConfirmation) {
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<5>("123456"));
+  EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::
+                           kOtpFieldsFromDifferentOrigins));
+  webui::mojom::GmailOtpConfirmationResponsePtr response =
+      webui::mojom::GmailOtpConfirmationResponse::New(
+          /*permission_granted=*/true);
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _))
+      .WillOnce(RunOnceCallback<1>(
+          webui::mojom::GmailOtpConfirmationResult::NewResponse(
+              std::move(response))));
+  EXPECT_CALL(delegate().mock_otp_service(), FillOtp).Times(0);
+
+  PageTarget target(gfx::Point(10, 10));
+  AttemptOtpFillingTool tool = CreateTool({target}, /*for_signin=*/true);
+  SetupSuccessfulTimeOfUseValidation(tool, target);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+
+  EXPECT_EQ(mojom::ActionResultCode::kOtpInsecureContext, future.Take()->code);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("TimeOfUse"),
+      autofill::FormFillingContextValidationResult::kSecure, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("AfterOtpRetrieved"),
+      autofill::FormFillingContextValidationResult::kSecure, 1);
+  histogram_tester_.ExpectUniqueSample(
+      ValidateFormFillingContextHistogram("AfterConfirmation"),
+      autofill::FormFillingContextValidationResult::
+          kOtpFieldsFromDifferentOrigins,
+      1);
+}
+
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())

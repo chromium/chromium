@@ -9,6 +9,7 @@
 
 #include "chrome/browser/actor/tools/one_time_token/actor_login_flow_verifier.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace actor {
@@ -123,6 +124,20 @@ enum class ActorOtpGmailAndGoogleSmartFeaturesConsent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOtpGmailAndGoogleSmartFeaturesConsent)
 
+// The step of the AttemptOtpFilling tool that validates the form filling
+// context. This enum is only used to select the
+// ValidateFormFillingContext.{Step} patterned histogram suffix and is never
+// logged as a bucket value.
+enum class AttemptOtpFillingStep {
+  // In `TimeOfUseValidation()`, right before the tool is invoked.
+  kTimeOfUse,
+  // After the OTP is retrieved, before it is filled (and before the
+  // confirmation dialog is shown, if applicable).
+  kAfterOtpRetrieved,
+  // After the user approves the confirmation dialog, before the OTP is filled.
+  kAfterConfirmation,
+};
+
 // Histogram name for AttemptOtpFilling tool invocation events.
 inline constexpr char kAttemptOtpFillingToolHistogram[] =
     "OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation";
@@ -145,6 +160,10 @@ inline constexpr std::string_view kActorOtpVerifyIsActorLoginFlowHistogram =
 inline constexpr char kGmailAndGoogleSmartFeaturesConsentHistogram[] =
     "OneTimeTokens.Actor.AttemptOtpFilling.GmailAndGoogleSmartFeaturesConsent";
 
+// Prefix of the histograms recorded per `AttemptOtpFillingStep`.
+inline constexpr char kAttemptOtpFillingValidateFormFillingContextHistogram[] =
+    "OneTimeTokens.Actor.AttemptOtpFilling.ValidateFormFillingContext";
+
 // Records events during the AttemptOtpFilling tool invocation events.
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event);
 
@@ -163,6 +182,12 @@ void RecordActorLoginFlowVerification(ActorLoginFlowVerifier::Result result);
 // states.
 void RecordGmailAndGoogleSmartFeaturesConsent(
     ActorOtpGmailAndGoogleSmartFeaturesConsent consent);
+
+// Records the detailed `result` of the form filling context validation at
+// `step`.
+void RecordFormFillingContextValidationResult(
+    AttemptOtpFillingStep step,
+    autofill::FormFillingContextValidationResult result);
 
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,

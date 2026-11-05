@@ -515,6 +515,8 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
                                       trigger_field_ids_);
+  RecordFormFillingContextValidationResult(AttemptOtpFillingStep::kTimeOfUse,
+                                           context_result);
   const FormFillingContextStatus status =
       ToFormFillingContextStatus(context_result);
   LogJournalEvent("AttemptOtpFillingTool::Validate",
@@ -754,6 +756,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
                                       trigger_field_ids_);
+  RecordFormFillingContextValidationResult(
+      AttemptOtpFillingStep::kAfterOtpRetrieved, context_result);
   const FormFillingContextStatus status =
       ToFormFillingContextStatus(context_result);
   mojom::ActionResultPtr validation_result =
@@ -939,6 +943,8 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
                                       trigger_field_ids_);
+  RecordFormFillingContextValidationResult(
+      AttemptOtpFillingStep::kAfterConfirmation, context_result);
   const FormFillingContextStatus status =
       ToFormFillingContextStatus(context_result);
   mojom::ActionResultPtr validation_result =

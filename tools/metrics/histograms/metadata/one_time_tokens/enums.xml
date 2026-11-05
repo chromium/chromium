@@ -83,6 +83,24 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtp) -->
 
+<!-- LINT.IfChange(ActorOtpFormFillingContextValidationResult) -->
+
+<enum name="ActorOtpFormFillingContextValidationResult">
+  <int value="0" label="Secure"/>
+  <int value="1" label="EmptyTriggerFieldIds"/>
+  <int value="2" label="TabNotAvailable"/>
+  <int value="3" label="InsecurePage"/>
+  <int value="4" label="NoAutofillManager"/>
+  <int value="5" label="FormStructureNotFound"/>
+  <int value="6" label="TriggerFieldNotFound"/>
+  <int value="7" label="MixedContentFormAction"/>
+  <int value="8" label="OtpFieldsFromDifferentOrigins"/>
+  <int value="9" label="FrameNotFound"/>
+  <int value="10" label="InvalidFrameOrOrigin"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h:FormFillingContextValidationResult) -->
+
 <!-- LINT.IfChange(ActorOtpGmailAndGoogleSmartFeaturesConsent) -->
 
 <enum name="ActorOtpGmailAndGoogleSmartFeaturesConsent">
