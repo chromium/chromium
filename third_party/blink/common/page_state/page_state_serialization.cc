@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 #include <optional>
 #include <string>
@@ -12,7 +13,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -20,6 +20,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -269,7 +270,7 @@ std::optional<base::span<const uint8_t>> ReadData(
   return result;
 }
 
-void WriteInteger(int data, SerializeObject* obj) {
+void WriteInteger(base::StrictNumeric<int> data, SerializeObject* obj) {
   obj->pickle.WriteInt(data);
 }
 
@@ -386,31 +387,29 @@ std::optional<std::u16string_view> ReadU16StringView(
   return std::optional<std::u16string>(ReadU16StringView(obj));
 }
 
-template <typename T>
-void WriteAndValidateVectorSize(const std::vector<T>& v, SerializeObject* obj) {
-  // TODO(crbug.com/579475491): Revisit dividing by `sizeof(T)` here; the
-  // in-memory size of `T` does not correspond to its serialized size, and `v`
-  // is already allocated in memory.
-  CHECK_LT(v.size(), std::numeric_limits<int>::max() / sizeof(T));
-  WriteInteger(static_cast<int>(v.size()), obj);
-}
-
 size_t ReadAndValidateVectorSize(DeserializeObject* obj, size_t element_size) {
-  size_t num_elements = static_cast<size_t>(ReadInteger(obj));
+  size_t num_elements;
+  if (!obj->iter.ReadLength(&num_elements)) {
+    obj->parse_error = true;
+    return 0;
+  }
 
-  // Ensure that resizing a vector to size num_elements makes sense.
+  // Ensure that pre-allocating a vector to `num_elements` via `reserve()`
+  // before reading its elements won't attempt an in-memory allocation of
+  // >= 2 GiB (which would trigger an immediate OOM crash in PartitionAlloc or
+  // overflow 32-bit size calculations).
   if (std::numeric_limits<int>::max() / element_size <= num_elements) {
     obj->parse_error = true;
     return 0;
   }
 
-  // Ensure that it is plausible for the pickle to contain num_elements worth
-  // of data, accounting for at least one byte per element in serialized form.
-  if (obj->iter.RemainingBytes() < num_elements) {
+  // Ensure that it is plausible for the pickle to contain `num_elements` worth
+  // of data, accounting for at least one 4-byte-aligned field per element in
+  // serialized form.
+  if (obj->iter.RemainingBytes() / sizeof(uint32_t) < num_elements) {
     obj->parse_error = true;
     return 0;
   }
-
   return num_elements;
 }
 
@@ -418,7 +417,7 @@ size_t ReadAndValidateVectorSize(DeserializeObject* obj, size_t element_size) {
 void WriteU16StringVector(
     const std::vector<std::optional<std::u16string>>& data,
     SerializeObject* obj) {
-  WriteAndValidateVectorSize(data, obj);
+  WriteInteger(base::checked_cast<int>(data.size()), obj);
   for (const auto& str : data) {
     WriteU16String(str, obj);
   }
@@ -431,7 +430,7 @@ std::vector<std::optional<std::u16string>> ReadU16StringVector(
 
   std::vector<std::optional<std::u16string>> result;
   result.reserve(num_elements);
-  for (size_t i = 0; i < num_elements; ++i) {
+  for (size_t i = 0; i < num_elements && !obj->parse_error; ++i) {
     result.push_back(ReadU16String(obj));
   }
   return result;
@@ -439,7 +438,7 @@ std::vector<std::optional<std::u16string>> ReadU16StringVector(
 
 void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
                               SerializeObject* obj) {
-  WriteAndValidateVectorSize(*request_body.elements(), obj);
+  WriteInteger(base::checked_cast<int>(request_body.elements()->size()), obj);
   for (const auto& element : *request_body.elements()) {
     switch (element.type()) {
       case network::DataElement::Tag::kBytes: {
@@ -468,8 +467,9 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
 scoped_refptr<network::ResourceRequestBody> ReadResourceRequestBody(
     DeserializeObject* obj) {
   auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-  int num_elements = ReadInteger(obj);
-  for (int i = 0; i < num_elements; ++i) {
+  size_t num_elements =
+      ReadAndValidateVectorSize(obj, sizeof(network::DataElement));
+  for (size_t i = 0; i < num_elements && !obj->parse_error; ++i) {
     HTTPBodyElementType type =
         static_cast<HTTPBodyElementType>(ReadInteger(obj));
     if (type == HTTPBodyElementType::kTypeData) {
@@ -642,7 +642,7 @@ ExplodedFrameState ReadLegacyFrameState(
   size_t num_children =
       ReadAndValidateVectorSize(obj, sizeof(ExplodedFrameState));
   state.children.reserve(num_children);
-  for (size_t i = 0; i < num_children; ++i) {
+  for (size_t i = 0; i < num_children && !obj->parse_error; ++i) {
     state.children.push_back(
         ReadLegacyFrameState(obj, /*is_top=*/false, unique_name_replacements));
   }
@@ -701,7 +701,7 @@ void WriteLegacyFrameState(const ExplodedFrameState& state,
   WriteU16String(state.http_body.http_content_type, obj);
 
   // Subitems
-  WriteAndValidateVectorSize(state.children, obj);
+  WriteInteger(base::checked_cast<int>(state.children.size()), obj);
   for (const auto& child : state.children) {
     WriteLegacyFrameState(child, obj);
   }
