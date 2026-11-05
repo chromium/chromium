@@ -44,6 +44,7 @@ if (!is_android) {
       "//content/public/browser",
       "//content/test:test_support",
       "//net:test_support",
+      "//services/data_decoder/public/cpp",
       "//testing/gtest",
       "//ui/gfx",
       "//url",

@@ -5,6 +5,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -29,8 +30,8 @@ class ImageDecoderImpl::DecodeImageRequest
   ~DecodeImageRequest() override = default;
 
  private:
-  // Runs the callback and remove the request from the internal request queue.
-  void RunCallbackAndRemoveRequest(const gfx::Image& image);
+  // Removes the request from the internal request queue and runs the callback.
+  void RemoveRequestAndRunCallback(const gfx::Image& image);
 
   // Methods inherited from ImageDecoder::ImageRequest
 
@@ -49,20 +50,23 @@ void ImageDecoderImpl::DecodeImageRequest::OnImageDecoded(
   // TODO(markusheintz): Check whether high res displays that require 2x and 3x
   // image versions need to be supported here.
   gfx::Image image(gfx::Image::CreateFrom1xBitmap(decoded_bitmap));
-  RunCallbackAndRemoveRequest(image);
+  RemoveRequestAndRunCallback(image);
 }
 
 // Called when decoding image failed.
 void ImageDecoderImpl::DecodeImageRequest::OnDecodeImageFailed() {
-  RunCallbackAndRemoveRequest(gfx::Image());
+  RemoveRequestAndRunCallback(gfx::Image());
 }
 
-void ImageDecoderImpl::DecodeImageRequest::RunCallbackAndRemoveRequest(
+void ImageDecoderImpl::DecodeImageRequest::RemoveRequestAndRunCallback(
     const gfx::Image& image) {
-  std::move(callback_).Run(image);
-
-  // This must be the last line in the method body.
+  // Move `callback_` to the stack and remove `this` before running the
+  // callback, as the callback may synchronously destroy `decoder_`.
+  // Note: `RemoveDecodeImageRequest` destroys `this`, so no members of `this`
+  // may be accessed after it returns (`image` is owned by the caller's stack).
+  image_fetcher::ImageDecodedCallback callback = std::move(callback_);
   decoder_->RemoveDecodeImageRequest(this);
+  std::move(callback).Run(image);
 }
 
 ImageDecoderImpl::ImageDecoderImpl() = default;
