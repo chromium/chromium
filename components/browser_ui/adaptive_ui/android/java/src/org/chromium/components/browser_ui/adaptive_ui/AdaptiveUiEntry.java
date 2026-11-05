@@ -5,17 +5,22 @@
 package org.chromium.components.browser_ui.adaptive_ui;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Model representing an entry in the adaptive UI system. */
 @NullMarked
 public class AdaptiveUiEntry {
     private final @AdaptiveUiScope int mScope;
     private final @AdaptiveUiContainer int mAllowedContainers;
+    private final PropertyModel mPropertyModel;
 
     private AdaptiveUiEntry(
-            @AdaptiveUiScope int scope, @AdaptiveUiContainer int allowedContainers) {
+            @AdaptiveUiScope int scope,
+            @AdaptiveUiContainer int allowedContainers,
+            PropertyModel propertyModel) {
         mScope = scope;
         mAllowedContainers = allowedContainers;
+        mPropertyModel = propertyModel;
     }
 
     public @AdaptiveUiScope int getScope() {
@@ -26,10 +31,29 @@ public class AdaptiveUiEntry {
         return mAllowedContainers;
     }
 
+    /**
+     * Returns the shared {@link PropertyModel} (built with {@link AdaptiveUiProperties#ALL_KEYS}).
+     */
+    public PropertyModel getPropertyModel() {
+        return mPropertyModel;
+    }
+
     /** Builder for {@link AdaptiveUiEntry}. */
     public static class Builder {
+        private final PropertyModel mPropertyModel;
         private @AdaptiveUiContainer int mAllowedContainers;
         private @AdaptiveUiScope int mScope = AdaptiveUiScope.TRANSIENT;
+
+        /**
+         * Creates a builder for an {@link AdaptiveUiEntry}.
+         *
+         * @param propertyModel The shared {@link PropertyModel} (built with {@link
+         *     AdaptiveUiProperties#ALL_KEYS}) describing the entry's header, body, and action
+         *     buttons.
+         */
+        public Builder(PropertyModel propertyModel) {
+            mPropertyModel = propertyModel;
+        }
 
         public Builder setScope(@AdaptiveUiScope int scope) {
             mScope = scope;
@@ -41,13 +65,17 @@ public class AdaptiveUiEntry {
             return this;
         }
 
-        /** Builds the {@link AdaptiveUiEntry}. */
+        /**
+         * Builds the {@link AdaptiveUiEntry}.
+         *
+         * @throws IllegalStateException if no allowed container was set.
+         */
         public AdaptiveUiEntry build() {
             if (mAllowedContainers == 0) {
                 throw new IllegalStateException(
                         "At least one allowed container must be specified.");
             }
-            return new AdaptiveUiEntry(mScope, mAllowedContainers);
+            return new AdaptiveUiEntry(mScope, mAllowedContainers, mPropertyModel);
         }
     }
 }

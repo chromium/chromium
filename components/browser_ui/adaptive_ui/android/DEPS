@@ -1,0 +1,6 @@
+noparent = True
+include_rules = [
+  "+base",
+  "+build/android",
+  "+ui/android",
+]

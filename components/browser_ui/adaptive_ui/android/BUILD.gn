@@ -8,12 +8,15 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiContainer.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntry.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiProperties.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiScope.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java",
   ]
   deps = [
     "//build/android:build_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
@@ -25,5 +28,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
