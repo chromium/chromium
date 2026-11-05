@@ -108,8 +108,9 @@
 [ Mac ] fast/forms/calendar-picker/month-open-picker-with-f4-key.html [ Skip ]
 [ Mac ] fast/forms/calendar-picker/week-open-picker-with-f4-key.html [ Skip ]
 
-# Date/time input subfields are not focusable without a fine pointer, and
-# on fuchsia there is only a coarse pointer set in pointer_device_web_engine.cc
+# The Fuchsia port loads every test over HTTP, but only starts the HTTP server
+# when an http/ test is in the batch, so this test fails when run by itself
+# (e.g. by the new test flakiness check).
 [ Fuchsia ] fast/forms/date-multiple-fields/date-multiple-fields-ax-value-changed-notification.html [ Skip ]
 
 # Mac does not have menu key.
