@@ -137,24 +137,28 @@ PlainTextRange GetSelectionOffsets(const SelectionInDomTree& selection) {
   return PlainTextRange::Create(*editable, range);
 }
 
-SelectionInDomTree CreateSelection(const wtf_size_t start,
-                                   const wtf_size_t end,
-                                   Element* element) {
-  const EphemeralRange& start_range =
-      PlainTextRange(0, static_cast<int>(start)).CreateRange(*element);
-  DCHECK(start_range.IsNotNull());
-  const Position& start_position = start_range.EndPosition();
-
-  const EphemeralRange& end_range =
-      PlainTextRange(0, static_cast<int>(end)).CreateRange(*element);
-  DCHECK(end_range.IsNotNull());
-  const Position& end_position = end_range.EndPosition();
-
-  const SelectionInDomTree& selection =
-      SelectionInDomTree::Builder()
-          .SetBaseAndExtent(start_position, end_position)
-          .Build();
-  return selection;
+SelectionInDomTree CreateCollapsedSelection(const wtf_size_t offset,
+                                            Element* element) {
+  EphemeralRange range;
+  if (RuntimeEnabledFeatures::FastTypingCommandCreateSelectionEnabled()) {
+    // A collapsed range finds the same position as the end of [0, offset].
+    // With FastPlainTextRangeCreateRange, it skips computing positions for
+    // earlier runs. For sibling <br>s, those positions require counting
+    // previous siblings, making a zero-based range quadratic in the number of
+    // <br>s.
+    range = PlainTextRange(offset, offset).CreateRange(*element);
+  }
+  if (range.IsNull()) {
+    // Use the legacy range when the feature is disabled or the collapsed range
+    // is null because `offset` is past the text, preserving end-of-text
+    // clamping.
+    range = PlainTextRange(0, static_cast<int>(offset)).CreateRange(*element);
+  }
+  DCHECK(range.IsNotNull());
+  const Position position = range.EndPosition();
+  return SelectionInDomTree::Builder()
+      .SetBaseAndExtent(position, position)
+      .Build();
 }
 
 bool CanAppendNewLineFeedToSelection(const SelectionInDomTree& selection,
@@ -403,7 +407,7 @@ void TypingCommand::AdjustSelectionAfterIncrementalInsertion(
 
   const wtf_size_t new_end = selection_start + text_length;
   const SelectionInDomTree& selection =
-      CreateSelection(new_end, new_end, element);
+      CreateCollapsedSelection(new_end, element);
   SetEndingSelection(SelectionForUndoStep::From(selection));
   if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
     SetEndingDomSelection(SelectionForUndoStep::From(selection));
