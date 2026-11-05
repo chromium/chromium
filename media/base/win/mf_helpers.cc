@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -881,6 +882,71 @@ HRESULT CreateDecryptConfigFromSample(
 
 constexpr size_t kOneMicrosecondInMFSampleTimeUnits = 10;
 
+bool IsCompatibleVideoFormatAndDxgiFormat(VideoPixelFormat frame_format,
+                                          DXGI_FORMAT dxgi_format) {
+  switch (frame_format) {
+    case PIXEL_FORMAT_NV12:
+      return dxgi_format == DXGI_FORMAT_NV12;
+    case PIXEL_FORMAT_P010LE:
+      return dxgi_format == DXGI_FORMAT_P010;
+    case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
+      // WebCodecs may wrap opaque RGBA/BGRA SharedImages with XBGR/XRGB, and
+      // GLTextureImageBacking::ProduceVideo copies single-plane GL textures
+      // into a DXGI_FORMAT_R8G8B8A8_UNORM D3D11 texture.
+      return dxgi_format == DXGI_FORMAT_B8G8R8A8_UNORM ||
+             dxgi_format == DXGI_FORMAT_B8G8R8X8_UNORM ||
+             dxgi_format == DXGI_FORMAT_R8G8B8A8_UNORM;
+    case PIXEL_FORMAT_XR30:
+    case PIXEL_FORMAT_XB30:
+      return dxgi_format == DXGI_FORMAT_R10G10B10A2_UNORM;
+    case PIXEL_FORMAT_RGBAF16:
+      return dxgi_format == DXGI_FORMAT_R16G16B16A16_FLOAT;
+    default:
+      return false;
+  }
+}
+
+// Precondition: `IsCompatibleVideoFormatAndDxgiFormat(frame_format,
+// desc.Format)` must be true before calling this helper.
+bool ValidateCopySubresourceBox(const gfx::Rect& visible_rect,
+                                const D3D11_TEXTURE2D_DESC& desc,
+                                VideoPixelFormat frame_format) {
+  if (visible_rect.IsEmpty() ||
+      !gfx::Rect(base::saturated_cast<int>(desc.Width),
+                 base::saturated_cast<int>(desc.Height))
+           .Contains(visible_rect)) {
+    DLOG(ERROR) << "Source visible_rect " << visible_rect.ToString()
+                << " is empty or out of bounds for texture of size "
+                << desc.Width << "x" << desc.Height;
+    return false;
+  }
+
+  // D3D11 CopySubresourceRegion silently drops the copy if the source box is
+  // not aligned to the format's subsampling block size, leaving the destination
+  // texture with uninitialized GPU memory. Check both the actual D3D11 texture
+  // format and the VideoFrame's claimed pixel format.
+  const bool is_420_texture =
+      desc.Format == DXGI_FORMAT_NV12 || desc.Format == DXGI_FORMAT_P010 ||
+      desc.Format == DXGI_FORMAT_P016 || desc.Format == DXGI_FORMAT_420_OPAQUE;
+  const bool is_420_frame =
+      frame_format == PIXEL_FORMAT_NV12 || frame_format == PIXEL_FORMAT_I420 ||
+      frame_format == PIXEL_FORMAT_YV12 || frame_format == PIXEL_FORMAT_NV21 ||
+      frame_format == PIXEL_FORMAT_P010LE;
+  if (is_420_texture || is_420_frame) {
+    if (visible_rect.x() % 2 != 0 || visible_rect.y() % 2 != 0 ||
+        visible_rect.width() % 2 != 0 || visible_rect.height() % 2 != 0) {
+      DLOG(ERROR) << "Source visible_rect is not properly aligned for 4:2:0 "
+                     "subsampled format.";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 HRESULT InitializeSampleFromTexture(const VideoFrame* frame,
                                     ID3D11Texture2D* input_texture,
                                     Microsoft::WRL::ComPtr<IMFSample> sample) {
@@ -919,26 +985,33 @@ Microsoft::WRL::ComPtr<IMFSample> CreateSampleFromTexture(
   CHECK(frame);
   CHECK(input_texture);
 
+  D3D11_TEXTURE2D_DESC desc;
+  input_texture->GetDesc(&desc);
+  if (!IsCompatibleVideoFormatAndDxgiFormat(frame->format(), desc.Format)) {
+    DLOG(ERROR) << "VideoFrame format "
+                << VideoPixelFormatToString(frame->format())
+                << " is incompatible with DXGI texture format " << desc.Format;
+    return nullptr;
+  }
+
   HRESULT hr;
   if (need_perform_copy) {
-    if (frame->format() == PIXEL_FORMAT_NV12 ||
-        frame->format() == PIXEL_FORMAT_I420 ||
-        frame->format() == PIXEL_FORMAT_YV12 ||
-        frame->format() == PIXEL_FORMAT_NV21) {
-      const gfx::Rect& visible_rect = frame->visible_rect();
-      if (visible_rect.x() % 2 != 0 || visible_rect.y() % 2 != 0 ||
-          visible_rect.width() % 2 != 0 || visible_rect.height() % 2 != 0) {
-        DLOG(ERROR) << "Source visible_rect is not properly aligned for 4:2:0 "
-                       "subsampled format.";
-        return nullptr;
-      }
+    if (!ValidateCopySubresourceBox(frame->visible_rect(), desc,
+                                    frame->format())) {
+      return nullptr;
     }
-    D3D11_TEXTURE2D_DESC desc;
-    input_texture->GetDesc(&desc);
     desc.Width = static_cast<UINT>(frame->visible_rect().width());
     desc.Height = static_cast<UINT>(frame->visible_rect().height());
     desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.BindFlags = D3D11_BIND_VIDEO_ENCODER;
+    // D3D11_BIND_VIDEO_ENCODER is only supported for NV12 textures fed
+    // directly to the encoder MFT. Non-NV12 textures (e.g. RGB with a
+    // non-zero visible_rect origin) are converted to NV12 by
+    // MediaFoundationVideoProcessorAccelerator and require shader/render-target
+    // bind flags.
+    desc.BindFlags =
+        desc.Format == DXGI_FORMAT_NV12
+            ? D3D11_BIND_VIDEO_ENCODER
+            : (D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET);
     desc.ArraySize = 1;
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
@@ -1146,6 +1219,12 @@ void GenerateResourceOnSyncTokenReleased(
 
   D3D11_TEXTURE2D_DESC texture_desc;
   input_texture.texture->GetDesc(&texture_desc);
+  if (!IsCompatibleVideoFormatAndDxgiFormat(frame->format(),
+                                            texture_desc.Format)) {
+    RETURN_ON_FAILURE_WITH_CALLBACK(
+        E_INVALIDARG,
+        "VideoFrame format is incompatible with DXGI texture format");
+  }
   bool is_texture_array = texture_desc.ArraySize > 1;
   // Array index must be 0 if input is not texture array.
   CHECK(is_texture_array || !input_texture.array_index);
@@ -1180,18 +1259,12 @@ void GenerateResourceOnSyncTokenReleased(
                                            nullptr, &shared_handle);
   }
   if (FAILED(hr) || is_texture_array) {
-    if (frame->format() == PIXEL_FORMAT_NV12 ||
-        frame->format() == PIXEL_FORMAT_I420 ||
-        frame->format() == PIXEL_FORMAT_YV12 ||
-        frame->format() == PIXEL_FORMAT_NV21) {
-      const gfx::Rect& visible_rect = frame->visible_rect();
-      if (visible_rect.x() % 2 != 0 || visible_rect.y() % 2 != 0 ||
-          visible_rect.width() % 2 != 0 || visible_rect.height() % 2 != 0) {
-        RETURN_ON_FAILURE_WITH_CALLBACK(
-            E_INVALIDARG,
-            "Source visible_rect is not properly aligned for "
-            "4:2:0 subsampled format.");
-      }
+    if (!ValidateCopySubresourceBox(frame->visible_rect(), texture_desc,
+                                    frame->format())) {
+      RETURN_ON_FAILURE_WITH_CALLBACK(
+          E_INVALIDARG,
+          "Source visible_rect is invalid or not properly aligned for "
+          "texture format.");
     }
     TRACE_EVENT0("media", "CopyTextureOnCreateSharedHandleFailed");
     texture_desc.Usage = D3D11_USAGE_DEFAULT;

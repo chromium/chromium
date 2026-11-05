@@ -215,7 +215,7 @@ TEST_P(MFHelpersAlignmentTest,
   }
 
   D3D11_TEXTURE2D_DESC desc = {};
-  desc.Width = 1920;
+  desc.Width = 1922;
   desc.Height = 1088;
   desc.MipLevels = 1;
   desc.ArraySize = 1;
@@ -247,7 +247,8 @@ TEST_P(MFHelpersAlignmentTest,
   Microsoft::WRL::ComPtr<IMFSample> sample = CreateSampleFromTexture(
       device, frame, input_texture, /*need_perform_copy=*/true);
 
-  // Because the visible_rect is unaligned, CreateSampleFromTexture should fail.
+  // Because the visible_rect is unaligned (and non-NV12 VideoFrame formats do
+  // not match the NV12 D3D11 texture), CreateSampleFromTexture should fail.
   EXPECT_FALSE(sample);
 }
 
@@ -256,7 +257,135 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(PIXEL_FORMAT_NV12,
                                            PIXEL_FORMAT_I420,
                                            PIXEL_FORMAT_YV12,
-                                           PIXEL_FORMAT_NV21));
+                                           PIXEL_FORMAT_NV21,
+                                           PIXEL_FORMAT_ARGB,
+                                           PIXEL_FORMAT_XRGB,
+                                           PIXEL_FORMAT_ABGR,
+                                           PIXEL_FORMAT_XBGR));
+
+TEST(MFHelpersTest, CreateSampleFromTextureRejectsOutOfBoundsVisibleRect) {
+  Microsoft::WRL::ComPtr<ID3D11Device> device;
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+  HRESULT hr =
+      D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr,
+                        0, D3D11_SDK_VERSION, &device, nullptr, &context);
+  if (FAILED(hr)) {
+    hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, 0, nullptr,
+                           0, D3D11_SDK_VERSION, &device, nullptr, &context);
+    if (FAILED(hr)) {
+      GTEST_SKIP() << "D3D11 device creation failed";
+    }
+  }
+
+  D3D11_TEXTURE2D_DESC desc = {};
+  desc.Width = 1920;
+  desc.Height = 1080;
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_NV12;
+  desc.SampleDesc.Count = 1;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+  hr = device->CreateTexture2D(&desc, nullptr, &input_texture);
+  ASSERT_HRESULT_SUCCEEDED(hr);
+
+  // Even-aligned visible_rect that exceeds the 1920x1080 D3D11 texture bounds.
+  gfx::Size coded_size(1928, 1088);
+  gfx::Rect visible_rect(4, 4, 1920, 1080);
+  scoped_refptr<VideoFrame> frame =
+      VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, coded_size, visible_rect,
+                              visible_rect.size(), base::TimeDelta());
+  ASSERT_TRUE(frame);
+
+  Microsoft::WRL::ComPtr<IMFSample> sample = CreateSampleFromTexture(
+      device, frame, input_texture, /*need_perform_copy=*/true);
+  EXPECT_FALSE(sample);
+}
+
+TEST(MFHelpersTest, CreateSampleFromTextureRejectsFormatMismatch) {
+  Microsoft::WRL::ComPtr<ID3D11Device> device;
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+  HRESULT hr =
+      D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr,
+                        0, D3D11_SDK_VERSION, &device, nullptr, &context);
+  if (FAILED(hr)) {
+    hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, 0, nullptr,
+                           0, D3D11_SDK_VERSION, &device, nullptr, &context);
+    if (FAILED(hr)) {
+      GTEST_SKIP() << "D3D11 device creation failed";
+    }
+  }
+
+  D3D11_TEXTURE2D_DESC desc = {};
+  desc.Width = 64;
+  desc.Height = 64;
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_NV12;
+  desc.SampleDesc.Count = 1;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+  hr = device->CreateTexture2D(&desc, nullptr, &input_texture);
+  ASSERT_HRESULT_SUCCEEDED(hr);
+
+  gfx::Size coded_size(64, 64);
+  gfx::Rect visible_rect(0, 0, 64, 64);
+  scoped_refptr<VideoFrame> rgb_frame =
+      VideoFrame::CreateFrame(PIXEL_FORMAT_ARGB, coded_size, visible_rect,
+                              coded_size, base::TimeDelta());
+  ASSERT_TRUE(rgb_frame);
+
+  // Even when visible_rect is aligned, wrapping an NV12 D3D11 texture with an
+  // RGB VideoFrame format must be rejected.
+  EXPECT_FALSE(CreateSampleFromTexture(device, rgb_frame, input_texture,
+                                       /*need_perform_copy=*/true));
+  EXPECT_FALSE(CreateSampleFromTexture(device, rgb_frame, input_texture,
+                                       /*need_perform_copy=*/false));
+}
+
+TEST(MFHelpersTest,
+     CreateSampleFromTextureAllowsCompatibleRgbFormatsWithOddVisibleRect) {
+  Microsoft::WRL::ComPtr<ID3D11Device> device;
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+  HRESULT hr =
+      D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr,
+                        0, D3D11_SDK_VERSION, &device, nullptr, &context);
+  if (FAILED(hr)) {
+    hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, 0, nullptr,
+                           0, D3D11_SDK_VERSION, &device, nullptr, &context);
+    if (FAILED(hr)) {
+      GTEST_SKIP() << "D3D11 device creation failed";
+    }
+  }
+
+  D3D11_TEXTURE2D_DESC desc = {};
+  desc.Width = 64;
+  desc.Height = 64;
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  desc.SampleDesc.Count = 1;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+  hr = device->CreateTexture2D(&desc, nullptr, &input_texture);
+  ASSERT_HRESULT_SUCCEEDED(hr);
+
+  gfx::Size coded_size(64, 64);
+  gfx::Rect visible_rect(1, 1, 61, 61);
+  scoped_refptr<VideoFrame> xrgb_frame =
+      VideoFrame::CreateFrame(PIXEL_FORMAT_XRGB, coded_size, visible_rect,
+                              visible_rect.size(), base::TimeDelta());
+  ASSERT_TRUE(xrgb_frame);
+
+  EXPECT_TRUE(CreateSampleFromTexture(device, xrgb_frame, input_texture,
+                                      /*need_perform_copy=*/true));
+}
 
 }  // namespace
 }  // namespace media
