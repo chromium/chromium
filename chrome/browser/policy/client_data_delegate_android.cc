@@ -32,6 +32,8 @@ void ClientDataDelegateAndroid::FillRegisterBrowserRequest(
     base::OnceClosure callback) const {
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
+  request->set_allocated_browser_device_identifier(
+      GetBrowserDeviceIdentifier().release());
 
   base::SysInfo::GetHardwareInfo(
       base::BindOnce(&SetHardwareInfo, request, std::move(callback)));

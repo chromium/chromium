@@ -4,41 +4,64 @@
 
 #include "chrome/browser/policy/client_data_delegate_android.h"
 
-#include <utility>
-
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/android/device_info.h"
 #include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
-TEST(ClientDataDelegateAndroidTest, FillRegisterBrowserRequest) {
-  base::test::TaskEnvironment task_environment;
+namespace {
+constexpr char kCustomDeviceName[] = "Custom Pixel Device";
+}  // namespace
+
+class ClientDataDelegateAndroidTest : public base::test::WithFeatureOverride,
+                                      public testing::Test {
+ public:
+  ClientDataDelegateAndroidTest()
+      : base::test::WithFeatureOverride(kReportAndroidMachineName) {}
+
+ protected:
+  void SetUp() override {
+    base::android::device_info::set_device_name_for_testing(kCustomDeviceName);
+  }
+
+  void TearDown() override {
+    base::android::device_info::reset_device_name_for_testing();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_P(ClientDataDelegateAndroidTest, FillRegisterBrowserRequest) {
   ClientDataDelegateAndroid client_data_delegate;
   enterprise_management::RegisterBrowserRequest request;
-  client_data_delegate.FillRegisterBrowserRequest(&request, base::DoNothing());
-  task_environment.RunUntilIdle();
+  base::test::TestFuture<void> register_done;
+  client_data_delegate.FillRegisterBrowserRequest(&request,
+                                                  register_done.GetCallback());
+  ASSERT_TRUE(register_done.Wait());
 
-  base::SysInfo::HardwareInfo hardware_info;
-  base::SysInfo::GetHardwareInfo(base::BindOnce(
-      [](base::SysInfo::HardwareInfo* target_info,
-         base::SysInfo::HardwareInfo info) { *target_info = std::move(info); },
-      &hardware_info));
-  task_environment.RunUntilIdle();
+  base::test::TestFuture<base::SysInfo::HardwareInfo> hardware_info_future;
+  base::SysInfo::GetHardwareInfo(hardware_info_future.GetCallback());
+  const base::SysInfo::HardwareInfo& hardware_info = hardware_info_future.Get();
 
   EXPECT_FALSE(request.device_model().empty());
   EXPECT_EQ(request.device_model(), hardware_info.model);
   EXPECT_FALSE(request.brand_name().empty());
   EXPECT_EQ(request.brand_name(), hardware_info.manufacturer);
+  EXPECT_EQ(request.browser_device_identifier().computer_name(),
+            IsParamFeatureEnabled() ? kCustomDeviceName : "");
 
-  // Fields that shouldn't be filled on Android due to Privacy concerns.
+  // Deprecated `machine_name` and `serial_number` fields should not be filled
+  // on Android.
   EXPECT_TRUE(request.machine_name().empty());
-  EXPECT_TRUE(request.browser_device_identifier().computer_name().empty());
   EXPECT_TRUE(request.browser_device_identifier().serial_number().empty());
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ClientDataDelegateAndroidTest);
 
 }  // namespace policy

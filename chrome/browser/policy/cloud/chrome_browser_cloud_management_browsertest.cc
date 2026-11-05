@@ -595,6 +595,10 @@ class ChromeBrowserCloudManagementEnrollmentTest
     if (is_enrollment_token_valid()) {
       EXPECT_TRUE(dm_token.is_valid());
       EXPECT_EQ(kFakeDeviceToken, dm_token.value());
+      EXPECT_FALSE(GetMachineName().empty());
+      EXPECT_EQ(
+          test_server_.client_storage()->GetClient("client_id").machine_name,
+          GetMachineName());
     } else {
       EXPECT_TRUE(dm_token.is_empty());
     }
