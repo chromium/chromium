@@ -316,6 +316,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7747746207470479571">Voit käyttää salasanoja ja avainkoodeja helposti käyttämällä Chromea automaattiseen täyttöön</translation>
 <translation id="776305366874821582">Avaa Chrome nopeammin iPhonen aloitusnäytön alapalkista.</translation>
 <translation id="7780154209050837198">Kirjaudu sisään Chromeen Google-tililläsi, jotta saat parhaan hyödyn Chromesta.</translation>
+<translation id="778331955594035129">Chrome tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="7787205077729386167">Avaa Chromen asetukset iOS:lla, napauta sitten Oletusselainsovellus ja valitse Chrome.</translation>
 <translation id="778855399387580014">Aloita haku Chrome-välilehdellä.</translation>
 <translation id="7792140019572081272">Chrome pitää arkaluontoiset tietosi turvassa Face ID:n avulla.</translation>
@@ -329,6 +330,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="8018153653741938705">Pysy turvassa Google Chromen avulla</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="804638182476029347">Salli Chrome-ilmoitukset, jotta saat ilmoituksia hinnan laskusta</translation>
+<translation id="8051480003988100876">Chrome-vinkkejä</translation>
 <translation id="8065292699993359127">Avaa URL-osoitteet Chromen incognito-tilassa</translation>
 <translation id="8069507567842347179">Tätä pakettia seurataan jo Chromessa.</translation>
 <translation id="8136856065410661948">Käytetään Apple-kalenterin tapahtumien luomiseen Chromesta ja Google Lensistä.</translation>

@@ -2629,7 +2629,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> telefonoak wifi-konexio pribatu bat egingo du.</translation>
 <translation id="3004385386820284928">Pertsonalizatu teklatuko teklak</translation>
 <translation id="300580149047131921">Duela gutxi erabilia</translation>
-<translation id="3005928441045180122">Pilatuta</translation>
 <translation id="3006881078666935414">Ez dago erabilerari buruzko daturik</translation>
 <translation id="3007555010975143508">Aplikazio hauek erabiliko dira pantaila grabatzeko:</translation>
 <translation id="3007771295016901659">Bikoiztu fitxa</translation>
@@ -4706,6 +4705,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4580389561674319558">Kontaktu guztientzat ikusgai</translation>
 <translation id="4580596421317071374">Gailu honetako pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan gordetzen dira.</translation>
 <translation id="4582297591746054421">Webguneek arbela irakurri ohi dute zuk kopiatutako testuaren formatua gordetzeko eta antzeko eginbideak eskaintzeko</translation>
+<translation id="4582563038311694664">Berrezarri ezarpen guztiak</translation>
 <translation id="4584094413232466841">Chrome-ren betetze automatikotik kendu nahi duzu informazio hori?</translation>
 <translation id="4584770411839426377">Leihoa</translation>
 <translation id="4584836561445313300">Zure erakundeak lehendik dauden arakatze-datuak ikusi eta kudeatu ahal izango ditu; adibidez, pasahitza</translation>
@@ -7086,7 +7086,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6453687572758515877">Taldekatu fitxa guztiak</translation>
 <translation id="6453921811609336127">Hurrengo idazketa-metodora aldatzeko, sakatu <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ktrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maius<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />zuriune-barra<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Profila kenduz gero, betiko ezabatuko dira gailuko arakatze-datuak. Datuak berreskuratzeko, hasi saioa kontu honekin:</translation>
-<translation id="6454456397828627257">Alboz albo</translation>
 <translation id="6455264371803474013">Webgune zehatzetan</translation>
 <translation id="6455521402703088376">Desaktibatuta • Garatzaileak luzapena desargitaratu du</translation>
 <translation id="6455894534188563617">&amp;Karpeta berria</translation>
@@ -10062,6 +10061,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8708000541097332489">Garbitu irteterakoan</translation>
 <translation id="870805141700401153">Microsoft-en kode-sinadura esklusiboak</translation>
 <translation id="8708671767545720562">Infor&amp;mazio gehiago</translation>
+<translation id="8709234440040320647">(Modu isolatua)</translation>
 <translation id="8709368517685334931">Kolore zaharrak aukeratzeko, joan Chrome Web Store-ra</translation>
 <translation id="8710414664106871428">Fantasia</translation>
 <translation id="8711402221661888347">Hanburgesa</translation>
@@ -10154,7 +10154,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="8774379074441005279">Berretsi leheneratu nahi duzula</translation>
 <translation id="8774934320277480003">Goiko marjina</translation>
 <translation id="8775144690796719618">URLak ez du balio</translation>
-<translation id="877515298105563553">Alboz albo</translation>
 <translation id="8776294611668764629">Zure erakundeak fitxategia blokeatu du handiegia delako hari segurtasun-egiaztapena egiteko. Gehienez 50 MB dituzten fitxategiak ireki ditzakezu.</translation>
 <translation id="8777509665768981163">Gehitu edo kokatu botoiak tabletan</translation>
 <translation id="8779720597365936419">Bai, mantendu nire datuak lanetik bereizita (gomendatuta)</translation>
@@ -10226,6 +10225,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="8836360711089151515">Astebeteko epean datuen babeskopiak egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="MANAGER" /> domeinuak. <ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Irten taldetik}other{Irten taldeetatik}}</translation>
 <translation id="8836782447513334597">aurrera egiteko</translation>
+<translation id="8837072669197607689">Eman baimena modu isolatuan</translation>
 <translation id="8837573527470979311">Aldatu beheko ikuspegiarekin</translation>
 <translation id="8838601485495657486">Opakua</translation>
 <translation id="8838770651474809439">Hanburgesa</translation>
@@ -10687,7 +10687,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9170884462774788842">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen gai bat gehitu du.</translation>
 <translation id="9172270007201309670">Letra-tamaina handitu da</translation>
 <translation id="917350715406657904">Iritsi zara gurasoak <ph name="APP_NAME" /> erabiltzeko ezarritako denbora-mugara. Bihar, <ph name="TIME_LIMIT" /> izango dituzu hura erabiltzeko.</translation>
-<translation id="9174854240439014335">Eman leihoaren eskuineko edo ezkerreko ertzean ikuspegi zatitua arrastatu eta jaregiteko baimena</translation>
 <translation id="9174870712400134574">Erakutsi fitxa berriaren orrian soilik</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth bidezko gailu bat konektatu da</translation>
 <translation id="9177859716483578738">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure <ph name="FIELDS_STRING" /> partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK" />pribatutasun-gidalerroak<ph name="END_LINK" />.</translation>

@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">သင့် စာညှပ်များကို စင့်ခ် လုပ်ပါ</translation>
 <translation id="1750238553597293878">သင့် Google Account တွင် စကားဝှက်များ ဆက်သုံးပါ</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315"><ph name="TITLE_OF_WINDOW" /> ဝင်းဒိုးကို ပြန်ယူနိုင်သည်။</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{စာမျက်နှာများ၊ စာရင်းရှိ စာမျက်နှာ ၁ ခု}other{စာမျက်နှာများ၊ စာရင်းရှိ စာမျက်နှာ # ခု}}</translation>
 <translation id="1771929606532798550">သင့် Chrome အသုံးပြုမှုအကြောင်း အချက်အလက်ကို Google သို့ပို့သော်လည်း သင်နှင့်ဆက်နွယ်ထားခြင်း မရှိပါ\n\nChrome ရပ်တန့်သွားပါက ရပ်တန့်မှုအကြောင်း အသေးစိတ်တွင် ကိုယ်ရေးအချက်အလက်အချို့ ပါဝင်နိုင်သည်\n\nသင့်မှတ်တမ်းကို Google Account နှင့် စင့်ခ်လုပ်ပါက မက်ထရစ်များတွင် သင်ဝင်ကြည့်သည့် URL များအကြောင်းလည်း ပါဝင်နိုင်သည်</translation>
 <translation id="1778457539567749232">မဖတ်ရသေးဟု မှတ်သားရန်</translation>
@@ -1258,6 +1259,7 @@
 <translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="6023820583797130428">နောက်သို့ပြန်သွားရန် မီနူးဖွင့်ပါ</translation>
 <translation id="6026538407078977628">စခရင်အပြည့် ချဲ့ရန်</translation>
+<translation id="6027619584715411062">သင့်စက်အားလုံးတွင် လိပ်စာ၊ စကားဝှက်နှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="6039379616847168523">နောက်တဘ်သို့ သွားရန်</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="604124094241169006">အလိုအလျောက်</translation>
@@ -1601,6 +1603,7 @@
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> ကို ပိတ်ထားမလား။</translation>
 <translation id="7191430249889272776">တဲဘ်ကို နောက်ခံမှာ ဖွင့်ထား။</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{၎င်းကို ယခုပြောင်းသင့်သည်}other{၎င်းတို့ကို ယခုပြောင်းသင့်သည်}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခုပါသော ဝင်းဒိုးကို ပြန်ယူနိုင်သည်။}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခုပါသော ဝင်းဒိုးကို ပြန်ယူနိုင်သည်။}}</translation>
 <translation id="7196215469483532480">ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန် ရှင်းလင်းချက်ကို မြင်ကွင်းအပြည့်ဖွင့်ပြီးပြီ</translation>
 <translation id="7196455519852483601">သင့်မှတ်တမ်း၊ ကွတ်ကီးများ၊ ဝဘ်ဆိုက်ဒေတာစသည်တို့၏ အချို့ (သို့) အားလုံးကို ဖျက်နိုင်သည်</translation>
 <translation id="7197682514647286393">ကြည့်ထားသောဒေတာ အမြန်ဖျက်ခြင်း</translation>
@@ -1854,6 +1857,7 @@
 <translation id="8135406045838672858">ဒေါင်းလုဒ်လုပ်ထားသော PDF များကို <ph name="APP_NAME" /> ဖြင့် အလိုအလျောက်ဖွင့်သည်</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{လင့်ခ် ရရှိထားသည်}other{လင့်ခ် # ခု ရရှိထားသည်}}</translation>
 <translation id="8137562778192957619">ဤစကားဝှက်ကို မှတ်ထားရန် မလိုပါ။ ၎င်းကို Google Password Manager တွင် သိမ်းပါမည်။</translation>
+<translation id="8149825829235553327">သင့်ရုပ်ဖျက်တဘ်များကို လုံခြုံအောင်လုပ်ခြင်း</translation>
 <translation id="8151185429379586178">ပြုစုသူ ကိရိယာများ</translation>
 <translation id="8152331954420209374">Lens သို့သွားရန်</translation>
 <translation id="8153206878708357851">‘Caret ဖြင့် ဖွင့်ကြည့်ခြင်း’ ပြောင်းရန်</translation>

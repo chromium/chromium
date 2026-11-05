@@ -1468,6 +1468,7 @@
 <translation id="2131548114076786395">ٹیب گروپس کا اشتراک کرنے، اس میں شامل ہونے اور تعاون کرنے کے لیے، تصدیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="2131863825246488194">آن لائن محفوظ رہیں</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> کو دوبارہ آزمائیں</translation>
+<translation id="2134044938347520790">ریڈنگ موڈ کے مسائل یا خصوصیت کی درخواستوں کا اشتراک کریں</translation>
 <translation id="2134905185275441536">‏سسٹم CAs</translation>
 <translation id="2135420518376202233">بلوٹوتھ آلہ کے نام</translation>
 <translation id="21354425047973905">‏PINs چھپائیں</translation>
@@ -2631,7 +2632,6 @@
 <translation id="3003967365858406397">‏آپ کا <ph name="PHONE_NAME" /> ایک نجی Wi-Fi کنکشن بنائے گا۔</translation>
 <translation id="3004385386820284928">کی بورڈ کی کلیدوں کو حسب ضرورت بنائیں</translation>
 <translation id="300580149047131921">حال ہی میں استعمال شدہ</translation>
-<translation id="3005928441045180122">انبار کردہ</translation>
 <translation id="3006881078666935414">ڈیٹا کا کوئی استعمال نہیں</translation>
 <translation id="3007555010975143508">یہ ایپس آپ کی اسکرین کو ریکارڈ کرنے کے لیے استعمال ہوں گی:</translation>
 <translation id="3007771295016901659">ڈپلیکیٹ ٹیب</translation>
@@ -4281,6 +4281,7 @@
 <translation id="4250596587221570622">اپنی پروفائل کے لیے ایک تھیم منتخب کریں</translation>
 <translation id="4250680216510889253">نہیں</translation>
 <translation id="4251243704979202079">‫<ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں موجود فائلز کو دیکھ اور خود ان کی کاپیاں بنا سکے گی</translation>
+<translation id="4251316952800826018">فوکس سلیکشن ہیڈر</translation>
 <translation id="4252899949534773101">بلوٹوتھ غیر فعال ہے</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ٹیب مواد کا اشتراک کیا جا رہا ہے</translation>
 <translation id="4253168017788158739">نوٹ</translation>
@@ -4708,6 +4709,7 @@
 <translation id="4580389561674319558">تمام رابطوں کے لیے مرئی</translation>
 <translation id="4580596421317071374">اس آلے پر پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہوتے ہیں۔</translation>
 <translation id="4582297591746054421">آپ کے کاپی کردہ ٹیکسٹ کی فارمیٹنگ برقرار رکھنے جیسی خصوصیات کے لیے سائٹس عام طور پر آپ کی کلپ بورڈ پڑھتی ہیں</translation>
+<translation id="4582563038311694664">سبھی ترتیبات کو دوبارہ سیٹ کریں</translation>
 <translation id="4584094413232466841">‏‫Chrome آٹوفل سے اس معلومات کو ہٹائیں؟</translation>
 <translation id="4584770411839426377">ونڈو</translation>
 <translation id="4584836561445313300">آپ کی تنظیم کسی بھی موجودہ براؤزنگ ڈیٹا جیسے پاس ورڈز وغیرہ کو دیکھ سکے گی اور اس کا نظم کر سکے گی۔</translation>
@@ -6764,6 +6766,7 @@
 <translation id="6185151644843671709">‏پاسکی محفوظ ہو گئی اور PIN تخلیق کیا گیا</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{‏‫1 پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}other{‏‫{PASSWORD_COUNT} پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}}</translation>
 <translation id="6186177419203903310">‏یہ پورے سسٹم میں تمام نئے USB پیری فیرلز کے لیے اطلاعات کو فعال کر دے گا۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
+<translation id="6187116431221566074">‫<ph name="GROUP_CONTENTS" /> پر فوکس کیا گیا - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">سائیڈ بائی سائیڈ اور اسٹیک کردہ لے آؤٹس کے درمیان سوئچ کرنے کے لیے منقسم منظر مینیو کا استعمال کریں۔</translation>
 <translation id="6190953336330058278">فون ہب کی ایپس</translation>
 <translation id="6192333916571137726">فائل ڈاؤن لوڈ کریں</translation>
@@ -7092,7 +7095,6 @@
 <translation id="6453687572758515877">تمام ٹیبز کی گروپ بندی کریں</translation>
 <translation id="6453921811609336127">‏اندراج کے اگلے طریقے پر سوئچ کرنے کیلئے <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> دبائیں۔</translation>
 <translation id="645433497989692531">یہ اس آلے سے آپ کے براؤزنگ ڈیٹا کو مستقل طور پر حذف کر دے گا۔ ڈیٹا بحال کرنے کے لیے، بطور سائن ان کریں</translation>
-<translation id="6454456397828627257">پہلو بہ پہلو</translation>
 <translation id="6455264371803474013">مخصوص سائٹس پر</translation>
 <translation id="6455521402703088376">آف ہے • اس ایکسٹینشن کی اشاعت اس کے ڈویلپر نے ختم کی تھی</translation>
 <translation id="6455894534188563617">&amp;نیا فولڈر</translation>
@@ -8619,6 +8621,7 @@
 <translation id="7612655942094160088">منسلک کردہ فون کی خصوصیات فعال کریں۔</translation>
 <translation id="7612989789287281429">آپ کو سائن ان کیا جا رہا ہے…</translation>
 <translation id="76131528886466333">‏‫Microsoft Edge ایکسٹینشن کے لیے Google تلاش انسٹال کریں</translation>
+<translation id="7613308212159091597">‫<ph name="GROUP_LABEL" /> پر فوکس کیا گیا</translation>
 <translation id="7615365294369022248">اکاؤنٹ کو شامل کرتے وقت ایک خرابی پیش آ گئی</translation>
 <translation id="7616964248951412133">سائٹس اس خصوصیت کو آپ کا ماؤس ان پٹ جیسے گیمز یا ریموٹ ڈیسک ٹاپ ایپس کی خاطر کیپچر کرنے اور استعمال کرنے کے لیے استعمال کرتی ہیں</translation>
 <translation id="7617263010641145920">‏Play اسٹور آن کریں</translation>
@@ -10164,7 +10167,6 @@
 <translation id="8774379074441005279">بحالی کی تصدیق کریں</translation>
 <translation id="8774934320277480003">اوپری مارجن</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>
-<translation id="877515298105563553">پہلو بہ پہلو</translation>
 <translation id="8776294611668764629">‏آپ کی تنظیم نے اس فائل کو مسدود کر دیا کیونکہ یہ سیکیورٹی چیک کے لیے بہت بڑی ہے۔ آپ ‎50 MB تک کی فائلز کھول سکتے ہیں۔</translation>
 <translation id="8777509665768981163">اپنے ٹیبلیٹ پر بٹنز شامل کریں یا تلاش کریں</translation>
 <translation id="8779720597365936419">ہاں، میرا ڈیٹا دفتری پروفائل سے الگ رکھیں (تجویز کردہ)</translation>
@@ -10699,7 +10701,6 @@
 <translation id="9170884462774788842">‏آپ کے کمپیوٹر پر موجود ایک دوسرے پروگرام نے ایک تھیم شامل کی جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔</translation>
 <translation id="9172270007201309670">فونٹ کا سائز بڑھایا گیا</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> کے لیے آپ کے والدین کی سیٹ کی ہوئی آپ کی وقت کی حد پوری ہو گئی۔ آپ اسے کل <ph name="TIME_LIMIT" /> کے لیے استعمال کر سکتے ہیں۔</translation>
-<translation id="9174854240439014335">ونڈو کے بائیں یا دائیں کنارے پر اسپلٹ ویو کھینچ کر ڈالنے کی اجازت دیں</translation>
 <translation id="9174870712400134574">صرف نئے ٹیب صفحہ پر دکھائیں</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - بلوٹوتھ آلہ منسلک ہے</translation>
 <translation id="9177859716483578738">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے <ph name="FIELDS_STRING" /> کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK" />رازداری کی پالیسی<ph name="END_LINK" /> دیکھیں۔</translation>

@@ -1468,6 +1468,7 @@
 <translation id="2131548114076786395">පටිති සමූහ තුළ බෙදා ගැනීමට, සම්බන්ධ වීමට සහ සහයෝගයෙන් කටයුතු කිරීමට, ඒ ඔබ බව තහවුරු කරන්න</translation>
 <translation id="2131863825246488194">සබැඳිව ආරක්ෂිත වන්න</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> යළි උත්සාහ කරන්න</translation>
+<translation id="2134044938347520790">කියවීමේ ප්‍රකාර ගැටලු හෝ විශේෂාංග ඉල්ලීම් බෙදා ගන්න</translation>
 <translation id="2134905185275441536">පද්ධති CAs</translation>
 <translation id="2135420518376202233">බ්ලූටූත් උපාංග නම්</translation>
 <translation id="21354425047973905">රහස් අංක සඟවන්න</translation>
@@ -2634,7 +2635,6 @@
 <translation id="3003967365858406397">ඔබේ <ph name="PHONE_NAME" /> පුද්ගලික Wi-Fi සබැඳුමක් සාදනු ඇත.</translation>
 <translation id="3004385386820284928">යතුරු පුවරු යතුරු අභිරුචිකරණය කරන්න</translation>
 <translation id="300580149047131921">මෑතක දී භාවිත කළ</translation>
-<translation id="3005928441045180122">අට්ටි</translation>
 <translation id="3006881078666935414">භාවිතයේ දත්ත නැත</translation>
 <translation id="3007555010975143508">ඔබේ තිරය පටිගත කිරීමට මෙම යෙදුම් භාවිතා කරනු ඇත:</translation>
 <translation id="3007771295016901659">අනුපත් පටිත්ත</translation>
@@ -4284,6 +4284,7 @@
 <translation id="4250596587221570622">ඔබේ පැතිකඩ සඳහා තේමාවක් තෝරා ගන්න</translation>
 <translation id="4250680216510889253">නැත</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> හට <ph name="FOLDERNAME" /> හි ගොනු බැලීමට සහ ඒවායේ පිටපත් සෑදීමට හැකි වනු ඇත</translation>
+<translation id="4251316952800826018">නාභිගත තේරීම් ශීර්ෂකය</translation>
 <translation id="4252899949534773101">බ්ලූටූත් අබලයි</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ටැබ අන්තර්ගතය බෙදා ගත්</translation>
 <translation id="4253168017788158739">සටහන</translation>
@@ -4711,6 +4712,7 @@
 <translation id="4580389561674319558">සියලු සම්බන්ධතා වෙත දෘශ්‍යමාන වේ</translation>
 <translation id="4580596421317071374">මෙම උපාංගයේ <ph name="GOOGLE_PASSWORD_MANAGER" /> හි මුරපද සුරැකේ.</translation>
 <translation id="4582297591746054421">අඩවි සාමාන්‍යයෙන් ඔබ පිටපත් කළ පෙළ හැඩ ගැන්වීම තබා ගැනීම වැනි විශේෂාංග සඳහා ඔබේ පසුරු පුවරුව කියවයි</translation>
+<translation id="4582563038311694664">සියලු සැකසුම් යළි සකසන්න</translation>
 <translation id="4584094413232466841">Chrome ස්වයං පිරවුමෙන් මෙම තතු ඉවත් කරන්න ද?</translation>
 <translation id="4584770411839426377">කවුළුව</translation>
 <translation id="4584836561445313300">ඔබේ සංවිධානයට මුරපද සහ තවත් දේ වැනි පවතින බ්‍රවුසින් දත්ත දැක බලා කළමනාකරණය කිරීමට හැකි වනු ඇත</translation>
@@ -6770,6 +6772,7 @@
 <translation id="6185151644843671709">මුරපදය සුරකින ලද අතර PIN තනන ලදි</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 මුරපදයක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}one{මුරපද {PASSWORD_COUNT}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}other{මුරපද {PASSWORD_COUNT}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}}</translation>
 <translation id="6186177419203903310">මෙය පද්ධතිය පුරා ඇති සියලු ම නව USB උපාංග සඳහා දැනුම්දීම් සබල කරයි. ඔබට ඉදිරියට යාමට අවශ්‍ය බව ඔබට සහතික ද?</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /> මත අවධානය යොමු කර ඇත</translation>
 <translation id="6188822118034543225">පැත්තෙන් පැත්තට සහ ගොඩගැසූ පිරිසැලසුම් අතර මාරු වීමට දසුන බෙදීමේ මෙනුව භාවිතා කරන්න.</translation>
 <translation id="6190953336330058278">Phone Hub යෙදුම්</translation>
 <translation id="6192333916571137726">ගොනුව බාගන්න</translation>
@@ -7098,7 +7101,6 @@
 <translation id="6453687572758515877">සියලු පටිති සමූහ කරන්න</translation>
 <translation id="6453921811609336127">ඊළඟ ආදාන ක්‍රමයට මාරු වීමට <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ඔබන්න</translation>
 <translation id="645433497989692531">මෙය මෙම උපාංගය වෙතින් ඔබේ බ්‍රවුස් කිරීමේ දත්ත ස්ථිරව මකනු ඇත. දත්ත ප්‍රතිසාධනය කිරීමට, මෙලෙස පුරන්න</translation>
-<translation id="6454456397828627257">පැතෙන් පැත්තට</translation>
 <translation id="6455264371803474013">විශේෂිත අඩවි මත</translation>
 <translation id="6455521402703088376">ක්‍රියාවිරහිතයි • මෙම දිගුව එහි සංවර්ධකයා විසින් ප්‍රකාශනය නොකරන ලදි</translation>
 <translation id="6455894534188563617">&amp;අලුත් ෆෝල්ඩරය</translation>
@@ -8625,6 +8627,7 @@
 <translation id="7612655942094160088">සම්බන්ධිත දුරකථන විශේෂාංග සබලයි.</translation>
 <translation id="7612989789287281429">ඔබව පුරමින්…</translation>
 <translation id="76131528886466333">Microsoft Edge දිගුව සඳහා Google සෙවීම ස්ථාපනය කරන්න</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" /> කෙරෙහි අවධානය යොමු කර ඇත</translation>
 <translation id="7615365294369022248">ගිණුමක් එක් කිරීමේ දෝෂයක් විය</translation>
 <translation id="7616964248951412133">අඩවි ක්‍රීඩා හෝ දුරස්ථ ඩෙස්ක්ටොප යෙදුම් සඳහා වැනියෙන් ඔබේ මූසිකයේ ආදානය ග්‍රහණ කර භාවිත කිරීමට මෙම විශේෂාංගය භාවිත කරයි</translation>
 <translation id="7617263010641145920">Play Store සක්‍රීය කරන්න</translation>
@@ -10170,7 +10173,6 @@
 <translation id="8774379074441005279">ප්‍රතිසාධනය තහවුරු කරන්න</translation>
 <translation id="8774934320277480003">ඉහල මායිම</translation>
 <translation id="8775144690796719618">අවලංගු URL</translation>
-<translation id="877515298105563553">පැතෙන් පැත්තට</translation>
 <translation id="8776294611668764629">ඔබගේ සංවිධානය මෙම ගොනුව ආරක්ෂක පරීක්ෂාවකට විශාල වැඩි නිසා අවහිර කර ඇත. ඔබට 50 MB දක්වා ගොනු විවෘත කළ හැකිය.</translation>
 <translation id="8777509665768981163">ඔබේ ටැබ්ලටයෙහි බොත්තම් එක් කරන්න හෝ සොයා ගන්න</translation>
 <translation id="8779720597365936419">ඔව්, මගේ දත්ත කාර්යාලයෙන් වෙන්ව තබා ගන්න (නිර්දේශිතයි)</translation>
@@ -10705,7 +10707,6 @@
 <translation id="9170884462774788842">වෙනත් වැඩසටහනක් Chrome  වැඩ කරන ආකාරය වෙනස් කළ හැකි තේමාවක් එකතු කරන ලදි.</translation>
 <translation id="9172270007201309670">අකුරු ප්‍රමාණය වැඩි කරන ලදි</translation>
 <translation id="917350715406657904">ඔබ ඔබේ මාපියන් <ph name="APP_NAME" /> සඳහා සකසා ඇති කාල සීමාවට ළඟා විය. ඔබට එය හෙට <ph name="TIME_LIMIT" />කට භාවිත කළ හැක.</translation>
-<translation id="9174854240439014335">කවුළුවේ වම් හෝ දකුණු කෙළවරේ බෙදීම් දසුන ඇදගෙන යාමට ඉඩ දෙන්න</translation>
 <translation id="9174870712400134574">නව පටිති පිටුවෙහි පමණක් පෙන්වන්න</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - බ්ලූටූත් උපාංගය සම්බන්ධිත</translation>
 <translation id="9177859716483578738">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබේ <ph name="FIELDS_STRING" /> මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියෙහි <ph name="BEGIN_LINK" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK" /> බලන්න.</translation>

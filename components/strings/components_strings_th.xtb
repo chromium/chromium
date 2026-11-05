@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 องศา</translation>
 <translation id="1747777564644667857">เที่ยวบิน</translation>
 <translation id="1748225549612934682">ย่อข้อความให้สั้นลงเพื่อรับความช่วยเหลือในการเขียน</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">กล่องจดหมาย 8</translation>
 <translation id="1753706481035618306">เลขหน้า</translation>
 <translation id="1756026472674246267">เปิดลิงก์ในแท็บใหม่</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">ระบบจะเข้ารหัส CVC ของบัตรนี้และบันทึกไว้ในบัญชี Google ของคุณเพื่อการชำระเงินที่เร็วขึ้น</translation>
 <translation id="2983666748527428214">เปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="2985398929374701810">ป้อนที่อยู่ที่ถูกต้อง</translation>
+<translation id="2985848978986605722">ใช้แป้นลูกศรซ้ายหรือขวาเพื่อไปยังลิงก์แหล่งที่มา</translation>
 <translation id="2986485254770343131">กำลังบันทึกไฟล์กล้อง</translation>
 <translation id="2987034854559945715">ไม่มีฟีเจอร์ที่ตรงกัน</translation>
 <translation id="2989742184762224133">เย็บด้วยลวดเย็บกระดาษด้านบน 2 ครั้ง</translation>
@@ -1273,6 +1275,7 @@
 <translation id="3141337053413339205">เปลี่ยนเป็นแท็บนี้</translation>
 <translation id="3144458715650412431">ใช้นโยบายทดสอบแล้ว ตรวจสอบและรีเซ็ตได้ที่ chrome://policy/test นโยบายของผู้ดูแลระบบจะไม่มีผล</translation>
 <translation id="3145945101586104090">การถอดรหัสการตอบกลับล้มเหลว</translation>
+<translation id="3149865382039202168">บันทึกข้อมูลใน <ph name="GOOGLE_WALLET_TITLE" /> เพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณควบคุม<ph name="HOW_INFO_IS_USED_LINK" />ได้ในการตั้งค่าบัตรส่วนตัวสำหรับ <ph name="ACCOUNT" /> <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">ข้อผิดพลาดชั่วคราวของเซิร์ฟเวอร์</translation>
 <translation id="3150889484970506196">ปุ่มสร้างชีต เปิดใช้งานเพื่อสร้างสเปรดชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="3154506275960390542">หน้านี้มีฟอร์มที่อาจส่งอย่างไม่ปลอดภัย บุคคลอื่นสามารถดูข้อมูลที่คุณส่งได้ระหว่างทางหรือข้อมูลอาจถูกแก้ไขโดยผู้โจมตีเพื่อเปลี่ยนแปลงสิ่งที่เซิร์ฟเวอร์จะได้รับ</translation>
@@ -1591,6 +1594,7 @@
 <translation id="3671540257457995106">อนุญาตให้ปรับขนาดไหม</translation>
 <translation id="3672568546897166916">ข้อผิดพลาดที่ <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ม้วนกระดาษ 3</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" /> เปิดในแผงด้านข้าง</translation>
 <translation id="3676592649209844519">รหัสอุปกรณ์:</translation>
 <translation id="3677008721441257057">คุณหมายถึง &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ใช่ไหม</translation>
 <translation id="3678029195006412963">ไม่สามารถลงนามคำขอ</translation>
@@ -3203,6 +3207,7 @@
 <translation id="6322182122604171028">ใช้ Windows Hello ไม่ได้</translation>
 <translation id="6326175484149238433">ลบจาก Chrome</translation>
 <translation id="6326947323444967009">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบในการตั้งค่า iOS</translation>
+<translation id="6327434859517217259">วิธีที่เราใช้ข้อมูลนี้ใน Google</translation>
 <translation id="6328639280570009161">ลองปิดการคาดคะเนเครือข่าย</translation>
 <translation id="6329742260390895689">เปิด "ใช้บัตรในบริการต่างๆ ของ Google" ในการตั้งค่า Wallet เพื่อป้อนข้อความอัตโนมัติ</translation>
 <translation id="6329815962353376655">&lt;พิมพ์คำถาม&gt;</translation>

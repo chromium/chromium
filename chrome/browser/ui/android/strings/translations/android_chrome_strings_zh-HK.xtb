@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">同步您的書籤</translation>
 <translation id="1750238553597293878">繼續使用 Google 帳戶中的密碼</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">還原視窗「<ph name="TITLE_OF_WINDOW" />」。</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{頁面，清單中有 1 個頁面}other{頁面，清單中有 # 個頁面}}</translation>
 <translation id="1771929606532798550">你的 Chrome 使用情況資料會傳送給 Google，但不會連繫你的身分\n\nChrome 當機時，當機詳情可能會包括部分個人資料\n\n如果你將記錄同步到 Google 帳戶，數據可能亦會包括所瀏覽網址的資料</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
@@ -1258,6 +1259,7 @@
 <translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
 <translation id="6023820583797130428">開啟選單以返回</translation>
 <translation id="6026538407078977628">展開去全螢幕</translation>
+<translation id="6027619584715411062">登入後，即可從任何裝置取得自己的書籤、密碼等項目。</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>
@@ -1602,6 +1604,7 @@
 <translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{你應立即更改密碼}other{你應立即更改密碼}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{還原 <ph name="TAB_COUNT_ONE" /> 個分頁嘅視窗。}other{還原 <ph name="TAB_COUNT_MANY" /> 個分頁嘅視窗。}}</translation>
 <translation id="7196215469483532480">私隱權指南說明宜家顯示喺成個畫面</translation>
 <translation id="7196455519852483601">你可以刪除部分或全部記錄、Cookie、網站資料等</translation>
 <translation id="7197682514647286393">迅速刪除瀏覽資料</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8135406045838672858">自動使用「<ph name="APP_NAME" />」開啟已下載的 PDF</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{已收到連結}other{已收到 # 個連結}}</translation>
 <translation id="8137562778192957619">您不需記住此密碼。系統會將密碼儲存至「Google 密碼管理工具」。</translation>
+<translation id="8149825829235553327">保護無痕式分頁</translation>
 <translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8152331954420209374">前往「智能鏡頭」</translation>
 <translation id="8153206878708357851">切換鍵盤瀏覽</translation>

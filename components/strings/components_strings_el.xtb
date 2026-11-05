@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 μοίρες</translation>
 <translation id="1747777564644667857">Πτήση</translation>
 <translation id="1748225549612934682">Συντομεύστε το κείμενό σας για να λάβετε βοήθεια σχετικά με το γράψιμο</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Γραμματοκιβώτιο 8</translation>
 <translation id="1753706481035618306">Αριθμός σελίδας</translation>
 <translation id="1756026472674246267">Άνοιγμα συνδέσμου σε νέα καρτέλα</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">Ο κωδικός CVC αυτής της κάρτας θα κρυπτογραφηθεί και θα αποθηκευτεί στον Λογαριασμό σας Google για ταχύτερη ολοκλήρωση αγοράς</translation>
 <translation id="2983666748527428214">Άνοιγμα καρτέλας ανώνυμης περιήγησης</translation>
 <translation id="2985398929374701810">Εισαγάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
+<translation id="2985848978986605722">Χρησιμοποιήστε τα πλήκτρα αριστερού ή δεξιού βέλους, για να πλοηγηθείτε στους συνδέσμους πηγών.</translation>
 <translation id="2986485254770343131">Γίνεται αποθήκευση αρχείων κάμερας</translation>
 <translation id="2987034854559945715">Δεν υπάρχουν λειτουργίες που να ταιριάζουν στο ερώτημα</translation>
 <translation id="2989742184762224133">Διπλή συρραφή στο επάνω μέρος</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3671540257457995106">Να επιτρέπεται η αλλαγή μεγέθους;</translation>
 <translation id="3672568546897166916">Σφάλμα στο στοιχείο <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Τρίτο ρολό</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, ανοίγει στο πλαϊνό πλαίσιο</translation>
 <translation id="3676592649209844519">Αναγνωριστικό συσκευής:</translation>
 <translation id="3677008721441257057">Μήπως εννοούσατε &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;;</translation>
 <translation id="3678029195006412963">Δεν ήταν δυνατή η έγκριση του αιτήματος</translation>

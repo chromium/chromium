@@ -189,6 +189,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1749561566933687563">Sincronizează marcajele</translation>
 <translation id="1750238553597293878">Folosește în continuare parolele din Contul Google</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Restabilește fereastra <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pagini, o pagină în listă}few{Pagini, # pagini în listă}other{Pagini, # de pagini în listă}}</translation>
 <translation id="1771929606532798550">Google primește informații despre modul în care folosești Chrome, dar acestea nu pot fi asociate cu tine\n\nDacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal.\n\nDacă sincronizezi istoricul cu Contul Google, valorile pot include informații despre adresele URL pe care le accesezi</translation>
 <translation id="1778457539567749232">Marchează ca necitit</translation>
@@ -1258,6 +1259,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6022659036123304283">Personalizează Chrome</translation>
 <translation id="6023820583797130428">Deschide meniul pentru a reveni</translation>
 <translation id="6026538407078977628">Extinde pe ecran complet</translation>
+<translation id="6027619584715411062">Conectează-te pentru a-ți accesa marcajele, parolele și alte lucruri pe toate dispozitivele tale.</translation>
 <translation id="6039379616847168523">Accesează fila următoare</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="604124094241169006">Automat</translation>
@@ -1602,6 +1604,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7190921792980745354">Blochezi pe <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">A fost deschisă o filă în fundal.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Ar trebui să o schimbi acum}few{Ar trebui să le schimbi acum}other{Ar trebui să le schimbi acum}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Restabilește fereastra cu <ph name="TAB_COUNT_ONE" /> filă.}few{Restabilește fereastra cu <ph name="TAB_COUNT_MANY" /> file.}other{Restabilește fereastra cu <ph name="TAB_COUNT_MANY" /> de file.}}</translation>
 <translation id="7196215469483532480">Prezentare a Ghidului privind confidențialitatea, deschisă la înălțimea completă</translation>
 <translation id="7196455519852483601">Poți să ștergi parțial sau integral istoricul, cookie-urile, datele privind site-urile și multe altele</translation>
 <translation id="7197682514647286393">Șterge rapid datele de navigare</translation>
@@ -1855,6 +1858,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8135406045838672858">Fișierele PDF descărcate se deschid automat cu <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Link primit}few{# linkuri primite}other{# de linkuri primite}}</translation>
 <translation id="8137562778192957619">Nu va trebui să reții parola. Ea se va salva în Managerul de parole Google.</translation>
+<translation id="8149825829235553327">Securizează filele incognito</translation>
 <translation id="8151185429379586178">Instrumente dezvoltator</translation>
 <translation id="8152331954420209374">Accesează Lens</translation>
 <translation id="8153206878708357851">Treci la navigarea cu tastatura</translation>

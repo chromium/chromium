@@ -197,6 +197,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5124429847818367226">You can now use Chromium any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="5131565040785979529">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chromium is used.</translation>
 <translation id="5134464247000681876">Open links from Gmail, Maps, YouTube and other apps in Chromium</translation>
+<translation id="5190583032791290546">Get Chromium tips</translation>
 <translation id="5203244847421322551">Save and autofill passwords in Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5259423875997548710">Search visuals in Chromium.</translation>
@@ -339,6 +340,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
 <translation id="8014091604604659473">Chromium is signed out</translation>
 <translation id="8104697640054703121">Get Chromium's strongest security from dangerous sites</translation>
+<translation id="8105840573057009683">Chromium needs location permission for this site</translation>
 <translation id="8119542592987737574">Access Chromium faster from your iPhone's Home Screen Dock.</translation>
 <translation id="8119553494985516751">Open links faster when you set Chromium as default</translation>
 <translation id="8164086860209325020">Go to Chromium settings</translation>

@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Anda dapat kembali ke sini untuk membuka kembali tab yang baru saja Anda tutup</translation>
 <translation id="1016495303386450659">Item diperbarui</translation>
 <translation id="1018804590490383958">Pindai dan isi otomatis</translation>
-<translation id="1019990162050689579">Aktivitas Aplikasi Gemini</translation>
 <translation id="102471647093736603">Tekan lama untuk memindahkan</translation>
 <translation id="102645702181682900">Tugas dimulai</translation>
 <translation id="102916930470544692">Kunci sandi</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680">Izin <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan direset ke nonaktif saat Anda menutup situs ini.</translation>
 <translation id="1293491796138057740">Info Anda disimpan ke Google Wallet untuk <ph name="USER_EMAIL" />. Anda dapat menggunakannya di berbagai produk Google untuk mempercepat pengisian formulir.</translation>
 <translation id="1293556467332435079">File</translation>
-<translation id="1294703224699789269"><ph name="BEGIN_LINK" />Persyaratan<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Persyaratan Lokasi Korea<ph name="END_LINK" />, dan <ph name="BEGIN_LINK" />Pemberitahuan Privasi<ph name="END_LINK" /> kami berlaku. Percakapan ditinjau dan digunakan untuk melatih model AI generatif. Gemini adalah AI dan dapat membuat kesalahan, termasuk tentang orang. Beberapa konten mungkin tidak sesuai untuk sebagian orang. Anda dapat <ph name="BEGIN_LINK" />mengelola histori Anda<ph name="END_LINK" />, termasuk info tentang lokasi Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut pilihan Anda<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Baru saja ditutup</translation>
 <translation id="1296581780163690620">Download file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">"Penelusuran dengan Mode AI" selesai.</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3973560090698854095">Tindakan ini akan menghapus alamat yang disimpan di Akun Google <ph name="USER_EMAIL" /> Anda.</translation>
 <translation id="398604237578616937">Login sebagai <ph name="USER_EMAIL" />. Buka menu akun.</translation>
+<translation id="3986082989454912832">Jawab</translation>
 <translation id="3986739045730058129">Buka tab</translation>
 <translation id="3992684624889376114">Tentang halaman ini</translation>
 <translation id="3993594519743675442">Sembunyikan Setel Pengingat</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">Download</translation>
 <translation id="4764612367328936189">Organisasi mengizinkan Anda login hanya dengan akun tertentu. Akun yang tidak diizinkan akan disembunyikan. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Membantu Anda mengakses kunci sandi tersimpan di perangkat mana pun</translation>
-<translation id="476946043193006313">Aktivitas Anda membantu melatih AI generatif</translation>
 <translation id="4782952780741793211">Kode konfirmasi:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Buka di Samaran?</translation>
@@ -1704,7 +1702,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="628251768213143684">Anda dapat mengelola data yang disimpan di Akun Google Anda kapan saja</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>
-<translation id="6295140892595702619">Gunakan mikrofon untuk melakukan percakapan dengan Gemini. Saat Anda berbicara dengan Gemini, audio disimpan di Aktivitas Aplikasi Gemini (jika diaktifkan). Data Anda tidak digunakan untuk meningkatkan kualitas model AI generatif</translation>
 <translation id="6295751040240588413">Nama kartu tidak valid</translation>
 <translation id="629730747756840877">Akun</translation>
 <translation id="6301104306974789820">Dapatkan notifikasi pemantauan harga</translation>
@@ -1732,7 +1729,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6347953390226388422">{count,plural, =1{Alamat ini akan dihapus dari Akun Google Anda (<ph name="USER_EMAIL" />) dan dari perangkat ini.}other{Alamat ini akan dihapus dari Akun Google Anda (<ph name="USER_EMAIL" />) dan dari perangkat ini.}}</translation>
 <translation id="634878792104344809">Sinkronkan sandi, histori, dan lainnya di semua perangkat Anda</translation>
 <translation id="6350745006329795504">Kelola perangkat Anda</translation>
-<translation id="6351000590398820964">Gemini adalah AI dan dapat membuat kesalahan, termasuk tentang orang. Beberapa konten mungkin tidak sesuai untuk sebagian orang. Percakapan ditinjau dan digunakan untuk melatih model AI generatif. <ph name="BEGIN_LINK" />Pelajari pilihan Anda<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Persyaratan<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Pemberitahuan Privasi<ph name="END_LINK" /> kami berlaku.</translation>
 <translation id="6351147166808964033">Masuk ke pengalih tab</translation>
 <translation id="63519665078626091">Untuk menggunakan Web Inspector, hubungkan ke Safari di komputer Anda menggunakan kabel dan akses iPad Anda dari menu Pengembangan. Anda dapat mengaktifkan menu pengembangan di bagian Lanjutan setelan Safari di komputer.</translation>
 <translation id="6354695695659930684">Mengisi sandi</translation>
@@ -2538,7 +2534,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8750037785291841318">Tab Anda akan ditampilkan di sini</translation>
 <translation id="8751126814549746156">Histori Anda akan otomatis dihapus setelah 18 bulan. Anda dapat mengubah jangka waktu ini di Setelan. Percakapan yang ditinjau oleh penyedia layanan akan dipisahkan dari akun Anda dan disimpan hingga 3 tahun. Anda dapat <ph name="BEGIN_LINK" />menonaktifkan<ph name="END_LINK" /> setelan Histori Anda kapan saja.</translation>
 <translation id="8756969031206844760">Perbarui sandi?</translation>
-<translation id="8762190205387442931">Percakapan ditinjau dan digunakan untuk melatih model AI generatif. Anda dapat <ph name="BEGIN_LINK" />mengelola histori Anda<ph name="END_LINK" />, termasuk info tentang lokasi Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut pilihan Anda<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Buka Tab Terakhir</translation>
 <translation id="8766790350274092814">Sandi untuk <ph name="WEBSITE" /> dan <ph name="SECOND_WEBSITE" /> akan dihapus. Akun Anda tidak akan dihapus.</translation>
 <translation id="8775144690796719618">URL tidak valid</translation>

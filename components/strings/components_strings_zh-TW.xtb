@@ -455,6 +455,7 @@
 <translation id="1746531169546376413">0 度</translation>
 <translation id="1747777564644667857">航班</translation>
 <translation id="1748225549612934682">請縮短文字，才能取得撰寫協助</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">出紙槽 8</translation>
 <translation id="1753706481035618306">頁碼</translation>
 <translation id="1756026472674246267">在新分頁中開啟連結</translation>
@@ -732,6 +733,7 @@
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2219658597883514593">重新啟動教學課程</translation>
 <translation id="2219735899272417925">必須重設裝置</translation>
+<translation id="2221460252073828078">在此查看 Google 搜尋的 AI 回覆</translation>
 <translation id="2222604080869344662">登入 OneDrive 即可繼續下載</translation>
 <translation id="2224337661447660594">沒有網際網路連線</translation>
 <translation id="2225927550500503913">虛擬卡片已啟用</translation>
@@ -1173,6 +1175,7 @@
 <translation id="2980742331521553164">為加快結帳速度，這張卡片的驗證碼會加密儲存在你的 Google 帳戶中</translation>
 <translation id="2983666748527428214">開啟無痕分頁</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
+<translation id="2985848978986605722">使用向左鍵或向右鍵即可瀏覽來源連結。</translation>
 <translation id="2986485254770343131">正在儲存相機檔案</translation>
 <translation id="2987034854559945715">找不到相符的功能</translation>
 <translation id="2989742184762224133">雙釘 (頂端)</translation>
@@ -1589,6 +1592,7 @@
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 發生錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">第三卷</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />，在側邊面板中開啟</translation>
 <translation id="3676592649209844519">裝置 ID：</translation>
 <translation id="3677008721441257057">你是否要前往 &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;？</translation>
 <translation id="3678029195006412963">無法簽署要求</translation>

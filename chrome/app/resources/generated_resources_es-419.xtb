@@ -1468,6 +1468,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2131548114076786395">Para compartir grupos de pestañas, unirte a ellos y colaborar, verifica tu identidad</translation>
 <translation id="2131863825246488194">Aumenta tu seguridad en línea</translation>
 <translation id="2133857665503360653">Volver a probar <ph name="FILE_NAME" /></translation>
+<translation id="2134044938347520790">Comparte solicitudes de funciones o problemas del modo de lectura</translation>
 <translation id="2134905185275441536">CA del sistema</translation>
 <translation id="2135420518376202233">Nombres de dispositivos Bluetooth</translation>
 <translation id="21354425047973905">Oculta los PIN</translation>
@@ -2631,7 +2632,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3003967365858406397">Tu número <ph name="PHONE_NAME" /> creará una conexión de Wi-Fi privada.</translation>
 <translation id="3004385386820284928">Personalizar las teclas del teclado</translation>
 <translation id="300580149047131921">Se usó recientemente</translation>
-<translation id="3005928441045180122">Apilado</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3007555010975143508">Se usarán estas apps para grabar tu pantalla:</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
@@ -4283,6 +4283,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4250596587221570622">Elige un tema para tu perfil</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> podrá ver los archivos de <ph name="FOLDERNAME" /> y hacer sus propias copias</translation>
+<translation id="4251316952800826018">Encabezado de la selección enfocada</translation>
 <translation id="4252899949534773101">Bluetooth está inhabilitado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: Se compartió el contenido de la pestaña</translation>
 <translation id="4253168017788158739">Nota</translation>
@@ -4710,6 +4711,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4580389561674319558">Visible para todos los contactos</translation>
 <translation id="4580596421317071374">Las contraseñas se guardan en <ph name="GOOGLE_PASSWORD_MANAGER" /> en este dispositivo.</translation>
 <translation id="4582297591746054421">Por lo general los sitios leen el portapapeles para habilitar funciones, como la de conservar el formato del texto que copias.</translation>
+<translation id="4582563038311694664">Restablecer toda la configuración</translation>
 <translation id="4584094413232466841">¿Quieres quitar esta información de la función Autocompletar de Chrome?</translation>
 <translation id="4584770411839426377">Ventana</translation>
 <translation id="4584836561445313300">Tu organización podrá ver y administrar los datos de navegación existentes, como las contraseñas y mucho más</translation>
@@ -6769,6 +6771,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6185151644843671709">Se guardó la llave de acceso y se creó el PIN</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 contraseña y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google. Esto también borrará cualquier duplicado.}other{{PASSWORD_COUNT} contraseñas y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google. Esto también borrará cualquier duplicado.}}</translation>
 <translation id="6186177419203903310">Esta acción habilitará las notificaciones de todos los periféricos USB nuevos en el sistema. ¿Confirmas que deseas continuar?</translation>
+<translation id="6187116431221566074">Foco en <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">Usa el menú de vista dividida para cambiar entre las cuadrículas una al lado de la otra y apiladas.</translation>
 <translation id="6190953336330058278">Apps en Phone Hub</translation>
 <translation id="6192333916571137726">Descargar archivo</translation>
@@ -7097,7 +7100,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6453687572758515877">Agrupar todas las pestañas</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de entrada, presiona <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayúsculas<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Barra espaciadora<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Esta acción borrará permanentemente tus datos de navegación de este dispositivo. Para recuperar los datos, accede como</translation>
-<translation id="6454456397828627257">Lado a lado</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455521402703088376">Desactivada • El desarrollador anuló la publicación de esta extensión</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
@@ -7127,7 +7129,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6470120577693311302">Notificaciones con flash</translation>
 <translation id="6470499912143282503">Para compartir pestañas y colaborar con otras personas, accede a Chrome y sincroniza tu historial y tus pestañas. También accederás a tus contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6470823736074966819">Silenciar notificaciones</translation>
-<translation id="6472893788822429178">Mostrar el botón de la Página principal</translation>
+<translation id="6472893788822429178">Mostrar el botón de la página principal</translation>
 <translation id="6473315466413288899">Selecciona una opción</translation>
 <translation id="6474021817475285003">Ver más en el Calendario de Google</translation>
 <translation id="6474401088838630457">Preguntarle a Gemini más sobre esto</translation>
@@ -8625,6 +8627,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7612655942094160088">Habilita las funciones del teléfono conectado.</translation>
 <translation id="7612989789287281429">Accediendo…</translation>
 <translation id="76131528886466333">Instala la extensión de la Búsqueda de Google para Microsoft Edge</translation>
+<translation id="7613308212159091597">Foco en <ph name="GROUP_LABEL" /></translation>
 <translation id="7615365294369022248">Se produjo un error al agregar una cuenta</translation>
 <translation id="7616964248951412133">Los sitios usan esta función para capturar y usar la entrada de tu mouse, como para juegos o apps de escritorio remoto</translation>
 <translation id="7617263010641145920">Activar Play Store</translation>
@@ -9505,7 +9508,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8267539814046467575">Agregar impresora</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="82706708334564640">Historial de descargas recientes</translation>
-<translation id="827097179112817503">Mostrar el botón de la Página principal</translation>
+<translation id="827097179112817503">Mostrar el botón de la página principal</translation>
 <translation id="8271268254812352141">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho o mantienes presionado texto. Personaliza los idiomas de traducción en <ph name="LINK_BEGIN" />Idiomas de sitios web<ph name="LINK_END" />.</translation>
 <translation id="8272443605911821513">Para administrar tus extensiones, haz clic en Extensiones en el menú "Más herramientas".</translation>
 <translation id="8272786333453048167">Volver a permitir</translation>
@@ -10170,7 +10173,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8774379074441005279">Confirma que quieres restablecer</translation>
 <translation id="8774934320277480003">Margen superior</translation>
 <translation id="8775144690796719618">URL no válida</translation>
-<translation id="877515298105563553">Lado a lado</translation>
 <translation id="8776294611668764629">Tu organización bloqueó este archivo porque es demasiado grande para realizar un control de seguridad. Se permite abrir archivos de hasta 50 MB.</translation>
 <translation id="8777509665768981163">Agrega o ubica botones en la tablet</translation>
 <translation id="8779720597365936419">Sí, mantener mis datos separados de los del trabajo (recomendado)</translation>
@@ -10705,7 +10707,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9170884462774788842">Otro programa en tu computadora agregó un tema que puede cambiar el funcionamiento de Chrome.</translation>
 <translation id="9172270007201309670">Se aumentó el tamaño de la fuente</translation>
 <translation id="917350715406657904">Alcanzaste el límite de tiempo que tu madre o padre establecieron para <ph name="APP_NAME" />. Mañana podrás volver a usar esta app por <ph name="TIME_LIMIT" />.</translation>
-<translation id="9174854240439014335">Permitir arrastrar y soltar la vista dividida en el borde izquierdo o derecho de la ventana</translation>
 <translation id="9174870712400134574">Mostrar solo en la página Nueva pestaña</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: Se conectó un dispositivo Bluetooth</translation>
 <translation id="9177859716483578738">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este sitio.</translation>

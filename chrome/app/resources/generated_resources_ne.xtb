@@ -1468,6 +1468,7 @@
 <translation id="2131548114076786395">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="2131863825246488194">अनलाइनमा अझ सुरक्षित रहनुहोस्</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> फेरि खोली हेर्नुहोस्</translation>
+<translation id="2134044938347520790">रिडिङ मोडसम्बन्धी समस्या वा सुविधासम्बन्धी अनुरोधहरू सेयर गर्नुहोस्</translation>
 <translation id="2134905185275441536">सिस्टम CA हरू</translation>
 <translation id="2135420518376202233">ब्लुटुथ डिभाइसका नामहरू</translation>
 <translation id="21354425047973905">PIN हरू लुकाउनुहोस्</translation>
@@ -2632,7 +2633,6 @@
 <translation id="3003967365858406397">तपाईंको <ph name="PHONE_NAME" /> ले कुनै निजी Wi-Fi जडान सिर्जना गर्दछ।</translation>
 <translation id="3004385386820284928">किबोर्डका की कस्टमाइज गर्नुहोस्</translation>
 <translation id="300580149047131921">हालसालै प्रयोग गरिएको</translation>
-<translation id="3005928441045180122">स्ट्याक गरिएको</translation>
 <translation id="3006881078666935414">उपयोगसम्बन्धी कुनै डेटा छैन</translation>
 <translation id="3007555010975143508">यी एपहरू तपाईंको स्क्रिन रेकर्ड गर्न प्रयोग गरिने छन्:</translation>
 <translation id="3007771295016901659">प्रतिलिपि गरिएको ट्याब</translation>
@@ -4281,6 +4281,7 @@
 <translation id="4250596587221570622">आफ्नो प्रोफाइलको थिम छनौट गर्नुहोस्</translation>
 <translation id="4250680216510889253">होइन</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू हेर्न र ती फाइलका कपीहरू बनाउन सक्छ</translation>
+<translation id="4251316952800826018">चयन गरिएको हेडरमा फोकस गर्नुहोस्</translation>
 <translation id="4252899949534773101">ब्लुटुथ अफ गरिएको छ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ट्याबको सामग्री आदन-प्रदान गरिएको छ</translation>
 <translation id="4253168017788158739">नोट</translation>
@@ -4708,6 +4709,7 @@
 <translation id="4580389561674319558">सबै कन्ट्याक्टहरूलाई देखिन्छ</translation>
 <translation id="4580596421317071374">पासवर्डहरू यो डिभाइसको <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिन्छन्।</translation>
 <translation id="4582297591746054421">साइटहरूले तपाईंले कपी गर्नुभएको पाठको ढाँचा कायमै राख्ने जस्ता सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको क्लिपबोर्ड पढ्छन्</translation>
+<translation id="4582563038311694664">सबै सेटिङहरू रिसेट गर्नुहोस्</translation>
 <translation id="4584094413232466841">यो जानकारी Chrome अटोफिलबाट हटाउने हो?</translation>
 <translation id="4584770411839426377">विन्डो</translation>
 <translation id="4584836561445313300">तपाईंको सङ्गठनले पासवर्डलगायतका विद्यमान सबै ब्राउजिङ डेटा हेर्न तथा व्यवस्थापन गर्न सक्ने छ</translation>
@@ -6765,6 +6767,7 @@
 <translation id="6185151644843671709">पासकी सेभ गरियो र PIN बनाइयो</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{एउटा पासवर्ड र अन्य सामग्री यो डिभाइसमा मात्र सेभ गरिएका छन्। यो पासवर्ड र अन्य सामग्री आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्। तपाईंले यसो गर्नुभयो भने सबै कपीहरू पनि हट्ने छन्।}other{{PASSWORD_COUNT} वटा पासवर्ड र अन्य सामग्री यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड र अन्य सामग्री आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्। तपाईंले यसो गर्नुभयो भने सबै कपीहरू पनि हट्ने छन्।}}</translation>
 <translation id="6186177419203903310">तपाईंले यसो गर्नुभयो भने सिस्टममा कनेक्ट गरिने सबै नयाँ USB डिभाइसहरूका बारेमा नोटिफिकेसन पठाउने सुविधा अन गरिने छ। तपाईंले जारी राख्न खोज्नुभएकै हो?</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /> मा फोकस गरिएको छ</translation>
 <translation id="6188822118034543225">साइड बाइ साइड र स्ट्याक गरिएका लेआउटहरूका बिचमा अदलबदल गर्न स्प्लिट भ्यू मेनु प्रयोग गर्नुहोस्।</translation>
 <translation id="6190953336330058278">फोन हब एपहरू</translation>
 <translation id="6192333916571137726">फाइल डाउनलोड गर्नुहोस्</translation>
@@ -7093,7 +7096,6 @@
 <translation id="6453687572758515877">सबै ट्याबहरूको समूह बनाउनुहोस्</translation>
 <translation id="6453921811609336127">अर्को इनपुट विधि प्रयोग गर्न <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> थिच्नुहोस्</translation>
 <translation id="645433497989692531">तपाईंले यो प्रोफाइल मेटाउनुभयो भने यो डिभाइसबाट तपाईंको ब्राउजिङ डेटा सदाका लागि मेटाइने छ। उक्त डेटा रिकभर गर्न यो खातामार्फत साइन इन गर्नुहोला:</translation>
-<translation id="6454456397828627257">सँगसँगै</translation>
 <translation id="6455264371803474013">खास साइटहरूमा</translation>
 <translation id="6455521402703088376">अफ • यो एक्स्टेन्सनको विकासकर्ताले यो एक्स्टेन्सनको प्रकाशन रद्द गरेको हो</translation>
 <translation id="6455894534188563617">&amp;नयाँ फोल्डर</translation>
@@ -8620,6 +8622,7 @@
 <translation id="7612655942094160088">कनेक्ट गरिएको फोनका सुविधाहरू सक्षम पार्नुहोस्।</translation>
 <translation id="7612989789287281429">साइन इन गरिँदै छ…</translation>
 <translation id="76131528886466333">Google Search for Microsoft Edge एक्स्टेन्सन इन्स्टल गर्नुहोस्</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" /> मा फोकस गरिएको छ</translation>
 <translation id="7615365294369022248">खाता थप्ने क्रममा कुनै त्रुटि भयो</translation>
 <translation id="7616964248951412133">माउसको इन्पुट क्याप्चर तथा प्रयोग गर्ने प्रयोजनका लागि साइटहरूले गेम वा रिमोट डेस्कटप एपहरूले जसरी नै यो सुविधा प्रयोग गर्छन्</translation>
 <translation id="7617263010641145920">Play Store अन गर्नुहोस्</translation>
@@ -10165,7 +10168,6 @@
 <translation id="8774379074441005279">रिस्टोर गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="8774934320277480003">शीर्ष सीमान्त</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
-<translation id="877515298105563553">सँगसँगै</translation>
 <translation id="8776294611668764629">यो फाइल धेरै ठुलो भएका कारण यसको सुरक्षा जाँच गर्न नसकिने भएकाले तपाईंको संस्थाले उक्त फाइल ब्लक गरेको छ। तपाईं बढीमा ५० एम.बि. सम्मका फाइलहरू खोल्न सक्नुहुन्छ।</translation>
 <translation id="8777509665768981163">ट्याब्लेटमा नयाँ बटन हाल्नुहोस् वा पहिले नै भएका बटनहरू पत्ता लगाउनुहोस्</translation>
 <translation id="8779720597365936419">अँ, मेरो व्यक्तिगत जानकारी र कार्यालयको जानकारी बेग्लाबेग्लै राख्न चाहन्छु (सिफारिस गरिएको)</translation>
@@ -10700,7 +10702,6 @@
 <translation id="9170884462774788842">तपाईंको कम्प्युटरमा रहेको अर्को कार्यक्रमले एउटा थिम थपेको छ जसले Chrome ले काम गर्ने तरिकालाई बदल्न सक्छ।</translation>
 <translation id="9172270007201309670">फन्टको आकार बढाइएको छ</translation>
 <translation id="917350715406657904">तपाईं आफ्ना अभिभावकले <ph name="APP_NAME" /> मा निर्धारण गर्नुभएको समयको सीमामा पुग्नुभयो। तपाईं भोलि यसलाई <ph name="TIME_LIMIT" /> प्रयोग गर्न सक्नुहुन्छ।</translation>
-<translation id="9174854240439014335">स्प्लिट भ्यूलाई विन्डोको बायाँ वा दायाँ किनारमा ड्र्याग एन्ड ड्रप गर्ने अनुमति दिनुहोस्</translation>
 <translation id="9174870712400134574">नयाँ ट्याब पेजमा मात्र देखाउनुहोस्</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - ब्लुटुथ यन्त्र जडान गरिएको छ</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्।</translation>

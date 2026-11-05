@@ -1467,6 +1467,7 @@
 <translation id="2131548114076786395">タブグループの共有、参加、共同作業を行うには、本人確認を行ってください</translation>
 <translation id="2131863825246488194">インターネットを安全に利用</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> を再試行</translation>
+<translation id="2134044938347520790">リーディング モードに関する問題点や機能のリクエストをお聞かせください</translation>
 <translation id="2134905185275441536">システム CA</translation>
 <translation id="2135420518376202233">Bluetooth デバイス名</translation>
 <translation id="21354425047973905">PIN を非表示</translation>
@@ -2630,7 +2631,6 @@
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> でプライベート Wi-Fi 接続を確立します。</translation>
 <translation id="3004385386820284928">キーボードのキーをカスタマイズ</translation>
 <translation id="300580149047131921">最近使用した権限</translation>
-<translation id="3005928441045180122">縦並び</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
 <translation id="3007555010975143508">画面の録画に使用されるアプリ:</translation>
 <translation id="3007771295016901659">タブを複製</translation>
@@ -4280,6 +4280,7 @@
 <translation id="4250596587221570622">プロファイルのテーマを選択してください</translation>
 <translation id="4250680216510889253">いいえ</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを表示し、独自のコピーを作成できます</translation>
+<translation id="4251316952800826018">フォーカス選択ヘッダー</translation>
 <translation id="4252899949534773101">Bluetooth が無効です</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - タブのコンテンツが共有されています</translation>
 <translation id="4253168017788158739">メモ</translation>
@@ -4707,6 +4708,7 @@
 <translation id="4580389561674319558">すべての連絡先に公開</translation>
 <translation id="4580596421317071374">パスワードは、このデバイスの <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
 <translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
+<translation id="4582563038311694664">すべての設定をリセット</translation>
 <translation id="4584094413232466841">Chrome の自動入力からこの情報を削除しますか？</translation>
 <translation id="4584770411839426377">ウィンドウ</translation>
 <translation id="4584836561445313300">組織は、既存の閲覧データ（パスワードなど）を確認、管理できるようになります</translation>
@@ -4972,7 +4974,7 @@
 <translation id="4779766576531456629">eSIM モバイル ネットワークの名前変更</translation>
 <translation id="4780321648949301421">ページを別名で保存...</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。</translation>
-<translation id="4784506603920819520"><ph name="TASK_TITLE" />: Gemini がこのタスクを処理するには、あなたの操作が必要です</translation>
+<translation id="4784506603920819520"><ph name="TASK_TITLE" />: Gemini がこのタスクの処理を継続できるよう、対応をお願いします</translation>
 <translation id="4785719467058219317">このウェブサイトに登録されていないセキュリティ キーを使用しています</translation>
 <translation id="4786430656008801173">オンデバイス AI</translation>
 <translation id="4787471921443575924">ユーザー名 <ph name="USER_EMAIL" /> のパスキーを編集</translation>
@@ -6762,6 +6764,7 @@
 <translation id="6185151644843671709">パスキーを保存し、PIN を作成しました</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}other{{PASSWORD_COUNT} 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}}</translation>
 <translation id="6186177419203903310">システム全体であらゆる新しい USB 周辺機器の通知が有効になります。続行してもよろしいですか？</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" /> にフォーカスしています - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">分割ビュー メニューを使用して、横並びと縦並びのレイアウトを切り替えることができます。</translation>
 <translation id="6190953336330058278">スマートフォン ハブ アプリ</translation>
 <translation id="6192333916571137726">ファイルをダウンロード</translation>
@@ -7090,7 +7093,6 @@
 <translation id="6453687572758515877">すべてのタブをグループ化</translation>
 <translation id="6453921811609336127">次の入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
 <translation id="645433497989692531">このデバイスから閲覧データを完全に削除します。データを復元するには、次のユーザーとしてログインしてください:</translation>
-<translation id="6454456397828627257">横並び</translation>
 <translation id="6455264371803474013">特定のサイト</translation>
 <translation id="6455521402703088376">オフ • この拡張機能はデベロッパーにより非公開にされました</translation>
 <translation id="6455894534188563617">新しいフォルダ(&amp;N)</translation>
@@ -8618,6 +8620,7 @@
 <translation id="7612655942094160088">接続されているスマートフォンの機能を有効にできます。</translation>
 <translation id="7612989789287281429">ログインしています…</translation>
 <translation id="76131528886466333">Microsoft Edge 向け Google 検索の拡張機能をインストール</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" /> にフォーカスしています</translation>
 <translation id="7615365294369022248">アカウントの追加中にエラーが発生しました</translation>
 <translation id="7616964248951412133">サイトは、ゲームやリモート デスクトップ アプリなどでのユーザーのマウス入力を取得して使用するために、この機能を使用します</translation>
 <translation id="7617263010641145920">Play ストアをオンにする</translation>
@@ -9005,7 +9008,7 @@
 <translation id="7915478442339169507">サイトへのアクセスを許可する</translation>
 <translation id="7916364730877325865">お客様の組織では、このアカウントとの同期を有効にすることは許可されていません</translation>
 <translation id="791698251820376781">組織がログインを許可していません</translation>
-<translation id="7918928051723770926">タスク完了</translation>
+<translation id="7918928051723770926">タスクを完了しました</translation>
 <translation id="7919123827536834358">これらの言語を自動的に翻訳する</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
@@ -10162,7 +10165,6 @@
 <translation id="8774379074441005279">復元を実行</translation>
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>
-<translation id="877515298105563553">横並び</translation>
 <translation id="8776294611668764629">このファイルはセキュリティ チェックを受けるには大きすぎるため、組織でブロックされました。開けるファイルは 50 MB までです。</translation>
 <translation id="8777509665768981163">タブレットのボタンを追加または指定する</translation>
 <translation id="8779720597365936419">はい、自分のデータを仕事用とは別に保持します（推奨）</translation>
@@ -10438,7 +10440,7 @@
 <translation id="8987736167266086032">中断したところから再開する</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
-<translation id="8989779557457435460">デフォルトで現在のタブを共有する</translation>
+<translation id="8989779557457435460">デフォルトで現在のタブを共有</translation>
 <translation id="8990243615717080992">パスワードまたはその他の復元方法でログインできます</translation>
 <translation id="8991520179165052608">サイトにマイクの使用が許可されています</translation>
 <translation id="8991694323904646277">カメラがありません</translation>
@@ -10697,7 +10699,6 @@
 <translation id="9170884462774788842">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるテーマが追加されました。</translation>
 <translation id="9172270007201309670">フォントサイズを大きくしました</translation>
 <translation id="917350715406657904">保護者が設定した <ph name="APP_NAME" /> の利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
-<translation id="9174854240439014335">ウィンドウの左端または右端で分割ビューのドラッグ＆ドロップを許可する</translation>
 <translation id="9174870712400134574">新しいタブページにのみ表示</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth デバイスに接続されています</translation>
 <translation id="9177859716483578738">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご確認ください。</translation>

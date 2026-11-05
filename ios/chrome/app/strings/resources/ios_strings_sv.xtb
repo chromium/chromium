@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Du kan återkomma hit och öppna nyligen stängda flikar</translation>
 <translation id="1016495303386450659">Bokmärket har uppdaterats</translation>
 <translation id="1018804590490383958">Skanna och autofyll</translation>
-<translation id="1019990162050689579">Gemini-appaktivitet</translation>
 <translation id="102471647093736603">Håll nedtryckt för att flytta</translation>
 <translation id="102645702181682900">Uppgiften har startats</translation>
 <translation id="102916930470544692">Nyckel</translation>
@@ -51,6 +50,7 @@
 <translation id="1122068467107743258">Arbete</translation>
 <translation id="1126696498560056882">Hantera konton på den här enheten</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
+<translation id="112943553659469376">”<ph name="PROMPT" />”</translation>
 <translation id="1133418583142946603">Lägg till aktuell flik</translation>
 <translation id="1136104150802877429">Visar produktrecensioner</translation>
 <translation id="1142371195993008685">Inaktivera aviseringar för <ph name="FEATURE_NAME" /></translation>
@@ -386,6 +386,7 @@
 <translation id="2104436223719117661">Populära sökningar</translation>
 <translation id="21133533946938348">Fäst flik</translation>
 <translation id="2117650889962717098">Surfa privat genom att växla till inkognitoläge</translation>
+<translation id="2119126821484134587">För att ge anpassad hjälp delar Gemini viss data (som delar av dina chattar, din plats och annan relevant information) med andra tjänster från Google, som Maps och Flights. Dessa tjänster kan använda informationen för att bli bättre, även om du raderar din Gemini-apphistorik senare. Läs mer i <ph name="BEGIN_LINK" />integritetscentret för Gemini-apparna<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Öppna i …</translation>
 <translation id="2119962645034852864">Vissa tjänster är inte tillgängliga för ditt konto</translation>
 <translation id="2120553909046681540">Organisationen har inaktiverat privat surfning.</translation>
@@ -507,6 +508,7 @@
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2496626742194544812">Öppna första fliken</translation>
 <translation id="2499505845365628575">Du hittar all webbhistorik från <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Få aviseringar om säkerhetsuppdateringar, anpassade teman med mera.</translation>
 <translation id="251033673027346551">Besök Google Wallet för att hantera <ph name="BEGIN_LINK" />data- och integritetsinställningar<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> utsatta lösenord som kan innebära en säkerhetsrisk.</translation>
 <translation id="2512709994717613803">Nivå <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +672,7 @@
 <translation id="3038136505713492417">Verifiera din identitet om du vill använda dina nycklar på den här enheten</translation>
 <translation id="3039671569659952257">Radera mappen</translation>
 <translation id="3041835740069544003">Chrome kan nu identifiera och fylla i fler formulär med Smartare formulärförståelse. För att göra detta kan sidinnehåll och webbadresser behandlas i ett privat utrymme i molnet. Du hanterar detta i inställningarna.</translation>
+<translation id="3042118633250374317">Google använder din historik för att tillhandahålla sina tjänster, skydda Google, dess användare och allmänheten samt utveckla och förbättra sina tjänster med hjälp av mänskliga granskare. Inkludera inte information som du inte vill ska granskas eller användas.</translation>
 <translation id="3050988301648974170">Öppna Lösenordskontroll</translation>
 <translation id="3053332585453689122">Webbadresser som du besöker och ett litet urval av sidans innehåll, nedladdningar, tilläggsaktivitet och systeminformation skickas till Google Säker webbsökning, som kontrollerar om webbadresserna är skadliga.</translation>
 <translation id="3055102495753300780">Informationslagring</translation>
@@ -954,6 +957,7 @@
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3973560090698854095">Detta raderar adresser som har sparats i Google-kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Inloggad som <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
+<translation id="3986082989454912832">Svara</translation>
 <translation id="3986739045730058129">Öppna fliken</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="3993594519743675442">Dölj Ställ in en påminnelse</translation>
@@ -1113,6 +1117,7 @@
 <translation id="4488754974567924717">Vi meddelar dig om dina lösenord är utsatta</translation>
 <translation id="4489536976005181779">{count,plural, =1{Sidan har lagts till i läslistan i kontot {email}}other{Sidorna har lagts till i läslistan i kontot {email}}}</translation>
 <translation id="4493604894403585654">Du är inloggad som <ph name="USER_EMAIL" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
+<translation id="4495251723189610737">Dina chattar sparas i Gemini-historiken. Historiken omfattar ljud, Gemini Live-videor och delade skärmar, vad du delar med Gemini (som promptar, <ph name="BEGIN_LINK" />uppladdningar<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />skärmar<ph name="END_LINK" />), Geminis svar, uppgifter och verktygsanrop, feedback, information från webbplatser du besöker med Gemini, produktanvändningsdata, enhetens ungefärliga plats, IP-adress och hem- eller jobbadresser i Google-kontot. Det kan även omfatta data från appar som du ansluter till Gemini.</translation>
 <translation id="4502423230170890588">Ta bort från den här enheten</translation>
 <translation id="4508486880075514067">Utöka till helskärm</translation>
 <translation id="4508750114462689118">Stäng inloggningskampanj</translation>
@@ -1217,6 +1222,7 @@
 <translation id="4808744395915275922">Uppdateringar</translation>
 <translation id="4813345808229079766">Anslutning</translation>
 <translation id="4821595350501541683">Flikarna stängdes och webbinformationen rensades.</translation>
+<translation id="4821645169621230110">Så används din historik</translation>
 <translation id="4823322556950229674">Du kan trycka länge för att flytta adressfältet och bakåtknappen längst ned</translation>
 <translation id="4824480232751123840">Volym</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} och 1 till}other{{domain} och {count} till}}</translation>
@@ -1244,6 +1250,7 @@
 <translation id="4877597489778380935">Påminn mig senare</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4883766694719903356">Rutnät med inkognitoflikar</translation>
+<translation id="4884205780547482830">Din data hjälper till att träna generativ AI</translation>
 <translation id="4884937942297374058">Utökat skydd är inaktiverat</translation>
 <translation id="4887391901725877182">Textning</translation>
 <translation id="488785315393301722">Visa information</translation>
@@ -1695,7 +1702,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="628251768213143684">Du kan när som helst hantera vad som sparas i Google-kontot</translation>
 <translation id="6284652193729350524">Erbjud översättning från <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Öppna <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /> och tryck på Säker webbsökning om du vill aktivera det.</translation>
-<translation id="6295140892595702619">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini lagras ljud i Gemini-appaktiviteten (om den är aktiverad). Din data används inte för att förbättra generativa AI-modeller</translation>
 <translation id="6295751040240588413">Ogiltigt kortnamn</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få aviseringar om prisbevakning</translation>
@@ -1890,6 +1896,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6830728435402077660">Inte säkert</translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6842136130964845393">Verifiera din identitet så att du alltid får åtkomst till dina sparade lösenord</translation>
+<translation id="6843744036364481304">Vilken chatthistorik som sparas</translation>
 <translation id="6844773122575789617">Aktivera AI-läge</translation>
 <translation id="6851516051005285358">Använd skrivbordsversion</translation>
 <translation id="6857446173140146664">Ta bort bakgrund</translation>
@@ -2013,6 +2020,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7223134495231529579">Spara i nedladdningar</translation>
 <translation id="722339453342442311">Kontrollera nu</translation>
 <translation id="7227235818314667565">Hantera delning</translation>
+<translation id="7232376892719594461">Varken dina konversationer med Gemini eller din <ph name="BEGIN_LINK" />Google Workspace-data<ph name="END_LINK" /> granskas eller används för att träna generativa AI-modeller.</translation>
 <translation id="7233006041370588369">Välj ett lösenord att fylla i.</translation>
 <translation id="7238074332967840767">Säkerhet</translation>
 <translation id="723874023660911012">Byt profil</translation>
@@ -2524,6 +2532,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8746155870861185046">Dela markering</translation>
 <translation id="8748678031495824833">Öppna AI-verktyg på sidan</translation>
 <translation id="8750037785291841318">Du hittar dina flikar här</translation>
+<translation id="8751126814549746156">Din historik raderas automatiskt efter 18 månader. Du kan ändra detta i inställningarna. Chattar som granskas av tjänsteleverantörer skiljs från ditt konto och sparas i upp till tre år. Du kan <ph name="BEGIN_LINK" />inaktivera<ph name="END_LINK" /> inställningen Historik när som helst.</translation>
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
 <translation id="8763613688786959833">Öppna sista fliken</translation>
 <translation id="8766790350274092814">Lösenorden för <ph name="WEBSITE" /> och <ph name="SECOND_WEBSITE" /> raderas. Dina konton raderas inte.</translation>
@@ -2569,6 +2578,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8893208530912252670">Videor</translation>
 <translation id="890009681345348416">40+ lösenord har fyllts i automatiskt</translation>
 <translation id="8900845556227858314">Webbläsarapp</translation>
+<translation id="8903042868629070803">Om du har fyllt 18 år använder Google även din historik för att <ph name="BEGIN_LINK" />träna generativa AI-modeller<ph name="END_LINK" />. Du kan <ph name="BEGIN_LINK" />inaktivera detta<ph name="END_LINK" /> för framtida chattar när som helst.</translation>
 <translation id="890565330728586731">Tillbaka</translation>
 <translation id="8907722425137681851">Sök på sidan …</translation>
 <translation id="8909135823018751308">Dela …</translation>

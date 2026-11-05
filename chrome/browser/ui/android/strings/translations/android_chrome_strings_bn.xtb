@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">আপনার বুকমার্কগুলি সিঙ্ক করুন</translation>
 <translation id="1750238553597293878">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ব্যবহার করতে থাকুন</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315"><ph name="TITLE_OF_WINDOW" /> উইন্ডো ফিরিয়ে আনুন।</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{পৃষ্ঠা, তালিকাতে ১টি পৃষ্ঠা আছে}one{পৃষ্ঠা, তালিকাতে #টি পৃষ্ঠা আছে}other{পৃষ্ঠা, তালিকাতে #টি পৃষ্ঠা আছে}}</translation>
 <translation id="1771929606532798550">Chrome-এর ব্যবহার সম্পর্কিত আপনার তথ্য Google-কে পাঠানো হয় কিন্তু আপনার সাথে সম্পর্কিত তথ্য পাঠানো হয়নি\n\nChrome ক্র্যাশ হলে, ক্র্যাশ সম্পর্কিত বিবরণে আপনার ব্যক্তিগত তথ্য অন্তর্ভুক্ত থাকতে পারে\n\nআপনার Google অ্যাকাউন্টের সাথে ইতিহাস সিঙ্ক করলে, আপনার ভিজিট করা URL সম্পর্কিত তথ্য, মেট্রিকেও অন্তর্ভুক্ত থাকতে পারে</translation>
 <translation id="1778457539567749232">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
@@ -1258,6 +1259,7 @@
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
 <translation id="6023820583797130428">ফিরে যেতে মেনু খুলুন</translation>
 <translation id="6026538407078977628">'ফুল-স্ক্রিন' মোডে পরিবর্তন করুন</translation>
+<translation id="6027619584715411062">আপনার সব ডিভাইসে বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু পেতে সাইন-ইন করুন।</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604124094241169006">স্বয়ংক্রিয়</translation>
@@ -1602,6 +1604,7 @@
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />-কে ব্লক করতে চান?</translation>
 <translation id="7191430249889272776">পটভূমিতে ট্যাব খোলা হয়েছে।</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{এটি এখন পরিবর্তন করতে হবে}one{এগুলি এখন পরিবর্তন করতে হবে}other{এগুলি এখন পরিবর্তন করতে হবে}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাবের উইন্ডো ফিরিয়ে আনুন।}one{<ph name="TAB_COUNT_MANY" />টি ট্যাবের উইন্ডো ফিরিয়ে আনুন।}other{<ph name="TAB_COUNT_MANY" />টি ট্যাবের উইন্ডো ফিরিয়ে আনুন।}}</translation>
 <translation id="7196215469483532480">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="7196455519852483601">আপনি কিছু বা সব ইতিহাস, কুকি ও সাইট ডেটা এবং আরও অনেক কিছু মুছে ফেলতে পারবেন</translation>
 <translation id="7197682514647286393">দ্রুত আপনার ব্রাউজ করা ডেটা মুছুন</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8135406045838672858">ডাউনলোড করা পিডিএফ অটোমেটিক <ph name="APP_NAME" /> অ্যাপের সাহায্যে খোলে</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{লিঙ্ক রিসিভ করা হয়েছে}one{#টি লিঙ্ক রিসিভ করা হয়েছে}other{#টি লিঙ্ক রিসিভ করা হয়েছে}}</translation>
 <translation id="8137562778192957619">আপনাকে এই পাসওয়ার্ড মনে রাখতে হবে না। এটি Google Password Manager-এ সেভ হয়ে যাবে।</translation>
+<translation id="8149825829235553327">আপনার ছদ্মবেশী ট্যাব সুরক্ষিত করুন</translation>
 <translation id="8151185429379586178">ডেভেলপার টুল</translation>
 <translation id="8152331954420209374">Lens-এ যান</translation>
 <translation id="8153206878708357851">ক্যারেট ব্রাউজিং টগল করুন</translation>

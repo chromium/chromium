@@ -189,6 +189,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1749561566933687563">Sinhronizirajte svoje oznake</translation>
 <translation id="1750238553597293878">Nastavite koristiti lozinke na Google računu</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Vraćanje prozora <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Stranice, 1 stranica na listi}one{Stranice, # stranica na listi}few{Stranice, # stranice na listi}other{Stranice, # stranica na listi}}</translation>
 <translation id="1771929606532798550">Informacije o vašem korištenju Chromea se šalju Googleu, ali se ne povezuju s vama\n\nAko dođe do pada Chromea, detalji o padu mogu uključivati neke lične informacije\n\nAko sinhronizirate historiju s Google računom, pokazatelji mogu uključivati informacije o URL-ovima koje posjećujete</translation>
 <translation id="1778457539567749232">Označi kao nepročitano</translation>
@@ -1258,6 +1259,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
 <translation id="6023820583797130428">Otvorite meni da se vratite</translation>
 <translation id="6026538407078977628">Proširivanje preko cijelog ekrana</translation>
+<translation id="6027619584715411062">Prijavite se da dobijete oznake, lozinke i još mnogo toga na svim uređajima.</translation>
 <translation id="6039379616847168523">Pređite na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -1602,6 +1604,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7190921792980745354">Blokirati kontakt <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Trebate je odmah promijeniti}one{Trebate ih odmah promijeniti}few{Trebate ih odmah promijeniti}other{Trebate ih odmah promijeniti}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Vraćanje prozora s <ph name="TAB_COUNT_ONE" /> karticom.}one{Vraćanje prozora sa <ph name="TAB_COUNT_MANY" /> karticom.}few{Vraćanje prozora sa <ph name="TAB_COUNT_MANY" /> kartice.}other{Vraćanje prozora sa <ph name="TAB_COUNT_MANY" /> kartica.}}</translation>
 <translation id="7196215469483532480">Objašnjenje vodiča za privatnost je otvoreno u punoj veličini</translation>
 <translation id="7196455519852483601">Možete djelimično ili potpuno izbrisati historiju, kolačiće, podatke web lokacije i drugo</translation>
 <translation id="7197682514647286393">Brzo izbrišite podatke o pregledanju</translation>
@@ -1855,6 +1858,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8135406045838672858">Preuzeti PDF-ovi se automatski otvaraju putem aplikacije <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Primljen je link}one{Primljen je # link}few{Primljena su # linka}other{Primljeno je # linkova}}</translation>
 <translation id="8137562778192957619">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Google upravitelju lozinki.</translation>
+<translation id="8149825829235553327">Zaštitite anonimne kartice</translation>
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8152331954420209374">Odlazak u Objektiv</translation>
 <translation id="8153206878708357851">Uključivanje/isključivanje navigacije kursorom</translation>

@@ -733,6 +733,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2215727959747642672">Dateien bearbeiten</translation>
 <translation id="2219658597883514593">Anleitung neu starten</translation>
 <translation id="2219735899272417925">Gerät muss zurückgesetzt werden</translation>
+<translation id="2221460252073828078">Hier findest du die KI-generierte Antwort der Google Suche</translation>
 <translation id="2222604080869344662">In OneDrive anmelden, um das Herunterladen fortzusetzen</translation>
 <translation id="2224337661447660594">Kein Internet</translation>
 <translation id="2225927550500503913">Virtuelle Karte aktiviert</translation>
@@ -932,6 +933,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2535585790302968248">Einen neuen Inkognitotab öffnen, um privat zu surfen</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{und 1 weitere}other{und # weitere}}</translation>
 <translation id="2536110899380797252">Adresse hinzufügen</translation>
+<translation id="2536852576044236667">Vorheriges Ergebnis außerhalb der Ansicht</translation>
 <translation id="2537931901612099523">Andere Personen, die dieses Gerät verwenden, können deine Aktivitäten nicht sehen, sodass du privat surfen kannst. Dies hat keine Auswirkungen darauf, wie Daten durch von dir besuchte Websites und den von ihnen genutzten Diensten, einschließlich Google, erhoben werden. Downloads und Lesezeichen werden gespeichert.</translation>
 <translation id="2541219929084442027">Seiten, die du dir auf Inkognitotabs ansiehst, werden nach dem Schließen aller Inkognitotabs nicht in deinem Browserverlauf, Cookiespeicher oder Suchverlauf gespeichert. Deine Lesezeichen und heruntergeladenen Dateien bleiben erhalten.</translation>
 <translation id="2541474152868747095">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, musst du deine Identität bestätigen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
@@ -1088,6 +1090,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2826760142808435982">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt und authentifiziert und verwendet <ph name="KX" /> als Mechanismus für den Schlüsselaustausch.</translation>
 <translation id="2828797285817981634">Zugriff auf Bewegungssensoren vorübergehend erlaubt</translation>
 <translation id="2835907903001172712">Browserübersicht</translation>
+<translation id="2836653778330912701">Nächstes Ergebnis außerhalb der Ansicht</translation>
 <translation id="2837891525090413132">Darf nachfragen, ob sie deine Tastatur sperren und verwenden darf</translation>
 <translation id="2839032553903800133">Benachrichtigungen blockiert</translation>
 <translation id="2839501879576190149">Warnung: Gefälschte Website</translation>
@@ -2438,6 +2441,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5053116470141135293">Beim Bezahlen mit dieser Karte wird eine virtuelle Kartennummer eingegeben, um deine tatsächlichen Kartendetails zu schützen. Du kannst diese Einstellung in Google Wallet verwalten. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Damit du diese Datei mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}other{Damit du diese Dateien mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}}</translation>
 <translation id="5056587122125565772">Bild erstellen</translation>
+<translation id="5056908537436373373">Fenster „<ph name="WINDOW_INDEX" />“ (1 Tab) in einem neuen Fenster öffnen</translation>
 <translation id="505757197798929356">Gib den Grund für das Öffnen an (erforderlich)</translation>
 <translation id="5058282932481719070">weitere Informationen zu erweitertem Autofill in den Einstellungen erhalten</translation>
 <translation id="5061227663725596739">Meintest du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3062,6 +3066,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6097297436119286254">Bestätige deine Identität, um deine Zahlungsinformationen einzugeben</translation>
 <translation id="6099269767116481177">22 × 29,5 Zoll</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Diese Richtlinie ist für die Anwendung auf Geräteebene vorgesehen. Das Verhalten bei Anwendung als Nutzerrichtlinie wird nicht offiziell unterstützt und wird eingestellt.</translation>
 <translation id="6105460996796456817">Website erstellen</translation>
 <translation id="6105511947520166941">Beim nächsten Mal mit Pix direkt in Chrome bezahlen</translation>
 <translation id="6105745639559695088">Seitenleiste ein- oder ausblenden</translation>
@@ -3172,6 +3177,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6284292079994426700">26 x 38 Zoll</translation>
 <translation id="6284517535531159884">Quelltyp der Varianten</translation>
 <translation id="6287197303017372967">Mit der detaillierten Routenführung der Navigationsfunktion erreichst du sicher dein Ziel.</translation>
+<translation id="6287497864845330943">Fenster <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> Tabs</translation>
 <translation id="628877850550444614">Rabatt gefunden</translation>
 <translation id="6289939620939689042">Seitenfarbe</translation>
 <translation id="6292819926564202163">Deine Suchmaschine in Chrome</translation>
@@ -3210,6 +3216,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6342069812937806050">Gerade eben</translation>
 <translation id="6342171901363060580">Du siehst diese Warnung, weil diese Website kein HTTPS unterstützt und du den Inkognitomodus nutzt. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Route</translation>
+<translation id="6345664705388712774">Bilder zur Suche hinzufügen</translation>
 <translation id="6348220984832452017">Aktive Variationen</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
 <translation id="6350739641326887427">Du kannst bezahlen, ohne den Pix-Code kopieren und einfügen zu müssen. <ph name="BEGIN_LINK1" />So funktionierts<ph name="END_LINK1" /></translation>
@@ -3601,6 +3608,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7013835112918108252">Darf nachfragen, ob sie deine Maus sperren und verwenden darf</translation>
 <translation id="7013844825046560088">Chrome protokolliert, wie du die Funktion verwendest, z. B. deine Anfragen und dein Verhalten, wenn du Vorschläge annimmst oder ignorierst</translation>
 <translation id="7014741021609395734">Zoomstufe</translation>
+<translation id="7016016144157344115">Fenster <ph name="WINDOW_NUMBER" /> · 1 Tab</translation>
 <translation id="7016992613359344582">Diese Belastungen können einmalig oder wiederkehrend sein und sind vielleicht nicht offensichtlich.</translation>
 <translation id="7020464868401003526">Die URL der Verknüpfung überschreitet die maximal zulässige Länge von <ph name="MAX_LENGTH" /> Zeichen.</translation>
 <translation id="7020581144940000377">Ungefähren Standort verwenden</translation>
@@ -4150,6 +4158,7 @@ Weitere Details:
 <translation id="7911651285409665023">Schließen und zu „<ph name="TAB_TITLE" />“ zurückkehren</translation>
 <translation id="7912924955815015552">Aus Safari importiert</translation>
 <translation id="7916162853251942238">Flexobasis</translation>
+<translation id="7916802424606434188">Fenster „<ph name="WINDOW_INDEX" />“ (<ph name="NUM_TABS" /> Tabs) in einem neuen Fenster öffnen</translation>
 <translation id="791698251820376781">Deine Organisation lässt deine Anmeldung nicht zu</translation>
 <translation id="7927046851848613453">Du kannst Tickets, Veranstaltungen und andere Informationen von Seiten speichern, die du aufrufst – nicht nur von Formularen, die du ausfüllst. Anschließend kannst du schnell auf deine Karten/Tickets zugreifen, z. B. auf Veranstaltungstickets und Kundenkarten. Deine gespeicherten Informationen können auf deinen Geräten und in Google-Produkten angezeigt werden.</translation>
 <translation id="7930282586031445870">Der Bildschirm mit den Nutzungsbedingungen für „Jetzt kaufen, später bezahlen“ ist geschlossen.</translation>

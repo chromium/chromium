@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 度</translation>
 <translation id="1747777564644667857">航班</translation>
 <translation id="1748225549612934682">必须缩短文字，才能获取写作帮助</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">信箱 8</translation>
 <translation id="1753706481035618306">页码</translation>
 <translation id="1756026472674246267">在新标签页中打开链接</translation>
@@ -733,6 +734,7 @@
 <translation id="2215727959747642672">文件修改</translation>
 <translation id="2219658597883514593">重启教程</translation>
 <translation id="2219735899272417925">需要重置设备</translation>
+<translation id="2221460252073828078">在此处查看 Google 搜索 AI 回答</translation>
 <translation id="2222604080869344662">登录 OneDrive 即可继续下载</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2225927550500503913">虚拟卡已开启</translation>
@@ -1174,6 +1176,7 @@
 <translation id="2980742331521553164">这张银行卡的验证码 (CVC) 将会经过加密并保存到您的 Google 账号，以便您更快捷地结账</translation>
 <translation id="2983666748527428214">打开无痕式标签页</translation>
 <translation id="2985398929374701810">请输入有效的送货地址</translation>
+<translation id="2985848978986605722">使用向左键或向右键可浏览来源链接。</translation>
 <translation id="2986485254770343131">正在保存相机文件</translation>
 <translation id="2987034854559945715">找不到任何相符的功能</translation>
 <translation id="2989742184762224133">双钉（顶部）</translation>
@@ -1587,6 +1590,7 @@
 <translation id="3671540257457995106">允许调整大小？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 出错了：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">第 3 卷</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />，在侧边栏中打开</translation>
 <translation id="3676592649209844519">设备 ID：</translation>
 <translation id="3677008721441257057">您是想访问 &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; 吧？</translation>
 <translation id="3678029195006412963">无法签署该请求</translation>

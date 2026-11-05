@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">તમારા બુકમાર્કને સિંક કરો</translation>
 <translation id="1750238553597293878">તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315"><ph name="TITLE_OF_WINDOW" /> વિન્ડો રિસ્ટોર કરો.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{પેજ, સૂચિમાં 1 પેજ છે}one{પેજ, સૂચિમાં # પેજ છે}other{પેજ, સૂચિમાં # પેજ છે}}</translation>
 <translation id="1771929606532798550">Chromeના તમારા વપરાશ વિશેની માહિતી Googleને મોકલવામાં આવે છે, પરંતુ તે તમારાથી સંકળાયેલી રહેતી નથી\n\nજો Chrome ક્રૅશ થાય, તો ક્રૅશ વિશેની વિગતોમાં થોડી વ્યક્તિગત માહિતી શામેલ કરવામાં આવી શકે છે\n\nજો તમે તમારો ઇતિહાસ તમારા Google એકાઉન્ટ સાથે સિંક કરો, તો મેટ્રિકમાં તમે મુલાકાત લેતા હો તે URLs વિશેની માહિતી શામેલ કરવામાં આવી શકે છે</translation>
 <translation id="1778457539567749232">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
@@ -1258,6 +1259,7 @@
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
 <translation id="6023820583797130428">પાછા જવા માટે મેનૂ ખોલો</translation>
 <translation id="6026538407078977628">પૂર્ણ સ્ક્રીન જેટલું મોટું કરો</translation>
+<translation id="6027619584715411062">તમારા બધા ડિવાઇસ પર બુકમાર્ક અને પાસવર્ડ જેવું બીજું ઘણું મેળવવા સાઇન ઇન કરો.</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
@@ -1602,6 +1604,7 @@
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />ને બ્લૉક કરીએ?</translation>
 <translation id="7191430249889272776">ટૅબ બૅકગ્રાઉન્ડમાં ખોલવામાં આવી છે.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{તમારે હમણાં જ આ બદલવો જોઈએ}one{તમારે હમણાં જ આ બદલવો જોઈએ}other{તમારે હમણાં જ આ બદલવા જોઈએ}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબની વિન્ડો રિસ્ટોર કરો.}one{<ph name="TAB_COUNT_MANY" /> ટૅબની વિન્ડો રિસ્ટોર કરો.}other{<ph name="TAB_COUNT_MANY" /> ટૅબની વિન્ડો રિસ્ટોર કરો.}}</translation>
 <translation id="7196215469483532480">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી પૂરી ઊંચાઈ સુધી ખોલી છે</translation>
 <translation id="7196455519852483601">તમે તમારો અમુક અથવા તમામ ઇતિહાસ, કુકી, સાઇટનો ડેટા અને બીજું ઘણું ડિલીટ કરી શકો છો</translation>
 <translation id="7197682514647286393">તમારો બ્રાઉઝિંગ ડેટા ઝડપથી ડિલીટ કરો</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8135406045838672858">ડાઉનલોડ કરેલી PDFs <ph name="APP_NAME" /> વડે ઑટોમૅટિક રીતે ખુલે છે</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{લિંક પ્રાપ્ત થઈ}one{# લિંક પ્રાપ્ત થઈ}other{# લિંક પ્રાપ્ત થઈ}}</translation>
 <translation id="8137562778192957619">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તેને Google Password Managerમાં સાચવવામાં આવશે.</translation>
+<translation id="8149825829235553327">તમારા છૂપા ટૅબને સુરક્ષિત કરો</translation>
 <translation id="8151185429379586178">વિકાસકર્તા સાધનો</translation>
 <translation id="8152331954420209374">Lens પર જાઓ</translation>
 <translation id="8153206878708357851">કૅરેટ બ્રાઉઝિંગને ટૉગલ કરો</translation>

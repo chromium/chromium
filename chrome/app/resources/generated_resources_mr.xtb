@@ -2645,7 +2645,6 @@
 <translation id="3003967365858406397">तुमचे <ph name="PHONE_NAME" /> एक खाजगी वाय-फाय कनेक्शन तयार करेल.</translation>
 <translation id="3004385386820284928">कीबोर्ड की कस्टमाइझ करा</translation>
 <translation id="300580149047131921">अलीकडे वापरले आहे</translation>
-<translation id="3005928441045180122">स्टॅक केलेला</translation>
 <translation id="3006881078666935414">वापराचा कोणताही डेटा नाही</translation>
 <translation id="3007555010975143508">तुमची स्क्रीन रेकॉर्ड करण्यासाठी ही ॲप्स वापरली जातील:</translation>
 <translation id="3007771295016901659">डुप्लिकेट टॅब</translation>
@@ -4723,6 +4722,7 @@
 <translation id="4580389561674319558">सर्व संपर्कांना दृश्यमान आहे</translation>
 <translation id="4580596421317071374">पासवर्ड या डिव्हाइसवर <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केले जातात.</translation>
 <translation id="4582297591746054421">तुम्ही कॉपी केलेल्या मजकुराचे फॉरमॅटिंग कायम ठेवणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा क्लिपबोर्ड वाचतात</translation>
+<translation id="4582563038311694664">सर्व सेटिंग्ज रीसेट करा</translation>
 <translation id="4584094413232466841">Chrome ऑटोफिलमधून ही माहिती काढून टाकायची आहे का?</translation>
 <translation id="4584770411839426377">विंडो</translation>
 <translation id="4584836561445313300">तुमच्या संस्थेला पासवर्ड आणि आणखी बरेच काही यासारखा कोणताही सद्य ब्राउझिंग डेटा पाहता आणि व्यवस्थापित करता येईल</translation>
@@ -6127,6 +6127,7 @@
 <translation id="5656845498778518563">Google ला फीडबॅक पाठवा</translation>
 <translation id="5656944594833183876">तुमच्या टास्कबाबत मदत मिळवा</translation>
 <translation id="5659593005791499971">ई-मेल</translation>
+<translation id="5660059687818220919">संबंधित टॅब गटबद्ध करण्यासाठी टॅब स्ट्रिपमधील फोकस निवड हेडरवर राइट-क्लिक करा</translation>
 <translation id="5663459693447872156">अर्ध्यारूंदीकडे स्वयंचलितपणे स्विच करा</translation>
 <translation id="5663653125349867535">&amp;वाचन सूची</translation>
 <translation id="5663918299073387939">साइट सामान्यपणे संगीत तयार करणे, संगीत संपादित करणे किंवा डिव्हाइस फर्मवेअर अपडेट करणे यासाठी MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्याची विनंती करतात</translation>
@@ -7113,7 +7114,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6453687572758515877">सर्व टॅब गटबद्ध करा</translation>
 <translation id="6453921811609336127">पुढील इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> प्रेस करा</translation>
 <translation id="645433497989692531">यामुळे या डिव्‍हाइसवरून तुमचा ब्राउझिंग डेटा कायमचा हटवला जाईल. डेटा रिकव्हर करण्यासाठी, या खात्याने साइन इन करा</translation>
-<translation id="6454456397828627257">शेजारी शेजारी</translation>
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455521402703088376">बंद केले • हे एक्स्टेंशन त्याच्या डेव्हलपरने अप्रकाशित केले होते</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
@@ -8667,6 +8667,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7634337648687970851">स्थानिक डेटा रिकव्हरी सध्या सपोर्ट करत नाही.</translation>
 <translation id="7634566076839829401">काहीतरी चूक झाली, कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="7635048370253485243">तुमच्या अ‍ॅडमिनिस्ट्रेटरने पिन केले</translation>
+<translation id="7635733478696751470">संबंधित टॅब गटबद्ध करण्यासाठी राइट-क्लिक करा</translation>
 <translation id="7636175154537919400">इतर टॅब तात्पुरते लपवण्यासाठी राइट-क्लिक करा</translation>
 <translation id="7636346903338549690">तृतीय पक्ष कुकी वापरण्याची अनुमती असलेल्या साइट</translation>
 <translation id="7636919061354591437">या डिव्हाइसवर इंस्टॉल करा</translation>
@@ -10187,7 +10188,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8774379074441005279">रिस्टोअर करण्याची खात्री करा</translation>
 <translation id="8774934320277480003">शीर्ष समास</translation>
 <translation id="8775144690796719618">चुकीची URL</translation>
-<translation id="877515298105563553">बाजूबाजूला</translation>
 <translation id="8776294611668764629">ही फाइल सुरक्षा तपासणी करण्यासाठी खूपच मोठी असल्याने, तुमच्या संस्थेने ती ब्लॉक केली. तुम्ही कमाल ५०MB च्या फाइल उघडू शकता.</translation>
 <translation id="8777509665768981163">तुमच्या टॅबलेटवर बटणे जोडा किंवा शोधा</translation>
 <translation id="8779720597365936419">होय, माझा डेटा कामापासून वेगळा ठेवा (शिफारस केलेले)</translation>
@@ -10722,7 +10722,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9170884462774788842">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारी थीम जोडली.</translation>
 <translation id="9172270007201309670">फाँटचा आकार वाढवला आहे</translation>
 <translation id="917350715406657904">तुमच्या पालकाने <ph name="APP_NAME" /> साठी सेट केलेली वेळ मर्यादा तुम्ही गाठली आहे. तुम्ही ते उद्या <ph name="TIME_LIMIT" /> साठी वापरू शकता.</translation>
-<translation id="9174854240439014335">विंडोच्या डाव्या किंवा उजव्या कडेवरून विभाजित दृश्य ड्रॅग करून ड्रॉप करायला अनुमती द्या</translation>
 <translation id="9174870712400134574">फक्त नवीन टॅब पेजवर दाखवा</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - ब्लूटूथ डिव्हाइस कनेक्ट केले</translation>
 <translation id="9177859716483578738">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल. या साइटचे <ph name="BEGIN_LINK" />गोपनीयता धोरण<ph name="END_LINK" /> पहा.</translation>

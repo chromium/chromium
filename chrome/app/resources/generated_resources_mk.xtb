@@ -2644,7 +2644,6 @@
 <translation id="3003967365858406397">Вашиот <ph name="PHONE_NAME" /> ќе создаде приватна врска со Wi-Fi.</translation>
 <translation id="3004385386820284928">Приспособете ги копчињата на тастатурата</translation>
 <translation id="300580149047131921">Неодамна користено</translation>
-<translation id="3005928441045180122">Едно врз друго</translation>
 <translation id="3006881078666935414">Нема податоци за користење</translation>
 <translation id="3007555010975143508">Следниве апликации ќе се користат за снимање на вашиот екран:</translation>
 <translation id="3007771295016901659">Направи дупликат од картичката</translation>
@@ -4723,6 +4722,7 @@
 <translation id="4580389561674319558">Видливо за сите контакти</translation>
 <translation id="4580596421317071374">Лозинките се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" /> на уредов.</translation>
 <translation id="4582297591746054421">Сајтовите обично ја читаат вашата привремена меморија за функциите како што е задржувањето на форматот на текстот што сте го копирале</translation>
+<translation id="4582563038311694664">Ресетирај ги сите поставки</translation>
 <translation id="4584094413232466841">Да се отстранат податоциве од „Автоматско пополнување на Chrome“?</translation>
 <translation id="4584770411839426377">Прозорец</translation>
 <translation id="4584836561445313300">Вашата организација ќе може да ги гледа и да управува со постојните податоци од прелистување, како лозинки и друго</translation>
@@ -7110,7 +7110,6 @@
 <translation id="6453687572758515877">Групирајте ги сите картички</translation>
 <translation id="6453921811609336127">За да се префрлите на следниот метод за внесување, притиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Празно место<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Ова трајно ќе ги избрише податоците од прелистувањето на овој уред. За да ги вратите податоците, најавете се како</translation>
-<translation id="6454456397828627257">Еден до друг</translation>
 <translation id="6455264371803474013">На одредени сајтови</translation>
 <translation id="6455521402703088376">Исклучено • програмерот го поништи објавувањето на екстензијава</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
@@ -10184,7 +10183,6 @@
 <translation id="8774379074441005279">Потврдете го враќањето</translation>
 <translation id="8774934320277480003">Маргина на врв</translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>
-<translation id="877515298105563553">Едно до друго</translation>
 <translation id="8776294611668764629">Организацијата ја блокираше датотекава бидејќи е преголема за безбедносна проверка. Може да отворате датотеки до 50 MB.</translation>
 <translation id="8777509665768981163">Додајте или лоцирајте копчиња на вашиот таблет</translation>
 <translation id="8779720597365936419">Да, чувај ги моите податоци одделно од работниот профил (препорачано)</translation>
@@ -10719,7 +10717,6 @@
 <translation id="9170884462774788842">Друга програма на компјутерот додаде тема која може да промени како работи Chrome.</translation>
 <translation id="9172270007201309670">Големината на фонтот е зголемена</translation>
 <translation id="917350715406657904">Го достигна временското ограничување што твојот родител го поставил за <ph name="APP_NAME" />. Ќе може да ја користиш <ph name="TIME_LIMIT" /> утре.</translation>
-<translation id="9174854240439014335">Дозволи влечење и спуштање за поделен приказ на левиот или десниот раб на прозорецот</translation>
 <translation id="9174870712400134574">Прикажувај само на страницата во нова картичка</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - поврзан е уред со Bluetooth</translation>
 <translation id="9177859716483578738">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето <ph name="FIELDS_STRING" /> со сајтов. Погледнете ја <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на сајтов.</translation>

@@ -456,6 +456,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1746531169546376413">0 graus</translation>
 <translation id="1747777564644667857">Vol</translation>
 <translation id="1748225549612934682">Escurça el text per obtenir ajuda per escriure</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Bústia de correu 8</translation>
 <translation id="1753706481035618306">Número de pàgina</translation>
 <translation id="1756026472674246267">Obre l'enllaç en una pestanya nova</translation>
@@ -1175,6 +1176,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2980742331521553164">El CVC d'aquesta targeta s'encriptarà i es desarà al teu Compte de Google per tramitar les compres més ràpidament</translation>
 <translation id="2983666748527428214">Obre una pestanya d'incògnit</translation>
 <translation id="2985398929374701810">Introdueix una adreça vàlida</translation>
+<translation id="2985848978986605722">Utilitza les tecles de fletxa esquerra o dreta per navegar pels enllaços de les fonts.</translation>
 <translation id="2986485254770343131">S'estan desant els fitxers de la càmera</translation>
 <translation id="2987034854559945715">No hi ha cap funció que coincideixi</translation>
 <translation id="2989742184762224133">Grapat doble a la part superior</translation>
@@ -1273,6 +1275,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3141337053413339205">Canvia a aquesta pestanya.</translation>
 <translation id="3144458715650412431">S'han aplicat polítiques de prova. Revisa-les i restableix-les a chrome://policy/test. Les polítiques d'administració no s'aplicaran.</translation>
 <translation id="3145945101586104090">No s'ha pogut descodificar la resposta</translation>
+<translation id="3149865382039202168">Desa la informació a <ph name="GOOGLE_WALLET_TITLE" /> i enllesteix més ràpidament les tasques, com ara emplenar formularis en tots els productes de Google. Pots controlar <ph name="HOW_INFO_IS_USED_LINK" /> a la configuració dels passis privats per a <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Error temporal del servidor</translation>
 <translation id="3150889484970506196">Botó Crea un full de càlcul: activa'l per crear ràpidament un full de càlcul nou de Google</translation>
 <translation id="3154506275960390542">Aquesta pàgina inclou un formulari que pot ser que no s'enviï de manera segura. La resta d'usuaris poden veure les dades que enviïs mentre estiguin en trànsit o un atacant podria modificar-les per canviar el contingut que rep el servidor.</translation>
@@ -1592,6 +1595,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3671540257457995106">Vols permetre que canviï de mida?</translation>
 <translation id="3672568546897166916">Error a <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Tercer corró</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, s'obre al tauler lateral</translation>
 <translation id="3676592649209844519">Identificador del dispositiu:</translation>
 <translation id="3677008721441257057">Volies dir &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">La sol·licitud no s'ha pogut signar</translation>
@@ -2713,6 +2717,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
     Proveu de contactar amb l'administrador del sistema.</translation>
 <translation id="5496804587179176046">Desa codis de seguretat (en aquest moment no hi ha cap codi de seguretat desat)</translation>
 <translation id="5499229993630251170">Vols continuar amb aquest fil de discussió?</translation>
+<translation id="5500759546320582211">Codi de verificació: <ph name="OTP" /> de <ph name="EMAIL" /></translation>
 <translation id="5506286895894263601">La llista no conté cap drecera vàlida.</translation>
 <translation id="5507756662695126555">No repudiació</translation>
 <translation id="5508515366054931524">La sol·licitud de verificació de l'adreça electrònica s'ha obert a alçada completa</translation>
@@ -3204,6 +3209,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6322182122604171028">No s'ha pogut fer servir Windows Hello</translation>
 <translation id="6326175484149238433">Suprimeix de Chrome</translation>
 <translation id="6326947323444967009">Estableix Chrome com a navegador predeterminat del sistema a la configuració d'iOS</translation>
+<translation id="6327434859517217259">com s'utilitza aquesta informació a Google</translation>
 <translation id="6328639280570009161">Proveu de desactivar la predicció de xarxa</translation>
 <translation id="6329742260390895689">Per emplenar automàticament la teva informació, activa l'opció "Utilitza passis en tot Google" a la configuració de Wallet</translation>
 <translation id="6329815962353376655">&lt;Escriu una pregunta&gt;</translation>

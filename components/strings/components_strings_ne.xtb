@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">० डिग्री</translation>
 <translation id="1747777564644667857">उडान</translation>
 <translation id="1748225549612934682">लेख्ने सम्बन्धमा मद्दत प्राप्त गर्न आफ्नो टेक्स्ट छोट्याउनुहोस्</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" />, <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">मेलबक्स ८</translation>
 <translation id="1753706481035618306">पृष्ठ संख्या</translation>
 <translation id="1756026472674246267">यो लिंक नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">तपाईं छिटोछरितो रूपमा चेक आउट गर्न सक्नुहोस् भन्नाका लागि यो कार्डको CVC इन्क्रिप्ट गरिने छ र तपाईंको Google खातामा सेभ गरिने छ</translation>
 <translation id="2983666748527428214">इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="2985398929374701810">मान्य ठेगाना प्रविष्टि गर्नुहोस्</translation>
+<translation id="2985848978986605722">स्रोतका लिंकहरूमा जान लेफ्ट वा राइट एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="2986485254770343131">क्यामेरा फाइलहरू सेभ गरिँदै छन्</translation>
 <translation id="2987034854559945715">कुनै पनि मिल्दा सुविधाहरू छैनन्</translation>
 <translation id="2989742184762224133">सिरानमा दुई स्टिच</translation>
@@ -1589,6 +1591,7 @@
 <translation id="3671540257457995106">आकार बदल्न दिने हो?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> मा त्रुटि भयो: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">तेस्रो रोल</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, साइड प्यानलमा खुल्छ</translation>
 <translation id="3676592649209844519">यन्त्रको ID:</translation>
 <translation id="3677008721441257057">तपाईंले &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; भन्न खोज्नुभएको हो?</translation>
 <translation id="3678029195006412963">अनुरोधमा हस्ताक्षर गर्न सकिएन</translation>

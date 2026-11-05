@@ -456,6 +456,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1746531169546376413">0 derece</translation>
 <translation id="1747777564644667857">Uçuş</translation>
 <translation id="1748225549612934682">Yazma konusunda yardım almak için metninizi kısaltın</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Posta kutusu 8</translation>
 <translation id="1753706481035618306">Sayfa numarası</translation>
 <translation id="1756026472674246267">Bağlantıyı Yeni Sekmede Aç</translation>
@@ -733,6 +734,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2215727959747642672">Dosya düzenleme</translation>
 <translation id="2219658597883514593">Eğitimi baştan başlat</translation>
 <translation id="2219735899272417925">Cihazın sıfırlanması gerekiyor</translation>
+<translation id="2221460252073828078">Arama yapay zeka yanıtınızı burada görebilirsiniz</translation>
 <translation id="2222604080869344662">İndirme işlemine devam etmek için OneDrive'da oturum açın</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="2225927550500503913">Sanal kart etkin</translation>
@@ -1174,6 +1176,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2980742331521553164">Daha hızlı ödeme için bu kartın CVC'si şifrelenip Google Hesabınıza kaydedilir</translation>
 <translation id="2983666748527428214">Gizli Sekme Aç</translation>
 <translation id="2985398929374701810">Geçerli bir adres girin</translation>
+<translation id="2985848978986605722">Kaynak bağlantılarında gezinmek için sol veya sağ ok tuşlarını kullanın.</translation>
 <translation id="2986485254770343131">Kamera dosyaları kaydediliyor</translation>
 <translation id="2987034854559945715">Eşleşen özellik yok</translation>
 <translation id="2989742184762224133">Üstte ikili tel zımba</translation>
@@ -1591,6 +1594,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3671540257457995106">Yeniden boyutlandırmaya izin verilsin mi?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> üzerinde hata: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Üçüncü Rulo</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, yan panelde açılır</translation>
 <translation id="3676592649209844519">Cihaz kimliği:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; adresine gitmek mi istemiştiniz?</translation>
 <translation id="3678029195006412963">İstek imzalanamadı</translation>

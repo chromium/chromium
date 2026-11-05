@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Þú getur farið aftur hingað til að opna flipa sem þú lokaðir nýlega</translation>
 <translation id="1016495303386450659">Atriði uppfært</translation>
 <translation id="1018804590490383958">Skanna og fylla sjálfkrafa út</translation>
-<translation id="1019990162050689579">Gemini-forritavirkni</translation>
 <translation id="102471647093736603">Halda inni til að færa</translation>
 <translation id="102645702181682900">Verkefni hafið</translation>
 <translation id="102916930470544692">Aðgangslykill</translation>
@@ -51,6 +50,7 @@
 <translation id="1122068467107743258">Vinna</translation>
 <translation id="1126696498560056882">Stjórna reikningum í þessu tæki</translation>
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
+<translation id="112943553659469376">„<ph name="PROMPT" />“</translation>
 <translation id="1133418583142946603">Bæta núverandi flipa við</translation>
 <translation id="1136104150802877429">Sýnir umsagnir um vörur</translation>
 <translation id="1142371195993008685">Slökkva á tilkynningum um <ph name="FEATURE_NAME" /></translation>
@@ -386,6 +386,7 @@
 <translation id="2104436223719117661">Vinsælar leitir</translation>
 <translation id="21133533946938348">Festa flipa</translation>
 <translation id="2117650889962717098">Skiptu yfir í huliðsstillingu til að halda vafraferlinum þínum leyndum</translation>
+<translation id="2119126821484134587">Til að bjóða upp á sérsniðna aðstoð deilir Gemini sumum gagnanna þinna (svo sem hlutum af spjallinu þínu, staðsetningu og öðrum viðeigandi upplýsingum) með öðrum Google-þjónustum, eins og „Kort“ og „Flug“. Þessar þjónustur kunna að nota upplýsingarnar fyrir endurbætur, jafnvel þótt þú eyðir Gemini-forritaferli þínum síðar meir. Nánar í <ph name="BEGIN_LINK" />persónuverndarmiðstöð Gemini-forrita<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Opna í…</translation>
 <translation id="2119962645034852864">Sumar þjónustur eru ekki í boði fyrir reikninginn þinn</translation>
 <translation id="2120553909046681540">Fyrirtækið þitt slökkti á óskráðri vefnotkun.</translation>
@@ -507,6 +508,7 @@
 <translation id="2496180316473517155">Vafraferill</translation>
 <translation id="2496626742194544812">Opna fyrsta flipa</translation>
 <translation id="2499505845365628575">Þú getur skoðað allan vafraferilinn á <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Fáðu tilkynningar um öryggisuppfærslur, sérsniðin þemu og fleira.</translation>
 <translation id="251033673027346551">Farðu í Google-veski til að stjórna <ph name="BEGIN_LINK" />stillingum gagna og persónuverndar<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Þú ert með <ph name="NUMBER_OF_PASSWORDS" /> aðgangsorð í hættu sem gætu stefnt öryggi þínu í hættu.</translation>
 <translation id="2512709994717613803">Stig <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +672,7 @@
 <translation id="3038136505713492417">Staðfestu að þetta sért þú til að nota aðgangslyklana þína í þessu tæki</translation>
 <translation id="3039671569659952257">Eyða möppu</translation>
 <translation id="3041835740069544003">Chrome getur nú greint og fyllt út fleiri eyðublöð með betri skilningi á eyðublöðum. Til að gera þetta er hægt að vinna efni og vefslóðir síðna í lokuðu rými í skýinu. Þú getur haft umsjón með þessu í stillingunum.</translation>
+<translation id="3042118633250374317">Google notar ferilinn þinn til að veita þjónustur sínar, vernda Google, notendur þess og almenning og þróa og bæta þjónustur sínar með aðstoð mannlegra yfirlesara. Ekki hafa neinar upplýsingar með sem þú vilt ekki að verði skoðaðar eða notaðar.</translation>
 <translation id="3050988301648974170">Opna aðgangsorðatékk</translation>
 <translation id="3053332585453689122">Sendir vefslóðirnar sem þú heimsækir og sýnishorn af efni á síðu, niðurhal, virkni viðbótar og kerfisupplýsingum til öruggrar vefskoðunar Google til að athuga hvort þær séu skaðlegar.</translation>
 <translation id="3055102495753300780">Upplýsingageymsla</translation>
@@ -954,6 +957,7 @@
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3973560090698854095">Þetta eyðir vistuðum heimilisföngum á Google-reikningnum <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Skráð(ur) inn sem <ph name="USER_EMAIL" />. Opnaðu reikningsvalmyndina.</translation>
+<translation id="3986082989454912832">Svara</translation>
 <translation id="3986739045730058129">Opnaðu flipann</translation>
 <translation id="3992684624889376114">Um þessa síðu</translation>
 <translation id="3993594519743675442">Fela „Stilla áminningu“</translation>
@@ -1113,6 +1117,7 @@
 <translation id="4488754974567924717">Við látum þig vita ef aðgangsorðin þín eru í hættu</translation>
 <translation id="4489536976005181779">{count,plural, =1{Síðu bætt við leslistann á reikningnum þínum, {email}}one{Síðum bætt við leslistann á reikningnum þínum, {email}}other{Síðum bætt við leslistann á reikningnum þínum, {email}}}</translation>
 <translation id="4493604894403585654">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL" />. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
+<translation id="4495251723189610737">Spjallið þitt verður vistað í Gemini-ferlinum þínum. Ferillinn inniheldur hljóð, myndskeið og skjádeilingar úr raunspjalli við Gemini, það sem þú deilir með Gemini (eins og skipanir, <ph name="BEGIN_LINK" />upphleðslur<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />skjái<ph name="END_LINK" />), svör Gemini, verkefni og opnun verkfæra, ábendingar, upplýsingar af vefsvæðum sem þú skoðar með Gemini, vörunotkunargögn, námundaða staðsetningu tækisins þíns, IP-tölu og heimilisfang vinnu eða heimilis sem er skráð á Google-reikningnum þínum. Hann getur einnig innihaldið gögn úr forritum sem þú tengir við Gemini.</translation>
 <translation id="4502423230170890588">Fjarlægja úr þessu tæki?</translation>
 <translation id="4508486880075514067">Birta á öllum skjánum</translation>
 <translation id="4508750114462689118">Loka innskráningarkynningu</translation>
@@ -1217,6 +1222,7 @@
 <translation id="4808744395915275922">Uppfærslur</translation>
 <translation id="4813345808229079766">Tenging</translation>
 <translation id="4821595350501541683">Flipum var lokað og vefskoðunargögnum eytt</translation>
+<translation id="4821645169621230110">Hvernig ferillinn þinn er notaður</translation>
 <translation id="4823322556950229674">Þú getur haldið inni til að færa veffangastikuna og bakkhnappinn neðst</translation>
 <translation id="4824480232751123840">Hljóðstyrkur</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 í viðbót}one{{domain} og {count} í viðbót}other{{domain} og {count} í viðbót}}</translation>
@@ -1244,6 +1250,7 @@
 <translation id="4877597489778380935">Minna mig á þetta seinna</translation>
 <translation id="4881695831933465202">Opna</translation>
 <translation id="4883766694719903356">Töfluyfirlit yfir huliðsflipa</translation>
+<translation id="4884205780547482830">Gögnin þín koma að þjálfun skapandi gervigreindar</translation>
 <translation id="4884937942297374058">Slökkt er á aukinni vörn</translation>
 <translation id="4887391901725877182">Skjátextun</translation>
 <translation id="488785315393301722">Sýna upplýsingar</translation>
@@ -1695,7 +1702,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="628251768213143684">Þú getur alltaf stjórnað því sem er vistað á Google-reikningnum þínum</translation>
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>
-<translation id="6295140892595702619">Notaðu hljóðnemann til að spjalla við Gemini. Þegar þú spjallar við Gemini er hljóðupptakan vistuð í Gemini-forritavirkni (ef kveikt er á henni). Gögnin þín eru ekki notuð til að bæta skapandi gervigreindarlíkön</translation>
 <translation id="6295751040240588413">Ógilt gælunafn korts</translation>
 <translation id="629730747756840877">Reikningur</translation>
 <translation id="6301104306974789820">Fá tilkynningar fyrir verðvöktun</translation>
@@ -1890,6 +1896,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6830728435402077660">Ekki öruggt</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6842136130964845393">Staðfestu að þetta sért þú til að tryggja aðgang þinn að vistuðum aðgangsorðum</translation>
+<translation id="6843744036364481304">Hvaða spjallferill er vistaður</translation>
 <translation id="6844773122575789617">Kveikja á gervigreindarstillingu</translation>
 <translation id="6851516051005285358">Biðja um tölvuvefsvæði</translation>
 <translation id="6857446173140146664">Eyða bakgrunni</translation>
@@ -2013,6 +2020,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7223134495231529579">Vista í niðurhal</translation>
 <translation id="722339453342442311">Athuga núna</translation>
 <translation id="7227235818314667565">Stjórna samnýtingu</translation>
+<translation id="7232376892719594461">Hvorki samtöl þín við Gemini né <ph name="BEGIN_LINK" />Google Workspace-gögnin<ph name="END_LINK" /> þín verða yfirfarin eða notuð til að þjálfa skapandi gervigreindarlíkön.</translation>
 <translation id="7233006041370588369">Veldu aðgangsorð til að fylla inn.</translation>
 <translation id="7238074332967840767">Öryggi</translation>
 <translation id="723874023660911012">Skipta um prófíl</translation>
@@ -2524,6 +2532,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8746155870861185046">Deila áherslumerkingu</translation>
 <translation id="8748678031495824833">Opna gervigreindarverkfæri á síðu</translation>
 <translation id="8750037785291841318">Þú finnur flipana þína hér</translation>
+<translation id="8751126814549746156">Ferlinum þínum verður eytt sjálfkrafa eftir 18 mánuði. Þú getur breytt þessu tímabili í stillingunum. Spjall sem þjónustuveitendur fara yfir er aftengt frá reikningnum þínum og geymt í allt að þrjú ár. Þú getur <ph name="BEGIN_LINK" />slökkt á<ph name="END_LINK" /> ferilsstillingunni hvenær sem er.</translation>
 <translation id="8756969031206844760">Uppfæra aðgangsorð?</translation>
 <translation id="8763613688786959833">Opna síðasta flipa</translation>
 <translation id="8766790350274092814">Aðgangsorðum fyrir <ph name="WEBSITE" /> og<ph name="SECOND_WEBSITE" /> verður eytt. Reikningunum þínum verður ekki eytt.</translation>
@@ -2569,6 +2578,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8893208530912252670">Vídeó</translation>
 <translation id="890009681345348416">Rúmlega 40 aðgangsorð fyllt út sjálfkrafa</translation>
 <translation id="8900845556227858314">Vafraforrit</translation>
+<translation id="8903042868629070803">Ef þú ert 18 ára eða eldri notar Google einnig ferilinn þinn til að <ph name="BEGIN_LINK" />þjálfa skapandi gervigreindarlíkön<ph name="END_LINK" />. Þú getur hvenær sem er <ph name="BEGIN_LINK" />slökkt á þessu<ph name="END_LINK" /> fyrir síðara spjall.</translation>
 <translation id="890565330728586731">Til baka</translation>
 <translation id="8907722425137681851">Leita á síðu…</translation>
 <translation id="8909135823018751308">Deila…</translation>

@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Mund të kthehesh përsëri këtu për të rihapur skedat që ke mbyllur së fundi</translation>
 <translation id="1016495303386450659">Elementi u përditësua</translation>
 <translation id="1018804590490383958">Skano dhe plotëso automatikisht</translation>
-<translation id="1019990162050689579">Aktiviteti i aplikacioneve Gemini</translation>
 <translation id="102471647093736603">Shtyp dhe mbaj shtypur për të zhvendosur</translation>
 <translation id="102645702181682900">Detyra u fillua</translation>
 <translation id="102916930470544692">Çelësi i kalimit</translation>
@@ -51,6 +50,7 @@
 <translation id="1122068467107743258">Puna</translation>
 <translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
+<translation id="112943553659469376">"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">Shto skedën aktuale</translation>
 <translation id="1136104150802877429">Shfaq komentet për produktet</translation>
 <translation id="1142371195993008685">Çaktivizo njoftimet për "<ph name="FEATURE_NAME" />"</translation>
@@ -386,6 +386,7 @@
 <translation id="2104436223719117661">Kërkimet në tendencë</translation>
 <translation id="21133533946938348">Gozhdimi i skedës</translation>
 <translation id="2117650889962717098">Mbaje shfletimin privat duke kaluar në modalitetin "I fshehtë"</translation>
+<translation id="2119126821484134587">Për të ofruar ndihmë të personalizuar, Gemini i ndan disa nga të dhënat e tua (si p.sh. pjesë të bisedave të tua, vendndodhjen dhe informacione të tjera përkatëse) me shërbime të tjera të Google, si p.sh. Maps dhe Flights. Këto shërbime mund t'i përdorin ato informacione për përmirësim, edhe nëse ti e fshin më vonë historikun tënd të aplikacioneve Gemini. Mëso më shumë te <ph name="BEGIN_LINK" />Qendra e privatësisë e aplikacioneve Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Hape në…</translation>
 <translation id="2119962645034852864">Disa shërbime nuk ofrohen për llogarinë tënde</translation>
 <translation id="2120553909046681540">Organizata jote ka çaktivizuar shfletimin privat.</translation>
@@ -507,6 +508,7 @@
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="2496626742194544812">Shko te skeda e parë</translation>
 <translation id="2499505845365628575">Mund të gjesh të gjithë historikun e shfletimit nga "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
+<translation id="2499948218922929716">Merr njoftime për përditësimet e sigurisë, temat e personalizuara etj.</translation>
 <translation id="251033673027346551">Vizito "Portofolin e Google" për të menaxhuar <ph name="BEGIN_LINK" />preferencat e të dhënave dhe privatësisë<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të komprometuara që mund ta rrezikojnë sigurinë tënde.</translation>
 <translation id="2512709994717613803">Niveli <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +672,7 @@
 <translation id="3038136505713492417">Verifiko që je ti për të përdorur çelësat e kalimit në këtë pajisje</translation>
 <translation id="3039671569659952257">Fshi dosjen</translation>
 <translation id="3041835740069544003">Chrome tani mund të zbulojë dhe të plotësojë më shumë formularë me kuptimin më inteligjent të formularëve. Për ta bërë këtë, përmbajtjet e faqeve dhe URL-të mund të përpunohen në një hapësirë private në renë kompjuterike. Menaxhoje te cilësimet.</translation>
+<translation id="3042118633250374317">Google e përdor historikun tënd për të ofruar shërbimet e tij, për të mbrojtur Google, përdoruesit e tij dhe publikun, si dhe për të zhvilluar dhe përmirësuar shërbimet e tij me ndihmën e shqyrtuesve njerëzorë. Mos përfshi informacione që nuk dëshiron që të shqyrtohen apo të përdoren.</translation>
 <translation id="3050988301648974170">Hap "Kontrollin e fjalëkalimit"</translation>
 <translation id="3053332585453689122">Dërgon URL-të që viziton ti dhe një kampion të vogël të përmbajtjes së faqes, shkarkimeve, aktivitetit të shtesës dhe informacioneve të sistemit te "Shfletimi i sigurt i Google" për të kontrolluar nëse janë të dëmshme.</translation>
 <translation id="3055102495753300780">Hapësira ruajtëse e informacioneve</translation>
@@ -954,6 +957,7 @@
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3973560090698854095">Kjo fshin adresat e ruajtura në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">I identifikuar si <ph name="USER_EMAIL" />. Hap menynë e llogarisë.</translation>
+<translation id="3986082989454912832">Përgjigju</translation>
 <translation id="3986739045730058129">Shko te skeda</translation>
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
 <translation id="3993594519743675442">Fshih "Cakto një alarm rikujtues"</translation>
@@ -1113,6 +1117,7 @@
 <translation id="4488754974567924717">Nëse fjalëkalimet e tua janë komprometuar, do të të njoftojmë</translation>
 <translation id="4489536976005181779">{count,plural, =1{Faqja u shtua në listën e leximit në llogarinë tënde, {email}}other{Faqet u shtuan në listën e leximit në llogarinë tënde, {email}}}</translation>
 <translation id="4493604894403585654">Je i identifikuar si <ph name="USER_EMAIL" />. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
+<translation id="4495251723189610737">Bisedat e tua do të ruhen te "Historiku i Gemini". "Historiku" përfshin audion, videot dhe ndarjet e ekranit të Gemini Live, gjërat që ndan me Gemini (si p.sh. kërkesat, <ph name="BEGIN_LINK" />ngarkimet<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />ekranet<ph name="END_LINK" />), përgjigjet e Gemini, detyrat dhe thirrjet e veglave, komentet, informacionet nga uebsajtet që viziton me Gemini, të dhënat e përdorimit të produkteve, vendndodhjen e përgjithshme të pajisjes, adresën IP dhe adresat e shtëpisë ose të punës në "Llogarinë tënde të Google". Ai mund të përfshijë gjithashtu të dhëna nga aplikacionet që ti lidh me Gemini.</translation>
 <translation id="4502423230170890588">Hiq nga kjo pajisje</translation>
 <translation id="4508486880075514067">Zgjero në ekranin e plotë</translation>
 <translation id="4508750114462689118">Mbyll promocionin për identifikimin</translation>
@@ -1217,6 +1222,7 @@
 <translation id="4808744395915275922">Përditësimet</translation>
 <translation id="4813345808229079766">Lidhja</translation>
 <translation id="4821595350501541683">Skedat janë mbyllur dhe të dhënat e shfletimit janë fshirë</translation>
+<translation id="4821645169621230110">Si përdoret historiku yt</translation>
 <translation id="4823322556950229674">Mund të shtypësh dhe të mbash shtypur për të zhvendosur shiritin e adresave dhe butonin "prapa" në pjesën e poshtme</translation>
 <translation id="4824480232751123840">Volumi</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dhe 1 tjetër}other{{domain} dhe {count} të tjerë}}</translation>
@@ -1244,6 +1250,7 @@
 <translation id="4877597489778380935">Më kujto më vonë</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4883766694719903356">Rrjeta e skedave "të fshehta"</translation>
+<translation id="4884205780547482830">Të dhënat e tua ndihmojnë në trajnimin e IA-së gjeneruese</translation>
 <translation id="4884937942297374058">"Mbrojtja e përmirësuar" është joaktive</translation>
 <translation id="4887391901725877182">Titrat</translation>
 <translation id="488785315393301722">Shfaq detajet</translation>
@@ -1695,7 +1702,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="628251768213143684">Mund të menaxhosh gjithmonë se çfarë ruhet në "Llogarinë tënde të Google"</translation>
 <translation id="6284652193729350524">Ofro përkthimin në <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
-<translation id="6295140892595702619">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Aktivitetin e aplikacioneve Gemini" (nëse është aktivizuar). Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese</translation>
 <translation id="6295751040240588413">Pseudonim i pavlefshëm karte</translation>
 <translation id="629730747756840877">Llogaria</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
@@ -1783,7 +1789,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6523575793810663688">Më trego mënyrën</translation>
 <translation id="6524082013156754186">Ruaje te llogaria</translation>
 <translation id="6524918542306337007">Modaliteti "i fshehtë" nuk ofrohet</translation>
-<translation id="6525550806864373485">Modifiko menynë</translation>
+<translation id="6525550806864373485">Menyja e redaktimit</translation>
 <translation id="6527208859483186860">sfondi {position} nga {total}</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6529706885792457023">Ke organizuar mbi 15 skeda</translation>
@@ -1890,6 +1896,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6830728435402077660">Jo e sigurt</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>
+<translation id="6843744036364481304">Çfarë historiku bisedash ruhet</translation>
 <translation id="6844773122575789617">Aktivizo "Modalitetin e IA-së"</translation>
 <translation id="6851516051005285358">Kërko sajtin për desktop</translation>
 <translation id="6857446173140146664">Fshi sfondin</translation>
@@ -2013,6 +2020,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="7223134495231529579">Ruaj te shkarkimet</translation>
 <translation id="722339453342442311">Kontrollo tani</translation>
 <translation id="7227235818314667565">Menaxho ndarjen</translation>
+<translation id="7232376892719594461">Bisedat e tua me Gemini dhe <ph name="BEGIN_LINK" />të dhënat e tua të Google Workspace<ph name="END_LINK" /> nuk do të shqyrtohen dhe nuk do të përdoren për të trajnuar modelet e IA-së gjeneruese.</translation>
 <translation id="7233006041370588369">Zgjidh një fjalëkalim për ta plotësuar.</translation>
 <translation id="7238074332967840767">Siguria</translation>
 <translation id="723874023660911012">Ndërro profilet</translation>
@@ -2524,6 +2532,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8746155870861185046">Ndaj theksimin</translation>
 <translation id="8748678031495824833">Hap veglat me IA në faqe</translation>
 <translation id="8750037785291841318">Këtu do të gjesh skedat e tua</translation>
+<translation id="8751126814549746156">Historiku yt fshihet automatikisht pas 18 muajsh. Mund ta ndryshosh këtë periudhë kohore te "Cilësimet". Bisedat e shqyrtuara nga ofruesit e shërbimit ndahen nga llogaria jote dhe mbahen për deri në 3 vjet. Mund ta <ph name="BEGIN_LINK" />çaktivizosh<ph name="END_LINK" /> cilësimin e "Historikut" në çdo kohë.</translation>
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
 <translation id="8763613688786959833">Shko te skeda e fundit</translation>
 <translation id="8766790350274092814">Fjalëkalimet për <ph name="WEBSITE" /> dhe <ph name="SECOND_WEBSITE" /> do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
@@ -2569,6 +2578,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8893208530912252670">Videot</translation>
 <translation id="890009681345348416">Mbi 40 fjalëkalime të plotësuara automatikisht</translation>
 <translation id="8900845556227858314">Aplikacioni i shfletuesit</translation>
+<translation id="8903042868629070803">Nëse je 18 vjeç ose më shumë, Google e përdor gjithashtu historikun tënd <ph name="BEGIN_LINK" />për të trajnuar modelet e IA-së gjeneruese<ph name="END_LINK" />. Mund <ph name="BEGIN_LINK" />ta çaktivizosh këtë<ph name="END_LINK" /> për bisedat e ardhshme në çdo kohë.</translation>
 <translation id="890565330728586731">Pas</translation>
 <translation id="8907722425137681851">Gjej në faqe…</translation>
 <translation id="8909135823018751308">Ndaj…</translation>

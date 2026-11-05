@@ -456,6 +456,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1746531169546376413">0 độ</translation>
 <translation id="1747777564644667857">Chuyến bay</translation>
 <translation id="1748225549612934682">Rút ngắn văn bản để được trợ giúp khi viết</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Hộp thư 8</translation>
 <translation id="1753706481035618306">Số trang</translation>
 <translation id="1756026472674246267">Mở đường liên kết trong thẻ mới</translation>
@@ -733,6 +734,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2215727959747642672">Chỉnh sửa tệp</translation>
 <translation id="2219658597883514593">Khởi động lại hướng dẫn</translation>
 <translation id="2219735899272417925">Yêu cầu thiết lập lại thiết bị</translation>
+<translation id="2221460252073828078">Xem câu trả lời do AI tạo trên Tìm kiếm tại đây</translation>
 <translation id="2222604080869344662">Đăng nhập vào OneDrive để tiếp tục tải xuống</translation>
 <translation id="2224337661447660594">Không có Internet</translation>
 <translation id="2225927550500503913">Đã bật thẻ ảo</translation>
@@ -1174,6 +1176,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2980742331521553164">CVC của thẻ này sẽ được mã hoá và lưu vào Tài khoản Google của bạn để giúp bạn thanh toán nhanh hơn</translation>
 <translation id="2983666748527428214">Mở thẻ ẩn danh</translation>
 <translation id="2985398929374701810">Nhập địa chỉ hợp lệ</translation>
+<translation id="2985848978986605722">Dùng phím mũi tên trái hoặc phải để di chuyển giữa các đường liên kết đến nguồn.</translation>
 <translation id="2986485254770343131">Đang lưu tệp camera</translation>
 <translation id="2987034854559945715">Không có tính năng nào phù hợp</translation>
 <translation id="2989742184762224133">Dập 2 ghim trên cùng</translation>
@@ -1272,6 +1275,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3141337053413339205">Chuyển sang thẻ này.</translation>
 <translation id="3144458715650412431">Đã áp dụng chính sách thử nghiệm. Hãy xem lại và đặt lại mật khẩu tại chrome://policy/test. Chính sách quản trị sẽ không được áp dụng.</translation>
 <translation id="3145945101586104090">Không thể giải mã phản hồi</translation>
+<translation id="3149865382039202168">Lưu thông tin của bạn vào <ph name="GOOGLE_WALLET_TITLE" /> để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể kiểm soát <ph name="HOW_INFO_IS_USED_LINK" /> trong phần cài đặt thẻ và vé riêng tư cho <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Lỗi máy chủ tạm thời</translation>
 <translation id="3150889484970506196">Nút Tạo trang tính, hãy nhấn nút này để tạo nhanh một trang tính mới trong Google Trang tính</translation>
 <translation id="3154506275960390542">Trang này bao gồm biểu mẫu có thể được gửi không an toàn. Dữ liệu bạn gửi có thể bị người khác xem trong khi chuyển tuyến hoặc có thể bị kẻ tấn công sửa đổi nhằm thay đổi thông tin mà máy chủ nhận được.</translation>
@@ -1591,6 +1595,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3671540257457995106">Cho phép thay đổi kích thước?</translation>
 <translation id="3672568546897166916">Có lỗi ở <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Cuộn thứ ba</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, mở trong bảng điều khiển bên</translation>
 <translation id="3676592649209844519">ID thiết bị:</translation>
 <translation id="3677008721441257057">Ý bạn là &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Không thể ký yêu cầu</translation>
@@ -2712,6 +2717,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     Hãy thử liên hệ với quản trị viên hệ thống của bạn.</translation>
 <translation id="5496804587179176046">Lưu mã bảo mật, hiện chưa lưu mã bảo mật nào</translation>
 <translation id="5499229993630251170">Tiếp tục chuỗi này?</translation>
+<translation id="5500759546320582211">Mã xác minh: <ph name="OTP" /> từ <ph name="EMAIL" /></translation>
 <translation id="5506286895894263601">Danh sách này không có lối tắt hợp lệ.</translation>
 <translation id="5507756662695126555">Không tuân thủ</translation>
 <translation id="5508515366054931524">Lời nhắc xác minh email đã mở trên toàn màn hình</translation>
@@ -3203,6 +3209,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6322182122604171028">Không thể dùng Windows Hello</translation>
 <translation id="6326175484149238433">Xóa khỏi Chrome</translation>
 <translation id="6326947323444967009">Đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
+<translation id="6327434859517217259">cách thông tin này được sử dụng trên Google</translation>
 <translation id="6328639280570009161">Thử tắt dự đoán mạng</translation>
 <translation id="6329742260390895689">Để tự động điền thông tin, hãy bật chế độ "Sử dụng thẻ và vé trên các sản phẩm và dịch vụ của Google" trong phần cài đặt Wallet</translation>
 <translation id="6329815962353376655">&lt;Nhập câu hỏi&gt;</translation>

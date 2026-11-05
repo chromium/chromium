@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 ଡିଗ୍ରୀ</translation>
 <translation id="1747777564644667857">ଫ୍ଲାଇଟ</translation>
 <translation id="1748225549612934682">ଲେଖିବାରେ ସହାୟତା ପାଇବାକୁ ଆପଣଙ୍କ ଟେକ୍ସଟକୁ ଛୋଟ କରନ୍ତୁ</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">ମେଲବକ୍ସ 8</translation>
 <translation id="1753706481035618306">ପୃଷ୍ଠା ସଂଖ୍ୟା</translation>
 <translation id="1756026472674246267">ନୂଆ ଟାବରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">ଦ୍ରୁତ ଚେକଆଉଟ ପାଇଁ ଏହି କାର୍ଡର CVCକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇ ଆପଣଙ୍କ Google ଅକାଉଣ୍ଟରେ ସେଭ କରାଯିବ</translation>
 <translation id="2983666748527428214">ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="2985398929374701810">ଏକ ବୈଧ ଠିକଣା ପ୍ରବେଶ କରନ୍ତୁ</translation>
+<translation id="2985848978986605722">ସୋର୍ସ ଲିଙ୍କଗୁଡ଼ିକୁ ନାଭିଗେଟ କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ'ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="2986485254770343131">କେମେରା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ କରାଯାଉଛି</translation>
 <translation id="2987034854559945715">କୌଣସି ମେଳ ହେଉଥିବା ଫିଚର୍‍ଗୁଡ଼ିକ ନାହିଁ</translation>
 <translation id="2989742184762224133">ଉପର ପଟରେ ଦୁଇଟି ଷ୍ଟାପଲ୍</translation>
@@ -1589,6 +1591,7 @@
 <translation id="3671540257457995106">ରିସାଇଜ୍ କରିବା ପାଇଁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />ରେ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ତୃତୀୟ ରୋଲ୍</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, ସାଇଡ ପେନେଲରେ ଖୋଲେ</translation>
 <translation id="3676592649209844519">ଡିଭାଇସ୍‌ ID:</translation>
 <translation id="3677008721441257057">ଆପଣଙ୍କର କହିବା ଅର୍ଥ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;କି?</translation>
 <translation id="3678029195006412963">ଅନୁରୋଧରେ ଦସ୍ତଖତ କରାଯାଇପାରିଲା ନାହିଁ</translation>

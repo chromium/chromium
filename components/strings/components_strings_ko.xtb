@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0도</translation>
 <translation id="1747777564644667857">항공편</translation>
 <translation id="1748225549612934682">작성 지원 기능을 이용하려면 텍스트 길이를 줄이세요.</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">메일박스 8</translation>
 <translation id="1753706481035618306">페이지 번호</translation>
 <translation id="1756026472674246267">새 탭에서 링크 열기</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">더 빠른 결제를 위해 이 카드의 CVC가 암호화되고 Google 계정에 저장됩니다.</translation>
 <translation id="2983666748527428214">시크릿 탭 열기</translation>
 <translation id="2985398929374701810">올바른 주소를 입력하세요.</translation>
+<translation id="2985848978986605722">왼쪽 또는 오른쪽 화살표 키를 사용하여 소스 링크를 탐색하세요.</translation>
 <translation id="2986485254770343131">카메라 파일 저장 중</translation>
 <translation id="2987034854559945715">일치하는 기능 없음</translation>
 <translation id="2989742184762224133">상단 듀얼 스테이플</translation>
@@ -1273,6 +1275,7 @@
 <translation id="3141337053413339205">이 탭으로 전환합니다.</translation>
 <translation id="3144458715650412431">테스트 정책이 적용되었습니다. chrome://policy/test에서 정책을 검토하고 재설정하세요. 관리자 정책은 적용되지 않습니다.</translation>
 <translation id="3145945101586104090">응답 디코딩 실패</translation>
+<translation id="3149865382039202168">정보를 <ph name="GOOGLE_WALLET_TITLE" />에 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="ACCOUNT" />의 비공개 패스 설정에서 <ph name="HOW_INFO_IS_USED_LINK" />을(를) 관리할 수 있습니다. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">일시적인 서버 오류</translation>
 <translation id="3150889484970506196">시트 만들기 버튼, 새 Google 시트를 빠르게 만들려면 활성화하세요.</translation>
 <translation id="3154506275960390542">이 페이지에 포함된 양식은 안전하게 제출되지 않을 수 있습니다. 전송되는 데이터는 전송 중에 다른 사람이 볼 수 있으며 서버에서 수신하는 데이터를 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
@@ -1592,6 +1595,7 @@
 <translation id="3671540257457995106">크기 조절을 허용하시겠습니까?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 오류: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">3번째 롤</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, 측면 패널에서 열림</translation>
 <translation id="3676592649209844519">기기 ID:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;을(를) 찾으셨나요?</translation>
 <translation id="3678029195006412963">요청을 서명할 수 없음</translation>
@@ -3204,6 +3208,7 @@
 <translation id="6322182122604171028">Windows Hello를 사용할 수 없음</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6326947323444967009">iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정합니다.</translation>
+<translation id="6327434859517217259">Google 전반에서 이 정보가 사용되는 방식</translation>
 <translation id="6328639280570009161">네트워크 예측을 사용 중지해 보세요.</translation>
 <translation id="6329742260390895689">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에 패스 사용'을 사용 설정하세요</translation>
 <translation id="6329815962353376655">&lt;질문 입력&gt;</translation>

@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 ڈگریز</translation>
 <translation id="1747777564644667857">فلائیٹ</translation>
 <translation id="1748225549612934682">تحریری مدد حاصل کرنے کے لیے اپنے ٹیکسٹ کو مختصر کریں</translation>
+<translation id="1748985883817578907">‫<ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">میل باکس 8</translation>
 <translation id="1753706481035618306">صفحہ نمبر</translation>
 <translation id="1756026472674246267">لنک کو نئے ٹیب میں کھولیں</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">‏اس کارڈ کا CVC تیزی سے چیک آؤٹ کے لیے آپ کے Google اکاؤنٹ میں مرموز اور محفوظ کیا جائے گا</translation>
 <translation id="2983666748527428214">پوشیدگی ٹیب کھولیں</translation>
 <translation id="2985398929374701810">ایک درست پتہ درج کریں</translation>
+<translation id="2985848978986605722">ماخذ کے لنکس کو نیویگیٹ کرنے کیلئے بائیں یا دائیں تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
 <translation id="2986485254770343131">کیمرا فائلز محفوظ ہو رہی ہیں</translation>
 <translation id="2987034854559945715">کوئی مماثل خصوصیات نہیں ہیں</translation>
 <translation id="2989742184762224133">اوپر دُہری سٹیپل</translation>
@@ -1593,6 +1595,7 @@
 <translation id="3671540257457995106">سائز تبدیل کرنے کی اجازت دیں؟</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> میں خرابی: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">تیسرا رول</translation>
+<translation id="3675778643732456976">‫<ph name="SUGGESTION_TEXT" />، سائیڈ پینل میں کھلتا ہے</translation>
 <translation id="3676592649209844519">‏آلہ کی ID:</translation>
 <translation id="3677008721441257057">‏کیا آپ کا مطلب &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; تھا؟</translation>
 <translation id="3678029195006412963">درخواست پر دستخط نہیں کیا جا سکا</translation>

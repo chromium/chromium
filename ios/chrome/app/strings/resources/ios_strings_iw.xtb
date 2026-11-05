@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">אפשר לחזור לפה כדי לפתוח כרטיסיות שסגרת לאחרונה</translation>
 <translation id="1016495303386450659">הפריט עודכן</translation>
 <translation id="1018804590490383958">סריקה ומילוי אוטומטי</translation>
-<translation id="1019990162050689579">‏הפעילות בממשקי Gemini</translation>
 <translation id="102471647093736603">כדי להזיז, צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="102645702181682900">המשימה התחילה</translation>
 <translation id="102916930470544692">מפתח גישה</translation>
@@ -40,6 +39,7 @@
 <translation id="1085677983426914530">לא ניתן לפתוח את <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
 <translation id="1095093219235104018">‏איתור ומילוי באמצעות Gemini</translation>
+<translation id="1096245844813536669">החיפוש נשלח אוטומטית כשהדיבור מפסיק</translation>
 <translation id="1096992026380844478">הגדרות הסנכרון ישוחזרו על סמך הגיבוי האחרון שלך. <ph name="BEGIN_LINK" />אלו הדברים שאפשר לסנכרן<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
 <translation id="1110772719190051587">‏ביטול הנעילה באמצעות Face ID</translation>
@@ -50,6 +50,7 @@
 <translation id="1122068467107743258">עבודה</translation>
 <translation id="1126696498560056882">ניהול החשבונות במכשיר הזה</translation>
 <translation id="1126809382673880764">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. גלישה בטוחה עדיין תגן עליך בשירותים אחרים של Google שבהם היא זמינה, כמו Gmail והחיפוש.</translation>
+<translation id="112943553659469376">"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">הוספה של הכרטיסייה הנוכחית</translation>
 <translation id="1136104150802877429">מוצגות ביקורות על מוצרים</translation>
 <translation id="1142371195993008685">השבתת ההודעות עבור <ph name="FEATURE_NAME" /></translation>
@@ -385,6 +386,7 @@
 <translation id="2104436223719117661">שאילתות חיפוש פופולריות</translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2117650889962717098">כדי לשמור על פרטיות הגלישה, אפשר לעבור למצב פרטי</translation>
+<translation id="2119126821484134587">‏כדי לספק עזרה בהתאמה אישית, Gemini משתף חלק מהנתונים שלך (למשל חלקים מהשיחות שלך, המיקום שלך ופרטים רלוונטיים נוספים) עם שירותי Google אחרים, כמו "מפות" ו"טיסות". נשתמש במידע הזה כדי לשפר את השירותים האלה, גם אם ההיסטוריה שלך בממשקי Gemini תימחק בהמשך. מידע נוסף מופיע ב<ph name="BEGIN_LINK" />מרכז המידע על פרטיות בממשקי Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">פתיחה באמצעות…</translation>
 <translation id="2119962645034852864">חלק מהשירותים לא זמינים בחשבון שלך</translation>
 <translation id="2120553909046681540">הארגון שלך כיבה את אפשרות הגלישה הפרטית.</translation>
@@ -506,6 +508,7 @@
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2496626742194544812">מעבר לכרטיסייה הראשונה</translation>
 <translation id="2499505845365628575">אפשר לראות את כל היסטוריית הגלישה שלך ב<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">אפשר לקבל התראות לגבי עדכוני אבטחה, עיצובים בהתאמה אישית ועוד.</translation>
 <translation id="251033673027346551">‏כדי לנהל את <ph name="BEGIN_LINK" />העדפות הנתונים והפרטיות<ph name="END_LINK" />, עליך לעבור אל Google Wallet.</translation>
 <translation id="2511117522375201202">יש לך <ph name="NUMBER_OF_PASSWORDS" /> סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך.</translation>
 <translation id="2512709994717613803">רמה <ph name="LEVEL_NUMBER" /></translation>
@@ -669,6 +672,7 @@
 <translation id="3038136505713492417">כדי להשתמש במפתחות הגישה במכשיר הזה, צריך לאמת את הזהות שלך</translation>
 <translation id="3039671569659952257">מחק תיקייה</translation>
 <translation id="3041835740069544003">‏עכשיו Chrome יכול לזהות ולמלא יותר טפסים באמצעות מילוי אוטומטי חכם יותר. הוא פשוט משתמש בתוכן ובכתובות ה-URL של הדפים, שעוברים עיבוד במרחב פרטי בענן. אפשר לנהל את זה בהגדרות.</translation>
+<translation id="3042118633250374317">‏‫Google משתמשת בהיסטוריה שלך כדי לספק את השירותים שלה, להגן על עצמה, על המשתמשים שלה ועל הציבור, ולפתח ולשפר את השירותים שלה. בתהליכים האלה מסייעים גם בודקים אנושיים. חשוב לא לכלול מידע שלא רוצים שנבדוק או שנשתמש בו.</translation>
 <translation id="3050988301648974170">פתיחת בדיקת הסיסמאות</translation>
 <translation id="3053332585453689122">‏כתובות ה-URL שבהן ביקרת ודגימה קטנה של תוכן מהדפים, הורדות, פעילות של תוספים ופרטי מערכת נשלחים אל הגלישה הבטוחה של Google כדי לבדוק אם הם מזיקים.</translation>
 <translation id="3055102495753300780">אחסון מידע</translation>
@@ -718,6 +722,7 @@
 <translation id="3186796054637504691">מחיקת ההיסטוריה ונתוני האתר</translation>
 <translation id="3190558889382726167">הסיסמה נשמרה</translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
+<translation id="3192820089569442694">הבקשה לביטול ההסכמה לשימוש בנתונים לא הצליחה</translation>
 <translation id="3208260410153224535">הכניסה הושבתה על ידי הארגון שלך. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
 <translation id="3211969308836412674">ביטול ההצמדה של האתר</translation>
 <translation id="3213807041830307252">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה וגלריית התמונות.</translation>
@@ -784,6 +789,7 @@
 <translation id="344589138074534176">‏מידע נוסף על Google Lens</translation>
 <translation id="3449029510150690417">כדי ליצור קבוצת כרטיסיות חדשה, צריך לתת לה שם וצבע</translation>
 <translation id="345348365500626747">הכתובת נמצאה</translation>
+<translation id="3453878468834191501">‏הכרטיסייה הנוכחית תשותף עם Gemini בתחילת שיחה חדשה. <ph name="BEGIN_LINK" />למידע נוסף על AI ופרטיות<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">‏אפשר לעבור למצב Live עם Gemini כדי לשאול על דף מסוים, לעשות סיעור מוחות בקול רם או פשוט לנהל שיחה.</translation>
 <translation id="3462768334899086950">זה אומר שהקובץ שלא נשמר והכרטיסיות הנוכחיות שלך יימחקו</translation>
 <translation id="3464194322481586217">לא ניתן היה לעקוב אחר המחיר.</translation>
@@ -847,6 +853,7 @@
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
 <translation id="3642060527569456384">קבוצות הכרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים.</translation>
 <translation id="3643338347976071250">{count,plural, =1{‏סיסמה אחת ({count}) שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google עם הכתובת {email}.}one{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}two{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}other{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}}</translation>
+<translation id="3657176844107584515">‏‫<ph name="EMAIL" />, עם מינוי לשירות של Google.</translation>
 <translation id="3659297405161482746">לא נמצאו אמצעי תשלום</translation>
 <translation id="3662966164093827811">{count,plural, =1{נבחר פריט אחד}one{# נבחרו}two{# נבחרו}other{# נבחרו}}</translation>
 <translation id="3668035568083954765">שמירה על הפרטיות והבטיחות</translation>
@@ -943,12 +950,14 @@
 <translation id="3955740319737378355">סיום</translation>
 <translation id="3955822496205734389">יש לך סיסמאות חלשות.</translation>
 <translation id="3957016963627617921">‏אפשר להספיק יותר עם Gemini ב-Chrome</translation>
+<translation id="3957737662589242353">‏‫<ph name="NAME" />, ‏<ph name="EMAIL" />, עם מינוי לשירות של Google.</translation>
 <translation id="3958312024468322930">‏גוררים את הסמל אל ה-Dock שבחלק התחתון של מסך הבית</translation>
 <translation id="3962326069546168954">שמירה</translation>
 <translation id="3967327056943561740">סימניות</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3973560090698854095">‏הפעולה הזו תמחק את הכתובות ששמורות בחשבון שלך ב-Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. לפתיחת תפריט החשבון.</translation>
+<translation id="3986082989454912832">מענה</translation>
 <translation id="3986739045730058129">מעבר לכרטיסייה</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
 <translation id="3993594519743675442">הסתרת האפשרות "הגדרת תזכורת"</translation>
@@ -1108,6 +1117,7 @@
 <translation id="4488754974567924717">אם הסיסמאות שלך ייחשפו לאחרים, נודיע לך</translation>
 <translation id="4489536976005181779">{count,plural, =1{הדף נוסף לרשימת הקריאה בחשבון שלך, {email}}one{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}two{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}other{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}}</translation>
 <translation id="4493604894403585654">‏נכנסת לחשבון בתור <ph name="USER_EMAIL" /> אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
+<translation id="4495251723189610737">‏השיחות שלך יישמרו בהיסטוריה של Gemini. ההיסטוריה כוללת את האודיו, הסרטונים ושיתופי המסך מ-Gemini Live, הדברים ששיתפת עם Gemini (כמו פרומפטים, <ph name="BEGIN_LINK" />פריטים שהעלית<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />צילומי מסך<ph name="END_LINK" />), התשובות של Gemini, משימות וקריאות API לכלי, משוב, מידע מאתרים שביקרת בהם עם Gemini, נתוני שימוש במוצרים, המיקום הכללי של המכשיר, כתובת ה-IP, וכתובת המגורים או הכתובת בעבודה שרשומות בחשבון Google שלך. ההיסטוריה יכולה לכלול גם נתונים מאפליקציות שקישרת ל-Gemini.</translation>
 <translation id="4502423230170890588">הסרה מהמכשיר הזה</translation>
 <translation id="4508486880075514067">הרחבה למסך מלא</translation>
 <translation id="4508750114462689118">סגירת קידום הכניסה</translation>
@@ -1212,6 +1222,7 @@
 <translation id="4808744395915275922">עדכונים</translation>
 <translation id="4813345808229079766">התקשרות</translation>
 <translation id="4821595350501541683">הכרטיסיות נסגרו ונתוני הגלישה נמחקו</translation>
+<translation id="4821645169621230110">איך אנחנו משתמשים בהיסטוריה שלך</translation>
 <translation id="4823322556950229674">אפשר ללחוץ לחיצה ארוכה כדי להעביר את סרגל הכתובות ואת הכפתור "הקודם" לתחתית המסך</translation>
 <translation id="4824480232751123840">נפח</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ואחד נוסף}one{{domain} ו-{count} נוספים}two{{domain} ו-{count} נוספים}other{{domain} ו-{count} נוספים}}</translation>
@@ -1239,6 +1250,7 @@
 <translation id="4877597489778380935">אני רוצה לקבל תזכורת אחר כך</translation>
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="4883766694719903356">תצוגה של כרטיסיות פרטיות</translation>
+<translation id="4884205780547482830">‏הנתונים שלך עוזרים לאמן את ה-AI הגנרטיבי</translation>
 <translation id="4884937942297374058">ההגנה המשופרת מושבתת</translation>
 <translation id="4887391901725877182">כתוביות</translation>
 <translation id="488785315393301722">הצגת פרטים</translation>
@@ -1618,6 +1630,7 @@
 <translation id="6078236141387574983">שינוי של גובה הגיליון</translation>
 <translation id="6084848228346514841">בחירת כרטיסיות</translation>
 <translation id="6089212833343035912">‏קוד אימות למנהל הסיסמאות של Google</translation>
+<translation id="6090690847556987004">‏הייתה בעיה בהגדרה הזו. צריך לעדכן את Chrome ואת iOS, ואז להפעיל מחדש את המכשיר ולנסות שוב. אם השגיאה הזו ממשיכה להופיע, יכול להיות שהאייפון שלך לא תומך בהגדרה הזו.</translation>
 <translation id="6090760257419195752">אזהרות שנסגרו</translation>
 <translation id="6094325891006032858">הפעלת הגרסה המשופרת של גלישה בטוחה</translation>
 <translation id="6096965253650248286">נמצאו <ph name="COUNT" /></translation>
@@ -1689,7 +1702,6 @@
 <translation id="628251768213143684">‏תמיד אפשר לנהל את הפריטים ששמורים בחשבון Google</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> וללחוץ על 'גלישה בטוחה'.</translation>
-<translation id="6295140892595702619">‏אפשר לדבר עם Gemini באמצעות המיקרופון. כשמדברים אל Gemini, האודיו נשמר בפעילות בממשקי Gemini (אם האפשרות מופעלת). הנתונים שלך לא ישמשו לשיפור מודלים של AI גנרטיבי.</translation>
 <translation id="6295751040240588413">כינוי הכרטיס לא תקין</translation>
 <translation id="629730747756840877">חשבון</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
@@ -1884,6 +1896,7 @@
 <translation id="6830728435402077660">לא מאובטח</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>
+<translation id="6843744036364481304">איזו היסטוריית שיחות נשמרת</translation>
 <translation id="6844773122575789617">‏הפעלת מצב AI</translation>
 <translation id="6851516051005285358">בקשת אתר למחשב</translation>
 <translation id="6857446173140146664">מחיקה של הרקע</translation>
@@ -2007,6 +2020,7 @@
 <translation id="7223134495231529579">שמירה ב"הורדות"</translation>
 <translation id="722339453342442311">לבדיקה</translation>
 <translation id="7227235818314667565">ניהול השיתוף</translation>
+<translation id="7232376892719594461">‏השיחות שלך עם Gemini ו<ph name="BEGIN_LINK" />הנתונים שלך ב-Google Workspace<ph name="END_LINK" /> לא ייבדקו ולא ישמשו לאימון מודלים של AI גנרטיבי.</translation>
 <translation id="7233006041370588369">צריך לבחור סיסמה למילוי.</translation>
 <translation id="7238074332967840767">בטיחות</translation>
 <translation id="723874023660911012">החלפת פרופיל</translation>
@@ -2088,6 +2102,7 @@
 <translation id="7486006552035434095">אפשר לסנכרן בין המכשירים</translation>
 <translation id="7491131399623468277">להגדרות…</translation>
 <translation id="7491161827858509164">כדי לראות קבצים שהורדו בעבר, פותחים את <ph name="BEGIN_LINK" />קבצים<ph name="END_LINK" /></translation>
+<translation id="7496554840683586365">‏האתר הזה מנסה לפתוח את App Store. הפעולה הזו תוציא אותך ממצב פרטי.</translation>
 <translation id="7498234416455752244">המשך העריכה</translation>
 <translation id="7500244509706269886">מילוי אוטומטי של טופס</translation>
 <translation id="750493650310597496">0 נבחרו</translation>
@@ -2111,6 +2126,7 @@
 <translation id="7557508262441527045">החשבון לא מחובר</translation>
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="7561982940498449837">סגירת התפריט</translation>
+<translation id="7562347727679121642">הוספת תמונה לחיפוש</translation>
 <translation id="7566349809380613217">פתיחה של <ph name="GROUP_TITLE" />, קבוצה משותפת של <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">הסימניות מוסתרות</translation>
 <translation id="7575664680938145959">פתיחה בלחיצה אחת</translation>
@@ -2516,6 +2532,7 @@
 <translation id="8746155870861185046">שיתוף של הטקסט המודגש</translation>
 <translation id="8748678031495824833">‏פתיחת כלי ה-AI בדף</translation>
 <translation id="8750037785291841318">הכרטיסיות זמינות כאן</translation>
+<translation id="8751126814549746156">ההיסטוריה שלך נמחקת באופן אוטומטי אחרי 18 חודשים. בהגדרות אפשר לשנות את פרק הזמן הזה. השיחות שנבדקות על ידי ספקי השירות מופרדות מהחשבון שלך ונשמרות למשך עד 3 שנים. תמיד אפשר <ph name="BEGIN_LINK" />להשבית<ph name="END_LINK" /> את הגדרת ההיסטוריה.</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>
 <translation id="8763613688786959833">מעבר לכרטיסייה האחרונה</translation>
 <translation id="8766790350274092814">הסיסמאות של <ph name="WEBSITE" /> ושל <ph name="SECOND_WEBSITE" /> יימחקו. החשבונות שלך לא יימחקו.</translation>
@@ -2561,6 +2578,7 @@
 <translation id="8893208530912252670">סרטונים</translation>
 <translation id="890009681345348416">יותר מ-40 סיסמאות מולאו אוטומטית</translation>
 <translation id="8900845556227858314">אפליקציית דפדפן</translation>
+<translation id="8903042868629070803">‏אם עברת את גיל 18, Google משתמשת בהיסטוריה שלך גם כדי <ph name="BEGIN_LINK" />לאמן מודלים של AI גנרטיבי<ph name="END_LINK" />. תמיד אפשר <ph name="BEGIN_LINK" />להשבית את ההגדרה הזו<ph name="END_LINK" /> לגבי שיחות עתידיות.</translation>
 <translation id="890565330728586731">אחורה</translation>
 <translation id="8907722425137681851">חיפוש בדף…</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
@@ -2622,6 +2640,7 @@
 <translation id="9090979472668095374">השמעת תשובות בדיבור</translation>
 <translation id="9094033019050270033">עדכון סיסמה</translation>
 <translation id="9098541895599151034">למחוק <ph name="NUMBER_OF_ACCOUNTS" /> סיסמאות?</translation>
+<translation id="909874878420399003">שליחה אוטומטית</translation>
 <translation id="9099233023029360602">צריך לשאול אותי בכל פעם באיזה חשבון להשתמש</translation>
 <translation id="9099821309562615674">חשוב לוודא שהטקסט שמתרגמים מופיע בבירור ובאופן מלא בתמונה.</translation>
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>
@@ -2655,6 +2674,7 @@
 <translation id="9203951165704618409">מעבירים את סרגל הכתובות מהחלק העליון לתחתית המסך ונהנים מחוויית גלישה בהתאמה אישית.</translation>
 <translation id="9205189991633470489">נעילה במצב פרטי</translation>
 <translation id="9206887540681440657">מהירות</translation>
+<translation id="9218088788182688902">‏הייתה בעיה בהגדרה הזו. צריך לעדכן את Chrome ואת iPadOS, ואז להפעיל מחדש את המכשיר ולנסות שוב. אם השגיאה הזו ממשיכה להופיע, יכול להיות שהאייפד שלך לא תומך בהגדרה הזו.</translation>
 <translation id="9218430445555521422">הגדרה כברירת מחדל</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219154867334666734">חיפוש כרטיסיות…</translation>

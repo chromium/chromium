@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">You can come back here to reopen tabs that you've recently closed</translation>
 <translation id="1016495303386450659">Item updated</translation>
 <translation id="1018804590490383958">Scan and autofill</translation>
-<translation id="1019990162050689579">Gemini App activity</translation>
 <translation id="102471647093736603">Press and hold to move</translation>
 <translation id="102645702181682900">Task started</translation>
 <translation id="102916930470544692">Passkey</translation>
@@ -51,6 +50,7 @@
 <translation id="1122068467107743258">Work</translation>
 <translation id="1126696498560056882">Manage accounts on this device</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
+<translation id="112943553659469376">‘<ph name="PROMPT" />’</translation>
 <translation id="1133418583142946603">Add current tab</translation>
 <translation id="1136104150802877429">Shows product reviews</translation>
 <translation id="1142371195993008685">Turn off notifications for <ph name="FEATURE_NAME" /></translation>
@@ -386,6 +386,7 @@
 <translation id="2104436223719117661">Trending searches</translation>
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2117650889962717098">Keep your browsing private by switching to Incognito mode</translation>
+<translation id="2119126821484134587">To provide tailored help, Gemini shares some of your data (such as parts of your chats, location and other relevant info) with other Google services, like Maps and Flights. These services may use that info to improve, even if you later delete your Gemini Apps history. Learn more in the <ph name="BEGIN_LINK" />Gemini Apps Privacy Hub<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Open in…</translation>
 <translation id="2119962645034852864">Some services aren't available for your account</translation>
 <translation id="2120553909046681540">Your organisation has turned off private browsing.</translation>
@@ -507,6 +508,7 @@
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2496626742194544812">Go to first tab</translation>
 <translation id="2499505845365628575">You can find all your browsing history from the <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Get notified about security updates, custom themes and more.</translation>
 <translation id="251033673027346551">Visit Google Wallet to manage <ph name="BEGIN_LINK" />data and privacy preferences<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">You have <ph name="NUMBER_OF_PASSWORDS" /> compromised passwords that could put your security at risk.</translation>
 <translation id="2512709994717613803">Level <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +672,7 @@
 <translation id="3038136505713492417">Verify that it's you to use your passkeys on this device</translation>
 <translation id="3039671569659952257">Delete folder</translation>
 <translation id="3041835740069544003">Chrome can now detect and fill more forms with Smarter form understanding. To do this, page content and URLs can be processed in a private space in the cloud. Manage in settings.</translation>
+<translation id="3042118633250374317">Google uses your history to provide its services, protect Google, its users and the public, and develop and improve its services with the help of human reviewers. Don't include info that you wouldn't want reviewed or used.</translation>
 <translation id="3050988301648974170">Open Password Checkup</translation>
 <translation id="3053332585453689122">Sends the URLs you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="3055102495753300780">Information storage</translation>
@@ -954,6 +957,7 @@
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3973560090698854095">This deletes addresses saved in your Google Account <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Signed in as <ph name="USER_EMAIL" />. Open account menu.</translation>
+<translation id="3986082989454912832">Answer</translation>
 <translation id="3986739045730058129">Go to tab</translation>
 <translation id="3992684624889376114">About this page</translation>
 <translation id="3993594519743675442">Hide Set a reminder</translation>
@@ -1113,6 +1117,7 @@
 <translation id="4488754974567924717">If your passwords are compromised, we'll let you know</translation>
 <translation id="4489536976005181779">{count,plural, =1{Page added to your reading list in your account, {email}}other{Pages added to your reading list in your account, {email}}}</translation>
 <translation id="4493604894403585654">You are signed in as <ph name="USER_EMAIL" />. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
+<translation id="4495251723189610737">Your chats will be saved in your Gemini history. History includes your audio, Gemini Live videos and screenshares, what you share with Gemini (like prompts, <ph name="BEGIN_LINK" />uploads<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />screens<ph name="END_LINK" />), Gemini's responses, tasks and tool calls, feedback, info from websites that you visit with Gemini, product usage data, your device's general location, IP address and home or work addresses in your Google Account. It can also include data from apps that you connect to Gemini.</translation>
 <translation id="4502423230170890588">Remove from this device</translation>
 <translation id="4508486880075514067">Expand to full screen</translation>
 <translation id="4508750114462689118">Close sign-in promo</translation>
@@ -1217,6 +1222,7 @@
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4813345808229079766">Connection</translation>
 <translation id="4821595350501541683">Tabs were closed and browsing data was deleted</translation>
+<translation id="4821645169621230110">How your history is used</translation>
 <translation id="4823322556950229674">You can press and hold to move the address bar and back button to the bottom</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
@@ -1244,6 +1250,7 @@
 <translation id="4877597489778380935">Remind me later</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4883766694719903356">Incognito tab grid</translation>
+<translation id="4884205780547482830">Your data helps train generative AI</translation>
 <translation id="4884937942297374058">Enhanced protection is off</translation>
 <translation id="4887391901725877182">Closed captioning</translation>
 <translation id="488785315393301722">Show details</translation>
@@ -1695,7 +1702,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="628251768213143684">You can always manage what's saved in your Google Account</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
-<translation id="6295140892595702619">Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps activity (if it's on). Your data is not used to improve generative AI models</translation>
 <translation id="6295751040240588413">Invalid card nickname</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
@@ -1890,6 +1896,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6830728435402077660">Not secure</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>
+<translation id="6843744036364481304">What chat history is saved</translation>
 <translation id="6844773122575789617">Turn on AI Mode</translation>
 <translation id="6851516051005285358">Request desktop site</translation>
 <translation id="6857446173140146664">Delete background</translation>
@@ -2013,6 +2020,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7223134495231529579">Save to Downloads</translation>
 <translation id="722339453342442311">Check now</translation>
 <translation id="7227235818314667565">Manage sharing</translation>
+<translation id="7232376892719594461">Neither your conversations with Gemini nor your <ph name="BEGIN_LINK" />Google Workspace data<ph name="END_LINK" /> will be reviewed or used to train generative AI models.</translation>
 <translation id="7233006041370588369">Select a password to fill.</translation>
 <translation id="7238074332967840767">Safety</translation>
 <translation id="723874023660911012">Switch profiles</translation>
@@ -2524,6 +2532,7 @@ You can restart at any time.</translation>
 <translation id="8746155870861185046">Share highlight</translation>
 <translation id="8748678031495824833">Open on-page AI tools</translation>
 <translation id="8750037785291841318">You'll find your tabs here</translation>
+<translation id="8751126814549746156">Your history is automatically deleted after 18 months. You can change this time period in Settings. Chats reviewed by service providers are separated from your account and kept for up to three years. You can <ph name="BEGIN_LINK" />turn off<ph name="END_LINK" /> your History setting at any time.</translation>
 <translation id="8756969031206844760">Update password?</translation>
 <translation id="8763613688786959833">Go to last tab</translation>
 <translation id="8766790350274092814">Passwords for <ph name="WEBSITE" /> and <ph name="SECOND_WEBSITE" /> will be deleted. Your accounts won't be deleted.</translation>
@@ -2569,6 +2578,7 @@ You can restart at any time.</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="890009681345348416">40+ passwords autofilled</translation>
 <translation id="8900845556227858314">Browser app</translation>
+<translation id="8903042868629070803">If you're 18 or over, Google also uses your history to <ph name="BEGIN_LINK" />train generative AI models<ph name="END_LINK" />. You can <ph name="BEGIN_LINK" />turn this off<ph name="END_LINK" /> for future chats at any time.</translation>
 <translation id="890565330728586731">Back</translation>
 <translation id="8907722425137681851">Find in page…</translation>
 <translation id="8909135823018751308">Share…</translation>

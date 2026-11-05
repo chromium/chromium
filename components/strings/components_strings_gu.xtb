@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 ડિગ્રી</translation>
 <translation id="1747777564644667857">ફ્લાઇટ</translation>
 <translation id="1748225549612934682">લેખન સંબંધિત સહાય મેળવવા માટે તમારી ટેક્સ્ટ ટૂંકી કરો</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">મેઇલબૉક્સ 8</translation>
 <translation id="1753706481035618306">પેજ નંબર</translation>
 <translation id="1756026472674246267">નવી ટૅબમાં લિંક ખોલો</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">આ કાર્ડના CVCનો એન્ક્રિપ્ટેડ હશે અને વધુ ઝડપી ચેકઆઉટ માટે તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે</translation>
 <translation id="2983666748527428214">છૂપી ટૅબ ખોલો</translation>
 <translation id="2985398929374701810">એક માન્ય સરનામું દાખલ કરો</translation>
+<translation id="2985848978986605722">સૉર્સની લિંક નૅવિગેટ કરવા માટે ડાબી અથવા જમણી ઍરો કીનો ઉપયોગ કરો.</translation>
 <translation id="2986485254770343131">કૅમેરાની ફાઇલો સાચવી રહ્યાં છીએ</translation>
 <translation id="2987034854559945715">કોઈ મેળ ખાતી સુવિધા નથી</translation>
 <translation id="2989742184762224133">ઉપરની બાજુએ બે સ્ટેપલ લગાવો</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3671540257457995106">કદ બદલવાની મંજૂરી આપીએ?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />માં ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ત્રીજો રોલ</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, બાજુની પૅનલમાં ખૂલે છે</translation>
 <translation id="3676592649209844519">ડિવાઇસ ID:</translation>
 <translation id="3677008721441257057">શું તમારો અર્થ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; હતો?</translation>
 <translation id="3678029195006412963">વિનંતી પર સહી કરી શક્યાં નથી</translation>

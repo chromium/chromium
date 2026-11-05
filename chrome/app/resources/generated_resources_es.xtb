@@ -1468,6 +1468,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2131548114076786395">Para compartir, unirte y colaborar en grupos de pestañas, verifica que eres tú</translation>
 <translation id="2131863825246488194">Más seguridad online</translation>
 <translation id="2133857665503360653">Reintentar descarga de <ph name="FILE_NAME" /></translation>
+<translation id="2134044938347520790">Comparte problemas o solicitudes de funciones del modo Lectura</translation>
 <translation id="2134905185275441536">Autoridades de certificación del sistema</translation>
 <translation id="2135420518376202233">Nombres de dispositivos Bluetooth</translation>
 <translation id="21354425047973905">Ocultar PINs</translation>
@@ -2632,7 +2633,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3003967365858406397">Tu <ph name="PHONE_NAME" /> creará una conexión Wi-Fi privada.</translation>
 <translation id="3004385386820284928">Personalizar teclas del teclado</translation>
 <translation id="300580149047131921">Se ha usado recientemente</translation>
-<translation id="3005928441045180122">Apilada</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3007555010975143508">Estas apps se usarán para grabar tu pantalla:</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
@@ -4183,7 +4183,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4157869833395312646">Criptografía activada por servidor de Microsoft</translation>
 <translation id="4158315983204257156">Tamaño y fuente del texto de los sitios web</translation>
 <translation id="4159784952369912983">Morado</translation>
-<translation id="4165986682804962316">Configuración del sitio</translation>
+<translation id="4165986682804962316">Ajustes de los sitios web</translation>
 <translation id="4167924027691268367">Más acciones del acceso directo de <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Algunas opciones que pertenecen a <ph name="PRIMARY_EMAIL" /> se están compartiendo contigo. Estas opciones solo se aplican a tu cuenta cuando utilizas el inicio de sesión múltiple.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que termina en <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -4283,6 +4283,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4250596587221570622">Elige un tema para tu perfil</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> podrá ver y hacer sus propias copias de los archivos de <ph name="FOLDERNAME" /></translation>
+<translation id="4251316952800826018">Enfocar en el encabezado de la selección</translation>
 <translation id="4252899949534773101">El Bluetooth está inhabilitado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: contenido de la pestaña compartido</translation>
 <translation id="4253168017788158739">Nota</translation>
@@ -4710,6 +4711,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4580389561674319558">Visible para todos los contactos</translation>
 <translation id="4580596421317071374">Las contraseñas se guardan en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de este dispositivo.</translation>
 <translation id="4582297591746054421">Los sitios suelen leer el contenido del portapapeles para utilizarlo en funciones como conservar el formato del texto que se ha copiado.</translation>
+<translation id="4582563038311694664">Recuperar configuración completa</translation>
 <translation id="4584094413232466841">¿Quitar esta información de Autocompletar de Chrome?</translation>
 <translation id="4584770411839426377">Ventana</translation>
 <translation id="4584836561445313300">Tu organización podrá ver y gestionar los datos de navegación que tengas, como contraseñas, entre otros</translation>
@@ -6112,6 +6114,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5656845498778518563">Enviar comentarios a Google</translation>
 <translation id="5656944594833183876">Recibe ayuda con tus tareas</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
+<translation id="5660059687818220919">Haz clic con el botón derecho en el encabezado de la selección de enfoque de la barra de pestañas para agrupar las pestañas relacionadas</translation>
 <translation id="5663459693447872156">Cambiar automáticamente a ancho medio</translation>
 <translation id="5663653125349867535">&amp;Lista de lectura</translation>
 <translation id="5663918299073387939">Los sitios suelen solicitar el control y la reprogramación de dispositivos MIDI para crear música, editarla o actualizar el firmware del dispositivo</translation>
@@ -6767,6 +6770,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6185151644843671709">Llave de acceso guardada y PIN creado</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 contraseña y otros elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google. Si hay duplicados, se eliminarán con esta acción.}other{{PASSWORD_COUNT} contraseñas y otros elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google. Si hay duplicados, se eliminarán con esta acción.}}</translation>
 <translation id="6186177419203903310">Se habilitarán las notificaciones de todos los nuevos periféricos USB del sistema. ¿Seguro que quieres continuar?</translation>
+<translation id="6187116431221566074">Enfocado en <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">Usa el menú de vista dividida para cambiar entre los diseños en paralelo y apilados.</translation>
 <translation id="6190953336330058278">Aplicaciones de Mi teléfono</translation>
 <translation id="6192333916571137726">Descargar archivo</translation>
@@ -7095,7 +7099,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6453687572758515877">Agrupar todas las pestañas</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de introducción de texto, pulsa <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayús<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espacio<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Se eliminarán de forma permanente los datos de navegación del dispositivo. Para recuperar los datos, inicia sesión como</translation>
-<translation id="6454456397828627257">Visualización en paralelo</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455521402703088376">Desactivada • El desarrollador ha anulado la publicación de esta extensión</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
@@ -8623,6 +8626,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7612655942094160088">Habilitar funciones de teléfono conectado.</translation>
 <translation id="7612989789287281429">Iniciando sesión…</translation>
 <translation id="76131528886466333">Instalar la extensión Búsqueda de Google para Microsoft Edge</translation>
+<translation id="7613308212159091597">Enfocado en <ph name="GROUP_LABEL" /></translation>
 <translation id="7615365294369022248">No se ha podido añadir una cuenta</translation>
 <translation id="7616964248951412133">Los sitios usan esta función para capturar y usar la entrada de tu ratón para, por ejemplo, juegos o aplicaciones de escritorio remoto</translation>
 <translation id="7617263010641145920">Activar Play Store</translation>
@@ -8648,6 +8652,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7634337648687970851">Actualmente no se admite la recuperación de datos locales.</translation>
 <translation id="7634566076839829401">Se ha producido un error. Vuelve a intentarlo.</translation>
 <translation id="7635048370253485243">Fijada por tu administrador</translation>
+<translation id="7635733478696751470">Haz clic con el botón derecho para agrupar pestañas relacionadas</translation>
 <translation id="7636175154537919400">Haz clic con el botón derecho para ocultar otras pestañas temporalmente</translation>
 <translation id="7636346903338549690">Sitios que pueden usar cookies de terceros</translation>
 <translation id="7636919061354591437">Instalar en este dispositivo</translation>
@@ -10168,7 +10173,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Margen superior</translation>
 <translation id="8775144690796719618">La URL no es válida</translation>
-<translation id="877515298105563553">Lateral</translation>
 <translation id="8776294611668764629">Tu organización ha bloqueado este archivo porque es demasiado grande para realizar una comprobación de seguridad. Puedes abrir archivos de hasta 50 MB.</translation>
 <translation id="8777509665768981163">Añadir o localizar botones en tu tablet</translation>
 <translation id="8779720597365936419">Sí, mantener mis datos separados de los del trabajo (recomendado)</translation>
@@ -10703,7 +10707,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9170884462774788842">Otro programa de tu ordenador ha añadido un tema que puede cambiar el funcionamiento de Chrome.</translation>
 <translation id="9172270007201309670">Tamaño de fuente aumentado</translation>
 <translation id="917350715406657904">Has llegado al límite de tiempo de uso de <ph name="APP_NAME" /> que ha establecido tu padre o madre. Podrás usar esta aplicación mañana durante <ph name="TIME_LIMIT" />.</translation>
-<translation id="9174854240439014335">Permitir arrastrar y soltar en la vista dividida en el borde izquierdo o derecho de la ventana</translation>
 <translation id="9174870712400134574">Mostrar solo en la página Nueva pestaña</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: dispositivo Bluetooth conectado</translation>
 <translation id="9177859716483578738">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este sitio.</translation>

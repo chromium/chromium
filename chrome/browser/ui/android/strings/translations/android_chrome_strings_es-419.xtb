@@ -189,6 +189,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1749561566933687563">Sincroniza tus favoritos</translation>
 <translation id="1750238553597293878">Sigue usando las contraseñas en tu Cuenta de Google</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Restablecer la ventana <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páginas, 1 página en la lista}other{Páginas, # páginas en la lista}}</translation>
 <translation id="1771929606532798550">Se envía información de tu uso de Chrome a Google, pero no está vinculada a ti.\n\nSi Chrome falla, es posible que los detalles de la falla incluyan información personal.\n\nSi sincronizas el historial con tu Cuenta de Google, es posible que las métricas incluyan información de las URL que visitas.</translation>
 <translation id="1778457539567749232">Marcar como no leído</translation>
@@ -1258,6 +1259,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
 <translation id="6023820583797130428">Abrir el menú para volver</translation>
 <translation id="6026538407078977628">Expandir a pantalla completa</translation>
+<translation id="6027619584715411062">Accede para obtener tus favoritos, contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6039379616847168523">Ir a la pestaña siguiente</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1602,6 +1604,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7190921792980745354">¿Quieres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Debes cambiarla ahora}other{Debes cambiarlas ahora}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Restablecer la ventana de <ph name="TAB_COUNT_ONE" /> pestaña.}other{Restablecer la ventana de <ph name="TAB_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="7196215469483532480">La explicación de la guía sobre privacidad está totalmente abierta.</translation>
 <translation id="7196455519852483601">Puedes borrar tu historial, cookies, datos de sitios y más de forma parcial o por completo</translation>
 <translation id="7197682514647286393">Borra tus datos de navegación rápidamente</translation>
@@ -1855,6 +1858,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8135406045838672858">Los archivos PDF descargados se abren automáticamente con <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Se recibió un vínculo}other{Se recibieron # vínculos}}</translation>
 <translation id="8137562778192957619">No será necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google.</translation>
+<translation id="8149825829235553327">Protege tus pestañas de incógnito</translation>
 <translation id="8151185429379586178">Herramientas del programador</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8153206878708357851">Activar o desactivar la navegación por cursor de texto</translation>

@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 աստիճան</translation>
 <translation id="1747777564644667857">Չվերթ</translation>
 <translation id="1748225549612934682">Կրճատեք ձեր տեքստը՝ գրելու հետ կապված օգնություն ստանալու համար</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Փոստարկղ 8</translation>
 <translation id="1753706481035618306">Էջի համարը</translation>
 <translation id="1756026472674246267">Բացել հղումը նոր ներդիրում</translation>
@@ -733,6 +734,7 @@
 <translation id="2215727959747642672">Ֆայլի փոփոխում</translation>
 <translation id="2219658597883514593">Նորից բացել ուղեցույցը</translation>
 <translation id="2219735899272417925">Պահանջվում է վերակայել սարքը</translation>
+<translation id="2221460252073828078">Տեսեք Որոնման ԱԲ պատասխանն այստեղ</translation>
 <translation id="2222604080869344662">Ներբեռնումը շարունակելու համար մուտք գործեք OneDrive</translation>
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="2225927550500503913">Վիրտուալ քարտը միացված է</translation>
@@ -1174,6 +1176,7 @@
 <translation id="2980742331521553164">Այս քարտի CVC կոդը կգաղտնագրվի և կպահվի ձեր Google հաշվում՝ ավելի արագ վճարման համար</translation>
 <translation id="2983666748527428214">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="2985398929374701810">Մուտքագրեք վավեր հասցե</translation>
+<translation id="2985848978986605722">Օգտագործեք ձախ կամ աջ սլաքների ստեղները՝ աղբյուրների հղումներով նավիգացիայի համար։</translation>
 <translation id="2986485254770343131">Տեսախցիկի ֆայլերը պահվում են</translation>
 <translation id="2987034854559945715">Համընկնող գործառույթներ չկան</translation>
 <translation id="2989742184762224133">Երկու ամրակ վերևում</translation>
@@ -1591,6 +1594,7 @@
 <translation id="3671540257457995106">Թույլատրե՞լ չափի փոփոխումը</translation>
 <translation id="3672568546897166916">Սխալ <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Երրորդ գլանափաթեթ</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, բացվում է կողային վահանակում</translation>
 <translation id="3676592649209844519">Սարքի ID-ն՝</translation>
 <translation id="3677008721441257057">Գուցե նկատի ունեիք &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;:</translation>
 <translation id="3678029195006412963">Չհաջողվեց ստորագրել հարցումը</translation>

@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 градусов</translation>
 <translation id="1747777564644667857">Авиарейс</translation>
 <translation id="1748225549612934682">Сократите текст, чтобы получить помощь с написанием.</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> — <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Почтовый ящик 8</translation>
 <translation id="1753706481035618306">Номер страницы</translation>
 <translation id="1756026472674246267">Открыть ссылку в новой вкладке</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">CVC-код этой карты будет зашифрован и сохранен в вашем аккаунте Google, чтобы вы могли оплачивать покупки быстрее.</translation>
 <translation id="2983666748527428214">Открыть вкладку инкогнито</translation>
 <translation id="2985398929374701810">Укажите действительный адрес.</translation>
+<translation id="2985848978986605722">Для навигации по ссылкам на источники используйте клавиши со стрелками влево и вправо.</translation>
 <translation id="2986485254770343131">Сохранение файлов с камеры…</translation>
 <translation id="2987034854559945715">Совпадений не найдено.</translation>
 <translation id="2989742184762224133">Две скобы сверху</translation>
@@ -1591,6 +1593,7 @@
 <translation id="3671540257457995106">Разрешить изменение размера?</translation>
 <translation id="3672568546897166916">Ошибка: <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Третий рулон</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, откроется на боковой панели</translation>
 <translation id="3676592649209844519">Идентификатор устройства:</translation>
 <translation id="3677008721441257057">Возможно, вы хотели открыть сайт &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Не удалось подписать запрос</translation>

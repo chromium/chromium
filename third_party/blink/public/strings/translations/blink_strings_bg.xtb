@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Моля, въведете валидна стойност. Данните в полето са непълни или датата е невалидна.</translation>
 <translation id="310520048233152454">Моля, въведете URL адрес.</translation>
+<translation id="3137127353890528027">Паролата е скрита</translation>
 <translation id="3321030238473337787">Скорост на възпроизвеждане</translation>
 <translation id="3450233048674729344">Стойността трябва да е по-малка или равна на <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">За повече подробности вижте <ph name="ALERT_HUB_LINK" />.</translation>
 <translation id="6310801910862476708">Изход от „Картина в картината“</translation>
+<translation id="64261224118544870">Паролата е показана</translation>
 <translation id="6484738902856791350">Отпечатване с форматиране</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="65574987622079584">инсталирате разширение за браузъра</translation>

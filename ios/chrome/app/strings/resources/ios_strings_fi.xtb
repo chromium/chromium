@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Voit palata tähän avataksesi uudelleen äskettäin sulkemasi välilehdet</translation>
 <translation id="1016495303386450659">Kohde päivitettiin</translation>
 <translation id="1018804590490383958">Skannaa ja täytä automaattisesti</translation>
-<translation id="1019990162050689579">Gemini-sovellustoiminta</translation>
 <translation id="102471647093736603">Siirrä painamalla pitkään</translation>
 <translation id="102645702181682900">Tehtävä aloitettu</translation>
 <translation id="102916930470544692">Avainkoodi</translation>
@@ -51,6 +50,7 @@
 <translation id="1122068467107743258">Työ</translation>
 <translation id="1126696498560056882">Hallinnoi tämän laitteen tilejä</translation>
 <translation id="1126809382673880764">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Voit silti käyttää Selaussuojaa muissa Googlen palveluissa, joissa se on saatavilla, kuten Gmailissa ja Haussa.</translation>
+<translation id="112943553659469376">"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">Lisää tämä välilehti</translation>
 <translation id="1136104150802877429">Näyttää tuotearvostelut</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" />: poista kokoelman ilmoitukset käytöstä</translation>
@@ -386,6 +386,7 @@
 <translation id="2104436223719117661">Trendaavat haut</translation>
 <translation id="21133533946938348">Kiinnitä välilehti</translation>
 <translation id="2117650889962717098">Selaa yksityisesti incognito-tilassa</translation>
+<translation id="2119126821484134587">Gemini jakaa osan datastasi (esim. osia keskusteluista, sijainnin ja muita relevantteja tietoja) muille Googlen palveluille, kuten Mapsille ja Lennoille, jotta voit saada räätälöityä apua. Palvelut voivat käyttää tietoja toimintansa parantamiseen, vaikka poistaisit Gemini-sovellushistorian. Lue lisää <ph name="BEGIN_LINK" />Gemini-sovellusten Yksityisyys- ja tietosuojakeskuksesta<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Avaa…</translation>
 <translation id="2119962645034852864">Osa palveluista ei ole käytettävissä tililläsi</translation>
 <translation id="2120553909046681540">Organisaatiosi on laittanut yksityisen selaamisen pois päältä.</translation>
@@ -507,6 +508,7 @@
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2496626742194544812">Siirry ensimmäiselle välilehdelle</translation>
 <translation id="2499505845365628575">Näet koko selaushistoriasi täältä: <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Saat ilmoituksia esimerkiksi tietoturvapäivityksistä ja omista teemoista.</translation>
 <translation id="251033673027346551">Jos haluat muuttaa <ph name="BEGIN_LINK" />data- ja yksityisyysasetuksia<ph name="END_LINK" />, siirry Google Walletiin.</translation>
 <translation id="2511117522375201202">Sinulla on <ph name="NUMBER_OF_PASSWORDS" /> vaarantunutta salasanaa, jotka voivat vaarantaa turvallisuutesi.</translation>
 <translation id="2512709994717613803">Taso <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +672,7 @@
 <translation id="3038136505713492417">Vahvista henkilöllisyytesi, niin voit käyttää avainkoodeja tällä laitteella</translation>
 <translation id="3039671569659952257">Poista kansio</translation>
 <translation id="3041835740069544003">Chrome voi nyt tunnistaa ja täyttää useampia lomakkeita Helpotetun lomakkeentäytön avulla. Tätä varten sivun sisältöä ja URL-osoitteita voidaan käsitellä yksityisessä tilassa pilvessä. Hallinnoi asetuksista.</translation>
+<translation id="3042118633250374317">Google käyttää historiaa palveluidensa tarjoamiseen, Googlen, sen käyttäjien ja muiden ihmisten suojaamiseen sekä palveluidensa kehittämiseen ja parantamiseen tarkastajien avulla. Älä lisää tietoja, joita et halua tarkastettavan tai käytettävän.</translation>
 <translation id="3050988301648974170">Avaa Salasanan tarkistus</translation>
 <translation id="3053332585453689122">Lähettää avaamasi URL-osoitteet ja pienen näytteen sivun sisällöstä, latauksista, laajennustoiminnasta ja järjestelmätiedoista Googlen selaussuojalle tarkistaakseen, ovatko ne haitallisia.</translation>
 <translation id="3055102495753300780">Tietojen tallennustila</translation>
@@ -954,6 +957,7 @@
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3973560090698854095">Tämä poistaa Google-tilille (<ph name="USER_EMAIL" />) tallennetut osoitteet.</translation>
 <translation id="398604237578616937">Kirjautuneena käyttäjänä <ph name="USER_EMAIL" />. Avaa tilivalikko.</translation>
+<translation id="3986082989454912832">Vastaa</translation>
 <translation id="3986739045730058129">Siirry välilehdelle</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="3993594519743675442">Piilota Aseta muistutus</translation>
@@ -1113,6 +1117,7 @@
 <translation id="4488754974567924717">Kerromme, jos salasanojasi vaarantuu</translation>
 <translation id="4489536976005181779">{count,plural, =1{Sivu lisätty lukulistalle tililläsi: {email}}other{Sivut lisätty lukulistalle tililläsi: {email}}}</translation>
 <translation id="4493604894403585654">Olet kirjautunut sisään tilillä <ph name="USER_EMAIL" />. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
+<translation id="4495251723189610737">Keskustelut tallennetaan Gemini-historiaan. Historia sisältää audion, Gemini Live ‑videot ja -näytönjaot, Geminille jakamasi sisällön (esim. kehotteet, <ph name="BEGIN_LINK" />lataukset<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />näytöt<ph name="END_LINK" />), Geminin vastaukset, tehtävät ja työkaluille tehdyt pyynnöt, palautteen, tiedot verkkosivustoilta, joilla käytät Geminiä, tuotteiden käyttötiedot, laitteesi karkean sijainnin, IP-osoitteen ja Google-tililläsi olevat koti- tai työosoitteet. Se voi sisältää myös dataa sovelluksista, jotka yhdistät Geminiin.</translation>
 <translation id="4502423230170890588">Poista tältä laitteelta</translation>
 <translation id="4508486880075514067">Laajenna koko näytölle</translation>
 <translation id="4508750114462689118">Sulje kirjautumismainos</translation>
@@ -1217,6 +1222,7 @@
 <translation id="4808744395915275922">Päivitykset</translation>
 <translation id="4813345808229079766">Yhteys</translation>
 <translation id="4821595350501541683">Välilehdet suljettiin ja selausdata poistettiin</translation>
+<translation id="4821645169621230110">Miten historiaasi käytetään</translation>
 <translation id="4823322556950229674">Voit siirtää osoitepalkin ja takaisin-painikkeen alareunaan painamalla pitkään</translation>
 <translation id="4824480232751123840">Tilavuus</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja 1 muu}other{{domain} ja {count} muuta}}</translation>
@@ -1244,6 +1250,7 @@
 <translation id="4877597489778380935">Muistuta myöhemmin</translation>
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="4883766694719903356">Incognito-välilehden ruudukko</translation>
+<translation id="4884205780547482830">Dataasi käytetään generatiivisen tekoälyn kouluttamiseen</translation>
 <translation id="4884937942297374058">Parannettu suojaus on pois päältä</translation>
 <translation id="4887391901725877182">Tekstitys</translation>
 <translation id="488785315393301722">Näytä tiedot</translation>
@@ -1695,7 +1702,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="628251768213143684">Voit milloin tahansa valita, mitä Google-tilillesi tallennetaan</translation>
 <translation id="6284652193729350524">Tarjoudu kääntämään <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Avaa <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ja valitse Selaussuoja.</translation>
-<translation id="6295140892595702619">Keskustele Geminin kanssa mikrofonin avulla. Kun puhut Geminille, ääni tallennetaan Gemini-sovellustoimintaan (jos se on päällä). Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="6295751040240588413">Virheellinen kortin lyhytnimi</translation>
 <translation id="629730747756840877">Tili</translation>
 <translation id="6301104306974789820">Tilaa hintaseurantailmoitukset</translation>
@@ -1890,6 +1896,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6830728435402077660">Ei turvallinen</translation>
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="6842136130964845393">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy tallennettuihin salasanoihisi</translation>
+<translation id="6843744036364481304">Mitä keskusteluhistoriaa tallennetaan</translation>
 <translation id="6844773122575789617">Laita tekoälytila päälle</translation>
 <translation id="6851516051005285358">Käytä tietokoneversiota</translation>
 <translation id="6857446173140146664">Poista tausta</translation>
@@ -2013,6 +2020,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="7223134495231529579">Tallenna latauksiin</translation>
 <translation id="722339453342442311">Tarkista nyt</translation>
 <translation id="7227235818314667565">Hallitse jakamista</translation>
+<translation id="7232376892719594461">Geminin kanssa käymiäsi keskusteluita tai <ph name="BEGIN_LINK" />Google Workspace ‑dataasi<ph name="END_LINK" /> ei tarkasteta eikä käytetä generatiivisten tekoälymallien kouluttamiseen.</translation>
 <translation id="7233006041370588369">Valitse täytettävä salasana.</translation>
 <translation id="7238074332967840767">Turvallisuus</translation>
 <translation id="723874023660911012">Vaihda profiilia</translation>
@@ -2524,6 +2532,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8746155870861185046">Jaa kohta</translation>
 <translation id="8748678031495824833">Avaa sivun tekoälytyökalut</translation>
 <translation id="8750037785291841318">Näet välilehtesi täällä</translation>
+<translation id="8751126814549746156">Historia poistetaan automaattisesti 18 kuukauden kuluttua. Voit muuttaa poistoaikaa asetuksista. Palveluntarjoajien tarkistamat keskustelut erotetaan tilistäsi, ja niitä säilytetään enintään kolme vuotta. Voit <ph name="BEGIN_LINK" />laittaa historia-asetuksen pois päältä<ph name="END_LINK" /> milloin tahansa.</translation>
 <translation id="8756969031206844760">Päivitetäänkö salasana?</translation>
 <translation id="8763613688786959833">Siirry viimeiselle välilehdelle</translation>
 <translation id="8766790350274092814">Näiden salasanat poistetaan: <ph name="WEBSITE" /> ja <ph name="SECOND_WEBSITE" />. Tilejäsi ei poisteta.</translation>
@@ -2569,6 +2578,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8893208530912252670">Videot</translation>
 <translation id="890009681345348416">Yli 40 salasanaa täytetty automaattisesti</translation>
 <translation id="8900845556227858314">Selainsovellus</translation>
+<translation id="8903042868629070803">Jos olet vähintään 18-vuotias, Google käyttää historiaasi myös <ph name="BEGIN_LINK" />generatiivisten tekoälymallien kouluttamiseen<ph name="END_LINK" />. Voit <ph name="BEGIN_LINK" />estää tämän<ph name="END_LINK" /> tulevien keskustelujen osalta milloin tahansa.</translation>
 <translation id="890565330728586731">Takaisin</translation>
 <translation id="8907722425137681851">Hae sivulta…</translation>
 <translation id="8909135823018751308">Jaa…</translation>

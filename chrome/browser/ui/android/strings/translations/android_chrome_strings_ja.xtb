@@ -189,6 +189,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1749561566933687563">ブックマークの同期</translation>
 <translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
 <translation id="1753744496844366747">Aあ</translation>
+<translation id="1760139219747062315">ウィンドウ <ph name="TITLE_OF_WINDOW" /> を復元します。</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{ページ、リストの 1 件のページ}other{ページ、リストの # 件のページ}}</translation>
 <translation id="1771929606532798550">Chrome の使用状況に関する情報が Google に送信されますが、ユーザーとは関連付けられません\n\nChrome がクラッシュした場合、クラッシュに関する情報として一部の個人情報が送信されることがあります\n\n履歴を Google アカウントと同期した場合、アクセスした URL に関する情報も送信されることがあります</translation>
 <translation id="1778457539567749232">未読にする</translation>
@@ -1258,6 +1259,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6022659036123304283">Chrome を自分用にカスタマイズ</translation>
 <translation id="6023820583797130428">戻るにはメニューを開きます</translation>
 <translation id="6026538407078977628">フルスクリーンで拡大表示</translation>
+<translation id="6027619584715411062">ログインすると、すべてのデバイスで同じブックマーク、パスワード、その他の設定を使用できます。</translation>
 <translation id="6039379616847168523">次のタブに移動する</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="604124094241169006">自動設定</translation>
@@ -1602,6 +1604,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> さんをブロックしますか？</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{今すぐ変更してください}other{今すぐ変更してください}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のタブのウィンドウを復元します。}other{<ph name="TAB_COUNT_MANY" /> 個のタブのウィンドウを復元します。}}</translation>
 <translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
 <translation id="7196455519852483601">履歴、Cookie、サイトデータなどの一部またはすべてを削除できます</translation>
 <translation id="7197682514647286393">閲覧データをすばやく削除</translation>
@@ -1855,6 +1858,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8135406045838672858">ダウンロードした PDF を <ph name="APP_NAME" /> で自動的に開きます</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{リンクを受信しました}other{# 件のリンクを受信しました}}</translation>
 <translation id="8137562778192957619">このパスワードを覚えておく必要はありません。パスワードは Google パスワード マネージャーに保存されます。</translation>
+<translation id="8149825829235553327">シークレット タブを保護</translation>
 <translation id="8151185429379586178">デベロッパー ツール</translation>
 <translation id="8152331954420209374">レンズに移動</translation>
 <translation id="8153206878708357851">カーソル ブラウジングを切り替える</translation>

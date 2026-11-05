@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 градусаў</translation>
 <translation id="1747777564644667857">Рэйс</translation>
 <translation id="1748225549612934682">Каб атрымаць дапамогу з напісаннем, скараціце тэкст</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Паштовая скрынка 8</translation>
 <translation id="1753706481035618306">Нумар старонкі</translation>
 <translation id="1756026472674246267">Адкрыць спасылку ў новай укладцы</translation>
@@ -733,6 +734,7 @@
 <translation id="2215727959747642672">Змяненне файлаў</translation>
 <translation id="2219658597883514593">Перазапусціць дапаможнік</translation>
 <translation id="2219735899272417925">Патрабуецца скід прылады</translation>
+<translation id="2221460252073828078">Праглядзіце адказ AI на пошукавы запыт тут</translation>
 <translation id="2222604080869344662">Каб працягнуць спампоўванне, увайдзіце ў OneDrive</translation>
 <translation id="2224337661447660594">Няма падключэння да інтэрнэту</translation>
 <translation id="2225927550500503913">Віртуальная картка ўключана</translation>
@@ -1175,6 +1177,7 @@
 <translation id="2980742331521553164">Код CVC карткі будзе зашыфраваны і захаваны ва Уліковым запісе Google для больш хуткай аплаты</translation>
 <translation id="2983666748527428214">Адкрыць укладку ў рэжыме інкогніта</translation>
 <translation id="2985398929374701810">Увядзіце сапраўдны адрас</translation>
+<translation id="2985848978986605722">Для пераходу па спасылках на крыніцы выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа.</translation>
 <translation id="2986485254770343131">Ідзе захаванне файлаў з камеры</translation>
 <translation id="2987034854559945715">Адпаведных функцый няма</translation>
 <translation id="2989742184762224133">Дзве скабы зверху</translation>
@@ -1591,6 +1594,7 @@
 <translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
 <translation id="3672568546897166916">Памылка тут: <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Трэці рулон</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, адкрыецца на бакавой панэлі</translation>
 <translation id="3676592649209844519">Ідэнтыфікатар прылады:</translation>
 <translation id="3677008721441257057">Вы мелі на ўвазе &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Не ўдалося падпісаць запыт</translation>

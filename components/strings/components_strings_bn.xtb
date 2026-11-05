@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">০ ডিগ্রী</translation>
 <translation id="1747777564644667857">ফ্লাইট</translation>
 <translation id="1748225549612934682">লেখার ব্যাপারে সহায়তা পেতে আপনার টেক্সট আরও ছোট করুন</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">মেলবক্স ৮</translation>
 <translation id="1753706481035618306">পৃষ্ঠা সংখ্যা</translation>
 <translation id="1756026472674246267">নতুন ট্যাবে লিঙ্ক খুলুন</translation>
@@ -1176,6 +1177,7 @@
 <translation id="2980742331521553164">আরও দ্রুত চেক-আউটের জন্য এই কার্ডের CVC আপনার Google অ্যাকাউন্টে এনক্রিপ্ট করে সেভ করা হবে</translation>
 <translation id="2983666748527428214">ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="2985398929374701810">একটি সঠিক ঠিকানা লিখুন</translation>
+<translation id="2985848978986605722">সোর্স লিঙ্কে নেভিগেট করতে বাঁদিক বা ডানদিকের তীরচিহ্ন কী ব্যবহার করুন।</translation>
 <translation id="2986485254770343131">ক্যামেরার ফাইল সেভ করা হচ্ছে</translation>
 <translation id="2987034854559945715">একই ধরনের ফিচার পাওয়া যায়নি</translation>
 <translation id="2989742184762224133">উপরে ডুয়াল স্টেপল</translation>
@@ -1593,6 +1595,7 @@
 <translation id="3671540257457995106">ছোট বড় করতে অনুমতি দেবেন?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" />-এ সমস্যা</translation>
 <translation id="3675563144891642599">Third Roll</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, সাইড প্যানেলে খোলে</translation>
 <translation id="3676592649209844519">ডিভাইস আইডি:</translation>
 <translation id="3677008721441257057">আপনি কি &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; বোঝাতে চাইছেন?</translation>
 <translation id="3678029195006412963">অনুরোধটি স্বাক্ষরিত করা যায়নি</translation>

@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Du kan vende tilbage hertil for at åbne dine senest lukkede faner igen</translation>
 <translation id="1016495303386450659">Elementet blev opdateret</translation>
 <translation id="1018804590490383958">Scan og udfyld automatisk</translation>
-<translation id="1019990162050689579">Gemini-appaktivitet</translation>
 <translation id="102471647093736603">Hold fingeren nede for at flytte</translation>
 <translation id="102645702181682900">Opgaven er startet</translation>
 <translation id="102916930470544692">Adgangsnøgle</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680">Tilladelser for <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> nulstilles til deres deaktiverede tilstand, når du forlader dette website.</translation>
 <translation id="1293491796138057740">Dine oplysninger gemmes i Google Wallet for <ph name="USER_EMAIL" />. Du kan bruge oplysningerne i Google-produkter til hurtigere at udfylde formularer.</translation>
 <translation id="1293556467332435079">Filer</translation>
-<translation id="1294703224699789269">Vores <ph name="BEGIN_LINK" />vilkår<ph name="END_LINK" />, <ph name="BEGIN_LINK" />koreanske servicevilkår for lokation<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelse<ph name="END_LINK" /> er gældende. Chatsamtaler gennemgås og bruges til at træne generative AI-modeller. Gemini er en AI-assistent og kan begå fejl, herunder om personer. Noget indhold er muligvis ikke egnet for alle. Du kan <ph name="BEGIN_LINK" />administrere din historik<ph name="END_LINK" />, herunder oplysninger om din lokation. <ph name="BEGIN_LINK" />Få flere oplysninger om dine valgmuligheder<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Senest lukkede</translation>
 <translation id="1296581780163690620">Vil du downloade filen? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">"Søg med AI-tilstand" er fuldført.</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3973560090698854095">Denne handling sletter adresser, der er gemt på din Google-konto <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Logget ind som <ph name="USER_EMAIL" />. Åbn kontomenu.</translation>
+<translation id="3986082989454912832">Svar</translation>
 <translation id="3986739045730058129">Gå til fane</translation>
 <translation id="3992684624889376114">Om denne side</translation>
 <translation id="3993594519743675442">Skjul Opret en påmindelse</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Hjælper dig med at tilgå gemte adgangsnøgler på enhver enhed</translation>
-<translation id="476946043193006313">Din aktivitet hjælper med at træne generativ AI</translation>
 <translation id="4782952780741793211">Bekræftelseskode:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vil du åbne i inkognitotilstand?</translation>
@@ -1704,7 +1702,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="628251768213143684">Du kan til altid administrere, hvad der gemmes på din Google-konto</translation>
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
-<translation id="6295140892595702619">Brug din mikrofon til at chatte med Gemini. Når du taler med Gemini, gemmes lyden i Gemini-appaktivitet (hvis den er aktiveret). Dine data anvendes ikke til at forbedre generativ AI-modeller</translation>
 <translation id="6295751040240588413">Kortets kaldenavn er ugyldigt</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få notifikationer om prissporing</translation>
@@ -1732,7 +1729,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6347953390226388422">{count,plural, =1{Adressen slettes fra din Google-konto (<ph name="USER_EMAIL" />) og fra denne enhed.}one{Adressen slettes fra din Google-konto (<ph name="USER_EMAIL" />) og fra denne enhed.}other{Adresserne slettes fra din Google-konto (<ph name="USER_EMAIL" />) og fra denne enhed.}}</translation>
 <translation id="634878792104344809">Synkroniser dine adgangskoder, din historik og meget mere på alle dine enheder</translation>
 <translation id="6350745006329795504">Administrer dine enheder</translation>
-<translation id="6351000590398820964">Gemini er en AI-assistent og kan begå fejl, herunder om personer. Noget indhold er muligvis ikke egnet for alle. Chatsamtaler gennemgås og bruges til at træne generative AI-modeller. <ph name="BEGIN_LINK" />Få flere oplysninger om dine valgmuligheder.<ph name="END_LINK" /> Vores <ph name="BEGIN_LINK" />vilkår<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelse<ph name="END_LINK" /> er gældende.</translation>
 <translation id="6351147166808964033">Åbn Faneskift</translation>
 <translation id="63519665078626091">Hvis du vil bruge Web Inspector, skal du oprette forbindelse til Safari på din computer ved hjælp af et kabel og tilgå din iPad via udviklermenuen. Du kan aktivere udviklermenuen i sektionen Avanceret i Safari-indstillingerne på din computer.</translation>
 <translation id="6354695695659930684">Udfylder adgangskode</translation>
@@ -1849,6 +1845,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6670729408462528018">Galleri</translation>
 <translation id="6671294218820966278">Markér som læst</translation>
 <translation id="6672697278890207089">Angiv din adgangssætning</translation>
+<translation id="6673666785752667010">Luk AI-tilstand</translation>
 <translation id="6674917187596384849">Du kan nemt skifte mellem konti</translation>
 <translation id="6676349090816247042">Loginmetoder.</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -1856,6 +1853,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6682680306647339111">Påmindelsen er fjernet</translation>
 <translation id="6683022854667115063">Høretelefoner</translation>
 <translation id="6684262542644248484">Log ind på et website</translation>
+<translation id="668475086425500258">websiteindstillinger</translation>
 <translation id="6685259053455152195">Genveje til hurtigt at ændre indstillinger og bruge funktioner via adresselinjen.</translation>
 <translation id="6689342293888598653">Hvid baggrundsfarve</translation>
 <translation id="6689685206615181381">Kun inkognitotilstand er tilgængelig</translation>
@@ -2538,7 +2536,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8750037785291841318">Her finder du dine faner</translation>
 <translation id="8751126814549746156">Din historik slettes automatisk efter 18 måneder. Du kan ændre dette tidsrum i Indstillinger. Chatsamtaler, der gennemgås af tjenesteudbydere, adskilles fra din konto og gemmes i op til 3 år. Du kan til enhver tid <ph name="BEGIN_LINK" />deaktivere<ph name="END_LINK" /> indstillingen Historik.</translation>
 <translation id="8756969031206844760">Vil du opdatere adgangskoden?</translation>
-<translation id="8762190205387442931">Chatsamtaler gennemgås og bruges til at træne generative AI-modeller. Du kan <ph name="BEGIN_LINK" />administrere din historik<ph name="END_LINK" />, herunder oplysninger om din lokation. <ph name="BEGIN_LINK" />Få flere oplysninger om dine valgmuligheder.<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">Gå til sidste fane</translation>
 <translation id="8766790350274092814">Adgangskoderne til <ph name="WEBSITE" /> og <ph name="SECOND_WEBSITE" /> slettes. Dine konti slettes ikke.</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>

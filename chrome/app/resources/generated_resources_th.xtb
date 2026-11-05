@@ -1468,6 +1468,7 @@
 <translation id="2131548114076786395">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ โปรดยืนยันว่าเป็นคุณ</translation>
 <translation id="2131863825246488194">ท่องโลกออนไลน์อย่างปลอดภัยยิ่งขึ้น</translation>
 <translation id="2133857665503360653">ลอง <ph name="FILE_NAME" /> อีกครั้ง</translation>
+<translation id="2134044938347520790">แชร์ปัญหาเกี่ยวกับโหมดการอ่านหรือคำขอฟีเจอร์</translation>
 <translation id="2134905185275441536">CA ของระบบ</translation>
 <translation id="2135420518376202233">ชื่ออุปกรณ์บลูทูธ</translation>
 <translation id="21354425047973905">ซ่อน PIN</translation>
@@ -2631,7 +2632,6 @@
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> จะสร้างการเชื่อมต่อ Wi-Fi ส่วนตัว</translation>
 <translation id="3004385386820284928">ปรับแต่งแป้นต่างๆ บนแป้นพิมพ์</translation>
 <translation id="300580149047131921">ใช้ล่าสุด</translation>
-<translation id="3005928441045180122">ซ้อนทับ</translation>
 <translation id="3006881078666935414">ไม่มีข้อมูลการใช้งาน</translation>
 <translation id="3007555010975143508">ระบบจะใช้แอปต่อไปนี้เพื่อบันทึกหน้าจอของคุณ</translation>
 <translation id="3007771295016901659">ทำซ้ำแท็บ</translation>
@@ -4281,6 +4281,7 @@
 <translation id="4250596587221570622">เลือกธีมสำหรับโปรไฟล์</translation>
 <translation id="4250680216510889253">ไม่</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> จะดูและทำสำเนาไฟล์ของตัวเองใน <ph name="FOLDERNAME" /> ได้</translation>
+<translation id="4251316952800826018">ส่วนหัวของส่วนที่เลือกโฟกัส</translation>
 <translation id="4252899949534773101">บลูทูธปิดอยู่</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - แชร์เนื้อหาในแท็บอยู่</translation>
 <translation id="4253168017788158739">หมายเหตุ</translation>
@@ -4708,6 +4709,7 @@
 <translation id="4580389561674319558">แสดงให้รายชื่อติดต่อทั้งหมดมองเห็น</translation>
 <translation id="4580596421317071374">รหัสผ่านจะบันทึกไว้ใน <ph name="GOOGLE_PASSWORD_MANAGER" />บนอุปกรณ์นี้</translation>
 <translation id="4582297591746054421">โดยปกติแล้วเว็บไซต์จะอ่านคลิปบอร์ดของคุณเพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น คงการจัดรูปแบบข้อความที่คุณคัดลอกไว้</translation>
+<translation id="4582563038311694664">รีเซ็ตการตั้งค่าทั้งหมด</translation>
 <translation id="4584094413232466841">นำข้อมูลนี้ออกจากฟีเจอร์ป้อนข้อความอัตโนมัติของ Chrome ใช่ไหม</translation>
 <translation id="4584770411839426377">หน้าต่าง</translation>
 <translation id="4584836561445313300">องค์กรของคุณจะสามารถดูและจัดการข้อมูลการท่องเว็บที่มีอยู่ เช่น รหัสผ่านและอื่นๆ</translation>
@@ -6762,6 +6764,7 @@
 <translation id="6185151644843671709">บันทึกพาสคีย์และสร้าง PIN แล้ว</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{ระบบบันทึกรหัสผ่าน 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}other{ระบบบันทึกรหัสผ่าน {PASSWORD_COUNT} รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}}</translation>
 <translation id="6186177419203903310">การดำเนินการนี้จะเปิดใช้การแจ้งเตือนสำหรับอุปกรณ์ต่อพ่วง USB เครื่องใหม่ทุกเครื่องในระบบ แน่ใจไหมว่าต้องการดำเนินการต่อ</translation>
+<translation id="6187116431221566074">โฟกัสที่ <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">ใช้เมนูมุมมองแบบแยกเพื่อสลับระหว่างเลย์เอาต์แบบแสดงเคียงข้างกันกับแบบแสดงหน้าต่างซ้อนกัน</translation>
 <translation id="6190953336330058278">แอปในฮับโทรศัพท์</translation>
 <translation id="6192333916571137726">ดาวน์โหลดไฟล์</translation>
@@ -7090,7 +7093,6 @@
 <translation id="6453687572758515877">จัดกลุ่มแท็บทั้งหมด</translation>
 <translation id="6453921811609336127">หากต้องการเปลี่ยนวิธีการป้อนข้อมูลครั้งต่อไป ให้กด <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">การดำเนินการนี้จะลบข้อมูลการท่องเว็บของคุณจากอุปกรณ์นี้อย่างถาวร หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ในชื่อ</translation>
-<translation id="6454456397828627257">แสดงคู่กัน</translation>
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
 <translation id="6455521402703088376">ปิด • นักพัฒนาเลิกเผยแพร่ส่วนขยายนี้แล้ว</translation>
 <translation id="6455894534188563617">และโฟลเดอร์ใหม่</translation>
@@ -8617,6 +8619,7 @@
 <translation id="7612655942094160088">เปิดใช้ฟีเจอร์ของโทรศัพท์ที่เชื่อมต่ออยู่</translation>
 <translation id="7612989789287281429">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="76131528886466333">ติดตั้งส่วนขยาย Google Search สำหรับ Microsoft Edge</translation>
+<translation id="7613308212159091597">โฟกัสที่ <ph name="GROUP_LABEL" /></translation>
 <translation id="7615365294369022248">เกิดข้อผิดพลาดในการเพิ่มบัญชี</translation>
 <translation id="7616964248951412133">เว็บไซต์ต่างๆ ใช้ฟีเจอร์นี้เพื่อบันทึกและใช้อินพุตจากเมาส์เพื่อการดำเนินการของเกมหรือแอป Remote Desktop เป็นต้น</translation>
 <translation id="7617263010641145920">เปิด Play Store</translation>
@@ -10162,7 +10165,6 @@
 <translation id="8774379074441005279">ยืนยันการคืนค่า</translation>
 <translation id="8774934320277480003">ขอบบน</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
-<translation id="877515298105563553">แสดงคู่กัน</translation>
 <translation id="8776294611668764629">องค์กรบล็อกไฟล์นี้เนื่องจากไฟล์มีขนาดใหญ่เกินไปสําหรับการตรวจสอบความปลอดภัย ไฟล์ที่เปิดต้องมีขนาดไม่เกิน 50 MB</translation>
 <translation id="8777509665768981163">เพิ่มหรือค้นหาปุ่มบนแท็บเล็ต</translation>
 <translation id="8779720597365936419">ใช่ แยกข้อมูลของฉันออกจากข้อมูลงาน (แนะนำ)</translation>
@@ -10697,7 +10699,6 @@
 <translation id="9170884462774788842">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มธีมที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>
 <translation id="9172270007201309670">เพิ่มขนาดแบบอักษรแล้ว</translation>
 <translation id="917350715406657904">คุณใช้งาน <ph name="APP_NAME" /> ถึงขีดจำกัดเวลาที่ผู้ปกครองตั้งไว้แล้ว พรุ่งนี้คุณจะใช้แอปได้ <ph name="TIME_LIMIT" /></translation>
-<translation id="9174854240439014335">อนุญาตให้ลากและวางในมุมมองแบบแยกที่ขอบด้านซ้ายหรือขวาของหน้าต่าง</translation>
 <translation id="9174870712400134574">แสดงในหน้าแท็บใหม่เท่านั้น</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - เชื่อมต่ออุปกรณ์บลูทูธแล้ว</translation>
 <translation id="9177859716483578738">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์<ph name="FIELDS_STRING" />ของคุณกับเว็บไซต์นี้ ดู<ph name="BEGIN_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_LINK" />ของเว็บไซต์นี้</translation>

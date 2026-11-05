@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 градус</translation>
 <translation id="1747777564644667857">Аба каттамы</translation>
 <translation id="1748225549612934682">Жазуу боюнча жардам алуу үчүн текстиңизди кыскартыңыз</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" />, <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">8-электрондук каттар кутусу</translation>
 <translation id="1753706481035618306">Беттин номери</translation>
 <translation id="1756026472674246267">Шилтемени жаңы өтмөктө ачуу</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">Бул картанын CVC коду шифрленип, тезирээк төлөө үчүн Google аккаунтуңузда сакталат</translation>
 <translation id="2983666748527428214">Жашыруун өтмөктү ачуу</translation>
 <translation id="2985398929374701810">Дарегин туура киргизиңиз</translation>
+<translation id="2985848978986605722">Булак шилтемелерине өтүү үчүн солго же оңго жебе баскычтарын колдонуңуз.</translation>
 <translation id="2986485254770343131">Камерага тартылган файлдар сакталууда</translation>
 <translation id="2987034854559945715">Дал келген функциялар жок</translation>
 <translation id="2989742184762224133">Жогорку жагын эки жолу илмек менен бекитүү</translation>
@@ -1591,6 +1593,7 @@
 <translation id="3671540257457995106">Өлчөмү өзгөрсүнбү?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> катасы: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Үчүнчү барабан</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, капталдагы тилкеде ачылат</translation>
 <translation id="3676592649209844519">Түзмөктүн идентификатору:</translation>
 <translation id="3677008721441257057">Төмөнкү шилтеме эмес беле: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Суроо-талапка кол коюлбай калды</translation>

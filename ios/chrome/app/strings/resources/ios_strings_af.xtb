@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Jy kan hierheen terugkom om oortjies wat jy onlangs toegemaak het, weer oop te maak</translation>
 <translation id="1016495303386450659">Item is opgedateer</translation>
 <translation id="1018804590490383958">Skandeer en outovul</translation>
-<translation id="1019990162050689579">Gemini-appsaktiwiteit</translation>
 <translation id="102471647093736603">Druk en hou om te skuif</translation>
 <translation id="102645702181682900">Taak is begin</translation>
 <translation id="102916930470544692">Wagwoordsleutel</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />-toestemmings sal teruggestel word na af wanneer jy hierdie werf verlaat.</translation>
 <translation id="1293491796138057740">Jou inligting word vir <ph name="USER_EMAIL" /> in Google Wallet gestoor. Jy kan dit in alle Google-produkte gebruik om vorms vinniger in te vul.</translation>
 <translation id="1293556467332435079">Lêers</translation>
-<translation id="1294703224699789269">Ons <ph name="BEGIN_LINK" />bepalings<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreaanse Liggingbepalings<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />privaatheidkennisgewing<ph name="END_LINK" /> geld. Kletse word gekontroleer en gebruik om generatiewe-KI-modelle op te lei. Gemini is KI en kan foute maak, insluitend oor mense. Sommige inhoud is dalk nie vir almal geskik nie. Jy kan <ph name="BEGIN_LINK" />jou geskiedenis bestuur<ph name="END_LINK" />, insluitend inligting oor jou ligging. <ph name="BEGIN_LINK" />Kry meer inligting oor jou keuses<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Onlangs toegemaak</translation>
 <translation id="1296581780163690620">Laai lêer af? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">“Soek met KI-modus” is voltooi!</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3973560090698854095">Dit vee adresse uit wat in jou Google-rekening <ph name="USER_EMAIL" /> gestoor is.</translation>
 <translation id="398604237578616937">Aangemeld as <ph name="USER_EMAIL" />. Maak rekeningkieslys oop.</translation>
+<translation id="3986082989454912832">Antwoord</translation>
 <translation id="3986739045730058129">Gaan na oortjie</translation>
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
 <translation id="3993594519743675442">Versteek Stel ’n Onthounota</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">Aflaaie</translation>
 <translation id="4764612367328936189">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld. Rekeninge wat nie toegelaat word nie, word versteek. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Help jou om toegang tot gestoorde toegangsleutels op enige toestel te kry</translation>
-<translation id="476946043193006313">Jou aktiwiteit help om generatiewe KI op te lei</translation>
 <translation id="4782952780741793211">Bevestigingkode:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Maak in Incognito oop?</translation>
@@ -1704,7 +1702,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="628251768213143684">Jy kan altyd bestuur wat in jou Google-rekening gestoor is</translation>
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
-<translation id="6295140892595702619">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-appsaktiwiteit gestoor (as dit aan is). Jou data word nie gebruik om generatiewe KI-modelle te verbeter</translation>
 <translation id="6295751040240588413">Ongeldige kaartbynaam</translation>
 <translation id="629730747756840877">Rekening</translation>
 <translation id="6301104306974789820">Kry prysnasporingkennisgewings</translation>
@@ -1732,7 +1729,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6347953390226388422">{count,plural, =1{HIerdie adres sal in jou Google-rekening (<ph name="USER_EMAIL" />) en op hierdie toestel uitgevee word.}other{HIerdie adresse sal in jou Google-rekening (<ph name="USER_EMAIL" />) en op hierdie toestel uitgevee word.}}</translation>
 <translation id="634878792104344809">Sinkroniseer jou wagwoorde, geskiedenis en meer op al jou toestelle</translation>
 <translation id="6350745006329795504">Bestuur jou toestelle</translation>
-<translation id="6351000590398820964">Gemini is KI en kan foute maak, insluitend oor mense. Sommige inhoud is dalk nie vir almal geskik nie. Kletse word gekontroleer en gebruik om generatiewe-KI-modelle op te lei. <ph name="BEGIN_LINK" />Kry meer inligting oor jou keuses<ph name="END_LINK" />. Ons <ph name="BEGIN_LINK" />bepalings<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />privaatheidkennisgewing<ph name="END_LINK" /> is van toepassing.</translation>
 <translation id="6351147166808964033">Gaan na oortjiewisselaar</translation>
 <translation id="63519665078626091">Om die Webinspekteur te gebruik, moet jy met ’n kabel aan Safari op jou rekenaar koppel en deur die Develop-kieslys toegang tot jou iPad kry. Jy kan die Develop-kieslys in die Advanced-afdeling van Safari-instellings op jou rekenaar aktiveer.</translation>
 <translation id="6354695695659930684">Vul tans wagwoord in</translation>
@@ -2538,7 +2534,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="8750037785291841318">Jy sal jou oortjies hier kry</translation>
 <translation id="8751126814549746156">Jou geskiedenis word ná 18 maande outomaties uitgevee. Jy kan hierdie tydperk in Instellings verander. Kletse wat deur diensverskaffers gekontroleer word, word van jou rekening geskei en tot 3 jaar lank gehou. Jy kan enige tyd jou Geskiedenis-instelling <ph name="BEGIN_LINK" />afskakel<ph name="END_LINK" />.</translation>
 <translation id="8756969031206844760">Dateer wagwoord op?</translation>
-<translation id="8762190205387442931">Kletse word gekontroleer en gebruik om generatiewe-KI-modelle op te lei. Jy kan <ph name="BEGIN_LINK" />jou geskiedenis bestuur<ph name="END_LINK" />, insluitend inligting oor jou ligging. <ph name="BEGIN_LINK" />Kry meer inligting oor jou keuses<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Gaan na laaste oortjie</translation>
 <translation id="8766790350274092814">Wagwoorde vir <ph name="WEBSITE" /> en <ph name="SECOND_WEBSITE" /> sal uitgevee word. Jou rekeninge sal nie uitgevee word nie.</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>

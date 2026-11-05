@@ -456,6 +456,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1746531169546376413">0 stopni</translation>
 <translation id="1747777564644667857">Lot</translation>
 <translation id="1748225549612934682">Aby uzyskać pomoc w pisaniu, skróć tekst</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Zestaw tac odbiorczych 8</translation>
 <translation id="1753706481035618306">Numer strony</translation>
 <translation id="1756026472674246267">Otwórz link w nowej karcie</translation>
@@ -1175,6 +1176,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2980742331521553164">Kod CVC tej karty zostanie zaszyfrowany i zapisany na Twoim koncie Google – umożliwi to szybsze płatności</translation>
 <translation id="2983666748527428214">Otwórz kartę incognito</translation>
 <translation id="2985398929374701810">Wpisz prawidłowy adres</translation>
+<translation id="2985848978986605722">Do nawigacji po linkach do źródeł używaj klawiszy strzałek w lewo i w prawo.</translation>
 <translation id="2986485254770343131">Zapisuję pliki z aparatu</translation>
 <translation id="2987034854559945715">Brak pasujących funkcji</translation>
 <translation id="2989742184762224133">Dwie zszywki u góry</translation>
@@ -1273,6 +1275,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3141337053413339205">Przełącz na tę kartę.</translation>
 <translation id="3144458715650412431">Zastosowano zasady testowe. Możesz je sprawdzić i zresetować na stronie chrome://policy/test. Zasady administratora nie będą stosowane.</translation>
 <translation id="3145945101586104090">Dekodowanie odpowiedzi nie powiodło się</translation>
+<translation id="3149865382039202168">Wykorzystaj <ph name="GOOGLE_WALLET_TITLE" />, aby zapisać swoje dane i szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Możesz zarządzać tym, <ph name="HOW_INFO_IS_USED_LINK" /> w ustawieniach dokumentu prywatnego na koncie <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Tymczasowy błąd serwera</translation>
 <translation id="3150889484970506196">Przycisk Utwórz arkusz; aktywuj, aby szybko utworzyć nowy arkusz Google</translation>
 <translation id="3154506275960390542">Strona zawiera formularz, którego nie można przesłać bezpiecznie. Podczas przesyłania dane mogą zobaczyć inni użytkownicy, a hakerzy mogą je zmodyfikować, by na serwer dotarły zmienione dane.</translation>
@@ -1592,6 +1595,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3671540257457995106">Zezwolić na zmianę rozmiaru?</translation>
 <translation id="3672568546897166916">Błąd w ścieżce <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Rolka 3</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, otwiera się w panelu bocznym</translation>
 <translation id="3676592649209844519">Identyfikator urządzenia:</translation>
 <translation id="3677008721441257057">Czy chodziło Ci o &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Nie udało się podpisać żądania</translation>
@@ -2713,6 +2717,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
     Skontaktuj się z administratorem systemu.</translation>
 <translation id="5496804587179176046">Zapisz kody zabezpieczające – obecnie nie są zapisane</translation>
 <translation id="5499229993630251170">Kontynuować ten wątek?</translation>
+<translation id="5500759546320582211">Kod weryfikacyjny: <ph name="OTP" /> od <ph name="EMAIL" /></translation>
 <translation id="5506286895894263601">Lista nie zawiera prawidłowych skrótów.</translation>
 <translation id="5507756662695126555">Niezaprzeczalność</translation>
 <translation id="5508515366054931524">Prośba o potwierdzenie adresu e-mail jest otwarta na całą wysokość</translation>
@@ -3204,6 +3209,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6322182122604171028">Nie udało się użyć Windows Hello</translation>
 <translation id="6326175484149238433">Usuń z Chrome</translation>
 <translation id="6326947323444967009">Ustaw Chrome jako domyślną przeglądarkę systemową w ustawieniach iOS</translation>
+<translation id="6327434859517217259">jak te informacje są wykorzystywane w Google</translation>
 <translation id="6328639280570009161">Wyłącz przewidywanie działań sieciowych</translation>
 <translation id="6329742260390895689">Aby automatycznie uzupełniać informacje, w ustawieniach Portfela włącz opcję „Korzystanie z kart w Google”</translation>
 <translation id="6329815962353376655">&lt;Wpisz pytanie&gt;</translation>

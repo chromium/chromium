@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 გრადუსი</translation>
 <translation id="1747777564644667857">ფრენა</translation>
 <translation id="1748225549612934682">შეამოკლეთ ტექსტი, დაწერაში დახმარება რომ მიიღოთ</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> — <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">საფოსტო ყუთი 8</translation>
 <translation id="1753706481035618306">გვერდის ნომერი</translation>
 <translation id="1756026472674246267">ბმულის გახსნა ახალ ჩანართში</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">უფრო სწრაფი ანგარიშსწორების მიზნით, ამ ბარათის CVC დაიშიფრება და შეინახება თქვენს Google ანგარიშში</translation>
 <translation id="2983666748527428214">ინკოგნიტო ჩანართის გახსნა</translation>
 <translation id="2985398929374701810">შეიყვანეთ სწორი მისამართი</translation>
+<translation id="2985848978986605722">წყაროს ბმულების ნავიგაციისთვის გამოიყენეთ კლავიში მარცხნივ ან მარჯვნივ მიმართული ისრებით.</translation>
 <translation id="2986485254770343131">მიმდინარეობს კამერის ფაილების შენახვა</translation>
 <translation id="2987034854559945715">შესატყვისი ფუნქციები ვერ მოიძებნა</translation>
 <translation id="2989742184762224133">ორმაგად დასტეპლერება ზემოთ</translation>
@@ -1273,6 +1275,7 @@
 <translation id="3141337053413339205">ამ ჩანართზე გადართვა.</translation>
 <translation id="3144458715650412431">სატესტო წესები გამოყენებულია. მათი შემოწმება და გადაყენება შეგიძლიათ მისამართზე chrome://policy/test. ადმინისტრატორის წესები გამოყენებული არ იქნება.</translation>
 <translation id="3145945101586104090">პასუხის გაშიფვრა ვერ მოხერხდა</translation>
+<translation id="3149865382039202168">შეინახეთ თქვენი ინფორმაცია <ph name="GOOGLE_WALLET_TITLE" />ში და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. თქვენ შეგიძლიათ, მართოთ, <ph name="HOW_INFO_IS_USED_LINK" />, თქვენი პირადი საშვის პარამეტრებში <ph name="ACCOUNT" />-ისთვის. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">სერვერის დროებითი შეცდომა</translation>
 <translation id="3150889484970506196">ფურცლის შექმნის ღილაკი, ახალი Google Sheet-ის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
 <translation id="3154506275960390542">ეს გვერდი შეიცავს ფორმას, რომელიც დაცულად ვერ გადაიგზავნება. თქვენ მიერ გაგზავნილი მონაცემები შეიძლება იხილონ სხვებმა, ან შეიცვალოს თავდამსხმელის მიერ, რათა სერვერმა სხვა ინფორმაცია მიიღოს.</translation>
@@ -1592,6 +1595,7 @@
 <translation id="3671540257457995106">გსურთ ზომის შეცვლის დაშვება?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> შეიცავს შეცდომას: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">მესამე რულონი</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, გაიხსნება გვერდით პანელში</translation>
 <translation id="3676592649209844519">მოწყობილობის ID:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ხომ არ იგულისხმეთ?</translation>
 <translation id="3678029195006412963">მოთხოვნის ხელმოწერა ვერ მოხერხდა</translation>
@@ -2713,6 +2717,7 @@
     დაუკავშირდით თქვენი სისტემის ადმინისტრატორს.</translation>
 <translation id="5496804587179176046">უსაფრთხოების კოდების შენახვა, უსაფრთხოების კოდები ამჟამად შენახული არ არის</translation>
 <translation id="5499229993630251170">გსურთ ამ თემატური გზავნილების გაგრძელება?</translation>
+<translation id="5500759546320582211">დამადასტურებელი კოდი: <ph name="OTP" /> <ph name="EMAIL" />-იდან</translation>
 <translation id="5506286895894263601">ეს სია არ შეიცავს მოქმედ მალსახმობებს.</translation>
 <translation id="5507756662695126555">არა უარყოფილი</translation>
 <translation id="5508515366054931524">ელფოსტის დადასტურების ფანჯარა გაიხსნა სრულ სიმაღლეზე</translation>
@@ -3204,6 +3209,7 @@
 <translation id="6322182122604171028">Windows Hello-ს გამოყენება ვერ მოხერხდა</translation>
 <translation id="6326175484149238433">Chrome-იდან წაშლა</translation>
 <translation id="6326947323444967009">Chrome-ის დაყენება სისტემის ნაგულისხმევ ბრაუზერად iOS პარამეტრებიდან</translation>
+<translation id="6327434859517217259">როგორ გამოიყენება ეს ინფორმაცია Google-ში</translation>
 <translation id="6328639280570009161">სცადეთ ქსელის პროგნოზის გამორთვა</translation>
 <translation id="6329742260390895689">თქვენი ინფორმაციის ავტომატურად შესავსებად ჩართეთ „საშვების გამოყენება Google-ში“ საფულის პარამეტრებში</translation>
 <translation id="6329815962353376655">&lt;აკრიფეთ შეკითხვა&gt;</translation>

@@ -197,6 +197,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="5124429847818367226">Voit nyt käyttää Chromiumia aina selatessasi ja kun napautat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa.</translation>
 <translation id="5131565040785979529">Organisaatiosi (<ph name="DOMAIN" />) ylläpitää tiliä, jolla olet kirjautuneena sisään ja sitä, miten Chromiumia käytetään.</translation>
 <translation id="5134464247000681876">Avaa Gmailin, Mapsin, YouTuben ja muiden sovellusten linkit Chromiumissa</translation>
+<translation id="5190583032791290546">Chromium-vinkkejä</translation>
 <translation id="5203244847421322551">Tallenna ja täytä salasanoja automaattisesti Chromiumissa</translation>
 <translation id="5224391634244552924">Ei tallennettuja salasanoja. Chromium voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="5259423875997548710">Visuaalinen haku Chromiumissa</translation>
@@ -339,6 +340,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8013573822802650211">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="8014091604604659473">Olet kirjautunut ulos Chromiumista</translation>
 <translation id="8104697640054703121">Käytä Chromiumin vahvinta suojausta vaarallisilta sivustoilta</translation>
+<translation id="8105840573057009683">Chromium tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="8119542592987737574">Avaa Chromium nopeammin iPhonen aloitusnäytön alapalkista.</translation>
 <translation id="8119553494985516751">Avaa linkit nopeammin asettamalla Chromium oletusselaimeksi</translation>
 <translation id="8164086860209325020">Siirry Chromiumin asetuksiin</translation>

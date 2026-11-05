@@ -1275,6 +1275,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3141337053413339205">Skift til denne fane.</translation>
 <translation id="3144458715650412431">Testpolitikkerne er anvendt. Du kan gennemgå og nulstille dem på chrome://policy/test. Administratorpolitikker anvendes ikke.</translation>
 <translation id="3145945101586104090">Svaret kunne ikke afkodes</translation>
+<translation id="3149865382039202168">Gem dine oplysninger i <ph name="GOOGLE_WALLET_TITLE" />, og få mere fra hånden hurtigere, f.eks. ved at udfylde formularer i Google-produkter. Du kan administrere, <ph name="HOW_INFO_IS_USED_LINK" />, i dine indstillinger for personlige kort for <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Midlertidig serverfejl</translation>
 <translation id="3150889484970506196">Knappen Opret regneark, aktivér for hurtigt at oprette et nyt Google-regneark</translation>
 <translation id="3154506275960390542">Denne side indeholder en formular, der muligvis ikke kan indsendes sikkert. Dine indsendte data kan ses af andre eller kan blive ændret af en hacker, så serveren, du sender til, modtager forkerte oplysninger.</translation>
@@ -2716,6 +2717,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
     Prøv at kontakte din systemadministrator.</translation>
 <translation id="5496804587179176046">Gem sikkerhedskoder. Du har ikke gemt nogen sikkerhedskoder endnu</translation>
 <translation id="5499229993630251170">Vil du fortsætte denne tråd?</translation>
+<translation id="5500759546320582211">Verificeringskode: <ph name="OTP" /> fra <ph name="EMAIL" /></translation>
 <translation id="5506286895894263601">Listen indeholder ingen gyldige genveje.</translation>
 <translation id="5507756662695126555">Uafviselighed</translation>
 <translation id="5508515366054931524">Prompten til verificering af mailadresse er åbnet i fuld højde</translation>
@@ -3207,6 +3209,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6322182122604171028">Windows Hello kunne ikke anvendes</translation>
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6326947323444967009">Angiv Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
+<translation id="6327434859517217259">hvordan disse oplysninger bruges på Google</translation>
 <translation id="6328639280570009161">Prøv at deaktivere netværksforslag</translation>
 <translation id="6329742260390895689">Aktivér "Brug kort og billetter på Google" i Wallet-indstillingerne for at få dine oplysninger udfyldt automatisk</translation>
 <translation id="6329815962353376655">&lt;Skriv et spørgsmål&gt;</translation>

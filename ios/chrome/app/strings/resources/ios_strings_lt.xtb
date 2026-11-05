@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Galite grįžę čia atidaryti neseniai uždarytus skirtukus iš naujo</translation>
 <translation id="1016495303386450659">Elementas atnaujintas</translation>
 <translation id="1018804590490383958">Nuskaityti ir automatiškai užpildyti</translation>
-<translation id="1019990162050689579">„Gemini Apps“ veikla</translation>
 <translation id="102471647093736603">Paspauskite ir palaikykite, kad perkeltumėte</translation>
 <translation id="102645702181682900">Užduotis pradėta</translation>
 <translation id="102916930470544692">Prieigos raktas</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> leidimai bus iš naujo nustatyti kaip išjungti, kai išeisite iš šios svetainės.</translation>
 <translation id="1293491796138057740">Jūsų informacija išsaugoma „Google Wallet“ paskyroje <ph name="USER_EMAIL" />. Galite ją naudoti „Google“ produktuose, kad greičiau užpildytumėte formas.</translation>
 <translation id="1293556467332435079">Failai</translation>
-<translation id="1294703224699789269">Taikomos mūsų <ph name="BEGIN_LINK" />sąlygos<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korėjos vietovės informacijos sąlygos<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />privatumo pranešimas<ph name="END_LINK" />. Pokalbiai peržiūrimi ir naudojami generatyviniams DI modeliams mokyti. „Gemini“ yra DI ir gali klysti, įskaitant su žmonėmis susijusias klaidas. Tam tikras turinys gali būti tinkamas ne visiems. Galite <ph name="BEGIN_LINK" />tvarkyti istoriją<ph name="END_LINK" />, įskaitant informaciją apie vietovę. <ph name="BEGIN_LINK" />Sužinokite daugiau apie turimus variantus<ph name="END_LINK" />.</translation>
 <translation id="129553762522093515">Neseniai uždarytas</translation>
 <translation id="1296581780163690620">Atsisiųsti failą? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Veiksmas „Ieškoti naudojant DI režimą“ atliktas!</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="3973560090698854095">Bus ištrinti adresai, išsaugoti „Google“ paskyroje <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Prisijungta kaip <ph name="USER_EMAIL" />. Atidaryti paskyros meniu.</translation>
+<translation id="3986082989454912832">Atsakyti</translation>
 <translation id="3986739045730058129">Eikite į skirtuką</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
 <translation id="3993594519743675442">Slėpti priminimo nustatymą</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">Atsisiuntimai</translation>
 <translation id="4764612367328936189">Organizacijoje leidžiama prisijungti tik naudojant tam tikras paskyras. Neleidžiamos paskyros yra paslėptos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Padeda pasiekti išsaugotus prieigos raktus bet kuriame įrenginyje</translation>
-<translation id="476946043193006313">Jūsų veikla padeda mokyti generatyvinį DI</translation>
 <translation id="4782952780741793211">Patvirtinimo kodas:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Atidaryti inkognito režimu?</translation>
@@ -1704,7 +1702,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="628251768213143684">Visada galite valdyti, kas išsaugoma jūsų „Google“ paskyroje</translation>
 <translation id="6284652193729350524">Siūlyti versti <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Jei norite įjungti saugų naršymą, atidarykite skiltį <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" /> ir palieskite „Saugus naršymas“.</translation>
-<translation id="6295140892595702619">Naudokite mikrofoną, kad galėtumėte kalbėtis su „Gemini“. Kai kalbate su „Gemini“, garso įrašas saugomas „Gemini Apps“ veikloje (jei ji įjungta). Jūsų duomenys nenaudojami generatyviniams DI modeliams tobulinti</translation>
 <translation id="6295751040240588413">Netinkamas kortelės slapyvardis</translation>
 <translation id="629730747756840877">Paskyra</translation>
 <translation id="6301104306974789820">Gaukite kainų stebėjimo pranešimus</translation>
@@ -1732,7 +1729,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6347953390226388422">{count,plural, =1{Šis adresas bus ištrintas iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}one{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}few{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}many{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}other{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}}</translation>
 <translation id="634878792104344809">Sinchronizuokite slaptažodžius, istoriją ir kitą turinį visuose savo įrenginiuose</translation>
 <translation id="6350745006329795504">Įrenginių tvarkymas</translation>
-<translation id="6351000590398820964">„Gemini“ yra DI ir gali klysti, įskaitant su žmonėmis susijusias klaidas. Tam tikras turinys gali būti tinkamas ne visiems. Pokalbiai peržiūrimi ir naudojami generatyviniams DI modeliams mokyti. <ph name="BEGIN_LINK" />Sužinokite apie savo pasirinkimus<ph name="END_LINK" />. Taikomos mūsų <ph name="BEGIN_LINK" />sąlygos<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />privatumo pranešimas<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Įjungti skirtukų perjungiklį</translation>
 <translation id="63519665078626091">Jei norite naudoti Žiniatinklio tikrintuvą, kompiuteriu prisijunkite prie „Safari“ naudodami laidą ir pasiekite „iPad“ naudodami meniu „Develop“. Meniu „Develop“ galite įgalinti kompiuterio „Safari“ nustatymų skiltyje „Advanced“.</translation>
 <translation id="6354695695659930684">Užpildomas slaptažodis</translation>
@@ -2538,7 +2534,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8750037785291841318">Čia rasite skirtukus</translation>
 <translation id="8751126814549746156">Istorija automatiškai ištrinama po 18 mėnesių. Šį laikotarpį galite pakeisti skiltyje „Nustatymai“. Paslaugų teikėjų peržiūrėti pokalbiai atskiriami nuo jūsų paskyros ir saugomi iki trejų metų. Galite bet kada <ph name="BEGIN_LINK" />išjungti<ph name="END_LINK" /> istorijos nustatymą.</translation>
 <translation id="8756969031206844760">Atnaujinti slaptažodį?</translation>
-<translation id="8762190205387442931">Pokalbiai peržiūrimi ir naudojami generatyviniams DI modeliams mokyti. Galite <ph name="BEGIN_LINK" />tvarkyti istoriją<ph name="END_LINK" />, įskaitant informaciją apie vietovę. <ph name="BEGIN_LINK" />Sužinokite daugiau apie turimus variantus<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Eiti į paskutinį skirtuką</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> ir <ph name="SECOND_WEBSITE" /> slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="8775144690796719618">Netinkamas URL</translation>

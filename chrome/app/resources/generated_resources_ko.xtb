@@ -1479,6 +1479,7 @@
 <translation id="2131548114076786395">탭 그룹을 공유하거나, 탭 그룹에 참여하거나, 탭 그룹에서 공동작업하려면 본인 인증을 하세요.</translation>
 <translation id="2131863825246488194">온라인에서 더 안전하게</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> 다시 시도</translation>
+<translation id="2134044938347520790">읽기 모드 문제 또는 기능 요청 공유</translation>
 <translation id="2134905185275441536">시스템 CA</translation>
 <translation id="2135420518376202233">블루투스 기기 이름</translation>
 <translation id="21354425047973905">PIN 숨기기</translation>
@@ -2645,7 +2646,6 @@
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />에서 비공개 Wi-Fi 연결을 생성합니다.</translation>
 <translation id="3004385386820284928">키보드 키 맞춤설정</translation>
 <translation id="300580149047131921">방금 사용</translation>
-<translation id="3005928441045180122">세로</translation>
 <translation id="3006881078666935414">사용 데이터 없음</translation>
 <translation id="3007555010975143508">다음 앱은 화면을 녹화하는 데 사용될 수 있습니다.</translation>
 <translation id="3007771295016901659">탭 복사</translation>
@@ -4295,6 +4295,7 @@
 <translation id="4250596587221570622">프로필 테마 선택</translation>
 <translation id="4250680216510889253">아니요</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 보고 사본을 만들 수 있게 됩니다.</translation>
+<translation id="4251316952800826018">포커스 선택 헤더</translation>
 <translation id="4252899949534773101">블루투스가 사용 중지됨</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 탭 콘텐츠 공유됨</translation>
 <translation id="4253168017788158739">메모</translation>
@@ -4722,6 +4723,7 @@
 <translation id="4580389561674319558">연락처에 있는 모든 사용자에게 공개</translation>
 <translation id="4580596421317071374">비밀번호는 이 기기의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="4582297591746054421">사이트에서는 일반적으로 복사한 텍스트 형식 유지와 같은 기능을 사용하기 위해 클립보드를 읽어 옵니다.</translation>
+<translation id="4582563038311694664">모든 설정 초기화</translation>
 <translation id="4584094413232466841">Chrome 자동 완성에서 이 정보를 삭제하시겠습니까?</translation>
 <translation id="4584770411839426377">창</translation>
 <translation id="4584836561445313300">조직에서 비밀번호 등 기존 인터넷 사용 기록을 보고 관리할 수 있습니다.</translation>
@@ -6781,6 +6783,7 @@
 <translation id="6185151644843671709">패스키 저장 및 PIN 생성됨</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{비밀번호 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}other{비밀번호 {PASSWORD_COUNT}개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}}</translation>
 <translation id="6186177419203903310">시스템 전반에서 모든 새 USB 주변기기에 대한 알림이 사용 설정됩니다. 계속하시겠습니까?</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" />에 포커스됨 - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">분할 뷰 메뉴를 사용하여 나란히 배치된 레이아웃과 스택 레이아웃 간에 전환하세요.</translation>
 <translation id="6190953336330058278">휴대전화 허브 앱</translation>
 <translation id="6192333916571137726">파일 다운로드</translation>
@@ -7109,7 +7112,6 @@
 <translation id="6453687572758515877">모든 탭 그룹화</translation>
 <translation id="6453921811609336127">다음 입력 방법으로 전환하려면 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" />를 누르세요.</translation>
 <translation id="645433497989692531">이 기기에서 인터넷 사용 기록이 영구적으로 삭제됩니다. 데이터를 복구하려면 다음 계정으로 로그인하세요.</translation>
-<translation id="6454456397828627257">나란히</translation>
 <translation id="6455264371803474013">특정 사이트에서</translation>
 <translation id="6455521402703088376">사용 안함 • 개발자가 이 확장 프로그램을 게시 취소했습니다.</translation>
 <translation id="6455894534188563617">새 폴더(&amp;N)</translation>
@@ -8636,6 +8638,7 @@
 <translation id="7612655942094160088">연결된 휴대전화 기능 사용 설정.</translation>
 <translation id="7612989789287281429">로그인하는 중…</translation>
 <translation id="76131528886466333">Microsoft Edge용 Google 검색 확장 프로그램 설치</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" />에 포커스됨</translation>
 <translation id="7615365294369022248">계정 추가 중 오류 발생</translation>
 <translation id="7616964248951412133">사이트에서 이 기능을 사용하여 게임이나 원격 데스크톱 앱과 같은 마우스 입력을 캡처하고 사용합니다.</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
@@ -10181,7 +10184,6 @@
 <translation id="8774379074441005279">복원 확인</translation>
 <translation id="8774934320277480003">상단 여백</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>
-<translation id="877515298105563553">나란히</translation>
 <translation id="8776294611668764629">파일이 너무 커서 보안 확인이 불가능하기 때문에 조직에서 파일을 차단했습니다. 최대 50MB 크기의 파일을 열 수 있습니다.</translation>
 <translation id="8777509665768981163">태블릿에서 버튼 추가 또는 찾기</translation>
 <translation id="8779720597365936419">예, 개인 데이터를 직장과 분리하여 유지(권장)</translation>
@@ -10716,7 +10718,6 @@
 <translation id="9170884462774788842">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 테마를 추가했습니다.</translation>
 <translation id="9172270007201309670">글꼴 크기 확대됨</translation>
 <translation id="917350715406657904">부모님이 설정한 <ph name="APP_NAME" /> 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
-<translation id="9174854240439014335">창 왼쪽 또는 오른쪽 가장자리에서 분할 보기 드래그 앤 드롭 허용</translation>
 <translation id="9174870712400134574">새 탭 페이지에만 표시</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 블루투스 기기 연결됨</translation>
 <translation id="9177859716483578738">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />을 확인하세요.</translation>

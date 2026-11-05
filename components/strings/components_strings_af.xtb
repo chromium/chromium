@@ -456,6 +456,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1746531169546376413">0 grade</translation>
 <translation id="1747777564644667857">Vlug</translation>
 <translation id="1748225549612934682">Verkort jou teks om skryfhulp te kry</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Posbus 8</translation>
 <translation id="1753706481035618306">Bladsynommer</translation>
 <translation id="1756026472674246267">Maak skakel in nuwe oortjie oop</translation>
@@ -1175,6 +1176,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2980742331521553164">Hierdie kaart se CVC sal geënkripteer word en in jou Google-rekening gestoor word om korter by betaalpunt te wees</translation>
 <translation id="2983666748527428214">Maak Incognito-oortjie oop</translation>
 <translation id="2985398929374701810">Voer 'n geldige adres in</translation>
+<translation id="2985848978986605722">Gebruik links- of regspylsleutels om die bronskakels te navigeer.</translation>
 <translation id="2986485254770343131">Stoor tans kameralêers</translation>
 <translation id="2987034854559945715">Geen passende kenmerke nie</translation>
 <translation id="2989742184762224133">Dubbelkram bo</translation>
@@ -1592,6 +1594,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3671540257457995106">Laat grootteverandering toe?</translation>
 <translation id="3672568546897166916">Fout by <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Derde rol</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, maak in kantpaneel oop</translation>
 <translation id="3676592649209844519">Toestel-ID:</translation>
 <translation id="3677008721441257057">Het jy bedoel &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Versoek kon nie onderteken word nie</translation>

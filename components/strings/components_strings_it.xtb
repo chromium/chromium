@@ -456,6 +456,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1746531169546376413">0 gradi</translation>
 <translation id="1747777564644667857">Volo</translation>
 <translation id="1748225549612934682">Abbrevia il testo per ricevere aiuto per la scrittura</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753706481035618306">Numero di pagina</translation>
 <translation id="1756026472674246267">Apri link in un'altra scheda</translation>
@@ -733,6 +734,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2215727959747642672">Modifica di file</translation>
 <translation id="2219658597883514593">Riavvia tutorial</translation>
 <translation id="2219735899272417925">È richiesta la reimpostazione del dispositivo</translation>
+<translation id="2221460252073828078">Visualizza qui la risposta dell'AI della Ricerca</translation>
 <translation id="2222604080869344662">Accedi a OneDrive per continuare il download</translation>
 <translation id="2224337661447660594">Nessuna connessione a internet</translation>
 <translation id="2225927550500503913">Carta virtuale attivata</translation>
@@ -1174,6 +1176,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2980742331521553164">Il CVC di questa carta verrà criptato e salvato nel tuo Account Google per velocizzare i pagamenti</translation>
 <translation id="2983666748527428214">Apri scheda Incognito</translation>
 <translation id="2985398929374701810">Inserisci un indirizzo valido</translation>
+<translation id="2985848978986605722">Usa i tasti Freccia sinistra o destra per navigare tra i link alle fonti.</translation>
 <translation id="2986485254770343131">Salvataggio dei file della fotocamera in corso…</translation>
 <translation id="2987034854559945715">Nessuna funzionalità corrispondente</translation>
 <translation id="2989742184762224133">Doppia pinzatura in alto</translation>
@@ -1588,6 +1591,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3671540257457995106">Consentire ridimensionamento?</translation>
 <translation id="3672568546897166916">Errore in <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Terzo rullo</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, si apre nel riquadro laterale</translation>
 <translation id="3676592649209844519">ID dispositivo:</translation>
 <translation id="3677008721441257057">Forse intendevi &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Impossibile firmare la richiesta</translation>

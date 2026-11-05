@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 dərəcə</translation>
 <translation id="1747777564644667857">Uçuş</translation>
 <translation id="1748225549612934682">Yazarkən kömək almaq üçün mətni qısaldın</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Poçt qutusu 8</translation>
 <translation id="1753706481035618306">Səhifə nömrəsi</translation>
 <translation id="1756026472674246267">Keçidi Yeni Tabda açın</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">Bu kartın CVC-si şifrələnəcək və sürətli ödəmə üçün Google Hesabında yadda saxlanacaq</translation>
 <translation id="2983666748527428214">Anonim Tab açın</translation>
 <translation id="2985398929374701810">Düzgün ünvan daxil edin</translation>
+<translation id="2985848978986605722">Mənbə keçidləri arasında hərəkət etmək üçün sol və ya sağ ox düymələrindən istifadə edin.</translation>
 <translation id="2986485254770343131">Kamera faylları yadda saxlanılır</translation>
 <translation id="2987034854559945715">Uyğun funksiya yoxdur</translation>
 <translation id="2989742184762224133">Yuxarıdan qoşa ştapel vurun</translation>
@@ -1588,6 +1590,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3671540257457995106">Ölçünü dəyişməyə icazə verilsin?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> xətası: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Üçüncü Rulon</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, yan paneldə açılır</translation>
 <translation id="3676592649209844519">Cihaz ID'si:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ünvanını nəzərdə tuturdunuz?</translation>
 <translation id="3678029195006412963">Sorğuya daxil olmaq mümkün olmadı</translation>

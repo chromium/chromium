@@ -451,6 +451,7 @@
 <translation id="1746531169546376413">0 డిగ్రీలు</translation>
 <translation id="1747777564644667857">విమానం</translation>
 <translation id="1748225549612934682">మీ టెక్స్ట్‌ను తక్కువ పదాలతో రాసి, రాయడంలో సహాయం పొందండి</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">మెయిల్‌బాక్స్ 8</translation>
 <translation id="1753706481035618306">పేజీ సంఖ్య</translation>
 <translation id="1756026472674246267">లింక్‌ను కొత్త ట్యాబ్‌లో తెరవండి</translation>
@@ -1170,6 +1171,7 @@
 <translation id="2980742331521553164">వేగవంతమైన చెక్అవుట్ కోసం ఈ కార్డ్ CVC ఎన్‌క్రిప్ట్ చేయబడుతుంది, మీ Google ఖాతాలో సేవ్ చేయబడుతుంది</translation>
 <translation id="2983666748527428214">అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="2985398929374701810">చెల్లుబాటు అయ్యే అడ్రస్‌ను నమోదు చేయండి</translation>
+<translation id="2985848978986605722">సోర్స్ లింక్‌లను నావిగేట్ చేయడానికి ఎడమ లేదా కుడి వైపు బాణం కీలను ఉపయోగించండి.</translation>
 <translation id="2986485254770343131">కెమెరా ఫైల్స్‌ను సేవ్ చేస్తోంది</translation>
 <translation id="2987034854559945715">మ్యాచ్ అయ్యే ఫీచర్‌లు లేవు</translation>
 <translation id="2989742184762224133">ఎగువ భాగంలో డ్యుయల్ స్టేపుల్</translation>
@@ -1587,6 +1589,7 @@
 <translation id="3671540257457995106">సైజ్‌ మార్చడానికి అనుమతించాలా?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />‌లో ఎర్రర్ ఏర్పడింది: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">థర్డ్ రోల్</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, సైడ్ ప్యానెల్‌లో తెరుచుకుంటుంది</translation>
 <translation id="3676592649209844519">పరికర ID:</translation>
 <translation id="3677008721441257057">మీరు &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; గురించి అభ్యర్థిస్తున్నారా?</translation>
 <translation id="3678029195006412963">రిక్వెస్ట్‌కు సంతకం అందించడం సాధ్యపడలేదు</translation>

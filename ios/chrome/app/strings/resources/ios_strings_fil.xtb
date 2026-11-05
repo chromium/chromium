@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Puwede kang bumalik dito para buksan ulit ang mga tab na isinara mo kamakailan</translation>
 <translation id="1016495303386450659">Na-update ang item</translation>
 <translation id="1018804590490383958">I-scan at i-autofill</translation>
-<translation id="1019990162050689579">Aktibidad sa Gemini App</translation>
 <translation id="102471647093736603">Pindutin nang matagal para ilipat</translation>
 <translation id="102645702181682900">Sinimulan ang gawain</translation>
 <translation id="102916930470544692">Passkey</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680">Mare-reset sa naka-off ang mga pahintulot sa <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> kapag umalis ka sa site na ito.</translation>
 <translation id="1293491796138057740">Ise-save ang iyong impormasyon sa Google Wallet para sa <ph name="USER_EMAIL" />. Puwede mo itong gamitin sa lahat ng produkto ng Google para mas mabilis na mapunan ang mga form.</translation>
 <translation id="1293556467332435079">Mga File</translation>
-<translation id="1294703224699789269">Nalalapat ang aming <ph name="BEGIN_LINK" />Mga Tuntunin<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Mga Tuntunin ng Lokasyon sa Korea<ph name="END_LINK" />, at <ph name="BEGIN_LINK" />Notification ng Privacy<ph name="END_LINK" />. Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. AI ang Gemini at puwede itong magkamali, kasama ang tungkol sa mga tao. Posibleng hindi naaangkop para sa lahat ang ilang content. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong history<ph name="END_LINK" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
 <translation id="1296581780163690620">I-download ang file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Natapos na ang "Maghanap gamit ang AI Mode"!</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3973560090698854095">Dine-delete nito ang mga address na naka-save sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Naka-sign in bilang <ph name="USER_EMAIL" />. Buksan ang menu ng account.</translation>
+<translation id="3986082989454912832">Sagutin</translation>
 <translation id="3986739045730058129">Pumunta sa tab</translation>
 <translation id="3992684624889376114">Tungkol sa page na ito</translation>
 <translation id="3993594519743675442">I-hide ang Magtakda ng Paalala</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4764612367328936189">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account. Nakatago ang mga account na hindi pinapayagan. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Tinutulungan kang i-access ang mga naka-save na passkey sa anumang device</translation>
-<translation id="476946043193006313">Nakakatulong ang iyong aktibidad na sanayin ang generative AI</translation>
 <translation id="4782952780741793211">Code sa pagkumpirma:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Buksan sa Incognito?</translation>
@@ -1704,7 +1702,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="628251768213143684">Puwede mong pamahalaan kung ano ang naka-save sa iyong Google Account anumang oras</translation>
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Para i-on ang Ligtas na Pag-browse, buksan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" /> at i-tap ang Ligtas na Pag-browse.</translation>
-<translation id="6295140892595702619">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, naso-store ang audio sa Aktibidad sa Mga Gemini App (kung naka-on ito). Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model</translation>
 <translation id="6295751040240588413">Invalid ang nickname ng card</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Makakuha ng mga notification sa pagsubaybay sa presyo</translation>
@@ -1732,7 +1729,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6347953390226388422">{count,plural, =1{Made-delete ang address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}one{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}other{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}}</translation>
 <translation id="634878792104344809">I-sync ang iyong password, history, at higit pa sa lahat ng device mo</translation>
 <translation id="6350745006329795504">Pamahalaan ang iyong mga device</translation>
-<translation id="6351000590398820964">AI ang Gemini at puwede itong magkamali, kasama ang tungkol sa mga tao. Posibleng hindi naaangkop para sa lahat ang ilang content. Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. <ph name="BEGIN_LINK" />Matuto tungkol sa iyong mga pagpipilian<ph name="END_LINK" />. Nalalapat ang aming <ph name="BEGIN_LINK" />Mga Tuntunin<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />Notification ng Privacy<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Pumasok sa tab switcher</translation>
 <translation id="63519665078626091">Para gamitin ang Web Inspector, kumonekta sa Safari sa iyong computer gamit ang isang cable at i-access ang iyong iPad mula sa menu ng Mag-develop. Puwede mong i-enable ang menu ng mag-develop sa seksyong Advanced ng mga setting ng Safari sa iyong computer.</translation>
 <translation id="6354695695659930684">Pinupunan ang password</translation>
@@ -2538,7 +2534,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8750037785291841318">Makikita mo rito ang iyong mga tab</translation>
 <translation id="8751126814549746156">Awtomatikong nade-delete ang iyong history pagkalipas ng 18 buwan. Puwede mong baguhin ang panahong ito sa Mga Setting. Ihihiwalay sa iyong account ang mga chat na sinuri ng mga service provider at papanatilihin ang mga ito nang hanggang 3 taon. Puwede mong <ph name="BEGIN_LINK" />i-off<ph name="END_LINK" /> ang iyong setting ng History anumang oras.</translation>
 <translation id="8756969031206844760">I-update ang password?</translation>
-<translation id="8762190205387442931">Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong history<ph name="END_LINK" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">Pumunta sa Huling Tab</translation>
 <translation id="8766790350274092814">Made-delete ang mga password para sa <ph name="WEBSITE" /> at <ph name="SECOND_WEBSITE" />. Hindi made-delete ang iyong mga account.</translation>
 <translation id="8775144690796719618">Di-wastong URL</translation>

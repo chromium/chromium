@@ -189,6 +189,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1749561566933687563">Synchronisez vos favoris</translation>
 <translation id="1750238553597293878">Continuer à utiliser les mots de passe de votre compte Google</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Restaurer la fenêtre <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pages, 1 page dans la liste}one{Pages, # page dans la liste}other{Pages, # pages dans la liste}}</translation>
 <translation id="1771929606532798550">Des informations sont envoyées à Google concernant votre utilisation de Chrome, mais elles ne sont pas liées à vous\n\nSi Chrome plante, les détails concernant le plantage peuvent inclure des renseignements personnels\n\nSi vous synchronisez votre historique avec votre compte Google, les mesures peuvent également inclure des informations sur les URL que vous visitez</translation>
 <translation id="1778457539567749232">Marquer comme non lu</translation>
@@ -1258,6 +1259,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
 <translation id="6023820583797130428">Ouvrir le menu pour revenir en arrière</translation>
 <translation id="6026538407078977628">Ouvrir la fenêtre en plein écran</translation>
+<translation id="6027619584715411062">Connectez-vous pour accéder à vos favoris, vos mots de passe et plus encore sur tous vos appareils.</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604124094241169006">Automatique</translation>
@@ -1602,6 +1604,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7190921792980745354">Bloquer <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Vous devriez le modifier maintenant}one{Vous devriez le modifier maintenant}other{Vous devriez les modifier maintenant}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Restaurer la fenêtre de <ph name="TAB_COUNT_ONE" /> onglet.}one{Restaurer la fenêtre de <ph name="TAB_COUNT_MANY" /> onglet.}other{Restaurer la fenêtre de <ph name="TAB_COUNT_MANY" /> onglets.}}</translation>
 <translation id="7196215469483532480">Explication du guide sur la confidentialité ouverte à pleine hauteur</translation>
 <translation id="7196455519852483601">Vous pouvez supprimer une partie ou l'intégralité de votre historique, de vos témoins, de vos données relatives aux sites et plus</translation>
 <translation id="7197682514647286393">Supprimer rapidement vos données de navigation</translation>
@@ -1855,6 +1858,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8135406045838672858">Les fichiers PDF téléchargés s'ouvrent automatiquement avec <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Lien reçu}one{# lien reçu}other{# liens reçus}}</translation>
 <translation id="8137562778192957619">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google.</translation>
+<translation id="8149825829235553327">Sécuriser vos onglets de navigation privée</translation>
 <translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8152331954420209374">Accéder à Lentille</translation>
 <translation id="8153206878708357851">Activer/Désactiver la navigation au clavier</translation>

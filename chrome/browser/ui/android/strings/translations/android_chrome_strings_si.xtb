@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">ඔබගේ පොත් සලකුණු සමමුහුර්ත කරන්න</translation>
 <translation id="1750238553597293878">ඔබේ Google ගිණුමේ ඇති මුරපද දිගටම භාවිතා කරන්න</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315"><ph name="TITLE_OF_WINDOW" /> කවුළුව ප්‍රතිසාධනය කරන්න.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{පිටු, ලැයිස්තුවේ 1 පිටුවක්}one{පිටු, ලැයිස්තුවේ පිටු #ක්}other{පිටු, ලැයිස්තුවේ පිටු #ක්}}</translation>
 <translation id="1771929606532798550">ඔබේ Chrome භාවිතය පිළිබඳ තතු Google වෙත යවනු ලැබේ, නමුත් එය ඔබ හා බැඳී නැත\n\nChrome බිඳ වැටුණහොත්, බිඳවැටීම පිළිබඳ විස්තරවල යම් පුද්ගලික තතු ඇතුළත් විය හැක\n\nඔබ ඔබේ ඉතිහාසය ඔබේ Google ගිණුමට සමමුහුර්ත කරන්නේ නම්, ප්‍රමිතිකවල ද ඔබ පිවිසෙන URL පිළිබඳ තතු ඇතුළත් විය හැක</translation>
 <translation id="1778457539567749232">නොකියවූ ලෙස ලකුණු කරන්න</translation>
@@ -1258,6 +1259,7 @@
 <translation id="6022659036123304283">Chrome ඔබේම කර ගන්න</translation>
 <translation id="6023820583797130428">ආපසු යාමට මෙනුව විවෘත කරන්න</translation>
 <translation id="6026538407078977628">පූර්ණ තිරයට දිග හරින්න</translation>
+<translation id="6027619584715411062">ඔබේ සියලු උපාංග මත ඔබේ පිටුසන්, මුරපද, සහ තවත් දේ ලබා ගැනීමට පුරන්න.</translation>
 <translation id="6039379616847168523">ඊළඟ ටැබය වෙත පනින්න</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="604124094241169006">ස්වයංක්‍රීය</translation>
@@ -1602,6 +1604,7 @@
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> අවහිර කරන්න ද?</translation>
 <translation id="7191430249889272776">පසුබිමින් පටිත්ත විවෘත කරන ලදි.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{ඔබ දැන් මෙය වෙනස් කළ යුතු ය}one{ඔබ දැන් මේවා වෙනස් කළ යුතු ය}other{ඔබ දැන් මේවා වෙනස් කළ යුතු ය}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> පටිත්තක කවුළුව ප්‍රතිසාධනය කරන්න.}one{පටිති <ph name="TAB_COUNT_MANY" />ක කවුළුව ප්‍රතිසාධනය කරන්න.}other{පටිති <ph name="TAB_COUNT_MANY" />ක කවුළුව ප්‍රතිසාධනය කරන්න.}}</translation>
 <translation id="7196215469483532480">පෞද්ගලිකත්ව මාර්ගෝපදේශ පැහැදිලි කිරීම පූර්ණ උසකින් විවෘත වේ</translation>
 <translation id="7196455519852483601">ඔබට ඔබේ ඉතිහාසය, කුකී, අඩවි දත්ත, සහ තවත් දේ හෝ සියල්ල මකා දැමිය හැක</translation>
 <translation id="7197682514647286393">ඔබේ බ්‍රවුස් කිරීමේ දත්ත ඉක්මනින් මකන්න</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8135406045838672858">බාගත කළ PDFs <ph name="APP_NAME" /> සමග ස්වයංක්‍රීයව විවෘත වේ</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{සබැඳිය ලැබුණි}one{සබැඳි #ක් ලැබුණි}other{සබැඳි #ක් ලැබුණි}}</translation>
 <translation id="8137562778192957619">ඔබට මෙම මුරපදය මතක තබා ගැනීමට අවශ්‍ය නොවනු ඇත. එය Google මුරපද කළමනාකරු වෙත සුරකිනු ඇත.</translation>
+<translation id="8149825829235553327">ඔබේ අප්‍රකට පටිති සුරක්ෂිත කරන්න</translation>
 <translation id="8151185429379586178">සංවර්ධක උපකරණ</translation>
 <translation id="8152331954420209374">Lens වෙත යන්න</translation>
 <translation id="8153206878708357851">කැරට් බ්‍රවුස් කිරීම ටොගල් කරන්න</translation>

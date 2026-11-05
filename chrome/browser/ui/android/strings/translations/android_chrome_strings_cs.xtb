@@ -189,6 +189,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1749561566933687563">Synchronizace záložek</translation>
 <translation id="1750238553597293878">Pokračujte v používání hesel ve svém účtu Google</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Obnovit okno <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Stránky, 1 stránka v seznamu}few{Stránky, # stránky v seznamu}many{Stránky, # stránky v seznamu}other{Stránky, # stránek v seznamu}}</translation>
 <translation id="1771929606532798550">Informace o vašem používání Chromu se odesílají do Googlu, ale nejsou spojeny s vámi.\n\nPokud Chrome spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.\n\nPokud svou historii synchronizujete do účtu Google, mohou metriky zahrnovat také navštívené adresy URL</translation>
 <translation id="1778457539567749232">Označit jako nepřečtené</translation>
@@ -1258,6 +1259,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6022659036123304283">Přizpůsobte si Chrome</translation>
 <translation id="6023820583797130428">Otevřít nabídku a vrátit se zpět</translation>
 <translation id="6026538407078977628">Rozbalit na celou obrazovku</translation>
+<translation id="6027619584715411062">Přihlaste se a používejte záložky, hesla a další obsah na všech svých zařízeních.</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="604124094241169006">Automaticky</translation>
@@ -1602,6 +1604,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7190921792980745354">Blokovat uživatele <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Karta je otevřena na pozadí.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Měli byste ho hned změnit}few{Měli byste je hned změnit}many{Měli byste je hned změnit}other{Měli byste je hned změnit}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Obnovit okno s <ph name="TAB_COUNT_ONE" /> kartou.}few{Obnovit okno se <ph name="TAB_COUNT_MANY" /> kartami.}many{Obnovit okno s <ph name="TAB_COUNT_MANY" /> karty.}other{Obnovit okno s <ph name="TAB_COUNT_MANY" /> kartami.}}</translation>
 <translation id="7196215469483532480">Vysvětlení průvodce ochranou soukromí otevřené na plnou výšku</translation>
 <translation id="7196455519852483601">Můžete smazat část nebo celou svou historii, soubory cookie, data webů a další položky</translation>
 <translation id="7197682514647286393">Rychlé vymazání údajů o prohlížení</translation>
@@ -1855,6 +1858,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8135406045838672858">Stažené soubory PDF se automaticky otevírají pomocí aplikace <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Byl přijat odkaz}few{Byly přijaty # odkazy}many{Bylo přijato # odkazu}other{Bylo přijato # odkazů}}</translation>
 <translation id="8137562778192957619">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google.</translation>
+<translation id="8149825829235553327">Zabezpečte své anonymní karty</translation>
 <translation id="8151185429379586178">Nástroje pro vývojáře</translation>
 <translation id="8152331954420209374">Přejít do prostředí Lens</translation>
 <translation id="8153206878708357851">Přepnout procházení pomocí kurzoru</translation>

@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">已更新項目</translation>
 <translation id="1018804590490383958">掃瞄並自動填入</translation>
-<translation id="1019990162050689579">Gemini 應用程式活動</translation>
 <translation id="102471647093736603">按住即可移動</translation>
 <translation id="102645702181682900">已開始任務</translation>
 <translation id="102916930470544692">密鑰</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />的權限會在您離開此網站後重設為停用。</translation>
 <translation id="1293491796138057740">資料會儲存至 <ph name="USER_EMAIL" /> 的「Google 錢包」。你可以在各項 Google 產品中使用有關資料，加快填表速度。</translation>
 <translation id="1293556467332435079">檔案</translation>
-<translation id="1294703224699789269">受我們的《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》、《<ph name="BEGIN_LINK" />韓國定位條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />私隱聲明<ph name="END_LINK" />》約束。對話會送交審核，並用於訓練生成式 AI 模型。Gemini 是 AI，可能會出錯 (包括有關人物的資料)。部分內容不一定適合所有人使用。你可以<ph name="BEGIN_LINK" />管理記錄<ph name="END_LINK" />，包括位置資料。<ph name="BEGIN_LINK" />進一步瞭解你有哪些選擇<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
 <translation id="1296581780163690620">要下載檔案嗎？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">完成「使用『AI 模式』搜尋」！</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3973560090698854095">這將會刪除 Google 帳戶 <ph name="USER_EMAIL" /> 儲存的地址。</translation>
 <translation id="398604237578616937">已使用 <ph name="USER_EMAIL" /> 的身分登入。開啟帳戶選單。</translation>
+<translation id="3986082989454912832">接聽</translation>
 <translation id="3986739045730058129">前往該分頁</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="3993594519743675442">隱藏「設定提醒」</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">下載</translation>
 <translation id="4764612367328936189">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">讓你在任何裝置上存取所儲存的密鑰</translation>
-<translation id="476946043193006313">你的活動有助訓練生成式 AI</translation>
 <translation id="4782952780741793211">確認碼：</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
@@ -1704,7 +1702,6 @@
 <translation id="628251768213143684">你隨時可管理儲存在 Google 帳戶中的內容</translation>
 <translation id="6284652193729350524">為<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6293101329759844770">如要啟用「安全瀏覽」功能，請開啟「<ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />」，並輕按 [安全瀏覽]。</translation>
-<translation id="6295140892595702619">使用麥克風與 Gemini 對話。當你與 Gemini 對話，音訊會儲存在「Gemini 應用程式活動」(如已啟用)。你的資料不會用於改善生成式 AI 模型</translation>
 <translation id="6295751040240588413">信用卡暱稱無效</translation>
 <translation id="629730747756840877">帳戶</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
@@ -1732,7 +1729,6 @@
 <translation id="6347953390226388422">{count,plural, =1{此地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}other{這些地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}}</translation>
 <translation id="634878792104344809">將所有裝置上的密碼、記錄及其他設定保持同步</translation>
 <translation id="6350745006329795504">管理你的裝置</translation>
-<translation id="6351000590398820964">Gemini 是 AI，可能會出錯 (包括有關人物的資料)。部分內容不一定適合所有人使用。對話會送交審核，並用於訓練生成式 AI 模型。<ph name="BEGIN_LINK" />瞭解你有哪些選擇<ph name="END_LINK" />。受我們的《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />私隱聲明<ph name="END_LINK" />》約束。</translation>
 <translation id="6351147166808964033">進入分頁切換工具</translation>
 <translation id="63519665078626091">如要使用「網絡檢查工具」，請透過連接線連線至電腦的 Safari，並從「開發」選單存取 iPad。您可透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
 <translation id="6354695695659930684">正在填入密碼</translation>
@@ -2536,7 +2532,6 @@
 <translation id="8750037785291841318">您可在此查看分頁</translation>
 <translation id="8751126814549746156">你的記錄會在 18 個月後自動刪除。你可在「設定」中變更此時間範圍。經服務供應商審查的對話會與你的帳戶解除連結，並保留最多 3 年。你可隨時<ph name="BEGIN_LINK" />關閉<ph name="END_LINK" />「記錄」設定。</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
-<translation id="8762190205387442931">對話會送交審核，並用於訓練生成式 AI 模型。你可以<ph name="BEGIN_LINK" />管理記錄<ph name="END_LINK" />，包括位置資料。<ph name="BEGIN_LINK" />進一步瞭解你的選項<ph name="END_LINK" />。</translation>
 <translation id="8763613688786959833">前往最後一個分頁</translation>
 <translation id="8766790350274092814">系統會刪除 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密碼。但不會刪除您的帳戶。</translation>
 <translation id="8775144690796719618">網址無效</translation>

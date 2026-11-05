@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 ഡിഗ്രി</translation>
 <translation id="1747777564644667857">ഫ്ലൈറ്റ്</translation>
 <translation id="1748225549612934682">എഴുതാൻ സഹായം തേടാൻ നിങ്ങളുടെ ടെക്‌സ്റ്റ് ചെറുതാക്കുക</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">മെയിൽബോക്സ് 8</translation>
 <translation id="1753706481035618306">പേജ് നമ്പർ</translation>
 <translation id="1756026472674246267">പുതിയ ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">വേഗത്തിലുള്ള ചെക്ക്ഔട്ടിനായി ഈ കാർഡിന്റെ CVC എൻക്രിപ്റ്റ് ചെയ്ത് നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കും</translation>
 <translation id="2983666748527428214">അദൃശ്യ ടാബ് തുറക്കുക</translation>
 <translation id="2985398929374701810">ശരിയായ വിലാസം നല്‍കുക</translation>
+<translation id="2985848978986605722">ഉറവിട ലിങ്കുകൾ നാവിഗേറ്റ് ചെയ്യാൻ ഇടത്തേക്കോ വലത്തേക്കോ ഉള്ള അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
 <translation id="2986485254770343131">ക്യാമറാ ഫയലുകൾ സംരക്ഷിക്കുന്നു</translation>
 <translation id="2987034854559945715">പൊരുത്തപ്പെടുന്ന ഫീച്ചറുകളൊന്നുമില്ല</translation>
 <translation id="2989742184762224133">മുകളിൽ ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
@@ -1591,6 +1593,7 @@
 <translation id="3671540257457995106">വലുപ്പം മാറ്റാൻ അനുവദിക്കണോ?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> എന്നതിൽ പിശക്: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">മൂന്നാമത്തെ റോൾ</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, സൈഡ് പാനലിൽ തുറക്കുന്നു</translation>
 <translation id="3676592649209844519">ഉപകരണ ഐഡി:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; എന്നാണോ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="3678029195006412963">അഭ്യർത്ഥന സൈൻ ചെയ്യാനായില്ല</translation>

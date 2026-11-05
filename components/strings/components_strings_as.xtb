@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">০ ডিগ্ৰী</translation>
 <translation id="1747777564644667857">বিমান</translation>
 <translation id="1748225549612934682">লিখাৰ ক্ষেত্ৰত সহায় পাবলৈ আপোনাৰ পাঠ অধিক চুটি কৰক</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">মেইলবক্স ৮</translation>
 <translation id="1753706481035618306">পৃষ্ঠাৰ সংখ্যা</translation>
 <translation id="1756026472674246267">লিংকটো নতুন টেবত খোলক</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">এই কাৰ্ডখনৰ CVC এনক্ৰিপ্ট কৰা হৈছে আৰু ক্ষিপ্ৰভাৱে চেকআউট কৰিবলৈ আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব</translation>
 <translation id="2983666748527428214">ইনক’গনিট’ টেব খোলক</translation>
 <translation id="2985398929374701810">এটা মান্য ঠিকনা দিয়ক</translation>
+<translation id="2985848978986605722">উৎসৰ লিংকসমূহ নেভিগে’ট কৰিবলৈ বাওঁ বা সোঁ কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="2986485254770343131">কেমেৰা ফাইলসমূহ ছেভ কৰি থকা হৈছে</translation>
 <translation id="2987034854559945715">কোনো মিলা সুবিধা নাই</translation>
 <translation id="2989742184762224133">ওপৰৰ অংশত দুবাৰ ষ্টে'পল কৰক</translation>
@@ -1589,6 +1591,7 @@
 <translation id="3671540257457995106">আকাৰ সলনি কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />ত আসোঁৱাহ হৈছে: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">তৃতীয় ৰোল</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, ছাইডৰ পেনেলত খোল খায়</translation>
 <translation id="3676592649209844519">ডিভাইচ আইডি:</translation>
 <translation id="3677008721441257057">আপুনি &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;ৰ কথা কৈছে নেকি?</translation>
 <translation id="3678029195006412963">অনুৰোধ ছাইন কৰিব পৰা নগ’ল</translation>

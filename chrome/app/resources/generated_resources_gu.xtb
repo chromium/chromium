@@ -1468,6 +1468,7 @@
 <translation id="2131548114076786395">ટૅબના ગ્રૂપ શેર કરવા, તેમાં જોડાવા અથવા તેમાં સહયોગ કરવા માટે, ચકાસણી કરો કે આ તમે જ છો</translation>
 <translation id="2131863825246488194">ઑનલાઇન વધુ સલામત રહો</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> માટે ફરી પ્રયાસ કરો</translation>
+<translation id="2134044938347520790">વાંચન મોડની સમસ્યાઓ અથવા સુવિધા માટેની વિનંતીઓ શેર કરો</translation>
 <translation id="2134905185275441536">સિસ્ટમ CAs</translation>
 <translation id="2135420518376202233">બ્લૂટૂથ ડિવાઇસના નામ</translation>
 <translation id="21354425047973905">પિન છુપાવો</translation>
@@ -2632,7 +2633,6 @@
 <translation id="3003967365858406397">તમારો <ph name="PHONE_NAME" /> ફોન એક ખાનગી વાઇ-ફાઇ કનેક્શન બનાવશે.</translation>
 <translation id="3004385386820284928">કીબોર્ડની કીને કસ્ટમાઇઝ કરો</translation>
 <translation id="300580149047131921">તાજેતરમાં ઉપયોગમાં લીધેલી</translation>
-<translation id="3005928441045180122">સ્ટૅક કરી છે</translation>
 <translation id="3006881078666935414">કોઈ વપરાશ ડેટા નથી</translation>
 <translation id="3007555010975143508">આ ઍપનો ઉપયોગ તમારી સ્ક્રીન રેકોર્ડ કરવા માટે થશે:</translation>
 <translation id="3007771295016901659">ડુપ્લિકેટ ટૅબ</translation>
@@ -4284,6 +4284,7 @@
 <translation id="4250596587221570622">તમારી પ્રોફાઇલ માટે કોઈ થીમ પસંદ કરો</translation>
 <translation id="4250680216510889253">નહીં</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માંની ફાઇલો જોઈ અને પોતાના માટે તેની કૉપિ બનાવી શકશે</translation>
+<translation id="4251316952800826018">પસંદગીના હેડર પર ફોકસ કરો</translation>
 <translation id="4252899949534773101">બ્લૂટૂથ બંધ છે</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ટૅબની સામગ્રી શેર કરી</translation>
 <translation id="4253168017788158739">નોંધ</translation>
@@ -4711,6 +4712,7 @@
 <translation id="4580389561674319558">બધા સંપર્કો જોઈ શકે છે</translation>
 <translation id="4580596421317071374">પાસવર્ડ આ ડિવાઇસ પરના <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવે છે.</translation>
 <translation id="4582297591746054421">સાઇટ સામાન્ય રીતે, તમે કૉપિ કરેલી ટેક્સ્ટનું ફૉર્મેટિંગ જાળવી રાખવા જેવી સુવિધાઓ માટે તમારું ક્લિપબોર્ડ વાંચે છે</translation>
+<translation id="4582563038311694664">તમામ સેટિંગને રીસેટ કરો</translation>
 <translation id="4584094413232466841">Chromeની ઑટોમૅટિક રીતે ભરવાની સુવિધામાંથી આ માહિતી કાઢી નાખીએ?</translation>
 <translation id="4584770411839426377">વિન્ડો</translation>
 <translation id="4584836561445313300">તમારી સંસ્થા હાલનો કોઈપણ બ્રાઉઝિંગ ડેટા જોઈ અને મેનેજ કરી શકશે, જેમકે પાસવર્ડ અને વધુ ડેટા</translation>
@@ -6772,6 +6774,7 @@ USB ડિવાઇસ</translation>
 <translation id="6185151644843671709">પાસકી સાચવી અને પિન બનાવ્યો</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 પાસવર્ડ અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો. આ કોઈપણ ડુપ્લિકેટને ક્લિન અપ કરશે.}one{{PASSWORD_COUNT} પાસવર્ડ અને અન્ય આઇટમ ફક્ત આ ડિવાઇસમાં જ સાચવેલા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો. આ કોઈપણ ડુપ્લિકેટને ક્લિન અપ કરશે.}other{{PASSWORD_COUNT} પાસવર્ડ અને અન્ય આઇટમ ફક્ત આ ડિવાઇસમાં જ સાચવેલા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો. આ કોઈપણ ડુપ્લિકેટને ક્લિન અપ કરશે.}}</translation>
 <translation id="6186177419203903310">આમ કરવાથી સમગ્ર સિસ્ટમ પરના USBના તમામ નવા સહાયક ડિવાઇસ માટે નોટિફિકેશન ચાલુ કરવામાં આવશે. શું તમે ખરેખર આગળ વધવા માગો છો?</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" /> પર ફોકસ કર્યું - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">આજુબાજુ અને સ્ટૅક કરેલા લેઆઉટ વચ્ચે સ્વિચ કરવા માટે વિભાજિત વ્યૂના મેનૂનો ઉપયોગ કરો.</translation>
 <translation id="6190953336330058278">ફોન હબની ઍપ</translation>
 <translation id="6192333916571137726">ફાઇલ ડાઉનલોડ કરો</translation>
@@ -7100,7 +7103,6 @@ USB ડિવાઇસ</translation>
 <translation id="6453687572758515877">બધા ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="6453921811609336127">આગલી ઇનપુટ પદ્ધતિ પર સ્વિચ કરવા માટે, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> દબાવો</translation>
 <translation id="645433497989692531">આનાથી આ ડિવાઇસમાંથી તમારો બ્રાઉઝિંગ ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે. ડેટા રિકવર કરવા માટે, આ તરીકે સાઇન ઇન કરો</translation>
-<translation id="6454456397828627257">સાથે સાથે</translation>
 <translation id="6455264371803474013">વિશિષ્ટ સાઇટ પર</translation>
 <translation id="6455521402703088376">બંધ • આ એક્સ્ટેન્શન તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
@@ -8630,6 +8632,7 @@ USB ડિવાઇસ</translation>
 <translation id="7612655942094160088">કનેક્ટ કરેલી ફોન સુવિધાઓ ચાલુ છે.</translation>
 <translation id="7612989789287281429">તમને સાઇન ઇન કરી રહ્યાં છીએ…</translation>
 <translation id="76131528886466333">Microsoft Edge એક્સ્ટેન્શન માટે Google Search ઇન્સ્ટૉલ કરો</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" /> પર ફોકસ કર્યું</translation>
 <translation id="7615365294369022248">તમારું એકાઉન્ટ ઉમેરતી વખતે ભૂલ આવી હતી</translation>
 <translation id="7616964248951412133">સાઇટ આ સુવિધાનો ઉપયોગ, તમારા માઉસના ઇનપુટને કૅપ્ચર કરવા અને તેનો ઉપયોગ કરવા માટે, જેમ કે ગેમ કે રિમોટ ડેસ્કટૉપ ઍપ માટે કરે છે</translation>
 <translation id="7617263010641145920">Play Store ચાલુ કરો</translation>
@@ -10170,7 +10173,6 @@ USB ડિવાઇસ</translation>
 <translation id="8774379074441005279">પુનઃસ્થાપિત કરવાનું કન્ફર્મ કરો</translation>
 <translation id="8774934320277480003">ઉપરી હાંસિયો</translation>
 <translation id="8775144690796719618">અમાન્ય URL</translation>
-<translation id="877515298105563553">સાથે સાથે</translation>
 <translation id="8776294611668764629">આ ફાઇલ સુરક્ષા તપાસ માટે ખૂબ જ મોટી હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે. તમે 50 MB સુધીના કદવાળી ફાઇલો ખોલી શકશો.</translation>
 <translation id="8777509665768981163">તમારા ટૅબ્લેટ પર બટન ઉમેરો અથવા શોધો</translation>
 <translation id="8779720597365936419">હા, મારા ડેટાને ઑફિસના ડેટાથી અલગ રાખો (સુઝાવ મુજબ)</translation>
@@ -10705,7 +10707,6 @@ USB ડિવાઇસ</translation>
 <translation id="9170884462774788842">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક થીમ ઉમેરી જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
 <translation id="9172270007201309670">ફૉન્ટનું કદ વધારવામાં આવ્યું</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> માટે તમારા માતાપિતાએ સેટ કરેલી સમયમર્યાદાએ તમે પહોંચી ગયા છો. તમે આવતી કાલે <ph name="TIME_LIMIT" /> માટે તેનો ઉપયોગ કરી શકશો.</translation>
-<translation id="9174854240439014335">વિન્ડોની ડાબી કે જમણી કિનારી પર વિભાજિત વ્યૂને ખેંચવાની અને છોડવાની મંજૂરી આપો</translation>
 <translation id="9174870712400134574">માત્ર નવા ટૅબ પેજ પર બતાવો</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth ડિવાઇસ કનેક્ટ કર્યું</translation>
 <translation id="9177859716483578738">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> આ સાઇટ સાથે તમારું <ph name="FIELDS_STRING" /> શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ.</translation>

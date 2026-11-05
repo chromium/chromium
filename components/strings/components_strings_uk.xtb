@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 градусів</translation>
 <translation id="1747777564644667857">Авіарейс</translation>
 <translation id="1748225549612934682">Щоб отримати допомогу з написанням тексту, скоротіть його</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> (<ph name="EMAIL" />)</translation>
 <translation id="1752021286346845558">Поштова скринька 8</translation>
 <translation id="1753706481035618306">Номер сторінки</translation>
 <translation id="1756026472674246267">Відкрити посилання в новій вкладці</translation>
@@ -733,6 +734,7 @@
 <translation id="2215727959747642672">Редагування файлів</translation>
 <translation id="2219658597883514593">Переглянути навчальний посібник знову</translation>
 <translation id="2219735899272417925">Потрібно скинути налаштування пристрою</translation>
+<translation id="2221460252073828078">Перегляньте відповідь від ШІ в Пошуку тут</translation>
 <translation id="2222604080869344662">Щоб продовжити завантаження, увійдіть у OneDrive</translation>
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2225927550500503913">Віртуальну картку ввімкнено</translation>
@@ -1174,6 +1176,7 @@
 <translation id="2980742331521553164">Код CVC цієї картки буде зашифровано й збережено в обліковому записі Google, щоб ви могли швидше оплачувати замовлення</translation>
 <translation id="2983666748527428214">Відкрити анонімну вкладку</translation>
 <translation id="2985398929374701810">Введіть дійсну адресу</translation>
+<translation id="2985848978986605722">Щоб переходити між посиланнями на джерела, натискайте стрілки вліво або вправо.</translation>
 <translation id="2986485254770343131">Зберігання файлів із камери</translation>
 <translation id="2987034854559945715">Немає відповідних функцій</translation>
 <translation id="2989742184762224133">Двічі скріпити вгорі</translation>
@@ -1591,6 +1594,7 @@
 <translation id="3671540257457995106">Дозволити змінити розмір?</translation>
 <translation id="3672568546897166916">Помилка (<ph name="ERROR_PATH" />): <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Третій рулон</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" /> (відкриється на бічній панелі)</translation>
 <translation id="3676592649209844519">Ідентифікатор пристрою:</translation>
 <translation id="3677008721441257057">Ви мали на увазі &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Не вдалося підписати запит</translation>

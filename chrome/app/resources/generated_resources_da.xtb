@@ -2646,7 +2646,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3003967365858406397">Din <ph name="PHONE_NAME" /> opretter en privat Wi-Fi-forbindelse.</translation>
 <translation id="3004385386820284928">Tilpas tastaturtaster</translation>
 <translation id="300580149047131921">Brugt for nylig</translation>
-<translation id="3005928441045180122">Stablet</translation>
 <translation id="3006881078666935414">Ingen brugsdata</translation>
 <translation id="3007555010975143508">Disse apps bruges til at optage din skærm:</translation>
 <translation id="3007771295016901659">Dupliker fane</translation>
@@ -4726,6 +4725,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4580389561674319558">Synlig for alle kontakter</translation>
 <translation id="4580596421317071374">Adgangskoder gemmes i <ph name="GOOGLE_PASSWORD_MANAGER" /> på denne enhed.</translation>
 <translation id="4582297591746054421">Websites læser normalt din udklipsholder for at kunne bevare formatet af den tekst, du kopierede</translation>
+<translation id="4582563038311694664">Nulstil alle indstillinger</translation>
 <translation id="4584094413232466841">Vil du fjerne disse oplysninger fra autofyld i Chrome?</translation>
 <translation id="4584770411839426377">Vindue</translation>
 <translation id="4584836561445313300">Din organisation kan se og administrere eksisterende browserdata, f.eks. adgangskoder</translation>
@@ -6130,6 +6130,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5656845498778518563">Send feedback til Google</translation>
 <translation id="5656944594833183876">Få hjælp til dine opgaver</translation>
 <translation id="5659593005791499971">Mail</translation>
+<translation id="5660059687818220919">Højreklik på overskriften for fokusvalg i fanelinjen for at gruppere relaterede faner</translation>
 <translation id="5663459693447872156">Skift automatisk til halv bredde</translation>
 <translation id="5663653125349867535">Læseliste</translation>
 <translation id="5663918299073387939">Websites anmoder normalt om at styre og omprogrammere MIDI-enheder for at skabe musik, redigere musik eller opdatere enhedens firmware</translation>
@@ -7114,7 +7115,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6453687572758515877">Gruppér alle faner</translation>
 <translation id="6453921811609336127">Du kan skifte til næste indtastningsmetode ved at trykke på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mellemrum<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Denne handling sletter dine browserdata permanent fra denne enhed. Du kan gendanne dataene ved at logge ind som</translation>
-<translation id="6454456397828627257">Side om side</translation>
 <translation id="6455264371803474013">På specifikke websites</translation>
 <translation id="6455521402703088376">Fra • Udgivelsen af denne udvidelse er fjernet af udvikleren</translation>
 <translation id="6455894534188563617">&amp;Ny mappe</translation>
@@ -8670,6 +8670,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7634337648687970851">Gendannelse af lokale data understøttes ikke i øjeblikket.</translation>
 <translation id="7634566076839829401">Noget gik galt. Prøv igen.</translation>
 <translation id="7635048370253485243">Fastgjort af din administrator</translation>
+<translation id="7635733478696751470">Højreklik for at gruppere relaterede faner</translation>
 <translation id="7636175154537919400">Højreklik for at skjule andre faner midlertidigt</translation>
 <translation id="7636346903338549690">Websites med tilladelse til at bruge tredjepartscookies</translation>
 <translation id="7636919061354591437">Installer på denne enhed</translation>
@@ -10191,7 +10192,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8774379074441005279">Bekræft gendannelse</translation>
 <translation id="8774934320277480003">Topmargen</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
-<translation id="877515298105563553">Side om side</translation>
 <translation id="8776294611668764629">Din organisation har blokeret denne fil, fordi den er for stor til at gå igennem et sikkerhedstjek. Du kan åbne filer på op til 50 MB.</translation>
 <translation id="8777509665768981163">Tilføj eller find knapper på din tablet</translation>
 <translation id="8779720597365936419">Ja. Adskil mine private data fra min arbejdsprofil (anbefales)</translation>
@@ -10726,7 +10726,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9170884462774788842">Et andet program på din computer tilføjede et tema, der kan ændre den måde, hvorpå Chrome fungerer.</translation>
 <translation id="9172270007201309670">Skriftstørrelsen er forøget</translation>
 <translation id="917350715406657904">Du har nået den grænse, din forælder har angivet for <ph name="APP_NAME" />. Du kan bruge den i <ph name="TIME_LIMIT" /> i morgen.</translation>
-<translation id="9174854240439014335">Tillad træk og slip i opdelt visning i venstre eller højre kant af vinduet</translation>
 <translation id="9174870712400134574">Vis kun på siden Ny fane</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhed er forbundet</translation>
 <translation id="9177859716483578738">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> med dette website. Se dette websites <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>

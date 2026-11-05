@@ -189,6 +189,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Restore window <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pages, 1 page in list}other{Pages, # pages in list}}</translation>
 <translation id="1771929606532798550">Info is sent to Google about your Chrome usage, but it isn't tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you sync your history to your Google Account, metrics may also include info about URLs that you visit</translation>
 <translation id="1778457539567749232">Mark as unread</translation>
@@ -1258,6 +1259,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6023820583797130428">Open the menu to go back</translation>
 <translation id="6026538407078977628">Expand to full screen</translation>
+<translation id="6027619584715411062">Sign in to get your bookmarks, passwords and more on all your devices.</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="604124094241169006">Automatic</translation>
@@ -1602,6 +1604,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7190921792980745354">Block <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{You should change this now}other{You should change these now}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Restore window of <ph name="TAB_COUNT_ONE" /> tab.}other{Restore window of <ph name="TAB_COUNT_MANY" /> tabs.}}</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7196455519852483601">You can delete some or all of your history, cookies, site data and more</translation>
 <translation id="7197682514647286393">Quickly delete your browsing data</translation>
@@ -1855,6 +1858,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8135406045838672858">Downloaded PDFs automatically open with <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Link received}other{# links received}}</translation>
 <translation id="8137562778192957619">You won't need to remember this password. It will be saved to Google Password Manager.</translation>
+<translation id="8149825829235553327">Secure your Incognito tabs</translation>
 <translation id="8151185429379586178">Developer tools</translation>
 <translation id="8152331954420209374">Go to Lens</translation>
 <translation id="8153206878708357851">Toggle Caret Browsing</translation>

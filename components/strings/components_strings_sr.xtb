@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 степени</translation>
 <translation id="1747777564644667857">Лет</translation>
 <translation id="1748225549612934682">Скратите текст да бисте добили помоћ при писању</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">8. поштанско сандуче</translation>
 <translation id="1753706481035618306">Број странице</translation>
 <translation id="1756026472674246267">Отвори линк на новој картици</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">CVC ове картице ће бити шифрован и сачуван на Google налогу ради бржег плаћања</translation>
 <translation id="2983666748527428214">Отвори картицу без архивирања</translation>
 <translation id="2985398929374701810">Унесите важећу адресу</translation>
+<translation id="2985848978986605722">Користите тастер са стрелицом налево или надесно да бисте се кретали кроз линкове до извора.</translation>
 <translation id="2986485254770343131">Фајлови камере се чувају</translation>
 <translation id="2987034854559945715">Нема функција које се подударају</translation>
 <translation id="2989742184762224133">Двоструко спајање на врху</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3671540257457995106">Желите да дозволите промену величине?</translation>
 <translation id="3672568546897166916">Грешка на <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Трећи котур</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, отвара се на бочној табли</translation>
 <translation id="3676592649209844519">ИД уређаја:</translation>
 <translation id="3677008721441257057">Да ли сте мислили &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Потписивање захтева није успело</translation>

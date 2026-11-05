@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Gib einen gültigen Wert ein. Das Feld ist nicht vollständig oder enthält ein ungültiges Datum.</translation>
 <translation id="310520048233152454">Gib eine URL ein.</translation>
+<translation id="3137127353890528027">Passwort ist ausgeblendet</translation>
 <translation id="3321030238473337787">Wiedergabegeschwindigkeit</translation>
 <translation id="3450233048674729344">Wert muss kleiner als oder gleich <ph name="MAXIMUM" /> sein.</translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">Weitere Informationen findest du unter <ph name="ALERT_HUB_LINK" />.</translation>
 <translation id="6310801910862476708">Bild im Bild beenden</translation>
+<translation id="64261224118544870">Passwort wird angezeigt</translation>
 <translation id="6484738902856791350">Quelltextformatierung</translation>
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="65574987622079584">eine Browsererweiterung installieren</translation>

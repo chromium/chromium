@@ -189,6 +189,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1749561566933687563">Synkronisera bokmärken</translation>
 <translation id="1750238553597293878">Fortsätt använda lösenorden i Google-kontot</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Återställ fönstret <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sidor, 1 sida i listan}other{Sidor, # sidor i listan}}</translation>
 <translation id="1771929606532798550">Information om hur du använder Chrome skickas till Google men kopplas inte till dig\n\nOm Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen\n\nOm du synkroniserar historiken med Google-kontot kan mätvärdena även innehålla information om webbadresser du besöker</translation>
 <translation id="1778457539567749232">Markera som oläst</translation>
@@ -1259,6 +1260,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6022659036123304283">Anpassa Chrome</translation>
 <translation id="6023820583797130428">Öppna menyn för att gå tillbaka</translation>
 <translation id="6026538407078977628">Utöka till helskärmsläge</translation>
+<translation id="6027619584715411062">Logga in om du vill ha dina bokmärken, lösenord med mera på alla dina enheter.</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="604124094241169006">Automatisk</translation>
@@ -1603,6 +1605,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7190921792980745354">Vill du blockera <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Du bör ändra detta nu}other{Du bör ändra dessa nu}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Återställ fönstret med <ph name="TAB_COUNT_ONE" /> flik.}other{Återställ fönstret med <ph name="TAB_COUNT_MANY" /> flikar.}}</translation>
 <translation id="7196215469483532480">Förklaringen till integritetsguiden har öppnats över hela skärmen</translation>
 <translation id="7196455519852483601">Du kan radera historik, cookies, webbplatsdata med mera helt eller delvis</translation>
 <translation id="7197682514647286393">Radera fort din webbinformation</translation>
@@ -1856,6 +1859,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8135406045838672858">Nedladdade PDF-filer öppnas automatiskt med <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{En länk har tagits emot}other{# länkar har tagits emot}}</translation>
 <translation id="8137562778192957619">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering.</translation>
+<translation id="8149825829235553327">Skydda dina inkognitoflikar</translation>
 <translation id="8151185429379586178">Verktyg för utvecklare</translation>
 <translation id="8152331954420209374">Öppna Lens</translation>
 <translation id="8153206878708357851">Aktivera/inaktivera textmarkörläget</translation>

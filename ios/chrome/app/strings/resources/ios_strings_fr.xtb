@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez récemment fermés</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
 <translation id="1018804590490383958">Scanner et saisir automatiquement</translation>
-<translation id="1019990162050689579">Activité dans les applications Gemini</translation>
 <translation id="102471647093736603">Appuyer de manière prolongée pour déplacer</translation>
 <translation id="102645702181682900">Tâche lancée</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
@@ -51,6 +50,7 @@
 <translation id="1122068467107743258">Travail</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
+<translation id="112943553659469376">"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">Ajouter l'onglet actuel</translation>
 <translation id="1136104150802877429">Affiche les avis sur les produits</translation>
 <translation id="1142371195993008685">Désactiver les notifications "<ph name="FEATURE_NAME" />"</translation>
@@ -386,6 +386,7 @@
 <translation id="2104436223719117661">Recherches populaires</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2117650889962717098">Protégez la confidentialité de votre navigation en passant en mode navigation privée</translation>
+<translation id="2119126821484134587">Pour vous fournir une aide personnalisée, Gemini partage certaines de vos données (comme des extraits de vos discussions, votre position et d'autres informations utiles) avec d'autres services Google, comme Maps et Vols. Ces services pourront utiliser ces informations pour s'améliorer, même si vous supprimez votre historique des applications Gemini par la suite. Pour en savoir plus, consultez le <ph name="BEGIN_LINK" />Guide sur la confidentialité dans les applications Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Ouvrir dans…</translation>
 <translation id="2119962645034852864">Certains services ne sont pas disponibles pour votre compte</translation>
 <translation id="2120553909046681540">Votre organisation a désactivé la navigation privée.</translation>
@@ -507,6 +508,7 @@
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2496626742194544812">Accéder au premier onglet</translation>
 <translation id="2499505845365628575">Vous pouvez consulter tout votre historique de navigation en sélectionnant <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Recevez des notifications sur les mises à jour de sécurité, les thèmes personnalisés et plus encore.</translation>
 <translation id="251033673027346551">Accédez à Google Wallet pour gérer les <ph name="BEGIN_LINK" />préférences concernant les données et la confidentialité<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe compromis pouvant menacer votre sécurité.</translation>
 <translation id="2512709994717613803">Niveau <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +672,7 @@
 <translation id="3038136505713492417">Confirmez votre identité pour utiliser vos clés d'accès sur cet appareil</translation>
 <translation id="3039671569659952257">Supprimer le dossier</translation>
 <translation id="3041835740069544003">Chrome peut désormais détecter et remplir plus de formulaires grâce à l'analyse intelligente des formulaires. Pour ce faire, le contenu et les URL des pages peuvent être traités dans un espace privé dans le cloud. Pour gérer cette fonctionnalité, accédez aux paramètres.</translation>
+<translation id="3042118633250374317">Google utilise votre historique pour fournir ses services, assurer sa propre protection ainsi que celle de ses utilisateurs et du public, et développer et améliorer ses services avec l'aide de réviseurs humains. N'incluez aucune information que vous ne souhaiteriez pas que quelqu'un examine ou utilise.</translation>
 <translation id="3050988301648974170">Ouvrir le Check-up Mots de passe</translation>
 <translation id="3053332585453689122">Envoie les URL que vous consultez et un petit échantillon du contenu des pages, les téléchargements, l'activité des extensions et des informations système à la navigation sécurisée Google pour vérifier s'ils sont dangereux.</translation>
 <translation id="3055102495753300780">Stockage des informations</translation>
@@ -954,6 +957,7 @@
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3973560090698854095">Cela supprimera les adresses enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Connecté en tant que <ph name="USER_EMAIL" />. Ouvrir le menu du compte.</translation>
+<translation id="3986082989454912832">Répondre</translation>
 <translation id="3986739045730058129">Accéder à l'onglet</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="3993594519743675442">Masquer "Définir un rappel"</translation>
@@ -1113,6 +1117,7 @@
 <translation id="4488754974567924717">Nous vous préviendrons si vos mots de passe sont compromis</translation>
 <translation id="4489536976005181779">{count,plural, =1{Page ajoutée à votre liste de lecture dans votre compte, {email}}one{Page ajoutée à votre liste de lecture dans votre compte, {email}}other{Pages ajoutées à votre liste de lecture dans votre compte, {email}}}</translation>
 <translation id="4493604894403585654">Vous êtes connecté en tant que <ph name="USER_EMAIL" />. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
+<translation id="4495251723189610737">Vos discussions seront conservées dans votre historique Gemini. L'historique inclut vos contenus audio, les vidéos et partages d'écran Gemini Live, ce que vous partagez avec Gemini (comme les prompts, les <ph name="BEGIN_LINK" />fichiers importés<ph name="END_LINK" /> et les <ph name="BEGIN_LINK" />écrans<ph name="END_LINK" />), les réponses de Gemini, les tâches et les appels d'outils, les commentaires, les informations sur les sites Web que vous consultez avec Gemini, les données d'utilisation du produit, la position générale de votre appareil, votre adresse IP et les adresses personnelle ou professionnelle figurant dans votre compte Google. Il peut aussi inclure des données issues des applis que vous connectez à Gemini.</translation>
 <translation id="4502423230170890588">Supprimer de cet appareil</translation>
 <translation id="4508486880075514067">Développer en plein écran</translation>
 <translation id="4508750114462689118">Fermer la promo de connexion</translation>
@@ -1217,6 +1222,7 @@
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4813345808229079766">Connexion</translation>
 <translation id="4821595350501541683">Les onglets ont été fermés et les données de navigation ont été supprimées</translation>
+<translation id="4821645169621230110">Comment votre historique est utilisé</translation>
 <translation id="4823322556950229674">Vous pouvez appuyer de manière prolongée pour déplacer la barre d'adresse et le bouton Retour vers le bas</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
@@ -1244,6 +1250,7 @@
 <translation id="4877597489778380935">Me le rappeler plus tard</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4883766694719903356">Grille des onglets de navigation privée</translation>
+<translation id="4884205780547482830">Vos données permettent d'entraîner l'IA générative</translation>
 <translation id="4884937942297374058">Protection renforcée désactivée</translation>
 <translation id="4887391901725877182">Sous-titrage</translation>
 <translation id="488785315393301722">Afficher les détails</translation>
@@ -1695,7 +1702,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="628251768213143684">Vous pouvez gérer ce qui est enregistré dans votre compte Google à tout moment</translation>
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et appuyez sur "Navigation sécurisée".</translation>
-<translation id="6295140892595702619">Utilisez votre micro pour discuter avec Gemini. Lorsque vous parlez à Gemini, l'audio est stocké dans l'Activité dans les applications Gemini (si elle est activée). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6295751040240588413">Pseudo incorrect associé à la carte</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6301104306974789820">Recevoir des notifications sur le suivi des prix</translation>
@@ -1890,6 +1896,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6830728435402077660">Non sécurisé</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6842136130964845393">Pour toujours avoir accès à vos mots de passe enregistrés, confirmez votre identité</translation>
+<translation id="6843744036364481304">Quelles données sont enregistrées dans l'historique des discussions ?</translation>
 <translation id="6844773122575789617">Activer le Mode IA</translation>
 <translation id="6851516051005285358">Voir la version pour ordinateur</translation>
 <translation id="6857446173140146664">Supprimer l'arrière-plan</translation>
@@ -2013,6 +2020,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="7223134495231529579">Enregistrer dans Téléchargements</translation>
 <translation id="722339453342442311">Vérifier maintenant</translation>
 <translation id="7227235818314667565">Gérer le partage</translation>
+<translation id="7232376892719594461">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK" />données Google Workspace<ph name="END_LINK" /> ne seront pas examinées ni utilisées pour entraîner les modèles d'IA générative.</translation>
 <translation id="7233006041370588369">Sélectionnez un mot de passe à renseigner.</translation>
 <translation id="7238074332967840767">Sécurité</translation>
 <translation id="723874023660911012">Changer de profil</translation>
@@ -2524,6 +2532,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8746155870861185046">Partager le texte en surbrillance</translation>
 <translation id="8748678031495824833">Ouvrir les outils IA sur la page</translation>
 <translation id="8750037785291841318">Vos onglets s'afficheront ici</translation>
+<translation id="8751126814549746156">Votre historique est automatiquement supprimé au bout de 18 mois. Vous pouvez modifier cette période dans les paramètres. Les discussions examinées par des fournisseurs de services sont dissociées de votre compte et conservées jusqu'à trois ans. Vous pouvez <ph name="BEGIN_LINK" />désactiver<ph name="END_LINK" /> le paramètre Historique à tout moment.</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
 <translation id="8763613688786959833">Accéder au dernier onglet</translation>
 <translation id="8766790350274092814">Les mots de passe pour <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
@@ -2569,6 +2578,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8893208530912252670">Vidéos</translation>
 <translation id="890009681345348416">Plus de 40 mots de passe saisis automatiquement</translation>
 <translation id="8900845556227858314">App du navigateur</translation>
+<translation id="8903042868629070803">Si vous avez 18 ans ou plus, Google utilise également votre historique pour <ph name="BEGIN_LINK" />entraîner des modèles d'IA générative<ph name="END_LINK" />. Vous pouvez <ph name="BEGIN_LINK" />désactiver cette option<ph name="END_LINK" /> pour les futures discussions à tout moment.</translation>
 <translation id="890565330728586731">Précédent</translation>
 <translation id="8907722425137681851">Trouver sur la page…</translation>
 <translation id="8909135823018751308">Partager…</translation>

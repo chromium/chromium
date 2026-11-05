@@ -1729,6 +1729,19 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 <translation id="2086505225896497574">Wenn die Richtlinie konfiguriert ist, werden WebAuthn-RP-IDs festgelegt, für die keine Aufforderung angezeigt wird, wenn auf dem Anmeldebildschirm Attestierungszertifikate von Sicherheitsschlüsseln angefordert werden. Zusätzlich wird ein Signal an den Sicherheitsschlüssel gesendet, dass eine geschäftliche Attestierung verwendet werden kann. Anderenfalls erhalten Nutzer eine Aufforderung, wenn Websites eine Attestierung von Sicherheitsschlüsseln anfordern.
 
 Diese Geräterichtlinie entspricht der vorhandenen Nutzerrichtlinie „<ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />“, gilt aber stattdessen für das Anmeldeprofil auf dem Anmeldebildschirm.</translation>
+<translation id="2088835253645709768">Diese Richtlinie wird in M157 nicht mehr unterstützt, da die KI‑basierte Verlaufssuche entfernt wurde.
+
+Die KI‑basierte Verlaufssuche ist eine Funktion, mit der Nutzer auch anhand von Seiteninhalten statt nur anhand von Seitentitel und URL ihren Browserverlauf durchsuchen und generierte Antworten erhalten können.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2089541797660774692">Cloud-Berichterstellung über verwaltete Browser aktivieren</translation>
 <translation id="2090280024671359587">Texterfassung zulassen und KI-Modelle verbessern.</translation>
 <translation id="2090712407517297305">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist unter chrome://history/grouped sichtbar.</translation>
@@ -3206,6 +3219,15 @@ Ist diese Richtlinie aktiviert oder nicht konfiguriert, können SharedWorker ein
 Ist diese Richtlinie deaktiviert, können SharedWorker keine verlängerte Lebensdauer haben, selbst wenn die Option auf „true“ gesetzt ist.
 
 Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
+<translation id="2974937054630672445">Mit dieser Richtlinie wird gesteuert, wie sich Nutzer im Browser anmelden. Du kannst damit festlegen, ob sich Nutzer mit ihrem Konto in <ph name="PRODUCT_NAME" /> anmelden und Kontodienste wie die <ph name="PRODUCT_NAME" />-Synchronisierung verwenden können.
+
+      Wenn die Richtlinie auf „Browseranmeldung deaktivieren“ gesetzt ist, können sich Nutzer nicht im Browser anmelden und keine Kontodienste nutzen. Funktionen auf Browserebene wie die <ph name="PRODUCT_NAME" />-Synchronisierung können dann nicht verwendet werden und sind auch nicht verfügbar. Unter <ph name="IOS_NAME" /> gilt: Falls Nutzer bereits angemeldet sind und die Richtlinie auf „Deaktiviert“ gesetzt wird, werden sie sofort abgemeldet. Bei anderen Plattformen werden Nutzer automatisch abgemeldet, wenn sie <ph name="PRODUCT_NAME" /> das nächste Mal verwendet. Bei allen Plattformen bleiben lokale Profildaten wie z. B. Lesezeichen und Passwörter jedoch erhalten. Nutzer können sich auch weiterhin in Google-Webdiensten wie Gmail anmelden und diese verwenden.
+
+      Wenn die Richtlinie auf „Browseranmeldung aktivieren“ gesetzt ist, können sich Nutzer im Browser anmelden. Bei allen Plattformen außer <ph name="IOS_NAME" /> werden Nutzer automatisch im Browser angemeldet, wenn sie in Google-Webdiensten wie Gmail angemeldet sind. Solange sie im Browser angemeldet sind, werden ihre Kontoinformationen dort gespeichert. Das bedeutet aber nicht, dass die <ph name="PRODUCT_NAME" />-Synchronisierung standardmäßig aktiviert wird. Nutzer müssen diese Funktion separat aktivieren. Wird diese Richtlinie aktiviert, können Nutzer die Einstellung für die Browseranmeldung nicht mehr deaktivieren. Die Verfügbarkeit der <ph name="PRODUCT_NAME" />-Synchronisierung lässt sich mithilfe der Richtlinie „<ph name="SYNC_POLICY_NAME" />“ steuern.
+
+      Wenn die Richtlinie auf „Erzwingen, dass Nutzer sich im Browser anmelden müssen“ gesetzt ist, wird Nutzern ein Dialogfeld zur Kontoauswahl angezeigt. Sie müssen dann ein Konto auswählen und sich anmelden, um den Browser verwenden zu können. Dadurch wird bei verwalteten Konten sichergestellt, dass die entsprechenden Richtlinien erzwungen und angewendet werden. Unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> wird der Standardwert für „<ph name="GUEST_MODE_POLICY_NAME" />“ auf „deaktiviert“ gesetzt. Nach dem Aktivieren dieser Richtlinie sind Profile ohne angemeldeten Nutzer gesperrt und nicht mehr zugänglich. Weitere Informationen findest du im Hilfeartikel unter https://support.google.com/chrome/?p=force_browser_signin. Unter <ph name="ANDROID_NAME" /> wird diese Option ab Version 153 unterstützt. Bei früheren Versionen wird „Browseranmeldung aktivieren“ verwendet.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob sie die Option zur Browseranmeldung in den <ph name="PRODUCT_NAME" />-Einstellungen aktivieren und verwenden möchten.</translation>
 <translation id="2976033779241323433">Touch-Bildschirmtastatur basierend auf der standardmäßigen Systemheuristik aktivieren</translation>
 <translation id="2976429807269247880">Einstellungen für das Verhalten des alten „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Cookies</translation>
 <translation id="2979696534869541158">Alte Implementierung erzwingen</translation>

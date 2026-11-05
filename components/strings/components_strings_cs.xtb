@@ -456,6 +456,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1746531169546376413">0°</translation>
 <translation id="1747777564644667857">Let</translation>
 <translation id="1748225549612934682">Pokud chcete získat pomoc s psaním, zkraťte svůj text</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Schránka 8</translation>
 <translation id="1753706481035618306">Číslo stránky</translation>
 <translation id="1756026472674246267">Otevřít odkaz na nové kartě</translation>
@@ -1175,6 +1176,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2980742331521553164">Kód CVC této karty bude zašifrován a uložen ve vašem účtu Google pro rychlejší placení</translation>
 <translation id="2983666748527428214">Otevřít anonymní kartu</translation>
 <translation id="2985398929374701810">Zadejte platnou adresu</translation>
+<translation id="2985848978986605722">Pomocí kláves se šipkami vlevo a vpravo můžete procházet odkazy na zdroje.</translation>
 <translation id="2986485254770343131">Ukládání souborů z fotoaparátu</translation>
 <translation id="2987034854559945715">Žádné funkce neodpovídají</translation>
 <translation id="2989742184762224133">Dvě sponky nahoře</translation>
@@ -1588,6 +1590,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3671540257457995106">Povolit změnu velikosti?</translation>
 <translation id="3672568546897166916">Chyba v cestě <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Třetí role</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, otevře se na bočním panelu</translation>
 <translation id="3676592649209844519">ID zařízení:</translation>
 <translation id="3677008721441257057">Měli jste na mysli &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Požadavek nebylo možné podepsat</translation>

@@ -1477,6 +1477,7 @@
 <translation id="2131548114076786395">如要分享、加入分頁群組和協作，請驗證你的身分</translation>
 <translation id="2131863825246488194">加強網上安全</translation>
 <translation id="2133857665503360653">重試 <ph name="FILE_NAME" /></translation>
+<translation id="2134044938347520790">分享閱讀模式問題或功能要求</translation>
 <translation id="2134905185275441536">系統 CA</translation>
 <translation id="2135420518376202233">藍牙裝置名稱</translation>
 <translation id="21354425047973905">隱藏 PIN</translation>
@@ -2643,7 +2644,6 @@
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 將會建立私人 Wi-Fi 連線。</translation>
 <translation id="3004385386820284928">自訂鍵盤按鍵</translation>
 <translation id="300580149047131921">最近使用過</translation>
-<translation id="3005928441045180122">上下並排</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="3007555010975143508">這些應用程式會用於錄製你的螢幕畫面：</translation>
 <translation id="3007771295016901659">複製標籤</translation>
@@ -4293,6 +4293,7 @@
 <translation id="4250596587221570622">選擇個人檔案主題</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> 將可查看和複製「<ph name="FOLDERNAME" />」中的檔案</translation>
+<translation id="4251316952800826018">焦點選擇標題</translation>
 <translation id="4252899949534773101">已停用藍牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享分頁內容</translation>
 <translation id="4253168017788158739">注意事項</translation>
@@ -4720,6 +4721,7 @@
 <translation id="4580389561674319558">所有聯絡人都可看見</translation>
 <translation id="4580596421317071374">密碼會儲存至此裝置的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
 <translation id="4582297591746054421">網站通常會讀取剪貼簿，以提供保留複製文字格式等功能</translation>
+<translation id="4582563038311694664">重設所有設定</translation>
 <translation id="4584094413232466841">要從 Chrome 自動填入功能中移除這項資料嗎？</translation>
 <translation id="4584770411839426377">視窗</translation>
 <translation id="4584836561445313300">你的機構將可以查看和管理任何現有瀏覽資料 (例如密碼)</translation>
@@ -6774,6 +6776,7 @@
 <translation id="6185151644843671709">已儲存密鑰和建立 PIN</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}other{{PASSWORD_COUNT} 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}}</translation>
 <translation id="6186177419203903310">系統會啟用所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
+<translation id="6187116431221566074">焦點喺<ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">使用分割檢視模式選單切換並排和堆疊版面配置。</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6192333916571137726">下載檔案</translation>
@@ -7102,7 +7105,6 @@
 <translation id="6453687572758515877">將所有分頁加入群組</translation>
 <translation id="6453921811609336127">如要切換至下一個輸入法，請按下 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> 鍵</translation>
 <translation id="645433497989692531">這會永久刪除此裝置上的瀏覽資料。如要復原資料，請用以下身分登入：</translation>
-<translation id="6454456397828627257">並排</translation>
 <translation id="6455264371803474013">在特定網站上</translation>
 <translation id="6455521402703088376">已關閉 • 開發人員已取消發佈此擴充程式</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
@@ -8629,6 +8631,7 @@
 <translation id="7612655942094160088">啟用連接手機嘅功能。</translation>
 <translation id="7612989789287281429">正在登入…</translation>
 <translation id="76131528886466333">安裝 Microsoft Edge 版「Google 搜尋」擴充程式</translation>
+<translation id="7613308212159091597">焦點喺<ph name="GROUP_LABEL" /></translation>
 <translation id="7615365294369022248">新增帳戶時發生錯誤</translation>
 <translation id="7616964248951412133">網站會使用此功能來擷取和使用滑鼠輸入，例如遊戲或遠端桌面應用程式</translation>
 <translation id="7617263010641145920">開啟「Play 商店」</translation>
@@ -10170,7 +10173,6 @@
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>
-<translation id="877515298105563553">左右並排</translation>
 <translation id="8776294611668764629">由於此檔案太大，無法進行安全檢查，因此已被機構封鎖。您可開啟的檔案大小上限為 50 MB。</translation>
 <translation id="8777509665768981163">新增或尋找平板電腦上的按鈕</translation>
 <translation id="8779720597365936419">是，分開儲存個人和工作資料 (建議設定)</translation>
@@ -10705,7 +10707,6 @@
 <translation id="9170884462774788842">電腦中其他程式所新增的主題可能會變更 Chrome 的工作方式。</translation>
 <translation id="9172270007201309670">已經放大字型</translation>
 <translation id="917350715406657904">您已達到家長為 <ph name="APP_NAME" /> 設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
-<translation id="9174854240439014335">允許將分割檢視拖放到視窗左邊或右邊</translation>
 <translation id="9174870712400134574">只在「新分頁」顯示</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已連接藍牙裝置</translation>
 <translation id="9177859716483578738">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />，詳情請參閱此網站的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》。</translation>

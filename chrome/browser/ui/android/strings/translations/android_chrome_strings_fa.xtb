@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">همگام‌سازی نشانک‌ها</translation>
 <translation id="1750238553597293878">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">بازگرداندن پنجره <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{صفحه‌ها، ۱ صفحه در فهرست}one{صفحه‌ها، # صفحه در فهرست}other{صفحه‌ها، # صفحه در فهرست}}</translation>
 <translation id="1771929606532798550">‏اطلاعاتی درباره استفاده‌تان از Chrome به Google ارسال می‌شود، اما این اطلاعات به شما پیوند داده نمی‌شود\n\nاگر Chrome از کار بیفتد، جزئیات مربوط به خرابی می‌تواند حاوی اطلاعات شخصی باشد\n\nاگر سابقه‌تان را با «حساب Google» همگام‌سازی کنید، سنجه‌ها ممکن است حاوی اطلاعاتی درباره نشانی‌های وبی که بازدید می‌کنید نیز باشند</translation>
 <translation id="1778457539567749232">علامت‌گذاری به عنوان خوانده نشده</translation>
@@ -1258,6 +1259,7 @@
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6023820583797130428">برای برگشتن، منو را باز کنید</translation>
 <translation id="6026538407078977628">گسترده کردن به‌حالت تمام‌صفحه</translation>
+<translation id="6027619584715411062">به سیستم وارد شوید تا نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید.</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604124094241169006">خودکار</translation>
@@ -1602,6 +1604,7 @@
 <translation id="7190921792980745354">‫<ph name="MEMBER_FULL_NAME" /> مسدود شود؟</translation>
 <translation id="7191430249889272776">برگه در پس‌زمینه باز شد.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{باید این گذرواژه را همین‌حالا تغییر دهید}one{باید این گذرواژه را همین‌حالا تغییر دهید}other{باید این گذرواژه‌ها را همین‌حالا تغییر دهید}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{بازگرداندن پنجره <ph name="TAB_COUNT_ONE" /> زبانه.}one{بازیابی پنجره <ph name="TAB_COUNT_MANY" /> زبانه.}other{بازیابی پنجره <ph name="TAB_COUNT_MANY" /> زبانه.}}</translation>
 <translation id="7196215469483532480">شرح «راهنمای حریم خصوصی» به‌صورت کامل باز شده است</translation>
 <translation id="7196455519852483601">می‌توانید همه یا بخشی‌از سابقه، کوکی‌ها، داده‌های سایت، و موارد دیگر را حذف کنید</translation>
 <translation id="7197682514647286393">داده‌های مرور کردن را سریعاً حذف کنید</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8135406045838672858">‏فایل‌های PDF بارگیری‌شده به‌طور خودکار با «<ph name="APP_NAME" />» باز می‌شود</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{پیوند دریافت شد}one{‫# پیوند دریافت شد}other{‫# پیوند دریافت شد}}</translation>
 <translation id="8137562778192957619">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» ذخیره خواهد شد.</translation>
+<translation id="8149825829235553327">ایمن کردن زبانه‌های «ناشناس»</translation>
 <translation id="8151185429379586178">ابزارهای برنامه‌نویس</translation>
 <translation id="8152331954420209374">رفتن به «لنز»</translation>
 <translation id="8153206878708357851">روشن/خاموش کردن «مرور با هشتک»</translation>

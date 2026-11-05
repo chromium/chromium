@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Ovdje se možete vratiti da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
 <translation id="1018804590490383958">Skenirajte i automatski popunite</translation>
-<translation id="1019990162050689579">Aktivnost u Gemini aplikacijama</translation>
 <translation id="102471647093736603">Pritisnite i zadržite za premještanje</translation>
 <translation id="102645702181682900">Zadatak je pokrenut</translation>
 <translation id="102916930470544692">Pristupni ključ</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680">Dopuštenja <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vratit će se na isključeno kad napustite ovu web-lokaciju.</translation>
 <translation id="1293491796138057740">Vaši se podaci spremaju u Google Wallet za račun <ph name="USER_EMAIL" />. Možete ih upotrebljavati na Googleovim proizvodima za brže popunjavanje obrazaca.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
-<translation id="1294703224699789269">Primjenjuju se naši <ph name="BEGIN_LINK" />uvjeti<ph name="END_LINK" />, <ph name="BEGIN_LINK" />uvjeti upotrebe podataka o lokaciji na Googleovim uslugama za Koreju<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />obavijest o privatnosti<ph name="END_LINK" />. Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. Gemini je AI i može pogriješiti, uključujući kada daje informacije o osobama. Neki sadržaji možda nisu prikladni za svakoga. Možete <ph name="BEGIN_LINK" />upravljati svojom poviješću<ph name="END_LINK" />, uključujući podatke o svojoj lokaciji. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296581780163690620">Preuzeti datoteku? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Pretraživanje pomoću AI načina je dovršeno!</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="3973560090698854095">Time se brišu adrese spremljene na vašem Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Prijavljeni ste kao <ph name="USER_EMAIL" />. Otvorite izbornik računa.</translation>
+<translation id="3986082989454912832">Odgovori</translation>
 <translation id="3986739045730058129">Otvori karticu</translation>
 <translation id="3992684624889376114">Informacije o ovoj stranici</translation>
 <translation id="3993594519743675442">Sakrij Postavi podsjetnik</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">Preuzimanje</translation>
 <translation id="4764612367328936189">Vaša organizacija dopušta da se prijavite samo putem određenih računa. Nedopušteni su računi skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Pomaže vam da pristupite spremljenim pristupnim ključevima na bilo kojem uređaju</translation>
-<translation id="476946043193006313">Vaša aktivnost pomaže u obuci generativnog AI-ja</translation>
 <translation id="4782952780741793211">Potvrdni kôd:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Otvoriti u anonimnom načinu?</translation>
@@ -1704,7 +1702,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="628251768213143684">Uvijek možete upravljati time koji će se podaci spremati na vaš Google račun</translation>
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Da biste uključili sigurno pregledavanje, otvorite odjeljak <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledavanje.</translation>
-<translation id="6295140892595702619">Upotrijebite mikrofon da biste razgovarali s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u aktivnost u Gemini aplikacijama (ako je uključena). Vaši se podaci ne upotrebljavaju za poboljšanje generativnih AI modela</translation>
 <translation id="6295751040240588413">Nadimak kartice nije važeći</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6301104306974789820">Primajte obavijesti o praćenju cijena</translation>
@@ -1732,7 +1729,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6347953390226388422">{count,plural, =1{Ta će se adresa izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}one{Ta će se adresa izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}few{Te će se adrese izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}other{Te će se adrese izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}}</translation>
 <translation id="634878792104344809">Sinkronizirajte svoje zaporke, povijest i ostalo na svim svojim uređajima</translation>
 <translation id="6350745006329795504">Upravljajte uređajima</translation>
-<translation id="6351000590398820964">Gemini je AI i može pogriješiti, uključujući kada daje informacije o osobama. Neki sadržaji možda nisu prikladni za svakoga. Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" />. Primjenjuju se naši <ph name="BEGIN_LINK" />uvjeti<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />obavijest o privatnosti<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Otvorite izmjenjivanje kartica</translation>
 <translation id="63519665078626091">Da biste upotrebljavali web inspektor, povežite se sa Safarijem na računalu pomoću kabela i pristupite svojem iPadu putem izbornika Razvoj. Izbornik Razvoj možete omogućiti u odjeljku Napredno u postavkama Safarija na računalu.</translation>
 <translation id="6354695695659930684">Unos zaporke</translation>
@@ -2538,7 +2534,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8750037785291841318">Ovdje ćete pronaći svoje kartice</translation>
 <translation id="8751126814549746156">Vaša se povijest automatski briše nakon 18 mjeseci. To razdoblje možete promijeniti u postavkama. Razgovori koje pregledaju davatelji usluga odvajaju se od vašeg računa i čuvaju do tri godine. Postavku Povijest možete u svakom trenutku <ph name="BEGIN_LINK" />isključiti<ph name="END_LINK" />.</translation>
 <translation id="8756969031206844760">Želite li ažurirati zaporku?</translation>
-<translation id="8762190205387442931">Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. Možete <ph name="BEGIN_LINK" />upravljati svojom poviješću<ph name="END_LINK" />, uključujući podatke o svojoj lokaciji. <ph name="BEGIN_LINK" />Saznajte više o svojim odabirima<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Idi na zadnju karticu</translation>
 <translation id="8766790350274092814">Izbrisat će se zaporke za <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" />. Vaši se računi neće izbrisati.</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>

@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Ange ett giltigt värde. Fältet är ofullständigt eller innehåller ett ogiltigt datum.</translation>
 <translation id="310520048233152454">Ange en webbadress.</translation>
+<translation id="3137127353890528027">Lösenordet har dolts</translation>
 <translation id="3321030238473337787">Uppspelningshastighet</translation>
 <translation id="3450233048674729344">Värdet måste vara mindre än eller lika med <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">Mer information finns på <ph name="ALERT_HUB_LINK" />.</translation>
 <translation id="6310801910862476708">Avsluta bild-i-bild-läge</translation>
+<translation id="64261224118544870">Lösenordet visas</translation>
 <translation id="6484738902856791350">Skriv ut indenterad kod</translation>
 <translation id="6550675742724504774">Alternativ</translation>
 <translation id="65574987622079584">installera ett webbläsartillägg</translation>

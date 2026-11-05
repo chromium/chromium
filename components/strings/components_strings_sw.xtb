@@ -456,6 +456,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1746531169546376413">Nyuzi 0</translation>
 <translation id="1747777564644667857">Safari ya ndege</translation>
 <translation id="1748225549612934682">Fupisha maandishi yako ili upate usaidizi wa kuandika</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Kikasha cha barua cha nane</translation>
 <translation id="1753706481035618306">Nambari ya ukurasa</translation>
 <translation id="1756026472674246267">Fungua Kiungo Katika Kichupo Kipya</translation>
@@ -733,6 +734,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2215727959747642672">Kubadilisha faili</translation>
 <translation id="2219658597883514593">Anzisha upya mafunzo</translation>
 <translation id="2219735899272417925">Lazima kifaa kirejeshwe katika mipangilio kiliyotoka nayo kiwandani</translation>
+<translation id="2221460252073828078">Angalia jibu lako la AI ya Utafutaji hapa</translation>
 <translation id="2222604080869344662">Ingia katika akaunti ya OneDrive ili uendelee kupakua</translation>
 <translation id="2224337661447660594">Hakuna intaneti</translation>
 <translation id="2225927550500503913">Kadi pepe imewashwa</translation>
@@ -1174,6 +1176,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2980742331521553164">CVC ya kadi hii itasimbwa kwa njia fiche na kuhifadhiwa kwenye Akaunti yako ya Google ili ulipe haraka</translation>
 <translation id="2983666748527428214">Fungua Kichupo Fiche</translation>
 <translation id="2985398929374701810">Andika anwani sahihi</translation>
+<translation id="2985848978986605722">Tumia vitufe vya vishale vya kushoto au kulia ili usogeze kwenye viungo vya vyanzo.</translation>
 <translation id="2986485254770343131">Inahifadhi faili za kamera</translation>
 <translation id="2987034854559945715">Hakuna vipengele vinavyolingana</translation>
 <translation id="2989742184762224133">Bana mara mbili juu</translation>
@@ -1591,6 +1594,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3671540257457995106">Ungependa kuruhusu ukubwa ubadilishwe?</translation>
 <translation id="3672568546897166916">Hitilafu katika <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Gombo la Tatu</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, hufunguka katika kidirisha cha pembeni</translation>
 <translation id="3676592649209844519">Kitambulisho cha Kifaa:</translation>
 <translation id="3677008721441257057">Unamaanisha &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Ombi halikutiwa sahihi</translation>

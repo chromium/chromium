@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
 <translation id="1018804590490383958">اسکین کریں اور آٹو فل کریں</translation>
-<translation id="1019990162050689579">‏‫Gemini ایپس کی سرگرمی</translation>
 <translation id="102471647093736603">منتقل کرنے کے لیے چھوئیں اور دبائے رکھیں</translation>
 <translation id="102645702181682900">ٹاسک شروع ہو گیا</translation>
 <translation id="102916930470544692">پاس کی</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680">جب آپ اس سائٹ کو چھوڑ دیتے ہیں تو <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> اجازتیں ری سیٹ ہو جائیں گی۔</translation>
 <translation id="1293491796138057740">‏آپ کی معلومات کو <ph name="USER_EMAIL" /> کیلئے Google والٹ میں محفوظ کیا جاتا ہے۔ فارمز کو تیزی سے پُر کرنے کیلئے، آپ اسے Google پروڈکٹس پر استعمال کر سکتے ہیں۔</translation>
 <translation id="1293556467332435079">فائلیں</translation>
-<translation id="1294703224699789269">‏ہماری <ph name="BEGIN_LINK" />شرائط<ph name="END_LINK" />، <ph name="BEGIN_LINK" />کوریا کی مقام کی شرائط<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />رازداری کا نوٹس<ph name="END_LINK" /> لاگو ہوتے ہیں۔ چیٹس کا جائزہ لیا جاتا ہے اور تخلیق کر سکنے والے AI ماڈلز کو تربیت دینے کے لیے استعمال کیا جاتا ہے۔ ‫Gemini ایک AI ہے اور اس سے غلطیاں ہو سکتی ہیں، بشمول لوگوں کے بارے میں۔ ہو سکتا ہے کچھ مواد سبھی کیلئے موزوں نہ ہو۔ آپ اپنے مقام کے بارے میں معلومات سمیت <ph name="BEGIN_LINK" />اپنی سرگزشت کا نظم<ph name="END_LINK" /> کر سکتے ہیں۔ <ph name="BEGIN_LINK" />اپنے انتخابات کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">حال ہی میں بند کردہ</translation>
 <translation id="1296581780163690620">فائل ڈاؤن لوڈ کریں؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">‏'‫AI وضع کے ساتھ تلاش' مکمل ہو گئی!</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3973560090698854095">‏اس سے آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کردہ پتے حذف ہو جاتے ہیں۔</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> کے بطور سائن ان کردہ۔ اکاؤنٹ مینیو کھولیں۔</translation>
+<translation id="3986082989454912832">جواب</translation>
 <translation id="3986739045730058129">ٹیب پر جائیں</translation>
 <translation id="3992684624889376114">اس صفحہ کے بارے میں</translation>
 <translation id="3993594519743675442">'بطور یاد دہانی سیٹ کریں' کو چھپائیں</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4764612367328936189">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔ جن اکاؤنٹس کی اجازت نہیں ہے وہ پوشیدہ ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">کسی بھی آلے پر محفوظ کردہ پاس کیز تک رسائی حاصل کرنے میں آپ کی مدد کرتا ہے</translation>
-<translation id="476946043193006313">‏آپ کی سرگرمی تخلیق کر سکنے والے AI کو تربیت دینے میں مدد کرتی ہے</translation>
 <translation id="4782952780741793211">توثیقی کوڈ:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">پوشیدگی وضع میں کھولیں؟</translation>
@@ -1704,7 +1702,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="628251768213143684">‏آپ ہمیشہ اپنے Google اکاؤنٹ میں محفوظ کردہ چیزوں کا نظم کر سکتے ہیں</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
-<translation id="6295140892595702619">‏‫Gemini کی مدد سے چیٹ کرنے کیلئے اپنا مائیکروفون استعمال کریں۔ جب آپ Gemini سے بات کرتے ہیں تو آڈیو Gemini ایپس کی سرگرمی (اس کے آن ہونے پر) میں اسٹور کیا جاتا ہے۔ تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کیلئے، آپ کے ڈیٹا کا استعمال نہیں کیا جاتا ہے</translation>
 <translation id="6295751040240588413">کارڈ کا غلط عرفی نام</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
@@ -1732,7 +1729,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6347953390226388422">{count,plural, =1{‏یہ پتہ آپ کے Google اکاؤنٹ (<ph name="USER_EMAIL" />) اور اس آلے سے حذف ہو جائے گا۔}other{‏یہ پتے آپ کے Google اکاؤنٹ (<ph name="USER_EMAIL" />) اور اس آلے سے حذف ہو جائیں گے۔}}</translation>
 <translation id="634878792104344809">اپنے سبھی آلات پر اپنے پاس ورڈز، سرگزشت اور مزید کی مطابقت پذیری کریں</translation>
 <translation id="6350745006329795504">اپنے آلات کا نظم کریں</translation>
-<translation id="6351000590398820964">‏‫Gemini ایک AI ہے اور اس سے غلطیاں ہو سکتی ہیں، بشمول لوگوں کے بارے میں۔ ہو سکتا ہے کچھ مواد سبھی کیلئے موزوں نہ ہو۔ چیٹس کا جائزہ لیا جاتا ہے اور تخلیق کر سکنے والے AI ماڈلز کو تربیت دینے کے لیے استعمال کیا جاتا ہے۔ <ph name="BEGIN_LINK" />اپنے انتخابات کے بارے میں جانیں۔<ph name="END_LINK" /> ہماری <ph name="BEGIN_LINK" />شرائط<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />رازداری کا نوٹس<ph name="END_LINK" /> لاگو ہوتے ہیں۔</translation>
 <translation id="6351147166808964033">ٹیب سوئچر میں داخل ہوں</translation>
 <translation id="63519665078626091">‏ویب انسپکٹر استعمال کرنے کے لیے، کیبل کا استعمال کرتے ہوئے اپنے کمپیوٹر پر Safari سے منسلک ہوں اور ڈیولپ مینو سے اپنے iPad تک رسائی حاصل کریں۔ آپ اپنے کمپیوٹر پر Safari کی ترتیبات کے جدید ترین سیکشن میں ڈویلپمنٹ مینو کو فعال کر سکتے ہیں۔</translation>
 <translation id="6354695695659930684">پاس ورڈ بھرا جا رہا ہے</translation>
@@ -2538,7 +2534,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8750037785291841318">آپ کو اپنے ٹیبز یہاں ملیں گے</translation>
 <translation id="8751126814549746156">آپ کی سرگزشت 18 ماہ کے بعد خودکار طور پر حذف ہو جاتی ہے۔ آپ ترتیبات میں اس وقت کی مدت کو تبدیل کر سکتے ہیں۔ سروس فراہم کنندگان کے ذریعے جائزہ لی گئی چیٹس کو آپ کے اکاؤنٹ سے الگ کر دیا جاتا ہے اور 3 سال تک رکھا جاتا ہے۔ آپ کسی بھی وقت اپنی سرگزشت کی ترتیب کو <ph name="BEGIN_LINK" />آف<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="8756969031206844760">پاس ورڈ کو اپ ڈیٹ کریں؟</translation>
-<translation id="8762190205387442931">‏چیٹس کا جائزہ لیا جاتا ہے اور تخلیق کر سکنے والے AI ماڈلز کو تربیت دینے کے لیے استعمال کیا جاتا ہے۔ آپ اپنے مقام کے بارے میں معلومات سمیت <ph name="BEGIN_LINK" />اپنی سرگزشت کا نظم<ph name="END_LINK" /> کر سکتے ہیں۔ <ph name="BEGIN_LINK" />اپنے انتخابات کے بارے میں مزید جانیں<ph name="END_LINK" />۔</translation>
 <translation id="8763613688786959833">آخری ٹیب پر جائیں</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> اور <ph name="SECOND_WEBSITE" /> کے پاسورڈز حذف ہو جائيں گے۔ آپ کے اکاؤنٹس حذف نہیں ہوں گے۔</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>

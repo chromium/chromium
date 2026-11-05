@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 grade</translation>
 <translation id="1747777564644667857">Zbor</translation>
 <translation id="1748225549612934682">Scurtează textul pentru a obține ajutor la scriere</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Căsuța de e-mail 8</translation>
 <translation id="1753706481035618306">Numărul paginii</translation>
 <translation id="1756026472674246267">Deschide linkul într-o filă nouă</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">Codul CVC al acestui card va fi criptat și salvat în Contul Google pentru finalizarea mai rapidă a achiziției</translation>
 <translation id="2983666748527428214">Deschide o filă incognito</translation>
 <translation id="2985398929374701810">Introdu o adresă validă</translation>
+<translation id="2985848978986605722">Folosește tastele săgeată spre stânga sau spre dreapta pentru a naviga prin linkurile sursă.</translation>
 <translation id="2986485254770343131">Se salvează capturile camerei foto</translation>
 <translation id="2987034854559945715">Nu există funcții care corespund</translation>
 <translation id="2989742184762224133">Capsare dublă în partea de sus</translation>
@@ -1592,6 +1594,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3671540257457995106">Permiți redimensionarea?</translation>
 <translation id="3672568546897166916">Eroare la <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">A treia rolă</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, se deschide în panoul lateral</translation>
 <translation id="3676592649209844519">ID dispozitiv:</translation>
 <translation id="3677008721441257057">Ai vrut să accesezi &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Solicitarea nu a putut fi semnată</translation>

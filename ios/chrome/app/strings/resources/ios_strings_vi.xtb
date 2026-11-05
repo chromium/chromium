@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Bạn có thể quay lại đây để mở lại các thẻ mà bạn đã đóng gần đây</translation>
 <translation id="1016495303386450659">Đã cập nhật mục</translation>
 <translation id="1018804590490383958">Quét và tự động điền</translation>
-<translation id="1019990162050689579">Hoạt động trên Các ứng dụng Gemini</translation>
 <translation id="102471647093736603">Nhấn và giữ để di chuyển</translation>
 <translation id="102645702181682900">Đã bắt đầu nhiệm vụ</translation>
 <translation id="102916930470544692">Khoá truy cập</translation>
@@ -51,6 +50,7 @@
 <translation id="1122068467107743258">Công việc</translation>
 <translation id="1126696498560056882">Quản lý các tài khoản trên thiết bị này</translation>
 <translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
+<translation id="112943553659469376">"<ph name="PROMPT" />"</translation>
 <translation id="1133418583142946603">Thêm thẻ hiện tại</translation>
 <translation id="1136104150802877429">Hiện bài đánh giá sản phẩm</translation>
 <translation id="1142371195993008685">Tắt thông báo cho <ph name="FEATURE_NAME" /></translation>
@@ -386,6 +386,7 @@
 <translation id="2104436223719117661">Nội dung tìm kiếm thịnh hành</translation>
 <translation id="21133533946938348">Ghim Thẻ</translation>
 <translation id="2117650889962717098">Duyệt web riêng tư bằng cách chuyển sang chế độ ẩn danh</translation>
+<translation id="2119126821484134587">Để trợ giúp bạn theo cách phù hợp, Gemini sẽ chia sẻ một số dữ liệu của bạn (như một phần nội dung trò chuyện, vị trí và các thông tin liên quan khác) với các dịch vụ khác của Google như Maps và Chuyến bay. Các dịch vụ này có thể sử dụng thông tin đó để cải thiện chất lượng, ngay cả khi sau đó bạn xoá nhật ký của mình trên Các ứng dụng Gemini. Vui lòng tìm hiểu thêm trong <ph name="BEGIN_LINK" />Trung tâm quyền riêng tư của Các ứng dụng Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Mở trong…</translation>
 <translation id="2119962645034852864">Một số dịch vụ không dùng được cho tài khoản của bạn</translation>
 <translation id="2120553909046681540">Tổ chức của bạn đã tắt tính năng duyệt web ở chế độ riêng tư.</translation>
@@ -507,6 +508,7 @@
 <translation id="2496180316473517155">Nhật ký duyệt web</translation>
 <translation id="2496626742194544812">Chuyển đến thẻ đầu tiên</translation>
 <translation id="2499505845365628575">Bạn có thể xem toàn bộ nhật ký duyệt web bằng <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="2499948218922929716">Nhận thông báo về các bản cập nhật bảo mật, giao diện tuỳ chỉnh và nhiều thông tin khác.</translation>
 <translation id="251033673027346551">Hãy truy cập vào Google Wallet để quản lý <ph name="BEGIN_LINK" />các lựa chọn ưu tiên về dữ liệu và quyền riêng tư<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Bạn có <ph name="NUMBER_OF_PASSWORDS" /> mật khẩu bị lộ. Điều này có thể khiến bạn gặp rủi ro về bảo mật.</translation>
 <translation id="2512709994717613803">Cấp <ph name="LEVEL_NUMBER" /></translation>
@@ -670,6 +672,7 @@
 <translation id="3038136505713492417">Xác minh danh tính của bạn để sử dụng khoá truy cập trên thiết bị này</translation>
 <translation id="3039671569659952257">Xóa thư mục</translation>
 <translation id="3041835740069544003">Giờ đây, Chrome có thể phát hiện và điền vào nhiều biểu mẫu hơn nhờ khả năng hiểu biểu mẫu thông minh hơn. Để làm việc này, nội dung trang và URL có thể được xử lý trong một không gian riêng tư trên đám mây. Bạn có thể quản lý việc này trong phần cài đặt.</translation>
+<translation id="3042118633250374317">Google sử dụng nhật ký của bạn để cung cấp các dịch vụ, bảo vệ Google, người dùng của Google và công chúng, cũng như để phát triển và cải thiện các dịch vụ của Google với sự trợ giúp của nhân viên đánh giá. Vui lòng không cung cấp những thông tin mà bạn không muốn Google đánh giá hoặc sử dụng.</translation>
 <translation id="3050988301648974170">Mở tính năng Kiểm tra mật khẩu</translation>
 <translation id="3053332585453689122">Gửi các URL bạn truy cập và một mẫu nhỏ nội dung trang, nội dung tải xuống, hoạt động của tiện ích và thông tin hệ thống cho dịch vụ Duyệt web An toàn của Google để kiểm tra xem các nội dung đó có gây hại hay không.</translation>
 <translation id="3055102495753300780">Dung lượng lưu trữ thông tin</translation>
@@ -954,6 +957,7 @@
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3973560090698854095">Thao tác này sẽ xoá các địa chỉ đã lưu trong Tài khoản Google <ph name="USER_EMAIL" /> của bạn.</translation>
 <translation id="398604237578616937">Đã đăng nhập bằng <ph name="USER_EMAIL" />. Mở trình đơn tài khoản.</translation>
+<translation id="3986082989454912832">Trả lời</translation>
 <translation id="3986739045730058129">Chuyển đến thẻ</translation>
 <translation id="3992684624889376114">Thông tin về trang này</translation>
 <translation id="3993594519743675442">Ẩn thao tác Đặt lời nhắc</translation>
@@ -1113,6 +1117,7 @@
 <translation id="4488754974567924717">Nếu mật khẩu của bạn bị lộ, chúng tôi sẽ thông báo cho bạn</translation>
 <translation id="4489536976005181779">{count,plural, =1{Trang đã được thêm vào danh sách đọc trong tài khoản {email} của bạn}other{Các trang đã được thêm vào danh sách đọc trong tài khoản {email} của bạn}}</translation>
 <translation id="4493604894403585654">Bạn đã đăng nhập bằng <ph name="USER_EMAIL" />. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
+<translation id="4495251723189610737">Các cuộc trò chuyện của bạn sẽ được lưu trong Nhật ký trên Gemini. Nhật ký bao gồm âm thanh, video và màn hình chia sẻ ở chế độ Gemini Live, những nội dung bạn chia sẻ với Gemini (như câu lệnh, <ph name="BEGIN_LINK" />tệp tải lên<ph name="END_LINK" /> và <ph name="BEGIN_LINK" />màn hình<ph name="END_LINK" />), câu trả lời của Gemini, nhiệm vụ và lệnh gọi công cụ, ý kiến phản hồi, thông tin trên các trang web bạn truy cập qua Gemini, dữ liệu sử dụng sản phẩm, vị trí khái quát của thiết bị, địa chỉ IP và địa chỉ nhà riêng/nơi làm việc trong Tài khoản Google của bạn. Nhật ký cũng có thể bao gồm dữ liệu từ những ứng dụng mà bạn kết nối với Gemini.</translation>
 <translation id="4502423230170890588">Xoá khỏi thiết bị này</translation>
 <translation id="4508486880075514067">Mở chế độ toàn màn hình</translation>
 <translation id="4508750114462689118">Đóng quảng cáo đăng nhập</translation>
@@ -1217,6 +1222,7 @@
 <translation id="4808744395915275922">Bản cập nhật</translation>
 <translation id="4813345808229079766">Kết nối</translation>
 <translation id="4821595350501541683">Hệ thống đã đóng các thẻ và xoá dữ liệu duyệt web</translation>
+<translation id="4821645169621230110">Cách chúng tôi sử dụng dữ liệu nhật ký của bạn</translation>
 <translation id="4823322556950229674">Bạn có thể nhấn và giữ để di chuyển thanh địa chỉ và nút quay lại xuống dưới cùng</translation>
 <translation id="4824480232751123840">Thể tích</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} và 1 thẻ khác}other{{domain} và {count} thẻ khác}}</translation>
@@ -1244,6 +1250,7 @@
 <translation id="4877597489778380935">Nhắc tôi sau</translation>
 <translation id="4881695831933465202">Mở</translation>
 <translation id="4883766694719903356">Lưới thẻ ẩn danh</translation>
+<translation id="4884205780547482830">Dữ liệu của bạn giúp huấn luyện AI tạo sinh</translation>
 <translation id="4884937942297374058">Chế độ Bảo vệ nâng cao đang tắt</translation>
 <translation id="4887391901725877182">Phụ đề</translation>
 <translation id="488785315393301722">Hiển thị chi tiết</translation>
@@ -1695,7 +1702,6 @@
 <translation id="628251768213143684">Bạn luôn có thể quản lý nội dung đã lưu trong Tài khoản Google của mình</translation>
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>
-<translation id="6295140892595702619">Hãy dùng micrô trên thiết bị để trò chuyện với Gemini. Khi bạn trò chuyện với Gemini, âm thanh sẽ được lưu trữ trong phần Hoạt động trên Các ứng dụng Gemini (nếu bạn bật chế độ này). Dữ liệu của bạn không được dùng để cải thiện các mô hình AI tạo sinh</translation>
 <translation id="6295751040240588413">Biệt hiệu của thẻ không hợp lệ</translation>
 <translation id="629730747756840877">Tài khoản</translation>
 <translation id="6301104306974789820">Nhận thông báo theo dõi giá</translation>
@@ -1839,6 +1845,7 @@
 <translation id="6670729408462528018">Thư viện</translation>
 <translation id="6671294218820966278">Đánh dấu là đã đọc</translation>
 <translation id="6672697278890207089">Nhập cụm mật khẩu của bạn</translation>
+<translation id="6673666785752667010">Đóng Chế độ AI</translation>
 <translation id="6674917187596384849">Bạn có thể dễ dàng chuyển đổi giữa các tài khoản</translation>
 <translation id="6676349090816247042">Phương thức đăng nhập.</translation>
 <translation id="667999046851023355">Tài liệu</translation>
@@ -1846,6 +1853,7 @@
 <translation id="6682680306647339111">Đã xoá lời nhắc</translation>
 <translation id="6683022854667115063">Tai nghe</translation>
 <translation id="6684262542644248484">Đăng nhập vào một trang web</translation>
+<translation id="668475086425500258">chế độ cài đặt trang web</translation>
 <translation id="6685259053455152195">Phím tắt cho phép bạn nhanh chóng sửa đổi chế độ cài đặt và sử dụng các tính năng từ thanh địa chỉ.</translation>
 <translation id="6689342293888598653">Màu nền trắng</translation>
 <translation id="6689685206615181381">Chỉ có Chế độ ẩn danh</translation>
@@ -1890,6 +1898,7 @@
 <translation id="6830728435402077660">Không bảo mật</translation>
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6842136130964845393">Hãy xác minh danh tính của bạn để đảm bảo bạn luôn có thể truy cập mật khẩu đã lưu</translation>
+<translation id="6843744036364481304">Loại dữ liệu được lưu trong nhật ký trò chuyện</translation>
 <translation id="6844773122575789617">Bật Chế độ AI</translation>
 <translation id="6851516051005285358">Yêu cầu trang web dành cho máy tính</translation>
 <translation id="6857446173140146664">Xoá nền</translation>
@@ -2013,6 +2022,7 @@
 <translation id="7223134495231529579">Lưu vào nội dung tải xuống</translation>
 <translation id="722339453342442311">Kiểm tra ngay</translation>
 <translation id="7227235818314667565">Quản lý việc chia sẻ</translation>
+<translation id="7232376892719594461">Các cuộc trò chuyện giữa bạn với Gemini cũng như <ph name="BEGIN_LINK" />dữ liệu của bạn trên Google Workspace<ph name="END_LINK" /> sẽ không được đánh giá hay dùng để huấn luyện các mô hình AI tạo sinh.</translation>
 <translation id="7233006041370588369">Chọn mật khẩu cần điền.</translation>
 <translation id="7238074332967840767">An toàn</translation>
 <translation id="723874023660911012">Chuyển đổi Hồ sơ</translation>
@@ -2524,6 +2534,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8746155870861185046">Chia sẻ nội dung được làm nổi bật</translation>
 <translation id="8748678031495824833">Mở các công cụ AI trên trang</translation>
 <translation id="8750037785291841318">Bạn sẽ thấy các thẻ ở đây</translation>
+<translation id="8751126814549746156">Nhật ký của bạn sẽ tự động bị xoá sau 18 tháng. Bạn có thể thay đổi khoảng thời gian này trong phần Cài đặt. Các cuộc trò chuyện mà nhà cung cấp dịch vụ đánh giá sẽ được tách biệt khỏi tài khoản của bạn và giữ lại tối đa 3 năm. Bạn có thể <ph name="BEGIN_LINK" />tắt<ph name="END_LINK" /> chế độ cài đặt Nhật ký bất cứ lúc nào.</translation>
 <translation id="8756969031206844760">Cập nhật mật khẩu?</translation>
 <translation id="8763613688786959833">Chuyển đến thẻ cuối cùng</translation>
 <translation id="8766790350274092814">Mật khẩu của <ph name="WEBSITE" /> và <ph name="SECOND_WEBSITE" /> sẽ bị xoá. Các tài khoản của bạn sẽ không bị xoá.</translation>
@@ -2569,6 +2580,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="890009681345348416">Đã tự động điền hơn 40 mật khẩu</translation>
 <translation id="8900845556227858314">Ứng dụng trình duyệt</translation>
+<translation id="8903042868629070803">Nếu bạn từ 18 tuổi trở lên, Google cũng sử dụng dữ liệu nhật ký của bạn để <ph name="BEGIN_LINK" />huấn luyện các mô hình AI tạo sinh<ph name="END_LINK" />. Bạn có thể <ph name="BEGIN_LINK" />tắt chế độ này<ph name="END_LINK" /> cho các cuộc trò chuyện trong tương lai bất cứ lúc nào.</translation>
 <translation id="890565330728586731">Quay lại</translation>
 <translation id="8907722425137681851">Tìm trong trang…</translation>
 <translation id="8909135823018751308">Chia sẻ...</translation>

@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Please enter a valid value. The field is incomplete or has an invalid date.</translation>
 <translation id="310520048233152454">Please enter a URL.</translation>
+<translation id="3137127353890528027">Password hidden</translation>
 <translation id="3321030238473337787">Playback speed</translation>
 <translation id="3450233048674729344">Value must be less than or equal to <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0.5</translation>
 <translation id="6070714301435004046">See <ph name="ALERT_HUB_LINK" /> for more details.</translation>
 <translation id="6310801910862476708">Exit picture-in-picture</translation>
+<translation id="64261224118544870">Password shown</translation>
 <translation id="6484738902856791350">Pretty print</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="65574987622079584">install a browser extension</translation>

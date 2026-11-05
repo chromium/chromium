@@ -1468,6 +1468,7 @@
 <translation id="2131548114076786395">Қойындылар топтарын бөлісу, қосылу және бірлесіп жұмыс істеу үшін жеке басыңызды растаңыз.</translation>
 <translation id="2131863825246488194">Интернетті қауіпсіз пайдаланыңыз</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> файлын қайталау</translation>
+<translation id="2134044938347520790">Оқу режиміне қатысты мәселелерді немесе функция туралы сұрауларды бөлісіңіз</translation>
 <translation id="2134905185275441536">Жүйенің сертификаттау органдары</translation>
 <translation id="2135420518376202233">Bluetooth құрылғысының атаулары</translation>
 <translation id="21354425047973905">PIN кодтарын жасыру</translation>
@@ -2631,7 +2632,6 @@
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> жеке Wi-Fi байланысын орнатады.</translation>
 <translation id="3004385386820284928">Пернетақта пернелерін бейімдеу</translation>
 <translation id="300580149047131921">Соңғы қолданылған</translation>
-<translation id="3005928441045180122">Қабатты</translation>
 <translation id="3006881078666935414">Пайдалану деректері жоқ</translation>
 <translation id="3007555010975143508">Бұл қолданбалар экраныңызды жазу үшін қолданылады:</translation>
 <translation id="3007771295016901659">Қайталанбалы қойынды</translation>
@@ -4281,6 +4281,7 @@
 <translation id="4250596587221570622">Профиліңізге тақырып таңдаңыз</translation>
 <translation id="4250680216510889253">Жоқ</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> сайты <ph name="FOLDERNAME" /> қалтасын көріп, көшіре алады</translation>
+<translation id="4251316952800826018">Ерекшеленген таңдаудың жоғарғы деректемесі</translation>
 <translation id="4252899949534773101">Bluetooth өшірілді</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – қойынды контенті бөлісілген</translation>
 <translation id="4253168017788158739">Ескертпе</translation>
@@ -4708,6 +4709,7 @@
 <translation id="4580389561674319558">Барлық контактіге көрінеді</translation>
 <translation id="4580596421317071374">Құпия сөздер осы құрылғыда <ph name="GOOGLE_PASSWORD_MANAGER" /> қызметінде сақталады.</translation>
 <translation id="4582297591746054421">Сіз көшірген мәтіннің форматын сақтау сияқты функциялар үшін сайттар әдетте буферді оқиды.</translation>
+<translation id="4582563038311694664">Барлық параметрлерді қалпына келтіру</translation>
 <translation id="4584094413232466841">Бұл ақпаратты Chrome-ның автотолтыру функциясынан өшіру қажет пе?</translation>
 <translation id="4584770411839426377">Терезе</translation>
 <translation id="4584836561445313300">Ұйымыңыз құпия сөздер сияқты қолданыстағы браузерді пайдалану деректерін көріп, реттей алады.</translation>
@@ -6762,6 +6764,7 @@
 <translation id="6185151644843671709">Кіру кілті сақталды және PIN коды жасалды</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 құпия сөз және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз. Бұл ретте барлық көшірме де жойылады.}other{{PASSWORD_COUNT} құпия сөз және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз. Бұл ретте барлық көшірме де жойылады.}}</translation>
 <translation id="6186177419203903310">Бұл жағдайда жүйедегі перифериялық жаңа USB құрылғыларының хабарландырулары қосылады. Шынымен жалғастырғыңыз келе ме?</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" /> ерекшеленді – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">Қатар және қабаттасқан макеттер арасында ауысу үшін бөлінген көрініс мәзірін пайдаланыңыз.</translation>
 <translation id="6190953336330058278">Phone Hub қолданбалары</translation>
 <translation id="6192333916571137726">Файлды жүктеп алу</translation>
@@ -7090,7 +7093,6 @@
 <translation id="6453687572758515877">Барлық қойындыны топтау</translation>
 <translation id="6453921811609336127">Келесі енгізу әдісіне ауысу үшін <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> пернелерін басыңыз.</translation>
 <translation id="645433497989692531">Мұның нәтижесінде осы құрылғыдағы браузерді пайдалану деректеріңіз біржола жойылады. Деректерді қалпына келтіру үшін мына аккаунтқа кіріңіз:</translation>
-<translation id="6454456397828627257">Қатар</translation>
 <translation id="6455264371803474013">Белгілі бір сайттарда</translation>
 <translation id="6455521402703088376">Өшірулі • Бұл кеңейтімді әзірлеушісі жариялаудан бас тартқан</translation>
 <translation id="6455894534188563617">&amp;Жаңа қалта</translation>
@@ -8616,6 +8618,7 @@
 <translation id="7612655942094160088">Жалғанған телефон функцияларын қосу.</translation>
 <translation id="7612989789287281429">Аккаунтқа кіруде…</translation>
 <translation id="76131528886466333">Microsoft Edge-ге арналған Google Search кеңейтімін орнату</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" /> ерекшеленді</translation>
 <translation id="7615365294369022248">Аккаунтты енгізу кезінде қате шықты</translation>
 <translation id="7616964248951412133">Сайттар бұл функцияны ойындарда немесе қашықтағы жұмыс үстелінің қолданбаларында тінтуірді бақылауыңыздан шығарып, пайдалану үшін қолданады</translation>
 <translation id="7617263010641145920">Play Store қызметін қосу</translation>
@@ -10161,7 +10164,6 @@
 <translation id="8774379074441005279">Қалпына келтіруді растау</translation>
 <translation id="8774934320277480003">Жоғарғы шек</translation>
 <translation id="8775144690796719618">Жарамсыз URL</translation>
-<translation id="877515298105563553">Қатар</translation>
 <translation id="8776294611668764629">Бұл файл қауіпсіздік тексерісі үшін тым үлкен болғандықтан, ұйымыңыз оны бөгеді. 50 MБ-қа дейінгі файлдарды аша аласыз.</translation>
 <translation id="8777509665768981163">Планшеттегі түймелерді қосу немесе табу</translation>
 <translation id="8779720597365936419">Иә, деректерімді жұмыс деректерінен бөлек сақтау (ұсынылады)</translation>
@@ -10696,7 +10698,6 @@
 <translation id="9170884462774788842">Компьютеріңіздегі басқа бір бағдарлама тақырыпты қосты, ол Chrome жұмысын өзгертуі мүмкін.</translation>
 <translation id="9172270007201309670">Қаріп өлшемі үлкейтілді</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> үшін ата-анаңыз белгілеген уақыт шегіне жеттіңіз. Оны ертең <ph name="TIME_LIMIT" /> бойы пайдалана аласыз.</translation>
-<translation id="9174854240439014335">Терезенің сол немесе оң жақ шетінде бөлінген көріністі сүйреп қоюға рұқсат беру</translation>
 <translation id="9174870712400134574">Тек "Жаңа қойынды" бетінде көрсету</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth құрылғысы қосылды</translation>
 <translation id="9177859716483578738">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> сіздің <ph name="FIELDS_STRING" /> деректеріңізді осы сайтпен бөліседі. Осы сайттың <ph name="BEGIN_LINK" />Құпиялық саясатын<ph name="END_LINK" /> қараңыз.</translation>

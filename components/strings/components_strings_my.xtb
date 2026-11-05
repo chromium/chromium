@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">၀ ဒီဂရီ</translation>
 <translation id="1747777564644667857">လေယာဥ်ခရီးစဥ်</translation>
 <translation id="1748225549612934682">ရေးသားမှုအကူအညီ ရယူရန် စာသားကို ချုံ့ပါ</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">စာတိုက်ပုံး ၈</translation>
 <translation id="1753706481035618306">စာမျက်နှာ နံပါတ်</translation>
 <translation id="1756026472674246267">လင့်ကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
@@ -734,6 +735,7 @@
 <translation id="2215727959747642672">ဖိုင်တည်းဖြတ်ခြင်း</translation>
 <translation id="2219658597883514593">ရှင်းလင်းပို့ချချက် ပြန်စရန်</translation>
 <translation id="2219735899272417925">စက်ကို ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်သည်</translation>
+<translation id="2221460252073828078">သင်၏ Search AI အဖြေကို ဤနေရာတွင် ကြည့်ပါ</translation>
 <translation id="2222604080869344662">ဒေါင်းလုဒ် ဆက်လုပ်ရန် OneDrive တွင် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2224337661447660594">အင်တာနက် မရှိပါ</translation>
 <translation id="2225927550500503913">ပကတိအသွင်ကတ် ဖွင့်ထားသည်</translation>
@@ -1179,6 +1181,7 @@
 <translation id="2980742331521553164">ပိုမိုမြန်ဆန်စွာ ငွေရှင်းနိုင်ရန် ဤကတ်၏ CVC နံပါတ်ကို သင့် Google Account တွင် အသွင်ဝှက်ပြီး သိမ်းပါမည်</translation>
 <translation id="2983666748527428214">ရုပ်ဖျက်တဘ်ဖွင့်ရန်</translation>
 <translation id="2985398929374701810">မှန်ကန်သည့် လိပ်စာကို ထည့်ပါ</translation>
+<translation id="2985848978986605722">ရင်းမြစ်လင့်ခ်များသို့ သွားရန် ဘယ်ညွှန်မြား (သို့) ညာညွှန်မြား ခလုတ်များ သုံးပါ။</translation>
 <translation id="2986485254770343131">ကင်မရာဖိုင်များ သိမ်းနေသည်</translation>
 <translation id="2987034854559945715">ကိုက်ညီသော ဝန်ဆောင်မှုများ မရှိပါ</translation>
 <translation id="2989742184762224133">ထိပ်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
@@ -1591,6 +1594,7 @@
 <translation id="3671540257457995106">အရွယ်အစားပြန်ပြင်ရန် ခွင့်ပြုမလား။</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> ၌ မှားနေသည်- <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">သုံးခုမြောက်အလိပ်</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />၊ ဘေးအကန့်တွင် ဖွင့်သည်</translation>
 <translation id="3676592649209844519">စက်ပစ္စည်း ID-</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ကို ဆိုလိုပါသလား။</translation>
 <translation id="3678029195006412963">တောင်းဆိုမှုကို လက်မှတ်ထိုး၍မရပါ</translation>

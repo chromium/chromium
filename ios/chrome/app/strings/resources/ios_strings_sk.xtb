@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Môžete sa sem vrátiť a znova otvoriť karty, ktoré ste nedávno zatvorili</translation>
 <translation id="1016495303386450659">Položka bola aktualizovaná</translation>
 <translation id="1018804590490383958">Naskenovať a automaticky doplniť</translation>
-<translation id="1019990162050689579">Aktivita v aplikáciách Gemini</translation>
 <translation id="102471647093736603">Presuniete pridržaním</translation>
 <translation id="102645702181682900">Úloha sa začala</translation>
 <translation id="102916930470544692">Prístupový kľúč</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680">Keď web <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> opustíte, povolenia preň sa resetujú na možnosť Vypnuté.</translation>
 <translation id="1293491796138057740">Vaše údaje sa uložia do Peňaženky Google do účtu <ph name="USER_EMAIL" />. Môžete ich používať na rýchlejšie vypĺňanie formulárov v službách Googlu.</translation>
 <translation id="1293556467332435079">Súbory</translation>
-<translation id="1294703224699789269">Platia naše <ph name="BEGIN_LINK" />zmluvné podmienky<ph name="END_LINK" />, <ph name="BEGIN_LINK" />kórejské zmluvné podmienky služieb určovania polohy<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />oznámenie o ochrane súkromia<ph name="END_LINK" />. Čety sa kontrolujú a používajú na cvičenie modelov generatívnej umelej inteligencie. Služba Gemini je umelá inteligencia a môže robiť chyby, a to aj v súvislosti s ľuďmi. Určitý obsah nemusí byť vhodný pre každého. Svoju históriu vrátane informácií o polohe <ph name="BEGIN_LINK" />môžete spravovať<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Prečítajte si viac o svojich možnostiach<ph name="END_LINK" />.</translation>
 <translation id="129553762522093515">Nedávno zatvorené</translation>
 <translation id="1296581780163690620">Chcete súbor stiahnuť? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Vyhľadávanie v režime AI bolo dokončené.</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3973560090698854095">Týmto odstránite adresy uložené vo vašom účte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Prihlásili ste sa ako <ph name="USER_EMAIL" />. Otvorte ponuku účtu.</translation>
+<translation id="3986082989454912832">Prijať</translation>
 <translation id="3986739045730058129">Prejsť na kartu</translation>
 <translation id="3992684624889376114">Táto stránka</translation>
 <translation id="3993594519743675442">Skryť položku Nastaviť pripomenutie</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">Stiahnuté</translation>
 <translation id="4764612367328936189">Vaša organizácia vám povoľuje prihlásiť sa iba určitými účtami. Nepovolené účty sú skryté. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Umožní vám získať prístup k uloženým prístupovým kľúčom vo všetkých zariadeniach</translation>
-<translation id="476946043193006313">Vaša aktivita pomáha cvičiť generatívnu umelú inteligenciu</translation>
 <translation id="4782952780741793211">Potvrdzovací kód:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Chcete otvoriť v režime inkognito?</translation>
@@ -1704,7 +1702,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="628251768213143684">Kedykoľvek môžete spravovať, čo sa ukladá do vášho účtu Google</translation>
 <translation id="6284652193729350524">Ponúkať preklad jazyka <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Ak chcete zapnúť Bezpečné prehliadanie, otvorte <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" /> a klepnite na Bezpečné prehliadanie.</translation>
-<translation id="6295140892595702619">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do aktivity v aplikáciách Gemini (ak je zapnutá). Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="6295751040240588413">Neplatná prezývka karty</translation>
 <translation id="629730747756840877">Účet</translation>
 <translation id="6301104306974789820">Dostávať upozornenia sledovania cien</translation>
@@ -1732,7 +1729,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6347953390226388422">{count,plural, =1{Táto adresa bude odstránená z vášho účtu Google (<ph name="USER_EMAIL" />) aj tohto zariadenia.}few{Tieto adresy budú odstránené z vášho účtu (<ph name="USER_EMAIL" />) aj tohto zariadenia.}many{These addresses will be deleted from your Google Account (<ph name="USER_EMAIL" />) and from this device.}other{Tieto adresy budú odstránené z vášho účtu (<ph name="USER_EMAIL" />) aj tohto zariadenia.}}</translation>
 <translation id="634878792104344809">Synchronizujte si heslá, históriu a ďalší obsah vo všetkých zariadeniach</translation>
 <translation id="6350745006329795504">Spravovať zariadenia</translation>
-<translation id="6351000590398820964">Služba Gemini je umelá inteligencia a môže robiť chyby, a to aj v súvislosti s ľuďmi. Určitý obsah nemusí byť vhodný pre každého. Čety sa kontrolujú a používajú na cvičenie modelov generatívnej umelej inteligencie. <ph name="BEGIN_LINK" />Prečítajte si viac o svojich možnostiach<ph name="END_LINK" />. Platia naše <ph name="BEGIN_LINK" />zmluvné podmienky<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />oznámenie o ochrane súkromia<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Prejsť do Prepínača kariet</translation>
 <translation id="63519665078626091">Ak chcete používať kontrolu internetu, pripojte sa k prehliadaču Safari v počítači káblom a z ponuky Vývoj prejdite do iPadu. Ponuku Vývoj môžete v počítači povoliť v nastaveniach prehliadača Safari v sekcii Rozšírené.</translation>
 <translation id="6354695695659930684">Vypĺňanie hesla</translation>
@@ -2538,7 +2534,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8750037785291841318">Tu nájdete svoje karty</translation>
 <translation id="8751126814549746156">Vaša história sa automaticky odstraňuje po 18 mesiacoch. Toto obdobie môžete zmeniť v nastaveniach. Čety kontrolované poskytovateľmi služieb sú oddelené od vášho účtu a uchovávajú sa maximálne tri roky. Svoje nastavenie histórie môžete <ph name="BEGIN_LINK" />kedykoľvek vypnúť<ph name="END_LINK" />.</translation>
 <translation id="8756969031206844760">Aktualizovať heslo?</translation>
-<translation id="8762190205387442931">Čety sa kontrolujú a používajú na cvičenie modelov generatívnej umelej inteligencie. Svoju históriu vrátane informácií o polohe <ph name="BEGIN_LINK" />môžete spravovať<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Prečítajte si viac o svojich možnostiach<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Prejsť na poslednú kartu</translation>
 <translation id="8766790350274092814">Heslá pre <ph name="WEBSITE" /> a <ph name="SECOND_WEBSITE" /> budú odstránené. Vaše účty odstránené nebudú.</translation>
 <translation id="8775144690796719618">Neplatná webová adresa</translation>

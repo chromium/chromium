@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Mo</translation>
 <translation id="3075154866155599887">Veuillez entrer une valeur valide. Le champ n'est pas complet ou contient une date non valide.</translation>
 <translation id="310520048233152454">Veuillez entrer une adresse URL.</translation>
+<translation id="3137127353890528027">Mot de passe masqué</translation>
 <translation id="3321030238473337787">Vitesse de lecture</translation>
 <translation id="3450233048674729344">La valeur doit être inférieure ou égale à <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">Pour en savoir plus, consultez la page <ph name="ALERT_HUB_LINK" />.</translation>
 <translation id="6310801910862476708">Quitter le mode d'incrustation d'image</translation>
+<translation id="64261224118544870">Mot de passe affiché</translation>
 <translation id="6484738902856791350">Imprimer avec mise en forme</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="65574987622079584">installer une extension de navigateur</translation>

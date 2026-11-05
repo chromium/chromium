@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 градус</translation>
 <translation id="1747777564644667857">Рейс</translation>
 <translation id="1748225549612934682">Жазу бойынша көмек алу үшін мәтінді қысқартыңыз.</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">8-ші пошта жәшігі</translation>
 <translation id="1753706481035618306">Бет нөмірі</translation>
 <translation id="1756026472674246267">Сілтемені жаңа қойындыда ашу</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2980742331521553164">Жылдам төлеу үшін бұл картаның CVC коды шифрланады және Google аккаунтыңызға сақталады.</translation>
 <translation id="2983666748527428214">Инкогнито қойындысын ашу</translation>
 <translation id="2985398929374701810">Дұрыс мекенжайды енгізіңіз</translation>
+<translation id="2985848978986605722">Дереккөз сілтемелеріне өту үшін сол немесе оң бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="2986485254770343131">Камера файлдары сақталып жатыр</translation>
 <translation id="2987034854559945715">Сәйкес келетін функциялар жоқ.</translation>
 <translation id="2989742184762224133">Жоғарғы жағын екі рет қапсыру</translation>
@@ -1591,6 +1593,7 @@
 <translation id="3671540257457995106">Өлшемін өзгертуге рұқсат берілсін бе?</translation>
 <translation id="3672568546897166916">Қате (<ph name="ERROR_PATH" />): <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Үшінші орам</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, бүйірлік панельде ашылады.</translation>
 <translation id="3676592649209844519">Құрылғы идентификаторы:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; деп жазғыңыз келіп пе еді?</translation>
 <translation id="3678029195006412963">Сұрауға қол қойылмады</translation>

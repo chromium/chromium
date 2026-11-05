@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">మీ బుక్‌మార్క్‌లను సింక్ చేయండి</translation>
 <translation id="1750238553597293878">మీ Google ఖాతాలోని పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315"><ph name="TITLE_OF_WINDOW" /> విండోను రీస్టోర్ చేయండి.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{పేజీలు, లిస్ట్‌లో 1 పేజీ ఉంది}other{పేజీలు, లిస్ట్‌లో # పేజీలు ఉన్నాయి}}</translation>
 <translation id="1771929606532798550">మీ Chrome వినియోగం గురించిన సమాచారం Googleకు పంపబడింది, కానీ దానిని మీకు అనుబంధించలేదు\n\nChrome క్రాష్ అయితే, ఆ క్రాష్‌కు సంబంధించిన వివరాలలో కొంత వ్యక్తిగత సమాచారం కూడా ఉండవచ్చు\n\nమీ హిస్టరీని మీ Google ఖాతాకు సింక్ చేస్తే, గణాంకాలలో మీరు సందర్శించే URLల గురించిన సమాచారం కూడా ఉండగలదు</translation>
 <translation id="1778457539567749232">చదవనిదిగా మార్క్ చేస్తుంది</translation>
@@ -1258,6 +1259,7 @@
 <translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
 <translation id="6023820583797130428">వెనుకకు వెళ్లడానికి మెనూను తెరవండి</translation>
 <translation id="6026538407078977628">ఫుల్ స్క్రీన్‌కు విస్తరింపజేయండి</translation>
+<translation id="6027619584715411062">మీ అన్ని పరికరాలలో మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని పొందడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="604124094241169006">ఆటోమేటిక్‌గా</translation>
@@ -1600,6 +1602,7 @@
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />‌ను బ్లాక్ చేయాలా?</translation>
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{ఇప్పుడే మీరు దీనిని మార్చాలి}other{ఇప్పుడే మీరు వీటిని మార్చాలి}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్ విండోను రీస్టోర్ చేయండి.}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌ల విండోను రీస్టోర్ చేయండి.}}</translation>
 <translation id="7196215469483532480">గోప్యతా గైడ్ వివరణ షీట్ ఫుల్-స్క్రీన్‌లో తెరవబడింది</translation>
 <translation id="7196455519852483601">మీ హిస్టరీ, కుక్కీలు, సైట్ డేటా, మరిన్నింటిని మొత్తంగా లేదా కొంత మీరు తొలగించవచ్చు</translation>
 <translation id="7197682514647286393">మీబ్రౌజింగ్ డేటా వేగమైన తొలగింపు</translation>
@@ -1853,6 +1856,7 @@
 <translation id="8135406045838672858">డౌన్‌లోడ్ చేయబడిన PDFలు <ph name="APP_NAME" />‌తో ఆటోమేటిక్‌గా తెరవబడతాయి</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{లింక్ అందింది}other{# లింక్‌లు అందాయి}}</translation>
 <translation id="8137562778192957619">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
+<translation id="8149825829235553327">మీ అజ్ఞాత ట్యాబ్‌లను సురక్షితం చేసుకోండి</translation>
 <translation id="8151185429379586178">డెవలపర్ సాధనాలు</translation>
 <translation id="8152331954420209374">Lensకు వెళ్లండి</translation>
 <translation id="8153206878708357851">కేరెట్ బ్రౌజింగ్‌ను టోగుల్ చేయండి</translation>

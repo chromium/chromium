@@ -189,6 +189,7 @@
 <translation id="1749561566933687563">Synchronizujte svoje záložky</translation>
 <translation id="1750238553597293878">Naďalej používajte heslá vo svojom účte Google</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Obnoviť okno <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Stránky, 1 stránka v zozname}few{Stránky, # stránky v zozname}many{Pages, # pages in list}other{Stránky, # stránok v zozname}}</translation>
 <translation id="1771929606532798550">Informácie o vašom používaní Chromu sa odosielajú Googlu, avšak nie sú s vami spojené.\n\nV prípade pádov Chromu môžu podrobnosti o nich obsahovať určité osobné údaje.\n\nAk budete synchronizovať históriu do svojho účtu Google, môžu metriky zahŕňať aj informácie o webových adresách, ktoré navštevujete.</translation>
 <translation id="1778457539567749232">Označiť ako neprečítané</translation>
@@ -1258,6 +1259,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6022659036123304283">Upravte si Chrome podľa seba</translation>
 <translation id="6023820583797130428">Ak sa chcete vrátiť, otvorte ponuku</translation>
 <translation id="6026538407078977628">Rozbaliť na celú obrazovku</translation>
+<translation id="6027619584715411062">Prihláste sa a používajte záložky, heslá a ďalší obsah vo všetkých svojich zariadeniach.</translation>
 <translation id="6039379616847168523">Prechod na ďalšiu kartu</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="604124094241169006">Automatické</translation>
@@ -1602,6 +1604,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7190921792980745354">Chcete zablokovať používateľa <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Karta je otvorená na pozadí.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Mali by ste si ho okamžite zmeniť}few{Mali by ste ich okamžite zmeniť}many{You should change these now}other{Mali by ste ich okamžite zmeniť}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Obnoviť okno s <ph name="TAB_COUNT_ONE" /> kartou.}few{Obnoviť okno s <ph name="TAB_COUNT_MANY" /> kartami.}many{Restore window of <ph name="TAB_COUNT_MANY" /> tabs.}other{Obnoviť okno s <ph name="TAB_COUNT_MANY" /> kartami.}}</translation>
 <translation id="7196215469483532480">Vysvetlenie sprievodcu ochranou súkromia je otvorené na celú výšku</translation>
 <translation id="7196455519852483601">Môžete odstrániť celú históriu alebo jej časť, súbory cookie, dáta webov a ďalšie položky</translation>
 <translation id="7197682514647286393">Rýchlo odstráňte dáta prehliadania</translation>
@@ -1855,6 +1858,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8135406045838672858">Stiahnuté súbory PDF sa automaticky otvoria pomocou aplikácie <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Bol prijatý odkaz}few{Boli prijaté # odkazy}many{# links received}other{Bolo prijatých # odkazov}}</translation>
 <translation id="8137562778192957619">Toto heslo si nebudete musieť pamätať. Uloží sa do Správcu hesiel Google.</translation>
+<translation id="8149825829235553327">Zabezpečte si karty inkognito</translation>
 <translation id="8151185429379586178">Nástroje pre vývojárov</translation>
 <translation id="8152331954420209374">Prejsť na Lens</translation>
 <translation id="8153206878708357851">Prepnutie kurzorového prehliadania</translation>

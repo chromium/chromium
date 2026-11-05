@@ -456,6 +456,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1746531169546376413">0 grados</translation>
 <translation id="1747777564644667857">Vuelo</translation>
 <translation id="1748225549612934682">Acorta tu texto para obtener ayuda con la escritura</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Buzón de correo 8</translation>
 <translation id="1753706481035618306">Número de página</translation>
 <translation id="1756026472674246267">Abrir enlace en una pestaña nueva</translation>
@@ -1175,6 +1176,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2980742331521553164">El CVC de esta tarjeta se cifrará y se guardará en tu cuenta de Google para tramitar las compras más rápido</translation>
 <translation id="2983666748527428214">Abrir pestaña de Incógnito</translation>
 <translation id="2985398929374701810">Introduce una dirección válida</translation>
+<translation id="2985848978986605722">Usa las teclas de flecha hacia la izquierda o hacia la derecha para desplazarte por los enlaces de las fuentes.</translation>
 <translation id="2986485254770343131">Guardando archivos de la cámara</translation>
 <translation id="2987034854559945715">No se ha encontrado ninguna función</translation>
 <translation id="2989742184762224133">Grapado doble en la parte superior</translation>
@@ -1273,6 +1275,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3141337053413339205">Cambiar a esta pestaña.</translation>
 <translation id="3144458715650412431">Se han aplicado las políticas de prueba. Puedes revisarlas y restablecerlas en chrome://policy/test. No se aplicarán las políticas de gestión.</translation>
 <translation id="3145945101586104090">Error al decodificar respuesta</translation>
+<translation id="3149865382039202168">Guarda tu información en <ph name="GOOGLE_WALLET_TITLE" /> y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes controlar <ph name="HOW_INFO_IS_USED_LINK" /> en la configuración de tus pases privados de <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Error de servidor temporal</translation>
 <translation id="3150889484970506196">Botón Crear hoja de cálculo: actívalo para crear una nueva hoja de cálculo de Google rápidamente</translation>
 <translation id="3154506275960390542">Es posible que un formulario de esta página no se envíe de forma segura. Otros usuarios pueden ver los datos que envías mientras estén en circulación y un atacante podría modificar lo que recibe el servidor.</translation>
@@ -1592,6 +1595,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3671540257457995106">¿Permitir cambio de tamaño?</translation>
 <translation id="3672568546897166916">Error en <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Tercer rollo</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, se abre en el panel lateral</translation>
 <translation id="3676592649209844519">ID del dispositivo:</translation>
 <translation id="3677008721441257057">Quizás quisiste decir: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;</translation>
 <translation id="3678029195006412963">No se ha podido firmar la solicitud</translation>
@@ -1891,7 +1895,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4157469997675439324">Actualiza el carné de conducir de forma segura</translation>
 <translation id="4159784952369912983">Morado</translation>
 <translation id="4165422751765527461">Abre un artículo del Centro de Ayuda en una pestaña nueva</translation>
-<translation id="4165986682804962316">Configuración del sitio</translation>
+<translation id="4165986682804962316">Ajustes de los sitios web</translation>
 <translation id="4169189393773057143">Gestiona las tarjetas de fidelización o desactiva estas sugerencias en Google Wallet</translation>
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4170851022123611628">La lista de tarjetas de fidelización está cerrada.</translation>
@@ -2713,6 +2717,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
     Ponte en contacto con el administrador del sistema.</translation>
 <translation id="5496804587179176046">Guardar códigos de seguridad (no hay ningún código de seguridad guardado en estos momentos)</translation>
 <translation id="5499229993630251170">¿Continuar esta conversación?</translation>
+<translation id="5500759546320582211">Código de verificación: <ph name="OTP" /> de <ph name="EMAIL" /></translation>
 <translation id="5506286895894263601">La lista no contiene accesos directos válidos.</translation>
 <translation id="5507756662695126555">Sin rechazo</translation>
 <translation id="5508515366054931524">Mensaje de verificación de correo abierto a altura completa</translation>
@@ -3204,6 +3209,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6322182122604171028">No se ha podido usar Windows Hello</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6326947323444967009">Establece Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
+<translation id="6327434859517217259">cómo se usa esta información en Google</translation>
 <translation id="6328639280570009161">Prueba a inhabilitar la predicción de red</translation>
 <translation id="6329742260390895689">Para autocompletar tu información, en los ajustes de Wallet, activa Usar mis documentos en todo Google.</translation>
 <translation id="6329815962353376655">&lt;Escribe una pregunta&gt;</translation>

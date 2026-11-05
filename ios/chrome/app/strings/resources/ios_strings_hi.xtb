@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">आप यहां से, हाल ही में बंद किए गए टैब दोबारा खोल सकते हैं</translation>
 <translation id="1016495303386450659">आइटम अपडेट किया गया</translation>
 <translation id="1018804590490383958">कार्ड को स्कैन करें और उसकी जानकारी ऑटोमैटिक तरीके से भरें</translation>
-<translation id="1019990162050689579">Gemini Apps में की गई गतिविधि</translation>
 <translation id="102471647093736603">पता बार को दूसरी जगह ले जाने के लिए, उसे दबाकर रखें</translation>
 <translation id="102645702181682900">टास्क शुरू हुआ</translation>
 <translation id="102916930470544692">पासकी</translation>
@@ -103,7 +102,6 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> को छोड़ने पर, इससे जुड़ी अनुमतियों को रीसेट करके, बंद कर दिया जाएगा.</translation>
 <translation id="1293491796138057740"><ph name="USER_EMAIL" /> के लिए, आपकी जानकारी Google Wallet में सेव हो गई है. इसका इस्तेमाल, Google की सभी सेवाओं में फ़ॉर्म तेज़ी से भरने के लिए किया जा सकता है.</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
-<translation id="1294703224699789269">हमारी <ph name="BEGIN_LINK" />शर्तें<ph name="END_LINK" />, <ph name="BEGIN_LINK" />कोरिया के लिए जगह की जानकारी के बारे में सेवा की शर्तें<ph name="END_LINK" />, और <ph name="BEGIN_LINK" />निजता नोटिस<ph name="END_LINK" /> में बताए गए नियम लागू होते हैं. चैट की समीक्षा की जाती है और उनका इस्तेमाल जनरेटिव एआई मॉडल की ट्रेनिंग के लिए किया जाता है. Gemini एक एआई है और इससे गलतियां हो सकती हैं. इनमें लोगों के बारे में गलत जानकारी देना भी शामिल है. ऐसा हो सकता है कि कोई कॉन्टेंट हर किसी के लिए सही न हो. <ph name="BEGIN_LINK" />अपनी गतिविधियों के इतिहास को मैनेज<ph name="END_LINK" /> किया जा सकता है. इसमें आपकी जगह की जानकारी भी शामिल है. <ph name="BEGIN_LINK" />आपके लिए मौजूद विकल्पों के बारे में जानें<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">हाल ही में बंद किए गए</translation>
 <translation id="1296581780163690620">क्या आपको फ़ाइल डाउनलोड करनी है? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">"एआई मोड की मदद से खोजना" टास्क पूरा हुआ!</translation>
@@ -959,6 +957,7 @@
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="3973560090698854095">इससे आपके Google खाते <ph name="USER_EMAIL" /> में सेव किए गए पते मिट जाएंगे.</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> के तौर पर साइन इन किया गया. खाता मेन्यू खोलें.</translation>
+<translation id="3986082989454912832">जवाब दें</translation>
 <translation id="3986739045730058129">टैब पर जाएं</translation>
 <translation id="3992684624889376114">इस पेज के बारे में</translation>
 <translation id="3993594519743675442">रिमाइंडर सेट करने का विकल्प छिपाएं</translation>
@@ -1207,7 +1206,6 @@
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4764612367328936189">आपका संगठन, आपको सिर्फ़ कुछ खास खातों से साइन इन करने की अनुमति देता है. जिन खातों से साइन करने की अनुमति नहीं है वे छिपा दिए जाते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">इस सुविधा से, किसी भी डिवाइस पर पासकी को ऐक्सेस किया जा सकता है</translation>
-<translation id="476946043193006313">आपकी गतिविधि के डेटा से, जनरेटिव एआई को ट्रेन करने में मदद मिलती है</translation>
 <translation id="4782952780741793211">पुष्टि करने वाला कोड:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">क्या आपको गुप्त मोड में खोलना है?</translation>
@@ -1704,7 +1702,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="628251768213143684">अपने Google खाते में सेव की गई जानकारी को किसी भी समय मैनेज किया जा सकता है</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> में अनुवाद करें</translation>
 <translation id="6293101329759844770">Safe Browsing चालू करने के लिए, <ph name="BEGIN_LINK" />Google की सेवाएं<ph name="END_LINK" /> खोलें और Safe Browsing पर टैप करें.</translation>
-<translation id="6295140892595702619">Gemini से बोलकर बातचीत करने के लिए, माइक्रोफ़ोन का इस्तेमाल करें. Gemini से बोलकर बातचीत करने पर, ऑडियो को Gemini Apps में की गई गतिविधि के डेटा में सेव किया जाता है (अगर यह सेटिंग चालू है). आपके डेटा का इस्तेमाल, जनरेटिव एआई मॉडल में सुधार करने के लिए नहीं किया जाता है</translation>
 <translation id="6295751040240588413">कार्ड का कोई दूसरा नाम अमान्य है</translation>
 <translation id="629730747756840877">खाता</translation>
 <translation id="6301104306974789820">प्रॉडक्ट की कीमत ट्रैक करने से जुड़ी सूचनाएं पाएं</translation>
@@ -1732,7 +1729,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6347953390226388422">{count,plural, =1{यह पता आपके Google खाते (<ph name="USER_EMAIL" />) और इस डिवाइस से मिटा दिया जाएगा.}one{ये पते आपके Google खाते (<ph name="USER_EMAIL" />) और इस डिवाइस से मिटा दिए जाएंगे.}other{ये पते आपके Google खाते (<ph name="USER_EMAIL" />) और इस डिवाइस से मिटा दिए जाएंगे.}}</translation>
 <translation id="634878792104344809">अपने बुकमार्क, पासवर्ड, इतिहास, और दूसरी कई चीज़ें अपने सभी डिवाइस पर सिंक करना</translation>
 <translation id="6350745006329795504">अपने डिवाइस मैनेज करें</translation>
-<translation id="6351000590398820964">Gemini एक एआई है और इससे गलतियां हो सकती हैं. इनमें लोगों के बारे में गलत जानकारी देना भी शामिल है. ऐसा हो सकता है कि कोई कॉन्टेंट हर किसी के लिए सही न हो. चैट की समीक्षा की जाती है और उनका इस्तेमाल जनरेटिव एआई मॉडल की ट्रेनिंग के लिए किया जाता है. <ph name="BEGIN_LINK" />अपने लिए मौजूद विकल्पों के बारे में जानें<ph name="END_LINK" />. इस पर हमारी <ph name="BEGIN_LINK" />शर्तें<ph name="END_LINK" /> और <ph name="BEGIN_LINK" />निजता नोटिस<ph name="END_LINK" /> में बताए गए नियम लागू होते हैं.</translation>
 <translation id="6351147166808964033">टैब बदलने की सुविधा चालू करें</translation>
 <translation id="63519665078626091">Web Inspector का इस्तेमाल करने के लिए, अपने कंप्यूटर पर केबल की मदद से Safari से कनेक्ट करें और Develop मेन्यू से अपने iPad को ऐक्सेस करें. आपके पास कंप्यूटर पर Safari की सेटिंग के Advanced सेक्शन में जाकर, develop मेन्यू को चालू करने का विकल्प होता है.</translation>
 <translation id="6354695695659930684">पासवर्ड भरा जा रहा है</translation>
@@ -1849,6 +1845,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6670729408462528018">गैलरी</translation>
 <translation id="6671294218820966278">'पढ़ा गया' के तौर पर मार्क करें</translation>
 <translation id="6672697278890207089">अपना पासफ़्रेज दर्ज करें</translation>
+<translation id="6673666785752667010">एआई मोड बंद करें</translation>
 <translation id="6674917187596384849">आपके पास एक से दूसरे खाते पर आसानी से स्विच करने का विकल्प है</translation>
 <translation id="6676349090816247042">साइन इन के विकल्प.</translation>
 <translation id="667999046851023355">दस्तावेज़</translation>
@@ -1856,6 +1853,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6682680306647339111">रिमाइंडर हटाया गया</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6684262542644248484">वेबसाइट में साइन इन करें</translation>
+<translation id="668475086425500258">साइट की सेटिंग</translation>
 <translation id="6685259053455152195">सेटिंग में तेज़ी से बदलाव करने और पता बार से सुविधाएं इस्तेमाल करने के लिए शॉर्टकट.</translation>
 <translation id="6689342293888598653">बैकग्राउंड का सफ़ेद रंग</translation>
 <translation id="6689685206615181381">सिर्फ़ गुप्त मोड उपलब्ध है</translation>
@@ -2538,7 +2536,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8750037785291841318">आपको अपने टैब यहां मिलेंगे</translation>
 <translation id="8751126814549746156">आपकी गतिविधियों का इतिहास 18 महीनों के बाद अपने-आप मिट जाता है. सेटिंग में जाकर, इस समयावधि को बदला जा सकता है. सेवा देने वाली कंपनियों ने जिन चैट की समीक्षा की है उन्हें आपके खाते से अलग कर दिया जाता है और तीन सालों तक सेव करके रखा जाता है. गतिविधियों के इतिहास की सेटिंग को किसी भी समय <ph name="BEGIN_LINK" />बंद<ph name="END_LINK" /> किया जा सकता है.</translation>
 <translation id="8756969031206844760">पासवर्ड अपडेट करें?</translation>
-<translation id="8762190205387442931">चैट की समीक्षा की जाती है और उनका इस्तेमाल जनरेटिव एआई मॉडल की ट्रेनिंग के लिए किया जाता है. <ph name="BEGIN_LINK" />अपनी गतिविधियों के इतिहास को मैनेज<ph name="END_LINK" /> किया जा सकता है. इसमें आपकी जगह की जानकारी भी शामिल है. <ph name="BEGIN_LINK" />आपको मिलने वाले विकल्पों के बारे में ज़्यादा जानें<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">आखिरी टैब पर जाएं</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> और <ph name="SECOND_WEBSITE" /> के पासवर्ड मिटा दिए जाएंगे. हालांकि, आपके खाते नहीं मिटाए जाएंगे.</translation>
 <translation id="8775144690796719618">गलत यूआरएल</translation>

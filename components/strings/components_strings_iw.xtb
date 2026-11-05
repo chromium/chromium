@@ -733,6 +733,7 @@
 <translation id="2215727959747642672">עריכת קובץ</translation>
 <translation id="2219658597883514593">חזרה על המדריך</translation>
 <translation id="2219735899272417925">יש לאתחל את המכשיר</translation>
+<translation id="2221460252073828078">‏כאן אפשר לראות את התשובה מ-AI בחיפוש Google</translation>
 <translation id="2222604080869344662">‏כדי להמשיך בהורדה, צריך להיכנס לחשבון ב-OneDrive</translation>
 <translation id="2224337661447660594">אין אינטרנט</translation>
 <translation id="2225927550500503913">הכרטיס הווירטואלי מופעל</translation>
@@ -932,6 +933,7 @@
 <translation id="2535585790302968248">כדי לגלוש באופן פרטי, יש לפתוח כרטיסייה פרטית חדשה</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ודומיין אחד נוסף}one{ו-# דומיינים נוספים}two{ו-# דומיינים נוספים}other{ו-# דומיינים נוספים}}</translation>
 <translation id="2536110899380797252">הוספת כתובת</translation>
+<translation id="2536852576044236667">לתוצאה הקודמת מחוץ לתצוגה</translation>
 <translation id="2537931901612099523">‏משתמשים אחרים במכשיר הזה לא יראו את הפעילות שלך, לכן ניתן לגלוש באופן פרטי יותר. אין לכך השפעה על דרכי איסוף הנתונים באתרים שבהם ביקרת והשירותים שפועלים בהם, כולל Google. עדיין תתבצע שמירה של הורדות וסימניות.</translation>
 <translation id="2541219929084442027">‏דפים שהצגת בכרטיסיות המצב האנונימי לא יישמרו בהיסטוריית הדפדפן, באחסון קובצי ה-cookie או בהיסטוריית החיפושים לאחר שכל כרטיסיות המצב האנונימי ייסגרו. קבצים שהורדת או סימניות שיצרת יישמרו.</translation>
 <translation id="2541474152868747095">‏כדי להעביר היסטוריה מהמכשירים האחרים, צריך לאמת את הזהות. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
@@ -1088,6 +1090,7 @@
 <translation id="2826760142808435982">החיבור מוצפן ומאומת באמצעות <ph name="CIPHER" /> ומשתמש ב-<ph name="KX" /> כמנגנון להחלפת מפתחות.</translation>
 <translation id="2828797285817981634">יש הרשאה זמנית להשתמש בחיישני התנועה</translation>
 <translation id="2835907903001172712">סקירה כללית של הדפדפן</translation>
+<translation id="2836653778330912701">לתוצאה הבאה מחוץ לתצוגה</translation>
 <translation id="2837891525090413132">אתרים יכולים לבקש לנעול את המקלדת ולהשתמש בה</translation>
 <translation id="2839032553903800133">ההודעות חסומות</translation>
 <translation id="2839501879576190149">האתר המבוקש נראה מזויף</translation>
@@ -2227,6 +2230,7 @@
 <translation id="4732860731866514038">חבילת השפה <ph name="LANGUAGE" /> בהורדה… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" />‏ רוצה להשתמש במיקום המכשיר שלך</translation>
 <translation id="473414950835101501">שימוש במצלמות</translation>
+<translation id="4735688073239574197">לתחתית המסך</translation>
 <translation id="4736089601076994090">המבצע יסתיים בתאריך <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">‏אתחול ה-Chromium</translation>
 <translation id="4736934858538408121">כרטיס וירטואלי</translation>
@@ -2442,6 +2446,7 @@ Del</translation>
 <translation id="5053116470141135293">‏כדי להגן על הפרטים האמיתיים שלך במהלך התשלום בכרטיס הזה, המערכת תמלא אוטומטית מספר כרטיס וירטואלי. אפשר לערוך את ההגדרה הזו ב-Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}one{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}two{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}other{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף מהיר', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}}</translation>
 <translation id="5056587122125565772">יצירת תמונה</translation>
+<translation id="5056908537436373373">פתיחת חלון <ph name="WINDOW_INDEX" /> (כרטיסייה אחת) בחלון חדש</translation>
 <translation id="505757197798929356">יש לציין את הסיבה לפתיחה (חובה)</translation>
 <translation id="5058282932481719070">מידע נוסף על התכונה "מילוי אוטומטי משופר" בהגדרות</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3067,6 +3072,7 @@ Del</translation>
 <translation id="6097297436119286254">כדי למלא את פרטי התשלום, צריך לאמת את הזהות</translation>
 <translation id="6099269767116481177">‏22x29.5 אינץ'</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">המדיניות הזו מיועדת ליישום ברמת המחשב. כשהיא מיושמת ברמת המשתמש, אין תמיכה רשמית באופן הפעולה שלה. היא גם תצא משימוש.</translation>
 <translation id="6105460996796456817">יצירת אתר</translation>
 <translation id="6105511947520166941">‏בפעם הבאה אפשר יהיה לשלם דרך Pix ישירות ב-Chrome</translation>
 <translation id="6105745639559695088">הצגה או הסתרה של סרגל הצד</translation>
@@ -3177,6 +3183,7 @@ Del</translation>
 <translation id="6284292079994426700">‏26x38 אינץ'</translation>
 <translation id="6284517535531159884">וריאציות של סוג המקור</translation>
 <translation id="6287197303017372967">קבלת מסלול מפורט ליעד בעזרת תכונת הניווט.</translation>
+<translation id="6287497864845330943">חלון <ph name="WINDOW_NUMBER" /> ‏· <ph name="NUM_TABS" /> כרטיסיות</translation>
 <translation id="628877850550444614">נמצאה הנחה</translation>
 <translation id="6289939620939689042">צבע הדף</translation>
 <translation id="6292819926564202163">‏מנוע החיפוש שלך ב-Chrome</translation>
@@ -3215,6 +3222,7 @@ Del</translation>
 <translation id="6342069812937806050">זה עתה</translation>
 <translation id="6342171901363060580">‏האזהרה הזו מופיעה כי האתר לא תומך ב-HTTPS ונכנסת אליו דרך מצב פרטי. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">מסלול</translation>
+<translation id="6345664705388712774">הוספת תמונות לחיפוש</translation>
 <translation id="6348220984832452017">הגרסאות הפעילות</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">‏רוצה לשלם בלי להעתיק ולהדביק את קוד Pix? <ph name="BEGIN_LINK1" />איך זה עובד<ph name="END_LINK1" /></translation>
@@ -3606,6 +3614,7 @@ Del</translation>
 <translation id="7013835112918108252">אתרים יכולים לבקש לנעול את העכבר ולהשתמש בו</translation>
 <translation id="7013844825046560088">‏‫Chrome מתעד את השימוש בתכונה, למשל את הבקשות שלך ואת ההתנהגות שלך לאחר קבלת הצעות או התעלמת מהן</translation>
 <translation id="7014741021609395734">המרחק מהתצוגה</translation>
+<translation id="7016016144157344115">חלון <ph name="WINDOW_NUMBER" /> · כרטיסייה אחת</translation>
 <translation id="7016992613359344582">התשלום עשוי להיות חד-פעמי או לכלול חיובים חוזרים וייתכן שהדרישה לתשלום לא תוצג בצורה ברורה וחד-משמעית.</translation>
 <translation id="7020464868401003526">‏כתובת ה-URL של קיצור הדרך חורגת ממגבלת האורך של <ph name="MAX_LENGTH" /> תווים.</translation>
 <translation id="7020581144940000377">שימוש במיקום משוער</translation>
@@ -4155,6 +4164,7 @@ Del</translation>
 <translation id="7911651285409665023">סגירה וחזרה אל "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">‏יובא מ-Safari</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
+<translation id="7916802424606434188">פתיחת חלון <ph name="WINDOW_INDEX" />‏ (<ph name="NUM_TABS" /> כרטיסיות) בחלון חדש</translation>
 <translation id="791698251820376781">הארגון שלך לא מאפשר לך להיכנס</translation>
 <translation id="7927046851848613453">‏אפשר לשמור כרטיסים, אירועים ומידע אחר מדפים שצופים בהם – ולא רק מטפסים שממלאים. כך ניתן לגשת במהירות לכרטיסים, כמו כרטיסים לאירועים וכרטיסי מועדון לקוחות. הפרטים השמורים יכולים להופיע במכשירים שלך ובמוצרים שונים של Google.</translation>
 <translation id="7930282586031445870">‏מסך התנאים וההגבלות של "קונים עכשיו, משלמים אחר כך (BNPL)" סגור.</translation>

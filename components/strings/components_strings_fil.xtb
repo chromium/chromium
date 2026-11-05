@@ -456,6 +456,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1746531169546376413">0 degrees</translation>
 <translation id="1747777564644667857">Flight</translation>
 <translation id="1748225549612934682">Paikliin ang iyong text para makatanggap ng tulong sa pagsusulat</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753706481035618306">Numero ng page</translation>
 <translation id="1756026472674246267">Buksan ang Link sa Bagong Tab</translation>
@@ -1175,6 +1176,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2980742331521553164">Ie-encypt at ise-save sa iyong Google Account ang CVC ng card na ito para sa mas mabilis na pag-checkout</translation>
 <translation id="2983666748527428214">Magbukas ng Tab na Incognito</translation>
 <translation id="2985398929374701810">Maglagay ng wastong address</translation>
+<translation id="2985848978986605722">Gamitin ang pakaliwa o pakanang arrow key para i-navigate ang mga link ng source.</translation>
 <translation id="2986485254770343131">Sine-save ang mga file ng camera</translation>
 <translation id="2987034854559945715">Walang tumutugmang feature</translation>
 <translation id="2989742184762224133">Dual staple top</translation>
@@ -1273,6 +1275,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3141337053413339205">Lumipat sa tab na ito.</translation>
 <translation id="3144458715650412431">Nailapat na ang mga patakaran sa pag-test. Suriin at i-reset ang mga ito sa chrome://policy/test. Hindi malalapat ang mga patakaran ng admin.</translation>
 <translation id="3145945101586104090">Nabigong i-decode ang tugon</translation>
+<translation id="3149865382039202168">I-save ang iyong impormasyon sa <ph name="GOOGLE_WALLET_TITLE" /> at mas mabilis na tapusin ang mga bagay, tulad ng pagsagot ng mga form sa mga produkto ng Google. Puwede mong kontrolin <ph name="HOW_INFO_IS_USED_LINK" /> sa iyong mga setting ng pribadong pass para sa <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Pansamantalang error sa server</translation>
 <translation id="3150889484970506196">Button na Gumawa ng sheet, i-activate para mabilis na makagawa ng bagong Google Sheet</translation>
 <translation id="3154506275960390542">Naglalaman ang page na ito ng isang form na maaaring hindi secure na maisusumite. Maaaring makita ng iba ang data na iyong ipapadala habang ipinapadala ito o maaaring mabago ng isang nang-aatake upang baguhin kung ano ang matatanggap ng server.</translation>
@@ -1592,6 +1595,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3671540257457995106">Payagan ang pag-resize?</translation>
 <translation id="3672568546897166916">Error sa <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Ikatlong Rolyo</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, magbubukas sa panel sa gilid</translation>
 <translation id="3676592649209844519">Device ID:</translation>
 <translation id="3677008721441257057">Ang ibig mo bang sabihin ay &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Hindi malagdaan ang kahilingan</translation>
@@ -3204,6 +3208,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6322182122604171028">Hindi magamit ang Windows Hello</translation>
 <translation id="6326175484149238433">Alisin sa Chrome</translation>
 <translation id="6326947323444967009">Itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
+<translation id="6327434859517217259">kung paano ginagamit ang impormasyong ito sa buong Google</translation>
 <translation id="6328639280570009161">Subukang i-disable ang paghula ng network</translation>
 <translation id="6329742260390895689">Para i-autofill ang iyong impormasyon, i-on ang "Gumamit ng mga pass sa buong Google" sa mga setting ng Wallet</translation>
 <translation id="6329815962353376655">&lt;Mag-type ng tanong&gt;</translation>

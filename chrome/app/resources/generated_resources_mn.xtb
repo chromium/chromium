@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">Бусад хэл дээрх вебсайтуудад Google Орчуулагчийг санал болгоно</translation>
 <translation id="1384959399684842514">Таталтыг түр зогсоосон</translation>
 <translation id="1386966479075994683">Табуудыг дэлгэх</translation>
+<translation id="1387227841274754059">Google Lens-р дэлгэцийнхээ талаар асууна уу</translation>
 <translation id="1388253969141979417">Таны микрофоныг ашиглахыг зөвшөөрсөн</translation>
 <translation id="139013308650923562">Таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" />-г таны <ph name="DEVICE_TYPE" />-д урьдчилж суулгасан</translation>
@@ -1476,6 +1477,7 @@
 <translation id="2131548114076786395">Табын бүлэг хуваалцах, нэгдэх, хамтран ажиллахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="2131863825246488194">Онлайн орчинд илүү аюулгүй байгаарай</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" />-г дахин оролдох</translation>
+<translation id="2134044938347520790">Унших горимын асуудал, онцлогийн хүсэлтийг хуваалцана уу</translation>
 <translation id="2134905185275441536">Системийн CA</translation>
 <translation id="2135420518376202233">Bluetooth төхөөрөмжийн нэр</translation>
 <translation id="21354425047973905">ПИН нуух</translation>
@@ -2642,7 +2644,6 @@
 <translation id="3003967365858406397">Таны <ph name="PHONE_NAME" /> хувийн Wi-Fi холболт үүсгэнэ.</translation>
 <translation id="3004385386820284928">Гарын товчнуудыг өөрчлөх</translation>
 <translation id="300580149047131921">Саяхан ашигласан</translation>
-<translation id="3005928441045180122">Өрсөн</translation>
 <translation id="3006881078666935414">Хэрэглээний дата алга</translation>
 <translation id="3007555010975143508">Эдгээр аппыг таны дэлгэцийг бичихэд ашиглана:</translation>
 <translation id="3007771295016901659">Табыг хуулбарлах</translation>
@@ -4293,6 +4294,7 @@
 <translation id="4250596587221570622">Профайлдаа загвар сонгох</translation>
 <translation id="4250680216510889253">Үгүй</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> дахь файлыг харах, өөрийн хуулбарыг үүсгэх боломжтой болно</translation>
+<translation id="4251316952800826018">Сонголтын толгой хэсгийг сонгох</translation>
 <translation id="4252899949534773101">Bluetooth-г идэвхгүй болгох</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Табын агуулгыг хуваалцсан</translation>
 <translation id="4253168017788158739">Тайлбар</translation>
@@ -4720,6 +4722,7 @@
 <translation id="4580389561674319558">Бүх харилцагчид харагдана</translation>
 <translation id="4580596421317071374">Нууц үгнүүдийг энэ төхөөрөмж дээрх <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгалсан.</translation>
 <translation id="4582297591746054421">Сайтууд ихэвчлэн таны хуулсан текстийн форматыг хадгалах зэрэг онцлогуудад зориулж таны түр санах ойг уншдаг</translation>
+<translation id="4582563038311694664">Бүх тохиргоог дахин тохируулах</translation>
 <translation id="4584094413232466841">Энэ мэдээллийг Chrome-н автоматаар бөглөх хэсгээс хасах уу?</translation>
 <translation id="4584770411839426377">Цонх</translation>
 <translation id="4584836561445313300">Танай байгууллага нууц үг болон бусад өгөгдөл зэрэг одоо байгаа аливаа интернэтээр үзсэн өгөгдлийг харж, удирдах боломжтой болно</translation>
@@ -4758,6 +4761,7 @@
 <translation id="4610637590575890427">Та энэ <ph name="SITE" /> руу орох гэж байсан уу?</translation>
 <translation id="4611619000650855880">Хулганын зүүн товчийг сонгосон үед 2 товшихын тулд “/”-г ашиглана уу</translation>
 <translation id="4613271546271159013">Өргөтгөл нь таныг шинэ цонх нээх үед гарч ирсэн хуудсыг өөрчилсөн.</translation>
+<translation id="4616024182698834938">Файлыг энд зөөж хийнэ үү</translation>
 <translation id="461613135510474570">Өгүүлбэр</translation>
 <translation id="461661862154729886">Эрчим хүчний эх үүсвэр</translation>
 <translation id="4617001782309103936">Хэт богино</translation>
@@ -5587,6 +5591,7 @@
 <translation id="5230190638672215545">Та "ươ"-г авахын тулд "uow" гэж бичнэ үү</translation>
 <translation id="5230516054153933099">Цонх</translation>
 <translation id="5231255476752743708">Chrome-д таны нууц үгийг өөрчлөхөд тусламж хэрэгтэй байна</translation>
+<translation id="5232607425694431024">Файл, зургийн талаар асуух</translation>
 <translation id="5232714764496316200">Google Lens-р гэрийн даалгавартаа тусламж аваарай</translation>
 <translation id="5233231016133573565">Явцын ID</translation>
 <translation id="5233638681132016545">Шинэ таб</translation>
@@ -6777,6 +6782,7 @@
 <translation id="6185151644843671709">Нэвтрэх түлхүүрийг хадгалж, ПИН үүсгэсэн</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу. Энэ нь мөн аливаа хуулбарыг цэвэрлэнэ.}other{{PASSWORD_COUNT} нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу. Энэ нь мөн аливаа хуулбарыг цэвэрлэнэ.}}</translation>
 <translation id="6186177419203903310">Энэ нь систем дээрх бүх шинэ USB нэмэлт хэрэгслийн мэдэгдлийг идэвхжүүлнэ. Та үргэлжлүүлэхдээ итгэлтэй байна уу?</translation>
+<translation id="6187116431221566074"><ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" />-г сонгосон</translation>
 <translation id="6188822118034543225">Зэрэгцүүлсэн болон өрсөн бүдүүвчүүдийн хооронд сэлгэхийн тулд зэрэгцүүлэн харах горимын цэсийг ашиглана уу.</translation>
 <translation id="6190953336330058278">Phone Hub-н аппууд</translation>
 <translation id="6192333916571137726">Файл татах</translation>
@@ -7105,7 +7111,6 @@
 <translation id="6453687572758515877">Бүх табыг бүлэглэх</translation>
 <translation id="6453921811609336127">Сүүлд ашигласан оруулах арга руу сэлгэхийн тулд <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Зай авах товч<ph name="END_SPACE" /><ph name="END_SHORTCUT" />-ийг дарна уу</translation>
 <translation id="645433497989692531">Ингэснээр таны төхөөрөмжөөс интернэтээр үзсэн өгөгдлийг бүрмөсөн устгана. Өгөгдлийг сэргээхийн тулд дараахаар нэвтэрнэ үү</translation>
-<translation id="6454456397828627257">Зэрэгцсэн</translation>
 <translation id="6455264371803474013">Зөвхөн сонгосон сайтуудад</translation>
 <translation id="6455521402703088376">Унтраалттай • Энэ өргөтгөлийг хөгжүүлэгч нь нийтлэхээ больсон</translation>
 <translation id="6455894534188563617">&amp;Шинэ фолдер</translation>
@@ -7734,6 +7739,7 @@
 <translation id="6913051485529944333">Та энэ хуудсан дээр Google Календарийг дахин харахгүй</translation>
 <translation id="6914812290245989348">Аюултай сайтууд руу очихоос өмнө ямар нэг сануулга харахгүй</translation>
 <translation id="6916590542764765824">Удирдлаганд байдаг өргөтгөлүүд</translation>
+<translation id="6916630302999048499">Gemini-н даалгавар ажиллаж байна</translation>
 <translation id="6916676294509106572">Outlook Календарийг нуусан</translation>
 <translation id="6916818963747321523">Бүгдийг дэлгэх</translation>
 <translation id="6917873303492266709">Табын бүлэг хуваалцах, нэгдэх, хамтран ажиллахын тулд тохиргоог нээж, Chrome-д нэвтрэхийг зөвшөөрөхийг асаана уу</translation>
@@ -8262,6 +8268,7 @@
 <translation id="733058866272972585">Энэ сайтыг хамгаалагдсан контент тоглуулахын тулд танигч ашиглахыг блоклосон.</translation>
 <translation id="7331646370422660166">alt + доош сум</translation>
 <translation id="7332053360324989309">Зориулагдсан ажилтан: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">Эхлүүлсэн</translation>
 <translation id="7333388112938984914">Хязгаартай холболттой байхад файлууд байршуулах боломжгүй.</translation>
 <translation id="7335974957018254119">Зөв бичгийн алдаа шалгах онцлогийг дараахад ашиглах</translation>
 <translation id="7336799713063880535">Мэдэгдлийг хориглов.</translation>
@@ -8630,6 +8637,7 @@
 <translation id="7612655942094160088">Холбогдсон утасны онцлогуудын идэвхжилт.</translation>
 <translation id="7612989789287281429">Та нэвтэрч байна…</translation>
 <translation id="76131528886466333">Microsoft Edge-н өргөтгөлд зориулсан Google Хайлтыг суулгаарай</translation>
+<translation id="7613308212159091597"><ph name="GROUP_LABEL" />-г сонгосон</translation>
 <translation id="7615365294369022248">Бүртгэл нэмэхэд алдаа гарлаа</translation>
 <translation id="7616964248951412133">Сайтууд энэ онцлогийг тоглоом, алсын зайн компьютерын апп зэрэгт зориулж таны хулганын оролтын мэдээллийг авч, ашиглахад хэрэглэдэг</translation>
 <translation id="7617263010641145920">Play Store-г асаах</translation>
@@ -10172,7 +10180,6 @@
 <translation id="8774379074441005279">Сэргээхийг баталгаажуулах</translation>
 <translation id="8774934320277480003">Дээд хүрээ</translation>
 <translation id="8775144690796719618">Хүчингүй URL</translation>
-<translation id="877515298105563553">Зэрэгцүүлсэн</translation>
 <translation id="8776294611668764629">Энэ файл аюулгүй байдлын шалгалтад хэт том тул танай байгууллага үүнийг блоклосон. Та 50 МБ хүртэлх хэмжээтэй файлуудыг нээх боломжтой.</translation>
 <translation id="8777509665768981163">Таблетдаа товчлуурууд нэмэх эсвэл тэдгээрийн байрлалыг тогтоох</translation>
 <translation id="8779720597365936419">Тийм, өгөгдлөө ажлаас тусад нь байлгана (санал болгосон)</translation>
@@ -10303,6 +10310,7 @@
 <translation id="8876307312329369159">Энэ тохиргоог демо харилцан үйлдэлд өөрчлөх боломжгүй.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> ойролцоох төхөөрөмжүүдийг олохын тулд Bluetooth скан хийхийг ашигладаг.</translation>
 <translation id="8877448029301136595">[толгой директор]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: Эхлүүлсэн</translation>
 <translation id="8879284080359814990">&amp;Цонх хэлбэрээр харуул</translation>
 <translation id="8879921471468674457">Нэвтрэх мэдээллээ санана уу</translation>
 <translation id="8880009256105053174">Энэ хуудсыг Google-р хайх...</translation>
@@ -10706,7 +10714,6 @@
 <translation id="9170884462774788842">Таны компьютер дээрх өөр нэг апп theme нэмжээ. Энэ нь Chrome-ийн ажиллах зарчимд нөлөө үзүүлж болзошгүй.</translation>
 <translation id="9172270007201309670">Фонтын хэмжээг томруулсан</translation>
 <translation id="917350715406657904">Та <ph name="APP_NAME" /> дээр таны эцэг эхийн тохируулсан цагийн хязгаарт хүрсэн байна. Та түүнийг маргааш <ph name="TIME_LIMIT" />-н турш ашиглах боломжтой.</translation>
-<translation id="9174854240439014335">Цонхны зүүн, баруун ирмэгээс чирч буулгаснаар хуваасан харагдах байдал үүсгэхийг зөвшөөрөх</translation>
 <translation id="9174870712400134574">Зөвхөн Шинэ таб хуудсан дээр харуулах</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth төхөөрөмжийг холбосон</translation>
 <translation id="9177859716483578738">Үргэлжлүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны <ph name="FIELDS_STRING" />-г энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK" />Нууцлалын бодлогыг<ph name="END_LINK" /> харна уу.</translation>

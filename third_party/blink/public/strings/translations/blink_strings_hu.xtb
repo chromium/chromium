@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Kérjük, adjon meg érvényes értéket. A mező hiányos, vagy érvénytelen dátum van megadva.</translation>
 <translation id="310520048233152454">Adjon meg egy URL-t.</translation>
+<translation id="3137127353890528027">Jelszó elrejtve</translation>
 <translation id="3321030238473337787">Lejátszási sebesség</translation>
 <translation id="3450233048674729344">Az érték legyen kisebb vagy egyenlő, mint <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">hh</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">További részletek: <ph name="ALERT_HUB_LINK" />.</translation>
 <translation id="6310801910862476708">Kilépés a kép a képben funkcióból</translation>
+<translation id="64261224118544870">Jelszó megjelenítve</translation>
 <translation id="6484738902856791350">Olvashatóra formázás</translation>
 <translation id="6550675742724504774">Beállítások</translation>
 <translation id="65574987622079584">telepíthet egy böngészőbővítményt</translation>

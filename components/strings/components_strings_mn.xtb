@@ -456,6 +456,7 @@
 <translation id="1746531169546376413">0 хэм</translation>
 <translation id="1747777564644667857">Нислэг</translation>
 <translation id="1748225549612934682">Бичих тусламж авахын тулд текстээ богиносгоно уу</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> - <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">Шуудангийн хайрцаг 8</translation>
 <translation id="1753706481035618306">Хуудaсны дугаар</translation>
 <translation id="1756026472674246267">Шинэ табд нээх</translation>
@@ -733,6 +734,7 @@
 <translation id="2215727959747642672">Файл засах</translation>
 <translation id="2219658597883514593">Практик хичээлийг дахин эхлүүлэх</translation>
 <translation id="2219735899272417925">Төхөөрөмжийг шинэчлэх шаардлагатай</translation>
+<translation id="2221460252073828078">Хайлтын ХОУ-ы хариултаа эндээс харна уу</translation>
 <translation id="2222604080869344662">Үргэлжлүүлэн татахын тулд OneDrive-т нэвтэрнэ үү</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2225927550500503913">Виртуал картыг асаасан</translation>
@@ -1174,6 +1176,7 @@
 <translation id="2980742331521553164">Энэ картын Карт баталгаажуулалтын кодыг шифрлэх бөгөөд илүү хурдан тооцоо хийхэд зориулж таны Google Бүртгэлд хадгална</translation>
 <translation id="2983666748527428214">Нууцлалтай табыг нээх</translation>
 <translation id="2985398929374701810">Зөв хаяг оруулна уу</translation>
+<translation id="2985848978986605722">Эх сурвалжийн холбооснууд руу шилжихийн тулд зүүн, баруун сумтай товчийг ашиглана уу.</translation>
 <translation id="2986485254770343131">Камерын файлуудыг хадгалж байна</translation>
 <translation id="2987034854559945715">Таарах онцлог олдсонгүй</translation>
 <translation id="2989742184762224133">Дээд буланд хоёр удаа үдэх</translation>
@@ -1592,6 +1595,7 @@
 <translation id="3671540257457995106">Хэмжээг өөрчлөхийг зөвшөөрөх үү?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />-д алдаа гарлаа: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Гурав дахь хуйлмал</translation>
+<translation id="3675778643732456976"><ph name="SUGGESTION_TEXT" />, хажуугийн самбарт нээгдэнэ</translation>
 <translation id="3676592649209844519">Төхөөрөмжийн ID:</translation>
 <translation id="3677008721441257057">Та &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; руу очихыг хүссэн үү?</translation>
 <translation id="3678029195006412963">Хүсэлт тавих боломжгүй байна</translation>

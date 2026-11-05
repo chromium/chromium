@@ -1478,6 +1478,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2131548114076786395">Para compartilhar, participar e colaborar em grupos de guias, confirme sua identidade</translation>
 <translation id="2131863825246488194">Mais segurança on-line</translation>
 <translation id="2133857665503360653">Tentar de novo: <ph name="FILE_NAME" /></translation>
+<translation id="2134044938347520790">Compartilhe problemas ou solicitações de recursos do modo de leitura</translation>
 <translation id="2134905185275441536">CAs do sistema</translation>
 <translation id="2135420518376202233">Nomes de dispositivos Bluetooth</translation>
 <translation id="21354425047973905">Ocultar PINs</translation>
@@ -2643,7 +2644,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3003967365858406397">Seu <ph name="PHONE_NAME" /> criará uma conexão Wi-Fi particular.</translation>
 <translation id="3004385386820284928">Personalizar teclas do teclado</translation>
 <translation id="300580149047131921">Usado recentemente</translation>
-<translation id="3005928441045180122">Divisão horizontal</translation>
 <translation id="3006881078666935414">Nenhum dado de uso</translation>
 <translation id="3007555010975143508">Estes apps serão usados para gravar sua tela:</translation>
 <translation id="3007771295016901659">Duplicar guia</translation>
@@ -4296,6 +4296,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4250596587221570622">Escolha um tema para o perfil</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> poderá ver e fazer cópias dos arquivos em <ph name="FOLDERNAME" /></translation>
+<translation id="4251316952800826018">Cabeçalho da seleção de foco</translation>
 <translation id="4252899949534773101">Bluetooth desativado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Conteúdo da guia compartilhado</translation>
 <translation id="4253168017788158739">Observação</translation>
@@ -4723,6 +4724,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4580389561674319558">Visível para todos os contatos</translation>
 <translation id="4580596421317071374">As senhas são salvas no <ph name="GOOGLE_PASSWORD_MANAGER" /> neste dispositivo.</translation>
 <translation id="4582297591746054421">Os sites geralmente leem a área de transferência para recursos como manter a formatação do texto copiado</translation>
+<translation id="4582563038311694664">Redefinir todas as configurações</translation>
 <translation id="4584094413232466841">Remover essas informações do preenchimento automático do Chrome?</translation>
 <translation id="4584770411839426377">Janela</translation>
 <translation id="4584836561445313300">Sua organização vai poder ver e gerenciar todos os dados de navegação, como senhas e muito mais</translation>
@@ -6783,6 +6785,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6185151644843671709">Chave de acesso salva e PIN criado</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 senha e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}one{{PASSWORD_COUNT} senha e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}other{{PASSWORD_COUNT} senhas e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos. Isso também vai limpar todas as cópias.}}</translation>
 <translation id="6186177419203903310">Isso vai ativar as notificações de todos os novos periféricos USB no sistema. Você quer mesmo continuar?</translation>
+<translation id="6187116431221566074">Foco em <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6188822118034543225">Use o menu de visualização dividida para alternar entre layouts lado a lado e empilhados.</translation>
 <translation id="6190953336330058278">Apps do recurso Seu smartphone</translation>
 <translation id="6192333916571137726">Baixar o arquivo</translation>
@@ -7111,7 +7114,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6453687572758515877">Agrupar todas as guias</translation>
 <translation id="6453921811609336127">Para mudar para o próximo método de entrada, pressione <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espaço<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Isso excluirá permanentemente os dados de navegação deste dispositivo. Para recuperar os dados, faça login como</translation>
-<translation id="6454456397828627257">Lado a lado</translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455521402703088376">Desativada • A publicação desta extensão foi cancelada pelo desenvolvedor</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
@@ -8641,6 +8643,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7612655942094160088">Ativar recursos do smartphone conectado.</translation>
 <translation id="7612989789287281429">Fazendo login…</translation>
 <translation id="76131528886466333">Instale a extensão da Pesquisa Google para Microsoft Edge</translation>
+<translation id="7613308212159091597">Foco em <ph name="GROUP_LABEL" /></translation>
 <translation id="7615365294369022248">Ocorreu um erro ao adicionar uma conta</translation>
 <translation id="7616964248951412133">Os sites usam esse recurso para capturar e usar a entrada do mouse, como em jogos ou apps de área de trabalho remota</translation>
 <translation id="7617263010641145920">Ativar a Play Store</translation>
@@ -10186,7 +10189,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8774379074441005279">Confirmar restauração</translation>
 <translation id="8774934320277480003">Margem superior</translation>
 <translation id="8775144690796719618">URL inválido</translation>
-<translation id="877515298105563553">Divisão vertical</translation>
 <translation id="8776294611668764629">Sua organização bloqueou esse arquivo porque ele é muito grande para uma verificação de segurança. É possível abrir arquivos de até 50 MB.</translation>
 <translation id="8777509665768981163">Adicionar ou localizar botões no tablet</translation>
 <translation id="8779720597365936419">Sim, manter meus dados separados dos profissionais (recomendado)</translation>
@@ -10721,7 +10723,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9170884462774788842">Outro programa em seu computador adicionou um tema que pode mudar a forma como o Google Chrome funciona.</translation>
 <translation id="9172270007201309670">Tamanho da fonte aumentado</translation>
 <translation id="917350715406657904">Você atingiu o limite de tempo que seu familiar responsável definiu para o app <ph name="APP_NAME" />. Você poderá usá-lo amanhã por <ph name="TIME_LIMIT" />.</translation>
-<translation id="9174854240439014335">Permitir arrastar e soltar na visualização dividida na borda esquerda ou direita da janela</translation>
 <translation id="9174870712400134574">Mostrar apenas na página Nova Guia</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Dispositivo Bluetooth conectado</translation>
 <translation id="9177859716483578738">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Consulte a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> do site.</translation>
