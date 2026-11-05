@@ -73,6 +73,20 @@
 + (BOOL)hasUserPolicyInCurrentProfile:(NSString*)policyName
                      withIntegerValue:(int)expectedValue;
 
+// Triggers a fetch of the user policy of the current Profile. Returns YES if
+// the fetch was triggered, or NO, without fetching, if the user policy client
+// isn't registered.
++ (BOOL)refreshUserPolicyInCurrentProfile [[nodiscard]];
+
+// Returns the `policy::CloudPolicyStore::Status` of the user policy store of
+// the current Profile.
++ (NSInteger)userPolicyStoreStatusInCurrentProfile [[nodiscard]];
+
+// Returns the `policy::CloudPolicyValidatorBase::Status` of the last policy
+// validated by the user policy store of the current Profile, or
+// `VALIDATION_OK` if none was validated yet.
++ (NSInteger)userPolicyValidationStatusInCurrentProfile [[nodiscard]];
+
 // Logs `message` using LOG_POLICY with ERROR severity from C++.
 + (void)logErrorPolicy:(NSString*)message;
 
