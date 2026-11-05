@@ -21,8 +21,8 @@ source_set("settings_row_locator") {
   public_deps = [
     "//base",
     "//chrome/browser/win",
+    "//ui/gfx/geometry",
   ]
-  deps = [ "//ui/gfx/geometry" ]
 }
 
 source_set("unit_tests") {

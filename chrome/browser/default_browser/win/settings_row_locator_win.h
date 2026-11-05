@@ -12,10 +12,10 @@
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/win/uia_element_locator_win.h"
+#include "ui/gfx/geometry/rect.h"
 
 // Finds the row that sets the default browser in the Windows Settings window
 // and turns it into the arrow's offset from the window's top edge, in physical
@@ -28,6 +28,11 @@ class SettingsRowLocatorWin {
   // The offset, in physical pixels, or why there is none.
   using Result = base::expected<int, FailureReason>;
   using MeasurementCallback = base::OnceCallback<void(Result)>;
+
+  // The button's bounds relative to the window's origin, in physical pixels,
+  // or why there are none.
+  using ButtonResult = base::expected<gfx::Rect, FailureReason>;
+  using ButtonCallback = base::OnceCallback<void(ButtonResult)>;
 
   // How a measurement ended, for the RowMeasurementOutcome histogram: the
   // failure reasons plus `kLocated`, so that one sample per measurement can be
@@ -66,9 +71,20 @@ class SettingsRowLocatorWin {
                        base::Process settings_process,
                        MeasurementCallback callback);
 
+  // Like Measure(), but answers with the "Set default" button's bounds and
+  // records no histograms. Shares Measure()'s one request in flight.
+  virtual void MeasureButton(HWND settings_hwnd,
+                             base::Process settings_process,
+                             ButtonCallback callback);
+
  private:
-  void OnLocated(MeasurementCallback callback,
-                 base::TimeTicks started,
+  // Asks the locator for the button, ending with `ending`, which OnLocated()
+  // runs only while `this` is alive.
+  void Locate(HWND settings_hwnd,
+              base::Process settings_process,
+              UiaElementLocatorWin::LocateCallback ending)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void OnLocated(UiaElementLocatorWin::LocateCallback ending,
                  UiaElementLocatorWin::Result result)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

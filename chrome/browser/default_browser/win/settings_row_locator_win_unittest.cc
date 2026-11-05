@@ -37,6 +37,8 @@ using FailureReason = SettingsRowLocatorWin::FailureReason;
 using Measurement = UiaElementLocatorWin::Measurement;
 using Outcome = SettingsRowLocatorWin::Outcome;
 using MeasureFuture = base::test::TestFuture<SettingsRowLocatorWin::Result>;
+using ButtonFuture =
+    base::test::TestFuture<SettingsRowLocatorWin::ButtonResult>;
 
 constexpr char kOutcomeHistogram[] =
     "DefaultBrowser.VisualGuide.RowMeasurementOutcome";
@@ -98,6 +100,10 @@ class SettingsRowLocatorWinTest : public testing::Test {
 
   void Measure(MeasureFuture& future) {
     locator_->Measure(kHwnd, OpenCurrentProcess(), future.GetCallback());
+  }
+
+  void MeasureButton(ButtonFuture& future) {
+    locator_->MeasureButton(kHwnd, OpenCurrentProcess(), future.GetCallback());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -210,6 +216,80 @@ TEST_F(SettingsRowLocatorWinTest, DestructionAbandonsTheMeasurementInFlight) {
   EXPECT_FALSE(second.IsReady());
   histograms_.ExpectTotalCount(kOutcomeHistogram, 0);
   histograms_.ExpectTotalCount(kDurationHistogram, 0);
+}
+
+TEST_F(SettingsRowLocatorWinTest, MeasureButtonAsksForTheSameButton) {
+  MeasureFuture row_future;
+  Measure(row_future);
+  const UiaElementLocatorWin::Query row_query = fake_->query();
+  fake_->Answer(base::unexpected(FailureReason::kTimedOut));
+
+  ButtonFuture future;
+  MeasureButton(future);
+
+  EXPECT_EQ(fake_->call_count(), 2);
+  EXPECT_EQ(fake_->target().hwnd, kHwnd);
+  ASSERT_TRUE(fake_->target().process.IsValid());
+  EXPECT_EQ(fake_->target().window_class, L"ApplicationFrameWindow");
+  EXPECT_EQ(fake_->query().automation_id, row_query.automation_id);
+  EXPECT_EQ(fake_->query().fallback_automation_id_fragment,
+            row_query.fallback_automation_id_fragment);
+  EXPECT_EQ(fake_->query().fallback_control_type,
+            row_query.fallback_control_type);
+  EXPECT_EQ(fake_->query().wait_for, row_query.wait_for);
+}
+
+TEST_F(SettingsRowLocatorWinTest, ButtonBoundsAreRelativeToTheWindow) {
+  ButtonFuture future;
+  MeasureButton(future);
+  fake_->Answer(Measurement{kRowBounds, kWindowBounds});
+
+  EXPECT_THAT(future.Get(), ValueIs(gfx::Rect(20, 100, 200, 40)));
+  histograms_.ExpectTotalCount(kOutcomeHistogram, 0);
+  histograms_.ExpectTotalCount(kDurationHistogram, 0);
+}
+
+// Centered at x 450, outside the window's x 100-400.
+TEST_F(SettingsRowLocatorWinTest, ButtonOutsideTheWindowIsUnusable) {
+  ButtonFuture future;
+  MeasureButton(future);
+  fake_->Answer(Measurement{gfx::Rect(400, 300, 100, 40), kWindowBounds});
+
+  EXPECT_THAT(future.Get(), ErrorIs(FailureReason::kUnusable));
+}
+
+// Inside the window, but nothing to point at.
+TEST_F(SettingsRowLocatorWinTest, EmptyButtonBoundsAreUnusable) {
+  ButtonFuture future;
+  MeasureButton(future);
+  fake_->Answer(Measurement{gfx::Rect(120, 300, 0, 0), kWindowBounds});
+
+  EXPECT_THAT(future.Get(), ErrorIs(FailureReason::kUnusable));
+}
+
+TEST_F(SettingsRowLocatorWinTest, MeasureButtonPassesFailuresThrough) {
+  ButtonFuture future;
+  MeasureButton(future);
+  fake_->Answer(base::unexpected(FailureReason::kWindowGone));
+
+  EXPECT_THAT(future.Get(), ErrorIs(FailureReason::kWindowGone));
+  histograms_.ExpectTotalCount(kOutcomeHistogram, 0);
+}
+
+// Both entry points go through the one locator, which keeps one request.
+TEST_F(SettingsRowLocatorWinTest, MeasureButtonSupersedesARowMeasurement) {
+  MeasureFuture row_future;
+  Measure(row_future);
+  ButtonFuture future;
+  MeasureButton(future);
+
+  EXPECT_THAT(row_future.Get(), ErrorIs(FailureReason::kSuperseded));
+  histograms_.ExpectUniqueSample(kOutcomeHistogram, Outcome::kSuperseded, 1);
+
+  fake_->Answer(Measurement{kRowBounds, kWindowBounds});
+  EXPECT_THAT(future.Get(), ValueIs(gfx::Rect(20, 100, 200, 40)));
+  // The button measurement adds nothing to the arrow flow's histograms.
+  histograms_.ExpectTotalCount(kOutcomeHistogram, 1);
 }
 
 }  // namespace

@@ -14,9 +14,12 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "ui/gfx/geometry/rect.h"
 
 #include <uiautomation.h>
 
@@ -74,6 +77,58 @@ Outcome ToOutcome(UiaElementLocatorWin::FailureReason reason) {
   NOTREACHED();
 }
 
+// Returns the element's bounds relative to the window's origin, or kUnusable
+// if they are empty or their center is outside the window. The locator checks
+// the same (see UiaElementLocatorWin), so a usable rect is never empty.
+SettingsRowLocatorWin::ButtonResult BoundsInWindow(
+    const UiaElementLocatorWin::Measurement& measurement) {
+  if (measurement.element_bounds.IsEmpty() ||
+      !measurement.window_bounds.Contains(
+          measurement.element_bounds.CenterPoint())) {
+    return base::unexpected(SettingsRowLocatorWin::FailureReason::kUnusable);
+  }
+  gfx::Rect bounds = measurement.element_bounds;
+  bounds.Offset(-measurement.window_bounds.OffsetFromOrigin());
+  return bounds;
+}
+
+// Measure()'s ending: records the samples and answers `callback`.
+void ReplyWithRowOffset(SettingsRowLocatorWin::MeasurementCallback callback,
+                        base::TimeTicks started,
+                        UiaElementLocatorWin::Result result) {
+  using FailureReason = SettingsRowLocatorWin::FailureReason;
+  SettingsRowLocatorWin::Result reply =
+      base::unexpected(FailureReason::kUnusable);
+  Outcome outcome = Outcome::kUnusable;
+  if (!result.has_value()) {
+    reply = base::unexpected(result.error());
+    outcome = ToOutcome(result.error());
+  } else if (std::optional<int> offset = OffsetFromMeasurement(*result)) {
+    reply = *offset;
+    outcome = Outcome::kLocated;
+  }
+
+  base::UmaHistogramEnumeration(kOutcomeHistogram, outcome);
+  // Not timed: a request a newer one cut short, or one refused because the
+  // window was gone.
+  if (outcome != Outcome::kSuperseded && outcome != Outcome::kWindowGone) {
+    base::UmaHistogramMediumTimes(kDurationHistogram,
+                                  base::TimeTicks::Now() - started);
+  }
+
+  std::move(callback).Run(std::move(reply));
+}
+
+// MeasureButton()'s ending.
+void ReplyWithButtonBounds(SettingsRowLocatorWin::ButtonCallback callback,
+                           UiaElementLocatorWin::Result result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(base::unexpected(result.error()));
+    return;
+  }
+  std::move(callback).Run(BoundsInWindow(*result));
+}
+
 }  // namespace
 
 SettingsRowLocatorWin::SettingsRowLocatorWin()
@@ -95,36 +150,36 @@ void SettingsRowLocatorWin::Measure(HWND settings_hwnd,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
 
+  Locate(settings_hwnd, std::move(settings_process),
+         base::BindOnce(&ReplyWithRowOffset, std::move(callback),
+                        base::TimeTicks::Now()));
+}
+
+void SettingsRowLocatorWin::MeasureButton(HWND settings_hwnd,
+                                          base::Process settings_process,
+                                          ButtonCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(callback);
+
+  Locate(settings_hwnd, std::move(settings_process),
+         base::BindOnce(&ReplyWithButtonBounds, std::move(callback)));
+}
+
+void SettingsRowLocatorWin::Locate(
+    HWND settings_hwnd,
+    base::Process settings_process,
+    UiaElementLocatorWin::LocateCallback ending) {
   // The locator answers a request this one supersedes with kSuperseded.
   locator_->Locate(
       {settings_hwnd, std::move(settings_process), kSettingsWindowClass},
       {kSetDefaultButtonId, kSetDefaultIdFragment, UIA_ButtonControlTypeId,
        kWaitForRow},
       base::BindOnce(&SettingsRowLocatorWin::OnLocated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     base::TimeTicks::Now()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(ending)));
 }
 
-void SettingsRowLocatorWin::OnLocated(MeasurementCallback callback,
-                                      base::TimeTicks started,
-                                      UiaElementLocatorWin::Result result) {
-  Result reply = base::unexpected(FailureReason::kUnusable);
-  Outcome outcome = Outcome::kUnusable;
-  if (!result.has_value()) {
-    reply = base::unexpected(result.error());
-    outcome = ToOutcome(result.error());
-  } else if (std::optional<int> offset = OffsetFromMeasurement(*result)) {
-    reply = *offset;
-    outcome = Outcome::kLocated;
-  }
-
-  base::UmaHistogramEnumeration(kOutcomeHistogram, outcome);
-  // Not timed: a request a newer one cut short, or one refused because the
-  // window was gone.
-  if (outcome != Outcome::kSuperseded && outcome != Outcome::kWindowGone) {
-    base::UmaHistogramMediumTimes(kDurationHistogram,
-                                  base::TimeTicks::Now() - started);
-  }
-
-  std::move(callback).Run(std::move(reply));
+void SettingsRowLocatorWin::OnLocated(
+    UiaElementLocatorWin::LocateCallback ending,
+    UiaElementLocatorWin::Result result) {
+  std::move(ending).Run(std::move(result));
 }
