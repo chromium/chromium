@@ -1197,6 +1197,20 @@ public class HubToolbarMediatorUnitTest {
         assertEquals(0.9f, mModel.get(SEARCH_BOX_VISIBILITY_FRACTION), 0.0f);
     }
 
+    @Test
+    public void testKeepSearchBoxOpen_landingMidReveal_keepsSearchBoxOpen() {
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        createMediator();
+        setPaneTransition(PaneId.INCOGNITO_TAB_SWITCHER, PaneId.TAB_SWITCHER);
+        // The swipe started the destination pane's pinned tabs reveal before it landed.
+        startTabSwitcherSearchBoxAnimation(/* firstFraction= */ 0.6f);
+
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        mPaneTransitionProgressSupplier.set(null);
+
+        assertEquals(1.0f, mModel.get(SEARCH_BOX_VISIBILITY_FRACTION), 0.0f);
+    }
+
     private void swipeFromIncognitoToTabSwitcher() {
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         createMediator();

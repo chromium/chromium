@@ -479,6 +479,20 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
+    public void testPrepareForSwipeReveal() {
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        // Once the coordinator exists, a warm pane schedules a soft cleanup.
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        mTabSwitcherPane.prepareForSwipeReveal();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(coordinator).setInitialScrollIndexOffset();
+        verify(coordinator, never()).softCleanup();
+    }
+
+    @Test
     public void testGetRootView() {
         assertNotNull(mTabSwitcherPane.getRootView());
     }

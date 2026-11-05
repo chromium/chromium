@@ -326,6 +326,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
         Pane nextPane = getAdjacentPane(isSwipeLeft);
         if (nextPane != null) {
             nextPane.notifyLoadHint(LoadHint.WARM);
+            nextPane.prepareForSwipeReveal();
             return nextPane.getRootView();
         }
         return null;

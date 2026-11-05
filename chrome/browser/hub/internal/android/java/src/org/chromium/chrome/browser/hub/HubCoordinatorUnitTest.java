@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -28,6 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -566,7 +568,9 @@ public class HubCoordinatorUnitTest {
         assertEquals(
                 incognitoTabSwitcherView,
                 mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ true));
-        verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+        InOrder inOrder = inOrder(mIncognitoTabSwitcherPane);
+        inOrder.verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+        inOrder.verify(mIncognitoTabSwitcherPane).prepareForSwipeReveal();
 
         // Move to last pane (INCOGNITO_TAB_SWITCHER).
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));

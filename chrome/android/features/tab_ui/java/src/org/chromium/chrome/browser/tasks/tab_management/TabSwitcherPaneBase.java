@@ -291,6 +291,16 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     }
 
     @Override
+    public void prepareForSwipeReveal() {
+        // Cancel the soft cleanup that the WARM hint just scheduled so the cards keep their
+        // thumbnails and favicons while the swipe shows this pane. A cancelled swipe sends WARM
+        // again, which reschedules it.
+        removeDelayedCallbacks();
+        // Scroll to the current tab now so the pane does not jump when the swipe completes.
+        setInitialScrollIndexOffset();
+    }
+
+    @Override
     public MonotonicObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
         if (BottomBarConfigUtils.isBottomBarEnabled(mContext)
                 && BottomBarConfigUtils.shouldShowOnGts()) {
