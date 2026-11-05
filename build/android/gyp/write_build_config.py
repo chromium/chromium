@@ -17,7 +17,6 @@ import gc
 import itertools
 import os
 import sys
-import xml.dom.minidom
 
 from util import build_utils
 from util import params_json_util
@@ -59,6 +58,9 @@ class AndroidManifest:
     """Helper class to inspect properties of an AndroidManifest.xml file."""
 
     def __init__(self, path):
+        # Imported lazily since most targets do not have a manifest.
+        import xml.dom.minidom
+
         self.path = path
         dom = xml.dom.minidom.parse(path)
         manifests = dom.getElementsByTagName('manifest')
