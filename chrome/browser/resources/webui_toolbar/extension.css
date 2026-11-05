@@ -22,4 +22,5 @@ toolbar-chip-button:focus-within {
   min-width: 0;
   interpolate-size: allow-keywords;
   width: auto;
+  app-region: no-drag;
 }

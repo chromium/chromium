@@ -14,6 +14,14 @@
   height: 100%;
 }
 
+/* Controls are excluded from the draggable 'app-region' declared on the
+ * document, so only the space around them is treated as window caption.
+ * Children that are not controls themselves override this in their own
+ * styles. */
+:host > * {
+  app-region: no-drag;
+}
+
 /* In native Views FlexLayout, adjacent expanded buttons collapse their margins
  * (max(5px, 5px) = 5px). In CSS Flexbox, margins are additive. If the
  * preceding avatar button is visible and expanded with a label, its trailing

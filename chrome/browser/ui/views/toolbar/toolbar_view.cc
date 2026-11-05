@@ -239,6 +239,13 @@ bool IsPositionInWindowCaptionForView(const views::View* view,
           views::View::ConvertPointToTarget(view, child, point);
       return IsPositionInWindowCaptionForView(child, point_in_child);
     }
+    // The WebUI toolbar hosts its controls in a single WebView, so ask it
+    // whether the point falls between its controls rather than on one.
+    if (const auto* webui_toolbar =
+            views::AsViewClass<WebUIToolbarWebView>(child)) {
+      return webui_toolbar->IsPositionInWindowCaption(
+          views::View::ConvertPointToTarget(view, child, point));
+    }
     // Separators and dividers are non-interactive and should be treated
     // as caption area.
     if (views::IsViewClass<views::Separator>(child) ||
@@ -690,6 +697,11 @@ void ToolbarView::Init() {
     should_display_vertical_tabs_ =
         vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
   }
+  // The toolbar is only part of the window caption while the vertical tab strip
+  // is shown, so the WebUI toolbar only needs its draggable regions then.
+  if (toolbar_webview_) {
+    toolbar_webview_->SetDraggableRegionsEnabled(should_display_vertical_tabs_);
+  }
   if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
     UpdateGlicButtonVisibility();
   }
@@ -733,6 +745,9 @@ void ToolbarView::InitGlicContainer() {
 void ToolbarView::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
   should_display_vertical_tabs_ = controller->ShouldDisplayVerticalTabs();
+  if (toolbar_webview_) {
+    toolbar_webview_->SetDraggableRegionsEnabled(should_display_vertical_tabs_);
+  }
   UpdateGlicButtonVisibility();
   UpdateGlicActorVisibility();
   // Invalidate the layout cache so responsive buttons (forward, home, split,

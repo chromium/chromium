@@ -14,6 +14,14 @@
       overflow: hidden;
     }
 
+    /* The whole toolbar is draggable by default; interactive controls opt out
+     * with `app-region: no-drag`. The browser uses the resulting region to
+     * treat the empty space between controls as window caption, matching the
+     * native toolbar. */
+    html {
+      app-region: drag;
+    }
+
     toolbar-app {
       display: flex;
     }

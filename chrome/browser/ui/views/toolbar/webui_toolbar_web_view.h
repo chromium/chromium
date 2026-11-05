@@ -41,6 +41,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/focus/focus_manager.h"
@@ -402,6 +403,24 @@ class WebUIToolbarWebView
   // `location_bar_`.
   void OnInternalWebViewFocused();
 
+  // Returns whether `point`, in `this`'s coordinates, lies in a part of the
+  // WebUI toolbar that is not covered by an interactive control, and should
+  // therefore be treated as part of the window caption. This mirrors how the
+  // native toolbar treats its empty space when the vertical tab strip is shown,
+  // so that window dragging, double-click and the system context menu behave
+  // the same. The draggable area is declared by the WebUI through the
+  // `app-region` CSS property.
+  bool IsPositionInWindowCaption(const gfx::Point& point) const;
+
+  // Updates the area of the WebUI, in the internal WebView's coordinates, that
+  // is declared draggable via `app-region`. Called by the internal WebView.
+  void SetDraggableRegion(SkRegion draggable_region);
+
+  // Enables collecting the WebUI's draggable regions. They are only needed
+  // while IsPositionInWindowCaption() is used, i.e. while the vertical tab
+  // strip is shown, so the owner enables them only then.
+  void SetDraggableRegionsEnabled(bool enabled);
+
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
   views::WebView* GetWebViewForTesting();
@@ -661,6 +680,11 @@ class WebUIToolbarWebView
   // The WebView displaying the toolbar. Initialized during construction, and
   // not modified afterwards. Cannot be null.
   raw_ptr<WebUIToolbarInternalWebView> web_view_;
+
+  // The area of the WebUI, in `web_view_`'s coordinates, declared draggable via
+  // the `app-region` CSS property. Only collected while the vertical tab strip
+  // is shown, and reset when it's hidden or the renderer goes away.
+  std::optional<SkRegion> draggable_region_;
 
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;

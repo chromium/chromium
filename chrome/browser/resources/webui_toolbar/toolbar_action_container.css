@@ -16,6 +16,11 @@
   /* Matches native views::AnimatingLayoutManager default FAST_OUT_SLOW_IN_3
    * configuration for pinned toolbar actions. */
   --fast-out-slow-in-3-cubic-bezier: cubic-bezier(0.2, 0, 0, 1);
+  /* Like native ToolbarIconContainerView, the container isn't a control: it
+   * stays draggable and only its actions opt out, keeping the gaps and dividers
+   * between them draggable. '!important' overrides the 'no-drag' that the
+   * toolbar applies to its children. */
+  app-region: drag !important;
 }
 
 :host(webui-toolbar-extensions) {
@@ -47,6 +52,9 @@
   pointer-events: none;
   position: absolute;
   transition: border-color 150ms ease-in-out;
+  /* Emit no region, so this overlay doesn't override the actions' 'no-drag'.
+   * ('none' would be treated as 'no-drag'.) */
+  app-region: initial;
 }
 
 /* Mirrors views::ToolbarIconContainerView::GetHighlighted(), which highlights
@@ -81,6 +89,10 @@
   inset-inline-start: 100%;
   position: absolute;
   width: var(--toolbar-icon-default-margin);
+  /* The strip covers the gap between actions, which stays draggable like the
+   * gaps in native ToolbarIconContainerView, rather than inheriting the
+   * action's 'no-drag'. */
+  app-region: drag;
 }
 
 /* Disable transitions during the initial load of the container. This prevents

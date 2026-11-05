@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -74,6 +75,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -84,6 +86,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
@@ -3092,6 +3095,72 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ContextMenuPositionE2E) {
   run_loop.Run();
 
   EXPECT_EQ(captured_bounds, expected_screen_bounds);
+}
+
+// Verifies that, when the vertical tab strip is shown, the space between WebUI
+// toolbar controls is treated as window caption (so it supports window dragging
+// and the system context menu), while the controls themselves are not.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       IsPositionInWindowCaptionInVerticalTabStrip) {
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::test::RunScheduledLayout(browser_view);
+
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  // Show the split tabs button, so that it sits right after the reload button.
+  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, kReloadButtonSelector));
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, kSplitTabsSelector));
+
+  content::EvalJsResult result = content::EvalJs(
+      web_contents,
+      base::StrCat(
+          {"(() => { const r = ", GetButtonAppJS(kReloadButtonSelector),
+           ".getBoundingClientRect(); const s = ",
+           GetButtonAppJS(kSplitTabsSelector),
+           ".getBoundingClientRect(); return [r.left, r.top, r.right, "
+           "r.bottom, s.left]; })()"}));
+  ASSERT_TRUE(result.is_ok());
+  const base::ListValue& rects = result.ExtractList();
+  ASSERT_EQ(5u, rects.size());
+  const double reload_left = rects[0].GetDouble();
+  const double reload_top = rects[1].GetDouble();
+  const double reload_right = rects[2].GetDouble();
+  const double reload_bottom = rects[3].GetDouble();
+  const double split_tabs_left = rects[4].GetDouble();
+  ASSERT_GT(split_tabs_left, reload_right);
+
+  // Convert from CSS pixels to DIPs in the WebView's coordinates.
+  const double zoom = blink::ZoomLevelToZoomFactor(
+      zoom::ZoomController::GetZoomLevelForWebContents(web_contents));
+  const int center_y =
+      base::ClampFloor((reload_top + reload_bottom) / 2 * zoom);
+  const gfx::Point reload_center(
+      base::ClampFloor((reload_left + reload_right) / 2 * zoom), center_y);
+  // Controls are excluded from the draggable region by their enclosed integer
+  // bounds, so the middle of the gap between the buttons is always draggable.
+  const gfx::Point gap(
+      base::ClampFloor((reload_right + split_tabs_left) / 2 * zoom), center_y);
+
+  // Query through the top container, which is what BrowserView consults for
+  // the toolbar when the vertical tab strip is shown.
+  TopContainerView* top_container = browser_view->top_container();
+  auto in_top_container = [&](const gfx::Point& point_in_web_view) {
+    return views::View::ConvertPointToTarget(web_view, top_container,
+                                             point_in_web_view);
+  };
+
+  // The draggable region is reported by the renderer asynchronously.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return top_container->IsPositionInWindowCaption(in_top_container(gap));
+  }));
+  EXPECT_FALSE(top_container->IsPositionInWindowCaption(
+      in_top_container(reload_center)));
 }
 
 class WebUIToolbarLocationBarBrowserTest
@@ -6328,6 +6397,92 @@ class WebUIToolbarFullyEnabledBrowserTest
     }
   }
 };
+
+// Verifies that, like native ToolbarIconContainerView, the space between an
+// action and the divider in the extensions container is treated as window
+// caption when the vertical tab strip is shown, while the action itself is not.
+// Uses the extensions menu button, which is never moved to the overflow menu,
+// so this doesn't depend on the window width.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
+                       IsPositionInWindowCaptionInExtensionsContainer) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  // The extensions menu button is shown once there's an extension.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(LoadAndPinExtension(temp_dir));
+
+  // Draggable regions are only collected while the vertical tab strip is shown.
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+
+  // Returns the bounds of the extensions menu button, followed by the edges of
+  // the gap between it and the divider. Returns null until both are shown and
+  // done animating.
+  static constexpr char kGetMenuButtonAndGapScript[] = R"(
+    (() => {
+      const container = document.querySelector('toolbar-app')
+          ?.shadowRoot?.querySelector('#extensions');
+      if (!container || container.shadowRoot.getAnimations().length) {
+        return null;
+      }
+      const menu = Array.from(
+          container.shadowRoot.querySelectorAll('webui-toolbar-extension'))
+          .find(el => el.state?.id === '');
+      const button = menu?.shadowRoot?.querySelector('toolbar-chip-button');
+      const divider = container.shadowRoot.querySelector('toolbar-divider');
+      if (!button || !divider) return null;
+      const m = button.getBoundingClientRect();
+      const d = divider.getBoundingClientRect();
+      if (m.width === 0 || d.width === 0) return null;
+      const gap = m.right <= d.left ? [m.right, d.left] : [d.right, m.left];
+      return [m.left, m.top, m.right, m.bottom, gap[0], gap[1]];
+    })())";
+  base::ListValue rects;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::EvalJsResult result =
+        content::EvalJs(web_contents, kGetMenuButtonAndGapScript);
+    if (!result.is_list()) {
+      return false;
+    }
+    rects = result.ExtractList().Clone();
+    return true;
+  }));
+  ASSERT_EQ(6u, rects.size());
+  const double menu_left = rects[0].GetDouble();
+  const double menu_top = rects[1].GetDouble();
+  const double menu_right = rects[2].GetDouble();
+  const double menu_bottom = rects[3].GetDouble();
+  const double gap_start = rects[4].GetDouble();
+  const double gap_end = rects[5].GetDouble();
+  ASSERT_GT(gap_end, gap_start);
+
+  // Convert from CSS pixels to DIPs in the WebView's coordinates.
+  const double zoom = blink::ZoomLevelToZoomFactor(
+      zoom::ZoomController::GetZoomLevelForWebContents(web_contents));
+  const int center_y = base::ClampFloor((menu_top + menu_bottom) / 2 * zoom);
+  const gfx::Point menu_center(
+      base::ClampFloor((menu_left + menu_right) / 2 * zoom), center_y);
+  // Controls are excluded from the draggable region by their enclosed integer
+  // bounds, so the middle of the gap is always draggable.
+  const gfx::Point gap(base::ClampFloor((gap_start + gap_end) / 2 * zoom),
+                       center_y);
+
+  ToolbarView* toolbar = GetToolbarView();
+  auto in_toolbar = [&](const gfx::Point& point_in_web_view) {
+    return views::View::ConvertPointToTarget(web_view, toolbar,
+                                             point_in_web_view);
+  };
+
+  // The draggable region is reported by the renderer asynchronously.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return toolbar->IsPositionInWindowCaption(in_toolbar(gap)); }));
+  EXPECT_FALSE(toolbar->IsPositionInWindowCaption(in_toolbar(menu_center)));
+}
 
 // When all currently supported WebUI controls are enabled, check that Views
 // controls are not instantiated.

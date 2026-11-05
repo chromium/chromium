@@ -10,6 +10,12 @@
  * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
 
+/* Applied to the whole action, not just its button, so that overlays like
+ * the progress ring and badge are covered. */
+:host {
+  app-region: no-drag;
+}
+
 /* Engaged actions paint their icon in the engaged color, as native
  * PinnedActionToolbarButton does. */
 toolbar-chip-button[is-activated] {

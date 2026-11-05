@@ -97,6 +97,7 @@
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,6 +105,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -288,6 +290,13 @@ class WebUIToolbarInternalWebView : public views::WebView {
   void OnFocus() override {
     views::WebView::OnFocus();
     webui_toolbar_web_view_->OnInternalWebViewFocused();
+  }
+
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override {
+    webui_toolbar_web_view_->SetDraggableRegion(
+        gfx::DraggableRegionsToSkRegion(regions));
   }
 
   void OnBlur() override {
@@ -1218,6 +1227,10 @@ void WebUIToolbarWebView::DidFirstVisuallyNonEmptyPaint() {
 
 void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
+  // The reported draggable area is stale once the renderer is gone; it is
+  // reported again once the WebUI is reloaded.
+  draggable_region_.reset();
+
   // TODO(crbug.com/474228715): update the enum definition from
   // //base/process/kill.h to be a enum class, and add IFTTT lint.
   base::UmaHistogramEnumeration(kHistogramToolbarRenderProcessGone, status,
@@ -1909,6 +1922,32 @@ void WebUIToolbarWebView::EnsureWidgetActive() {
     // not reclaim activation before the menu opens.
     base::AutoReset<bool> activating_for_menu(&activating_for_menu_, true);
     widget->Activate();
+  }
+}
+
+bool WebUIToolbarWebView::IsPositionInWindowCaption(
+    const gfx::Point& point) const {
+  if (!draggable_region_ || !web_view_ || !web_view_->GetVisible()) {
+    return false;
+  }
+  // The draggable region is reported by the renderer in DIPs relative to the
+  // WebView's origin.
+  const gfx::Point point_in_web_view =
+      views::View::ConvertPointToTarget(this, web_view_, point);
+  return draggable_region_->contains(point_in_web_view.x(),
+                                     point_in_web_view.y());
+}
+
+void WebUIToolbarWebView::SetDraggableRegion(SkRegion draggable_region) {
+  draggable_region_ = std::move(draggable_region);
+}
+
+void WebUIToolbarWebView::SetDraggableRegionsEnabled(bool enabled) {
+  if (!enabled) {
+    draggable_region_.reset();
+  }
+  if (web_contents()) {
+    web_contents()->SetSupportsDraggableRegions(enabled);
   }
 }
 
