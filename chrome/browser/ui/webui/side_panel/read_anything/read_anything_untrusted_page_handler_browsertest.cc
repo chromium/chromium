@@ -41,9 +41,11 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -2581,9 +2583,16 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
 class ReadAnythingUntrustedPageHandlerSendFeedbackTest
     : public ReadAnythingUntrustedPageHandlerTest {
  public:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  ReadAnythingUntrustedPageHandlerSendFeedbackTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            /*enabled_features=*/{features::kReadAnythingSendFeedback},
+            /*disabled_features=*/{features::kFeedbackDisabledDialog}) {}
+#else
   ReadAnythingUntrustedPageHandlerSendFeedbackTest()
       : ReadAnythingUntrustedPageHandlerTest(
             {features::kReadAnythingSendFeedback}) {}
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
@@ -2605,6 +2614,22 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
 
   histogram_tester.ExpectUniqueSample("Feedback.RequestSource",
                                       feedback::kFeedbackSourceReadingMode, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
+                       OnSendFeedback_IgnoresWhenCannotShowFeedback) {
+  base::HistogramTester histogram_tester;
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  false);
+  SetUpHandler();
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+
+  GrantUserActivation(rfh);
+  handler_remote_->OnSendFeedback();
+  handler_remote_.FlushForTesting();
+
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 0);
+  histogram_tester.ExpectTotalCount("Feedback.NotAllowed.RequestSource", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,

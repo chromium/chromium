@@ -1083,9 +1083,11 @@ void ReadAnythingUntrustedPageHandler::OnSendFeedback() {
     return;
   }
 
-  // TODO(crbug.com/579419628): Use chrome::CanShowFeedback(profile_) via
-  // ReadAnythingUntrustedUI loadTimeData to hide the send feedback entry point
-  // when feedback is disabled by policy.
+  // Hide the send feedback entry point when feedback is disabled by policy.
+  if (!chrome::CanShowFeedback(profile_)) {
+    return;
+  }
+
   chrome::ShowFeedbackPage(
       tab_->GetBrowserWindowInterface(), feedback::kFeedbackSourceReadingMode,
       /*description_template=*/std::string(),

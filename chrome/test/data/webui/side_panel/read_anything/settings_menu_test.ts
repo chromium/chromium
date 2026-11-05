@@ -759,6 +759,33 @@ suite('SettingsMenuElement', () => {
       });
 
   test(
+      'send feedback action does not show when canShowFeedback is false',
+      async () => {
+        contentBrowserProxy.sendFeedbackEnabled = true;
+        loadTimeData.overrideValues({canShowFeedback: false});
+        settingsMenu.remove();
+        await createSettingsMenu();
+
+        let actionMenu = settingsMenu.$.lazyMenu.get();
+        let menuItems = Array.from(
+            actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+        assertFalse(
+            menuItems.some(item => item.id === SettingsOption.SEND_FEEDBACK));
+
+        visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+        settingsMenu.remove();
+        await createSettingsMenu();
+
+        actionMenu = settingsMenu.$.lazyMenu.get();
+        menuItems = Array.from(
+            actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+        assertFalse(
+            menuItems.some(item => item.id === SettingsOption.SEND_FEEDBACK));
+
+        loadTimeData.overrideValues({canShowFeedback: true});
+      });
+
+  test(
       'line focus item shows new badge when showLineFocusNewBadge is true',
       async () => {
         settingsMenu.showLineFocusNewBadge = true;

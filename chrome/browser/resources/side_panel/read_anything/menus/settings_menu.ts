@@ -304,7 +304,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
     }
 
-    if (this.contentBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
+    if (this.contentBrowserProxy_.isReadAnythingSendFeedbackEnabled() &&
+        loadTimeData.getBoolean('canShowFeedback')) {
       optionIDs.push(SettingsOption.SEND_FEEDBACK);
     }
 
@@ -328,7 +329,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
     }
 
-    if (this.contentBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
+    if (this.contentBrowserProxy_.isReadAnythingSendFeedbackEnabled() &&
+        loadTimeData.getBoolean('canShowFeedback')) {
       optionIDs.push(SettingsOption.SEND_FEEDBACK);
     }
 

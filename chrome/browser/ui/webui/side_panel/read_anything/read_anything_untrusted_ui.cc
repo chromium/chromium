@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -276,6 +277,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       "parse-html-subset polymer-html-literal "
       "polymer-template-event-attribute-policy;");
   raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
+  source->AddBoolean("canShowFeedback", chrome::CanShowFeedback(profile));
 
   // If the ThemeSource isn't added here, since Read Anything is
   // chrome-untrusted, it will be unable to load stylesheets until a new tab
