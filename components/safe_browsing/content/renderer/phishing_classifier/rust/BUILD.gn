@@ -44,6 +44,7 @@ if (safe_browsing_mode != 0) {
       "//base",
       "//components/safe_browsing/content/common:interfaces_rust",
       "//mojo/public/rust/bindings",
+      "//mojo/public/rust/bindings:cpp_router_handle_cc",
       "//third_party/rust/cxx/v1:lib",
     ]
   }
