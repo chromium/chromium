@@ -1020,8 +1020,9 @@ BaseRenderingContext2D::CreateExportedResource(
     scoped_refptr<CanvasResourceSharedImage> resource) {
   return base::MakeRefCounted<ExportedCanvasResource>(
       resource, resource->GetSharedImage(), resource->sync_token(),
-      resource->GetTransferableResourceSource(), resource->GetHdrMetadata(),
-      resource->context_provider_wrapper_, resource->UsesAcceleratedRaster());
+      viz::TransferableResource::ResourceSource::kCanvas,
+      color_params_.GetGfxHdrMetadata(), context_provider_wrapper_,
+      shared_image_provider_->IsAccelerated());
 }
 
 scoped_refptr<ExportedCanvasResource>

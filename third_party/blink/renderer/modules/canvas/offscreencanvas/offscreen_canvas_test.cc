@@ -299,8 +299,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
 
   offscreen_canvas().PushFrame(base::MakeRefCounted<ExportedCanvasResource>(
       resource, resource->GetSharedImage(), resource->sync_token(),
-      resource->GetTransferableResourceSource(), resource->GetHdrMetadata(),
-      resource->context_provider_wrapper_, resource->UsesAcceleratedRaster()));
+      viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
+      nullptr, false));
   platform->RunUntilIdle();
 }
 

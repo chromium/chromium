@@ -525,8 +525,8 @@ CanvasNon2DResourceProvider::CreateExportedResource(
     scoped_refptr<CanvasResourceSharedImage> resource) {
   return base::MakeRefCounted<ExportedCanvasResource>(
       resource, resource->GetSharedImage(), resource->sync_token(),
-      resource->GetTransferableResourceSource(), resource->GetHdrMetadata(),
-      resource->context_provider_wrapper_, resource->UsesAcceleratedRaster());
+      viz::TransferableResource::ResourceSource::kCanvas, hdr_metadata_,
+      context_provider_wrapper_, !IsSoftware());
 }
 
 scoped_refptr<ExportedCanvasResource>

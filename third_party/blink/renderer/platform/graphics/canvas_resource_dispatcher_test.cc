@@ -293,8 +293,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   const gfx::Rect damage_rect(kDamageWidth, kDamageHeight);
   auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
       resource, resource->GetSharedImage(), resource->sync_token(),
-      resource->GetTransferableResourceSource(), resource->GetHdrMetadata(),
-      resource->context_provider_wrapper_, resource->UsesAcceleratedRaster());
+      viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
+      nullptr, false);
   dispatcher()->DispatchFrame(std::move(exported_resource), damage_rect,
                               !context_alpha /* is_opaque */);
   platform->RunUntilIdle();
