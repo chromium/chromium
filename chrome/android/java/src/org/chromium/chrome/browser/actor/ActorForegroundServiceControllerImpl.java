@@ -225,6 +225,16 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
     }
 
     @Override
+    public Intent createTrustedPendingActorTaskNewTabIntent() {
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent =
+                IntentHandler.createTrustedOpenNewTabIntent(context, /* incognito= */ false);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, true);
+        return intent;
+    }
+
+    @Override
     public boolean isActivityVisibleForTabs(Set<Integer> tabIds) {
         ThreadUtils.assertOnUiThread();
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();

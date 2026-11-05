@@ -180,6 +180,14 @@ public interface ActorForegroundServiceController {
     @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task);
 
     /**
+     * Creates a trusted Intent to open a new tab on the New Tab Page in Chrome and mark it with
+     * {@link GlicIntentConstants#EXTRA_GLIC_PENDING_ACTOR_TASK}.
+     *
+     * @return Created Intent.
+     */
+    Intent createTrustedPendingActorTaskNewTabIntent();
+
+    /**
      * Returns true if there is a visible Chrome activity that has one of the tabs, the given task
      * is acting on.
      */

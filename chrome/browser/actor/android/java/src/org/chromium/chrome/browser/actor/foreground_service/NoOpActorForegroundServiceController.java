@@ -61,6 +61,11 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
     }
 
     @Override
+    public Intent createTrustedPendingActorTaskNewTabIntent() {
+        return new Intent();
+    }
+
+    @Override
     public boolean isActivityVisibleForTabs(Set<Integer> tabIds) {
         return false;
     }

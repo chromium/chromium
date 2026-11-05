@@ -627,6 +627,19 @@ public class ActorForegroundServiceControllerImplTest {
         ActorKeyedServiceFactory.setForTesting(null);
     }
 
+    @Test
+    public void testCreateTrustedPendingActorTaskNewTabIntent() {
+        Intent intent = mController.createTrustedPendingActorTaskNewTabIntent();
+
+        assertNotNull(intent);
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(UrlConstants.NTP_URL, intent.getDataString());
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0);
+        assertTrue(
+                intent.getBooleanExtra(GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, false));
+        assertTrue(IntentHandler.wasIntentSenderChrome(intent));
+    }
+
     public ServiceConnection getServiceConnectionForTesting() {
         return mController.getServiceConnectionForTesting();
     }

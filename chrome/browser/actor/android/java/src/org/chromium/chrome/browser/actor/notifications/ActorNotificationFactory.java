@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceController;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -46,6 +47,7 @@ public class ActorNotificationFactory {
             NotificationCompat.EXTRA_SHORT_CRITICAL_TEXT;
 
     public static final int TASK_STARTS_SOON_NOTIFICATION_ID = 101;
+    public static final int OPT_IN_NOTIFICATION_ID = 102;
 
     @IntDef({
         NotificationCategory.RUNNING,
@@ -359,6 +361,63 @@ public class ActorNotificationFactory {
                 .setContentTitle(
                         context.getString(
                                 R.string.actor_notification_title_preparing_to_start_task))
+                .buildNotificationWrapper();
+    }
+
+    /**
+     * Builds the system notification shown when a remote experimental triggering opt-in request
+     * arrives while Chrome is in the background.
+     *
+     * @return The built {@link NotificationWrapper}.
+     */
+    public static NotificationWrapper buildOptInNotification() {
+        Intent intent =
+                ActorForegroundServiceController.get().createTrustedPendingActorTaskNewTabIntent();
+        Context context = ContextUtils.getApplicationContext();
+        PendingIntentProvider contentIntent =
+                PendingIntentProvider.getActivity(
+                        context, OPT_IN_NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent cancelIntent =
+                new Intent(context, ActorBroadcastReceiver.class)
+                        .setAction(NotificationConstants.ACTION_ACTOR_CANCEL);
+        PendingIntentProvider cancelPendingIntent =
+                PendingIntentProvider.getBroadcast(
+                        context,
+                        OPT_IN_NOTIFICATION_ID,
+                        cancelIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String title = context.getString(R.string.glic_experimental_opt_in_notification_title);
+        String body = context.getString(R.string.glic_experimental_opt_in_notification_body);
+
+        NotificationMetadata metadata =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.ACTOR,
+                        /* notificationTag= */ null,
+                        OPT_IN_NOTIFICATION_ID);
+        return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                        ChromeChannelDefinitions.ChannelId.ACTOR, metadata)
+                .setSmallIcon(R.drawable.ic_chrome)
+                .setLocalOnly(true)
+                .setAutoCancel(true)
+                .setOngoing(false)
+                .setOnlyAlertOnce(true)
+                .setPriorityBeforeO(Notification.PRIORITY_HIGH)
+                .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setBigTextStyle(body)
+                .setContentIntent(contentIntent)
+                .addAction(
+                        R.drawable.ic_chrome,
+                        context.getString(R.string.glic_experimental_opt_in_notification_action),
+                        contentIntent,
+                        NotificationUmaTracker.ActionType.ACTOR_VIEW)
+                .addAction(
+                        /* icon= */ 0,
+                        context.getString(R.string.no_thanks),
+                        cancelPendingIntent,
+                        NotificationUmaTracker.ActionType.ACTOR_CANCEL)
                 .buildNotificationWrapper();
     }
 }
