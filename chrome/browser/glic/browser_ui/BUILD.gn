@@ -15,6 +15,7 @@ source_set("browser_ui") {
     "glic_split_button_delegate.h",
     "glic_split_button_ui_state.h",
     "glic_tab_indicator_helper.h",
+    "glic_toast.h",
   ]
 
   public_deps = [
@@ -47,9 +48,6 @@ source_set("browser_ui") {
       "//components/actor/core:task_id",
       "//components/content_settings/core/browser",
     ]
-  } else {
-    sources += [ "glic_toast.h" ]
-    deps += [ "//components/messages/android" ]
   }
 }
 
@@ -70,12 +68,13 @@ source_set("impl") {
       "glic_iph_controller.cc",
       "glic_selection_widget.cc",
       "glic_selection_widget_controller.cc",
+      "glic_toast_impl.cc",
       "glic_vector_icon_manager.cc",
     ]
   } else {
     sources += [
       "glic_split_button_delegate_android.cc",
-      "glic_toast.cc",
+      "glic_toast_android.cc",
     ]
   }
 
@@ -88,6 +87,7 @@ source_set("impl") {
     "//chrome/browser/ui/call_to_action",
     "//components/contextual_tasks/public:feature_list",
     "//components/feature_engagement/public",
+    "//components/tabs:public",
   ]
 
   if (!is_android) {
@@ -120,7 +120,6 @@ source_set("impl") {
       "//components/content_settings/core/common",
       "//components/prefs",
       "//components/signin/public/identity_manager",
-      "//components/tabs:public",
       "//content/public/browser",
       "//ui/base",
       "//ui/strings",
@@ -336,15 +335,22 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "tab_underline_view_browsertest.cc" ]
+    sources = [
+      "glic_toast_browsertest.cc",
+      "tab_underline_view_browsertest.cc",
+    ]
     deps = [
       ":browser_ui",
       ":glow",
+      ":impl",
       "//base",
+      "//chrome/app:generated_resources",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/tabs/alert:tab_alert",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/tabs/tab",
@@ -355,6 +361,7 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/base",
       "//ui/compositor",
       "//ui/gfx:gfx_switches",
       "//ui/gfx/animation",

@@ -190,8 +190,7 @@ void GlicSidePanelCoordinatorDesktopAndroid::MaybeShowResizeToast() {
     return;
   }
 
-  content::WebContents* web_contents = tab_->GetContents();
-  if (!web_contents || !glic_service_) {
+  if (!tab_ || !glic_service_) {
     return;
   }
 
@@ -209,8 +208,7 @@ void GlicSidePanelCoordinatorDesktopAndroid::MaybeShowResizeToast() {
   int description_res_id = is_actuating ? IDS_GLIC_TASK_PAUSED_DESCRIPTION
                                         : IDS_GLIC_CHAT_HIDDEN_DESCRIPTION;
 
-  resize_toast_ =
-      GlicToast::Show(web_contents, title_res_id, description_res_id);
+  resize_toast_ = GlicToast::Show(*tab_, title_res_id, description_res_id);
 }
 
 void GlicSidePanelCoordinatorDesktopAndroid::OnGlicEnabledChanged() {

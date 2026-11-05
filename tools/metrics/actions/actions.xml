@@ -1097,6 +1097,7 @@ should be able to be added at any place in this file.
   <variant name=".DiceUserMigrated" summary="DICe user migrated"/>
   <variant name=".EnhancedBundledSecuritySettings"
       summary="Enhanced protection user migrated"/>
+  <variant name=".Glic" summary="Glic toast"/>
   <variant name=".GlicSelectionHiddenForSite"
       summary="Glic selection hidden for site"/>
   <variant name=".MultistepFilterSuggestion" summary="Filter suggested"/>

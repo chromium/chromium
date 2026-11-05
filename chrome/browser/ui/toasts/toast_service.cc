@@ -12,6 +12,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -350,6 +352,13 @@ void ToastService::RegisterToasts() {
                                       ? vector_icons::kInfoIcon
                                       : vector_icons::kInfoRefreshOldIcon,
                                   IDS_GLIC_SHARE_IMAGE_FAILED_TOAST_BODY)
+          .AddCloseButton()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kGlic,
+      ToastSpecification::Builder(glic::GlicVectorIconManager::GetVectorIcon(
+                                      IDR_GLIC_BUTTON_VECTOR_ICON))
           .AddCloseButton()
           .Build());
 

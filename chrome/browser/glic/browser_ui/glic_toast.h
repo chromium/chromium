@@ -7,49 +7,34 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/messages/android/message_enums.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
-
-namespace messages {
-class MessageWrapper;
-}  // namespace messages
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace glic {
 
-// A generalized helper class to show a Glic-branded message toast/banner on
-// Android. The toast always displays Glic's spark icon and a standard "OK"
-// primary button.
-// TODO(crbug.com/515493573): Expand this to also support a Desktop variant
-// (utilizing ToastController) to provide a fully platform-agnostic C++ toast
-// interface for callers.
+// A generalized helper class to show a Glic-branded message toast/banner across
+// platforms (via MessageDispatcherBridge on Android, and ToastController on
+// Desktop Views). The toast displays Glic's spark icon.
 class GlicToast {
  public:
-  // Creates and shows a Glic-branded toast message on the given `web_contents`.
-  static std::unique_ptr<GlicToast> Show(content::WebContents* web_contents,
+  // Creates and shows a Glic-branded toast message on the given `tab`. Returns
+  // the toast instance if successfully shown, or nullptr if the toast cannot be
+  // shown (e.g. tab has no contents, tab is in the background, or another toast
+  // prevented it).
+  static std::unique_ptr<GlicToast> Show(const tabs::TabInterface& tab,
                                          int title_res_id,
-                                         int description_res_id);
+                                         int description_res_id = 0);
 
-  GlicToast(content::WebContents* web_contents,
-            int title_res_id,
-            int description_res_id);
-  ~GlicToast();
+  virtual ~GlicToast() = default;
 
   GlicToast(const GlicToast&) = delete;
   GlicToast& operator=(const GlicToast&) = delete;
 
-  bool IsShowing() const { return message_ != nullptr; }
+  virtual bool IsShowing() const = 0;
 
- private:
-  void HandleMessageAccepted();
-  void HandleMessageDismissed(messages::DismissReason reason);
-
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
-  std::unique_ptr<messages::MessageWrapper> message_;
+ protected:
+  GlicToast() = default;
 };
 
 }  // namespace glic
