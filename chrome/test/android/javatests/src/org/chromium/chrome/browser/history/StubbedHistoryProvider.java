@@ -108,6 +108,9 @@ public class StubbedHistoryProvider implements HistoryProvider {
     public void queryClients() {}
 
     @Override
+    public void queryTimePeriodOptions() {}
+
+    @Override
     public void getLastVisitToHostBeforeRecentNavigations(
             String hostName, Callback<Long> callback) {
         long timestamp = 0;

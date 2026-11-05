@@ -331,6 +331,7 @@ public class HistoryManager
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();
         mContentManager.maybeQueryClients();
+        mContentManager.maybeQueryTimePeriodOptions();
 
         mContentManager.getAdapter().setIsLargeFormFactorDevice(mIsLargeFormFactorDevice);
     }

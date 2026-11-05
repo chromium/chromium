@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -23,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
@@ -200,7 +202,9 @@ public class BrowsingHistoryBridgeTest {
                             "example.com",
                             List.of("client_123", "client_456"),
                             vals[i],
-                            vals[i + 1]);
+                            vals[i + 1],
+                            /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                            /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS);
             mBrowsingHistoryBridge.queryHistory("search query", options);
 
             verify(mNativeMocks)
@@ -212,13 +216,65 @@ public class BrowsingHistoryBridgeTest {
                             eq("example.com"),
                             eq(List.of("client_123", "client_456")),
                             eq(vals[i]),
-                            eq(vals[i + 1]));
+                            eq(vals[i + 1]),
+                            eq(QueryOptions.UNBOUNDED_TIME_MS),
+                            eq(QueryOptions.UNBOUNDED_TIME_MS));
         }
+    }
+
+    @Test
+    public void testQueryHistoryWithTimePeriod() {
+        QueryOptions options =
+                new QueryOptions(
+                        /* appId= */ null,
+                        /* hostName= */ null,
+                        List.of(),
+                        /* includeUserVisits= */ true,
+                        /* includeActorVisits= */ true,
+                        /* beginTimeMs= */ 1000L,
+                        /* endTimeMs= */ 2000L);
+        mBrowsingHistoryBridge.queryHistory("", options);
+
+        verify(mNativeMocks)
+                .queryHistory(
+                        anyLong(),
+                        any(),
+                        eq(""),
+                        eq(null),
+                        eq(null),
+                        eq(List.of()),
+                        eq(true),
+                        eq(true),
+                        eq(1000L),
+                        eq(2000L));
     }
 
     @Test
     public void testQueryClients() {
         mBrowsingHistoryBridge.queryClients();
         verify(mNativeMocks).getAllClients(anyLong());
+    }
+
+    @Test
+    public void testQueryTimePeriodOptions() {
+        HistoryProvider.BrowsingHistoryObserver observer =
+                mock(HistoryProvider.BrowsingHistoryObserver.class);
+        mBrowsingHistoryBridge.setObserver(observer);
+        List<TimePeriodOption> options =
+                List.of(
+                        BrowsingHistoryBridge.createTimePeriodOption(
+                                TimePeriodOptionId.ALL_TIME, "All time", 0L, 0L),
+                        BrowsingHistoryBridge.createTimePeriodOption(
+                                TimePeriodOptionId.YESTERDAY, "Yesterday", 1000L, 2000L));
+        doReturn(options).when(mNativeMocks).getTimePeriodOptions();
+
+        mBrowsingHistoryBridge.queryTimePeriodOptions();
+
+        verify(mNativeMocks).getTimePeriodOptions();
+        verify(observer).onQueryTimePeriodOptionsComplete(options);
+        assertEquals(TimePeriodOptionId.YESTERDAY, options.get(1).id);
+        assertEquals("Yesterday", options.get(1).label);
+        assertEquals(1000L, options.get(1).beginTimeMs);
+        assertEquals(2000L, options.get(1).endTimeMs);
     }
 }

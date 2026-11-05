@@ -30,6 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.history.HistoryProvider.ClientGroup;
+import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
@@ -94,6 +95,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     // querying history.
     private List<String> mClientIds = Collections.emptyList();
     private @ActorFilter String mActorFilter = ActorFilter.ANY;
+    // Time period currently chosen for time period filtering. If null, ignored when querying
+    // history (i.e. history from all time is shown).
+    private @Nullable TimePeriodOption mTimePeriod;
     private boolean mDisableScrollToLoadForTest;
 
     // Whether we show the source app for each entry. We show it in BrApp in full history UI, but
@@ -151,6 +155,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     private void executeQuery() {
+        long beginTimeMs =
+                mTimePeriod == null ? QueryOptions.UNBOUNDED_TIME_MS : mTimePeriod.beginTimeMs;
+        long endTimeMs =
+                mTimePeriod == null ? QueryOptions.UNBOUNDED_TIME_MS : mTimePeriod.endTimeMs;
         mHistoryProvider.queryHistory(
                 mQueryText,
                 new QueryOptions(
@@ -158,7 +166,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         mHostName,
                         mClientIds,
                         !mActorFilter.equals(ActorFilter.ACTOR),
-                        !mActorFilter.equals(ActorFilter.USER)));
+                        !mActorFilter.equals(ActorFilter.USER),
+                        beginTimeMs,
+                        endTimeMs));
     }
 
     /** Starts loading the first set of browsing history items. */
@@ -187,6 +197,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     void queryClients() {
         mHistoryProvider.queryClients();
+    }
+
+    void queryTimePeriodOptions() {
+        mHistoryProvider.queryTimePeriodOptions();
     }
 
     @Override
@@ -265,6 +279,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mManager.showHostFilter()) setHostName(null);
         if (mManager.showClientFilter()) setClientIds(Collections.emptyList());
         if (mManager.showActorFilter()) setActorFilter(ActorFilter.ANY);
+        if (mManager.showTimePeriodFilter()) setTimePeriod(null);
         mShowSourceApp = mManager.showAppFilter();
     }
 
@@ -473,6 +488,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     @Override
+    public void onQueryTimePeriodOptionsComplete(List<TimePeriodOption> items) {
+        mManager.onQueryTimePeriodOptionsComplete(items);
+
+        // Same as for clients: set the headers again to show/hide the time period filter chip.
+        // On LFF devices, the filter chips are always visible.
+        if (mIsSearching || mIsLargeFormFactorDevice) {
+            setHeaders();
+        }
+    }
+
+    @Override
     protected BasicViewHolder createFooter(ViewGroup parent) {
         // Create the same frame layout as place holder for more footer items.
         return createHeader(parent);
@@ -611,6 +637,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     void updateActorFilter(@Nullable @ActorFilter String actorFilter) {
         setActorFilter(actorFilter == null ? ActorFilter.ANY : actorFilter);
+        search(mQueryText);
+    }
+
+    /**
+     * Updates the time period filter.
+     *
+     * @param timePeriod The selected time period, or null if the filter was cleared.
+     */
+    void updateTimePeriodFilter(@Nullable TimePeriodOption timePeriod) {
+        setTimePeriod(timePeriod);
         search(mQueryText);
     }
 
@@ -797,6 +833,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mActorFilter = actorFilter;
     }
 
+    /**
+     * @param timePeriod The time period to retrieve history entries for, or null for no time period
+     *     restriction.
+     */
+    public void setTimePeriod(@Nullable TimePeriodOption timePeriod) {
+        mTimePeriod = timePeriod;
+    }
+
     public void setIsLargeFormFactorDevice(boolean isLargeFormFactorDevice) {
         mIsLargeFormFactorDevice = isLargeFormFactorDevice;
     }
@@ -896,6 +940,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     @ActorFilter
     String getActorFilterForTest() {
         return mActorFilter;
+    }
+
+    @Nullable TimePeriodOption getTimePeriodForTest() {
+        return mTimePeriod;
     }
 
     public void toggleCluster(HistoryItem item) {

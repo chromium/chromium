@@ -489,6 +489,7 @@ public abstract class ChromeFeatureList {
     public static final String BROWSING_HISTORY_FILTER_BY_DEVICE = "BrowsingHistoryFilterByDevice";
     public static final String BROWSING_HISTORY_FILTER_BY_DOMAIN_V2 =
             "BrowsingHistoryFilterByDomainV2";
+    public static final String BROWSING_HISTORY_FILTER_BY_TIME = "BrowsingHistoryFilterByTime";
     public static final String CACHE_IS_GOOGLE_SIGNED = "CacheIsGoogleSigned";
     public static final String CACHE_IS_MULTI_INSTANCE_API_31_ENABLED =
             "CacheIsMultiInstanceApi31Enabled";
@@ -1830,6 +1831,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_ACTOR, false);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByDomainV2 =
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_DOMAIN_V2, false);
+    public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByTime =
+            newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_TIME, false);
     public static final MutableFlagWithSafeDefault sCriticalActionHistory =
             newMutableFlagWithSafeDefault(CRITICAL_ACTION_HISTORY, false);
     public static final MutableFlagWithSafeDefault sCrossWindowTabGroupOperations =

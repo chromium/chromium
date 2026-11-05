@@ -13,6 +13,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.history.HistoryProvider.ClientGroup;
+import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.url.GURL;
@@ -58,7 +59,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         options.hostName,
                         options.clientIds,
                         options.includeUserVisits,
-                        options.includeActorVisits);
+                        options.includeActorVisits,
+                        options.beginTimeMs,
+                        options.endTimeMs);
     }
 
     @Override
@@ -85,6 +88,21 @@ public class BrowsingHistoryBridge implements HistoryProvider {
             @JniType("std::vector<std::string>") List<String> clientIds,
             @JniType("std::string") String clientName) {
         return new ClientGroup(clientIds, clientName);
+    }
+
+    @Override
+    public void queryTimePeriodOptions() {
+        List<TimePeriodOption> options = BrowsingHistoryBridgeJni.get().getTimePeriodOptions();
+        if (mObserver != null) mObserver.onQueryTimePeriodOptionsComplete(options);
+    }
+
+    @CalledByNative
+    public static TimePeriodOption createTimePeriodOption(
+            @TimePeriodOptionId int id,
+            @JniType("std::u16string") String label,
+            long beginTimeMs,
+            long endTimeMs) {
+        return new TimePeriodOption(id, label, beginTimeMs, endTimeMs);
     }
 
     @Override
@@ -231,7 +249,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 @JniType("std::optional<std::string>") @Nullable String hostnameSuffix,
                 @JniType("std::vector<std::string>") List<String> clientIds,
                 boolean includeUserVisits,
-                boolean includeActorVisits);
+                boolean includeActorVisits,
+                long beginTimeMs,
+                long endTimeMs);
 
         void queryHistoryContinuation(
                 long nativeBrowsingHistoryBridge, List<HistoryItem> historyItems);
@@ -262,6 +282,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
         @JniType("std::vector<history::BrowsingHistoryService::ClientGroup>")
         List<ClientGroup> getAllClients(long nativeBrowsingHistoryBridge);
+
+        @JniType("std::vector<history::TimePeriodOption>")
+        List<TimePeriodOption> getTimePeriodOptions();
 
         void getPageTitleForUrl(
                 @JniType("Profile*") Profile profile,

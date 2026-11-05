@@ -21,6 +21,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/time_period_filter_utils.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -29,7 +30,25 @@
 #include "url/android/gurl_android.h"
 
 using history::BrowsingHistoryService;
+using history::TimePeriodOption;
 using ClientGroup = history::BrowsingHistoryService::ClientGroup;
+
+namespace {
+
+// Converts a Java-side timestamp in milliseconds since the Unix epoch to a
+// `base::Time`, mapping 0 (the Java-side "unbounded" sentinel) to a null time.
+base::Time TimeFromJavaMs(int64_t time_ms) {
+  return time_ms == 0 ? base::Time()
+                      : base::Time::FromMillisecondsSinceUnixEpoch(time_ms);
+}
+
+// Converts a `base::Time` to a Java-side timestamp in milliseconds since the
+// Unix epoch, mapping a null time to 0 (the Java-side "unbounded" sentinel).
+int64_t TimeToJavaMs(base::Time time) {
+  return time.is_null() ? 0 : time.InMillisecondsSinceUnixEpoch();
+}
+
+}  // namespace
 
 namespace jni_zero {
 template <>
@@ -46,12 +65,17 @@ inline ScopedJavaLocalRef<jobject> ToJniType<std::vector<int64_t>>(
   return ScopedJavaLocalRef<jobject>(ToJniArray(env, vec));
 }
 
-// Declared before `BrowsingHistoryBridge_jni.h`, which instantiates it, and
-// defined after it because the implementation calls
-// `Java_BrowsingHistoryBridge_createClientGroup` from that header.
+// Declared before `BrowsingHistoryBridge_jni.h`, which instantiates them, and
+// defined after it because the implementations call
+// `Java_BrowsingHistoryBridge_createClientGroup` and
+// `Java_BrowsingHistoryBridge_createTimePeriodOption` from that header.
 template <>
 ScopedJavaLocalRef<jobject> ToJniType<ClientGroup>(JNIEnv* env,
                                                    const ClientGroup& client);
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<TimePeriodOption>(
+    JNIEnv* env,
+    const TimePeriodOption& option);
 }  // namespace jni_zero
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -63,6 +87,15 @@ ScopedJavaLocalRef<jobject> ToJniType<ClientGroup>(JNIEnv* env,
                                                    const ClientGroup& client) {
   return Java_BrowsingHistoryBridge_createClientGroup(env, client.client_ids,
                                                       client.name);
+}
+
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<TimePeriodOption>(
+    JNIEnv* env,
+    const TimePeriodOption& option) {
+  return Java_BrowsingHistoryBridge_createTimePeriodOption(
+      env, static_cast<int>(option.id), option.label,
+      TimeToJavaMs(option.begin_time), TimeToJavaMs(option.end_time));
 }
 }  // namespace jni_zero
 
@@ -103,7 +136,9 @@ void BrowsingHistoryBridge::QueryHistory(
     const std::optional<std::string>& hostname_suffix,
     const std::vector<std::string>& client_ids,
     bool include_user_visits,
-    bool include_actor_visits) {
+    bool include_actor_visits,
+    int64_t begin_time_ms,
+    int64_t end_time_ms) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
 
@@ -118,6 +153,8 @@ void BrowsingHistoryBridge::QueryHistory(
     options.hostname_suffix = *hostname_suffix;
   }
   options.client_ids = client_ids;
+  options.begin_time = TimeFromJavaMs(begin_time_ms);
+  options.end_time = TimeFromJavaMs(end_time_ms);
   browsing_history_service_->QueryHistory(query, options);
 }
 
@@ -335,6 +372,13 @@ static void JNI_BrowsingHistoryBridge_GetPageTitleForUrl(
 static bool JNI_BrowsingHistoryBridge_IsBrowsingHistoryFilterByDeviceEnabled(
     JNIEnv* env) {
   return history::IsBrowsingHistoryFilterByDeviceEnabled();
+}
+
+// Returns the predefined time period options for the time period filter,
+// computed relative to now. Empty if the time period filter is disabled.
+static std::vector<TimePeriodOption>
+JNI_BrowsingHistoryBridge_GetTimePeriodOptions(JNIEnv* env) {
+  return history::ComputeTimePeriodOptions(base::Time::Now());
 }
 
 static void JNI_BrowsingHistoryBridge_AddPageToHistoryForTesting(

@@ -241,3 +241,11 @@ source_set("unit_tests") {
     deps += [ "//components/test:history_test_bundle_data" ]
   }
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("time_period_option_id_java") {
+    sources = [ "time_period_filter_utils.h" ]
+  }
+}

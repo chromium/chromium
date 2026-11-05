@@ -33,6 +33,9 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
 
   void Destroy();
 
+  // Queries history matching `query` and the given filters. `begin_time_ms`
+  // (inclusive) and `end_time_ms` (exclusive) restrict the visit time in
+  // milliseconds since the Unix epoch; 0 means unbounded.
   void QueryHistory(JNIEnv* env,
                     const JavaRef<jobject>& j_result_obj,
                     const std::u16string& query,
@@ -40,7 +43,9 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
                     const std::optional<std::string>& hostname_suffix,
                     const std::vector<std::string>& client_ids,
                     bool include_user_visits,
-                    bool include_actor_visits);
+                    bool include_actor_visits,
+                    int64_t begin_time_ms,
+                    int64_t end_time_ms);
 
   void QueryHistoryContinuation(JNIEnv* env,
                                 const JavaRef<jobject>& j_result_obj);

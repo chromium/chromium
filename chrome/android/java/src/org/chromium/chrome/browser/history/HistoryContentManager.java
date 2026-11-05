@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
+import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -165,11 +166,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mShowHostFilter;
     private final boolean mShowClientFilter;
     private final boolean mShowActorFilter;
+    private final boolean mShowTimePeriodFilter;
 
     private final HistoryFilterChip<String> mAppFilter;
     private final HistoryFilterChip<String> mHostFilter;
     private final HistoryFilterChip<List<String>> mClientFilter;
     private final HistoryFilterChip<String> mActorFilter;
+    private final HistoryFilterChip<TimePeriodOption> mTimePeriodFilter;
     private final List<HistoryFilterChip<?>> mFilterChips;
     private @Nullable View mResetFiltersButton;
     private boolean mHostInfoListInitialized;
@@ -252,6 +255,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 /* showHostFilter= */ false,
                 /* showClientFilter= */ false,
                 /* showActorFilter= */ false,
+                /* showTimePeriodFilter= */ false,
                 /* shouldClusterByDomain= */ false,
                 /* openHistoryItemCallback= */ null,
                 regularAsyncTabLauncher,
@@ -347,6 +351,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 /* showHostFilter= */ true,
                 /* showClientFilter= */ true,
                 /* showActorFilter= */ true,
+                /* showTimePeriodFilter= */ true,
                 shouldClusterByDomain,
                 openHistoryItemCallback,
                 regularAsyncTabLauncher,
@@ -378,6 +383,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean showHostFilter,
             boolean showClientFilter,
             boolean showActorFilter,
+            boolean showTimePeriodFilter,
             boolean shouldClusterByDomain,
             @Nullable Runnable openHistoryItemCallback,
             AsyncTabLauncher regularAsyncTabLauncher,
@@ -393,6 +399,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mShowHostFilter = showHostFilter;
         mShowClientFilter = showClientFilter;
         mShowActorFilter = showActorFilter;
+        mShowTimePeriodFilter = showTimePeriodFilter;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
@@ -457,8 +464,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         mHistorySyncPromoCoordinator,
                         shouldClusterByDomain);
 
+        boolean hasOtherFilters =
+                showHostFilter()
+                        || showClientFilter()
+                        || showActorFilter()
+                        || showTimePeriodFilter();
         int appFilterChipText =
-                (showHostFilter() || showClientFilter() || showActorFilter())
+                hasOtherFilters
                         ? R.string.history_app_filter_chip_text
                         : R.string.history_filter_by_app;
         mAppFilter =
@@ -493,7 +505,16 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         showActorFilter(),
                         this::onActorFilterUpdated,
                         mUmaRecorder::recordActorFilterSheetOpened);
-        mFilterChips = List.of(mAppFilter, mHostFilter, mClientFilter, mActorFilter);
+        mTimePeriodFilter =
+                new HistoryFilterChip<>(
+                        R.id.time_period_history_filter_chip,
+                        /* chipTextResId= */ R.string.history_time_period_filter_chip_text,
+                        /* sheetHeaderResId= */ R.string.history_filter_by_time_period,
+                        showTimePeriodFilter(),
+                        this::onTimePeriodFilterUpdated,
+                        /* onSheetOpened= */ null);
+        mFilterChips =
+                List.of(mAppFilter, mHostFilter, mClientFilter, mActorFilter, mTimePeriodFilter);
         // The actor filter offers a fixed set of options, so no query is needed to populate it.
         maybeBuildActorInfoList();
 
@@ -580,6 +601,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHistoryAdapter.queryClients();
     }
 
+    /** Query the predefined time period options if required. */
+    void maybeQueryTimePeriodOptions() {
+        if (!showTimePeriodFilter()) return;
+
+        mHistoryAdapter.queryTimePeriodOptions();
+    }
+
     void onQueryAppsComplete(List<String> items) {
         mUmaRecorder.recordQueryAppDuration(SystemClock.elapsedRealtime() - mAppQueryStartMs);
         buildAppInfoList(items);
@@ -587,6 +615,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     void onQueryClientsComplete(List<HistoryProvider.ClientGroup> items) {
         buildClientInfoList(items);
+    }
+
+    void onQueryTimePeriodOptionsComplete(List<TimePeriodOption> items) {
+        buildTimePeriodInfoList(items);
     }
 
     /**
@@ -659,6 +691,24 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                                 mActivity, R.drawable.ic_arrow_selector_spark_24dp),
                         mActivity.getString(R.string.history_actor_filter_actor)));
         mActorFilter.setItems(actorInfoList);
+    }
+
+    /**
+     * Build the list of {@link FilterItem}s for the time period filter from the predefined time
+     * period options computed by the backend.
+     *
+     * @param options The time period options, in the order they should be shown.
+     */
+    private void buildTimePeriodInfoList(List<TimePeriodOption> options) {
+        var timePeriodInfoList = new ArrayList<FilterItem<TimePeriodOption>>();
+        Drawable icon = AppCompatResources.getDrawable(mActivity, R.drawable.ic_history_24dp);
+        for (TimePeriodOption option : options) {
+            // The chip's unselected state already means "all time", so the option restricting
+            // nothing is not offered as a selectable item in the sheet.
+            if (option.id == TimePeriodOptionId.ALL_TIME) continue;
+            timePeriodInfoList.add(new FilterItem<>(option, icon, option.label));
+        }
+        mTimePeriodFilter.setItems(timePeriodInfoList);
     }
 
     /**
@@ -834,6 +884,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         if (!GlicEnabling.isEnabledAndConsentForProfile(mProfile)) return false;
         GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(mProfile);
         return glicService != null && glicService.getUserEnabledActuationOnWeb();
+    }
+
+    /**
+     * @return True if history page needs to show the time period filter UI.
+     */
+    boolean showTimePeriodFilter() {
+        return ChromeFeatureList.sBrowsingHistoryFilterByTime.isEnabled() && mShowTimePeriodFilter;
     }
 
     /** returns whether the info header will be available for user upon request. */
@@ -1025,6 +1082,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         }
         updateResetFiltersButtonVisibility();
         mHistoryAdapter.updateActorFilter(actorFilter);
+    }
+
+    private void onTimePeriodFilterUpdated(@Nullable TimePeriodOption timePeriod) {
+        updateResetFiltersButtonVisibility();
+        mHistoryAdapter.updateTimePeriodFilter(timePeriod);
     }
 
     private void resetFilters() {
@@ -1228,6 +1290,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     HistoryFilterChip<String> getActorFilterForTesting() {
         return mActorFilter;
+    }
+
+    HistoryFilterChip<TimePeriodOption> getTimePeriodFilterForTesting() {
+        return mTimePeriodFilter;
     }
 
     View getResetFiltersButtonForTesting() {

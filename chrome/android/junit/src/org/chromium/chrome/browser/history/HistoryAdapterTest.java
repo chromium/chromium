@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
+import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 
@@ -176,22 +177,26 @@ public class HistoryAdapterTest {
         Assert.assertEquals("www.google.com", mAdapter.getHostNameForTest());
         Assert.assertEquals(
                 new QueryOptions(
-                        null,
+                        /* appId= */ null,
                         "www.google.com",
                         Collections.emptyList(),
                         /* includeUserVisits= */ true,
-                        /* includeActorVisits= */ true),
+                        /* includeActorVisits= */ true,
+                        /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                        /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS),
                 mHistoryProvider.getLastQueryOptions());
 
         mAdapter.updateClientFilter(List.of("client_123", "client_456"));
         Assert.assertEquals(List.of("client_123", "client_456"), mAdapter.getClientIdsForTest());
         Assert.assertEquals(
                 new QueryOptions(
-                        null,
+                        /* appId= */ null,
                         "www.google.com",
                         List.of("client_123", "client_456"),
                         /* includeUserVisits= */ true,
-                        /* includeActorVisits= */ true),
+                        /* includeActorVisits= */ true,
+                        /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                        /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS),
                 mHistoryProvider.getLastQueryOptions());
 
         mAdapter.onEndSearch();
@@ -220,11 +225,13 @@ public class HistoryAdapterTest {
             Assert.assertEquals(filter, mAdapter.getActorFilterForTest());
             Assert.assertEquals(
                     new QueryOptions(
-                            null,
-                            null,
+                            /* appId= */ null,
+                            /* hostName= */ null,
                             Collections.emptyList(),
                             !filter.equals(ActorFilter.ACTOR),
-                            !filter.equals(ActorFilter.USER)),
+                            !filter.equals(ActorFilter.USER),
+                            /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                            /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS),
                     mHistoryProvider.getLastQueryOptions());
         }
 
@@ -234,17 +241,73 @@ public class HistoryAdapterTest {
         Assert.assertEquals(ActorFilter.ANY, mAdapter.getActorFilterForTest());
         Assert.assertEquals(
                 new QueryOptions(
-                        null,
-                        null,
+                        /* appId= */ null,
+                        /* hostName= */ null,
                         Collections.emptyList(),
                         /* includeUserVisits= */ true,
-                        /* includeActorVisits= */ true),
+                        /* includeActorVisits= */ true,
+                        /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                        /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS),
                 mHistoryProvider.getLastQueryOptions());
 
         // Ending the search resets the filter.
         mAdapter.updateActorFilter(ActorFilter.USER);
         mAdapter.onEndSearch();
         Assert.assertEquals(ActorFilter.ANY, mAdapter.getActorFilterForTest());
+    }
+
+    @Test
+    public void testSearch_TimePeriodFilter() {
+        doReturn(true).when(mContentManager).showTimePeriodFilter();
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ false);
+        mAdapter.generateHeaderItemsForTest();
+        mAdapter.generateFooterItemsForTest(mButton);
+
+        mAdapter.onSearchStart();
+        Assert.assertNull(mAdapter.getTimePeriodForTest());
+
+        TimePeriodOption yesterday =
+                new TimePeriodOption(TimePeriodOptionId.YESTERDAY, "Yesterday", 1000L, 2000L);
+        mAdapter.updateTimePeriodFilter(yesterday);
+        Assert.assertEquals(yesterday, mAdapter.getTimePeriodForTest());
+        Assert.assertEquals(
+                new QueryOptions(
+                        /* appId= */ null,
+                        /* hostName= */ null,
+                        Collections.emptyList(),
+                        /* includeUserVisits= */ true,
+                        /* includeActorVisits= */ true,
+                        /* beginTimeMs= */ 1000L,
+                        /* endTimeMs= */ 2000L),
+                mHistoryProvider.getLastQueryOptions());
+
+        // Clearing the filter removes the time restriction again.
+        mAdapter.updateTimePeriodFilter(null);
+        Assert.assertNull(mAdapter.getTimePeriodForTest());
+        Assert.assertEquals(
+                new QueryOptions(
+                        /* appId= */ null,
+                        /* hostName= */ null,
+                        Collections.emptyList(),
+                        /* includeUserVisits= */ true,
+                        /* includeActorVisits= */ true,
+                        /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                        /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS),
+                mHistoryProvider.getLastQueryOptions());
+
+        // Ending the search resets the filter.
+        mAdapter.updateTimePeriodFilter(yesterday);
+        mAdapter.onEndSearch();
+        Assert.assertNull(mAdapter.getTimePeriodForTest());
+        Assert.assertEquals(
+                QueryOptions.UNBOUNDED_TIME_MS, mHistoryProvider.getLastQueryOptions().beginTimeMs);
+        Assert.assertEquals(
+                QueryOptions.UNBOUNDED_TIME_MS, mHistoryProvider.getLastQueryOptions().endTimeMs);
     }
 
     @Test
@@ -734,11 +797,13 @@ public class HistoryAdapterTest {
                 .queryHistory(
                         "query",
                         new QueryOptions(
-                                null,
-                                null,
+                                /* appId= */ null,
+                                /* hostName= */ null,
                                 Collections.emptyList(),
                                 /* includeUserVisits= */ true,
-                                /* includeActorVisits= */ true));
+                                /* includeActorVisits= */ true,
+                                /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                                /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS));
         // While the query is ongoing, no more items can be loaded.
         Assert.assertFalse(mAdapter.canLoadMoreItems());
 
@@ -984,7 +1049,9 @@ public class HistoryAdapterTest {
                                     "example.com",
                                     List.of("client_123"),
                                     !filter.equals(ActorFilter.ACTOR),
-                                    !filter.equals(ActorFilter.USER)));
+                                    !filter.equals(ActorFilter.USER),
+                                    /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
+                                    /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS));
         }
     }
 }

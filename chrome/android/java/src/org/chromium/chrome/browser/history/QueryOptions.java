@@ -14,6 +14,9 @@ import java.util.Objects;
 /** Options for querying browsing history. */
 @NullMarked
 public class QueryOptions {
+    /** Value for {@link #beginTimeMs} / {@link #endTimeMs} meaning the bound is not restricted. */
+    public static final long UNBOUNDED_TIME_MS = 0;
+
     // App Id to restrict the query to. If empty, visits from all apps are returned.
     public final @Nullable String appId;
     // Hostname to restrict the query to. If empty, visits from all hosts are returned.
@@ -24,6 +27,12 @@ public class QueryOptions {
     public final boolean includeUserVisits;
     // Whether to include visits with SOURCE_ACTOR.
     public final boolean includeActorVisits;
+    // Start of the time period to restrict the query to (inclusive), in milliseconds since the
+    // Unix epoch. {@link #UNBOUNDED_TIME_MS} if unbounded.
+    public final long beginTimeMs;
+    // End of the time period to restrict the query to (exclusive), in milliseconds since the Unix
+    // epoch. {@link #UNBOUNDED_TIME_MS} if unbounded.
+    public final long endTimeMs;
 
     public QueryOptions() {
         this(
@@ -31,7 +40,9 @@ public class QueryOptions {
                 /* hostName= */ null,
                 Collections.emptyList(),
                 /* includeUserVisits= */ true,
-                /* includeActorVisits= */ true);
+                /* includeActorVisits= */ true,
+                /* beginTimeMs= */ UNBOUNDED_TIME_MS,
+                /* endTimeMs= */ UNBOUNDED_TIME_MS);
     }
 
     public QueryOptions(
@@ -39,12 +50,16 @@ public class QueryOptions {
             @Nullable String hostName,
             List<String> clientIds,
             boolean includeUserVisits,
-            boolean includeActorVisits) {
+            boolean includeActorVisits,
+            long beginTimeMs,
+            long endTimeMs) {
         this.appId = appId;
         this.hostName = hostName;
         this.clientIds = List.copyOf(clientIds);
         this.includeUserVisits = includeUserVisits;
         this.includeActorVisits = includeActorVisits;
+        this.beginTimeMs = beginTimeMs;
+        this.endTimeMs = endTimeMs;
     }
 
     @Override
@@ -55,11 +70,20 @@ public class QueryOptions {
                 && Objects.equals(hostName, that.hostName)
                 && Objects.equals(clientIds, that.clientIds)
                 && includeUserVisits == that.includeUserVisits
-                && includeActorVisits == that.includeActorVisits;
+                && includeActorVisits == that.includeActorVisits
+                && beginTimeMs == that.beginTimeMs
+                && endTimeMs == that.endTimeMs;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(appId, hostName, clientIds, includeUserVisits, includeActorVisits);
+        return Objects.hash(
+                appId,
+                hostName,
+                clientIds,
+                includeUserVisits,
+                includeActorVisits,
+                beginTimeMs,
+                endTimeMs);
     }
 }

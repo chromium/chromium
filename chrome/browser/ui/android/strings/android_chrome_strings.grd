@@ -1877,6 +1877,13 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_HISTORY_ACTOR_FILTER_ACTOR" desc="Label of the item in the actor filter sheet, when selected restricts the history results to entries in Chrome history that are the result of Gemini in Chrome browsing while performing an auto browse task for the user.">
         Gemini
       </message>
+      <!-- TODO(b/573481189): Make translatable when strings are finalized. -->
+      <message name="IDS_HISTORY_TIME_PERIOD_FILTER_CHIP_TEXT" desc="Text used in the time period filter chip when no option is selected. Selecting an option restricts the history results to entries visited within that time period, e.g. 'Yesterday' or 'Last week'." translateable="false">
+        Time period
+      </message>
+      <message name="IDS_HISTORY_FILTER_BY_TIME_PERIOD" desc="Text used in the header of the time period filter sheet, which lists time periods such as 'Yesterday' or 'Last week' to restrict the history results to." translateable="false">
+        Filter by time period
+      </message>
       <message name="IDS_HISTORY_RESET_FILTERS" desc="Text used in the button to reset all applied history filters.">
         Clear all
       </message>

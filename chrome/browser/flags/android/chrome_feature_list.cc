@@ -252,6 +252,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &history::kBrowsingHistoryFilterByActor,
     &history::kBrowsingHistoryFilterByDevice,
     &history::kBrowsingHistoryFilterByDomainV2,
+    &history::kBrowsingHistoryFilterByTime,
     &history::kOrganicRepeatableQueries,
     &kAccountForSuppressedKeyboardInsets,
     &kAccountPickerDialog,

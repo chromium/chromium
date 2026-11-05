@@ -36,6 +36,52 @@ public interface HistoryProvider {
         }
     }
 
+    /**
+     * A predefined time period the user can select to restrict the shown history to. Mirrors {@code
+     * history::TimePeriodOption}.
+     */
+    class TimePeriodOption {
+        public final @TimePeriodOptionId int id;
+
+        /** The localized label shown to the user in the filter UI. */
+        public final String label;
+
+        /**
+         * The start of the time period (inclusive), in milliseconds since the Unix epoch. {@link
+         * QueryOptions#UNBOUNDED_TIME_MS} if unbounded.
+         */
+        public final long beginTimeMs;
+
+        /**
+         * The end of the time period (exclusive), in milliseconds since the Unix epoch. {@link
+         * QueryOptions#UNBOUNDED_TIME_MS} if unbounded.
+         */
+        public final long endTimeMs;
+
+        public TimePeriodOption(
+                @TimePeriodOptionId int id, String label, long beginTimeMs, long endTimeMs) {
+            this.id = id;
+            this.label = label;
+            this.beginTimeMs = beginTimeMs;
+            this.endTimeMs = endTimeMs;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TimePeriodOption that)) return false;
+            return id == that.id
+                    && Objects.equals(label, that.label)
+                    && beginTimeMs == that.beginTimeMs
+                    && endTimeMs == that.endTimeMs;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, label, beginTimeMs, endTimeMs);
+        }
+    }
+
     /** Observer to be notified of browsing history events. */
     interface BrowsingHistoryObserver {
         /**
@@ -77,6 +123,14 @@ public interface HistoryProvider {
          * @param items The list of synced client device groups.
          */
         default void onQueryClientsComplete(List<ClientGroup> items) {}
+
+        /**
+         * Called after {@link BrowsingHistoryBridge#queryTimePeriodOptions()} is complete.
+         *
+         * @param items The list of predefined time period options. Empty if the time period filter
+         *     is disabled.
+         */
+        default void onQueryTimePeriodOptionsComplete(List<TimePeriodOption> items) {}
     }
 
     /** Sets the {@link BrowsingHistoryObserver} to be notified of browsing history events. */
@@ -112,6 +166,9 @@ public interface HistoryProvider {
 
     /** Fetches all synced client devices. */
     void queryClients();
+
+    /** Fetches the predefined time period options for the time period filter. */
+    void queryTimePeriodOptions();
 
     /**
      * Gets the last time any webpage on the given host was visited, excluding the last navigation

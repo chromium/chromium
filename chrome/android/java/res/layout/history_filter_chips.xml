@@ -43,6 +43,12 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_marginEnd="8dp" />
 
+    <org.chromium.components.browser_ui.widget.chips.ChipView
+        android:id="@+id/time_period_history_filter_chip"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="8dp" />
+
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/reset_history_filters_button"
         style="@style/TextButton"
