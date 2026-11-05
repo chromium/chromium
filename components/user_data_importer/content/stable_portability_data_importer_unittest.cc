@@ -503,6 +503,51 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList) {
       kHistogramPrefix + "ReadingList.ImportedCount", 3, 1);
 }
 
+// Tests that importing a reading list HTML file skips entries with unsupported
+// URL schemes (such as `mailto:`, `javascript:`, `file:`, `chrome:`, `data:`,
+// and `about:`) or missing URLs while importing valid HTTP and HTTPS entries.
+TEST_F(StablePortabilityDataImporterTest, ReadingList_SkipsUnsupportedUrls) {
+  constexpr char kHttpsUrl[] = "https://www.google.com/";
+  constexpr char kHttpsTitle[] = "Google";
+  constexpr char kHttpUrl[] = "http://example.com/";
+  constexpr char kHttpTitle[] = "Example";
+  constexpr int64_t kAddDateSeconds = 904914000;
+  const base::Time kExpectedCreationTime =
+      base::Time::FromSecondsSinceUnixEpoch(kAddDateSeconds);
+
+  base::HistogramTester histogram_tester;
+  ImportReadingList(absl::StrFormat(
+      R"html(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+      <DL>
+      <DT><A HREF="%s" ADD_DATE="%d">%s</A>
+      <DT><A HREF="%s" ADD_DATE="%d">%s</A>
+      <DT><A HREF="mailto:user@example.com">Mailto</A>
+      <DT><A HREF="javascript:void(0)">JavaScript</A>
+      <DT><A HREF="file:///tmp/index.html">File</A>
+      <DT><A HREF="chrome://settings/">Chrome</A>
+      <DT><A HREF="data:text/plain,hello">Data</A>
+      <DT><A HREF="about:blank">About</A>
+      <DT><A>Missing URL</A>
+      </DL>)html",
+      kHttpsUrl, kAddDateSeconds, kHttpsTitle, kHttpUrl, kAddDateSeconds,
+      kHttpTitle));
+  EXPECT_EQ(GetNumberOfReadingListImported(), 2);
+  EXPECT_THAT(GetReadingListModel().GetKeys(),
+              UnorderedElementsAre(GURL(kHttpsUrl), GURL(kHttpUrl)));
+  EXPECT_THAT(
+      GetReadingListModel().GetEntryByURL(GURL(kHttpsUrl)),
+      IsReadingListEntry(kHttpsTitle, GURL(kHttpsUrl), kExpectedCreationTime));
+  EXPECT_THAT(
+      GetReadingListModel().GetEntryByURL(GURL(kHttpUrl)),
+      IsReadingListEntry(kHttpTitle, GURL(kHttpUrl), kExpectedCreationTime));
+
+  histogram_tester.ExpectUniqueSample(kHistogramPrefix + "ReadingList.Outcome",
+                                      DataTypeMetrics::ImportOutcome::kSuccess,
+                                      1);
+  histogram_tester.ExpectBucketCount(
+      kHistogramPrefix + "ReadingList.ImportedCount", 2, 1);
+}
+
 // Tests parsing an HTML with several not valid formats. The parser should still
 // try to parse as many items as possible.
 TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {

@@ -128,7 +128,8 @@ size_t ImportReadingList(ReadingListModel* reading_list_model,
       reading_list_model->BeginBatchUpdates();
 
   for (const ImportedBookmarkEntry& reading_list_entry : reading_list) {
-    if (!reading_list_entry.url.is_valid()) {
+    if (reading_list_entry.is_folder || !reading_list_entry.url.is_valid() ||
+        !reading_list_model->IsUrlSupported(reading_list_entry.url)) {
       continue;
     }
     reading_list_model->AddOrReplaceEntry(
