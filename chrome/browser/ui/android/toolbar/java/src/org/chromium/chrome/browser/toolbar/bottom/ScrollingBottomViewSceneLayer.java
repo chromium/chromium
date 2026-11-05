@@ -4,9 +4,15 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.RectF;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -26,8 +32,11 @@ import org.chromium.ui.resources.ResourceManager;
 @JNINamespace("android")
 @NullMarked
 public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+    @JniType("::android::ScrollingBottomViewSceneLayer")
+    interface NativeScrollingBottomViewSceneLayer extends JniTypeToken {}
+
     /** Handle to the native side of this class. */
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeScrollingBottomViewSceneLayer> mNativePtr;
 
     /** The resource ID used to reference the view bitmap in native. */
     private final int mResourceId;
@@ -137,15 +146,24 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
+        if (mNativePtr == null) {
             mNativePtr = ScrollingBottomViewSceneLayerJni.get().init(this);
         }
-        assert mNativePtr != 0;
+        assert mNativePtr != null;
+    }
+
+    @Override
+    public void destroy() {
+        if (mNativePtr == null) return;
+        mNativePtr.release();
+        mNativePtr = null;
+        super.destroy();
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        ScrollingBottomViewSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
+        ScrollingBottomViewSceneLayerJni.get()
+                .setContentTree(assumeNonNull(mNativePtr), contentTree);
     }
 
     @Override
@@ -153,7 +171,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         ScrollingBottomViewSceneLayerJni.get()
                 .updateScrollingBottomViewLayer(
-                        mNativePtr,
+                        assumeNonNull(mNativePtr),
                         resourceManager,
                         mResourceId,
                         mTopShadowHeightPx,
@@ -179,12 +197,13 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
 
     @NativeMethods
     interface Natives {
-        long init(ScrollingBottomViewSceneLayer self);
+        JniRawPtr<NativeScrollingBottomViewSceneLayer> init(ScrollingBottomViewSceneLayer self);
 
-        void setContentTree(long nativeScrollingBottomViewSceneLayer, SceneLayer contentTree);
+        void setContentTree(
+                JniPtr<NativeScrollingBottomViewSceneLayer> self, SceneLayer contentTree);
 
         void updateScrollingBottomViewLayer(
-                long nativeScrollingBottomViewSceneLayer,
+                JniPtr<NativeScrollingBottomViewSceneLayer> self,
                 ResourceManager resourceManager,
                 int viewResourceId,
                 int shadowHeightPx,

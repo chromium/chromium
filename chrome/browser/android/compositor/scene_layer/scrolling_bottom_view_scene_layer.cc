@@ -10,6 +10,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -116,13 +117,11 @@ bool ScrollingBottomViewSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static int64_t JNI_ScrollingBottomViewSceneLayer_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& jobj) {
+static jni_zero::JniRawPtr<ScrollingBottomViewSceneLayer>
+JNI_ScrollingBottomViewSceneLayer_Init(JNIEnv* env,
+                                       const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
-  ScrollingBottomViewSceneLayer* scene_layer =
-      new ScrollingBottomViewSceneLayer(env, jobj);
-  return reinterpret_cast<intptr_t>(scene_layer);
+  return jni_zero::MakeRaw(new ScrollingBottomViewSceneLayer(env, jobj));
 }
 
 }  // namespace android
