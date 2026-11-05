@@ -8,7 +8,7 @@
 @class LocationBarBadgeConfiguration;
 enum class LocationBarBadgeType;
 
-// TODO(crbug.com/454351425): Refactor function names to not use "entrypoint".
+// TODO(crbug.com/574559217): Refactor function names to not use "entrypoint".
 // Usage is for parity with ContextualPanelEntryPointConsumer.
 // Mutator for LocationBarBadgeViewController.
 @protocol LocationBarBadgeMutator

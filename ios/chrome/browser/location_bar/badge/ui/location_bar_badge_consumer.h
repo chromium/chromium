@@ -10,7 +10,7 @@
 @class LocationBarBadgeConfiguration;
 enum class ContextualPanelItemType;
 
-// TODO(crbug.com/454351425): Refactor function names to not use "entrypoint".
+// TODO(crbug.com/574559217): Refactor function names to not use "entrypoint".
 // Usage is for parity with ContextualPanelEntryPointConsumer.
 // Consumer for the location bar badge mediator.
 @protocol LocationBarBadgeConsumer

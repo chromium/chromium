@@ -120,12 +120,12 @@
   _mediator.active = active;
 }
 
-// TODO(crbug.com/454351425): Remove Contextual Panel pragma when
+// TODO(crbug.com/574559217): Remove Contextual Panel pragma when
 // `kLocationBarBadgeMigration` is enabled by default.
 #pragma mark - ContextualPanelEntrypointMediatorDelegate
 #pragma mark - LocationBarBadgeMediatorDelegate
 
-// TODO(crbug.com/454351425): Remove when `kLocationBarBadgeMigration` is
+// TODO(crbug.com/574559217): Remove when `kLocationBarBadgeMigration` is
 // enabled by default.
 - (BOOL)canShowLargeContextualPanelEntrypoint:
     (ContextualPanelEntrypointMediator*)mediator {
@@ -235,7 +235,7 @@
       HandlerForProtocol(_dispatcher, ContextualPanelEntrypointIPHCommands);
 }
 
-// TODO(crbug.com/454351425): Remove when Contextual Panel Entry Point is
+// TODO(crbug.com/574559217): Remove when Contextual Panel Entry Point is
 // integrated with LocationBarBadgeMediator.
 // Creates a Contextual Panel entry point mediator.
 - (void)createContextualPanelEntryPointMediator {
