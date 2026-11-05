@@ -117,7 +117,8 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
   MOCK_METHOD(void,
               OnTabContextUpdated,
               (std::vector<searchbox::mojom::TabInfoPtr> tabs,
-               const std::vector<int32_t>& submitted_tab_ids),
+               const std::vector<int32_t>& submitted_tab_ids,
+               mojom::SmartTabSharingStatePtr smart_tab_sharing_state),
               (override));
 
  private:

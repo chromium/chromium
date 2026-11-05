@@ -357,6 +357,16 @@ interface ExtensionPageHandler {
 };
 
 // Extension-side handler for requests from the browser process.
+// State of the Smart Tab Sharing ('Share open tabs') feature for the current
+// Contextual Tasks session.
+struct SmartTabSharingState {
+  // Whether Smart Tab Sharing is currently toggled on for the session.
+  bool active;
+  // Whether the Smart Tab Sharing menu option should be shown in the tab picker
+  // menu.
+  bool visible;
+};
+
 // Implemented in HTML/TS and called from C++
 // (ContextualTasksExtensionHandler or
 // ContextualTasksExtensionServiceWorkerHandler) to control the extension UI and
@@ -395,7 +405,10 @@ interface ExtensionPage {
   // Called by the browser process (C++, ContextualTasksExtensionHandler)
   // when the session's tab context state updates, providing the combined
   // list of attached and restored tabs along with the IDs of tabs that
-  // have already been submitted or restored.
+  // have already been submitted or restored, as well as the current Smart
+  // Tab Sharing state (consumed by `ContextLibraryElement` in
+  // `context_library.ts` and `TabPickerAppElement` in `tab_picker_app.ts`).
   OnTabContextUpdated(array<searchbox.mojom.TabInfo> tabs,
-                      array<int32> submitted_tab_ids);
+                      array<int32> submitted_tab_ids,
+                      SmartTabSharingState smart_tab_sharing_state);
 };

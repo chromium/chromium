@@ -38,3 +38,21 @@
   --composebox-favicon-skeleton-color:
       var(--color-override-favicon-skeleton, rgb(68, 71, 70));
 }
+
+#faviconGroup[hidden] {
+  display: none;
+}
+
+.sts-active-coin {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  color: var(--color-sys-on-surface-subtle,
+      var(--cr-fallback-color-on-surface-subtle, #474747));
+  flex-shrink: 0;
+  height: 20px;
+  width: 20px;
+}
+
+:host([dark-mode]) .sts-active-coin {
+  color: rgba(230, 232, 240, 1);
+}
