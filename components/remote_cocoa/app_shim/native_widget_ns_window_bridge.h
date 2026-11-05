@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller_cocoa.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_transparent_titlebar_controller_cocoa.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
@@ -333,6 +334,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void SetCursor(const ui::Cursor& cursor) override;
   void EnableImmersiveFullscreen(uint64_t fullscreen_overlay_widget_id,
                                  uint64_t tab_widget_id) override;
+  void EnableImmersiveFullscreenWithTransparentTitlebar() override;
   void DisableImmersiveFullscreen() override;
   void UpdateToolbarVisibility(
       remote_cocoa::mojom::ToolbarVisibilityStyle style) override;
@@ -374,7 +376,15 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // menubar and the browser window traffic lights.
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
 
-  BOOL ImmersiveFullscreenEnabled() { return !!immersive_mode_controller_; }
+  // Called by the ImmersiveModeTransparentTitlebarControllerCocoa when the
+  // frame of the titlebar container in the NSToolbarFullScreenWindow changes.
+  // `frame` is in content view coordinates, with the origin at the top-left.
+  void OnImmersiveFullscreenTitlebarFrameChanged(const gfx::Rect& frame);
+
+  BOOL ImmersiveFullscreenEnabled() {
+    return immersive_mode_controller_ ||
+           immersive_transparent_titlebar_controller_;
+  }
 
   // Called by the ImmersiveModeController at the end of fullscreen transition
   // with the height of the menu bar if it autohides, or 0 if it doesn't.
@@ -554,6 +564,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   // Manages immersive mode when in fullscreen.
   std::unique_ptr<ImmersiveModeControllerCocoa> immersive_mode_controller_;
+
+  // Manages immersive mode with a transparent titlebar when in fullscreen.
+  // Mutually exclusive with `immersive_mode_controller_`.
+  std::unique_ptr<ImmersiveModeTransparentTitlebarControllerCocoa>
+      immersive_transparent_titlebar_controller_;
 
   // When `window_` is made visible, its `alphaValue` is forced to 0 to avoid
   // flashing a blank window. The value to restore it to when the compositor

@@ -319,6 +319,17 @@ interface NativeWidgetNSWindow {
   EnableImmersiveFullscreen(
       uint64 fullscreen_overlay_widget_id, uint64 tab_widget_id);
 
+  // Enables immersive fullscreen without overlay widgets: top chrome stays in
+  // this window, and the AppKit-owned NSToolbarFullScreenWindow that hosts the
+  // window controls (traffic lights) is made transparent so that top chrome
+  // can be drawn underneath it. Whenever the part of the
+  // NSToolbarFullScreenWindow that AppKit shows changes (e.g. when it slides
+  // in and out with the menu bar), the host is notified through
+  // NativeWidgetNSWindowHost.OnImmersiveFullscreenTitlebarFrameChanged() so
+  // that top chrome can follow it.
+  // Balanced by DisableImmersiveFullscreen().
+  EnableImmersiveFullscreenWithTransparentTitlebar();
+
   // Rollback the immersive transition. The top chrome NSView is reparented into
   // the overlay widget.
   DisableImmersiveFullscreen();

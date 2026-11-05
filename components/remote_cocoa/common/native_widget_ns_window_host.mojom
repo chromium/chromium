@@ -232,6 +232,15 @@ interface NativeWidgetNSWindowHost {
   // Returns height of the menubar if the menubar autohides, otherwise 0.
   OnAutohidingMenuBarHeightChanged(int32 menu_bar_height);
 
+  // Called during immersive fullscreen with a transparent titlebar (see
+  // NativeWidgetNSWindow.EnableImmersiveFullscreenWithTransparentTitlebar())
+  // whenever the part of the NSToolbarFullScreenWindow that AppKit currently
+  // shows changes, e.g. while it slides in and out with the menu bar. `frame`
+  // is the frame of the titlebar container in the coordinates of this window's
+  // content view (DIPs, origin at the top-left). A frame above the top of the
+  // content view means the titlebar is (partially) hidden.
+  OnImmersiveFullscreenTitlebarFrameChanged(gfx.mojom.Rect frame);
+
   // Accept or cancel the current dialog window (depending on the value of
   // |button|), if a current dialog exists.
   DoDialogButtonAction(ui.mojom.DialogButton button);

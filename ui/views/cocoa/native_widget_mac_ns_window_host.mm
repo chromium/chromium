@@ -132,6 +132,8 @@ class BridgedNativeWidgetHostDummy
   void OnImmersiveFullscreenMenuBarRevealChanged(
       double reveal_amount) override {}
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
+  void OnImmersiveFullscreenTitlebarFrameChanged(
+      const gfx::Rect& frame) override {}
   void DoDialogButtonAction(ui::mojom::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(
@@ -1854,6 +1856,15 @@ void NativeWidgetMacNSWindowHost::OnAutohidingMenuBarHeightChanged(
   if (immersive_mode_reveal_client_) {
     immersive_mode_reveal_client_->OnAutohidingMenuBarHeightChanged(
         menu_bar_height);
+  }
+}
+
+void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenTitlebarFrameChanged(
+    const gfx::Rect& frame) {
+  // The frame is in the content view's coordinates, which are the same as the
+  // root view's coordinates.
+  if (immersive_mode_reveal_client_) {
+    immersive_mode_reveal_client_->OnImmersiveModeTitlebarFrameChanged(frame);
   }
 }
 

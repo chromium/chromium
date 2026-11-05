@@ -173,6 +173,8 @@ class DummyNativeWidgetNSWindowHost
   void OnImmersiveFullscreenMenuBarRevealChanged(
       double reveal_amount) override {}
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
+  void OnImmersiveFullscreenTitlebarFrameChanged(
+      const gfx::Rect& frame) override {}
   void DoDialogButtonAction(ui::mojom::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(

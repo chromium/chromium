@@ -417,6 +417,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override;
   void OnImmersiveFullscreenMenuBarRevealChanged(double reveal_amount) override;
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override;
+  void OnImmersiveFullscreenTitlebarFrameChanged(
+      const gfx::Rect& frame) override;
   void DoDialogButtonAction(ui::mojom::DialogButton button) override;
   bool GetDialogButtonInfo(ui::mojom::DialogButton type,
                            bool* button_exists,

@@ -16,6 +16,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
@@ -60,6 +61,7 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/native_theme/os_settings_provider_mac.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/cocoa/immersive_mode_reveal_client.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/button/label_button.h"
@@ -4129,6 +4131,60 @@ TEST_F(NativeWidgetMacTest, SizeChangeNotifiedBeforeMoveChange) {
   widget->SetBounds(gfx::Rect(200, 200, 400, 400));
 
   widget->RemoveObserver(&observer);
+  widget->CloseNow();
+}
+
+namespace {
+
+class TestImmersiveModeRevealClient : public ImmersiveModeRevealClient {
+ public:
+  void OnImmersiveModeToolbarRevealChanged(bool is_revealed) override {}
+  void OnImmersiveModeMenuBarRevealChanged(double reveal_amount) override {}
+  void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
+  void OnImmersiveModeTitlebarFrameChanged(const gfx::Rect& frame) override {
+    titlebar_frames.push_back(frame);
+  }
+
+  base::WeakPtr<TestImmersiveModeRevealClient> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  std::vector<gfx::Rect> titlebar_frames;
+
+ private:
+  base::WeakPtrFactory<TestImmersiveModeRevealClient> weak_ptr_factory_{this};
+};
+
+}  // namespace
+
+// Immersive fullscreen v2: enabling it adds the transparent titlebar accessory,
+// disabling it removes it, and titlebar frame changes reach the reveal client.
+TEST_F(NativeWidgetMacTest, ImmersiveFullscreenWithTransparentTitlebar) {
+  Widget* widget = CreateTopLevelPlatformWidget();
+  widget->Show();
+  NativeWidgetMacNSWindowHost* host =
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          widget->GetNativeWindow());
+  remote_cocoa::NativeWidgetNSWindowBridge* bridge =
+      host->GetInProcessNSWindowBridge();
+  NSWindow* window = widget->GetNativeWindow().GetNativeNSWindow();
+  const NSUInteger accessory_count =
+      window.titlebarAccessoryViewControllers.count;
+
+  bridge->EnableImmersiveFullscreenWithTransparentTitlebar();
+  EXPECT_TRUE(bridge->ImmersiveFullscreenEnabled());
+  EXPECT_EQ(accessory_count + 1, window.titlebarAccessoryViewControllers.count);
+
+  TestImmersiveModeRevealClient reveal_client;
+  host->set_immersive_mode_reveal_client(reveal_client.GetWeakPtr());
+  const gfx::Rect frame(0, -32, 400, 32);
+  bridge->OnImmersiveFullscreenTitlebarFrameChanged(frame);
+  EXPECT_THAT(reveal_client.titlebar_frames, testing::ElementsAre(frame));
+
+  bridge->DisableImmersiveFullscreen();
+  EXPECT_FALSE(bridge->ImmersiveFullscreenEnabled());
+  EXPECT_EQ(accessory_count, window.titlebarAccessoryViewControllers.count);
+
   widget->CloseNow();
 }
 

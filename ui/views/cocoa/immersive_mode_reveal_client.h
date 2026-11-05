@@ -7,6 +7,10 @@
 
 #include "ui/views/views_export.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace views {
 
 class VIEWS_EXPORT ImmersiveModeRevealClient {
@@ -17,6 +21,11 @@ class VIEWS_EXPORT ImmersiveModeRevealClient {
   virtual void OnImmersiveModeToolbarRevealChanged(bool is_revealed) = 0;
   virtual void OnImmersiveModeMenuBarRevealChanged(double reveal_amount) = 0;
   virtual void OnAutohidingMenuBarHeightChanged(int menu_bar_height) = 0;
+
+  // Only used by immersive fullscreen with a transparent titlebar. `frame` is
+  // the frame of the NSToolbarFullScreenWindow's titlebar container in the
+  // coordinates of the widget's root view.
+  virtual void OnImmersiveModeTitlebarFrameChanged(const gfx::Rect& frame) {}
 };
 
 }  // namespace views
