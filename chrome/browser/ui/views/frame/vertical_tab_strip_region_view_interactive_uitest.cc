@@ -56,9 +56,9 @@ std::string OmniboxTypeName(const testing::TestParamInfo<bool>& info) {
 }
 
 auto OmniboxTestParams() {
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-  // TODO(crbug.com/581549456): FullWebUI variants time out in
-  // BringBrowserWindowToFront() during test setup on win-asan.
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/581549456, crbug.com/581993586): FullWebUI variants time out
+  // in BringBrowserWindowToFront() during test setup on Windows.
   return testing::Values(false);
 #else
   return testing::Bool();
