@@ -15,7 +15,9 @@ export function getHtml(this: LeftHandSideElement) {
                  @expand-rail="${this.onExpandRail_}"
                  @click="${this.onFoldedClick_}"
                  @pointerenter="${this.onFoldedPointerenter_}"
-                 @focusin="${this.onFoldedFocusin_}">
+                 @pointerleave="${this.onFoldedPointerleave_}"
+                 @focusin="${this.onFoldedFocusin_}"
+                 @focusout="${this.onFoldedFocusout_}">
              </cr-threads-rail>`
       : ''}
   ${!this.enableThreadsRailHybrid_ || this.hasPreloaded_

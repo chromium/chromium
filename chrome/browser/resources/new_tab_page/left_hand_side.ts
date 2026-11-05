@@ -94,6 +94,7 @@ export class LeftHandSideElement extends CrLitElement {
         reflect: true,
       },
       isExpandedReady_: {type: Boolean},
+      threadsRailPreloadDebounceMs_: {type: Number},
     };
   }
 
@@ -106,11 +107,16 @@ export class LeftHandSideElement extends CrLitElement {
   protected accessor hasPreloaded_: boolean = false;
   protected accessor isExpanded_: boolean = false;
   protected accessor isExpandedReady_: boolean = false;
+  protected accessor threadsRailPreloadDebounceMs_: number =
+      loadTimeData.valueExists('threadsRailPreloadDebounceMs') ?
+      loadTimeData.getInteger('threadsRailPreloadDebounceMs') :
+      100;
   private eventTracker_: EventTracker = new EventTracker();
   private iframeResizeObserver_: ResizeObserver|null = null;
   private lastIframeWidth_: number = 0;
   // Width of the folded rail in hybrid mode, measured once it has rendered.
   private collapsedWidth_: number = 0;
+  private preloadTimerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -128,6 +134,7 @@ export class LeftHandSideElement extends CrLitElement {
     this.eventTracker_.removeAll();
     this.iframeResizeObserver_?.disconnect();
     this.iframeResizeObserver_ = null;
+    this.cancelPreloadTimer_();
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
@@ -199,12 +206,20 @@ export class LeftHandSideElement extends CrLitElement {
     return this.shadowRoot.querySelector<IframeElement>('#expanded');
   }
 
-  protected async onFoldedPointerenter_() {
-    await this.preloadExpanded_();
+  protected onFoldedPointerenter_() {
+    this.schedulePreloadExpanded_();
   }
 
-  protected async onFoldedFocusin_() {
-    await this.preloadExpanded_();
+  protected onFoldedPointerleave_() {
+    this.cancelPreloadTimer_();
+  }
+
+  protected onFoldedFocusin_() {
+    this.schedulePreloadExpanded_();
+  }
+
+  protected onFoldedFocusout_() {
+    this.cancelPreloadTimer_();
   }
 
   protected async onFoldedClick_() {
@@ -213,6 +228,30 @@ export class LeftHandSideElement extends CrLitElement {
 
   protected async onExpandRail_() {
     await this.expand_();
+  }
+
+  private schedulePreloadExpanded_() {
+    if (this.hasPreloaded_) {
+      return;
+    }
+    if (this.preloadTimerId_ !== null) {
+      return;
+    }
+    if (this.threadsRailPreloadDebounceMs_ <= 0) {
+      this.preloadExpanded_();
+      return;
+    }
+    this.preloadTimerId_ = WindowProxy.getInstance().setTimeout(() => {
+      this.preloadTimerId_ = null;
+      this.preloadExpanded_();
+    }, this.threadsRailPreloadDebounceMs_);
+  }
+
+  private cancelPreloadTimer_() {
+    if (this.preloadTimerId_ !== null) {
+      WindowProxy.getInstance().clearTimeout(this.preloadTimerId_);
+      this.preloadTimerId_ = null;
+    }
   }
 
   private async preloadExpanded_() {
@@ -227,6 +266,7 @@ export class LeftHandSideElement extends CrLitElement {
   }
 
   private async expand_() {
+    this.cancelPreloadTimer_();
     await this.preloadExpanded_();
     this.isExpanded_ = true;
   }

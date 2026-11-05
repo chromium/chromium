@@ -825,6 +825,8 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
   dict.Set("enableThreadsRail", enable_threads_rail);
   dict.Set("enableThreadsRailHybrid",
            ntp_features::kNtpThreadsRailHybridParam.Get());
+  dict.Set("threadsRailPreloadDebounceMs",
+           ntp_features::kNtpThreadsRailPreloadDebounceMsParam.Get());
   if (enable_threads_rail && lhs_rail_config) {
     base::DictValue lhs_rail_config_dict;
     base::ListValue items_list;
