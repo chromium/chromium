@@ -28,10 +28,12 @@ std::vector<uint8_t> GenerateKeyForOtrPayloads();
 // Seals a payload with `key` using a random nonce and `storage_id` as
 // additional metadata. The nonce is appended to the encrypted payload. A random
 // nonce should be safe as the data for OTR tabs is frequently wiped out and the
-// key is rotated when not restored from the bundle.
-std::vector<uint8_t> SealPayload(base::span<const uint8_t> key,
-                                 base::span<const uint8_t> payload,
-                                 StorageId storage_id);
+// key is rotated when not restored from the bundle. Returns std::nullopt if
+// sealing fails (e.g. `key` has an invalid length).
+std::optional<std::vector<uint8_t>> SealPayload(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> payload,
+    StorageId storage_id);
 
 // Opens a payload with `key` and the additional metadata `storage_id`. The
 // nonce is expected to be appended to the encrypted payload. Returns

@@ -27,17 +27,34 @@ std::vector<uint8_t> GenerateKeyForOtrPayloads() {
   return crypto::RandBytesAsVector(kKeyLength);
 }
 
-std::vector<uint8_t> SealPayload(base::span<const uint8_t> key,
-                                 base::span<const uint8_t> payload,
-                                 StorageId storage_id) {
-  CHECK_EQ(kNonceLength,
-           crypto::aead::NonceSizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256),
-           base::NotFatalUntil::M163);
+std::optional<std::vector<uint8_t>> SealPayload(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> payload,
+    StorageId storage_id) {
+  // `crypto::aead::{Key,Nonce}SizeFor` are non-constexpr BoringSSL wrappers, so
+  // verify the local constants once at runtime.
+  [[maybe_unused]] static const bool kLengthsValid = [] {
+    CHECK_EQ(kKeyLength,
+             crypto::aead::KeySizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256),
+             base::NotFatalUntil::M163);
+    CHECK_EQ(kNonceLength,
+             crypto::aead::NonceSizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256),
+             base::NotFatalUntil::M163);
+    return true;
+  }();
+  if (key.size() != kKeyLength) {
+    LOG(WARNING) << "Failed to seal payload, invalid key size: " << key.size();
+    return std::nullopt;
+  }
   auto nonce = crypto::RandBytesAsArray<kNonceLength>();
   auto bytes = crypto::aead::Seal(crypto::aead::AES_128_CTR_HMAC_SHA256, key,
                                   payload, nonce, storage_id.AsBytes());
+  if (bytes.empty()) {
+    LOG(WARNING) << "Failed to seal payload.";
+    return std::nullopt;
+  }
 
-  bytes.reserve(payload.size() + nonce.size());
+  bytes.reserve(bytes.size() + nonce.size());
   bytes.insert(bytes.end(), nonce.begin(), nonce.end());
   return bytes;
 }

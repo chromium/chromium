@@ -31,11 +31,13 @@ TEST(PayloadUtilTest, SealAndOpenPayload) {
   std::vector<uint8_t> payload = {1, 2, 3, 4, 5};
   StorageId storage_id = StorageId::Create();
 
-  std::vector<uint8_t> sealed_payload = SealPayload(key, payload, storage_id);
-  ASSERT_FALSE(sealed_payload.empty());
+  std::optional<std::vector<uint8_t>> sealed_payload =
+      SealPayload(key, payload, storage_id);
+  ASSERT_TRUE(sealed_payload.has_value());
+  ASSERT_FALSE(sealed_payload->empty());
 
   std::optional<std::vector<uint8_t>> opened_payload =
-      OpenPayload(key, sealed_payload, storage_id);
+      OpenPayload(key, *sealed_payload, storage_id);
   ASSERT_TRUE(opened_payload.has_value());
   ASSERT_EQ(opened_payload.value(), payload);
 }
@@ -46,11 +48,13 @@ TEST(PayloadUtilTest, OpenPayloadWithBadKey) {
   std::vector<uint8_t> payload = {1, 2, 3, 4, 5};
   StorageId storage_id = StorageId::Create();
 
-  std::vector<uint8_t> sealed_payload = SealPayload(key, payload, storage_id);
-  ASSERT_FALSE(sealed_payload.empty());
+  std::optional<std::vector<uint8_t>> sealed_payload =
+      SealPayload(key, payload, storage_id);
+  ASSERT_TRUE(sealed_payload.has_value());
+  ASSERT_FALSE(sealed_payload->empty());
 
   std::optional<std::vector<uint8_t>> opened_payload =
-      OpenPayload(bad_key, sealed_payload, storage_id);
+      OpenPayload(bad_key, *sealed_payload, storage_id);
   ASSERT_FALSE(opened_payload.has_value());
 }
 
@@ -59,14 +63,16 @@ TEST(PayloadUtilTest, OpenPayloadWithTruncatedPayload) {
   std::vector<uint8_t> payload = {1, 2, 3, 4, 5};
   StorageId storage_id = StorageId::Create();
 
-  std::vector<uint8_t> sealed_payload = SealPayload(key, payload, storage_id);
-  ASSERT_FALSE(sealed_payload.empty());
+  std::optional<std::vector<uint8_t>> sealed_payload =
+      SealPayload(key, payload, storage_id);
+  ASSERT_TRUE(sealed_payload.has_value());
+  ASSERT_FALSE(sealed_payload->empty());
 
   // Truncate the sealed payload by 1 byte (removing part of the nonce).
-  sealed_payload.pop_back();
+  sealed_payload->pop_back();
 
   std::optional<std::vector<uint8_t>> opened_payload =
-      OpenPayload(key, sealed_payload, storage_id);
+      OpenPayload(key, *sealed_payload, storage_id);
   ASSERT_FALSE(opened_payload.has_value());
 }
 
@@ -75,13 +81,41 @@ TEST(PayloadUtilTest, SealAndOpenEmptyPayload) {
   std::vector<uint8_t> payload = {};
   StorageId storage_id = StorageId::Create();
 
-  std::vector<uint8_t> sealed_payload = SealPayload(key, payload, storage_id);
-  ASSERT_FALSE(sealed_payload.empty());
+  std::optional<std::vector<uint8_t>> sealed_payload =
+      SealPayload(key, payload, storage_id);
+  ASSERT_TRUE(sealed_payload.has_value());
+  ASSERT_FALSE(sealed_payload->empty());
 
   std::optional<std::vector<uint8_t>> opened_payload =
-      OpenPayload(key, sealed_payload, storage_id);
+      OpenPayload(key, *sealed_payload, storage_id);
   ASSERT_TRUE(opened_payload.has_value());
   ASSERT_TRUE(opened_payload.value().empty());
+}
+
+TEST(PayloadUtilTest, SealPayloadAllocatesExactCapacity) {
+  std::vector<uint8_t> key = GenerateKeyForOtrPayloads();
+  std::vector<uint8_t> payload(4096, 0xAB);
+  StorageId storage_id = StorageId::Create();
+
+  std::optional<std::vector<uint8_t>> sealed_payload =
+      SealPayload(key, payload, storage_id);
+  ASSERT_TRUE(sealed_payload.has_value());
+  EXPECT_EQ(sealed_payload->capacity(), sealed_payload->size());
+
+  std::optional<std::vector<uint8_t>> opened_payload =
+      OpenPayload(key, *sealed_payload, storage_id);
+  ASSERT_TRUE(opened_payload.has_value());
+  EXPECT_EQ(opened_payload.value(), payload);
+}
+
+TEST(PayloadUtilTest, SealPayloadWithInvalidKeySize) {
+  std::vector<uint8_t> payload = {1, 2, 3, 4, 5};
+  StorageId storage_id = StorageId::Create();
+
+  EXPECT_FALSE(SealPayload({}, payload, storage_id).has_value());
+
+  std::vector<uint8_t> truncated_key = {1, 2, 3};
+  EXPECT_FALSE(SealPayload(truncated_key, payload, storage_id).has_value());
 }
 
 }  // namespace
