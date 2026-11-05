@@ -348,12 +348,14 @@ public class TabGroupUiUtils {
         }
     }
 
-    private static boolean isGroupClosingInAnotherWindow(@Nullable Token groupId) {
-        if (groupId == null) return false;
+    private static boolean isGroupActiveInAnotherWindow(@Nullable Token groupId) {
+        if (groupId == null) {
+            return false;
+        }
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         @WindowId
         int windowId =
-                windowManager.findWindowIdForTabGroup(groupId, /* includeClosingGroups= */ true);
+                windowManager.findWindowIdForTabGroup(groupId, /* includeClosingGroups= */ false);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }
@@ -363,13 +365,24 @@ public class TabGroupUiUtils {
         }
         TabModel incognitoModel = selector.getModel(/* incognito= */ true);
         assert getLocalTabsInGroup(incognitoModel, groupId).isEmpty()
-                : "isGroupClosingInAnotherWindow is only meant for non-incognito groups.";
+                : "isGroupActiveInAnotherWindow is only meant for non-incognito groups.";
 
         TabModel otherModel = selector.getModel(/* incognito= */ false);
-        return !otherModel.containsTabGroup(groupId);
+        return otherModel.containsTabGroup(groupId);
     }
 
-    private static boolean isRemoteGroup(GroupWindowInfo group) {
+    static boolean isGroupClosingInAnotherWindow(Token groupId) {
+        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+        @WindowId
+        int windowId =
+                windowManager.findWindowIdForTabGroup(groupId, /* includeClosingGroups= */ true);
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return false;
+        }
+        return !isGroupActiveInAnotherWindow(groupId);
+    }
+
+    private static boolean shouldRestoreFromSync(GroupWindowInfo group) {
         if (!isRemoteGroupOperationsEnabled() || group.syncId == null) {
             return false;
         }
@@ -380,9 +393,28 @@ public class TabGroupUiUtils {
             return true;
         }
         if (group.groupWindowState == GroupWindowState.IN_ANOTHER) {
-            return isGroupClosingInAnotherWindow(group.localId);
+            return !isGroupActiveInAnotherWindow(group.localId);
         }
         return false;
+    }
+
+    private static boolean isValidAnotherWindowDestination(GroupWindowInfo destinationGroup) {
+        if (!isCrossWindowTabGroupOperationsEnabled() || destinationGroup.localId == null) {
+            return false;
+        }
+        if (!isRemoteGroupOperationsEnabled()) {
+            boolean isClosing =
+                    destinationGroup.syncId != null
+                            && isGroupClosingInAnotherWindow(destinationGroup.localId);
+            return !isClosing;
+        }
+        if (destinationGroup.syncId == null) {
+            return TabWindowManagerSingleton.getInstance()
+                            .findWindowIdForTabGroup(
+                                    destinationGroup.localId, /* includeClosingGroups= */ false)
+                    != TabWindowManager.INVALID_WINDOW_ID;
+        }
+        return true;
     }
 
     /**
@@ -401,7 +433,7 @@ public class TabGroupUiUtils {
         if (destinationGroup == null) {
             return false;
         }
-        if (isRemoteGroup(destinationGroup)) {
+        if (shouldRestoreFromSync(destinationGroup)) {
             return isRemoteGroupOperationsEnabled()
                     && destinationGroup.syncId != null
                     && syncService != null
@@ -412,12 +444,7 @@ public class TabGroupUiUtils {
             return false;
         }
         if (destinationGroup.groupWindowState == GroupWindowState.IN_ANOTHER) {
-            boolean isClosing =
-                    destinationGroup.syncId != null
-                            && isGroupClosingInAnotherWindow(destinationGroup.localId);
-            return isCrossWindowTabGroupOperationsEnabled()
-                    && destinationGroup.localId != null
-                    && !isClosing;
+            return isValidAnotherWindowDestination(destinationGroup);
         }
         return destinationGroup.localId != null;
     }
@@ -614,13 +641,13 @@ public class TabGroupUiUtils {
         if (groupInfo == null || !isValidDestination(groupInfo, syncService, uiActionHandler)) {
             return null;
         }
-        if (isRemoteGroup(groupInfo)) {
-            return maybeRestoreRemoteGroup(tabModel, groupInfo, syncService, uiActionHandler);
+        if (shouldRestoreFromSync(groupInfo)) {
+            return maybeRestoreFromSync(tabModel, groupInfo, syncService, uiActionHandler);
         }
         return groupInfo.groupWindowState != GroupWindowState.HIDDEN ? groupInfo.localId : null;
     }
 
-    private static @Nullable Token maybeRestoreRemoteGroup(
+    private static @Nullable Token maybeRestoreFromSync(
             TabModel sourceTabModel,
             GroupWindowInfo destinationGroup,
             @Nullable TabGroupSyncService syncService,
