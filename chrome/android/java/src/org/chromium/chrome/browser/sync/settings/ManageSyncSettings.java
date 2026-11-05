@@ -426,7 +426,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             getContext(), identityManager, R.dimen.account_management_picture_size);
         }
         centralAccountCardPreference.initialize(
-                assumeNonNull(identityManager.getPrimaryAccountInfo()), profileDataCache);
+                assumeNonNull(identityManager.getPrimaryAccountInfo()).getId(), profileDataCache);
     }
 
     private void setupIdentityErrorCardPreference(Profile profile) {

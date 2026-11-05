@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.sync.SyncService;
 
 /*
@@ -82,7 +82,7 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
 
     private void updatePreferences() {
         String signedInAccountName =
-                CoreAccountInfo.getEmailFrom(
+                AccountInfo.getEmailFrom(
                         assumeNonNull(
                                         IdentityServicesProvider.get()
                                                 .getIdentityManager(getProfile()))

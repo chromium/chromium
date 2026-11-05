@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 /** A dedicated preference for the account settings top avatar. */
 @NullMarked
@@ -53,8 +53,8 @@ public class CentralAccountCardPreference extends Preference
      * settings screen's onViewCreated method.
      */
     @Initializer
-    public void initialize(CoreAccountInfo primaryAccountInfo, ProfileDataCache profileDataCache) {
-        mPrimaryAccount = profileDataCache.getById(primaryAccountInfo.getId());
+    public void initialize(CoreAccountId primaryAccountId, ProfileDataCache profileDataCache) {
+        mPrimaryAccount = profileDataCache.getById(primaryAccountId);
         mProfileDataCache = profileDataCache;
     }
 

@@ -44,7 +44,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -189,7 +189,7 @@ public class SignInPreference extends Preference
         return getAccountInfo(profile) != null;
     }
 
-    private static @Nullable CoreAccountInfo getAccountInfo(Profile profile) {
+    private static @Nullable AccountInfo getAccountInfo(Profile profile) {
         var identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
         return identityManager.getPrimaryAccountInfo();
