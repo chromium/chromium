@@ -5779,32 +5779,29 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
   return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(*param);
 }
 
-bool ConsumeCorner(CSSParserTokenStream& stream,
-                   const CSSParserContext& context,
-                   CSSParserLocalContext& local_context,
-                   CSSValue*& radius,
-                   CSSValue*& shape) {
-  if (stream.Peek().GetType() == kIdentToken &&
-      stream.Peek().Id() == CSSValueID::kNormal) {
-    ConsumeIdent(stream);
-    radius = MakeGarbageCollected<CSSValuePair>(
-        CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kPixels),
-        CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kPixels),
-        CSSValuePair::kDropIdenticalValues);
-    shape = CSSIdentifierValue::Create(CSSValueID::kRound);
-    return true;
+CSSValue* ConsumeSingleCornerRadius(CSSParserTokenStream& stream,
+                                    const CSSParserContext& context,
+                                    CSSParserLocalContext& local_context) {
+  CSSParserSavePoint savepoint(stream);
+  CSSValue* horizontal =
+      ConsumeLengthOrPercent(stream, context, local_context,
+                             CSSPrimitiveValue::ValueRange::kNonNegative);
+  if (!horizontal) {
+    return nullptr;
   }
-
-  shape = ConsumeCornerShape(stream, context, local_context);
-  radius = ParseBorderRadiusCorner(stream, context, local_context);
-  if (!radius) {
-    return false;
+  const bool slash_separated = ConsumeSlashIncludingWhitespace(stream);
+  CSSValue* vertical =
+      ConsumeLengthOrPercent(stream, context, local_context,
+                             CSSPrimitiveValue::ValueRange::kNonNegative);
+  if (!vertical) {
+    if (slash_separated) {
+      return nullptr;
+    }
+    vertical = horizontal;
   }
-
-  if (!shape) {
-    shape = ConsumeCornerShape(stream, context, local_context);
-  }
-  return shape != nullptr;
+  savepoint.Release();
+  return MakeGarbageCollected<CSSValuePair>(horizontal, vertical,
+                                            CSSValuePair::kDropIdenticalValues);
 }
 
 CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,

@@ -63,7 +63,7 @@ class CORE_EXPORT StylePropertySerializer {
       const CSSProperty& first_corner,
       const CSSProperty& second_corner) const;
   String CornerShapeValue() const;
-  String CornersValue() const;
+  String CornerValue() const;
   String SingleCornerShorthandValue(const StylePropertyShorthand&) const;
   String CornerPairShorthandValue(const StylePropertyShorthand&) const;
   String GetLayeredShorthandValue(const StylePropertyShorthand&) const;

@@ -571,11 +571,12 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream&,
                              const CSSParserContext&,
                              CSSParserLocalContext&);
 
-bool ConsumeCorner(CSSParserTokenStream&,
-                   const CSSParserContext&,
-                   CSSParserLocalContext&,
-                   CSSValue*& radius,
-                   CSSValue*& shape);
+// <length-percentage [0,inf]> [ / <length-percentage [0,inf]> ]? |
+// <length-percentage [0,inf]>{1,2}
+// https://drafts.csswg.org/css-borders-4/#typedef-border-radius
+CSSValue* ConsumeSingleCornerRadius(CSSParserTokenStream&,
+                                    const CSSParserContext&,
+                                    CSSParserLocalContext&);
 
 CSSValue* ConsumeGapDecorationPropertyList(CSSParserTokenStream&,
                                            const CSSParserContext&,
