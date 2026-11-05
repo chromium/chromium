@@ -61,6 +61,8 @@ class PLATFORM_EXPORT FontFallbackIterator {
                                     const HintCharList& hint_list);
 
   const SimpleFontData* FallbackPriorityFont(UChar32 hint);
+  const SimpleFontData* UniqueFallbackPriorityFontForHintList(
+      const HintCharList& hint_list);
   const SimpleFontData* UniqueSystemFontForHintList(
       const HintCharList& hint_list);
 
@@ -80,6 +82,7 @@ class PLATFORM_EXPORT FontFallbackIterator {
   };
 
   FallbackStage fallback_stage_ = kFontGroupFonts;
+  HashSet<UChar32> previously_asked_for_priority_hint_;
   HashSet<UChar32> previously_asked_for_hint_;
   // FontFallbackIterator is meant for single use by HarfBuzzShaper,
   // traversing through the fonts for shaping only once. We must not return

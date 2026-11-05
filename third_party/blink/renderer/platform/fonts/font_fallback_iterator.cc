@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -26,6 +27,7 @@ void FontFallbackIterator::Reset() {
   current_font_data_index_ = 0;
   segmented_face_index_ = 0;
   fallback_stage_ = kFontGroupFonts;
+  previously_asked_for_priority_hint_.clear();
   previously_asked_for_hint_.clear();
   unique_font_data_for_range_sets_returned_.clear();
   first_candidate_ = nullptr;
@@ -119,18 +121,33 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
     return MakeGarbageCollected<FontDataForRangeSet>();
 
   if (fallback_stage_ == kFallbackPriorityFonts) {
-    // Only try one fallback priority font,
-    // then proceed to regular system fallback.
-    fallback_stage_ = kSystemFonts;
-    FontDataForRangeSet* fallback_priority_font_range =
-        MakeGarbageCollected<FontDataForRangeSet>(
-            FallbackPriorityFont(hint_list[0]));
-    if (fallback_priority_font_range->HasFontData())
-      return UniqueOrNext(std::move(fallback_priority_font_range), hint_list);
-    return Next(hint_list);
+    if (RuntimeEnabledFeatures::FontFallbackMultiplePriorityFontsEnabled()) {
+      // Platforms such as Android split color emoji coverage across multiple
+      // `und-Zsye` fonts (e.g. NotoColorEmoji.ttf and NotoColorEmojiFlags.ttf).
+      // Keep `kFallbackPriorityFonts` active so each distinct unshaped hint
+      // character tries priority fallback before regular system fallback.
+      if (const SimpleFontData* priority_font =
+              UniqueFallbackPriorityFontForHintList(hint_list)) {
+        return UniqueOrNext(
+            MakeGarbageCollected<FontDataForRangeSet>(priority_font),
+            hint_list);
+      }
+    } else {
+      // Only try one fallback priority font,
+      // then proceed to regular system fallback.
+      fallback_stage_ = kSystemFonts;
+      FontDataForRangeSet* fallback_priority_font_range =
+          MakeGarbageCollected<FontDataForRangeSet>(
+              FallbackPriorityFont(hint_list[0]));
+      if (fallback_priority_font_range->HasFontData()) {
+        return UniqueOrNext(std::move(fallback_priority_font_range), hint_list);
+      }
+      return Next(hint_list);
+    }
   }
 
-  if (fallback_stage_ == kSystemFonts) {
+  if (fallback_stage_ == kSystemFonts ||
+      fallback_stage_ == kFallbackPriorityFonts) {
     // We've reached pref + system fallback.
     const SimpleFontData* system_font = UniqueSystemFontForHintList(hint_list);
     if (system_font) {
@@ -235,6 +252,21 @@ const SimpleFontData* FontFallbackIterator::FallbackPriorityFont(UChar32 hint) {
   return font_data;
 }
 
+const SimpleFontData*
+FontFallbackIterator::UniqueFallbackPriorityFontForHintList(
+    const HintCharList& hint_list) {
+  if (hint_list.empty()) {
+    return nullptr;
+  }
+
+  const UChar32 hint = hint_list[0];
+  if (!hint || previously_asked_for_priority_hint_.Contains(hint)) {
+    return nullptr;
+  }
+  previously_asked_for_priority_hint_.insert(hint);
+  return FallbackPriorityFont(hint);
+}
+
 // static
 wtf_size_t FontFallbackIterator::ChooseHintIndex(
     const FontFallbackIterator::HintCharList& hint_list) {
@@ -286,6 +318,8 @@ bool FontFallbackIterator::operator==(const FontFallbackIterator& other) const {
          current_font_data_index_ == other.current_font_data_index_ &&
          segmented_face_index_ == other.segmented_face_index_ &&
          font_description_ == other.font_description_ &&
+         previously_asked_for_priority_hint_ ==
+             other.previously_asked_for_priority_hint_ &&
          previously_asked_for_hint_ == other.previously_asked_for_hint_ &&
          unique_font_data_for_range_sets_returned_ ==
              other.unique_font_data_for_range_sets_returned_ &&

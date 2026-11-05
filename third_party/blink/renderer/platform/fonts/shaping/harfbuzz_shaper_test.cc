@@ -39,6 +39,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/test/scoped_feature_list.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/color_table_lookup.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -1261,6 +1264,60 @@ TEST_F(HarfBuzzShaperTest, EmojiZwjSequence) {
   HarfBuzzShaper shaper{String(base::span(emoji_zwj_sequence))};
   shaper.Shape(font, direction);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Regression test for https://crbug.com/579721442: Android splits system color
+// emojis across NotoColorEmoji.ttf and NotoColorEmojiFlags.ttf (`und-Zsye`).
+// When GMSCore's monolithic emoji font is unavailable, an emoji or ZWJ sequence
+// immediately followed by a Regional Indicator flag must still shape the flag
+// as a color ligature rather than falling back to NotoSansSymbols (`und-Zsym`).
+TEST_F(HarfBuzzShaperTest, EmojiFollowedByFlagSequence) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGMSCoreEmoji);
+  ScopedFontFallbackMultiplePriorityFontsForTest scoped_feature(true);
+
+  Font* font = MakeGarbageCollected<Font>(font_description);
+
+  // Verify the test environment supports color flag ligatures standalone first.
+  HarfBuzzShaper flag_shaper(u"\U0001F1E7\U0001F1F7");
+  const ShapeResult* flag_result = flag_shaper.Shape(font, TextDirection::kLtr);
+  if (flag_result->NumGlyphs() != 1u) {
+    GTEST_SKIP() << "System fonts do not form flag ligatures on this image.";
+  }
+
+  Vector<const char16_t*> test_cases = {
+      // 😀🇧🇷
+      u"\U0001F600\U0001F1E7\U0001F1F7",
+      // 👩‍⚕️🇧🇷 (Emoji 4.0 ZWJ + VS16, Android 10+)
+      u"\U0001F469\u200D\u2695\uFE0F\U0001F1E7\U0001F1F7",
+  };
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_R) {
+    // 🏳️‍⚧️🇧🇷 (Emoji 13.0, Android 11+)
+    test_cases.push_back(
+        u"\U0001F3F3\uFE0F\u200D\u26A7\uFE0F\U0001F1E7\U0001F1F7");
+  }
+
+  for (const char16_t* text : test_cases) {
+    String input(text);
+    HarfBuzzShaper shaper(input);
+    const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+    // Each leading emoji/ZWJ sequence + 🇧🇷 should produce 2 ligature/emoji
+    // glyphs total (1 for the leading emoji/ZWJ sequence and 1 for 🇧🇷), never 3
+    // glyphs ([B][R]).
+    EXPECT_EQ(2u, result->NumGlyphs()) << input;
+
+    HeapVector<ShapeResult::RunFontData> run_font_data;
+    result->GetRunFontData(&run_font_data);
+    for (const auto& run : run_font_data) {
+      EXPECT_TRUE(ColorTableLookup::TypefaceHasAnySupportedColorTable(
+          run.font_data_->PlatformData().Typeface()))
+          << input;
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(HarfBuzzShaperTest, CaretOffsetForHitTestMatchesPositionForOffsetLatin) {
   Font* font = MakeGarbageCollected<Font>(font_description);
