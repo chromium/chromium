@@ -11,8 +11,7 @@ struct AutocompleteMatch;
 
 namespace suggest_template_info {
 
-// Creates the SuggestTemplateInfo Mojom object to render `match` with, i.e. the
-// client-supported, rendering-relevant subset of SuggestTemplateInfo.
+// Creates the SuggestTemplateInfo Mojom object to render `match` with.
 mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     const AutocompleteMatch& match);
 
