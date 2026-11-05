@@ -399,18 +399,21 @@ if (!is_android) {
         "first_run_test_util.cc",
         "first_run_test_util.h",
       ]
-      public_deps = [ "//chrome/browser/ui/profiles" ]
+      public_deps = [
+        "//chrome/browser/ui/profiles",
+        "//chrome/test/base:in_process_browser_test",
+      ]
       deps += [
         ":startup",
         "//base/test:test_support",
         "//chrome/browser:browser_process",
         "//chrome/browser/first_run",
         "//chrome/browser/profiles:profile",
+        "//chrome/browser/profiles:profile_manager",
         "//chrome/browser/profiles:profile_util",
         "//chrome/browser/ui/browser_window",
         "//chrome/common:constants",
         "//chrome/common:non_code_constants",
-        "//chrome/test:test_support_ui",
         "//components/prefs",
         "//testing/gtest",
       ]
@@ -523,7 +526,6 @@ if (!is_android) {
       "//chrome/common:non_code_constants",
       "//chrome/common:version_header",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/keep_alive_registry",
@@ -616,7 +618,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//content/test:test_support",
       "//testing/gtest",
       "//url",

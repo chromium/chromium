@@ -155,7 +155,6 @@ if (!is_android) {
         ":dump_accessibility_events_views_browsertest_base",
         "//chrome/browser/ui/color:color_headers",
         "//chrome/common:constants",
-        "//chrome/test:test_support_ui",
         "//components/prefs",
         "//content/test:test_support",
         "//ui/accessibility",
@@ -190,7 +189,9 @@ if (!is_android) {
         "//chrome/browser/ui:browser_window_header",
         "//chrome/browser/ui:tab_modal_confirm_dialog",
         "//chrome/browser/ui/views/frame:browser_view_header",
-        "//chrome/test:test_support_ui",
+        "//chrome/test/base:in_process_browser_test",
+        "//chrome/test/base:interactive_test_utils",
+        "//chrome/test/base:ui_test_utils",
         "//components/live_caption:constants",
         "//components/on_device_translation/buildflags",
         "//components/soda",
@@ -208,6 +209,7 @@ if (!is_android) {
         ]
         deps += [
           "//chrome/browser/ui/views/toolbar",
+          "//net:test_support",
           "//ui/base:test_support",
         ]
       }

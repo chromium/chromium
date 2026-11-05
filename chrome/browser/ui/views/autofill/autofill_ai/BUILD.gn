@@ -62,9 +62,15 @@ source_set("browser_tests") {
 
   deps = [
     ":autofill_ai",
+    "//base/i18n:test_support",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/autofill:test_support",
-    "//chrome/test:test_support_ui",
+    "//chrome/browser/ui/test:dialog",
+    "//chrome/test/base:in_process_browser_test",
+    "//components/autofill/core/browser:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/views:test_support",
   ]
 }
 

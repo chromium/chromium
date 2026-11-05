@@ -134,11 +134,12 @@ if (!is_android && !is_chromeos_device) {
         "//base",
         "//base/test:test_support",
         "//chrome/common",
-        "//chrome/test:test_support_ui",
+        "//chrome/test/interaction",
         "//content/test:test_support",
         "//testing/gtest",
         "//ui/base",
         "//ui/base:test_support",
+        "//ui/base/interaction:test_support",
         "//ui/views",
         "//url",
       ]

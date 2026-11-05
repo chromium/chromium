@@ -38,10 +38,14 @@ source_set("browser_tests") {
 
   deps = [
     ":one_time_tokens",
+    "//base/i18n:test_support",
+    "//base/test:test_support",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/interaction",
-    "//chrome/test:test_support_ui",
+    "//chrome/browser/ui/test:dialog",
+    "//chrome/test/base:in_process_browser_test",
+    "//content/test:test_support",
   ]
 }
 
