@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "base/command_line.h"
+#import "base/command_line.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
-#include "components/memory_system/memory_system.h"
-#include "ios/chrome/browser/flags/ios_chrome_field_trials.h"
-#include "ios/web/public/init/web_main_parts.h"
+#import "base/memory/raw_ref.h"
+#import "components/memory_system/memory_system.h"
+#import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
+#import "ios/web/public/init/web_main_parts.h"
 
 namespace display {
 class ScopedNativeScreen;
@@ -36,7 +36,7 @@ class IOSChromeMainParts : public web::WebMainParts {
   void InitializeFieldTrialAndFeatureList();
 
  private:
-  // web::WebMainParts implementation.
+  // web::WebMainParts:
   void PreCreateMainMessageLoop() override;
   void PreCreateThreads() override;
   void PostCreateThreads() override;
