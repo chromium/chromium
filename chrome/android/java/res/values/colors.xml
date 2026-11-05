@@ -96,4 +96,16 @@ found in the LICENSE file.
     <color name="tab_recording_alert_color">@color/google_red_600</color>
     <color name="tab_sharing_alert_color">@color/tab_group_color_picker_blue_dark</color>
     <color name="tab_pip_alert_color">@color/tab_group_color_picker_blue_dark</color>
+
+    <!-- Settings row icons: circle (container) and glyph (on container) colors per hue. -->
+    <color name="settings_icon_blue_container">@color/baseline_primary_90</color>
+    <color name="settings_icon_on_blue_container">@color/baseline_primary_30</color>
+    <color name="settings_icon_purple_container">@color/tab_group_card_primary_color_purple_light_gm3</color>
+    <color name="settings_icon_on_purple_container">@color/settings_icon_purple_30</color>
+    <color name="settings_icon_pink_container">@color/tab_group_card_primary_color_pink_light_gm3</color>
+    <color name="settings_icon_on_pink_container">@color/settings_icon_pink_30</color>
+    <color name="settings_icon_orange_container">@color/tab_group_card_primary_color_orange_light_gm3</color>
+    <color name="settings_icon_on_orange_container">@color/settings_icon_orange_30</color>
+    <color name="settings_icon_cyan_container">@color/tab_group_card_primary_color_cyan_light_gm3</color>
+    <color name="settings_icon_on_cyan_container">@color/settings_icon_cyan_30</color>
 </resources>

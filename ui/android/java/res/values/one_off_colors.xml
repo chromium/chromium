@@ -239,4 +239,13 @@ found in the LICENSE file.
     <color name="gm3_aurora_tertiary_container_mid_energy_dark">#0C976D</color>
     <color name="gm3_aurora_tertiary_container_end_energy_light">#6DD4FF</color>
     <color name="gm3_aurora_tertiary_container_end_energy_dark">#00ADCC</color>
+
+    <!--
+     Settings row icon glyph colors (tone 30). The matching tone 90 circle
+     colors are the tab_group_card_primary_color_*_light_gm3 colors above.
+     -->
+    <color name="settings_icon_purple_30">#5629A4</color>
+    <color name="settings_icon_pink_30">#8D0053</color>
+    <color name="settings_icon_orange_30">#753403</color>
+    <color name="settings_icon_cyan_30">#004D68</color>
 </resources>
