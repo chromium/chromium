@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chromeos/printing/ppd_metadata_parser.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -56,9 +57,8 @@ class ForwardIndexSearchContext {
  public:
   ForwardIndexSearchContext(
       const std::vector<std::string>& emms,
-      base::Time max_age,
       PpdMetadataManager::FindAllEmmsAvailableInIndexCallback cb)
-      : emms_(emms), current_index_(), max_age_(max_age), cb_(std::move(cb)) {}
+      : emms_(emms), current_index_(), cb_(std::move(cb)) {}
   ~ForwardIndexSearchContext() = default;
 
   ForwardIndexSearchContext(const ForwardIndexSearchContext&) = delete;
@@ -100,8 +100,6 @@ class ForwardIndexSearchContext {
     cb_arg_.insert_or_assign(CurrentEmm(), value);
   }
 
-  base::Time MaxAge() const { return max_age_; }
-
  private:
   // List of all effective-make-and-model strings that caller gave to
   // PpdMetadataManager::FindAllEmmsAvailableInIndex().
@@ -110,9 +108,6 @@ class ForwardIndexSearchContext {
   // Index into |emms| that marks the effective-make-and-model string
   // currently being searched.
   size_t current_index_;
-
-  // Freshness requirement for forward indices that this search reads.
-  base::Time max_age_;
 
   // Callback that caller gave to
   // PpdMetadataManager::FindAllEmmsAvailableInIndex().
@@ -187,6 +182,23 @@ bool MapHasValueFresherThan(const CachedParsedMetadataMap<T>& metadata_map,
     return value.time_of_parse > expiration;
   }
   return false;
+}
+
+// Erases values from |metadata_map| parsed at or before |expiration|.
+template <typename T>
+void EraseExpiredFromMap(CachedParsedMetadataMap<T>& metadata_map,
+                         base::Time expiration) {
+  base::EraseIf(metadata_map, [expiration](const auto& kv) {
+    return kv.second.time_of_parse <= expiration;
+  });
+}
+
+template <typename T>
+void UpdateOldestParseTime(const CachedParsedMetadataMap<T>& metadata_map,
+                           base::Time& oldest_parse_time) {
+  for (const auto& [key, entry] : metadata_map) {
+    oldest_parse_time = std::min(oldest_parse_time, entry.time_of_parse);
+  }
 }
 
 // Calculates the shard number of |key| inside sharded metadata.
@@ -316,19 +328,23 @@ class PpdMetadataPathSpecifier {
 class PpdMetadataManagerImpl : public PpdMetadataManager {
  public:
   PpdMetadataManagerImpl(PpdIndexChannel channel,
-                         base::Clock* clock,
+                         const base::Clock* clock,
+                         base::TimeDelta max_age,
                          std::unique_ptr<PrinterConfigCache> config_cache)
       : channel_(channel),
         clock_(clock),
+        max_age_(max_age),
         config_cache_(std::move(config_cache)),
-        weak_factory_(this) {}
+        weak_factory_(this) {
+    CHECK(max_age_.is_positive());
+    CHECK(!max_age_.is_max());
+  }
 
   ~PpdMetadataManagerImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  void GetManufacturers(base::TimeDelta age,
-                        PpdProvider::ResolveManufacturersCallback cb) override {
+  void GetManufacturers(PpdProvider::ResolveManufacturersCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     PpdMetadataPathSpecifier path(
@@ -336,7 +352,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     const std::string metadata_name = path.AsString();
 
     if (MapHasValueFresherThan(cached_manufacturers_, metadata_name,
-                               clock_->Now() - age)) {
+                               OldestFreshTime())) {
       OnManufacturersAvailable(metadata_name, std::move(cb));
       return;
     }
@@ -344,11 +360,10 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     PrinterConfigCache::FetchCallback fetch_cb =
         base::BindOnce(&PpdMetadataManagerImpl::OnManufacturersFetched,
                        weak_factory_.GetWeakPtr(), std::move(cb));
-    config_cache_->Fetch(metadata_name, age, std::move(fetch_cb));
+    config_cache_->Fetch(metadata_name, std::move(fetch_cb));
   }
 
   void GetPrinters(std::string_view manufacturer,
-                   base::TimeDelta age,
                    GetPrintersCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -360,7 +375,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     }
 
     if (MapHasValueFresherThan(cached_printers_, metadata_name.value(),
-                               clock_->Now() - age)) {
+                               OldestFreshTime())) {
       OnPrintersAvailable(metadata_name.value(), std::move(cb));
       return;
     }
@@ -368,16 +383,15 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     PrinterConfigCache::FetchCallback fetch_cb =
         base::BindOnce(&PpdMetadataManagerImpl::OnPrintersFetched,
                        weak_factory_.GetWeakPtr(), std::move(cb));
-    config_cache_->Fetch(metadata_name.value(), age, std::move(fetch_cb));
+    config_cache_->Fetch(metadata_name.value(), std::move(fetch_cb));
   }
 
   void FindAllEmmsAvailableInIndex(
       const std::vector<std::string>& emms,
-      base::TimeDelta age,
       FindAllEmmsAvailableInIndexCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    ForwardIndexSearchContext context(emms, clock_->Now() - age, std::move(cb));
+    ForwardIndexSearchContext context(emms, std::move(cb));
     bool queue_was_idle = forward_index_search_queue_.IsIdle();
     forward_index_search_queue_.Enqueue(std::move(context));
 
@@ -393,7 +407,6 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
 
   void FindDeviceInUsbIndex(int vendor_id,
                             int product_id,
-                            base::TimeDelta age,
                             FindDeviceInUsbIndexCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -412,7 +425,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     const std::string metadata_name = path.AsString();
 
     if (MapHasValueFresherThan(cached_usb_indices_, metadata_name,
-                               clock_->Now() - age)) {
+                               OldestFreshTime())) {
       OnUsbIndexAvailable(metadata_name, product_id, std::move(cb));
       return;
     }
@@ -420,18 +433,17 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     auto callback = base::BindOnce(&PpdMetadataManagerImpl::OnUsbIndexFetched,
                                    weak_factory_.GetWeakPtr(), metadata_name,
                                    product_id, std::move(cb));
-    config_cache_->Fetch(metadata_name, age, std::move(callback));
+    config_cache_->Fetch(metadata_name, std::move(callback));
   }
 
   void GetUsbManufacturerName(int vendor_id,
-                              base::TimeDelta age,
                               GetUsbManufacturerNameCallback cb) override {
     PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kUsbVendorIds,
                                   channel_);
     const std::string metadata_name = path.AsString();
 
     if (MapHasValueFresherThan(cached_usb_vendor_id_map_, metadata_name,
-                               clock_->Now() - age)) {
+                               OldestFreshTime())) {
       OnUsbVendorIdMapAvailable(metadata_name, vendor_id, std::move(cb));
       return;
     }
@@ -439,11 +451,10 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     auto fetch_cb =
         base::BindOnce(&PpdMetadataManagerImpl::OnUsbVendorIdMapFetched,
                        weak_factory_.GetWeakPtr(), vendor_id, std::move(cb));
-    config_cache_->Fetch(metadata_name, age, std::move(fetch_cb));
+    config_cache_->Fetch(metadata_name, std::move(fetch_cb));
   }
 
   void SplitMakeAndModel(std::string_view effective_make_and_model,
-                         base::TimeDelta age,
                          PpdProvider::ReverseLookupCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -453,7 +464,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     const std::string metadata_name = path.AsString();
 
     if (MapHasValueFresherThan(cached_reverse_indices_, metadata_name,
-                               clock_->Now() - age)) {
+                               OldestFreshTime())) {
       OnReverseIndexAvailable(metadata_name, effective_make_and_model,
                               std::move(cb));
       return;
@@ -463,7 +474,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
         base::BindOnce(&PpdMetadataManagerImpl::OnReverseIndexFetched,
                        weak_factory_.GetWeakPtr(),
                        std::string(effective_make_and_model), std::move(cb));
-    config_cache_->Fetch(metadata_name, age, std::move(fetch_cb));
+    config_cache_->Fetch(metadata_name, std::move(fetch_cb));
   }
 
   PrinterConfigCache* GetPrinterConfigCacheForTesting() const override {
@@ -488,6 +499,11 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
                                                               parsed.value()};
     cached_manufacturers_.insert_or_assign(manufacturers_name, value);
     return true;
+  }
+
+  size_t GetCachedMetadataCountForTesting() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return CachedMetadataCount();
   }
 
  private:
@@ -628,6 +644,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     ParsedMetadataWithTimestamp<ParsedPrinters> value = {clock_->Now(),
                                                          parsed.value()};
     cached_printers_.insert_or_assign(result.key, value);
+    StartCleanupTimerIfNeeded();
     OnPrintersAvailable(result.key, std::move(cb));
   }
 
@@ -677,6 +694,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     ParsedMetadataWithTimestamp<ParsedIndex> value = {clock_->Now(),
                                                       parsed.value()};
     cached_forward_indices_.insert_or_assign(result.key, value);
+    StartCleanupTimerIfNeeded();
     ContinueSearchingForwardIndices();
   }
 
@@ -696,7 +714,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     const std::string forward_index_name = path.AsString();
 
     if (MapHasValueFresherThan(cached_forward_indices_, forward_index_name,
-                               context.MaxAge())) {
+                               OldestFreshTime())) {
       // We have the appropriate forward index metadata and it's fresh
       // enough to make a determination: is the current
       // effective-make-and-model string  present in this metadata?
@@ -707,18 +725,10 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     // We don't have the appropriate forward index metadata. We need to
     // get it before we can determine if the current
     // effective-make-and-model string is present in it.
-    //
-    // PrinterConfigCache::Fetch() accepts a TimeDelta expressing the
-    // maximum permissible age of the cached response; to simulate the
-    // original TimeDelta that caller gave to
-    // FindAllEmmsAvailableInIndex(), we find the delta between Now()
-    // and the absolute time ceiling recorded in the
-    // ForwardIndexSearchContext.
     auto callback =
         base::BindOnce(&PpdMetadataManagerImpl::OnForwardIndexFetched,
                        weak_factory_.GetWeakPtr());
-    config_cache_->Fetch(forward_index_name, clock_->Now() - context.MaxAge(),
-                         std::move(callback));
+    config_cache_->Fetch(forward_index_name, std::move(callback));
     return ForwardIndexSearchStatus::kWillResumeOnFetchCompletion;
   }
 
@@ -785,6 +795,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     ParsedMetadataWithTimestamp<ParsedUsbIndex> value = {clock_->Now(),
                                                          parsed.value()};
     cached_usb_indices_.insert_or_assign(fetch_result.key, value);
+    StartCleanupTimerIfNeeded();
     OnUsbIndexAvailable(fetch_result.key, product_id, std::move(cb));
   }
 
@@ -842,6 +853,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     ParsedMetadataWithTimestamp<ParsedUsbVendorIdMap> value = {clock_->Now(),
                                                                parsed.value()};
     cached_usb_vendor_id_map_.insert_or_assign(fetch_result.key, value);
+    StartCleanupTimerIfNeeded();
     OnUsbVendorIdMapAvailable(fetch_result.key, vendor_id, std::move(cb));
   }
 
@@ -910,21 +922,80 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     ParsedMetadataWithTimestamp<ParsedReverseIndex> value = {clock_->Now(),
                                                              parsed.value()};
     cached_reverse_indices_.insert_or_assign(result.key, value);
+    StartCleanupTimerIfNeeded();
     OnReverseIndexAvailable(result.key, effective_make_and_model,
                             std::move(cb));
   }
 
+  void PurgeExpiredMetadata() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    const base::Time expiration = OldestFreshTime();
+    EraseExpiredFromMap(cached_printers_, expiration);
+    EraseExpiredFromMap(cached_forward_indices_, expiration);
+    EraseExpiredFromMap(cached_usb_indices_, expiration);
+    EraseExpiredFromMap(cached_usb_vendor_id_map_, expiration);
+    EraseExpiredFromMap(cached_reverse_indices_, expiration);
+    if (CachedMetadataCount() == 0) {
+      return;
+    }
+
+    // All remaining parsed metadata is younger than `max_age_`. Schedules
+    // the next purge for when the oldest of it expires.
+    base::Time oldest_parse_time = base::Time::Max();
+    UpdateOldestParseTime(cached_printers_, oldest_parse_time);
+    UpdateOldestParseTime(cached_forward_indices_, oldest_parse_time);
+    UpdateOldestParseTime(cached_usb_indices_, oldest_parse_time);
+    UpdateOldestParseTime(cached_usb_vendor_id_map_, oldest_parse_time);
+    UpdateOldestParseTime(cached_reverse_indices_, oldest_parse_time);
+    cleanup_timer_.Start(FROM_HERE, oldest_parse_time - expiration, this,
+                         &PpdMetadataManagerImpl::PurgeExpiredMetadata);
+  }
+
+  // Called after caching newly parsed metadata. The timer is pending
+  // whenever parsed metadata is cached, and a pending timer expires no
+  // later than the new metadata. Otherwise, the new metadata is the only
+  // one and expires in `max_age_`. If the timer fires early (e.g. the
+  // oldest metadata was parsed again), the purge reschedules it.
+  void StartCleanupTimerIfNeeded() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (cleanup_timer_.IsRunning()) {
+      return;
+    }
+    DCHECK_EQ(CachedMetadataCount(), 1u);
+    cleanup_timer_.Start(FROM_HERE, max_age_, this,
+                         &PpdMetadataManagerImpl::PurgeExpiredMetadata);
+  }
+
+  // Returns the number of cached parsed metadata entries, excluding
+  // `cached_manufacturers_`.
+  size_t CachedMetadataCount() const {
+    return cached_printers_.size() + cached_forward_indices_.size() +
+           cached_usb_indices_.size() + cached_usb_vendor_id_map_.size() +
+           cached_reverse_indices_.size();
+  }
+
+  // Returns the time at or before which parsed metadata is stale.
+  base::Time OldestFreshTime() const { return clock_->Now() - max_age_; }
+
   const PpdIndexChannel channel_;
   raw_ptr<const base::Clock> clock_;
 
+  // Parsed metadata older than this is refetched and evicted.
+  const base::TimeDelta max_age_;
+
   std::unique_ptr<PrinterConfigCache> config_cache_;
 
+  // Note: `cached_manufacturers_` is intentionally retained because
+  // GetPrinters() requires GetManufacturers() to have populated it first.
   CachedParsedMetadataMap<ParsedManufacturers> cached_manufacturers_;
   CachedParsedMetadataMap<ParsedPrinters> cached_printers_;
   CachedParsedMetadataMap<ParsedIndex> cached_forward_indices_;
   CachedParsedMetadataMap<ParsedUsbIndex> cached_usb_indices_;
   CachedParsedMetadataMap<ParsedUsbVendorIdMap> cached_usb_vendor_id_map_;
   CachedParsedMetadataMap<ParsedReverseIndex> cached_reverse_indices_;
+
+  // Evicts expired parsed metadata.
+  base::OneShotTimer cleanup_timer_;
 
   // Processing queue for FindAllEmmsAvailableInIndex().
   ForwardIndexSearchQueue forward_index_search_queue_;
@@ -942,9 +1013,10 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
 // static
 std::unique_ptr<PpdMetadataManager> PpdMetadataManager::Create(
     PpdIndexChannel channel,
-    base::Clock* clock,
+    const base::Clock* clock,
+    base::TimeDelta max_age,
     std::unique_ptr<PrinterConfigCache> config_cache) {
-  return std::make_unique<PpdMetadataManagerImpl>(channel, clock,
+  return std::make_unique<PpdMetadataManagerImpl>(channel, clock, max_age,
                                                   std::move(config_cache));
 }
 

@@ -24,6 +24,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_message_loop.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chromeos/printing/fake_printer_config_cache.h"
 #include "chromeos/printing/ppd_cache.h"
@@ -141,8 +142,9 @@ class PpdProviderTest : public ::testing::Test {
     auto manager_config_cache = std::make_unique<FakePrinterConfigCache>();
     provider_backdoor_.manager_config_cache = manager_config_cache.get();
 
-    auto manager = PpdMetadataManager::Create(
-        PpdIndexChannel::kProduction, &clock_, std::move(manager_config_cache));
+    auto manager = PpdMetadataManager::Create(PpdIndexChannel::kProduction,
+                                              &clock_, base::Minutes(30),
+                                              std::move(manager_config_cache));
     provider_backdoor_.metadata_manager = manager.get();
 
     auto config_cache = std::make_unique<FakePrinterConfigCache>();

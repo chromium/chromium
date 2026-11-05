@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_PRINTING_PPD_METADATA_MANAGER_H_
 #define CHROMEOS_PRINTING_PPD_METADATA_MANAGER_H_
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -58,64 +59,62 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdMetadataManager {
   using GetUsbManufacturerNameCallback =
       base::OnceCallback<void(const std::string&)>;
 
-  // Assumes ownership of |config_cache|.
+  // Assumes ownership of |config_cache|. Queries are answered with
+  // metadata no older than `max_age`, and older parsed metadata is
+  // evicted.
   static std::unique_ptr<PpdMetadataManager> Create(
       PpdIndexChannel channel,
-      base::Clock* clock,
+      const base::Clock* clock,
+      base::TimeDelta max_age,
       std::unique_ptr<PrinterConfigCache> config_cache);
 
   virtual ~PpdMetadataManager() = default;
 
   // Calls |cb| with a list of manufacturers.
   // *  On success, the list is created from metadata no older than
-  //    |age|.
+  //    `max_age`.
   // *  On failure, the first argument to |cb| is set accordingly.
   virtual void GetManufacturers(
-      base::TimeDelta age,
       PpdProvider::ResolveManufacturersCallback cb) = 0;
 
   // Calls |cb| with a map of printers made by |manufacturer|.
   // *  Caller must have previously successfully called
   //    GetManufacturers().
   // *  On success, the map is created from metadata no older than
-  //    |age|.
+  //    `max_age`.
   // *  On failure, the first argument to |cb| is set accordingly.
   virtual void GetPrinters(std::string_view manufacturer,
-                           base::TimeDelta age,
                            GetPrintersCallback cb) = 0;
 
   // Calls |cb| with the subset of strings from |emms| that are
   // available in forward index metadata mapped to the corresponding
   // values read from forward index metadata.
-  // *  During operation, operates with metadata no older than |age|.
+  // *  During operation, operates with metadata no older than `max_age`.
   // *  On failure, calls |cb| with an empty map.
   virtual void FindAllEmmsAvailableInIndex(
       const std::vector<std::string>& emms,
-      base::TimeDelta age,
       FindAllEmmsAvailableInIndexCallback cb) = 0;
 
   // Searches USB index metadata for a printer with the given
   // |vendor_id| and |product_id|, calling |cb| with the appropriate
   // effective-make-and-model string if one is found.
-  // *  During operation, operates with metadata no older than |age|.
+  // *  During operation, operates with metadata no older than `max_age`.
   // *  On failure, calls |cb| with an empty string.
   virtual void FindDeviceInUsbIndex(int vendor_id,
                                     int product_id,
-                                    base::TimeDelta age,
                                     FindDeviceInUsbIndexCallback cb) = 0;
 
   // Searches the USB vendor ID map for a manufacturer with the given
   // |vendor_id|, calling |cb| with the name found (if any).
-  // *  During operation, operates with metadata no older than |age|.
+  // *  During operation, operates with metadata no older than `max_age`.
   // *  On failure, calls |cb| with an empty string.
   virtual void GetUsbManufacturerName(int vendor_id,
-                                      base::TimeDelta age,
                                       GetUsbManufacturerNameCallback cb) = 0;
 
   // Calls |cb| with the make and model of
   // |effective_make_and_model|.
   // *  On success, the split is performed against metadata no older than
-  //    |age|.
+  //    `max_age`.
   // *  On failure, the first argument to |cb| is set accordingly.
   //
   // The split is defined by the reverse index metadata that this method
@@ -123,7 +122,6 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdMetadataManager {
   // Googlers: you may consult
   // go/cros-printing:ppd-metadata#reverse-index
   virtual void SplitMakeAndModel(std::string_view effective_make_and_model,
-                                 base::TimeDelta age,
                                  PpdProvider::ReverseLookupCallback cb) = 0;
 
   // Returns a borrowed pointer to the PrinterConfigCache passed to
@@ -140,6 +138,8 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdMetadataManager {
   virtual bool SetManufacturersForTesting(
       std::string_view manufacturers_json) = 0;
 
+  // Returns total number of cached non-manufacturer metadata entries.
+  virtual size_t GetCachedMetadataCountForTesting() const = 0;
 };
 
 }  // namespace chromeos

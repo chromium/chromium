@@ -4,6 +4,7 @@
 
 #include "chromeos/printing/printer_config_cache.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -22,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -88,29 +91,31 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
  public:
   PrinterConfigCacheImpl(
       const base::Clock* clock,
+      base::TimeDelta max_age,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool use_localhost_as_root)
       : clock_(clock),
+        max_age_(max_age),
         url_loader_factory_(std::move(url_loader_factory)),
         use_localhost_as_root_(use_localhost_as_root),
         weak_factory_(this) {
     CHECK(url_loader_factory_);
+    CHECK(max_age_.is_positive());
+    CHECK(!max_age_.is_max());
   }
 
   ~PrinterConfigCacheImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  void Fetch(const std::string& key,
-             base::TimeDelta expiration,
-             FetchCallback cb) override {
+  void Fetch(const std::string& key, FetchCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Try to answer this fetch request locally.
     const auto& finding = cache_.find(key);
     if (finding != cache_.end()) {
       const Entry& entry = finding->second;
-      if (entry.time_of_fetch + expiration > clock_->Now()) {
+      if (entry.time_of_fetch + max_age_ > clock_->Now()) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(cb), FetchResult::Success(
                                                          key, entry.contents,
@@ -129,6 +134,14 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
   void Drop(const std::string& key) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     cache_.erase(key);
+    if (cache_.empty()) {
+      cleanup_timer_.Stop();
+    }
+  }
+
+  size_t SizeForTesting() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return cache_.size();
   }
 
  private:
@@ -244,6 +257,7 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
       const Entry newly_inserted =
           Entry(std::move(contents).value(), clock_->Now());
       cache_.insert_or_assign(context->key, newly_inserted);
+      StartCleanupTimerIfNeeded();
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(context->cb),
                                     FetchResult::Success(
@@ -259,14 +273,55 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
     TryToStartNetworkedFetch();
   }
 
+  void PurgeExpiredEntries() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    const base::Time expiration = clock_->Now() - max_age_;
+    base::EraseIf(cache_, [expiration](const auto& kv) {
+      return kv.second.time_of_fetch <= expiration;
+    });
+    if (cache_.empty()) {
+      return;
+    }
+
+    // All remaining entries are younger than `max_age_`. Schedules the next
+    // purge for when the oldest of them expires.
+    base::Time oldest_fetch_time = base::Time::Max();
+    for (const auto& [key, entry] : cache_) {
+      oldest_fetch_time = std::min(oldest_fetch_time, entry.time_of_fetch);
+    }
+    cleanup_timer_.Start(FROM_HERE, oldest_fetch_time - expiration, this,
+                         &PrinterConfigCacheImpl::PurgeExpiredEntries);
+  }
+
+  // Called after caching a newly fetched entry. The timer is pending
+  // whenever the cache is not empty, and a pending timer expires no later
+  // than the new entry. Otherwise, the new entry is the only one and
+  // expires in `max_age_`. If the timer fires early (e.g. the oldest entry
+  // was refetched or dropped), the purge reschedules it.
+  void StartCleanupTimerIfNeeded() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (cleanup_timer_.IsRunning()) {
+      return;
+    }
+    DCHECK_EQ(cache_.size(), 1u);
+    cleanup_timer_.Start(FROM_HERE, max_age_, this,
+                         &PrinterConfigCacheImpl::PurgeExpiredEntries);
+  }
+
   // The heart of an PrinterConfigCache: the local cache itself.
   base::flat_map<std::string, Entry> cache_;
+
+  // Evicts expired entries.
+  base::OneShotTimer cleanup_timer_;
 
   // Enqueues networked requests.
   base::queue<std::unique_ptr<FetchContext>> fetch_queue_;
 
   // Dispenses Time objects to mark time of fetch on Entry instances.
   raw_ptr<const base::Clock> clock_;
+
+  // Cached entries older than this are refetched and evicted.
+  const base::TimeDelta max_age_;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -291,10 +346,11 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
 // static
 std::unique_ptr<PrinterConfigCache> PrinterConfigCache::Create(
     const base::Clock* clock,
+    base::TimeDelta max_age,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     bool use_localhost_as_root) {
   return std::make_unique<PrinterConfigCacheImpl>(
-      clock, std::move(url_loader_factory), use_localhost_as_root);
+      clock, max_age, std::move(url_loader_factory), use_localhost_as_root);
 }
 
 }  // namespace chromeos

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_PRINTING_FAKE_PRINTER_CONFIG_CACHE_H_
 #define CHROMEOS_PRINTING_FAKE_PRINTER_CONFIG_CACHE_H_
 
+#include <cstddef>
 #include <string>
 #include <string_view>
 
@@ -30,12 +31,13 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) FakePrinterConfigCache
   // Calls |cb| with a canned response for |key| previously provided by
   // SetFetchResponseForTesting().
   void Fetch(const std::string& key,
-             base::TimeDelta unused_expiration,
              PrinterConfigCache::FetchCallback cb) override;
 
   // Causes subsequent Fetch() calls for |key| to fail (until a future
   // SetFetchResponseForTesting() provides a new canned response).
   void Drop(const std::string& key) override;
+
+  size_t SizeForTesting() const override;
 
   // Sets internal state of |this| s.t. future Fetch() calls for
   // |key| get called back with |value|.

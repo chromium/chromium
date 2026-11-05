@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -27,10 +28,9 @@
 // 1. The use of base::Unretained throughout this suite is appropriate
 //    because the sequences of each test live as long as the test does.
 //    Real consumers probably can't do this.
-// 2. The passage of time is controlled by a mock clock, so most Fetch()
-//    invocations not preceded by clock advancement never hit the
-//    "networked fetch" codepath. In such tests, the values of the
-//    TimeDelta argument are arbitrary and meaningless.
+// 2. The passage of time is controlled by a mock clock, so Fetch()
+//    invocations not preceded by advancing the clock past kMaxAge never
+//    hit the "networked fetch" codepath for already cached resources.
 
 namespace chromeos {
 namespace {
@@ -53,6 +53,9 @@ const char kKnownBadResourceURL[] =
 
 // Defines an arbitrary time increment by which we advance the Clock.
 constexpr base::TimeDelta kTestingIncrement = base::Seconds(1LL);
+
+// Maximum age of cached entries for the class under test.
+constexpr base::TimeDelta kMaxAge = base::Seconds(32LL);
 
 // Defines a time of fetch used to construct FetchResult instances that
 // you'll use with the TimeInsensitiveFetchResultEquals matcher.
@@ -78,6 +81,7 @@ class PrinterConfigCacheTest : public ::testing::Test {
   PrinterConfigCacheTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         cache_(PrinterConfigCache::Create(&clock_,
+                                          kMaxAge,
                                           loader_factory_.GetSafeWeakWrapper(),
                                           /*use_localhost_as_root=*/false)) {}
 
@@ -126,9 +130,9 @@ TEST_F(PrinterConfigCacheTest, SucceedAtSingleFetch) {
 
   // Fetches the "known-good" resource.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&PrinterConfigCache::Fetch,
-                                base::Unretained(cache_.get()), "known-good",
-                                base::Seconds(0LL), test_future.GetCallback()));
+      FROM_HERE,
+      base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
+                     "known-good", test_future.GetCallback()));
 
   EXPECT_THAT(
       test_future.Get(),
@@ -142,17 +146,17 @@ TEST_F(PrinterConfigCacheTest, FailAtSingleFetch) {
 
   // Fetches the "known-bad" resource.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&PrinterConfigCache::Fetch,
-                                base::Unretained(cache_.get()), "known-bad",
-                                base::Seconds(0LL), test_future.GetCallback()));
+      FROM_HERE,
+      base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
+                     "known-bad", test_future.GetCallback()));
 
   EXPECT_THAT(test_future.Get(),
               TimeInsensitiveFetchResultEquals(
                   PrinterConfigCache::FetchResult::Failure("known-bad")));
 }
 
-// Tests that we can force a networked Fetch() by demanding
-// fresh content.
+// Tests that a Fetch() after the cached entry is older than kMaxAge
+// performs a networked fetch.
 TEST_F(PrinterConfigCacheTest, RefreshSubsequentFetch) {
   // Fetches the "known-good" resource with its stock contents.
   base::test::TestFuture<const PrinterConfigCache::FetchResult&>
@@ -160,23 +164,22 @@ TEST_F(PrinterConfigCacheTest, RefreshSubsequentFetch) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(0LL),
-                     first_test_future.GetCallback()));
+                     "known-good", first_test_future.GetCallback()));
   fetched_results_.push_back(first_test_future.Get());
 
   // To detect a networked fetch, we'll change the served content
   // and check that the subsequent Fetch() recovers the new content.
   loader_factory_.AddResponse(kKnownGoodResourceURL, "one Argentinian peso");
 
-  // We've mutated the content; now, this fetches the "known-good"
-  // resource with its new contents.
+  // We've mutated the content and let the cached entry expire; now, this
+  // fetches the "known-good" resource with its new contents.
+  AdvanceClock(kMaxAge);
   base::test::TestFuture<const PrinterConfigCache::FetchResult&>
       second_test_future;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(0LL),
-                     second_test_future.GetCallback()));
+                     "known-good", second_test_future.GetCallback()));
   fetched_results_.push_back(second_test_future.Get());
 
   EXPECT_THAT(
@@ -190,8 +193,8 @@ TEST_F(PrinterConfigCacheTest, RefreshSubsequentFetch) {
                   "known-good", "one Argentinian peso", kUnusedTimeOfFetch))));
 }
 
-// Tests that we can Fetch() locally cached contents by specifying a
-// wide age limit.
+// Tests that we can Fetch() locally cached contents while they are
+// younger than kMaxAge.
 TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
   // Fetches the "known-good" resource with its stock contents.
   base::test::TestFuture<const PrinterConfigCache::FetchResult&>
@@ -199,8 +202,7 @@ TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(0LL),
-                     first_test_future.GetCallback()));
+                     "known-good", first_test_future.GetCallback()));
   fetched_results_.push_back(first_test_future.Get());
 
   // As in the RefreshSubsequentFetch test, we'll change the served
@@ -216,11 +218,8 @@ TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good",
-                     // Avoids hitting the network by using a long
-                     // timeout. Bear in mind that this test controls
-                     // the passage of time, so nonzero timeout is
-                     // "long" here...
-                     base::Seconds(1LL),
+                     // Avoids hitting the network because the clock has
+                     // not advanced since the first Fetch().
                      base::BindOnce(&PrinterConfigCacheTest::CaptureFetchResult,
                                     base::Unretained(this))));
 
@@ -228,23 +227,27 @@ TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(3600LL),
+                     "known-good",
                      base::BindOnce(&PrinterConfigCacheTest::CaptureFetchResult,
                                     base::Unretained(this))));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(86400LL),
+                     "known-good",
                      base::BindOnce(&PrinterConfigCacheTest::CaptureFetchResult,
                                     base::Unretained(this))));
+
+  // Waits for the three local Fetch()es above to complete, then lets the
+  // cached entry expire so the next Fetch() is networked.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return fetched_results_.size() == 4; }));
+  AdvanceClock(kMaxAge);
 
   // Performs a live Fetch(), returning the live (mutated) contents.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good",
-                     // Forces the networked fetch.
-                     base::Seconds(0LL), second_test_future.GetCallback()));
+                     "known-good", second_test_future.GetCallback()));
   fetched_results_.push_back(second_test_future.Get());
 
   ASSERT_EQ(fetched_results_.size(), 5ULL);
@@ -268,36 +271,32 @@ TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
                   "known-good", "apologize darn you", kUnusedTimeOfFetch))));
 }
 
-// Tests that Fetch() respects its |expiration| argument. This is a
+// Tests that Fetch() respects the max age passed to Create(). This is a
 // purely time-bound variation on the LocallyPerformSubsequentFetch
 // test; the served content doesn't change between RunLoops.
 TEST_F(PrinterConfigCacheTest, FetchExpirationIsRespected) {
-  // This Fetch() is given a useful |expiration|, but it won't matter
-  // here since there are no locally resident cache entries at this
-  // time; it'll have to be a networked fetch.
+  // There are no locally resident cache entries at this time; this
+  // Fetch() has to be networked.
   base::test::TestFuture<const PrinterConfigCache::FetchResult&>
       first_test_future;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(32LL),
-                     first_test_future.GetCallback()));
+                     "known-good", first_test_future.GetCallback()));
   fetched_results_.push_back(first_test_future.Get());
   const base::Time time_zero = clock_.Now();
 
   // Advance clock to T+31.
   AdvanceClock(base::Seconds(31LL));
 
-  // This Fetch() is given the same useful |expiration|; it only matters
-  // in that the clock does not yet indicate that the locally resident
-  // cache entry has expired.
+  // The clock does not yet indicate that the locally resident cache
+  // entry has expired.
   base::test::TestFuture<const PrinterConfigCache::FetchResult&>
       second_test_future;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(32LL),
-                     second_test_future.GetCallback()));
+                     "known-good", second_test_future.GetCallback()));
   fetched_results_.push_back(second_test_future.Get());
   // We don't capture the time right Now() because the above Fetch()
   // should have replied with local contents, fetched at time_zero.
@@ -305,18 +304,15 @@ TEST_F(PrinterConfigCacheTest, FetchExpirationIsRespected) {
   // Advance clock to T+32.
   AdvanceClock(base::Seconds(1));
 
-  // This third Fetch() will be given the same |expiration| as ever.
   // The two previous calls to AdvanceClock() will have moved the time
-  // beyond the staleness threshold, though, so this Fetch() will be
-  // networked.
+  // beyond kMaxAge, so this Fetch() will be networked.
   base::test::TestFuture<const PrinterConfigCache::FetchResult&>
       third_test_future;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good",
-                     // Entry fetched at T+0 is now stale at T+32.
-                     base::Seconds(32LL), third_test_future.GetCallback()));
+      FROM_HERE, base::BindOnce(&PrinterConfigCache::Fetch,
+                                base::Unretained(cache_.get()), "known-good",
+                                // Entry fetched at T+0 is now stale at T+32.
+                                third_test_future.GetCallback()));
   fetched_results_.push_back(third_test_future.Get());
   const base::Time time_of_third_fetch = clock_.Now();
 
@@ -339,8 +335,7 @@ TEST_F(PrinterConfigCacheTest, DropLocalContents) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(604800LL),
-                     first_test_future.GetCallback()));
+                     "known-good", first_test_future.GetCallback()));
   fetched_results_.push_back(first_test_future.Get());
 
   // Drops that which we just fetched. This isn't immediately externally
@@ -352,17 +347,16 @@ TEST_F(PrinterConfigCacheTest, DropLocalContents) {
   // Mutates the contents served for the "known-good" resource.
   loader_factory_.AddResponse(kKnownGoodResourceURL, "ultimate dogeza");
 
-  // Fetches the "known-good" resource anew with a wide timeout.
+  // Fetches the "known-good" resource anew without advancing the clock.
   // This is where the side effect of the prior Drop() call manifests:
-  // the "known-good" resource is no longer cached, so not even a wide
-  // timeout will spare us a networked fetch.
+  // the "known-good" resource is no longer cached, so even a fresh
+  // entry will not spare us a networked fetch.
   base::test::TestFuture<const PrinterConfigCache::FetchResult&>
       second_test_future;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
-                     "known-good", base::Seconds(18748800LL),
-                     second_test_future.GetCallback()));
+                     "known-good", second_test_future.GetCallback()));
   fetched_results_.push_back(second_test_future.Get());
 
   // We detect the networked fetch to by observing mutated
@@ -377,6 +371,96 @@ TEST_F(PrinterConfigCacheTest, DropLocalContents) {
           TimeInsensitiveFetchResultEquals(
               PrinterConfigCache::FetchResult::Success(
                   "known-good", "ultimate dogeza", kUnusedTimeOfFetch))));
+}
+
+TEST(PrinterConfigCacheIdleEvictionTest, EvictsExpiredEntriesWhenIdle) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  network::TestURLLoaderFactory loader_factory;
+  loader_factory.AddResponse(kKnownGoodResourceURL, kKnownGoodResourceContent);
+  loader_factory.AddResponse(
+      "https://printerconfigurations.googleusercontent.com/chromeos_printing/"
+      "second-good",
+      "takoyaki");
+
+  auto cache = PrinterConfigCache::Create(task_environment.GetMockClock(),
+                                          base::Minutes(30),
+                                          loader_factory.GetSafeWeakWrapper(),
+                                          /*use_localhost_as_root=*/false);
+
+  base::test::TestFuture<const PrinterConfigCache::FetchResult&> first_future;
+  cache->Fetch("known-good", first_future.GetCallback());
+  ASSERT_TRUE(first_future.Get().succeeded);
+  EXPECT_EQ(cache->SizeForTesting(), 1u);
+
+  // Fetch a second resource 10 minutes later so expiration times are staggered.
+  task_environment.FastForwardBy(base::Minutes(10));
+  base::test::TestFuture<const PrinterConfigCache::FetchResult&> second_future;
+  cache->Fetch("second-good", second_future.GetCallback());
+  ASSERT_TRUE(second_future.Get().succeeded);
+  EXPECT_EQ(cache->SizeForTesting(), 2u);
+
+  // Both entries remain cached at T+29m.
+  task_environment.FastForwardBy(base::Minutes(19));
+  EXPECT_EQ(cache->SizeForTesting(), 2u);
+
+  // At T+30m, the first entry expires while the second remains cached.
+  task_environment.FastForwardBy(base::Minutes(1));
+  EXPECT_EQ(cache->SizeForTesting(), 1u);
+
+  // At T+40m, the second entry expires as well.
+  task_environment.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(cache->SizeForTesting(), 0u);
+}
+
+TEST(PrinterConfigCacheIdleEvictionTest, ReschedulesAfterEarlyCleanup) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  network::TestURLLoaderFactory loader_factory;
+  loader_factory.AddResponse(kKnownGoodResourceURL, kKnownGoodResourceContent);
+  loader_factory.AddResponse(
+      "https://printerconfigurations.googleusercontent.com/chromeos_printing/"
+      "second-good",
+      "takoyaki");
+
+  auto cache = PrinterConfigCache::Create(task_environment.GetMockClock(),
+                                          base::Minutes(30),
+                                          loader_factory.GetSafeWeakWrapper(),
+                                          /*use_localhost_as_root=*/false);
+
+  // Fetches "known-good" at T+0, which schedules cleanup for T+30m.
+  base::test::TestFuture<const PrinterConfigCache::FetchResult&> first_future;
+  cache->Fetch("known-good", first_future.GetCallback());
+  ASSERT_TRUE(first_future.Get().succeeded);
+
+  // Fetches "second-good" at T+5m.
+  task_environment.FastForwardBy(base::Minutes(5));
+  base::test::TestFuture<const PrinterConfigCache::FetchResult&> second_future;
+  cache->Fetch("second-good", second_future.GetCallback());
+  ASSERT_TRUE(second_future.Get().succeeded);
+
+  // Drops and refetches "known-good" at T+10m, so the oldest entry is now
+  // "second-good" (expiring at T+35m) while the timer is still set for
+  // T+30m.
+  task_environment.FastForwardBy(base::Minutes(5));
+  cache->Drop("known-good");
+  base::test::TestFuture<const PrinterConfigCache::FetchResult&> third_future;
+  cache->Fetch("known-good", third_future.GetCallback());
+  ASSERT_TRUE(third_future.Get().succeeded);
+  EXPECT_EQ(cache->SizeForTesting(), 2u);
+
+  // The timer fires early at T+30m without evicting anything.
+  task_environment.FastForwardBy(base::Minutes(20));
+  EXPECT_EQ(cache->SizeForTesting(), 2u);
+
+  // The rescheduled timer evicts "second-good" at T+35m and "known-good"
+  // at T+40m.
+  task_environment.FastForwardBy(base::Minutes(5));
+  EXPECT_EQ(cache->SizeForTesting(), 1u);
+  task_environment.FastForwardBy(base::Minutes(5));
+  EXPECT_EQ(cache->SizeForTesting(), 0u);
 }
 
 }  // namespace

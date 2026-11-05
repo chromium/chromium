@@ -10,6 +10,7 @@
 #ifndef CHROMEOS_PRINTING_PRINTER_CONFIG_CACHE_H_
 #define CHROMEOS_PRINTING_PRINTER_CONFIG_CACHE_H_
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -38,11 +39,15 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterConfigCache {
   // `url_loader_factory` must be non-null. It is held for the lifetime of
   // `this` and transparently survives network service restarts.
   //
+  // Cached entries are served for up to `max_age` after they were fetched,
+  // and are evicted once they are older than that.
+  //
   // Setting `use_localhost_as_root` to true sets the Chrome OS Printing
   // serving root to localhost. It allows to run integration tests without
   // connecting to actual Chrome OS Printing serving root.
   static std::unique_ptr<PrinterConfigCache> Create(
       const base::Clock* clock,
+      base::TimeDelta max_age,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool use_localhost_as_root);
   virtual ~PrinterConfigCache() = default;
@@ -65,25 +70,16 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterConfigCache {
   using FetchCallback = base::OnceCallback<void(const FetchResult&)>;
 
   // Queries the Chrome OS Printing serving root for |key|. Calls |cb|
-  // with the contents. If an entry newer than |expiration| is resident,
-  // calls |cb| immediately with those contents. Caller should not pass
-  // keys with leading slashes.
-  //
-  // Using TimeDelta implies the caller is asking for "some entry not
-  // older than |expiration|," e.g. "metadata_v3/index-00.json that
-  // was fetched within the last 30 minutes."
-  //
-  // Naturally,
-  // *  passing the Max() TimeDelta means "perform this Fetch() with no
-  //    limit on staleness" and
-  // *  passing a zero TimeDelta should practically force a networked
-  //    fetch (less esoteric timing quirks etc.).
-  virtual void Fetch(const std::string& key,
-                     base::TimeDelta expiration,
-                     FetchCallback cb) = 0;
+  // with the contents. If an entry fetched within the `max_age` passed to
+  // Create() is resident, calls |cb| immediately with those contents.
+  // Caller should not pass keys with leading slashes.
+  virtual void Fetch(const std::string& key, FetchCallback cb) = 0;
 
   // Drops Entry corresponding to |key|.
   virtual void Drop(const std::string& key) = 0;
+
+  // Returns the number of cached entries for testing.
+  virtual size_t SizeForTesting() const = 0;
 };
 
 }  // namespace chromeos

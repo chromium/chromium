@@ -35,7 +35,6 @@ void FakePrinterConfigCache::DiscardFetchRequestFor(std::string_view key) {
 }
 
 void FakePrinterConfigCache::Fetch(const std::string& key,
-                                   base::TimeDelta unused_expiration,
                                    PrinterConfigCache::FetchCallback cb) {
   if (contents_.contains(key)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -59,6 +58,10 @@ void FakePrinterConfigCache::Drop(const std::string& key) {
   // If Fetch(|key|) was previously being consumed by prior call to
   // DiscardFetchRequestFor(), we unblock it now.
   fetch_requests_to_ignore_.erase(key);
+}
+
+size_t FakePrinterConfigCache::SizeForTesting() const {
+  return contents_.size();
 }
 
 }  // namespace chromeos
