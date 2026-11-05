@@ -1100,6 +1100,7 @@ void BrowserAutofillManager::LogSubmissionMetrics(
   if (client().IsAutofillEnabled()) {
     metrics_->loyalty_card_form_event_logger.OnWillSubmitForm(*submitted_form);
   }
+  metrics_->otp_form_event_logger.OnWillSubmitForm(*submitted_form);
 
   if (client().IsAutofillProfileEnabled()) {
     metrics_->address_form_event_logger.OnFormSubmitted(*submitted_form);
@@ -1118,8 +1119,7 @@ void BrowserAutofillManager::LogSubmissionMetrics(
   if (client().IsAutofillEnabled()) {
     metrics_->loyalty_card_form_event_logger.OnFormSubmitted(*submitted_form);
   }
-
-  metrics_->otp_form_event_logger.OnWillSubmitForm(*submitted_form);
+  metrics_->otp_form_event_logger.OnFormSubmitted(*submitted_form);
 }
 
 void BrowserAutofillManager::OnTextFieldValueChangedImpl(
