@@ -103,6 +103,7 @@ if (!is_android) {
         "//services/webnn/public/mojom:mojom_fuzzilli",
         "//third_party/blink/public/mojom:authenticator_mojo_bindings_fuzzilli",
         "//third_party/blink/public/mojom:credentialmanagement_mojo_bindings_fuzzilli",
+        "//third_party/blink/public/mojom:mojom_modules_fuzzilli",
         "//third_party/blink/public/mojom:mojom_platform_fuzzilli",
       ]
     }

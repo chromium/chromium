@@ -871,29 +871,108 @@ private func isTargetObject(type: ILType) -> Bool {
     return mojoTargetGroups.contains(group)
 }
 
+/// Whether `type` is an interface endpoint: a remote or a pending endpoint.
+private func isEndpoint(type: ILType) -> Bool {
+    guard let group = type.group else { return false }
+    return group.hasSuffix("Remote") || group.hasSuffix("PendingReceiver")
+        || group.hasSuffix("PendingAssociatedReceiver")
+}
+
+/// Sending an endpoint moves its pipe to the other side. Hides the endpoints
+/// among the `arguments` of a call, so that Fuzzilli does not send or call
+/// them again.
+private func hideEndpoints(_ b: ProgramBuilder, in arguments: [Variable]) {
+    for argument in Set(arguments) where isEndpoint(type: b.type(of: argument)) {
+        b.hide(argument)
+    }
+}
+
+/// Maps every interface that JS both calls and implements to the methods that
+/// take a receiver for it. Each method is given as `(group of the object to
+/// call, method, receiver index)`. Calling one of them binds a new remote,
+/// which JS can then send.
+private let mojoRemoteBinders: [String: [(owner: String, method: String, index: Int)]] = [:
+]
+
+/// Binds a new remote for each parameter of `signature` that is a remote JS
+/// sends. Parameters for which no such object is in scope are left out.
+private func bindRemoteArguments(
+    _ b: ProgramBuilder, for signature: Signature
+) -> [Int: Variable] {
+    var remotes = [Int: Variable]()
+    for (i, parameter) in signature.parameters.enumerated() {
+        // Extract the underlying type from the `Parameter` enum.
+        let type: ILType
+        switch parameter {
+        case .plain(let t), .opt(let t), .rest(let t), .either(let t, _):
+            type = t
+        }
+
+        guard let group = type.group, let binders = mojoRemoteBinders[group] else { continue }
+        // Find all variables that provide binders for this type
+        let available = binders.compactMap { binder in
+            b.findVariable { b.type(of: $0).group == binder.owner }.map { ($0, binder) }
+        }
+        guard let (owner, binder) = available.randomElement() else { continue }
+
+        let remote = b.construct(b.createNamedVariable(forBuiltin: group), withArgs: [])
+        let receiver = b.callMethod(
+            "bindNewPipeAndPassReceiver", on: b.getProperty("$", of: remote), withArgs: [])
+        let bindSignature = b.methodSignatures(of: binder.method, on: owner)[0]
+        var bindArguments = b.findOrGenerateArguments(
+            forSignature: bindSignature, maxNumberOfVariablesToGenerate: 1000)
+        bindArguments[binder.index] = receiver
+        hideEndpoints(b, in: bindArguments)
+        b.callMethod(binder.method, on: owner, withArgs: bindArguments, guard: false)
+        remotes[i] = remote
+    }
+    return remotes
+}
+
+/// Finds or generates arguments for a call with `signature`, binding the remotes
+/// JS sends (see `bindRemoteArguments`).
+private func findOrGenerateMojoArguments(
+    _ b: ProgramBuilder, forSignature signature: Signature
+) -> [Variable] {
+    let remotes = bindRemoteArguments(b, for: signature)
+    var arguments = b.findOrGenerateArguments(
+        forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
+    for (i, remote) in remotes {
+        arguments[i] = remote
+    }
+    return arguments
+}
+
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
 /// "Mojo" objects instead of all the objects in the JavaScript environment,
 /// most of which are unrelated to the interface. This generator emits random
 /// method calls, generating any arguments that are not available.
 private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     b in
-    // Pick a variable among all Mojo variables with methods
-    var targetVar = b.findVariable {
-        let type = b.type(of: $0)
-        return isTargetObject(type: type) && !type.methods.isEmpty
-    }
+    // Pick an object group among all Mojo variables with methods, and then a
+    // variable of that group. This gives each interface in scope the same
+    // share of calls, however many variables hold it (e.g. one per
+    // `getOrCreatePrimaryRemote()` call). `addListener` calls are left to the
+    // router listener generators, which build proper listeners.
+    let groups = Set(b.visibleVariables.compactMap { v -> String? in
+        let type = b.type(of: v)
+        let methods = type.methods.subtracting(["addListener"])
+        return isTargetObject(type: type) && !methods.isEmpty ? type.group : nil
+    })
 
     // If we can't find a Mojo object in scope, create the PictureInPictureService remote
-    guard let obj = targetVar else {
+    guard let group = groups.randomElement() else {
         let getRemoteFunc = b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote")
         b.callFunction(getRemoteFunc, withArgs: [])
         return
     }
+    let obj = b.findVariable { b.type(of: $0).group == group }!
 
     let methodName = b.type(of: obj).randomMethod()!
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
-    let arguments = b.findOrGenerateArguments(forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
+    let arguments = findOrGenerateMojoArguments(b, forSignature: signature)
+    hideEndpoints(b, in: arguments)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
@@ -916,6 +995,7 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
 ///
 /// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
 /// then tells Fuzzilli to populate the callback body with five random expressions.
+/// For methods with a response, the callback returns the response parameters.
 private let MojoMediaMojomMediaPlayerRouterListenerGenerator = CodeGenerator(
     "MojoMediaMojomMediaPlayerRouterListenerGenerator",
     inputs: .required(.jsMediaMojomMediaPlayerCallbackRouter)
@@ -937,6 +1017,14 @@ private let MojoMediaMojomMediaPlayerRouterListenerGenerator = CodeGenerator(
             }
         }
         b.build(n: 5)
+        switch eventName {
+        case "requestVisibility":
+            b.doReturn(b.createObject(with: [
+                "hasSufficientlyVisibleVideo": b.findOrGenerateType(.boolean),
+            ]))
+        default:
+            break
+        }
     }
     b.callMethod("addListener", on: listenerHost, withArgs: [callback])
 }
@@ -945,6 +1033,7 @@ private let MojoMediaMojomMediaPlayerRouterListenerGenerator = CodeGenerator(
 ///
 /// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
 /// then tells Fuzzilli to populate the callback body with five random expressions.
+/// For methods with a response, the callback returns the response parameters.
 private let MojoBlinkMojomPictureInPictureSessionObserverRouterListenerGenerator = CodeGenerator(
     "MojoBlinkMojomPictureInPictureSessionObserverRouterListenerGenerator",
     inputs: .required(.jsBlinkMojomPictureInPictureSessionObserverCallbackRouter)
@@ -968,6 +1057,53 @@ private let MojoBlinkMojomPictureInPictureSessionObserverRouterListenerGenerator
         b.build(n: 5)
     }
     b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+}
+
+/// Awaits a call to `method` on `remote` and returns the remote at `path` in
+/// the reply.
+private func awaitRemoteChain(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String]
+) -> Variable {
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    let arguments = findOrGenerateMojoArguments(b, forSignature: signature)
+    hideEndpoints(b, in: arguments)
+    var value = b.await(b.callMethod(method, on: remote, withArgs: arguments, guard: false))
+    for property in path {
+        value = b.getProperty(property, of: value)
+    }
+    return value
+}
+
+/// Calls `method` on `remote`, passing at `index` a receiver for a new remote
+/// built with `constructor`, and returns the new remote. The other arguments
+/// are found or generated before the new remote exists, so that they cannot be
+/// built from it.
+private func passReceiver(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
+    constructor: String, bind: String
+) -> Variable {
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    var arguments = findOrGenerateMojoArguments(b, forSignature: signature)
+    let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
+    arguments[index] = receiver
+    hideEndpoints(b, in: arguments)
+    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    return newRemote
+}
+/// Follows a chain of calls from a remote that culminates in a remote. Each call
+/// either returns a remote in its reply, or takes a receiver for a new remote.
+/// There may also be remotes retrieved along the chain, which Fuzzilli can
+/// interact with as well.
+///
+/// Chain1:
+///   PictureInPictureService.startSession().session
+private let MojoReplyChain1Generator = CodeGenerator(
+    "MojoReplyChain1Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "startSession", on: remote, at: ["session"])
 }
 
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
@@ -1086,9 +1222,20 @@ let mojoPictureInPictureServiceProfile = Profile(
         // async functions run to completion (including code after `await`)
         // before the primary remote is closed. The leading `;` stops this from
         // being parsed as a call on the program's last line.
+        //
+        // Errors thrown in async functions do not fail the program on their
+        // own. Without rethrowing them here, Fuzzilli would keep programs,
+        // accepting mutations and minimizations on them.
         ;(async () => {
-            await Promise.allSettled(mojoAsyncFunctionPromises);
+            const results = await Promise.allSettled(mojoAsyncFunctionPromises);
             if (globalRemote) {globalRemote.$.close()}
+            for (const result of results) {
+                const error = result.reason
+                if (result.status === 'rejected' &&
+                    (error instanceof TypeError || error instanceof ReferenceError)) {
+                    throw result.reason;
+                }
+            }
         })();
         // --- End program suffix ---
         """,
@@ -1107,8 +1254,9 @@ let mojoPictureInPictureServiceProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-        (MojoMediaMojomMediaPlayerRouterListenerGenerator, 5000),
-        (MojoBlinkMojomPictureInPictureSessionObserverRouterListenerGenerator, 5000),
+        (MojoMediaMojomMediaPlayerRouterListenerGenerator, 2500),
+        (MojoBlinkMojomPictureInPictureSessionObserverRouterListenerGenerator, 2500),
+        (MojoReplyChain1Generator, 5000),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

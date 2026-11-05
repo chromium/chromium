@@ -42,6 +42,7 @@ public let commonMojoBuiltins: [String: ILType] = [:]
     .merging(mojoBaseMojomBuiltins) { (existing, _) in existing }
     .merging(skiaMojomBuiltins) { (existing, _) in existing }
     .merging(urlMojomBuiltins) { (existing, _) in existing }
+    .merging(webnnMojomBuiltins) { (existing, _) in existing }
 
 public let commonMojoCodeGenerators: [(CodeGenerator, Int)] = [
     (MojoAsyncFunctionGenerator, 5000),
@@ -52,16 +53,19 @@ public let commonMojoCodeGenerators: [(CodeGenerator, Int)] = [
     + mojoBaseMojomCodeGenerators
     + skiaMojomCodeGenerators
     + urlMojomCodeGenerators
+    + webnnMojomCodeGenerators
 
 public let commonMojoObjectGroups: [ObjectGroup] = []
     + mojoCoreObjectGroups
     + mojoBaseMojomObjectGroups
     + skiaMojomObjectGroups
     + urlMojomObjectGroups
+    + webnnMojomObjectGroups
 
 public let commonMojoEnumerations: [ILType] = []
     + networkMojomEnumerations
     + skiaMojomEnumerations
+    + webnnMojomEnumerations
 
 public let commonMojoOptionsBags: [OptionsBag] = []
     + mojoCoreOptionsBags
