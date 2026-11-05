@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/account_preview_data_service_android.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/to_vector.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -50,5 +52,15 @@ inline ScopedJavaLocalRef<jobject> ToJniType(
 }
 
 }  // namespace jni_zero
+
+namespace signin {
+
+static int64_t
+JNI_AccountPreviewDataService_GetPreferredAccountFREFetchTimeoutMs() {
+  return switches::kAccountPreviewPreferredAccountFREFetchTimeout.Get()
+      .InMilliseconds();
+}
+
+}  // namespace signin
 
 DEFINE_JNI(AccountPreviewDataService)

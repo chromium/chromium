@@ -43,6 +43,16 @@ public class AccountPreviewDataService {
                 .getPreferredAccountForSignin(mNativeAccountPreviewDataService);
     }
 
+    /**
+     * Returns the maximum duration in milliseconds the FRE waits for an ongoing preferred account
+     * computation to update the selected account.
+     */
+    @MainThread
+    public long getPreferredAccountFREFetchTimeoutMs() {
+        ThreadUtils.assertOnUiThread();
+        return AccountPreviewDataServiceJni.get().getPreferredAccountFREFetchTimeoutMs();
+    }
+
     /** Updates the account currently used by the external app. */
     @MainThread
     public void updateExternalAppAccount(@Nullable String email) {
@@ -56,6 +66,8 @@ public class AccountPreviewDataService {
         @JniType("std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>")
         @Nullable AccountPreviewPreference getPreferredAccountForSignin(
                 @JniType("AccountPreviewDataService*") long nativeAccountPreviewDataService);
+
+        long getPreferredAccountFREFetchTimeoutMs();
 
         void updateExternalAppAccount(
                 @JniType("AccountPreviewDataService*") long nativeAccountPreviewDataService,

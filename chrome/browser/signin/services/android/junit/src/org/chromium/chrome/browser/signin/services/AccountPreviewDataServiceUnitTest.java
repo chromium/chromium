@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -111,5 +113,12 @@ public class AccountPreviewDataServiceUnitTest {
 
         assertFalse(pref.equals(prefDifferentFormFactor));
         assertNotEquals(pref.hashCode(), prefDifferentFormFactor.hashCode());
+    }
+
+    @Test
+    public void testGetPreferredAccountFREFetchTimeoutMs() {
+        when(mNativeMock.getPreferredAccountFREFetchTimeoutMs()).thenReturn(1500L);
+        assertEquals(1500L, mService.getPreferredAccountFREFetchTimeoutMs());
+        verify(mNativeMock).getPreferredAccountFREFetchTimeoutMs();
     }
 }
