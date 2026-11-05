@@ -76,6 +76,7 @@
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/range/range.h"
@@ -2818,16 +2819,36 @@ gfx::Size TabDragController::CalculateDraggedWindowSize(
           ->GetDisplayNearestPoint(last_point_in_screen_)
           .work_area()
           .size();
-  if (new_size.width() > work_area.width()) {
+  // Inset both axes when the window covers the full work area (e.g. when
+  // detaching from a window whose restored bounds equal the work area; see
+  // crbug.com/573531784). Otherwise, only inset axes that strictly exceed the
+  // work area (such as when dragging onto a smaller display; see
+  // crbug.com/40861006) so windows spanning just one axis (like half-screen
+  // tiled windows) keep that dimension.
+  const bool covers_work_area = new_size.width() >= work_area.width() &&
+                                new_size.height() >= work_area.height();
+  if (covers_work_area || new_size.width() > work_area.width()) {
     new_size.set_width(
         std::max(0, work_area.width() - 2 * kMaximizedWindowInset));
   }
-  if (new_size.height() > work_area.height()) {
+  if (covers_work_area || new_size.height() > work_area.height()) {
     new_size.set_height(
         std::max(0, work_area.height() - 2 * kMaximizedWindowInset));
   }
 
   if (source->GetWidget()->IsMaximized()) {
+#if BUILDFLAG(IS_LINUX)
+    // On Linux, window managers such as GNOME/Mutter auto-maximize newly mapped
+    // windows whose area exceeds 80% (MAX_UNMAXIMIZED_WINDOW_AREA) of the
+    // display's work area, and X11 may report the maximized work area as the
+    // restored bounds on initial launch. Cap dimensions so the detached window
+    // stays below the auto-maximize threshold and opens visibly restored.
+    constexpr float kMaxRestoredDimensionRatio = 0.8f;
+    if (new_size.Area64() >= (work_area.Area64() / 5) * 4) {
+      new_size.SetToMin(
+          gfx::ScaleToFlooredSize(work_area, kMaxRestoredDimensionRatio));
+    }
+#endif
     // If the restore bounds is really small, we don't want to honor it
     // (dragging a really small window looks wrong), instead make sure the new
     // window is at least 50% the size of the old.

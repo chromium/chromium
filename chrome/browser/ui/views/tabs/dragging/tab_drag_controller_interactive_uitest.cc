@@ -3481,6 +3481,67 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(new_browser->GetWindow()->IsMaximized(),
             kMaximizedStateRetainedOnTabDrag);
 }
+
+// Drags from a browser that was launched maximized with work-area bounds
+// (simulating first launch without smaller restored bounds) to a separate
+// window and releases mouse.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DetachToOwnWindowFromInitiallyMaximizedWindow) {
+  const gfx::Rect work_area =
+      display::Screen::Get()
+          ->GetDisplayNearestWindow(browser()->GetWindow()->GetNativeWindow())
+          .work_area();
+
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/false);
+  params.initial_bounds = work_area;
+  params.initial_show_state = ui::mojom::WindowShowState::kMaximized;
+  BrowserWindowInterface* maximized_browser =
+      CreateBrowserWindow(std::move(params));
+  AddBlankTabAndShow(maximized_browser);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return maximized_browser->GetWindow()->GetNativeWindow()->IsVisible();
+  }));
+  ui_test_utils::MaximizeAndWaitUntilUIUpdateDone(*maximized_browser);
+  CloseBrowserSynchronously(browser());
+
+  AddTabsAndResetBrowser(maximized_browser, 1);
+  TabStrip* tab_strip = GetTabStripForBrowser(maximized_browser);
+
+  // Move to the first tab and drag it enough so that it detaches.
+  int tab_0_width = tab_strip->tab_at(0)->width();
+  BrowserWindowInterface* const new_browser = DragTabForDetachAndNotify(
+      maximized_browser, base::BindOnce(&DetachToBrowserTabDragControllerTest::
+                                            ReleaseInputAfterWindowDetached,
+                                        base::Unretained(this), tab_0_width));
+  ASSERT_TRUE(new_browser);
+
+  // Should no longer be dragging.
+  ASSERT_FALSE(IsDragSessionActive(tab_strip));
+  ASSERT_FALSE(TabDragController::IsActive());
+
+  WaitForBrowserActivation(new_browser);
+  TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
+  ASSERT_FALSE(IsDragSessionActive(tab_strip2));
+
+  EXPECT_EQ("0", IDString(new_browser->GetTabStripModel()));
+  EXPECT_EQ("1", IDString(maximized_browser->GetTabStripModel()));
+
+  EXPECT_FALSE(new_browser->GetWindow()->IsFullscreen());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  EXPECT_FALSE(new_browser->GetWindow()->IsMaximized());
+  const gfx::Rect new_bounds = new_browser->GetWindow()->GetBounds();
+  EXPECT_LE(new_bounds.width(), work_area.width() - 20);
+  EXPECT_LE(new_bounds.height(), work_area.height() - 20);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX)
+  if (maximized_browser->GetWindow()->IsMaximized()) {
+    EXPECT_LT(new_bounds.size().Area64(), (work_area.size().Area64() / 5) * 4);
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+}
 #endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
