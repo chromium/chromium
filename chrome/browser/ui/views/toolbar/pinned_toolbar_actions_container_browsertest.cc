@@ -377,6 +377,13 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        QRCodeUpdatesWithPolicyPrefChanges) {
+  // The QR code action is only available on HTTP(S) pages. On the initial
+  // about:blank tab, any refresh of the tab's command state while waiting for
+  // the pin animation would disable the action, so load a real page first.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(), embedded_test_server()->GetURL("/title1.html")));
+
   PinnedActionTestAccessor accessor(browser(), kActionQrCodeGenerator);
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetBoolean(prefs::kQRCodeGeneratorEnabled, true);
