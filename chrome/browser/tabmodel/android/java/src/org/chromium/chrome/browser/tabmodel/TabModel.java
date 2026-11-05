@@ -528,15 +528,6 @@ public interface TabModel extends TabList {
     void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId);
 
     /**
-     * This method merges the source group that contains the {@code sourceTabId} to the destination
-     * group that contains the {@code destinationTabId}. This method only operates if two groups are
-     * in the same {@code TabModel}.
-     *
-     * @param sourceTabId The id of the {@link Tab} to get the source group.
-     * @param destinationTabId The id of a {@link Tab} to get the destination group.
-     */
-    void mergeTabsToGroup(@TabId int sourceTabId, @TabId int destinationTabId);
-
     /**
      * Appends a list of {@link Tab}s to the destination group that contains the {@code
      * destinationTab}. The {@link TabModel} ordering of the tabs in the given list is not

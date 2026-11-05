@@ -1377,26 +1377,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void mergeTabsToGroup(@TabId int sourceTabId, @TabId int destinationTabId) {
-        Tab sourceTab = getTabById(sourceTabId);
-        if (sourceTab == null) return;
-
-        Tab destinationTab = getTabById(destinationTabId);
-        if (destinationTab == null) return;
-
-        List<Tab> tabsToMerge;
-        Token sourceTabGroupId = sourceTab.getTabGroupId();
-        if (sourceTabGroupId == null) {
-            tabsToMerge = Collections.singletonList(sourceTab);
-        } else {
-            tabsToMerge = getTabsInGroup(sourceTabGroupId);
-        }
-        try (ScopedStorageBatch ignored = mBatchFactory.get()) {
-            mergeListOfTabsToGroup(tabsToMerge, destinationTab, NOTIFY_IF_NOT_NEW_GROUP);
-        }
-    }
-
-    @Override
     public void mergeListOfTabsToGroup(
             List<Tab> tabs,
             Tab destinationTab,

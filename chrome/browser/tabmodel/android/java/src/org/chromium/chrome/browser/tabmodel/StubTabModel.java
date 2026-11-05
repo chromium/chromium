@@ -139,11 +139,6 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
-    public void mergeTabsToGroup(int sourceTabId, int destinationTabId) {
-        throw error();
-    }
-
-    @Override
     public void mergeListOfTabsToGroup(
             List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, int notify) {
         throw error();

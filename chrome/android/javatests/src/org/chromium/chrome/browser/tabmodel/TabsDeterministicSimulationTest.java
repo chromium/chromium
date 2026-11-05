@@ -270,9 +270,7 @@ public class TabsDeterministicSimulationTest {
                 () -> {
                     int count = mCollectionModel.getCount();
                     if (count < 2 && mGlobalRandom.nextBoolean()) {
-                        // Not enough tabs to do anything meaningful, so 50% of the time try an
-                        // invalid operation.
-                        mCollectionModel.mergeTabsToGroup(Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID);
+                        // Not enough tabs to do anything meaningful, so 50% of the time skip.
                         return;
                     }
                     if (count < 2) return;
@@ -296,14 +294,25 @@ public class TabsDeterministicSimulationTest {
                         destinationTabId = Tab.INVALID_TAB_ID;
                     }
 
+                    Tab resolvedSourceTab = mCollectionModel.getTabById(sourceTabId);
+                    Tab resolvedDestinationTab = mCollectionModel.getTabById(destinationTabId);
+                    if (resolvedSourceTab == null || resolvedDestinationTab == null) return;
+                    Token sourceTabGroupId = resolvedSourceTab.getTabGroupId();
+                    List<Tab> tabsToMerge =
+                            sourceTabGroupId == null
+                                    ? Collections.singletonList(resolvedSourceTab)
+                                    : mCollectionModel.getTabsInGroup(sourceTabGroupId);
                     Log.i(
                             TAG,
-                            "createOrAddTabToGroup: mergeTabsToGroup("
-                                    + sourceTabId
+                            "createOrAddTabToGroup: mergeListOfTabsToGroup("
+                                    + tabsToMerge
                                     + ", "
                                     + destinationTabId
                                     + ")");
-                    mCollectionModel.mergeTabsToGroup(sourceTabId, destinationTabId);
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            tabsToMerge,
+                            resolvedDestinationTab,
+                            TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
                 });
     }
 

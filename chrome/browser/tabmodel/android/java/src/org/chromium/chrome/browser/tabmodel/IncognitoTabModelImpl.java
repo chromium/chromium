@@ -608,11 +608,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void mergeTabsToGroup(int sourceTabId, int destinationTabId) {
-        mDelegateModel.mergeTabsToGroup(sourceTabId, destinationTabId);
-    }
-
-    @Override
     public void mergeListOfTabsToGroup(
             List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, int notify) {
         mDelegateModel.mergeListOfTabsToGroup(tabs, destinationTab, indexInGroup, notify);
