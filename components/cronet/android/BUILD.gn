@@ -2386,6 +2386,7 @@ GN2BP_SOURCES = [
   "//components/cronet/gn2bp/action_sanitizers.py",
   "//components/cronet/gn2bp/common.py",
   "//components/cronet/gn2bp/context.py",
+  "//components/cronet/gn2bp/copybara_diff3.sh",
   "//components/cronet/gn2bp/gen_android_bp.py",
   "//components/cronet/gn2bp/generate_build_scripts_output.py",
   "//components/cronet/gn2bp/gn_utils.py",
