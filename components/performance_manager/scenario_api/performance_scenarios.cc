@@ -43,9 +43,11 @@ SharedAtomicRef<InputScenario> GetInputScenario(ScenarioScope scope) {
 }
 
 bool CurrentScenariosMatch(ScenarioScope scope, ScenarioPattern pattern) {
-  return ScenariosMatch(
-      GetLoadingScenario(scope)->load(std::memory_order_relaxed),
-      GetInputScenario(scope)->load(std::memory_order_relaxed), pattern);
+  scoped_refptr<RefCountedScenarioMapping> mapping =
+      GetScenarioMappingForScope(scope);
+  const ScenarioState& state = GetScenarioStateFromMapping(mapping.get());
+  return ScenariosMatch(state.loading.load(std::memory_order_relaxed),
+                        state.input.load(std::memory_order_relaxed), pattern);
 }
 
 bool ScenariosMatch(LoadingScenario loading_scenario,

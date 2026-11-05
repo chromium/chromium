@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,6 +21,9 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace performance_scenarios {
+
+COMPONENT_EXPORT(SCENARIO_API)
+BASE_DECLARE_FEATURE(kOptimizePerformanceScenarioObserverNotify);
 
 class MatchingScenarioObserver;
 class PerformanceScenarioObserverList;
@@ -115,7 +119,11 @@ class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
                               ScenarioScope scope);
 
   // Lets ScopedReadOnlyScenarioMemory set the initial scenario state. After
-  // this is called, observers will be notified when the state changes.
+  // this is called, observers will be notified when the state changes. When
+  // `kOptimizePerformanceScenarioObserverNotify` is enabled, `initial_mapping`
+  // is retained until this PerformanceScenarioObserverList is destroyed,
+  // extending the mapping lifetime if ScopedReadOnlyScenarioMemory is
+  // destroyed first.
   void SetInitialScenarioState(
       base::PassKey<ScopedReadOnlyScenarioMemory>,
       scoped_refptr<RefCountedScenarioMapping> initial_mapping);
@@ -131,7 +139,20 @@ class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
   const ScenarioScope scope_;
 
   base::Lock lock_;
+  const bool optimize_notify_;
   bool is_initialized_ GUARDED_BY(lock_) = false;
+  // True when a newly added pattern's `last_matches_pattern` was initialized
+  // from live shared memory that differed from `last_loading_scenario_` /
+  // `last_input_scenario_`, requiring the next `NotifyIfScenarioChanged()` to
+  // check `matching_observers_by_pattern_` even if scenarios revert first.
+  bool has_unsynced_matching_observers_ GUARDED_BY(lock_) = false;
+  // Retained mapping used to query scenario state without acquiring global
+  // locks when `kOptimizePerformanceScenarioObserverNotify` is enabled. Keeps
+  // the underlying shared-memory mapping alive until `this` is destroyed, even
+  // if `ScopedReadOnlyScenarioMemory` is destroyed earlier (during which
+  // `NotifyIfScenarioChanged()` and `AddMatchingObserver()` continue reading
+  // the retained mapping rather than falling back to `kDummyScenarioState`).
+  scoped_refptr<RefCountedScenarioMapping> mapping_ GUARDED_BY(lock_);
 
   // The last scenario values that were notified.
   LoadingScenario last_loading_scenario_ GUARDED_BY(lock_) =

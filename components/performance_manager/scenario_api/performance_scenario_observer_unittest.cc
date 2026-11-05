@@ -8,9 +8,12 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
@@ -54,7 +57,7 @@ class MockMatchingScenarioObserver : public MatchingScenarioObserver {
 using StrictMockMatchingScenarioObserver =
     ::testing::StrictMock<MockMatchingScenarioObserver>;
 
-class PerformanceScenarioObserverTest : public ::testing::Test {
+class PerformanceScenarioObserverTest : public ::testing::TestWithParam<bool> {
  public:
   void SetUp() override {
     test_helper_ = PerformanceScenarioTestHelper::CreateWithoutMapping();
@@ -62,13 +65,23 @@ class PerformanceScenarioObserverTest : public ::testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_{[] {
+    base::test::ScopedFeatureList list;
+    list.InitWithFeatureState(kOptimizePerformanceScenarioObserverNotify,
+                              GetParam());
+    return list;
+  }()};
   std::unique_ptr<PerformanceScenarioTestHelper> test_helper_;
 
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(PerformanceScenarioObserverTest, GetForScope) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PerformanceScenarioObserverTest,
+                         ::testing::Bool());
+
+TEST_P(PerformanceScenarioObserverTest, GetForScope) {
   // Map kCurrentProcess memory before creating the observer list.
   ScopedReadOnlyScenarioMemory scoped_process_memory(
       ScenarioScope::kCurrentProcess,
@@ -106,7 +119,7 @@ TEST_F(PerformanceScenarioObserverTest, GetForScope) {
       PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
 }
 
-TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
+TEST_P(PerformanceScenarioObserverTest, NotifyOnChange) {
   ScopedScenarioObserverList scoped_observer_list;
 
   // Create a PerformanceScenarioObserver and a MatchingScenarioObserver, and
@@ -127,6 +140,9 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
     scoped_observation.AddObservation(observer_list.get());
     idle_observation.AddObservation(observer_list.get());
   }
+
+  // Should be a safe no-op when scenario memory isn't mapped yet.
+  PerformanceScenarioObserverList::NotifyAllScopes();
 
   // Update the process scenario state before mapping in scenario memory, to
   // make sure the state tracking doesn't depend on the state starting at
@@ -173,6 +189,9 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
     idle_observation2.AddObservation(observer_list.get());
     input_only_observation.AddObservation(observer_list.get());
   }
+
+  // Should be a no-op since the scenario state hasn't changed.
+  PerformanceScenarioObserverList::NotifyAllScopes();
 
   // Utility function that waits for all mock expectations to be filled. The
   // test should invoke `task_env_.QuitClosure()` when all expected observer
@@ -233,6 +252,9 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
                                    LoadingScenario::kBackgroundPageLoading);
   test_helper_->SetLoadingScenario(ScenarioScope::kGlobal,
                                    LoadingScenario::kVisiblePageLoading);
+  // Shouldn't send another notification since SetLoadingScenario() already
+  // notified.
+  PerformanceScenarioObserverList::NotifyAllScopes();
   wait_for_expectations();
 
   // Toggle process scenario again without changing global scenario.
@@ -327,6 +349,69 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
   test_helper_->SetInputScenario(ScenarioScope::kGlobal,
                                  InputScenario::kTyping);
   wait_for_expectations();
+}
+
+TEST_P(PerformanceScenarioObserverTest,
+       AddMatchingObserverDuringUnnotifiedChange) {
+  ScopedScenarioObserverList scoped_observer_list;
+  ScopedReadOnlyScenarioMemory scoped_global_memory(
+      ScenarioScope::kGlobal,
+      test_helper_->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
+
+  // Change the scenario in shared memory without notifying observers, so live
+  // shared memory (`kFocusedPageLoading`, non-idle) differs from
+  // `last_loading_scenario_` (`kNoPageLoading`, idle).
+  test_helper_->SetLoadingScenario(ScenarioScope::kGlobal,
+                                   LoadingScenario::kFocusedPageLoading,
+                                   /*notify=*/false);
+  ASSERT_FALSE(
+      CurrentScenariosMatch(ScenarioScope::kGlobal, kDefaultIdleScenarios));
+
+  // Register a matching observer while the unnotified change is in shared
+  // memory. Its initial state is non-idle (`matches_pattern == false`).
+  StrictMockMatchingScenarioObserver mock_idle_observer(kDefaultIdleScenarios);
+  base::ScopedMultiSourceObservation<PerformanceScenarioObserverList,
+                                     MatchingScenarioObserver>
+      idle_observation(&mock_idle_observer);
+  idle_observation.AddObservation(
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal)
+          .get());
+
+  // Revert the scenario in shared memory back to `kNoPageLoading` (idle)
+  // before `NotifyAllScopes()` is called. Even though the net scenario change
+  // since the last notification is empty, `mock_idle_observer` was initialized
+  // while non-idle and must be notified that scenarios now match idle.
+  test_helper_->SetLoadingScenario(ScenarioScope::kGlobal,
+                                   LoadingScenario::kNoPageLoading,
+                                   /*notify=*/false);
+  ASSERT_TRUE(
+      CurrentScenariosMatch(ScenarioScope::kGlobal, kDefaultIdleScenarios));
+
+  EXPECT_CALL(mock_idle_observer,
+              OnScenarioMatchChanged(ScenarioScope::kGlobal, true))
+      .WillOnce(base::test::RunClosure(task_env_.QuitClosure()));
+  PerformanceScenarioObserverList::NotifyAllScopes();
+  task_env_.RunUntilQuit();
+  EXPECT_TRUE(::testing::Mock::VerifyAndClearExpectations(&mock_idle_observer));
+
+  // A subsequent notification with no change should not fire again.
+  PerformanceScenarioObserverList::NotifyAllScopes();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+  EXPECT_TRUE(::testing::Mock::VerifyAndClearExpectations(&mock_idle_observer));
+
+  // A subsequent transition back to non-idle should notify `false`, confirming
+  // `last_matches_pattern` remained synchronized.
+  EXPECT_CALL(mock_idle_observer,
+              OnScenarioMatchChanged(ScenarioScope::kGlobal, false))
+      .WillOnce(base::test::RunClosure(task_env_.QuitClosure()));
+  test_helper_->SetLoadingScenario(ScenarioScope::kGlobal,
+                                   LoadingScenario::kFocusedPageLoading,
+                                   /*notify=*/false);
+  PerformanceScenarioObserverList::NotifyAllScopes();
+  task_env_.RunUntilQuit();
+  EXPECT_TRUE(::testing::Mock::VerifyAndClearExpectations(&mock_idle_observer));
 }
 
 }  // namespace
