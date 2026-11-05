@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -34,6 +37,8 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/hid_chooser.h"
 #include "content/public/browser/render_frame_host.h"
@@ -48,6 +53,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
+#include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/common/extension_features.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
@@ -1109,6 +1115,300 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameMediaPermissionCacheBrowserTest,
   // embedder listener now explicitly denies the request. If the cache was not
   // wiped, this would incorrectly return SUCCESS.
   EXPECT_EQ("FAIL: NotAllowedError", RunGetVideo(controlled_frame));
+}
+
+class ControlledFrameEphemeralMediaPermissionBrowserTest
+    : public ControlledFrameMediaPermissionCacheBrowserTest {
+ protected:
+  web_app::ManifestBuilder GetMediaManifestBuilder() {
+    web_app::ManifestBuilder manifest_builder;
+    manifest_builder.AddPermissionsPolicyWildcard(
+        network::mojom::PermissionsPolicyFeature::kCamera);
+    manifest_builder.AddPermissionsPolicyWildcard(
+        network::mojom::PermissionsPolicyFeature::kMicrophone);
+    return manifest_builder;
+  }
+
+  // Allows the embedder IWA's camera and microphone in content settings and
+  // approves every `permissionrequest` event raised by the Controlled Frame.
+  void AllowEmbedderMedia(content::RenderFrameHost* app_frame) {
+    const GURL embedder_url = app_frame->GetLastCommittedOrigin().GetURL();
+    SetPermission(embedder_url, ContentSettingsType::MEDIASTREAM_CAMERA,
+                  CONTENT_SETTING_ALLOW);
+    SetPermission(embedder_url, ContentSettingsType::MEDIASTREAM_MIC,
+                  CONTENT_SETTING_ALLOW);
+    ASSERT_TRUE(content::ExecJs(app_frame, R"(
+      document.querySelector('controlledframe').addEventListener(
+          'permissionrequest', (e) => e.request.allow());
+    )"));
+  }
+
+  // Drives the browser-side permission request flow used by the <usermedia>
+  // element: the embedder's `permissionrequest` handler and the embedder
+  // frame permission check both run before an ephemeral grant is recorded.
+  bool RequestEphemeralMediaPermission(content::RenderFrameHost* frame,
+                                       ContentSettingsType type) {
+    auto* permission_helper =
+        extensions::WebViewPermissionHelper::FromRenderFrameHost(frame);
+    if (!permission_helper) {
+      return false;
+    }
+    base::test::TestFuture<bool> future;
+    permission_helper->RequestMediaPermission(
+        type, frame->GetLastCommittedOrigin().GetURL(), /*user_gesture=*/true,
+        future.GetCallback());
+    return future.Get();
+  }
+
+  content::RenderFrameHost* AppendIframe(content::RenderFrameHost* parent,
+                                         const GURL& url,
+                                         const std::string& allow) {
+    EXPECT_TRUE(content::ExecJs(parent, content::JsReplace(R"(
+      new Promise((resolve, reject) => {
+        const iframe = document.createElement('iframe');
+        iframe.allow = $1;
+        iframe.src = $2;
+        iframe.onload = () => resolve();
+        iframe.onerror = () => reject();
+        document.body.appendChild(iframe);
+      });
+    )",
+                                                           allow, url)));
+    return content::FrameMatchingPredicate(
+        parent->GetPage(),
+        base::BindRepeating(&content::FrameHasSourceUrl, url));
+  }
+
+  // Starts a video track in `frame` and stores it in `window.videoTrack`.
+  // `window.videoEnded` resolves to 'ENDED' once the track ends.
+  std::string StartVideoTrack(content::RenderFrameHost* frame) {
+    return content::EvalJs(frame, R"(
+      (async () => {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        window.videoTrack = stream.getVideoTracks()[0];
+        window.videoEnded = new Promise((resolve) => {
+          window.videoTrack.addEventListener(
+              'ended', () => resolve('ENDED'), {once: true});
+        });
+        return window.videoTrack.readyState === 'live' ? 'LIVE' : 'NOT_LIVE';
+      })();
+    )")
+        .ExtractString();
+  }
+
+  // Lets any stream stop triggered by a permission change reach `frame`.
+  void FlushPermissionChangeEffects(content::RenderFrameHost* frame) {
+    // Stream stops triggered by permission changes are dispatched on the IO
+    // thread; wait for already-posted IO tasks before checking the renderer.
+    base::RunLoop run_loop;
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+    run_loop.Run();
+    ASSERT_TRUE(content::ExecJs(frame, "new Promise(r => setTimeout(r, 0));"));
+  }
+};
+
+// An ephemeral media grant applies to its origin within the guest, including
+// same-origin subframes, and stays scoped to the granted media type.
+IN_PROC_BROWSER_TEST_F(ControlledFrameEphemeralMediaPermissionBrowserTest,
+                       GrantIsVisibleToSameOriginSubframe) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/"guest.com", "/empty.html",
+          GetMediaManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+  AllowEmbedderMedia(app_frame);
+
+  EXPECT_EQ("prompt", QueryPermission(controlled_frame, "camera"));
+  ASSERT_TRUE(RequestEphemeralMediaPermission(
+      controlled_frame, ContentSettingsType::MEDIASTREAM_CAMERA));
+  EXPECT_EQ("granted", QueryPermission(controlled_frame, "camera"));
+  EXPECT_EQ("prompt", QueryPermission(controlled_frame, "microphone"));
+
+  content::RenderFrameHost* same_origin_subframe = AppendIframe(
+      controlled_frame,
+      embedded_https_test_server().GetURL("guest.com", "/empty.html?subframe"),
+      "camera; microphone");
+  ASSERT_TRUE(same_origin_subframe);
+  EXPECT_EQ("granted", QueryPermission(same_origin_subframe, "camera"));
+  EXPECT_EQ("prompt", QueryPermission(same_origin_subframe, "microphone"));
+}
+
+// Permission changes that do not revoke the embedder's grant for the stream's
+// media type must not stop an active guest stream.
+IN_PROC_BROWSER_TEST_F(ControlledFrameEphemeralMediaPermissionBrowserTest,
+                       UnrelatedPermissionChangesDoNotStopGuestStream) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/"guest.com", "/empty.html",
+          GetMediaManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+  AllowEmbedderMedia(app_frame);
+  ASSERT_EQ("LIVE", StartVideoTrack(controlled_frame));
+
+  const GURL embedder_url = app_frame->GetLastCommittedOrigin().GetURL();
+  // A different media type on the embedder.
+  SetPermission(embedder_url, ContentSettingsType::MEDIASTREAM_MIC,
+                CONTENT_SETTING_BLOCK);
+  // A non-media permission on the embedder.
+  SetPermission(embedder_url, ContentSettingsType::GEOLOCATION,
+                CONTENT_SETTING_BLOCK);
+  // The guest origin in profile-wide settings (Controlled Frame is isolated).
+  SetPermission(embedded_https_test_server().GetURL("guest.com", "/"),
+                ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
+  // An unrelated origin.
+  SetPermission(embedded_https_test_server().GetURL("unrelated.com", "/"),
+                ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
+
+  FlushPermissionChangeEffects(controlled_frame);
+  EXPECT_EQ("live",
+            content::EvalJs(controlled_frame, "window.videoTrack.readyState"));
+}
+
+class ControlledFramePermissionIsolationBrowserTest
+    : public ControlledFrameEphemeralMediaPermissionBrowserTest {
+ protected:
+  struct PermissionCase {
+    const char* name;
+    ContentSettingsType type;
+    // Whether the type is a content setting that can be set to ALLOW for the
+    // guest origins (CLIPBOARD_SANITIZED_WRITE is not; it is allowed by
+    // default).
+    bool has_content_setting;
+    // Expected Permissions API state in every Controlled Frame document when
+    // the profile allows the permission for the guest origins but nothing was
+    // requested through the Controlled Frame.
+    const char* isolated_state;
+  };
+
+  // Permissions whose guest status is decided by, or passes through,
+  // GuestViewBase::OverridePermissionResult(). `notifications` stands in for
+  // permissions without a guest override.
+  static constexpr PermissionCase kPermissionCases[] = {
+      {"camera", ContentSettingsType::MEDIASTREAM_CAMERA, true, "prompt"},
+      {"microphone", ContentSettingsType::MEDIASTREAM_MIC, true, "prompt"},
+      {"geolocation", ContentSettingsType::GEOLOCATION, true, "prompt"},
+      {"clipboard-read", ContentSettingsType::CLIPBOARD_READ_WRITE, true,
+       "prompt"},
+      {"clipboard-write", ContentSettingsType::CLIPBOARD_SANITIZED_WRITE, false,
+       "prompt"},
+      {"notifications", ContentSettingsType::NOTIFICATIONS, true, "denied"},
+  };
+
+  web_app::ManifestBuilder GetIsolationManifestBuilder() {
+    web_app::ManifestBuilder manifest_builder = GetMediaManifestBuilder();
+    manifest_builder.AddPermissionsPolicyWildcard(
+        network::mojom::PermissionsPolicyFeature::kGeolocation);
+    manifest_builder.AddPermissionsPolicyWildcard(
+        network::mojom::PermissionsPolicyFeature::kClipboardRead);
+    manifest_builder.AddPermissionsPolicyWildcard(
+        network::mojom::PermissionsPolicyFeature::kClipboardWrite);
+    return manifest_builder;
+  }
+
+  static constexpr char kAllowAll[] =
+      "camera; microphone; geolocation; clipboard-read; clipboard-write";
+
+  std::map<std::string, std::string> QueryAll(content::RenderFrameHost* frame) {
+    std::map<std::string, std::string> states;
+    for (const PermissionCase& permission : kPermissionCases) {
+      states[permission.name] = QueryPermission(frame, permission.name);
+    }
+    return states;
+  }
+};
+
+// Profile-wide grants for the guest's origins and the embedder's own grants
+// must not leak into any Controlled Frame document, whether it is the guest
+// main frame or a same- or cross-origin subframe.
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionIsolationBrowserTest,
+                       PermissionStatusIsIsolatedInAllFrames) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/"guest.com", "/empty.html",
+          GetIsolationManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  const GURL same_origin_url =
+      embedded_https_test_server().GetURL("guest.com", "/empty.html?subframe");
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("subframe.com", "/empty.html");
+  for (const PermissionCase& permission : kPermissionCases) {
+    if (!permission.has_content_setting) {
+      continue;
+    }
+    SetPermission(same_origin_url, permission.type, CONTENT_SETTING_ALLOW);
+    SetPermission(cross_origin_url, permission.type, CONTENT_SETTING_ALLOW);
+    SetPermission(app_frame->GetLastCommittedOrigin().GetURL(), permission.type,
+                  CONTENT_SETTING_ALLOW);
+  }
+
+  content::RenderFrameHost* same_origin_subframe =
+      AppendIframe(controlled_frame, same_origin_url, kAllowAll);
+  ASSERT_TRUE(same_origin_subframe);
+  content::RenderFrameHost* cross_origin_subframe =
+      AppendIframe(controlled_frame, cross_origin_url, kAllowAll);
+  ASSERT_TRUE(cross_origin_subframe);
+
+  const std::pair<const char*, content::RenderFrameHost*> frames[] = {
+      {"main frame", controlled_frame},
+      {"same-origin subframe", same_origin_subframe},
+      {"cross-origin subframe", cross_origin_subframe},
+  };
+  for (const auto& [frame_name, frame] : frames) {
+    for (const PermissionCase& permission : kPermissionCases) {
+      SCOPED_TRACE(base::StringPrintf("%s: %s", frame_name, permission.name));
+      EXPECT_EQ(permission.isolated_state,
+                QueryPermission(frame, permission.name));
+    }
+  }
+}
+
+// Revoking the embedder's camera permission must leave the guest's other
+// permissions (including a different media type and an ephemeral clipboard
+// grant) unchanged.
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionIsolationBrowserTest,
+                       EmbedderCameraRevocationLeavesOtherPermissions) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/"guest.com", "/empty.html",
+          GetIsolationManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+  AllowEmbedderMedia(app_frame);
+  const GURL embedder_url = app_frame->GetLastCommittedOrigin().GetURL();
+  SetPermission(embedder_url, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                CONTENT_SETTING_ALLOW);
+
+  ASSERT_TRUE(RequestEphemeralMediaPermission(
+      controlled_frame, ContentSettingsType::MEDIASTREAM_MIC));
+  auto* permission_helper =
+      extensions::WebViewPermissionHelper::FromRenderFrameHost(
+          controlled_frame);
+  ASSERT_TRUE(permission_helper);
+  permission_helper->GrantClipboardPermission(
+      WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE,
+      controlled_frame->GetLastCommittedOrigin());
+
+  const url::Origin guest_origin = controlled_frame->GetLastCommittedOrigin();
+  ASSERT_TRUE(permission_helper->HasClipboardPermission(
+      WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE, guest_origin));
+  std::map<std::string, std::string> before = QueryAll(controlled_frame);
+  EXPECT_EQ("granted", before["microphone"]);
+  before.erase("camera");
+
+  SetPermission(embedder_url, ContentSettingsType::MEDIASTREAM_CAMERA,
+                CONTENT_SETTING_BLOCK);
+  FlushPermissionChangeEffects(controlled_frame);
+
+  std::map<std::string, std::string> after = QueryAll(controlled_frame);
+  after.erase("camera");
+  EXPECT_EQ(before, after);
+  EXPECT_TRUE(permission_helper->HasClipboardPermission(
+      WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE, guest_origin));
 }
 
 // TODO(crbug.com/422421852): These tests require document focus,
