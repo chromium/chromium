@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -130,6 +131,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_DEFAULT_BROWSER = "default_browser";
     public static final String PREF_GLIC = "glic";
     public static final String PREF_ON_STARTUP = "on_startup";
+    static final String PREF_ACCESSIBILITY = "accessibility";
+    static final String PREF_CONTENT_SETTINGS = "content_settings";
+    static final String PREF_LANGUAGES = "languages";
+    static final String PREF_ABOUT_CHROME = "about_chrome";
 
     // Tag for Fragment backstack entry loading the search results into the display fragment.
     // Popping the entry means we are transitioning from result -> search state.
@@ -555,6 +560,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)) {
             groupPreferencesBySection();
+            applyRowIcons();
         }
     }
 
@@ -581,6 +587,18 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public @Nullable String getSectionId(Preference preference) {
         return mSectionIdByKey.get(preference.getKey());
+    }
+
+    /**
+     * Gives each top-level row a colored, circular icon. Rows without an icon mapping in {@link
+     * SettingsIconFactory} (e.g. sign in, Google services) keep their own.
+     */
+    private void applyRowIcons() {
+        Context context = getContext();
+        for (Map.Entry<String, Preference> entry : mAllPreferences.entrySet()) {
+            Drawable icon = SettingsIconFactory.createForKey(context, entry.getKey());
+            if (icon != null) entry.getValue().setIcon(icon);
+        }
     }
 
     @Override

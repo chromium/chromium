@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
@@ -41,7 +42,8 @@ public class SettingsIconFactoryTest {
     @Test
     public void testCreate_layersCircleAndCenteredGlyph() {
         Drawable drawable =
-                SettingsIconFactory.create(mContext, R.drawable.ic_info_24dp, IconColor.PURPLE);
+                SettingsIconFactory.create(
+                        mContext, R.drawable.settings_search_24dp, IconColor.PURPLE);
 
         assertTrue(drawable instanceof LayerDrawable);
         LayerDrawable icon = (LayerDrawable) drawable;
@@ -87,14 +89,43 @@ public class SettingsIconFactoryTest {
         LayerDrawable first =
                 (LayerDrawable)
                         SettingsIconFactory.create(
-                                mContext, R.drawable.ic_info_24dp, IconColor.PURPLE);
+                                mContext, R.drawable.settings_search_24dp, IconColor.PURPLE);
         LayerDrawable second =
                 (LayerDrawable)
                         SettingsIconFactory.create(
-                                mContext, R.drawable.ic_info_24dp, IconColor.CYAN);
+                                mContext, R.drawable.settings_search_24dp, IconColor.CYAN);
 
         // Tinting one icon's glyph must not change another icon built from the same resource.
         assertNotSame(first.getDrawable(1), second.getDrawable(1));
+    }
+
+    @Test
+    public void testCreateForKey_mappedRowGetsIcon() {
+        assertTrue(
+                SettingsIconFactory.createForKey(mContext, MainSettings.PREF_PRIVACY)
+                        instanceof LayerDrawable);
+    }
+
+    @Test
+    public void testCreateForKey_unmappedRowsKeepTheirOwnIcon() {
+        assertNull(SettingsIconFactory.createForKey(mContext, MainSettings.PREF_SIGN_IN));
+        assertNull(SettingsIconFactory.createForKey(mContext, MainSettings.PREF_GOOGLE_SERVICES));
+        assertNull(SettingsIconFactory.createForKey(mContext, "unknown_key"));
+    }
+
+    @Test
+    public void testCreateForKey_colorOverride() {
+        LayerDrawable icon =
+                (LayerDrawable)
+                        SettingsIconFactory.createForKey(
+                                mContext, MainSettings.PREF_PRIVACY, IconColor.PINK);
+        GradientDrawable circle = (GradientDrawable) icon.getDrawable(0);
+        assertEquals(
+                harmonized(R.color.settings_icon_pink_container),
+                circle.getColor().getDefaultColor());
+        assertNull(
+                SettingsIconFactory.createForKey(
+                        mContext, MainSettings.PREF_SIGN_IN, IconColor.PINK));
     }
 
     /** The fixed hues are harmonized with the theme's primary color. */
@@ -105,7 +136,8 @@ public class SettingsIconFactoryTest {
     private void assertCircleColor(@IconColor int iconColor, int expected) {
         LayerDrawable icon =
                 (LayerDrawable)
-                        SettingsIconFactory.create(mContext, R.drawable.ic_info_24dp, iconColor);
+                        SettingsIconFactory.create(
+                                mContext, R.drawable.settings_search_24dp, iconColor);
         GradientDrawable circle = (GradientDrawable) icon.getDrawable(0);
         assertEquals(expected, circle.getColor().getDefaultColor());
     }
