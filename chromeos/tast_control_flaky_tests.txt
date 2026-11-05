@@ -11,10 +11,6 @@
 # b/537158036
 tast.flex.HWIS
 
-# b/537159924
-tast.wmp.DesksTemplatesBasic
-tast.wmp.DesksTemplatesLaunch
-
 # b/549299789
 tast.secagentd.AuthenticationEvents
 tast.secagentd.FileEvents.cookies
