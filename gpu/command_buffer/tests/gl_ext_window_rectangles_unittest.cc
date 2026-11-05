@@ -71,8 +71,14 @@ class GLEXTWindowRectanglesTest : public testing::Test {
     EXPECT_NEAR((a), pixel[3], 2);                                  \
   } while (0)
 
-// TODO(crbug.com/40246425): Re-enable this test
-TEST_F(GLEXTWindowRectanglesTest, DISABLED_Defaults) {
+// Verifies default state and limits for the window rectangles extension.
+// TODO(crbug.com/40246425): Flaky on ASan/LSan builds.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_Defaults DISABLED_Defaults
+#else
+#define MAYBE_Defaults Defaults
+#endif
+TEST_F(GLEXTWindowRectanglesTest, MAYBE_Defaults) {
   if (!IsApplicable()) {
     return;
   }
