@@ -1865,7 +1865,7 @@ union AdditionalContextPart {
   AnnotatedPageData annotated_page_data;
   PdfDocumentData pdf_document_data;
   TabContextResult tab_context;
-  // Deprecated: Chrome no longer sends `region`. Read `pending_region` instead.
+  // @deprecated Chrome no longer sends `region`. Use `pending_region` instead.
   CapturedRegion region;
   PendingCapturedRegion pending_region;
   ParentConversationMetadata parent_conversation_metadata;

@@ -211,7 +211,7 @@ export declare interface AdditionalContextPart {
   pdf?: PdfDocumentData;
   tabContext?: TabContextResult;
   /**
-   * Deprecated: Chrome no longer sends `region`. Read `pendingRegion`
+   * @deprecated Chrome no longer sends `region`. Use `pendingRegion`
    * instead.
    */
   region?: CapturedRegion;
