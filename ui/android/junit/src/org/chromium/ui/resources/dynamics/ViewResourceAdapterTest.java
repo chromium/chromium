@@ -28,9 +28,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.ResourceFactoryJni;
@@ -209,18 +206,7 @@ public class ViewResourceAdapterTest {
     }
 
     @Test
-    @DisableFeatures(UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION)
-    public void testBitmapReused() {
-        Bitmap bitmap = getBitmap();
-        assertNotNull(bitmap);
-
-        mAdapter.invalidate(null);
-        assertTrue(mAdapter.isDirty());
-        assertEquals(bitmap, getBitmap());
-    }
-
-    @Test
-    public void testAndroidResourceMemoryOptimization_Default() {
+    public void testAndroidResourceMemoryOptimization() {
         WeakReference<Bitmap> bitmapWeakReference = new WeakReference<>(getBitmap());
         assertNotNull(bitmapWeakReference.get());
         assertTrue(canBeGarbageCollected(bitmapWeakReference));
@@ -228,45 +214,6 @@ public class ViewResourceAdapterTest {
         mAdapter.invalidate(null);
         assertTrue(mAdapter.isDirty());
         assertNotEquals(bitmapWeakReference.get(), getBitmap());
-    }
-
-    @Test
-    @DisableFeatures(UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION)
-    public void testAndroidResourceMemoryOptimization_Disabled() {
-        Bitmap bitmap = getBitmap();
-        assertNotNull(bitmap);
-
-        mAdapter.invalidate(null);
-        assertTrue(mAdapter.isDirty());
-        assertEquals(bitmap, getBitmap());
-    }
-
-    @Test
-    @EnableFeatures(UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION)
-    public void testAndroidResourceMemoryOptimization_Enabled() {
-        WeakReference<Bitmap> bitmapWeakReference = new WeakReference<>(getBitmap());
-        assertNotNull(bitmapWeakReference.get());
-        assertTrue(canBeGarbageCollected(bitmapWeakReference));
-
-        mAdapter.invalidate(null);
-        assertTrue(mAdapter.isDirty());
-        assertNotEquals(bitmapWeakReference.get(), getBitmap());
-    }
-
-    @Test
-    @DisableFeatures(UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION)
-    public void testDropCachedBitmap() {
-        Bitmap bitmap = getBitmap();
-        assertNotNull(bitmap);
-
-        mAdapter.invalidate(null);
-        assertTrue(mAdapter.isDirty());
-        assertEquals(bitmap, getBitmap());
-
-        mAdapter.dropCachedBitmap();
-        mAdapter.invalidate(null);
-        assertTrue(mAdapter.isDirty());
-        assertNotEquals(bitmap, getBitmap());
     }
 
     @Test
@@ -274,31 +221,6 @@ public class ViewResourceAdapterTest {
         getBitmap();
         mAdapter.dropCachedBitmap();
         assertFalse(mAdapter.isDirty());
-    }
-
-    @Test
-    @DisableFeatures(UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION)
-    public void testDropCachedBitmapGCed() {
-        WeakReference<Bitmap> bitmapWeakReference = new WeakReference<>(getBitmap());
-        assertNotNull(bitmapWeakReference.get());
-        assertFalse(canBeGarbageCollected(bitmapWeakReference));
-
-        mAdapter.dropCachedBitmap();
-        assertTrue(canBeGarbageCollected(bitmapWeakReference));
-    }
-
-    @Test
-    @DisableFeatures(UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION)
-    public void testResizeGCed() {
-        WeakReference<Bitmap> bitmapWeakReference = new WeakReference<>(getBitmap());
-        assertNotNull(bitmapWeakReference.get());
-        assertFalse(canBeGarbageCollected(bitmapWeakReference));
-
-        mViewWidth += 10;
-        mView.layout(0, 0, mViewWidth, mViewHeight);
-        mAdapter.invalidate(null);
-        getBitmap();
-        assertTrue(canBeGarbageCollected(bitmapWeakReference));
     }
 
     @Test
@@ -328,36 +250,7 @@ public class ViewResourceAdapterTest {
     }
 
     @Test
-    @DisableFeatures(UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION)
     public void testManuallyTriggerCapture() throws Exception {
-        Bitmap bitmap = getBitmap();
-
-        Bitmap[] bitmapHolder = new Bitmap[1];
-        Callback<Resource> callback =
-                (resource) -> {
-                    bitmapHolder[0] = resource.getBitmap();
-                };
-        mAdapter.addOnResourceReadyCallback(callback);
-
-        CallbackHelper helper = new CallbackHelper();
-        DynamicResourceReadyOnceCallback.onNext(mAdapter, (r) -> helper.notifyCalled());
-
-        mAdapter.triggerBitmapCapture();
-
-        helper.waitForOnly("Capture never completed.");
-        // Bitmap is re-used.
-        assertEquals(bitmap, bitmapHolder[0]);
-
-        mAdapter.triggerBitmapCapture();
-        // Assert that no further captures occur.
-        assertEquals(1, helper.getCallCount());
-
-        // Clear this out in case another case depends on it being unset.
-        mAdapter.removeOnResourceReadyCallback(callback);
-    }
-
-    @Test
-    public void testManuallyTriggerCapture_Default() throws Exception {
         Bitmap bitmap = getBitmap();
 
         Bitmap[] bitmapHolder = new Bitmap[1];

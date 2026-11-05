@@ -146,11 +146,6 @@ public class UiAndroidFeatureList {
     public static final MutableBooleanParamWithSafeDefault sSubmenuTypeOverrideForceDrilldown =
             sSubmenuTypeOverride.newBooleanParam("force_drilldown", false);
 
-    public static final MutableFlagWithSafeDefault sAndroidResourceMemoryOptimization =
-            newMutableFlagWithSafeDefault(
-                    UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION,
-                    /* defaultValue= */ true);
-
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
                     sAndroidPreserveStatusBarInsetsWhenUnfocused,
