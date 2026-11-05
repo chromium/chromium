@@ -125,13 +125,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   gpu::raster::RasterInterface* RasterInterface() const;
 
-  CanvasResourceSharedImage* resource() {
-    return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
-  const CanvasResourceSharedImage* resource() const {
-    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
-  }
-
  private:
   CanvasNon2DResourceProvider(
       gfx::Size,

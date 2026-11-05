@@ -407,7 +407,7 @@ bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
   CHECK(!is_software_);
 
   // If the resource was lost, we can not use it for writes again.
-  if (resource()->IsLost()) {
+  if (resource_->IsLost()) {
     return true;
   }
 
@@ -446,8 +446,8 @@ void CanvasNon2DResourceProvider::EndExternalWrite(
     return;
   }
 
-  resource()->WaitSyncToken(external_write_sync_token);
-  resource()->SetReleaseSyncToken(external_write_sync_token);
+  resource_->WaitSyncToken(external_write_sync_token);
+  resource_->SetReleaseSyncToken(external_write_sync_token);
 }
 
 scoped_refptr<ExportedCanvasResource>
@@ -473,10 +473,7 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
   }
 
   if (IsSoftware()) {
-    // Note that the resource *must* be a CanvasResourceSharedImage as this
-    // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(software_resource.get())
-        ->UploadSoftwareRenderingResults(GetSkSurface());
+    software_resource->UploadSoftwareRenderingResults(GetSkSurface());
 
     return base::MakeRefCounted<ExportedCanvasResource>(
         std::move(software_resource));
@@ -534,10 +531,7 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
       return nullptr;
     }
 
-    // Note that the resource *must* be a CanvasResourceSharedImage as this
-    // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(output_resource.get())
-        ->UploadSoftwareRenderingResults(GetSkSurface());
+    output_resource->UploadSoftwareRenderingResults(GetSkSurface());
 
     return base::MakeRefCounted<ExportedCanvasResource>(output_resource);
   }
@@ -696,9 +690,9 @@ void CanvasNon2DResourceProvider::FlushRecording(
     auto* image_provider = GetOrCreateImageProvider();
 
     gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
-        resource()->GetSharedImage(), resource()->acquire_sync_token(),
+        resource_->GetSharedImage(), resource_->acquire_sync_token(),
         std::move(last_recording), image_provider, needs_clear);
-    resource()->SetReleaseSyncToken(sync_token);
+    resource_->SetReleaseSyncToken(sync_token);
   }
 
   // Images are locked for the duration of the rasterization, in case they get
@@ -747,7 +741,7 @@ void CanvasNon2DResourceProvider::OnMemoryDump(
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                         reinterpret_cast<uintptr_t>(this));
 
-  resource()->OnMemoryDump(pmd, path);
+  resource_->OnMemoryDump(pmd, path);
 
   std::string cached_path = path + "/cached";
   image_pool_->OnMemoryDump(pmd, cached_path);

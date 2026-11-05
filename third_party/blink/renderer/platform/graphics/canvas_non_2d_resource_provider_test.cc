@@ -200,12 +200,14 @@ TEST_F(CanvasNon2DResourceProviderTest, EndExternalWrite) {
 
   provider->EndExternalWrite(external_write_sync_token);
 
-  // EndExternalWrite() should set the release sync token for compositor reads
-  // and update the acquire sync token for subsequent writes.
+  // EndExternalWrite() should update the acquire sync token for subsequent
+  // writes and set the release sync token for compositor reads.
+  gpu::SyncToken acquire_sync_token;
+  provider->BeginExternalOverwrite(acquire_sync_token);
+  EXPECT_EQ(acquire_sync_token, external_write_sync_token);
+
   auto resource = provider->ProduceCanvasResource();
   EXPECT_EQ(GetSyncToken(resource.get()), external_write_sync_token);
-  EXPECT_EQ(provider->resource()->acquire_sync_token(),
-            external_write_sync_token);
 }
 
 TEST_F(CanvasNon2DResourceProviderTest, SoftwareSharedImage_GPUCompositing) {
