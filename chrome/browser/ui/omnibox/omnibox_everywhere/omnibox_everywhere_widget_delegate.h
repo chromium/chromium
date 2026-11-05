@@ -12,13 +12,18 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
 
+class TemplateURLService;
+
 namespace omnibox_everywhere {
 
 // Defines the custom window behavior and layout for the desktop Omnibox
 // Everywhere widget.
 class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
  public:
-  OmniboxEverywhereWidgetDelegate();
+  // `template_url_service` selects the window icon (see
+  // `GetOmniboxEverywhereIcon()`). It may be null and is not retained.
+  explicit OmniboxEverywhereWidgetDelegate(
+      const TemplateURLService* template_url_service);
   OmniboxEverywhereWidgetDelegate(const OmniboxEverywhereWidgetDelegate&) =
       delete;
   OmniboxEverywhereWidgetDelegate& operator=(
@@ -28,6 +33,11 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
   void SetDraggableRegion(std::optional<SkRegion> region);
   bool IsPointInDraggableRegion(const gfx::Point& point) const;
 
+  // Recomputes the window icon for `template_url_service` (see
+  // `GetOmniboxEverywhereIcon()`) and applies it to the widget, if any.
+  void UpdateWindowIconForSearchEngine(
+      const TemplateURLService* template_url_service);
+
   int NonClientHitTest(const gfx::Point& point) const;
 
   // views::WidgetDelegate:
@@ -36,6 +46,7 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
   std::u16string GetWindowTitle() const override;
 
  private:
+  ui::ImageModel window_icon_;
   std::optional<SkRegion> draggable_region_;
 };
 

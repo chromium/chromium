@@ -21,7 +21,8 @@ class OmniboxEverywhereEventHandlerAuraTest : public ChromeViewsTestBase {};
 
 TEST_F(OmniboxEverywhereEventHandlerAuraTest, DraggableRegionsAndHitTesting) {
   OmniboxEverywhereUIManager ui_manager;
-  OmniboxEverywhereWidgetDelegate widget_delegate;
+  OmniboxEverywhereWidgetDelegate widget_delegate(
+      /*template_url_service=*/nullptr);
   OmniboxEverywhereEventHandlerAura event_handler(ui_manager);
 
   std::vector<blink::mojom::DraggableRegionPtr> regions;

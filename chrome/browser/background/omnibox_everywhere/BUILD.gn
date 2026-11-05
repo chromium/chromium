@@ -12,6 +12,7 @@ source_set("omnibox_everywhere") {
     "//base",
     "//chrome/browser/status_icons",
     "//components/prefs",
+    "//components/search_engines",
   ]
 
   if (is_win) {
@@ -27,6 +28,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser:browser_process",
     "//chrome/browser/lifetime",
     "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/search_engines",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox/omnibox_everywhere:icon",

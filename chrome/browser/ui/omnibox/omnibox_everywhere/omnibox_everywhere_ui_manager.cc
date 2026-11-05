@@ -21,6 +21,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -594,7 +595,8 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
 #if BUILDFLAG(IS_WIN)
   params.dont_show_in_taskbar = is_ephemeral;
 #endif  // BUILDFLAG(IS_WIN)
-  widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>();
+  widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>(
+      TemplateURLServiceFactory::GetForProfile(profile_));
   if (draggable_region_) {
     widget_delegate_->SetDraggableRegion(draggable_region_);
   }
@@ -688,6 +690,10 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   widget_->SetCanAppearInExistingFullscreenSpaces(true);
   widget_->MoveToActiveFullscreenSpace();
 #endif
+  // The widget is reused across shows, and the default search engine may have
+  // changed since its window icon was last set.
+  widget_delegate_->UpdateWindowIconForSearchEngine(
+      TemplateURLServiceFactory::GetForProfile(profile_));
   widget_->Show();
   capture_release_timer_.Stop();
   widget_->Activate();

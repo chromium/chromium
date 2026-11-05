@@ -114,7 +114,7 @@ TEST_F(MacWindowUtilTest, DisassociatePopupOnMac) {
 }
 
 TEST_F(MacWindowUtilTest, NonClientHitTestAllowsHoverInDraggableRegion) {
-  OmniboxEverywhereWidgetDelegate delegate;
+  OmniboxEverywhereWidgetDelegate delegate(/*template_url_service=*/nullptr);
   SkRegion region;
   region.op(SkIRect::MakeXYWH(0, 0, 200, 100), SkRegion::kUnion_Op);
   delegate.SetDraggableRegion(region);

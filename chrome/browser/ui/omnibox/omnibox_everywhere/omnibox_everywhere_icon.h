@@ -7,15 +7,17 @@
 
 #include "ui/gfx/image/image_skia.h"
 
-namespace gfx {
-struct VectorIcon;
-}  // namespace gfx
+class TemplateURLService;
 
 namespace omnibox_everywhere {
 
-// Returns the ImageSkia icon for Omnibox Everywhere based on branding
-// buildflags.
-gfx::ImageSkia GetOmniboxEverywhereIcon();
+// Returns the `ImageSkia` icon for Omnibox Everywhere based on branding
+// buildflags. On branded builds, the Google "G" is returned when
+// `template_url_service` indicates that Google is the default search engine,
+// and the generic search loupe is returned otherwise (including when
+// `template_url_service` is null).
+gfx::ImageSkia GetOmniboxEverywhereIcon(
+    const TemplateURLService* template_url_service);
 
 }  // namespace omnibox_everywhere
 

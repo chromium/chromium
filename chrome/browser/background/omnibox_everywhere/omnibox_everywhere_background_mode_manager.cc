@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -33,6 +34,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
@@ -90,6 +92,14 @@ void OmniboxEverywhereBackgroundModeManager::SetProfile(Profile* profile) {
     return;
   }
   profile_ = profile;
+  template_url_service_observation_.Reset();
+  if (profile_) {
+    if (TemplateURLService* template_url_service =
+            TemplateURLServiceFactory::GetForProfile(profile_)) {
+      template_url_service_observation_.Observe(template_url_service);
+    }
+    OnTemplateURLServiceChanged();
+  }
   OnPrefChanged();
 }
 
@@ -188,7 +198,8 @@ void OmniboxEverywhereBackgroundModeManager::ShowStatusIcon() {
     return;
   }
 
-  gfx::ImageSkia icon_image = GetOmniboxEverywhereIcon();
+  gfx::ImageSkia icon_image =
+      GetOmniboxEverywhereIcon(template_url_service_observation_.GetSource());
 
   std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP);
@@ -268,6 +279,18 @@ void OmniboxEverywhereBackgroundModeManager::OnBrowserCreated(
 void OmniboxEverywhereBackgroundModeManager::OnBrowserClosed(
     BrowserWindowInterface* browser) {
   UpdateVisibilityOfExitInContextMenu();
+}
+
+void OmniboxEverywhereBackgroundModeManager::OnTemplateURLServiceChanged() {
+  if (status_icon_) {
+    status_icon_->SetImage(GetOmniboxEverywhereIcon(
+        template_url_service_observation_.GetSource()));
+  }
+}
+
+void OmniboxEverywhereBackgroundModeManager::
+    OnTemplateURLServiceShuttingDown() {
+  template_url_service_observation_.Reset();
 }
 
 void OmniboxEverywhereBackgroundModeManager::

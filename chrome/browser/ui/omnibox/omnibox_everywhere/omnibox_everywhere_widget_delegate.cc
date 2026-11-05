@@ -10,6 +10,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/mac_window_util.h"
@@ -17,7 +18,19 @@
 
 namespace omnibox_everywhere {
 
-OmniboxEverywhereWidgetDelegate::OmniboxEverywhereWidgetDelegate() {
+namespace {
+
+ui::ImageModel GetWindowIconFor(
+    const TemplateURLService* template_url_service) {
+  return ui::ImageModel::FromImageSkia(
+      GetOmniboxEverywhereIcon(template_url_service));
+}
+
+}  // namespace
+
+OmniboxEverywhereWidgetDelegate::OmniboxEverywhereWidgetDelegate(
+    const TemplateURLService* template_url_service)
+    : window_icon_(GetWindowIconFor(template_url_service)) {
   SetCanActivate(true);
   SetHasWindowSizeControls(false);
 }
@@ -33,6 +46,14 @@ bool OmniboxEverywhereWidgetDelegate::IsPointInDraggableRegion(
     const gfx::Point& point) const {
   return draggable_region_ && !draggable_region_->isEmpty() &&
          draggable_region_->contains(point.x(), point.y());
+}
+
+void OmniboxEverywhereWidgetDelegate::UpdateWindowIconForSearchEngine(
+    const TemplateURLService* template_url_service) {
+  window_icon_ = GetWindowIconFor(template_url_service);
+  if (views::Widget* widget = GetWidget()) {
+    widget->UpdateWindowIcon();
+  }
 }
 
 int OmniboxEverywhereWidgetDelegate::NonClientHitTest(
@@ -52,7 +73,7 @@ int OmniboxEverywhereWidgetDelegate::NonClientHitTest(
 }
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowIcon() {
-  return ui::ImageModel::FromImageSkia(GetOmniboxEverywhereIcon());
+  return window_icon_;
 }
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowAppIcon() {
