@@ -39,6 +39,9 @@
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/display/screen_base.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
@@ -541,6 +544,9 @@ class MenuControllerTest : public ViewsTestBase,
   MenuController* menu_controller() { return menu_controller_; }
   const MenuItemView* pending_state_item() const {
     return menu_controller_->pending_state_.item;
+  }
+  const gfx::Rect& state_monitor_bounds() const {
+    return menu_controller_->state_.monitor_bounds;
   }
   MenuController::ExitType menu_exit_type() const {
     return menu_controller_->exit_type_;
@@ -5401,6 +5407,105 @@ TEST_F(MenuControllerTest, MenuHostedTextfieldYieldsToOwnerFocusChange) {
   owner->GetFocusManager()->ClearFocus();
   EXPECT_FALSE(textfield->HasFocus());
   EXPECT_FALSE(input_method->GetTextInputClient());
+}
+
+namespace {
+
+class MultiDisplayTestScreen : public display::ScreenBase {
+ public:
+  MultiDisplayTestScreen(const display::Display& primary_display,
+                         const display::Display& window_display,
+                         gfx::NativeWindow target_window)
+      : window_display_id_(window_display.id()),
+        target_window_(target_window),
+        previous_screen_(display::Screen::SetScreenInstance(nullptr)) {
+    display::Screen::SetScreenInstance(this);
+    ProcessDisplayChanged(primary_display, /*is_primary=*/true);
+    ProcessDisplayChanged(window_display, /*is_primary=*/false);
+  }
+
+  MultiDisplayTestScreen(const MultiDisplayTestScreen&) = delete;
+  MultiDisplayTestScreen& operator=(const MultiDisplayTestScreen&) = delete;
+
+  ~MultiDisplayTestScreen() override {
+    display::Screen::SetScreenInstance(nullptr);
+    display::Screen::SetScreenInstance(previous_screen_);
+  }
+
+  display::Display GetDisplayNearestWindow(
+      gfx::NativeWindow window) const override {
+    if (window && window == target_window_) {
+      display::Display display;
+      if (GetDisplayWithDisplayId(window_display_id_, &display)) {
+        return display;
+      }
+    }
+    return GetPrimaryDisplay();
+  }
+
+ private:
+  const int64_t window_display_id_;
+  const gfx::NativeWindow target_window_;
+  const raw_ptr<display::Screen> previous_screen_;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/331956476: When the owning widget is on a
+// larger offset secondary display and global screen coordinates are not
+// supported (e.g. Ozone/Wayland), UpdateInitialLocation() must query the
+// display from the owning widget and normalize monitor_bounds to a (0, 0)
+// origin so tall menus are not clamped to the smaller primary display or
+// miscalculated against an offset work-area origin.
+TEST_F(MenuControllerTest,
+       UpdateInitialLocationUsesOwnerDisplayOnOffsetDisplays) {
+  display::Display primary_display(/*id=*/1, gfx::Rect(0, 0, 2048, 1152));
+  primary_display.set_work_area(gfx::Rect(0, 32, 2048, 1120));
+
+  constexpr gfx::Point kSecondaryOrigins[] = {
+      gfx::Point(2048, 0),
+      gfx::Point(0, -1440),
+  };
+
+  for (const gfx::Point& secondary_origin : kSecondaryOrigins) {
+    SCOPED_TRACE(secondary_origin.ToString());
+    display::Display secondary_display(
+        /*id=*/2, gfx::Rect(secondary_origin, gfx::Size(2560, 1440)));
+    secondary_display.set_work_area(gfx::Rect(
+        secondary_origin + gfx::Vector2d(0, 32), gfx::Size(2560, 1408)));
+
+    CreateMenu({.show = false});
+    constexpr gfx::Size kTallMenuSize(220, 1250);
+    menu_item()->GetSubmenu()->GetScrollViewContainer()->SetPreferredSize(
+        kTallMenuSize);
+
+    {
+      MultiDisplayTestScreen test_screen(primary_display, secondary_display,
+                                         owner()->GetNativeWindow());
+      const gfx::Rect anchor_bounds =
+          ShouldIgnoreScreenBoundsForMenus()
+              ? gfx::Rect(100, 85, 90, 28)
+              : gfx::Rect(secondary_display.work_area().origin() +
+                              gfx::Vector2d(100, 85),
+                          gfx::Size(90, 28));
+
+      menu_controller()->Run(
+          owner(), /*button_controller=*/nullptr, menu_item(), anchor_bounds,
+          MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
+
+      const gfx::Rect expected_monitor_bounds =
+          ShouldIgnoreScreenBoundsForMenus()
+              ? gfx::Rect(gfx::Point(0, 0),
+                          secondary_display.work_area().size())
+              : secondary_display.work_area();
+      EXPECT_EQ(expected_monitor_bounds, state_monitor_bounds());
+      EXPECT_EQ(kTallMenuSize.height(),
+                menu_item()->GetSubmenu()->GetScrollViewContainer()->height());
+
+      ExitMenuRun();
+    }
+    DestroyMenuController();
+  }
 }
 
 }  // namespace views

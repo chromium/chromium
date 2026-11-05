@@ -2676,6 +2676,23 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& anchor_bounds,
 
   // Calculate the bounds of the monitor we'll show menus on. Do this once to
   // avoid repeated system queries for the info.
+  if (ShouldIgnoreScreenBoundsForMenus()) {
+    // On platforms without global screen coordinates (such as Ozone/Wayland),
+    // `anchor_bounds` is in parent-local coordinates, so
+    // `GetDisplayNearestPoint` can match the wrong display and the display's
+    // work area may have a non-zero offset origin. Query the display from
+    // `owner_` and shift the work area origin to (0, 0).
+    const display::Display display =
+        (owner_ && owner_->GetNativeWindow())
+            ? display::Screen::Get()->GetDisplayNearestWindow(
+                  owner_->GetNativeWindow())
+            : display::Screen::Get()->GetDisplayNearestPoint(
+                  anchor_bounds.origin());
+    pending_state_.monitor_bounds = display.work_area();
+    pending_state_.monitor_bounds.set_origin(gfx::Point(0, 0));
+    return;
+  }
+
   const display::Display display =
       display::Screen::Get()->GetDisplayNearestPoint(anchor_bounds.origin());
   pending_state_.monitor_bounds = display.work_area();
