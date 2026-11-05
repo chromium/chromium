@@ -49,4 +49,35 @@ TEST_F(ContouredBorderGeometryTest, ZeroOutsetsMatchPixelSnappedBorder) {
           .Rect());
 }
 
+TEST_F(ContouredBorderGeometryTest, RoundInnerBorderKeepsBorderBoxOrigin) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 160px; height: 60px; border: 20px solid;
+         border-top-right-radius: 100%"></div>
+  )HTML");
+
+  const ComputedStyle& style = GetLayoutObjectByElementId("target")->Style();
+  const PhysicalRect border_rect(0, 0, 200, 100);
+  const ContouredRect inner =
+      ContouredBorderGeometry::PixelSnappedContouredInnerBorder(style,
+                                                                border_rect);
+  EXPECT_EQ(gfx::RectF(20, 20, 160, 60), inner.Rect());
+  EXPECT_EQ(gfx::RectF(0, 0, 200, 100), inner.GetOriginRect().Rect());
+  EXPECT_EQ(gfx::SizeF(200, 100), inner.GetOriginRect().GetRadii().TopRight());
+  EXPECT_TRUE(inner.IsInnerRect());
+}
+
+TEST_F(ContouredBorderGeometryTest, RoundInnerBorderPastRadiusIsNotRounded) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 100px; border: 10px solid;
+         border-radius: 5px"></div>
+  )HTML");
+
+  const ComputedStyle& style = GetLayoutObjectByElementId("target")->Style();
+  const ContouredRect inner =
+      ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+          style, PhysicalRect(0, 0, 120, 120));
+  EXPECT_TRUE(inner.GetOriginRect().IsRounded());
+  EXPECT_FALSE(inner.IsRounded());
+}
+
 }  // namespace blink

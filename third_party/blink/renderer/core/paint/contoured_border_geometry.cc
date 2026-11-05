@@ -167,6 +167,9 @@ ContouredRect ComputeContouredBorderFromStyle(
       EffectiveCurvature(style.CornerBottomRightShape(), radii.BottomRight()),
       EffectiveCurvature(style.CornerBottomLeftShape(), radii.BottomLeft()));
   if (curvature.IsRound()) {
+    // Keep the border box as the origin rect so that inset/outset contours
+    // derived from it (e.g. the inner border) remain aligned to it.
+    result.SetOriginRect(result.AsRoundedRect());
     return result;
   }
 

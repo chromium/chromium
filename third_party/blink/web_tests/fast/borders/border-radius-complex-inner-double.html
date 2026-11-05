@@ -1,6 +1,11 @@
 <!doctype html>
 <!-- Divs should have smooth, continuous borders -->
 <style>
+/* Keep the layout independent of platform font metrics. */
+body {
+    font-size: 0;
+}
+
 div {
     display: inline-block;
     border: 20px #00F double;

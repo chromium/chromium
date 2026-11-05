@@ -371,7 +371,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     const ContouredRect& contoured_rect) {
   const FloatRoundedRect& target_rect = contoured_rect.AsRoundedRect();
 
-  if (contoured_rect.HasRoundCurvature()) {
+  if (contoured_rect.CanRenderAsRoundedRect()) {
     AddRoundedRect(target_rect);
     return *this;
   }

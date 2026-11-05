@@ -91,8 +91,9 @@ void ApplySpreadToShadowShape(ContouredRect& shadow_shape, float spread) {
   if (spread == 0)
     return;
 
+  // The radii are intentionally not constrained: the corners of the shadow
+  // shape are aligned to the border box when painted.
   shadow_shape.OutsetWithCornerCorrection(spread);
-  shadow_shape.ConstrainRadii();
 }
 
 BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator(
@@ -173,6 +174,13 @@ void ClipToBorderEdge(GraphicsContext& context,
   // introduces subpixel gaps along the corners / edges. Those are avoided
   // by insetting the clipping path by one CSS pixel.
   if (has_opaque_background) {
+    // This inset clip is only an optimization hidden under the opaque
+    // background, so it doesn't need to stay aligned to the border box. For
+    // round corners, drop the origin rect so that it can always be clipped as
+    // a plain rounded rect.
+    if (border.HasRoundCurvature()) {
+      rect_to_clip_out = ContouredRect(border.AsRoundedRect());
+    }
     rect_to_clip_out.Inset(1);
   }
 

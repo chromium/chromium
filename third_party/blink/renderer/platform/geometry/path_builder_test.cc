@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -91,6 +92,32 @@ TEST(PathBuilderTest, AsymmetricConcaveOutsetIsSingleContour) {
   }
   EXPECT_EQ(contour_count, 1);
   EXPECT_EQ(path.getBounds(), SkRect::MakeLTRB(-15, -15, 95, 95));
+}
+
+TEST(PathBuilderTest, UnconstrainedRoundInnerRectAlignsToOrigin) {
+  // A 200x100 border box with a 100% top-right radius, inset by 20px.
+  FloatRoundedRect::Radii origin_radii;
+  origin_radii.SetTopRight(gfx::SizeF(200, 100));
+  const FloatRoundedRect origin(gfx::RectF(0, 0, 200, 100), origin_radii);
+
+  FloatRoundedRect::Radii target_radii;
+  target_radii.SetTopRight(gfx::SizeF(180, 80));
+  ContouredRect target(
+      FloatRoundedRect(gfx::RectF(20, 20, 160, 60), target_radii));
+  target.SetOriginRect(origin);
+  ASSERT_FALSE(target.IsRenderable());
+  EXPECT_FALSE(target.CanRenderAsRoundedRect());
+
+  PathBuilder builder;
+  builder.AddContouredRect(target);
+  const Path path = builder.Finalize();
+
+  // The corner follows the origin ellipse inset by 20px, i.e. an ellipse
+  // centered at (0, 100) with radii 180x80, clipped to the target rect.
+  EXPECT_TRUE(path.Contains(gfx::PointF(25, 21)));
+  EXPECT_TRUE(path.Contains(gfx::PointF(100, 70)));
+  EXPECT_FALSE(path.Contains(gfx::PointF(60, 21)));
+  EXPECT_FALSE(path.Contains(gfx::PointF(178, 22)));
 }
 
 TEST(PathBuilderTest, WindRule) {

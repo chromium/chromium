@@ -69,6 +69,22 @@ bool ContouredRect::IntersectsQuad(const gfx::QuadF& quad) const {
                              : GetPath().Intersects(quad);
 }
 
+bool ContouredRect::IsRounded() const {
+  if (rect_.IsRounded()) {
+    return true;
+  }
+  if (!origin_rect_ || !origin_rect_->IsRounded()) {
+    return false;
+  }
+  // With round curvature, an inner rect whose radii have all shrunk to zero is
+  // a plain rectangle, regardless of the origin rect.
+  return !corner_curvature_.IsRound();
+}
+
+bool ContouredRect::CanRenderAsRoundedRect() const {
+  return HasRoundCurvature() && (IsRenderable() || !IsInnerRect());
+}
+
 void ContouredRect::OutsetWithCornerCorrection(const gfx::OutsetsF& outsets) {
   rect_.OutsetWithCornerCorrection(outsets);
 }

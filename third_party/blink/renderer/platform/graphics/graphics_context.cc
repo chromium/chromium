@@ -746,7 +746,7 @@ void GraphicsContext::FillRect(const gfx::RectF& rect,
 void GraphicsContext::FillContouredRect(const ContouredRect& crect,
                                         const Color& color,
                                         const AutoDarkMode& auto_dark_mode) {
-  if (crect.HasRoundCurvature()) {
+  if (crect.CanRenderAsRoundedRect()) {
     FillRoundedRect(crect.AsRoundedRect(), color, auto_dark_mode);
     return;
   }
@@ -871,7 +871,7 @@ void GraphicsContext::FillRectWithContouredHole(
   cc::PaintFlags flags(ImmutableState()->FillFlags());
   flags.setColor(color.toSkColor4f());
   const DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
-  if (contoured_hole_rect.HasRoundCurvature()) {
+  if (contoured_hole_rect.CanRenderAsRoundedRect()) {
     canvas_->drawDRRect(SkRRect::MakeRect(gfx::RectFToSkRect(rect)),
                         SkRRect(contoured_hole_rect.AsRoundedRect()),
                         dark_mode_flags);
@@ -928,7 +928,7 @@ void GraphicsContext::ClipContouredRect(const ContouredRect& contoured_rect,
     return;
   }
 
-  if (contoured_rect.HasRoundCurvature()) {
+  if (contoured_rect.CanRenderAsRoundedRect()) {
     ClipRRect(SkRRect(contoured_rect.AsRoundedRect()), should_antialias,
               clip_op);
     return;

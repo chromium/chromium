@@ -225,9 +225,13 @@ class PLATFORM_EXPORT ContouredRect {
 
   void SetRadii(const FloatRoundedRect::Radii& radii) { rect_.SetRadii(radii); }
 
-  bool IsRounded() const {
-    return rect_.IsRounded() || (origin_rect_ && origin_rect_->IsRounded());
-  }
+  bool IsRounded() const;
+
+  // Whether this can be painted as a plain rounded rect (SkRRect). This is
+  // false for an inner rect with round curvature whose radii are not
+  // renderable, as those need to be clipped in alignment with the origin rect
+  // rather than having their radii scaled down.
+  bool CanRenderAsRoundedRect() const;
 
   const FloatRoundedRect& AsRoundedRect() const { return rect_; }
 
