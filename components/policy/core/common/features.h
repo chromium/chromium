@@ -44,11 +44,6 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kUserPolicyCacheSizeLimit2MB);
 // Enables policy initialization for signed-in users in new entry points.
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kInitializePoliciesForSignedInUserInNewEntryPoints);
-
-// Controls whether to use RestrictionsManager instead of UserManager in
-// AppRestrictionsProvider to retrieve application restrictions.
-POLICY_EXPORT BASE_DECLARE_FEATURE(
-    kUseRestrictionsManagerInAppRestrictionsProvider);
 #endif
 
 // Enables a configurable delay for policy registration.

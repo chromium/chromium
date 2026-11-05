@@ -32,7 +32,6 @@ import org.chromium.components.omnibox.OmniboxFeatureMap;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
-import org.chromium.components.policy.PolicyFeatureMap;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -58,7 +57,6 @@ public class ChromeCachedFlags {
                     ModalDialogFeatureMap.getInstance(),
                     UiAndroidFeatureMap.getInstance(),
                     SigninFeatureMap.getInstance(),
-                    PolicyFeatureMap.getInstance(),
                     MediaFeatureMap.getInstance(),
                     PermissionsAndroidFeatureMap.getInstance(),
                     NotificationFeatureMap.getInstance());
@@ -73,7 +71,6 @@ public class ChromeCachedFlags {
                     ModalDialogFeatureMap.sCachedFlags,
                     UiAndroidFeatureList.sFlagsCachedUiAndroid,
                     SigninFeatureMap.sCachedFlags,
-                    PolicyFeatureMap.sCachedFlags,
                     MediaFeatureList.getAllCachedFlags(),
                     NotificationFeatureMap.sCachedFlags);
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER =
@@ -88,7 +85,6 @@ public class ChromeCachedFlags {
                     ModalDialogFeatureMap.sCachedFlags,
                     ChromeFeatureList.sFlagsCachedInMinimalBrowser,
                     UiAndroidFeatureList.sFlagsCachedUiAndroid,
-                    PolicyFeatureMap.sCachedFlags,
                     MediaFeatureList.getAllCachedFlags(),
                     NotificationFeatureMap.sCachedFlags);
 

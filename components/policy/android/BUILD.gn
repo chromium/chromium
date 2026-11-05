@@ -10,7 +10,6 @@ _jni_sources = [
   "java/src/org/chromium/components/policy/EnterpriseInfo.java",
   "java/src/org/chromium/components/policy/PolicyCacheUpdater.java",
   "java/src/org/chromium/components/policy/PolicyConverter.java",
-  "java/src/org/chromium/components/policy/PolicyFeatureMap.java",
   "java/src/org/chromium/components/policy/PolicyMap.java",
   "java/src/org/chromium/components/policy/PolicyService.java",
 ]
@@ -22,25 +21,16 @@ java_cpp_strings("java_switches_srcjar") {
   class_name = "org.chromium.components.policy.PolicySwitches"
 }
 
-java_cpp_features("policy_features_srcjar") {
-  # External code should depend on ":policy_java" instead.
-  visibility = [ ":*" ]
-  sources = [ "//components/policy/core/common/features.cc" ]
-  class_name = "org.chromium.components.policy.PolicyFeatures"
-}
-
 android_library("policy_java") {
   deps = [
     "//base:base_java",
     "//build/android:build_java",
-    "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [
     ":java_switches_srcjar",
     ":jni_headers",
-    ":policy_features_srcjar",
   ]
 
   sources = _jni_sources + [

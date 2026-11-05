@@ -339,7 +339,6 @@ source_set("internal") {
       "android/android_combined_policy_provider.h",
       "android/policy_converter.cc",
       "android/policy_converter.h",
-      "android/policy_feature_map.cc",
       "android/policy_map_android.cc",
       "android/policy_map_android.h",
       "android/policy_service_android.cc",
