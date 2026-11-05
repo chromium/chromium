@@ -288,7 +288,7 @@ void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
     return;
   }
   std::string tree_id_str = tree_id.ToString();
-  DCHECK(!tree_id_str.empty());
+  CHECK(!tree_id_str.empty(), base::NotFatalUntil::M163);
   string_attributes.Set(ax::mojom::StringAttribute::kChildTreeId,
                         std::move(tree_id_str));
 }
@@ -304,7 +304,7 @@ std::optional<AXTreeID> AXNodeData::GetChildTreeID() const {
 
   const std::string& child_tree_id_str =
       GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
-  DCHECK(!child_tree_id_str.empty());
+  CHECK(!child_tree_id_str.empty(), base::NotFatalUntil::M163);
   return AXTreeID::FromString(child_tree_id_str);
 }
 
@@ -503,18 +503,22 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
 }
 
 void AXNodeData::RemoveAction(ax::mojom::Action action_enum) {
-  DCHECK_GT(static_cast<int>(action_enum),
-            static_cast<int>(ax::mojom::Action::kNone));
-  DCHECK_LE(static_cast<int>(action_enum),
-            static_cast<int>(ax::mojom::Action::kMaxValue));
+  CHECK_GT(static_cast<int>(action_enum),
+           static_cast<int>(ax::mojom::Action::kNone),
+           base::NotFatalUntil::M163);
+  CHECK_LE(static_cast<int>(action_enum),
+           static_cast<int>(ax::mojom::Action::kMaxValue),
+           base::NotFatalUntil::M163);
   actions = ModifyFlag(actions, static_cast<uint64_t>(action_enum), false);
 }
 
 void AXNodeData::AddTextStyle(ax::mojom::TextStyle text_style_enum) {
-  DCHECK_GE(static_cast<int>(text_style_enum),
-            static_cast<int>(ax::mojom::TextStyle::kMinValue));
-  DCHECK_LE(static_cast<int>(text_style_enum),
-            static_cast<int>(ax::mojom::TextStyle::kMaxValue));
+  CHECK_GE(static_cast<int>(text_style_enum),
+           static_cast<int>(ax::mojom::TextStyle::kMinValue),
+           base::NotFatalUntil::M163);
+  CHECK_LE(static_cast<int>(text_style_enum),
+           static_cast<int>(ax::mojom::TextStyle::kMaxValue),
+           base::NotFatalUntil::M163);
   int32_t style = GetIntAttribute(ax::mojom::IntAttribute::kTextStyle);
   style = ModifyFlag(static_cast<uint32_t>(style),
                      static_cast<uint32_t>(text_style_enum), true);

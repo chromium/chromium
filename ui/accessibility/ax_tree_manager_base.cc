@@ -58,7 +58,8 @@ AXTreeManagerBase::~AXTreeManagerBase() {
   if (!tree_)
     return;
 
-  DCHECK_NE(GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown);
+  CHECK_NE(GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown,
+           base::NotFatalUntil::M163);
   tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
   GetTreeManagerMapInstance().erase(GetTreeID());
 }
@@ -217,7 +218,7 @@ AXNode* AXTreeManagerBase::GetHostNode() const {
       << "Multiple nodes claim the same child tree ID.";
   const AXNodeID& host_node_id = *host_node_ids.begin();
   AXNode* parent_node = parent_manager->GetNode(host_node_id);
-  DCHECK(parent_node);
+  CHECK(parent_node, base::NotFatalUntil::M163);
   DCHECK_EQ(GetTreeID(), AXTreeID::FromString(parent_node->GetStringAttribute(
                              ax::mojom::StringAttribute::kChildTreeId)))
       << "A node that hosts a child tree should expose its tree ID in its "
@@ -246,9 +247,10 @@ bool AXTreeManagerBase::AttachChildTree(AXNode& host_node,
       << "`host_node` should belong to this manager.";
   DCHECK(host_node.tree())
       << "A node should always be attached to its owning tree.";
-  DCHECK_NE(GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown);
-  DCHECK_NE(child_manager.GetTreeID().type(),
-            ax::mojom::AXTreeIDType::kUnknown);
+  CHECK_NE(GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown,
+           base::NotFatalUntil::M163);
+  CHECK_NE(child_manager.GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown,
+           base::NotFatalUntil::M163);
   if (!host_node.IsLeaf()) {
     // For now, child trees can only be attached on leaf nodes, otherwise
     // behavior would be ambiguous.
@@ -314,7 +316,8 @@ AXTreeManagerBase* AXTreeManagerBase::DetachChildTree(AXNode& host_node) {
       << "`host_node` should belong to this manager.";
   DCHECK(host_node.tree())
       << "A node should always be attached to its owning tree.";
-  DCHECK_NE(GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown);
+  CHECK_NE(GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown,
+           base::NotFatalUntil::M163);
   if (!host_node.IsLeaf()) {
     // For now, child trees are only allowed to be attached on leaf nodes,
     // otherwise behavior would be ambiguous.
@@ -327,8 +330,8 @@ AXTreeManagerBase* AXTreeManagerBase::DetachChildTree(AXNode& host_node) {
   if (!child_manager || !child_manager->GetTree())
     return nullptr;
 
-  DCHECK_NE(child_manager->GetTreeID().type(),
-            ax::mojom::AXTreeIDType::kUnknown);
+  CHECK_NE(child_manager->GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown,
+           base::NotFatalUntil::M163);
 
   {
     AXTreeUpdate update;

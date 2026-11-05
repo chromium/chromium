@@ -26,7 +26,7 @@ AXActionHandlerBase::~AXActionHandlerBase() {
 }
 
 void AXActionHandlerBase::SetAXTreeID(AXTreeID new_ax_tree_id) {
-  DCHECK_NE(new_ax_tree_id, AXTreeIDUnknown());
+  CHECK_NE(new_ax_tree_id, AXTreeIDUnknown(), base::NotFatalUntil::M163);
   if (tree_id_ != AXTreeIDUnknown()) {
     AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
   }
@@ -35,7 +35,7 @@ void AXActionHandlerBase::SetAXTreeID(AXTreeID new_ax_tree_id) {
 }
 
 void AXActionHandlerBase::RemoveAXTreeID() {
-  DCHECK_NE(tree_id_, ui::AXTreeIDUnknown());
+  CHECK_NE(tree_id_, ui::AXTreeIDUnknown(), base::NotFatalUntil::M163);
   AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
   tree_id_ = AXTreeIDUnknown();
 }

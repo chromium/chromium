@@ -23,7 +23,8 @@ struct UnionTraits<ax::mojom::AXTreeIDDataView, ui::AXTreeID> {
   }
   static uint8_t unknown(const ui::AXTreeID& p) { return 0; }
   static const base::UnguessableToken token(const ui::AXTreeID& p) {
-    DCHECK_EQ(p.type(), ax::mojom::AXTreeIDType::kToken);
+    CHECK_EQ(p.type(), ax::mojom::AXTreeIDType::kToken,
+             base::NotFatalUntil::M163);
     return *p.token();
   }
 

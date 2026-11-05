@@ -15,7 +15,7 @@ bool StructTraits<ax::mojom::AssistantTreeDataView,
                   std::unique_ptr<ui::AssistantTree>>::
     Read(ax::mojom::AssistantTreeDataView data,
          std::unique_ptr<ui::AssistantTree>* out) {
-  DCHECK(!*out);
+  CHECK(!*out, base::NotFatalUntil::M163);
   *out = std::make_unique<ui::AssistantTree>();
   if (!data.ReadNodes(&(*out)->nodes))
     return false;
@@ -35,7 +35,7 @@ bool StructTraits<ax::mojom::AssistantNodeDataView,
                   std::unique_ptr<ui::AssistantNode>>::
     Read(ax::mojom::AssistantNodeDataView data,
          std::unique_ptr<ui::AssistantNode>* out) {
-  DCHECK(!out->get());
+  CHECK(!out->get(), base::NotFatalUntil::M163);
   *out = std::make_unique<ui::AssistantNode>();
   (*out)->bgcolor = data.bgcolor();
   (*out)->bold = data.bold();

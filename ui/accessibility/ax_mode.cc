@@ -71,7 +71,7 @@ std::string AXMode::ToString() const {
         break;
     }
 
-    DCHECK(!flag_name.empty());
+    CHECK(!flag_name.empty(), base::NotFatalUntil::M163);
 
     if (has_mode(mode_flag))
       tokens.push_back(flag_name);
@@ -90,7 +90,7 @@ std::string AXMode::ToString() const {
         break;
     }
 
-    DCHECK(!flag_name.empty());
+    CHECK(!flag_name.empty(), base::NotFatalUntil::M163);
 
     if (HasFilterFlags(filter_mode_flag)) {
       tokens.push_back(flag_name);

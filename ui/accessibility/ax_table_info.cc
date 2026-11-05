@@ -174,31 +174,29 @@ void FindCellsForRowlessTable(
 
 // static
 AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
-#if DCHECK_IS_ON()
-  DCHECK(tree);
-  DCHECK(table_node);
+  CHECK(tree, base::NotFatalUntil::M163);
+  CHECK(table_node, base::NotFatalUntil::M163);
 
-  DCHECK(table_node->IsTable());
-  DCHECK(!table_node->IsInvisibleOrIgnored());
+  CHECK(table_node->IsTable(), base::NotFatalUntil::M163);
+  CHECK(!table_node->IsInvisibleOrIgnored(), base::NotFatalUntil::M163);
 
   // Confidence check, make sure the node is in the tree.
   AXNode* node = table_node;
   while (node && node != tree->root()) {
     node = node->GetParent();
   }
-  DCHECK_EQ(node, tree->root());
-#endif
+  CHECK_EQ(node, tree->root(), base::NotFatalUntil::M163);
 
   AXTableInfo* info = new AXTableInfo(tree, table_node);
   bool success = info->Update();
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M163);
 
   return info;
 }
 
 bool AXTableInfo::Update() {
-  DCHECK(table_node_->IsTable());
-  DCHECK(!table_node_->IsInvisibleOrIgnored());
+  CHECK(table_node_->IsTable(), base::NotFatalUntil::M163);
+  CHECK(!table_node_->IsInvisibleOrIgnored(), base::NotFatalUntil::M163);
 
   ClearVectors();
 
@@ -227,7 +225,8 @@ bool AXTableInfo::Update() {
     // Iterate over the cells and build up an array of CellData
     // entries, one for each cell. Compute the actual row and column
     BuildCellDataVectorFromRowAndCellNodes(row_nodes, cell_nodes_per_row);
-    DCHECK_EQ(cell_nodes_per_row.size(), row_nodes.size());
+    CHECK_EQ(cell_nodes_per_row.size(), row_nodes.size(),
+             base::NotFatalUntil::M163);
   } else {
     FindCellsForRowlessTable(table_node_, &cell_nodes_per_row);
     BuildCellDataVectorFromCellNodes(cell_nodes_per_row);
@@ -515,10 +514,10 @@ void AXTableInfo::BuildCellAndHeaderVectorsFromCellData() {
   for (auto& cell_data : cell_data_vector) {
     for (size_t r = cell_data.dom_row_index;
          r < cell_data.dom_row_index + cell_data.dom_row_span; r++) {
-      DCHECK_LT(r, dom_row_count);
+      CHECK_LT(r, dom_row_count, base::NotFatalUntil::M163);
       for (size_t c = cell_data.dom_col_index;
            c < cell_data.dom_col_index + cell_data.dom_col_span; c++) {
-        DCHECK_LT(c, dom_col_count);
+        CHECK_LT(c, dom_col_count, base::NotFatalUntil::M163);
         AXNode* cell = cell_data.cell;
         if (cell->GetRole() == ax::mojom::Role::kColumnHeader) {
           // If this is a column header spanning vertically, we'll encounter

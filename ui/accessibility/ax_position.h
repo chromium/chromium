@@ -264,9 +264,10 @@ class AXPosition {
 
   static AXPositionInstance CreateTreePosition(const AXNode& anchor,
                                                int child_index) {
-    DCHECK(anchor.tree());
-    DCHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown());
-    DCHECK_NE(anchor.id(), kInvalidAXNodeID);
+    CHECK(anchor.tree(), base::NotFatalUntil::M163);
+    CHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown(),
+             base::NotFatalUntil::M163);
+    CHECK_NE(anchor.id(), kInvalidAXNodeID, base::NotFatalUntil::M163);
 
     AXPositionInstance new_position(new AXPositionType());
     new_position->Initialize(AXPositionKind::TREE_POSITION,
@@ -296,9 +297,10 @@ class AXPosition {
       const AXNode& anchor,
       int text_offset,
       ax::mojom::TextAffinity affinity) {
-    DCHECK(anchor.tree());
-    DCHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown());
-    DCHECK_NE(anchor.id(), kInvalidAXNodeID);
+    CHECK(anchor.tree(), base::NotFatalUntil::M163);
+    CHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown(),
+             base::NotFatalUntil::M163);
+    CHECK_NE(anchor.id(), kInvalidAXNodeID, base::NotFatalUntil::M163);
 
     AXPositionInstance new_position(new AXPositionType());
     new_position->Initialize(AXPositionKind::TEXT_POSITION,
@@ -363,7 +365,8 @@ class AXPosition {
 
     // A tree ID can be serialized as a 32-byte string.
     std::string tree_id_string = tree_id_.ToString();
-    DCHECK_LE(tree_id_string.size(), SerializedPosition::kMaxTreeIdLength);
+    CHECK_LE(tree_id_string.size(), SerializedPosition::kMaxTreeIdLength,
+             base::NotFatalUntil::M163);
     auto tree_id_span = base::as_writable_byte_span(result.tree_id);
     std::ranges::fill(tree_id_span, 0);
     tree_id_span.first(tree_id_string.size())
@@ -425,7 +428,7 @@ class AXPosition {
       return str;
 
     const std::u16string& text = GetText();
-    DCHECK_GE(text_offset_, 0);
+    CHECK_GE(text_offset_, 0, base::NotFatalUntil::M163);
     const size_t max_text_offset = text.size();
     DCHECK_LE(text_offset_, static_cast<int>(max_text_offset)) << text;
     std::u16string annotated_text;
@@ -581,7 +584,7 @@ class AXPosition {
     if (IsNullPosition())
       return false;
 
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
     // If this position is anchored to an ignored node, then consider this
     // position to be ignored.
     if (GetAnchor()->IsIgnored())
@@ -629,7 +632,8 @@ class AXPosition {
                                        : child_index_ - 1;
         AXPositionInstance child_position =
             CreateChildPositionAt(adjusted_child_index);
-        DCHECK(child_position && !child_position->IsNullPosition());
+        CHECK(child_position && !child_position->IsNullPosition(),
+              base::NotFatalUntil::M163);
         return child_position->IsNullPosition() ||
                child_position->GetAnchor()->IsIgnored();
       }
@@ -664,7 +668,7 @@ class AXPosition {
       return false;
 
     AXNode* anchor = GetAnchor();
-    DCHECK(anchor);
+    CHECK(anchor, base::NotFatalUntil::M163);
 
     return IsLeafNodeForTreePosition(*anchor);
   }
@@ -1526,18 +1530,18 @@ class AXPosition {
               position->child_index() == BEFORE_TEXT
                   ? CreateTreePositionAtStartOfAnchor(*leaf_node)
                   : CreateTreePositionAtEndOfAnchor(*leaf_node);
-          DCHECK(new_position->IsLeaf());
+          CHECK(new_position->IsLeaf(), base::NotFatalUntil::M163);
           return new_position;
         }
 
-        DCHECK(!position->IsLeaf());
+        CHECK(!position->IsLeaf(), base::NotFatalUntil::M163);
         // Not a leaf: use a child index from 0 to AnchorChilkdCount().
         if (position->child_index_ == BEFORE_TEXT) {
           position->child_index_ = 0;
           return position;
         }
 
-        DCHECK_GE(position->child_index_, 0);
+        CHECK_GE(position->child_index_, 0, base::NotFatalUntil::M163);
         if (position->child_index_ > position->AnchorChildCount())
           position->child_index_ = position->AnchorChildCount();
         break;
@@ -1591,7 +1595,7 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance copy = Clone();
-    DCHECK_GE(copy->text_offset_, 0);
+    CHECK_GE(copy->text_offset_, 0, base::NotFatalUntil::M163);
     // Note that by design, `AXPosition::IsLeaf()` excludes the text found in
     // ignored subtrees from the accessibility tree's text representation. (See
     // `AXNode::IsEmptyLeaf()`.)
@@ -1610,7 +1614,7 @@ class AXPosition {
       }
 
       copy->kind_ = AXPositionKind::TREE_POSITION;
-      DCHECK(copy->IsValid());
+      CHECK(copy->IsValid(), base::NotFatalUntil::M163);
       return copy;
     }
 
@@ -1634,7 +1638,7 @@ class AXPosition {
     for (int current_offset = 0; child_index < copy->AnchorChildCount();
          ++child_index) {
       AXPositionInstance child = copy->CreateChildPositionAt(child_index);
-      DCHECK(!child->IsNullPosition());
+      CHECK(!child->IsNullPosition(), base::NotFatalUntil::M163);
 
       // If the text offset falls on the boundary between two adjacent children,
       // we look at the affinity to decide whether to place the tree position on
@@ -1719,10 +1723,10 @@ class AXPosition {
         tree_position =
             tree_position->CreateChildPositionAt(tree_position->child_index_);
       }
-      DCHECK(!tree_position->IsNullPosition());
+      CHECK(!tree_position->IsNullPosition(), base::NotFatalUntil::M163);
     } while (!tree_position->IsLeaf());
 
-    DCHECK(tree_position->IsLeafTreePosition());
+    CHECK(tree_position->IsLeafTreePosition(), base::NotFatalUntil::M163);
     return tree_position;
   }
 
@@ -1767,12 +1771,13 @@ class AXPosition {
       return copy;
     }
 
-    DCHECK_GE(copy->child_index_, 0);
-    DCHECK_LT(copy->child_index_, copy->AnchorChildCount());
+    CHECK_GE(copy->child_index_, 0, base::NotFatalUntil::M163);
+    CHECK_LT(copy->child_index_, copy->AnchorChildCount(),
+             base::NotFatalUntil::M163);
     int new_offset = 0;
     for (int i = 0; i <= child_index_; ++i) {
       AXPositionInstance child = copy->CreateChildPositionAt(i);
-      DCHECK(!child->IsNullPosition());
+      CHECK(!child->IsNullPosition(), base::NotFatalUntil::M163);
       // If the current text offset is valid, we don't touch it to
       // potentially allow converting from a text position to a tree
       // position and back without losing information. Otherwise, if the
@@ -1842,7 +1847,7 @@ class AXPosition {
       }
     }
     text_position = text_position->AsTextPosition();
-    DCHECK(!text_position->IsNullPosition());
+    CHECK(!text_position->IsNullPosition(), base::NotFatalUntil::M163);
 
     int offset_in_parent = text_position->text_offset_;
     // Determine the anchor and text offset of the leaf equivalent position by
@@ -1850,7 +1855,7 @@ class AXPosition {
     // `offset_in_parent`.
     while (!text_position->IsLeaf()) {
       AXPositionInstance child = text_position->CreateChildPositionAt(0);
-      DCHECK(!child->IsNullPosition());
+      CHECK(!child->IsNullPosition(), base::NotFatalUntil::M163);
 
       // Note that even though ignored children should not contribute any text
       // content or hypertext to the tree's text representation, we have to
@@ -1910,7 +1915,7 @@ class AXPosition {
       text_position = std::move(child);
     }
 
-    DCHECK(text_position->IsLeafTextPosition());
+    CHECK(text_position->IsLeafTextPosition(), base::NotFatalUntil::M163);
     text_position->text_offset_ = offset_in_parent;
     // A leaf Text position is always downstream since there is no ambiguity as
     // to whether it refers to the end of the current or the start of the next
@@ -1980,7 +1985,7 @@ class AXPosition {
         // Since the equivalent leaf tree position is unignored, search for the
         // first unignored ancestor anchor and return that text position.
         if (!unignored_position->GetAnchor()->IsIgnored()) {
-          DCHECK(!unignored_position->IsIgnored());
+          CHECK(!unignored_position->IsIgnored(), base::NotFatalUntil::M163);
           return unignored_position;
         }
         unignored_position = unignored_position->CreateParentPosition();
@@ -2649,7 +2654,7 @@ class AXPosition {
       return CreateNullPosition();
 
     const AXTree* tree = parent_anchor->tree();
-    DCHECK(tree);
+    CHECK(tree, base::NotFatalUntil::M163);
 
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
@@ -3284,8 +3289,9 @@ class AXPosition {
         SANITIZER_NOTREACHED() << "Offset range error:\n" << ToDebugString();
         return CreateNullPosition();
       }
-      DCHECK_GE(text_position->text_offset_, 0);
-      DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
+      CHECK_GE(text_position->text_offset_, 0, base::NotFatalUntil::M163);
+      CHECK_LE(text_position->text_offset_, text_position->MaxTextOffset(),
+               base::NotFatalUntil::M163);
       while (!text_position->AtStartOfAnchor() &&
              (!gfx::IsValidCodePointIndex(
                   text_position->GetText(),
@@ -3340,8 +3346,9 @@ class AXPosition {
         SANITIZER_NOTREACHED() << "Offset range error:\n" << ToDebugString();
         return CreateNullPosition();
       }
-      DCHECK_GE(text_position->text_offset_, 0);
-      DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
+      CHECK_GE(text_position->text_offset_, 0, base::NotFatalUntil::M163);
+      CHECK_LE(text_position->text_offset_, text_position->MaxTextOffset(),
+               base::NotFatalUntil::M163);
       while (!text_position->AtEndOfAnchor() &&
              (!gfx::IsValidCodePointIndex(
                   text_position->GetText(),
@@ -3427,7 +3434,8 @@ class AXPosition {
       }
 
       int max_text_offset = text_position->MaxTextOffset();
-      DCHECK_LT(text_position->text_offset_, max_text_offset);
+      CHECK_LT(text_position->text_offset_, max_text_offset,
+               base::NotFatalUntil::M163);
       std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
           text_position->GetGraphemeIterator();
       do {
@@ -3436,8 +3444,9 @@ class AXPosition {
                grapheme_iterator &&
                !grapheme_iterator->IsGraphemeBoundary(
                    static_cast<size_t>(text_position->text_offset_)));
-      DCHECK_GT(text_position->text_offset_, 0);
-      DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
+      CHECK_GT(text_position->text_offset_, 0, base::NotFatalUntil::M163);
+      CHECK_LE(text_position->text_offset_, text_position->MaxTextOffset(),
+               base::NotFatalUntil::M163);
     }
 
     // If the character boundary is in the same subtree, return a position
@@ -3532,7 +3541,7 @@ class AXPosition {
         return Clone();
       }
 
-      DCHECK_GT(text_position->text_offset_, 0);
+      CHECK_GT(text_position->text_offset_, 0, base::NotFatalUntil::M163);
       std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
           text_position->GetGraphemeIterator();
       do {
@@ -3540,8 +3549,9 @@ class AXPosition {
       } while (!text_position->AtStartOfAnchor() && grapheme_iterator &&
                !grapheme_iterator->IsGraphemeBoundary(
                    static_cast<size_t>(text_position->text_offset_)));
-      DCHECK_GE(text_position->text_offset_, 0);
-      DCHECK_LT(text_position->text_offset_, text_position->MaxTextOffset());
+      CHECK_GE(text_position->text_offset_, 0, base::NotFatalUntil::M163);
+      CHECK_LT(text_position->text_offset_, text_position->MaxTextOffset(),
+               base::NotFatalUntil::M163);
     }
 
     // The character boundary should be in the same subtree. Return a position
@@ -3870,7 +3880,8 @@ class AXPosition {
                   base::BindRepeating(&AbortMoveAtRootBoundary));
             } else {
               text_position = text_position->CreatePositionAtStartOfAnchor();
-              DCHECK(!text_position->IsNullPosition());
+              CHECK(!text_position->IsNullPosition(),
+                    base::NotFatalUntil::M163);
               continue;
             }
             break;
@@ -4077,7 +4088,8 @@ class AXPosition {
                   base::BindRepeating(&AbortMoveAtRootBoundary));
             } else {
               text_position = text_position->CreatePositionAtEndOfAnchor();
-              DCHECK(!text_position->IsNullPosition());
+              CHECK(!text_position->IsNullPosition(),
+                    base::NotFatalUntil::M163);
               continue;
             }
             break;
@@ -4275,8 +4287,8 @@ class AXPosition {
     // Valid positions are required for comparison. Use `AsValidPosition`
     // or `SnapToMaxTextOffsetIfBeyond` before calling `CompareTo` or making
     // comparisons.
-    DCHECK(IsValid());
-    DCHECK(other.IsValid());
+    CHECK(IsValid(), base::NotFatalUntil::M163);
+    CHECK(other.IsValid(), base::NotFatalUntil::M163);
 
     if (GetAnchor() == other.GetAnchor())
       return SlowCompareTo(other);  // No optimization is necessary.
@@ -4315,6 +4327,8 @@ class AXPosition {
 
     if (normalized_this_position->IsNullPosition()) {
       if (normalized_other_position->IsNullPosition()) {
+        // CHECK-exclusion: since the slot path is not required (see the comment
+        // below), keep DCHECK_EQ() for fast path.
         // Both positions normalized to a position past the end of the whole
         // content. There is no way that they could be ancestors of one another,
         // so using the slow path is not required.
@@ -4620,7 +4634,8 @@ class AXPosition {
         AXPositionInstance other_text_position =
             other.AsTextPosition()->CreateAncestorPosition(
                 common_anchor, ax::mojom::MoveDirection::kForward);
-        DCHECK_EQ(other_text_position->GetAnchor(), common_anchor);
+        CHECK_EQ(other_text_position->GetAnchor(), common_anchor,
+                 base::NotFatalUntil::M163);
         other_affinity = other_text_position->affinity();
         AXPositionInstance this_text_position = AsTextPosition();
         this_affinity = this_text_position->affinity();
@@ -4647,7 +4662,8 @@ class AXPosition {
         AXPositionInstance this_text_position =
             AsTextPosition()->CreateAncestorPosition(
                 common_anchor, ax::mojom::MoveDirection::kForward);
-        DCHECK_EQ(this_text_position->GetAnchor(), common_anchor);
+        CHECK_EQ(this_text_position->GetAnchor(), common_anchor,
+                 base::NotFatalUntil::M163);
         this_affinity = this_text_position->affinity();
         AXPositionInstance other_text_position = other.AsTextPosition();
         other_affinity = other_text_position->affinity();
@@ -4698,8 +4714,10 @@ class AXPosition {
         AXPositionInstance other_text_position_ancestor =
             other.LowestCommonAncestorPosition(
                 *this, ax::mojom::MoveDirection::kBackward);
-        DCHECK(this_text_position_ancestor->IsTextPosition());
-        DCHECK(other_text_position_ancestor->IsTextPosition());
+        CHECK(this_text_position_ancestor->IsTextPosition(),
+              base::NotFatalUntil::M163);
+        CHECK(other_text_position_ancestor->IsTextPosition(),
+              base::NotFatalUntil::M163);
 
         this_affinity = this_text_position_ancestor->affinity();
         other_affinity = other_text_position_ancestor->affinity();
@@ -4766,8 +4784,10 @@ class AXPosition {
     AXPositionInstance other_tree_position_ancestor =
         other_normalized_tree_position->CreateAncestorPosition(
             common_anchor, ax::mojom::MoveDirection::kBackward);
-    DCHECK(this_tree_position_ancestor->IsTreePosition());
-    DCHECK(other_tree_position_ancestor->IsTreePosition());
+    CHECK(this_tree_position_ancestor->IsTreePosition(),
+          base::NotFatalUntil::M163);
+    CHECK(other_tree_position_ancestor->IsTreePosition(),
+          base::NotFatalUntil::M163);
     return this_tree_position_ancestor->child_index_ -
            other_tree_position_ancestor->child_index_;
   }
@@ -4799,7 +4819,7 @@ class AXPosition {
   // characters for image elements, even if they have an author specified name.
   // Only used for UIA.
   bool EmptyObjectShouldProvideNameFromAttribute() const {
-    DCHECK(IsInUnignoredEmptyObject());
+    CHECK(IsInUnignoredEmptyObject(), base::NotFatalUntil::M163);
     return GetAnchor()->GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
            !IsImage(GetAnchor()->GetRole()) &&
            !GetAnchor()->GetNameUTF16().empty();
@@ -4935,7 +4955,7 @@ class AXPosition {
     // text node.
     if (IsTextPosition()) {
       AXPositionInstance leaf_text_position = AsLeafTextPosition();
-      DCHECK(leaf_text_position->GetAnchor());
+      CHECK(leaf_text_position->GetAnchor(), base::NotFatalUntil::M163);
       if (leaf_text_position->GetAnchor()->IsLineBreak())
         return true;
       std::u16string text = leaf_text_position->GetText();
@@ -5103,7 +5123,7 @@ class AXPosition {
     // the meaning of "hypertext" in this context.
     AXPositionInstance tree_position =
         CreatePositionAtStartOfAnchor()->AsTreePosition();
-    DCHECK(!tree_position->IsNullPosition());
+    CHECK(!tree_position->IsNullPosition(), base::NotFatalUntil::M163);
     AXPositionInstance parent_position = tree_position->CreateParentPosition(
         ax::mojom::MoveDirection::kBackward);
     if (parent_position->IsNullPosition())
@@ -5112,7 +5132,7 @@ class AXPosition {
     int offset_in_parent = 0;
     for (int i = 0; i < parent_position->child_index(); ++i) {
       AXPositionInstance child = parent_position->CreateChildPositionAt(i);
-      DCHECK(!child->IsNullPosition());
+      CHECK(!child->IsNullPosition(), base::NotFatalUntil::M163);
       offset_in_parent += child->MaxTextOffsetInParent();
     }
     return offset_in_parent;
@@ -5347,7 +5367,7 @@ class AXPosition {
     if (IsNullPosition()) {
       return {};
     }
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
 
     // An embedded object replacement character is exposed in a node's text
     // representation when a control, such as a text field, is empty. Since the
@@ -5376,7 +5396,7 @@ class AXPosition {
     if (IsNullPosition()) {
       return {};
     }
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
 
     // An embedded object replacement character is exposed in a node's text
     // representation when a control, such as a text field, is empty. Since the
@@ -5407,7 +5427,7 @@ class AXPosition {
     if (IsNullPosition()) {
       return {};
     }
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
 
     // Format is almost always consistent throughout any node -- the only
     // exceptions are inline text boxes with CSS highlights or spelling/grammar
@@ -5502,7 +5522,7 @@ class AXPosition {
     if (IsNullPosition()) {
       return {};
     }
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
 
     int text_length = GetAnchor()->GetTextContentLengthUTF16();
 
@@ -5599,8 +5619,8 @@ class AXPosition {
   // without creating position objects.
   static int ComputeTextStartOfChildInParent(const AXNode* child,
                                              const AXNode* parent) {
-    DCHECK(child);
-    DCHECK(parent);
+    CHECK(child, base::NotFatalUntil::M163);
+    CHECK(parent, base::NotFatalUntil::M163);
     int offset = 0;
     for (size_t c = 0; c < parent->GetChildCount(); ++c) {
       if (parent->GetChildAtIndex(c) == child) {
@@ -5622,7 +5642,7 @@ class AXPosition {
   AXNodeID GetNextOnLineID() const {
     if (IsNullPosition())
       return kInvalidAXNodeID;
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
 
     if (GetAnchor()->HasIntAttribute(ax::mojom::IntAttribute::kNextOnLineId)) {
       return static_cast<AXNodeID>(
@@ -5664,7 +5684,7 @@ class AXPosition {
   AXNodeID GetPreviousOnLineID() const {
     if (IsNullPosition())
       return kInvalidAXNodeID;
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
 
     if (GetAnchor()->HasIntAttribute(
             ax::mojom::IntAttribute::kPreviousOnLineId)) {
@@ -5744,7 +5764,7 @@ class AXPosition {
     const bool is_last_child =
         AnchorIndexInParent() == (GetAnchorSiblingCount() - 1);
 
-    DCHECK(GetAnchor());
+    CHECK(GetAnchor(), base::NotFatalUntil::M163);
     return is_last_child &&
            GetRole(GetAnchor()->GetParentCrossingTreeBoundary()) ==
                ax::mojom::Role::kStaticText;
@@ -5757,7 +5777,7 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance current_position = AsTreePosition();
-    DCHECK(!current_position->IsNullPosition());
+    CHECK(!current_position->IsNullPosition(), base::NotFatalUntil::M163);
 
     if (!IsLeaf()) {
       const int child_index = current_position->child_index_;
@@ -5784,7 +5804,7 @@ class AXPosition {
       if (index_in_parent + 1 < parent_position->AnchorChildCount()) {
         AXPositionInstance next_sibling =
             parent_position->CreateChildPositionAt(index_in_parent + 1);
-        DCHECK(!next_sibling->IsNullPosition());
+        CHECK(!next_sibling->IsNullPosition(), base::NotFatalUntil::M163);
 
         if (abort_predicate.Run(*current_position, *next_sibling,
                                 AXMoveType::kSibling,
@@ -5813,7 +5833,7 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance current_position = AsTreePosition();
-    DCHECK(!current_position->IsNullPosition());
+    CHECK(!current_position->IsNullPosition(), base::NotFatalUntil::M163);
 
     AXPositionInstance parent_position =
         current_position->CreateParentPosition();
@@ -5837,7 +5857,7 @@ class AXPosition {
     // Get the previous sibling's deepest last child.
     AXPositionInstance rightmost_leaf =
         parent_position->CreateChildPositionAt(index_in_parent - 1);
-    DCHECK(!rightmost_leaf->IsNullPosition());
+    CHECK(!rightmost_leaf->IsNullPosition(), base::NotFatalUntil::M163);
 
     if (abort_predicate.Run(*current_position, *rightmost_leaf,
                             AXMoveType::kSibling,
@@ -5850,7 +5870,7 @@ class AXPosition {
       parent_position = std::move(rightmost_leaf);
       rightmost_leaf = parent_position->CreateChildPositionAt(
           parent_position->AnchorChildCount() - 1);
-      DCHECK(!rightmost_leaf->IsNullPosition());
+      CHECK(!rightmost_leaf->IsNullPosition(), base::NotFatalUntil::M163);
 
       if (abort_predicate.Run(*parent_position, *rightmost_leaf,
                               AXMoveType::kDescendant,
@@ -5875,7 +5895,7 @@ class AXPosition {
     while (!next_leaf->IsNullPosition() && !next_leaf->IsLeaf())
       next_leaf = next_leaf->CreateNextAnchorPosition(abort_predicate);
 
-    DCHECK(next_leaf);
+    CHECK(next_leaf, base::NotFatalUntil::M163);
     return next_leaf->AsLeafTextPosition();
   }
 
@@ -5895,7 +5915,7 @@ class AXPosition {
           previous_leaf->CreatePreviousAnchorPosition(abort_predicate);
     }
 
-    DCHECK(previous_leaf);
+    CHECK(previous_leaf, base::NotFatalUntil::M163);
     return previous_leaf->AsLeafTextPosition();
   }
 
@@ -5909,7 +5929,7 @@ class AXPosition {
     while (!next_leaf->IsNullPosition() && !next_leaf->IsLeaf())
       next_leaf = next_leaf->CreateNextAnchorPosition(abort_predicate);
 
-    DCHECK(next_leaf);
+    CHECK(next_leaf, base::NotFatalUntil::M163);
     return next_leaf;
   }
 
@@ -5925,7 +5945,7 @@ class AXPosition {
           previous_leaf->CreatePreviousAnchorPosition(abort_predicate);
     }
 
-    DCHECK(previous_leaf);
+    CHECK(previous_leaf, base::NotFatalUntil::M163);
     return previous_leaf;
   }
 
@@ -6494,7 +6514,7 @@ class AXPosition {
     if (position->IsNullPosition()) {
       return {};
     }
-    DCHECK(position->GetAnchor());
+    CHECK(position->GetAnchor(), base::NotFatalUntil::M163);
     return position->GetAnchor()->GetIntListAttribute(
         ax::mojom::IntListAttribute::kSentenceStarts);
   }
@@ -6504,7 +6524,7 @@ class AXPosition {
     if (position->IsNullPosition()) {
       return {};
     }
-    DCHECK(position->GetAnchor());
+    CHECK(position->GetAnchor(), base::NotFatalUntil::M163);
     return position->GetAnchor()->GetIntListAttribute(
         ax::mojom::IntListAttribute::kSentenceEnds);
   }
