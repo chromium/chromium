@@ -54,7 +54,7 @@ class TreeBuilder {
   BaseSizeInfo* size_info_;
   bool diff_mode_;
   TreeNodeFactory tree_node_factory_;
-  std::unique_ptr<TreeNode> root_;
+  TreeNode* root_;
   absl::flat_hash_map<GroupedPath, TreeNode*> _parents;
 
   // Contained TreeNode hold lightweight string_views to fields in SizeInfo.

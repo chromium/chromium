@@ -8,6 +8,7 @@
 #include <cassert>
 #include <iostream>
 #include <list>
+#include <map>
 #include <sstream>
 #include <tuple>
 
@@ -29,8 +30,9 @@ void Container::AssignShortNames(std::vector<Container>* containers) {
   for (size_t i = 0; i < containers->size(); ++i) {
     Container& c = (*containers)[i];
     std::ostringstream oss;
-    if (!c.name.empty())
+    if (!c.name.empty()) {
       oss << i;
+    }
     c.short_name = oss.str();
   }
 }
@@ -310,12 +312,9 @@ DiffStatus DeltaSymbol::GetDiffStatus() const {
 TreeNode::TreeNode(ArtifactType artifact_type_in, int32_t id_in)
     : artifact_type(artifact_type_in), id(id_in) {}
 
-TreeNode::~TreeNode() {
-  // TODO(jaspercb): Could use custom allocator to delete all nodes in one go.
-  for (TreeNode* child : children) {
-    delete child;
-  }
-}
+TreeNode::TreeNode(TreeNode&&) = default;
+
+TreeNode::~TreeNode() = default;
 
 std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
   return os << "Symbol(full_name=" << sym.FullName()
@@ -496,33 +495,60 @@ void TreeNode::WriteIntoJson(
   }
 }
 
+namespace {
+Stat& GetOrCreateStat(
+    absl::InlinedVector<std::pair<SectionId, Stat>, 2>* child_stats,
+    SectionId section) {
+  for (auto& pair : *child_stats) {
+    if (pair.first == section) {
+      return pair.second;
+    }
+  }
+  child_stats->push_back({section, Stat{}});
+  return child_stats->back().second;
+}
+}  // namespace
+
 NodeStats::NodeStats() = default;
+NodeStats::NodeStats(const NodeStats&) = default;
+NodeStats& NodeStats::operator=(const NodeStats&) = default;
+NodeStats::NodeStats(NodeStats&&) = default;
+NodeStats& NodeStats::operator=(NodeStats&&) = default;
 NodeStats::~NodeStats() = default;
 
-NodeStats::NodeStats(const BaseSymbol& symbol) {
-  const SectionId section = symbol.Section();
-  Stat& section_stats = child_stats[section];
-  section_stats = {1, 0, 0, 0, symbol.Pss()};
+void NodeStats::AddSymbol(const BaseSymbol& symbol) {
+  Stat& section_stats = GetOrCreateStat(&child_stats, symbol.Section());
+  section_stats.count += 1;
+  section_stats.size += symbol.Pss();
   switch (symbol.GetDiffStatus()) {
     case DiffStatus::kUnchanged:
       break;
     case DiffStatus::kAdded:
-      section_stats.added = 1;
+      section_stats.added += 1;
       break;
     case DiffStatus::kRemoved:
-      section_stats.removed = 1;
+      section_stats.removed += 1;
       break;
     case DiffStatus::kChanged:
-      section_stats.changed = 1;
+      section_stats.changed += 1;
       break;
   }
+}
+
+bool NodeStats::HasSection(SectionId section) const {
+  for (const auto& pair : child_stats) {
+    if (pair.first == section) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void NodeStats::WriteIntoJson(const JsonWriteOptions& opts,
                               Json::Value* out) const {
   (*out) = Json::Value(Json::objectValue);
   bool is_diff_count = opts.diff_mode && opts.method_count_mode;
-  for (const auto kv : child_stats) {
+  for (const auto& kv : child_stats) {
     const std::string sectionId = std::string(1, static_cast<char>(kv.first));
     const Stat stats = kv.second;
     (*out)[sectionId] = Json::Value(Json::objectValue);
@@ -540,7 +566,7 @@ void NodeStats::WriteIntoJson(const JsonWriteOptions& opts,
 
 NodeStats& NodeStats::operator+=(const NodeStats& other) {
   for (const auto& it : other.child_stats) {
-    child_stats[it.first] += it.second;
+    GetOrCreateStat(&child_stats, it.first) += it.second;
   }
   return *this;
 }
@@ -548,10 +574,11 @@ NodeStats& NodeStats::operator+=(const NodeStats& other) {
 SectionId NodeStats::ComputeBiggestSection() const {
   SectionId ret = SectionId::kNone;
   float max = 0.0f;
-  for (auto& pair : child_stats) {
-    if (abs(pair.second.size) > max) {
+  for (const auto& pair : child_stats) {
+    float abs_size = abs(pair.second.size);
+    if (abs_size > max || (abs_size == max && max > 0.0f && pair.first < ret)) {
       ret = pair.first;
-      max = abs(pair.second.size);
+      max = abs_size;
     }
   }
   return ret;
@@ -595,7 +622,8 @@ TreeNodeFactory::TreeNodeFactory() = default;
 TreeNodeFactory::~TreeNodeFactory() = default;
 
 TreeNode* TreeNodeFactory::Make(ArtifactType artifact_type) {
-  return new TreeNode(artifact_type, next_id++);
+  nodes_.push_back(TreeNode(artifact_type, next_id++));
+  return &nodes_.back();
 }
 
 }  // namespace caspian

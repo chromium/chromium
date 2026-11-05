@@ -8,6 +8,7 @@
 #include <iostream>
 #include <map>
 #include <stack>
+#include <tuple>
 #include <utility>
 
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -18,6 +19,11 @@ namespace {
 /** Name used by a directory created to hold symbols with no name. */
 constexpr const char kComponentSep = '>';
 constexpr const char kPathSep = '/';
+
+struct GroupedEntry {
+  GroupedPath key;
+  std::vector<const BaseSymbol*> symbols;
+};
 }  // namespace
 
 TreeBuilder::TreeBuilder(SizeInfo* size_info)
@@ -63,19 +69,43 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
 
   // Initialize tree root.
   root_->id_path = GroupedPath{"", ""};
-  _parents[root_->id_path] = root_.get();
+  _parents[root_->id_path] = root_;
 
-  absl::flat_hash_map<GroupedPath, std::vector<const BaseSymbol*>>
-      symbols_by_grouped_path;
+  // Group symbols by (group, path) using a two-level lookup:
+  // 1. |fast_key_to_entry| keys on the raw (group.data(), group.size(), path)
+  //    pointers so that symbols from the same file do not repeatedly call
+  //    strlen(path) or hash path strings.
+  // 2. |key_to_entry| keys on string content (GroupedPath) so that distinct
+  //    char* pointers with identical strings (e.g. "before" vs "after" path
+  //    tables in diff mode) resolve to the same GroupedEntry.
+  std::vector<GroupedEntry> grouped_entries;
+  absl::flat_hash_map<GroupedPath, uint32_t> key_to_entry;
+  absl::flat_hash_map<std::tuple<const char*, size_t, const char*>, uint32_t>
+      fast_key_to_entry;
+  const bool has_filters = !filters_.empty();
   for (const BaseSymbol* sym : symbols_) {
     const char* path = sym->GroupingPath();
-    GroupedPath key = GroupedPath{lens_->ParentName(*sym), path};
-    if (ShouldIncludeSymbol(key, *sym)) {
-      symbols_by_grouped_path[key].push_back(sym);
+    std::string_view group = lens_->ParentName(*sym);
+    auto [fast_it, fast_inserted] =
+        fast_key_to_entry.try_emplace({group.data(), group.size(), path}, 0);
+    if (fast_inserted) {
+      GroupedPath key{group, path};
+      auto [it, inserted] =
+          key_to_entry.try_emplace(key, grouped_entries.size());
+      if (inserted) {
+        grouped_entries.push_back(GroupedEntry{key, {}});
+      }
+      fast_it->second = it->second;
+    }
+    GroupedEntry& entry = grouped_entries[fast_it->second];
+    if (!has_filters || ShouldIncludeSymbol(entry.key, *sym)) {
+      entry.symbols.push_back(sym);
     }
   }
-  for (const auto& pair : symbols_by_grouped_path) {
-    AddFileEntry(pair.first, pair.second);
+  for (const GroupedEntry& entry : grouped_entries) {
+    if (!entry.symbols.empty()) {
+      AddFileEntry(entry.key, entry.symbols);
+    }
   }
 }
 
@@ -112,7 +142,7 @@ TreeNode* TreeBuilder::Find(std::string_view path) {
     path = path.substr(idx + 1);
   }
 
-  TreeNode* node = root_.get();
+  TreeNode* node = root_;
   for (std::string_view id_path : id_paths) {
     TreeNode* old_node = node;
     node = nullptr;
@@ -184,7 +214,7 @@ void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
       // to aggregate counts of all symbol types in |node_stats.count| to know
       // if all child symbols of a node have been added or removed, which is
       // true if |count| == |added| or |count| == |removed|.
-      node_stats += NodeStats(*sym);
+      node_stats.AddSymbol(*sym);
       continue;
     }
     TreeNode* symbol_node = tree_node_factory_.Make(ArtifactType::kSymbol);
@@ -193,7 +223,7 @@ void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
     symbol_node->size = sym->Pss();
     symbol_node->padding = sym->PaddingPss();
     symbol_node->address = sym->Address();
-    symbol_node->node_stats = NodeStats(*sym);
+    symbol_node->node_stats.AddSymbol(*sym);
     symbol_node->symbol = sym;
     if (diff_mode_) {
       symbol_node->before_size = sym->BeforePss();
@@ -220,12 +250,13 @@ void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
     }
   }
 
+  file_node->children.reserve(file_node->children.size() + symbol_nodes.size());
   for (TreeNode* symbol_node : symbol_nodes) {
     AttachToParent(symbol_node, file_node);
   }
 
   TreeNode* orphan_node = file_node;
-  while (orphan_node != root_.get()) {
+  while (orphan_node != root_) {
     orphan_node = GetOrMakeParentNode(orphan_node);
   }
 
@@ -285,10 +316,10 @@ TreeNode* TreeBuilder::FindNodeById(int32_t id) {
     std::vector<TreeNode*>::const_iterator it;
   };
   if (root_->id == id) {
-    return root_.get();
+    return root_;
   }
   std::stack<Frame> st;
-  st.emplace(root_.get(), root_->children.begin());
+  st.emplace(root_, root_->children.begin());
   while (!st.empty()) {
     Frame& fr = st.top();
     if (fr.it == fr.node->children.end()) {
@@ -326,9 +357,8 @@ bool TreeBuilder::ShouldIncludeSymbol(const GroupedPath& id_path,
 
 void TreeBuilder::JoinDexMethodClasses(TreeNode* node) {
   const bool is_file_node = node->artifact_type == ArtifactType::kFile;
-  const bool has_dex =
-      node->node_stats.child_stats.count(SectionId::kDex) ||
-      node->node_stats.child_stats.count(SectionId::kDexMethod);
+  const bool has_dex = node->node_stats.HasSection(SectionId::kDex) ||
+                       node->node_stats.HasSection(SectionId::kDexMethod);
   if (!is_file_node || !has_dex || node->children.empty()) {
     return;
   }

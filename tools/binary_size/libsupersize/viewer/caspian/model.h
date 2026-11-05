@@ -11,12 +11,13 @@
 #include <array>
 #include <deque>
 #include <functional>
-#include <map>
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/jsoncpp/source/include/json/json.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/grouped_path.h"
 
@@ -368,8 +369,13 @@ struct Stat {
 
 struct NodeStats {
   NodeStats();
+  NodeStats(const NodeStats&);
+  NodeStats& operator=(const NodeStats&);
+  NodeStats(NodeStats&&);
+  NodeStats& operator=(NodeStats&&);
   ~NodeStats();
-  explicit NodeStats(const BaseSymbol& symbol);
+  void AddSymbol(const BaseSymbol& symbol);
+  bool HasSection(SectionId section) const;
   void WriteIntoJson(const JsonWriteOptions& opts, Json::Value* out) const;
   NodeStats& operator+=(const NodeStats& other);
   SectionId ComputeBiggestSection() const;
@@ -378,7 +384,7 @@ struct NodeStats {
   int32_t SumRemoved() const;
   DiffStatus GetGlobalDiffStatus() const;
 
-  std::map<SectionId, Stat> child_stats;
+  absl::InlinedVector<std::pair<SectionId, Stat>, 2> child_stats;
   DiffStatus imposed_diff_status = DiffStatus::kUnchanged;
 };
 
@@ -390,6 +396,7 @@ struct TreeNode {
   friend TreeNodeFactory;
 
  public:
+  TreeNode(TreeNode&&);
   ~TreeNode();
 
   using CompareFunc =
@@ -429,6 +436,7 @@ class TreeNodeFactory {
 
  private:
   int32_t next_id = 0;
+  std::deque<TreeNode> nodes_;
 };
 
 }  // namespace caspian
