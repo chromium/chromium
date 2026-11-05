@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'Notification': Illegal constructor. Use ServiceWorkerRegistration.showNotification() instead."
 [FAIL] Notification interface: attribute navigate
@@ -41,8 +41,6 @@ Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Notification interface: notification must inherit property "icon" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
 [FAIL] Notification interface: notification must inherit property "badge" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
-[FAIL] Notification interface: notification must inherit property "vibrate" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
 [FAIL] Notification interface: notification must inherit property "timestamp" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
