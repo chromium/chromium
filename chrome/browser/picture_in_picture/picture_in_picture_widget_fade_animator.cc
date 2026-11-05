@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 
+#include "build/build_config.h"
 #include "ui/views/widget/widget.h"
 
 PictureInPictureWidgetFadeAnimator::PictureInPictureWidgetFadeAnimator() =
@@ -24,7 +25,14 @@ void PictureInPictureWidgetFadeAnimator::AnimateShowWindow(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only disable the show/hide animations. On Aura,
+  // `SetVisibilityChangedAnimationsEnabled(false)` disables all window
+  // animations, including the PiP snap animation after a drag.
+  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+#else
   widget->SetVisibilityChangedAnimationsEnabled(false);
+#endif
 
   fade_animator_ = std::make_unique<views::WidgetFadeAnimator>(widget);
   fade_animator_->set_fade_in_duration(base::Milliseconds(kFadeInDurationMs));

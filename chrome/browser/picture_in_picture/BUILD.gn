@@ -254,6 +254,13 @@ source_set("unit_tests") {
       "//chrome/browser/ui/android/tab_model:test_support",
     ]
   }
+
+  if (is_chromeos) {
+    deps += [
+      "//ui/aura",
+      "//ui/wm",
+    ]
+  }
 }
 
 if (!is_android) {
