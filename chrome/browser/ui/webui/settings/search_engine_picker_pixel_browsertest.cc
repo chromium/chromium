@@ -23,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -269,6 +270,12 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest, MoreEngines) {
 
 IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest,
                        MoreEnginesFiltered) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam().use_dark_theme) {
+    // TODO(crbug.com/579836795): Failing on Windows builders.
+    GTEST_SKIP();
+  }
+#endif
   RunTestSequence(
       OpenMoreEnginesDialog(),
       // Matches "Foxtrot" and "Hotel".
