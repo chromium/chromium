@@ -152,7 +152,7 @@ int ComputeTopCornerRadius(ui::FrameType type, bool tiled, bool maximized) {
       GtkCheckVersion(4)
           ? PaintBitmap(size_dip, {{0, 0}, gfx::SizeF(size_dip)}, context, 1)
           : PaintHeaderbar(size_dip, context, 1);
-  DCHECK_EQ(bitmap.width(), bitmap.height());
+  CHECK_EQ(bitmap.width(), bitmap.height(), base::NotFatalUntil::M163);
   for (int i = 0; i < bitmap.width(); ++i) {
     if (SkColorGetA(bitmap.getColor(0, i)) == 255 &&
         SkColorGetA(bitmap.getColor(i, 0)) == 255) {

@@ -892,7 +892,7 @@ void SelectFileDialogLinuxGtk::OnFileChooserDestroy(GtkWidget* dialog) {
 }
 
 void SelectFileDialogLinuxGtk::OnUpdatePreview(GtkWidget* chooser) {
-  DCHECK(!GtkCheckVersion(4));
+  CHECK(!GtkCheckVersion(4), base::NotFatalUntil::M163);
   auto it = dialogs_.find(chooser);
   if (it == dialogs_.end()) {
     return;

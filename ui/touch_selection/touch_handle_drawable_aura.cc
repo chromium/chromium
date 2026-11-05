@@ -108,8 +108,8 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
                                              bool mirror_vertical,
                                              bool mirror_horizontal) {
   // TODO(AviD): Implement adaptive handle orientation logic for Aura
-  DCHECK(!mirror_vertical);
-  DCHECK(!mirror_horizontal);
+  CHECK(!mirror_vertical, base::NotFatalUntil::M163);
+  CHECK(!mirror_horizontal, base::NotFatalUntil::M163);
 
   if (orientation_ == orientation)
     return;

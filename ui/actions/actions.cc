@@ -684,7 +684,7 @@ void ActionManager::ResetActionItemInitializerList() {
 
 base::CallbackListSubscription ActionManager::AppendActionItemInitializer(
     ActionItemInitializerList::CallbackType initializer) {
-  DCHECK(initializer_list_);
+  CHECK(initializer_list_, base::NotFatalUntil::M163);
   // If an initializer is added after items have already been added, just run
   // the initializer immediately.
   if (!root_action_parent_->GetChildren().children().empty()) {

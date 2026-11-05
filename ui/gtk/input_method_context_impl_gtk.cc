@@ -34,7 +34,8 @@ int GetKeyEventProperty(const ui::KeyEvent& key_event,
     return 0;
   }
   auto it = properties->find(property_key);
-  DCHECK(it == properties->end() || it->second.size() == 1);
+  CHECK(it == properties->end() || it->second.size() == 1,
+        base::NotFatalUntil::M163);
   return (it != properties->end()) ? it->second[0] : 0;
 }
 
@@ -51,7 +52,7 @@ GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
   if (it == properties->end()) {
     return static_cast<GdkModifierType>(0);
   }
-  DCHECK_EQ(it->second.size(), 4u);
+  CHECK_EQ(it->second.size(), 4u, base::NotFatalUntil::M163);
   // Stored in little endian.
   int result = 0;
   int bitshift = 0;
@@ -77,7 +78,7 @@ int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group) {
 
 // Translate IME ui::KeyEvent to a GdkEventKey.
 GdkEventKey* GdkEventFromImeKeyEvent(const ui::KeyEvent& key_event) {
-  DCHECK(!GtkCheckVersion(4));
+  CHECK(!GtkCheckVersion(4), base::NotFatalUntil::M163);
   GdkEventType event_type = key_event.type() == ui::EventType::kKeyPressed
                                 ? GdkKeyPress()
                                 : GdkKeyRelease();
@@ -94,7 +95,8 @@ GdkEventKey* GdkEventFromImeKeyEvent(const ui::KeyEvent& key_event) {
   gdk_keymap_translate_keyboard_state(keymap, hw_code, state, group, &keyval,
                                       nullptr, nullptr, &consumed);
   gdk_keymap_add_virtual_modifiers(keymap, &state);
-  DCHECK_NE(keyval, static_cast<guint>(GDK_KEY_VoidSymbol));
+  CHECK_NE(keyval, static_cast<guint>(GDK_KEY_VoidSymbol),
+           base::NotFatalUntil::M163);
 
   // Build GdkEvent
   GdkEvent* gdk_event = gdk_event_new(event_type);
@@ -200,7 +202,7 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   GdkEventKey* event = nullptr;
   if (!GtkCheckVersion(4)) {
     event = GdkEventFromImeKeyEvent(key_event);
-    DCHECK(event);
+    CHECK(event, base::NotFatalUntil::M163);
 
     auto* window = GetTargetWindow(key_event);
     event->window = window;

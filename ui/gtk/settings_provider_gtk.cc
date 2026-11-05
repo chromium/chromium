@@ -66,7 +66,7 @@ void SettingsProviderGtk::FrameActionSettingWatcher::OnSettingChanged(
 
 SettingsProviderGtk::SettingsProviderGtk(GtkUi* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   GtkSettings* settings = gtk_settings_get_default();
   signal_ = ScopedGSignal(
       settings, "notify::gtk-decoration-layout",

@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
 
   template <typename T>
   T* AddChild(std::unique_ptr<T> action_item) {
-    DCHECK(!action_item->GetParent());
+    CHECK(!action_item->GetParent(), base::NotFatalUntil::M163);
     action_item->parent_ = this;
     T* result = action_item.get();
     AddChildInternal(std::move(action_item));
@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
 
   template <typename T>
   T* AddChildAt(std::unique_ptr<T> action_item, size_t index) {
-    DCHECK(!action_item->GetParent());
+    CHECK(!action_item->GetParent(), base::NotFatalUntil::M163);
     action_item->parent_ = this;
     T* result = action_item.get();
     AddChildAtInternal(std::move(action_item), index);
@@ -101,8 +101,8 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
 
   template <typename T>
   std::unique_ptr<T> RemoveChild(T* action_item) {
-    DCHECK(action_item);
-    DCHECK_EQ(action_item->GetParent(), this);
+    CHECK(action_item, base::NotFatalUntil::M163);
+    CHECK_EQ(action_item->GetParent(), this, base::NotFatalUntil::M163);
     action_item->parent_ = nullptr;
     std::unique_ptr<BaseAction> removed_action =
         children_.RemoveAction(action_item);

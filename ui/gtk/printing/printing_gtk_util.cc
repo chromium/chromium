@@ -40,9 +40,9 @@ gfx::Size GetPdfPaperSizeDeviceUnitsGtk(
 void InitPrintSettingsGtk(GtkPrintSettings* settings,
                           GtkPageSetup* page_setup,
                           printing::PrintSettings* print_settings) {
-  DCHECK(settings);
-  DCHECK(page_setup);
-  DCHECK(print_settings);
+  CHECK(settings, base::NotFatalUntil::M163);
+  CHECK(page_setup, base::NotFatalUntil::M163);
+  CHECK(print_settings, base::NotFatalUntil::M163);
 
   const char* printer_name = gtk_print_settings_get_printer(settings);
   std::u16string name =
@@ -75,7 +75,8 @@ void InitPrintSettingsGtk(GtkPrintSettings* settings,
   GtkPageOrientation orientation = gtk_print_settings_get_orientation(settings);
   // Set before SetPrinterPrintableArea to make it flip area if necessary.
   print_settings->SetOrientation(orientation == GTK_PAGE_ORIENTATION_LANDSCAPE);
-  DCHECK_EQ(print_settings->device_units_per_inch(), dpi);
+  CHECK_EQ(print_settings->device_units_per_inch(), dpi,
+           base::NotFatalUntil::M163);
   print_settings->SetPrinterPrintableArea(physical_size_device_units,
                                           printable_area_device_units, true);
 

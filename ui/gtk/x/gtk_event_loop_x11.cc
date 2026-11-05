@@ -27,7 +27,8 @@ x11::KeyButMask BuildXkbStateFromGdkEvent(unsigned int state,
 x11::Event ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
   if (!gtk::GtkCheckVersion(4)) {
     auto* key = reinterpret_cast<GdkEventKey*>(gdk_event);
-    DCHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease());
+    CHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease(),
+          base::NotFatalUntil::M163);
     x11::Window window = x11::Window::None;
     if (key->window) {
       window = static_cast<x11::Window>(gdk_x11_window_get_xid(key->window));
@@ -138,14 +139,14 @@ GtkEventLoopX11::~GtkEventLoopX11() {
 }
 
 gboolean GtkEventLoopX11::OnEvent(GdkSurface* surface, GdkEvent* gdk_event) {
-  DCHECK(gtk::GtkCheckVersion(4));
+  CHECK(gtk::GtkCheckVersion(4), base::NotFatalUntil::M163);
   ProcessGdkEvent(gdk_event);
   return false;
 }
 
 // static
 void GtkEventLoopX11::DispatchGdkEvent(GdkEvent* gdk_event, gpointer) {
-  DCHECK(!gtk::GtkCheckVersion(4));
+  CHECK(!gtk::GtkCheckVersion(4), base::NotFatalUntil::M163);
   ProcessGdkEvent(gdk_event);
   gtk_main_do_event(gdk_event);
 }

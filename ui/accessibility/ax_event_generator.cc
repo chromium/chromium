@@ -119,7 +119,7 @@ bool AXEventGenerator::EventParams::operator<(const EventParams& rhs) const {
 AXEventGenerator::TargetedEvent::TargetedEvent(AXNodeID node_id,
                                                const EventParams& event_params)
     : node_id(node_id), event_params(event_params) {
-  DCHECK_NE(node_id, kInvalidAXNodeID);
+  CHECK_NE(node_id, kInvalidAXNodeID, base::NotFatalUntil::M163);
 }
 
 AXEventGenerator::TargetedEvent::~TargetedEvent() = default;
@@ -173,7 +173,7 @@ AXEventGenerator::Iterator AXEventGenerator::Iterator::operator++(int) {
 }
 
 AXEventGenerator::TargetedEvent AXEventGenerator::Iterator::operator*() const {
-  DCHECK(map_iter_ != map_end_iter_);
+  CHECK(map_iter_ != map_end_iter_, base::NotFatalUntil::M163);
   CHECK(set_iter_ != map_iter_->second.end());
   return AXEventGenerator::TargetedEvent(map_iter_->first, *set_iter_);
 }
@@ -218,7 +218,8 @@ AXEventGenerator::~AXEventGenerator() = default;
 
 void AXEventGenerator::SetTree(AXTree* new_tree) {
   if (tree_) {
-    DCHECK(tree_event_observation_.IsObservingSource(tree_.get()));
+    CHECK(tree_event_observation_.IsObservingSource(tree_.get()),
+          base::NotFatalUntil::M163);
     tree_event_observation_.Reset();
   }
   tree_ = new_tree;
@@ -268,7 +269,7 @@ void AXEventGenerator::ClearEvents() {
 }
 
 void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
 
   if (node->GetRole() == ax::mojom::Role::kInlineTextBox)
     return;
@@ -324,7 +325,7 @@ void AXEventGenerator::OnIgnoredWillChange(
 void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
                                          const AXNodeData& old_node_data,
                                          const AXNodeData& new_node_data) {
-  DCHECK_EQ(tree_, tree);
+  CHECK_EQ(tree_, tree, base::NotFatalUntil::M163);
   AXNode* node = tree_->GetFromId(new_node_data.id);
   if (!node)
     return;

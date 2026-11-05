@@ -22,7 +22,7 @@ base::WeakPtr<TouchSelectionMenuClient> TouchSelectionMenuClient::GetWeakPtr() {
 }
 
 TouchSelectionMenuRunner::~TouchSelectionMenuRunner() {
-  DCHECK_EQ(this, g_touch_selection_menu_runner);
+  CHECK_EQ(this, g_touch_selection_menu_runner, base::NotFatalUntil::M163);
   g_touch_selection_menu_runner = nullptr;
 }
 
@@ -31,7 +31,7 @@ TouchSelectionMenuRunner* TouchSelectionMenuRunner::GetInstance() {
 }
 
 TouchSelectionMenuRunner::TouchSelectionMenuRunner() {
-  DCHECK(!g_touch_selection_menu_runner);
+  CHECK(!g_touch_selection_menu_runner, base::NotFatalUntil::M163);
   g_touch_selection_menu_runner = this;
 }
 

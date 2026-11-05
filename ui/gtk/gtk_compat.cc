@@ -270,7 +270,7 @@ SkColor GtkStyleContextGetColor(GtkStyleContext* context) {
 }
 
 SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context) {
-  DCHECK(!GtkCheckVersion(4));
+  CHECK(!GtkCheckVersion(4), base::NotFatalUntil::M163);
   static auto get_bg_color =
       DlSym<void(GtkStyleContext*, GtkStateFlags, Gdk3Rgba*)>(
           GetLibGtk(), "gtk_style_context_get_background_color");
@@ -281,7 +281,7 @@ SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context) {
 
 std::optional<SkColor> GtkStyleContextLookupColor(GtkStyleContext* context,
                                                   const gchar* color_name) {
-  DCHECK(!GtkCheckVersion(4));
+  CHECK(!GtkCheckVersion(4), base::NotFatalUntil::M163);
   static auto lookup_color =
       DlSym<gboolean(GtkStyleContext*, const gchar*, Gdk3Rgba*)>(
           GetLibGtk(), "gtk_style_context_lookup_color");
@@ -324,13 +324,13 @@ void GtkRenderIcon(GtkStyleContext* context,
                    double x,
                    double y) {
   if (texture) {
-    DCHECK(GtkCheckVersion(4));
+    CHECK(GtkCheckVersion(4), base::NotFatalUntil::M163);
     static auto render =
         DlSym<void(GtkStyleContext*, cairo_t*, GdkTexture*, double, double)>(
             GetLibGtk(), "gtk_render_icon");
     render(context, cr, texture, x, y);
   } else if (pixbuf) {
-    DCHECK(!GtkCheckVersion(4));
+    CHECK(!GtkCheckVersion(4), base::NotFatalUntil::M163);
     static auto render =
         DlSym<void(GtkStyleContext*, cairo_t*, GdkPixbuf*, double, double)>(
             GetLibGtk(), "gtk_render_icon");
@@ -364,7 +364,7 @@ void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
 }
 
 ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog) {
-  DCHECK(GtkCheckVersion(4));
+  CHECK(GtkCheckVersion(4), base::NotFatalUntil::M163);
   static auto get = DlSym<GListModel*(GtkFileChooser*)>(
       GetLibGtk(), "gtk_file_chooser_get_files");
   return TakeGObject(get(dialog));
@@ -391,7 +391,7 @@ ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGiconForScale(
     int size,
     int scale,
     GtkIconLookupFlags flags) {
-  DCHECK(!GtkCheckVersion(4));
+  CHECK(!GtkCheckVersion(4), base::NotFatalUntil::M163);
   static auto lookup =
       DlSym<GtkIconInfo*(GtkIconTheme*, GIcon*, int, int, GtkIconLookupFlags)>(
           GetLibGtk(), "gtk_icon_theme_lookup_by_gicon_for_scale");
@@ -421,7 +421,7 @@ ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
     int scale,
     GtkTextDirection direction,
     GtkIconLookupFlags flags) {
-  DCHECK(GtkCheckVersion(4));
+  CHECK(GtkCheckVersion(4), base::NotFatalUntil::M163);
   static auto lookup = DlSym<GtkIconPaintable*(
       GtkIconTheme*, GIcon*, int, int, GtkTextDirection, GtkIconLookupFlags)>(
       GetLibGtk(), "gtk_icon_theme_lookup_by_gicon");

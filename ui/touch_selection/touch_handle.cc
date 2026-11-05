@@ -36,7 +36,7 @@ constexpr float kMaxTouchMajorForHitTesting = 36.0f;
 bool RectIntersectsCircle(const gfx::RectF& rect,
                           const gfx::PointF& circle_center,
                           float circle_radius) {
-  DCHECK_GT(circle_radius, 0.f);
+  CHECK_GT(circle_radius, 0.f, base::NotFatalUntil::M163);
   // An intersection occurs if the closest point between the rect and the
   // circle's center is less than the circle's radius.
   gfx::PointF closest_point_in_rect(circle_center);
@@ -84,7 +84,8 @@ TouchHandle::TouchHandle(TouchHandleClient* client,
       is_handle_layout_update_required_(false),
       mirror_vertical_(false),
       mirror_horizontal_(false) {
-  DCHECK_NE(orientation, TouchHandleOrientation::UNDEFINED);
+  CHECK_NE(orientation, TouchHandleOrientation::UNDEFINED,
+           base::NotFatalUntil::M163);
   drawable_->SetEnabled(enabled_);
   drawable_->SetOrientation(orientation_, false, false);
   drawable_->SetOrigin(focus_bottom_);
@@ -108,7 +109,7 @@ void TouchHandle::SetEnabled(bool enabled) {
 }
 
 void TouchHandle::SetVisible(bool visible, AnimationStyle animation_style) {
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
   if (is_visible_ == visible)
     return;
 
@@ -131,7 +132,7 @@ void TouchHandle::SetVisible(bool visible, AnimationStyle animation_style) {
 }
 
 void TouchHandle::SetFocus(const gfx::PointF& top, const gfx::PointF& bottom) {
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
   if (focus_top_ == top && focus_bottom_ == bottom)
     return;
 
@@ -141,7 +142,7 @@ void TouchHandle::SetFocus(const gfx::PointF& top, const gfx::PointF& bottom) {
 }
 
 void TouchHandle::SetViewportRect(const gfx::RectF& viewport_rect) {
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
   if (viewport_rect_ == viewport_rect)
     return;
 
@@ -150,13 +151,15 @@ void TouchHandle::SetViewportRect(const gfx::RectF& viewport_rect) {
 }
 
 void TouchHandle::SetOrientation(TouchHandleOrientation orientation) {
-  DCHECK(enabled_);
-  DCHECK_NE(orientation, TouchHandleOrientation::UNDEFINED);
+  CHECK(enabled_, base::NotFatalUntil::M163);
+  CHECK_NE(orientation, TouchHandleOrientation::UNDEFINED,
+           base::NotFatalUntil::M163);
   if (is_dragging_) {
     deferred_orientation_ = orientation;
     return;
   }
-  DCHECK_EQ(deferred_orientation_, TouchHandleOrientation::UNDEFINED);
+  CHECK_EQ(deferred_orientation_, TouchHandleOrientation::UNDEFINED,
+           base::NotFatalUntil::M163);
   if (orientation_ == orientation)
     return;
 
@@ -233,7 +236,7 @@ bool TouchHandle::Animate(base::TimeTicks frame_time) {
   if (fade_end_time_ == base::TimeTicks())
     return false;
 
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
 
   const float time_u = 1.0f - (fade_end_time_ - frame_time) / kFadeDuration;
   const float position_u =
@@ -353,7 +356,7 @@ gfx::PointF TouchHandle::ComputeHandleOrigin() const {
 }
 
 void TouchHandle::BeginDrag() {
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
   if (is_dragging_)
     return;
   EndFade();
@@ -363,7 +366,7 @@ void TouchHandle::BeginDrag() {
 }
 
 void TouchHandle::EndDrag() {
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
   if (!is_dragging_)
     return;
 
@@ -390,8 +393,8 @@ void TouchHandle::EndDrag() {
 }
 
 void TouchHandle::BeginFade() {
-  DCHECK(enabled_);
-  DCHECK(!is_dragging_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
+  CHECK(!is_dragging_, base::NotFatalUntil::M163);
   animate_deferred_fade_ = false;
   const float target_alpha = is_visible_ ? 1.f : 0.f;
   if (target_alpha == alpha_) {
@@ -406,7 +409,7 @@ void TouchHandle::BeginFade() {
 }
 
 void TouchHandle::EndFade() {
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M163);
   animate_deferred_fade_ = false;
   fade_end_time_ = base::TimeTicks();
   SetAlpha(is_visible_ ? 1.f : 0.f);

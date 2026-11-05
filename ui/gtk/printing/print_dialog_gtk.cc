@@ -141,7 +141,7 @@ class StickyPrintSettingGtk {
   GtkPrintSettings* settings() { return last_used_settings_; }
 
   void SetLastUsedSettings(GtkPrintSettings* settings) {
-    DCHECK(last_used_settings_);
+    CHECK(last_used_settings_, base::NotFatalUntil::M163);
     g_object_unref(last_used_settings_.ExtractAsDangling());
     last_used_settings_ = gtk_print_settings_copy(settings);
   }
@@ -251,8 +251,8 @@ PrintDialogGtk::~PrintDialogGtk() {
 
 void PrintDialogGtk::UseDefaultSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!page_setup_);
-  DCHECK(!printer_);
+  CHECK(!page_setup_, base::NotFatalUntil::M163);
+  CHECK(!printer_, base::NotFatalUntil::M163);
 
   // |gtk_settings_| is a new copy.
   gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
@@ -461,7 +461,7 @@ void PrintDialogGtk::ShowDialog(
     PrintingContextLinux::PrintSettingsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = std::move(callback);
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M163);
 
   dialog_ = gtk_print_unix_dialog_new(nullptr, nullptr);
   gtk::SetGtkTransientForAura(dialog_, parent_view, platform_);
@@ -516,7 +516,6 @@ void PrintDialogGtk::ShowDialog(
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
-#if DCHECK_IS_ON()
   bool oop_printing =
       context_->out_of_process_behavior() !=
       printing::PrintingContext::OutOfProcessBehavior::kDisabled;
@@ -524,8 +523,8 @@ void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
   // For in-browser printing, this runs on the print worker thread, so it does
   // not block the UI thread.  For OOP it runs on the service document task
   // runner.
-  DCHECK_EQ(task_runner_->RunsTasksInCurrentSequence(), oop_printing);
-#endif  // DCHECK_IS_ON()
+  CHECK_EQ(task_runner_->RunsTasksInCurrentSequence(), oop_printing,
+           base::NotFatalUntil::M163);
 
   bool success = base::CreateTemporaryFile(&path_to_pdf_);
 
@@ -692,7 +691,8 @@ void PrintDialogGtk::InitPrintSettings(
 
 void PrintDialogGtk::OnWindowDestroying(aura::Window* window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(gtk::GetAuraTransientParent(dialog_), window);
+  CHECK_EQ(gtk::GetAuraTransientParent(dialog_), window,
+           base::NotFatalUntil::M163);
 
   gtk::ClearAuraTransientParent(dialog_, window, platform_);
   window->RemoveObserver(this);

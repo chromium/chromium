@@ -43,7 +43,7 @@ void GtkUiPlatformX11::OnInitialized() {
 
 GdkWindow* GtkUiPlatformX11::GetGdkWindow(
     gfx::AcceleratedWidget window_id) const {
-  DCHECK(!gtk::GtkCheckVersion(4));
+  CHECK(!gtk::GtkCheckVersion(4), base::NotFatalUntil::M163);
   GdkDisplay* display = gdk_display_get_default();
   GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
       display, static_cast<uint32_t>(window_id));
@@ -85,7 +85,7 @@ void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
 void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
   // gtk_window_present_with_time() also maps `window`, so it gets correctly
   // raised and gets focus.
-  DCHECK(ui::X11EventSource::HasInstance());
+  CHECK(ui::X11EventSource::HasInstance(), base::NotFatalUntil::M163);
   gtk_window_present_with_time(
       window,
       static_cast<uint32_t>(ui::X11EventSource::GetInstance()->GetTimestamp()));

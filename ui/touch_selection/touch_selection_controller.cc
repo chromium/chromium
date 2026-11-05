@@ -63,7 +63,7 @@ TouchSelectionController::TouchSelectionController(
       selection_handle_dragged_(false),
       consume_touch_sequence_(false),
       show_touch_handles_(false) {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
 }
 
 TouchSelectionController::~TouchSelectionController() {
@@ -165,11 +165,11 @@ void TouchSelectionController::OnViewportChanged(
   }
 
   if (active_status_ == ActiveStatus::kInsertionActive) {
-    DCHECK(insertion_handle_);
+    CHECK(insertion_handle_, base::NotFatalUntil::M163);
     insertion_handle_->SetViewportRect(viewport_rect);
   } else if (active_status_ == ActiveStatus::kSelectionActive) {
-    DCHECK(start_selection_handle_);
-    DCHECK(end_selection_handle_);
+    CHECK(start_selection_handle_, base::NotFatalUntil::M163);
+    CHECK(end_selection_handle_, base::NotFatalUntil::M163);
     start_selection_handle_->SetViewportRect(viewport_rect);
     end_selection_handle_->SetViewportRect(viewport_rect);
   }
@@ -299,7 +299,7 @@ bool TouchSelectionController::Animate(base::TimeTicks frame_time) {
 }
 
 const gfx::SelectionBound& TouchSelectionController::GetFocusBound() const {
-  DCHECK_NE(active_status_, ActiveStatus::kInactive);
+  CHECK_NE(active_status_, ActiveStatus::kInactive, base::NotFatalUntil::M163);
   return anchor_drag_to_selection_start_ ? start_ : end_;
 }
 
@@ -405,13 +405,13 @@ bool TouchSelectionController::WillHandleTouchEventImpl(
   }
 
   if (active_status_ == ActiveStatus::kInsertionActive) {
-    DCHECK(insertion_handle_);
+    CHECK(insertion_handle_, base::NotFatalUntil::M163);
     return insertion_handle_->WillHandleTouchEvent(event);
   }
 
   if (active_status_ == ActiveStatus::kSelectionActive) {
-    DCHECK(start_selection_handle_);
-    DCHECK(end_selection_handle_);
+    CHECK(start_selection_handle_, base::NotFatalUntil::M163);
+    CHECK(end_selection_handle_, base::NotFatalUntil::M163);
     if (start_selection_handle_->IsActive())
       return start_selection_handle_->WillHandleTouchEvent(event);
 
@@ -450,7 +450,8 @@ void TouchSelectionController::OnDragBegin(
     const TouchSelectionDraggable& draggable,
     const gfx::PointF& drag_position) {
   if (&draggable == insertion_handle_.get()) {
-    DCHECK_EQ(active_status_, ActiveStatus::kInsertionActive);
+    CHECK_EQ(active_status_, ActiveStatus::kInsertionActive,
+             base::NotFatalUntil::M163);
     if (config_.hide_active_handle)
       insertion_handle_->SetTransparent();
     NotifySelectionEvent(INSERTION_HANDLE_DRAG_STARTED);
@@ -458,14 +459,15 @@ void TouchSelectionController::OnDragBegin(
     return;
   }
 
-  DCHECK_EQ(active_status_, ActiveStatus::kSelectionActive);
+  CHECK_EQ(active_status_, ActiveStatus::kSelectionActive,
+           base::NotFatalUntil::M163);
 
   if (&draggable == start_selection_handle_.get()) {
     anchor_drag_to_selection_start_ = true;
   } else if (&draggable == end_selection_handle_.get()) {
     anchor_drag_to_selection_start_ = false;
   } else {
-    DCHECK_EQ(&draggable, &longpress_drag_selector_);
+    CHECK_EQ(&draggable, &longpress_drag_selector_, base::NotFatalUntil::M163);
     anchor_drag_to_selection_start_ =
         (drag_position - GetStartPosition()).LengthSquared() <
         (drag_position - GetEndPosition()).LengthSquared();
@@ -596,7 +598,7 @@ void TouchSelectionController::HandleSwipeToMoveCursorGestureAck(
   ScopedNotificationBatch batch(*this);
   switch (type) {
     case ui::EventType::kGestureScrollBegin: {
-      DCHECK(cursor_control.has_value());
+      CHECK(cursor_control.has_value(), base::NotFatalUntil::M163);
       if (!*cursor_control) {
         break;
       }
@@ -674,7 +676,8 @@ void TouchSelectionController::OnSelectionChanged() {
 }
 
 bool TouchSelectionController::ActivateInsertionIfNecessary() {
-  DCHECK_NE(ActiveStatus::kSelectionActive, active_status_);
+  CHECK_NE(ActiveStatus::kSelectionActive, active_status_,
+           base::NotFatalUntil::M163);
 
   if (!insertion_handle_) {
     insertion_handle_ = std::make_unique<TouchHandle>(
@@ -697,14 +700,15 @@ void TouchSelectionController::DeactivateInsertion() {
   if (active_status_ != ActiveStatus::kInsertionActive) {
     return;
   }
-  DCHECK(insertion_handle_);
+  CHECK(insertion_handle_, base::NotFatalUntil::M163);
   active_status_ = ActiveStatus::kInactive;
   insertion_handle_->SetEnabled(false);
   NotifySelectionEvent(INSERTION_HANDLE_CLEARED);
 }
 
 bool TouchSelectionController::ActivateSelectionIfNecessary() {
-  DCHECK_NE(ActiveStatus::kInsertionActive, active_status_);
+  CHECK_NE(ActiveStatus::kInsertionActive, active_status_,
+           base::NotFatalUntil::M163);
 
   if (!start_selection_handle_) {
     start_selection_handle_ =
@@ -742,8 +746,8 @@ void TouchSelectionController::DeactivateSelection() {
   if (active_status_ != ActiveStatus::kSelectionActive) {
     return;
   }
-  DCHECK(start_selection_handle_);
-  DCHECK(end_selection_handle_);
+  CHECK(start_selection_handle_, base::NotFatalUntil::M163);
+  CHECK(end_selection_handle_, base::NotFatalUntil::M163);
   longpress_drag_selector_.OnSelectionDeactivated();
   start_selection_handle_->SetEnabled(false);
   end_selection_handle_->SetEnabled(false);
@@ -767,12 +771,12 @@ TouchSelectionController::ScopedNotificationBatch::~ScopedNotificationBatch() {
 }
 
 void TouchSelectionController::NotifySelectionEvent(SelectionEventType event) {
-  DCHECK_GT(notification_batch_depth_, 0);
+  CHECK_GT(notification_batch_depth_, 0, base::NotFatalUntil::M163);
   pending_notifications_.push_back(event);
 }
 
 void TouchSelectionController::DispatchNotifications() {
-  DCHECK_EQ(notification_batch_depth_, 1);
+  CHECK_EQ(notification_batch_depth_, 1, base::NotFatalUntil::M163);
   base::WeakPtr<TouchSelectionController> weak_this =
       weak_factory_.GetWeakPtr();
   // Index-based loop as re-entrant calls from the client may append events.
@@ -788,11 +792,11 @@ void TouchSelectionController::DispatchNotifications() {
 
 void TouchSelectionController::UpdateHandleLayoutIfNecessary() {
   if (active_status_ == ActiveStatus::kInsertionActive) {
-    DCHECK(insertion_handle_);
+    CHECK(insertion_handle_, base::NotFatalUntil::M163);
     insertion_handle_->UpdateHandleLayout();
   } else if (active_status_ == ActiveStatus::kSelectionActive) {
-    DCHECK(start_selection_handle_);
-    DCHECK(end_selection_handle_);
+    CHECK(start_selection_handle_, base::NotFatalUntil::M163);
+    CHECK(end_selection_handle_, base::NotFatalUntil::M163);
     start_selection_handle_->UpdateHandleLayout();
     end_selection_handle_->UpdateHandleLayout();
   }

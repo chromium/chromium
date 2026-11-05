@@ -121,7 +121,7 @@ ui::TextEditCommand GtkKeyBindingsHandler::MatchEvent(const ui::Event& event) {
 
 void GtkKeyBindingsHandler::OnSettingsChanged(GSettings* settings,
                                               const char* key) {
-  DCHECK(settings);
+  CHECK(settings, base::NotFatalUntil::M163);
   if (std::string_view(key) != kGtkKeyTheme) {
     return;
   }

@@ -206,7 +206,7 @@ GtkUi::~GtkUi() {
 
 bool GtkUi::Initialize() {
   const auto* delegate = ui::LinuxUiDelegate::GetInstance();
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   const auto backend = delegate->GetBackend();
 
   // The GTK codepath using these schemas is only used on Wayland.
@@ -512,8 +512,10 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
       if (!surface) {
         continue;
       }
-      DCHECK_EQ(cairo_surface_get_type(surface), CAIRO_SURFACE_TYPE_IMAGE);
-      DCHECK_EQ(cairo_image_surface_get_format(surface), CAIRO_FORMAT_ARGB32);
+      CHECK_EQ(cairo_surface_get_type(surface), CAIRO_SURFACE_TYPE_IMAGE,
+               base::NotFatalUntil::M163);
+      CHECK_EQ(cairo_image_surface_get_format(surface), CAIRO_FORMAT_ARGB32,
+               base::NotFatalUntil::M163);
 
       SkImageInfo image_info =
           SkImageInfo::Make(cairo_image_surface_get_width(surface),
