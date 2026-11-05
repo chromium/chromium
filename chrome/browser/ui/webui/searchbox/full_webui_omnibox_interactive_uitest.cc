@@ -4870,6 +4870,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // text in the Omnibox.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        FocusLocationBarAfterBlurSelectsAll) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/571374047): Ensure this test works properly when "
+                    "WebUI toolbar is enabled.";
+  }
   RunTestSequence(
       // 1. Open the WebUI omnibox.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
