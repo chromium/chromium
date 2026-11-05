@@ -17,6 +17,8 @@
   - Use --filters to explicitly state all directories and files to include in
     the coverage report.
   - Use --debug to run a debug build of Fuzzilli.
+  - Use --jobs to set the number of parallel jobs Fuzzilli runs. Without it,
+    Fuzzilli uses its own default.
 
   The following gn args, for use with `js_in_process_fuzzer`, are a mix
   of args required for coverage and args that improve fuzzing either by
@@ -172,6 +174,15 @@ def _ParseCommandArguments():
     help='Compile Fuzzilli as a debug build.',
   )
 
+  arg_parser.add_argument(
+    '-j',
+    '--jobs',
+    type=int,
+    required=False,
+    help='The number of parallel jobs for Fuzzilli to run. If not provided, '
+    'Fuzzilli uses its own default.',
+  )
+
   args = arg_parser.parse_args()
   return args
 
@@ -184,6 +195,7 @@ def _RunFuzzilli(
   profile,
   profraw_dir,
   is_debug,
+  jobs=None,
 ):
   """Builds and runs Fuzzilli.
 
@@ -228,9 +240,11 @@ def _RunFuzzilli(
     fuzzilli_executable = os.path.join(
       fuzzilli_dir, f'.build/{build_config}/FuzzilliCli'
     )
+    jobs_args = [f'--jobs={jobs}'] if jobs is not None else []
     run_command = [
       fuzzilli_executable,
       *DEFAULT_FUZZILLI_FLAGS,
+      *jobs_args,
       f'--profile={profile}',
       temp_wrapper.name,
     ]
@@ -320,6 +334,7 @@ def Main():
       args.profile,
       profraw_path,
       args.debug,
+      args.jobs,
     ):
       sys.exit('Error: Fuzzilli failed to build or run.')
 

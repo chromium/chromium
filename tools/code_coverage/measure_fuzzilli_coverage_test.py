@@ -26,7 +26,7 @@ TEST_PROFRAW_DIR = '/tmp/fake_profraw_dir'
 
 
 class MeasureFuzzilliCoverageTest(unittest.TestCase):
-  def _assert_run_fuzzilli(self, mock_run, mock_popen, is_debug):
+  def _assert_run_fuzzilli(self, mock_run, mock_popen, is_debug, jobs=None):
     build_config = 'debug' if is_debug else 'release'
     mock_process = mock.Mock()
     mock_process.wait.side_effect = subprocess.TimeoutExpired(
@@ -43,6 +43,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
       TEST_PROFILE,
       TEST_PROFRAW_DIR,
       is_debug,
+      jobs,
     )
 
     self.assertTrue(success)
@@ -57,12 +58,14 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
       cwd=TEST_FUZZILLI_DIR,
     )
 
+    jobs_args = [f'--jobs={jobs}'] if jobs is not None else []
     expected_run_command_prefix = [
       os.path.join(TEST_FUZZILLI_DIR, f'.build/{build_config}/FuzzilliCli'),
       '--storagePath=/tmp/fuzzilli_storage',
       '--overwrite',
       '--engine=hybrid',
       '--fixedMinimizationTimeout',
+      *jobs_args,
       '--profile=fakeProfile',
     ]
 
@@ -91,6 +94,12 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
   @mock.patch('subprocess.run')
   def test_RunFuzzilliDebug(self, mock_run, mock_popen):
     self._assert_run_fuzzilli(mock_run, mock_popen, is_debug=True)
+
+  @mock.patch.dict(os.environ, {}, clear=True)
+  @mock.patch('subprocess.Popen')
+  @mock.patch('subprocess.run')
+  def test_RunFuzzilliWithJobs(self, mock_run, mock_popen):
+    self._assert_run_fuzzilli(mock_run, mock_popen, is_debug=False, jobs=8)
 
   @mock.patch.dict(os.environ, {}, clear=True)
   @mock.patch('subprocess.Popen')
