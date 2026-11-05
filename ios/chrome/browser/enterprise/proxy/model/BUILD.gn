@@ -108,6 +108,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/chrome/test:test_support",
+    "//ios/components/security_interstitials",
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/public/proxy",

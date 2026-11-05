@@ -378,6 +378,15 @@ chromium-metrics-reviews@google.com.
       summary="URL filtering interstitial events"/>
 </variants>
 
+<variants name="EnterpriseSecureGatewayErrorCategory">
+  <variant name="" summary="any error category"/>
+  <variant name=".Authentication"
+      summary="the Authentication Required error category"/>
+  <variant name=".Authorization"
+      summary="the Access Denied (authorization) error category"/>
+  <variant name=".Other" summary="the Gateway / Other error category"/>
+</variants>
+
 <!-- LINT.IfChange(EnterpriseSignals) -->
 
 <variants name="EnterpriseSignals">
@@ -4633,6 +4642,31 @@ chromium-metrics-reviews@google.com.
     This is recorded when a user account is added as a secondary account
     (in-session).
   </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.SecureGateway.ErrorPage.Event{EnterpriseSecureGatewayErrorCategory}"
+    enum="EnterpriseSecureGatewayErrorPageEvent" expires_after="2027-11-01">
+  <owner>dmytriievd@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the events of the Secure Gateway error page, shown when a managed
+    enterprise proxy fails a navigation, for
+    {EnterpriseSecureGatewayErrorCategory}. Only recorded on iOS for now.
+    &quot;Shown&quot; is recorded when the page is created for a failed
+    navigation, right before it is displayed. Then exactly one outcome is
+    recorded, unless the app is terminated while the page is displayed: &quot;Go
+    back&quot; when the user taps &quot;Go back&quot;, which the Access Denied
+    and Gateway / Other error pages show, &quot;Continue&quot; when the user
+    taps &quot;Continue&quot; on the Authentication Required error page, whether
+    or not a sign-in flow starts, &quot;Dismissed&quot; when the user leaves the
+    page without using its button, once a navigation away from it commits, e.g.
+    a back navigation, an omnibox navigation or a reload, or its tab is closed,
+    or &quot;Not displayed&quot; when the page is destroyed without having been
+    displayed, which only happens when its navigation doesn't commit.
+  </summary>
+  <token key="EnterpriseSecureGatewayErrorCategory"
+      variants="EnterpriseSecureGatewayErrorCategory"/>
 </histogram>
 
 <histogram name="Enterprise.SecureGateway.ProxyAuthChallengeDecision"
