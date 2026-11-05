@@ -179,6 +179,9 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   const std::unique_ptr<AV1Accelerator> accelerator_;
   AV1ReferenceFrameVector ref_frames_;
 
+  // True initially and after Reset()/Flush() until a sequence header OBU is
+  // received in the stream.
+  bool need_sequence_header_ = true;
   std::optional<libgav1::ObuSequenceHeader> current_sequence_header_;
   std::optional<libgav1::ObuFrameHeader> current_frame_header_;
   libgav1::RefCountedBufferPtr current_frame_;
