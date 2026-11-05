@@ -377,6 +377,71 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(registry->IsHandledProtocol(protocol));
 }
 
+// A registration made without a user gesture must not replace a handler, not
+// even the page's own: it waits for the user's decision in the bubble.
+IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
+                       UngesturedSameOriginRegistrationIsPending) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  const std::string protocol = "web+search";
+  const GURL old_handler_url = embedded_test_server()->GetURL("/old.html?%s");
+  AddProtocolHandler(protocol, old_handler_url);
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* content_settings =
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
+
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  ProtocolHandlerRegistry* registry = GetRegistry();
+  EXPECT_EQ(1u, registry->GetHandlersFor(protocol).size());
+  EXPECT_EQ(old_handler_url, registry->GetHandlerFor(protocol).url());
+  EXPECT_EQ(embedded_test_server()->GetURL("/test.html?%s"),
+            content_settings->pending_protocol_handler().url());
+}
+
+// A request with a user gesture supersedes the one an earlier request without a
+// gesture left pending, also when it ends in a silent replacement: otherwise
+// the bubble would keep offering a handler that is already registered, and
+// dismissing it, which commits "Deny", would remove that handler.
+IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
+                       GesturedReplacementClearsPendingRegistration) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  const std::string protocol = "web+search";
+  AddProtocolHandler(protocol, embedded_test_server()->GetURL("/old.html?%s"));
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* content_settings =
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
+  const GURL new_handler_url = embedded_test_server()->GetURL("/test.html?%s");
+
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_EQ(new_handler_url,
+            content_settings->pending_protocol_handler().url());
+
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');"));
+
+  ProtocolHandlerRegistry* registry = GetRegistry();
+  EXPECT_EQ(1u, registry->GetHandlersFor(protocol).size());
+  EXPECT_EQ(new_handler_url, registry->GetHandlerFor(protocol).url());
+  EXPECT_TRUE(content_settings->pending_protocol_handler().IsEmpty());
+}
+
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
                        RegisterProtocolHandlerFrameDetachOnFullscreenExit) {
   ASSERT_TRUE(embedded_test_server()->Start());

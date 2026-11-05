@@ -547,6 +547,62 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   ASSERT_TRUE(registry->HasDefaultHandler(kScheme2));
 }
 
+// End-to-end reproduction of crbug.com/578678235. A manifest handler stays
+// unconfirmed until the user accepts it, and an unconfirmed handler must not
+// be replaced silently: before the fix, a page on the origin the handler points
+// at could replace it without a user gesture, and the replacement survived the
+// extension's uninstall. The page can still take over the scheme, but only
+// once the user grants its own registration request.
+IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
+                       UnconfirmedManifestHandlerIsNotSilentlyReplaced) {
+  constexpr char kScheme[] = "web+ecsearch";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL manifest_handler_url =
+      embedded_test_server()->GetURL("/seed?q=%s");
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      R"({
+        "name": "Test",
+        "version": "1",
+        "manifest_version": 3,
+        "protocol_handlers": [
+          {
+            "name": "Seed handler",
+            "protocol": "%s",
+            "uriTemplate": "%s"
+          }
+        ]
+      })",
+      kScheme, manifest_handler_url.spec().c_str()));
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      GetProtocolHandlersRegistry();
+  auto manifest_handler = CreateExtensionProtocolHandler(
+      kScheme, manifest_handler_url, extension_id);
+  ASSERT_TRUE(registry->IsDefault(manifest_handler));
+  ASSERT_TRUE(registry->ProtocolHandlerNeedsConfirmation(kScheme));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "navigator.registerProtocolHandler('web+ecsearch', '/hijack?q=%s');",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  EXPECT_EQ(1u, registry->GetHandlersFor(kScheme).size());
+  EXPECT_TRUE(registry->IsDefault(manifest_handler));
+  EXPECT_TRUE(registry->ProtocolHandlerNeedsConfirmation(kScheme));
+  EXPECT_EQ(1u, registry->GetExtensionProtocolHandlers(extension_id).size());
+
+  // Nothing is left behind once the extension is gone.
+  UninstallExtension(extension_id);
+  EXPECT_FALSE(registry->HasDefaultHandler(kScheme));
+}
+
 class ProtocolHandlersManagerOTRBrowserTest
     : public ProtocolHandlersManagerBrowserTest {
  protected:

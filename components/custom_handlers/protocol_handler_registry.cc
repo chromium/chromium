@@ -94,18 +94,22 @@ bool ProtocolHandlerRegistry::IsHandlerAccessible(
   return !is_off_the_record_ || handler.is_allowed_in_incognito();
 }
 
+bool ProtocolHandlerRegistry::IsNoOpRegisterHandlerRequest(
+    const ProtocolHandler& handler) const {
+  if (handler.IsEmpty() || !CanSchemeBeOverridden(handler.protocol())) {
+    return true;
+  }
+
+  return !enabled() || IsRegistered(handler) || HasIgnoredEquivalent(handler);
+}
+
 bool ProtocolHandlerRegistry::SilentlyHandleRegisterHandlerRequest(
     const ProtocolHandler& handler) {
-  if (handler.IsEmpty() || !CanSchemeBeOverridden(handler.protocol()))
+  if (IsNoOpRegisterHandlerRequest(handler)) {
     return true;
+  }
 
-  if (!enabled() || IsRegistered(handler) || HasIgnoredEquivalent(handler))
-    return true;
-
-  if (AttemptReplace(handler))
-    return true;
-
-  return false;
+  return AttemptReplace(handler);
 }
 
 void ProtocolHandlerRegistry::OnAcceptRegisterProtocolHandler(
@@ -154,33 +158,45 @@ void ProtocolHandlerRegistry::OnIgnoreRegisterProtocolHandler(
   NotifyChanged();
 }
 
-static bool CanReplaceHandler(const ProtocolHandler& handler1,
-                              const ProtocolHandler& handler2) {
-  if (!handler1.IsSameOrigin(handler2)) {
+// Returns true if |new_handler|, which isn't registered yet, can silently
+// replace |registered_handler|.
+static bool CanReplaceHandler(const ProtocolHandler& new_handler,
+                              const ProtocolHandler& registered_handler) {
+  if (!new_handler.IsSameOrigin(registered_handler)) {
     return false;
   }
 
-  // Extension handlers must not override WebAPI or PWAs registrations.
-  if (handler1.IsExtensionHandler()) {
-    return handler2.IsExtensionHandler();
+  // A handler the user hasn't confirmed yet is waiting for their decision;
+  // replacing it silently would make that decision for them.
+  if (!registered_handler.is_confirmed()) {
+    return false;
   }
 
-  return true;
+  // Handlers belong to whoever registered them: the web origin, or the
+  // extension. Extension handlers must not override WebAPI or PWAs
+  // registrations, a web page must not take over an extension's handler (the
+  // replacement would outlive the extension), and an extension must not take
+  // over another extension's handler.
+  return new_handler.extension_id() == registered_handler.extension_id();
 }
 
 bool ProtocolHandlerRegistry::AttemptReplace(const ProtocolHandler& handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Callers treat a handler that is already registered as a no-op, see
+  // IsNoOpRegisterHandlerRequest().
+  CHECK(!IsRegistered(handler));
   // Refuse destructive removals if the new handler isn't accessible. Only
   // OnAcceptRegisterProtocolHandler auto-promotes the OTR flag; the silent
   // path here must not.
   if (!IsHandlerAccessible(handler)) {
     return false;
   }
-  ProtocolHandler old_default = GetHandlerForInternal(handler.protocol());
-  bool make_new_handler_default = CanReplaceHandler(handler, old_default);
   ProtocolHandlerList to_replace(GetReplacedHandlers(handler));
   if (to_replace.empty())
     return false;
+  // The new handler only becomes the default if it replaces the default.
+  bool make_new_handler_default = std::ranges::contains(
+      to_replace, GetHandlerForInternal(handler.protocol()));
   for (const auto& replaced_handler : to_replace) {
     RemoveHandler(replaced_handler);
   }

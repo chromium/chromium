@@ -756,6 +756,31 @@ TEST_F(ProtocolHandlerRegistryTest, TestSilentlyRegisterHandler) {
   ASSERT_TRUE(registry()->HasIgnoredEquivalent(ph4));
 }
 
+// Unlike SilentlyHandleRegisterHandlerRequest(), IsNoOpRegisterHandlerRequest()
+// never replaces a handler: a request that would replace one isn't a no-op.
+TEST_F(ProtocolHandlerRegistryTest, IsNoOpRegisterHandlerRequest) {
+  ProtocolHandler ph1 =
+      CreateProtocolHandler("news", GURL("https://test/1/%s"));
+  ProtocolHandler ph2 =
+      CreateProtocolHandler("news", GURL("https://test/2/%s"));
+  ProtocolHandler ph3 =
+      CreateProtocolHandler("ignore", GURL("https://test/%s"));
+
+  EXPECT_FALSE(registry()->IsNoOpRegisterHandlerRequest(ph1));
+  registry()->OnAcceptRegisterProtocolHandler(ph1);
+  EXPECT_TRUE(registry()->IsNoOpRegisterHandlerRequest(ph1));
+
+  EXPECT_FALSE(registry()->IsNoOpRegisterHandlerRequest(ph2));
+  EXPECT_TRUE(registry()->IsRegistered(ph1));
+  EXPECT_FALSE(registry()->IsRegistered(ph2));
+
+  registry()->OnIgnoreRegisterProtocolHandler(ph3);
+  EXPECT_TRUE(registry()->IsNoOpRegisterHandlerRequest(ph3));
+
+  registry()->Disable();
+  EXPECT_TRUE(registry()->IsNoOpRegisterHandlerRequest(ph2));
+}
+
 TEST_F(ProtocolHandlerRegistryTest, TestRemoveHandlerRemovesDefault) {
   ProtocolHandler ph1 = CreateProtocolHandler("news", "test1");
   ProtocolHandler ph2 = CreateProtocolHandler("news", "test2");
@@ -976,6 +1001,129 @@ TEST_F(ProtocolHandlerRegistryTest, TestReplaceRemovesStaleHandlers) {
   ASSERT_EQ(handler.url(), ph3.url());
   registry()->RemoveHandler(ph3);
   ASSERT_TRUE(registry()->GetHandlerFor("mailto").IsEmpty());
+}
+
+// A web page must not silently replace an extension's manifest handler that the
+// user hasn't confirmed yet, even one on the page's origin: that would skip the
+// confirmation dialog and leave behind a handler that outlives the extension.
+TEST_F(ProtocolHandlerRegistryTest,
+       UnconfirmedExtensionHandlerIsNotReplacedByWebHandler) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  ProtocolHandler manifest_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/seed/%s"), kExtensionId);
+  ASSERT_FALSE(manifest_handler.is_confirmed());
+  registry()->OnAcceptRegisterProtocolHandler(manifest_handler);
+  ASSERT_TRUE(registry()->IsDefault(manifest_handler));
+
+  ProtocolHandler web_handler =
+      CreateProtocolHandler("mailto", GURL("https://test.com/hijack/%s"));
+  EXPECT_FALSE(registry()->SilentlyHandleRegisterHandlerRequest(web_handler));
+
+  EXPECT_FALSE(registry()->IsRegistered(web_handler));
+  EXPECT_TRUE(registry()->IsDefault(manifest_handler));
+  EXPECT_TRUE(registry()->ProtocolHandlerNeedsConfirmation("mailto"));
+  EXPECT_EQ(1u, registry()->GetExtensionProtocolHandlers(kExtensionId).size());
+}
+
+// A handler registered from an extension page through the Web API is created
+// confirmed, so it must not silently replace the same extension's unconfirmed
+// manifest handler either: the extension would confirm its own handler.
+TEST_F(ProtocolHandlerRegistryTest,
+       UnconfirmedExtensionHandlerIsNotReplacedByItsOwnConfirmedHandler) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  ProtocolHandler manifest_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/seed/%s"), kExtensionId);
+  registry()->OnAcceptRegisterProtocolHandler(manifest_handler);
+  ASSERT_TRUE(registry()->ProtocolHandlerNeedsConfirmation("mailto"));
+
+  ProtocolHandler js_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/other/%s"), kExtensionId);
+  js_handler.Confirm();
+  EXPECT_FALSE(registry()->SilentlyHandleRegisterHandlerRequest(js_handler));
+
+  EXPECT_FALSE(registry()->IsRegistered(js_handler));
+  EXPECT_TRUE(registry()->IsDefault(manifest_handler));
+  EXPECT_TRUE(registry()->ProtocolHandlerNeedsConfirmation("mailto"));
+}
+
+// Once confirmed, an extension's handler still belongs to the extension: a web
+// page on its origin must not silently turn it into a web handler, which
+// extension cleanup would no longer remove.
+TEST_F(ProtocolHandlerRegistryTest,
+       ConfirmedExtensionHandlerIsNotReplacedByWebHandler) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  ProtocolHandler manifest_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/seed/%s"), kExtensionId);
+  registry()->OnAcceptRegisterProtocolHandler(manifest_handler);
+  registry()->ConfirmProtocolHandler("mailto", /*save=*/true);
+  ASSERT_FALSE(registry()->ProtocolHandlerNeedsConfirmation("mailto"));
+
+  ProtocolHandler web_handler =
+      CreateProtocolHandler("mailto", GURL("https://test.com/hijack/%s"));
+  EXPECT_FALSE(registry()->SilentlyHandleRegisterHandlerRequest(web_handler));
+
+  EXPECT_FALSE(registry()->IsRegistered(web_handler));
+  EXPECT_TRUE(registry()->IsDefault(manifest_handler));
+  EXPECT_EQ(1u, registry()->GetExtensionProtocolHandlers(kExtensionId).size());
+}
+
+// An extension must not silently replace another extension's handler, even a
+// confirmed one on the same origin.
+TEST_F(ProtocolHandlerRegistryTest,
+       ExtensionHandlerIsNotReplacedByAnotherExtension) {
+  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  ProtocolHandler foo_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/foo/%s"), kIdFoo);
+  registry()->OnAcceptRegisterProtocolHandler(foo_handler);
+  registry()->ConfirmProtocolHandler("mailto", /*save=*/true);
+
+  ProtocolHandler bar_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/bar/%s"), kIdBar);
+  EXPECT_FALSE(registry()->SilentlyHandleRegisterHandlerRequest(bar_handler));
+
+  EXPECT_TRUE(registry()->IsRegistered(foo_handler));
+  EXPECT_FALSE(registry()->IsRegistered(bar_handler));
+  EXPECT_EQ(1u, registry()->GetExtensionProtocolHandlers(kIdFoo).size());
+}
+
+// A manifest handler must not override a handler registered through the Web
+// API: neither by silently replacing it nor by taking the default when
+// ProtocolHandlersManager registers it afterwards.
+TEST_F(ProtocolHandlerRegistryTest, ExtensionHandlerDoesNotReplaceWebHandler) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  ProtocolHandler web_handler =
+      CreateProtocolHandler("mailto", GURL("https://test.com/web/%s"));
+  registry()->OnAcceptRegisterProtocolHandler(web_handler);
+
+  ProtocolHandler manifest_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/seed/%s"), kExtensionId);
+  EXPECT_FALSE(
+      registry()->SilentlyHandleRegisterHandlerRequest(manifest_handler));
+  registry()->OnAcceptRegisterProtocolHandler(manifest_handler);
+
+  EXPECT_TRUE(registry()->IsRegistered(web_handler));
+  EXPECT_TRUE(registry()->IsDefault(web_handler));
+  EXPECT_FALSE(registry()->ProtocolHandlerNeedsConfirmation("mailto"));
+}
+
+// An extension may still update its own confirmed handler silently.
+TEST_F(ProtocolHandlerRegistryTest,
+       ConfirmedExtensionHandlerIsReplacedByItsOwnExtension) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  ProtocolHandler old_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/old/%s"), kExtensionId);
+  old_handler.Confirm();
+  registry()->OnAcceptRegisterProtocolHandler(old_handler);
+
+  ProtocolHandler new_handler = CreateExtensionProtocolHandler(
+      "mailto", GURL("https://test.com/new/%s"), kExtensionId);
+  new_handler.Confirm();
+  EXPECT_TRUE(registry()->SilentlyHandleRegisterHandlerRequest(new_handler));
+
+  EXPECT_FALSE(registry()->IsRegistered(old_handler));
+  EXPECT_TRUE(registry()->IsDefault(new_handler));
+  EXPECT_EQ(1u, registry()->GetExtensionProtocolHandlers(kExtensionId).size());
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestIsSameOrigin) {
