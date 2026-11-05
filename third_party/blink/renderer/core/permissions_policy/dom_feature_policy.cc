@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
 
+#include <algorithm>
+
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -16,6 +18,28 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
+
+namespace {
+
+// Permissions policy feature names whose queries through the JS introspection
+// API (`allowsFeature()` and `getAllowlistForFeature()`) are excluded from the
+// FeaturePolicyJSAPI* use counters. Chrome no longer supports these features,
+// but pages may continue to query them indefinitely since we can't rely on
+// sites to update their code. Excluding them keeps those leftover queries from
+// inflating the counters.
+void MaybeCountFeaturePolicyJSAPIUse(ExecutionContext* execution_context,
+                                     const String& feature,
+                                     WebFeature specific_feature) {
+  static constexpr const char* kExcludedFeatures[] = {"browsing-topics",
+                                                      "interest-cohort"};
+  if (std::ranges::contains(kExcludedFeatures, feature)) {
+    return;
+  }
+  UseCounter::Count(execution_context, WebFeature::kFeaturePolicyJSAPI);
+  UseCounter::Count(execution_context, specific_feature);
+}
+
+}  // namespace
 
 bool FeatureAvailable(const String& feature, ExecutionContext* ec) {
   bool is_isolated_context = ec && ec->IsIsolatedContext();
@@ -33,10 +57,10 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
                                      const String& feature) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
-  UseCounter::Count(execution_context,
-                    IsIFramePolicy()
-                        ? WebFeature::kFeaturePolicyJSAPIAllowsFeatureIFrame
-                        : WebFeature::kFeaturePolicyJSAPIAllowsFeatureDocument);
+  MaybeCountFeaturePolicyJSAPIUse(
+      execution_context, feature,
+      IsIFramePolicy() ? WebFeature::kFeaturePolicyJSAPIAllowsFeatureIFrame
+                       : WebFeature::kFeaturePolicyJSAPIAllowsFeatureDocument);
   if (FeatureAvailable(feature, execution_context)) {
     bool is_isolated_context =
         execution_context && execution_context->IsIsolatedContext();
@@ -54,8 +78,8 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
                                      const String& url) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
-  UseCounter::Count(
-      execution_context,
+  MaybeCountFeaturePolicyJSAPIUse(
+      execution_context, feature,
       IsIFramePolicy()
           ? WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginIFrame
           : WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginDocument);
@@ -118,10 +142,10 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
     const String& feature) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
-  UseCounter::Count(execution_context,
-                    IsIFramePolicy()
-                        ? WebFeature::kFeaturePolicyJSAPIGetAllowlistIFrame
-                        : WebFeature::kFeaturePolicyJSAPIGetAllowlistDocument);
+  MaybeCountFeaturePolicyJSAPIUse(
+      execution_context, feature,
+      IsIFramePolicy() ? WebFeature::kFeaturePolicyJSAPIGetAllowlistIFrame
+                       : WebFeature::kFeaturePolicyJSAPIGetAllowlistDocument);
   bool is_isolated_context =
       execution_context && execution_context->IsIsolatedContext();
   if (FeatureAvailable(feature, execution_context)) {

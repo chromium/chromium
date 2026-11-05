@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <initializer_list>
+
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
@@ -321,6 +326,78 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
   EXPECT_TRUE(allowed_features.Contains("sync-xhr"));
   // This feature does not exist, so should not be advertised as allowed.
   EXPECT_FALSE(allowed_features.Contains("badfeature"));
+}
+
+TEST_F(DOMFeaturePolicyTest, UseCountersSkipExcludedFeatures) {
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(&page_holder_->GetFrame());
+  const Document& document = page_holder_->GetDocument();
+
+  // Queries for excluded features are not counted.
+  for (const char* feature : {"browsing-topics", "interest-cohort"}) {
+    GetPolicy()->allowsFeature(script_state, feature);
+    GetPolicy()->allowsFeature(script_state, feature, kOriginA);
+    GetPolicy()->getAllowlistForFeature(script_state, feature);
+  }
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kFeaturePolicyJSAPI));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureDocument));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginDocument));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIGetAllowlistDocument));
+
+  // Queries for other features are counted.
+  GetPolicy()->allowsFeature(script_state, "camera");
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kFeaturePolicyJSAPI));
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureDocument));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureIFrame));
+
+  GetPolicy()->allowsFeature(script_state, "camera", kOriginA);
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginDocument));
+
+  GetPolicy()->getAllowlistForFeature(script_state, "camera");
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIGetAllowlistDocument));
+}
+
+TEST_F(IFramePolicyTest, UseCountersSkipExcludedFeatures) {
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(&page_holder_->GetFrame());
+  const Document& document = page_holder_->GetDocument();
+
+  // Queries for excluded features are not counted.
+  for (const char* feature : {"browsing-topics", "interest-cohort"}) {
+    GetPolicy()->allowsFeature(script_state, feature);
+    GetPolicy()->allowsFeature(script_state, feature, kOriginA);
+    GetPolicy()->getAllowlistForFeature(script_state, feature);
+  }
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kFeaturePolicyJSAPI));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureIFrame));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginIFrame));
+  EXPECT_FALSE(
+      document.IsUseCounted(WebFeature::kFeaturePolicyJSAPIGetAllowlistIFrame));
+
+  // Queries for other features are counted.
+  GetPolicy()->allowsFeature(script_state, "camera");
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kFeaturePolicyJSAPI));
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureIFrame));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureDocument));
+
+  GetPolicy()->allowsFeature(script_state, "camera", kOriginA);
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginIFrame));
+
+  GetPolicy()->getAllowlistForFeature(script_state, "camera");
+  EXPECT_TRUE(
+      document.IsUseCounted(WebFeature::kFeaturePolicyJSAPIGetAllowlistIFrame));
 }
 
 }  // namespace blink

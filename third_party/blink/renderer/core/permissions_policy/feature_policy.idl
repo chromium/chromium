@@ -8,8 +8,11 @@
   ImplementedAs=DOMFeaturePolicy,
   LegacyWindowAlias=FeaturePolicy
 ] interface PermissionsPolicy {
-  [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] boolean allowsFeature(DOMString feature, optional DOMString origin);
+  // The FeaturePolicyJSAPI use counter is recorded in DOMFeaturePolicy for
+  // methods that take a feature name so that queries for some features can be
+  // excluded.
+  [CallWith=ScriptState] boolean allowsFeature(DOMString feature, optional DOMString origin);
   [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> features();
   [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> allowedFeatures();
-  [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> getAllowlistForFeature(DOMString feature);
+  [CallWith=ScriptState] sequence<DOMString> getAllowlistForFeature(DOMString feature);
 };
