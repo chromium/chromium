@@ -67,6 +67,8 @@ public class ChromeBaseCheckBoxPreferenceTest {
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertTrue(preference.isEnabled());
+        Assert.assertFalse(preference.isIconSpaceReserved());
+        Assert.assertFalse(preference.isPersistent());
 
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
@@ -189,6 +191,7 @@ public class ChromeBaseCheckBoxPreferenceTest {
                 preference.getLayoutResource(),
                 R.layout.chrome_managed_preference_with_custom_layout);
         Assert.assertTrue(preference.isEnabled());
+        Assert.assertFalse(preference.isPersistent());
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(SUMMARY), isDisplayed())));
@@ -297,5 +300,12 @@ public class ChromeBaseCheckBoxPreferenceTest {
         onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
         onView(withId(android.R.id.checkbox))
                 .check(matches(allOf(not(isEnabled()), isDisplayed())));
+    }
+
+    @Test
+    @LargeTest
+    public void testPersistentDefaultFalse() {
+        ChromeBaseCheckBoxPreference preference = new ChromeBaseCheckBoxPreference(mActivity);
+        Assert.assertFalse(preference.isPersistent());
     }
 }

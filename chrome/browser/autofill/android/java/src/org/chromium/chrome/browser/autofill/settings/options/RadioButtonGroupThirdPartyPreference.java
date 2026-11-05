@@ -39,7 +39,7 @@ public final class RadioButtonGroupThirdPartyPreference
 
     private @Nullable RadioButtonWithDescription mDefaultOption;
     private @Nullable RadioButtonWithDescription mOptInOption;
-    private @ThirdPartyOption int mSelectedOption = getPersistedInt(ThirdPartyOption.DEFAULT);
+    private @ThirdPartyOption int mSelectedOption = ThirdPartyOption.DEFAULT;
 
     public RadioButtonGroupThirdPartyPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -62,7 +62,6 @@ public final class RadioButtonGroupThirdPartyPreference
         if (mSelectedOption != selectedOption) {
             mSelectedOption = selectedOption;
             callChangeListener(mSelectedOption);
-            persistInt(mSelectedOption);
         }
     }
 

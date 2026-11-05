@@ -295,4 +295,28 @@ public class ChromeBasePreferenceTest {
         ChromeBaseListPreference listPreference = new ChromeBaseListPreference(mActivity);
         Assert.assertFalse(listPreference.isIconSpaceReserved());
     }
+
+    @Test
+    @LargeTest
+    public void testPersistentDefaultFalse() {
+        ChromeBasePreference preference = new ChromeBasePreference(mActivity);
+        Assert.assertFalse(preference.isPersistent());
+
+        ChromeBasePreferenceCategory category = new ChromeBasePreferenceCategory(mActivity);
+        Assert.assertFalse(category.isPersistent());
+
+        ChromeBaseListPreference listPreference = new ChromeBaseListPreference(mActivity);
+        Assert.assertFalse(listPreference.isPersistent());
+    }
+
+    @Test
+    @LargeTest
+    public void testPersistentFromXml() {
+        PreferenceFragmentCompat fragment = mSettingsRule.getPreferenceFragment();
+        SettingsUtils.addPreferencesFromResource(
+                fragment, R.xml.test_chrome_base_preference_persistent);
+
+        Assert.assertFalse(fragment.findPreference("default_persistent").isPersistent());
+        Assert.assertTrue(fragment.findPreference("explicit_persistent").isPersistent());
+    }
 }

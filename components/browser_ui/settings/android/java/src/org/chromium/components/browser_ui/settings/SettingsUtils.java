@@ -163,11 +163,18 @@ public class SettingsUtils {
     /**
      * Initializes default attributes on the given preference.
      *
-     * <p>AndroidX Preference defaults iconSpaceReserved to true. When hosted inside an Activity
-     * that does not define preferenceTheme in its theme (such as ChromeTabbedActivity in
-     * SettingsInTab), PreferenceFragmentCompat falls back to PreferenceThemeOverlay, which keeps
-     * iconSpaceReserved as true. Explicitly default iconSpaceReserved to false unless overridden in
-     * attrs so unused icon_frame space is collapsed.
+     * <p>AndroidX Preference defaults iconSpaceReserved to true and persistent to true.
+     *
+     * <p>When hosted inside an Activity that does not define preferenceTheme in its theme (such as
+     * ChromeTabbedActivity in SettingsInTab), PreferenceFragmentCompat falls back to
+     * PreferenceThemeOverlay, which keeps iconSpaceReserved as true. Explicitly default
+     * iconSpaceReserved to false unless overridden in attrs so unused icon_frame space is
+     * collapsed.
+     *
+     * <p>Chrome preference widgets generally do not use the default SharedPreferences file for
+     * persistence (preferring native prefs or declared SharedPreferences keys), and writing
+     * auto-persisted values causes unnecessary disk I/O and shared prefs pollution. Explicitly
+     * default persistent to false unless overridden in attrs.
      *
      * @param context The context for the preference.
      * @param attrs The XML attribute set, or null if constructed programmatically.
@@ -179,6 +186,10 @@ public class SettingsUtils {
         if (!preferenceAttrs.hasValue(R.styleable.Preference_iconSpaceReserved)
                 && !preferenceAttrs.hasValue(R.styleable.Preference_android_iconSpaceReserved)) {
             preference.setIconSpaceReserved(false);
+        }
+        if (!preferenceAttrs.hasValue(R.styleable.Preference_persistent)
+                && !preferenceAttrs.hasValue(R.styleable.Preference_android_persistent)) {
+            preference.setPersistent(false);
         }
         preferenceAttrs.recycle();
     }

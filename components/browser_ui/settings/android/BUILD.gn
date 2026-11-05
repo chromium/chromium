@@ -233,6 +233,7 @@ android_resources("java_test_resources") {
     "java/res_test/xml/test_search_root_prefs.xml",
     "widget/java_test_resources/res/layout/chrome_managed_preference_with_custom_layout.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_checkbox_preference_screen.xml",
+    "widget/java_test_resources/res/xml/test_chrome_base_preference_persistent.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_expandable_switch_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_switch_preference_screen.xml",

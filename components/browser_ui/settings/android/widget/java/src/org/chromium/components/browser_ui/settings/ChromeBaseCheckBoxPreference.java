@@ -30,6 +30,7 @@ public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     /** Constructor for inflating from XML. */
     public ChromeBaseCheckBoxPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }
 

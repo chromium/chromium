@@ -81,6 +81,7 @@ public class ChromeSwitchPreferenceTest {
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertTrue(preference.isEnabled());
+        Assert.assertFalse(preference.isPersistent());
 
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
@@ -192,6 +193,7 @@ public class ChromeSwitchPreferenceTest {
 
         // 1. Verify initial "following" state.
         Assert.assertTrue(preference.isEnabled());
+        Assert.assertFalse(preference.isPersistent());
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(SUMMARY), isDisplayed())));
@@ -250,6 +252,7 @@ public class ChromeSwitchPreferenceTest {
 
         // 1. Verify initial "overridden" state.
         Assert.assertTrue(preference.isEnabled());
+        Assert.assertFalse(preference.isPersistent());
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(SUMMARY), isDisplayed())));
@@ -309,6 +312,7 @@ public class ChromeSwitchPreferenceTest {
                 preference.getLayoutResource(),
                 R.layout.chrome_managed_preference_with_custom_layout);
         Assert.assertTrue(preference.isEnabled());
+        Assert.assertFalse(preference.isPersistent());
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(SUMMARY), isDisplayed())));
