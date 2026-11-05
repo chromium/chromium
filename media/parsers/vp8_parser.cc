@@ -8,11 +8,11 @@
 #include "media/parsers/vp8_parser.h"
 
 #include <array>
-#include <cstring>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
@@ -250,7 +250,7 @@ bool Vp8Parser::ParseSegmentationHeader(bool keyframe) {
   Vp8SegmentationHeader* shdr = &curr_segmentation_hdr_;
 
   if (keyframe)
-    UNSAFE_TODO(memset(shdr, 0, sizeof(*shdr)));
+    *shdr = {};
 
   BD_READ_BOOL_OR_RETURN(&shdr->segmentation_enabled);
   if (!shdr->segmentation_enabled)
@@ -301,7 +301,7 @@ bool Vp8Parser::ParseLoopFilterHeader(bool keyframe) {
   Vp8LoopFilterHeader* lfhdr = &curr_loopfilter_hdr_;
 
   if (keyframe)
-    UNSAFE_TODO(memset(lfhdr, 0, sizeof(*lfhdr)));
+    *lfhdr = {};
 
   int type;
   BD_READ_UNSIGNED_OR_RETURN(1, &type);
@@ -334,7 +334,7 @@ bool Vp8Parser::ParseLoopFilterHeader(bool keyframe) {
 
 bool Vp8Parser::ParseQuantizationHeader(Vp8QuantizationHeader* qhdr) {
   // If any of the delta values is not present, the delta should be zero.
-  UNSAFE_TODO(memset(qhdr, 0, sizeof(*qhdr)));
+  *qhdr = {};
 
   BD_READ_UNSIGNED_OR_RETURN(7, &qhdr->y_ac_qi);
 
@@ -855,15 +855,17 @@ bool Vp8Parser::ParsePartitions(Vp8FrameHeader* fhdr) {
   // Total size of all DCT partitions.
   size_t bytes_left = fhdr->frame_size - first_dct_pos;
 
-  // Position ourselves at the beginning of partition size values.
-  const uint8_t* ptr = UNSAFE_TODO(
-      fhdr->data + base::checked_cast<size_t>(fhdr->first_part_offset) +
-      fhdr->first_part_size);
+  // The partition size values follow the first partition, so they start
+  // `first_part_size` bytes into `stream_` (which begins at `first_part_offset`
+  // in the frame).
+  base::SpanReader reader(stream_.subspan(fhdr->first_part_size));
 
   // Read sizes from the stream (if present).
   for (size_t i = 0; i < fhdr->num_of_dct_partitions - 1; ++i) {
+    // `first_dct_pos <= frame_size` was verified above, so this read succeeds.
+    base::span<const uint8_t, 3u> entry = *reader.Read<3u>();
     fhdr->dct_partition_sizes[i] =
-        (UNSAFE_TODO(ptr[2]) << 16) | (UNSAFE_TODO(ptr[1]) << 8) | ptr[0];
+        (entry[2u] << 16) | (entry[1u] << 8) | entry[0u];
 
     // Make sure we have enough data in the stream for ith partition and
     // subtract its size from total.
@@ -871,9 +873,6 @@ bool Vp8Parser::ParsePartitions(Vp8FrameHeader* fhdr) {
       return false;
 
     bytes_left -= fhdr->dct_partition_sizes[i];
-
-    // Move to the position of the next partition size value.
-    UNSAFE_TODO(ptr += 3);
   }
 
   // The remainder of the data belongs to the last DCT partition.
