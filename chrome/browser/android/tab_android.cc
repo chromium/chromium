@@ -83,7 +83,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/android/view_android.h"
 #include "url/android/gurl_android.h"
@@ -752,14 +751,6 @@ void TabAndroid::SetActiveNavigationEntryTitleForUrl(const std::string& url,
       (url == entry->GetVirtualURL().spec() || url == entry->GetURL().spec())) {
     entry->SetTitle(std::move(title));
   }
-}
-
-void TabAndroid::LoadOriginalImage() {
-  content::RenderFrameHost* render_frame_host =
-      web_contents()->GetFocusedFrame();
-  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> renderer;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&renderer);
-  renderer->RequestReloadImageForContextNode();
 }
 
 void TabAndroid::OnShow() {

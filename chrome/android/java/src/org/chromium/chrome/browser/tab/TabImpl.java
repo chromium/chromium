@@ -2303,13 +2303,6 @@ class TabImpl implements Tab, TabInternal {
         return mIsRendererUnresponsive;
     }
 
-    /** Load the original image (uncompressed by spdy proxy) in this tab. */
-    void loadOriginalImage() {
-        if (mNativeTabAndroid != 0) {
-            TabImplJni.get().loadOriginalImage(mNativeTabAndroid);
-        }
-    }
-
     /**
      * Sets whether the tab is showing an error page. This is reset whenever the tab finishes a
      * navigation.
@@ -3765,8 +3758,6 @@ class TabImpl implements Tab, TabInternal {
                 long nativeTabAndroid,
                 @JniType("std::string") String url,
                 @JniType("std::u16string") String title);
-
-        void loadOriginalImage(long nativeTabAndroid);
 
         boolean handleNonNavigationAboutURL(@JniType("GURL") GURL url);
 
