@@ -204,6 +204,8 @@ void SurfaceEmbedHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties,
     bool is_visible) {
   CHECK(surface_embed_.is_bound());
+  last_synchronized_local_surface_id_for_testing_ =
+      visual_properties.local_surface_id;
 
   if (content::SurfaceEmbedConnector* connector = GetConnector()) {
     connector->OnVisibilityChanged(

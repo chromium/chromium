@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/surface_embed_connector.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -85,6 +86,10 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   bool HasReceivedAttachConnectorForTesting() const {
     return has_received_attach_connector_for_testing_;
   }
+  const viz::LocalSurfaceId& GetLastSynchronizedLocalSurfaceIdForTesting()
+      const {
+    return last_synchronized_local_surface_id_for_testing_;
+  }
 
  private:
   friend class SurfaceEmbedHostCollection;
@@ -112,6 +117,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
 
   bool pending_request_focus_on_embed_element_ = false;
   bool has_received_attach_connector_for_testing_ = false;
+  viz::LocalSurfaceId last_synchronized_local_surface_id_for_testing_;
 
   ui::AXNodeID container_accessibility_node_id_ = ui::kInvalidAXNodeID;
 

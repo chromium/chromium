@@ -505,7 +505,9 @@ void SurfaceEmbedWebPlugin::SetFrameSinkId(
 
 void SurfaceEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
     const ::viz::LocalSurfaceId& local_surface_id) {
-  if (!parent_local_surface_id_allocator_->UpdateFromChild(local_surface_id)) {
+  if (parent_local_surface_id_allocator_->GetEmbedToken() !=
+          local_surface_id.embed_token() ||
+      !parent_local_surface_id_allocator_->UpdateFromChild(local_surface_id)) {
     return;
   }
 

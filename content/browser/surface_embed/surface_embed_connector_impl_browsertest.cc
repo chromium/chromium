@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -21,6 +22,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -29,6 +31,8 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +43,8 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -65,6 +71,22 @@ class MockSurfaceEmbedConnectorDelegate
   MOCK_METHOD(void, ChildProcessGone, (), (override));
   MOCK_METHOD(void, RequestFocusOnEmbedElement, (), (override));
   MOCK_METHOD(void, AdvanceFocusFromEmbedElement, (bool), (override));
+};
+
+// Observes WebContents capture target changes for testing.
+class CaptureTargetObserver : public WebContentsObserver {
+ public:
+  explicit CaptureTargetObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void CaptureTargetChanged() override { ++capture_target_changed_count_; }
+
+  int capture_target_changed_count() const {
+    return capture_target_changed_count_;
+  }
+
+ private:
+  int capture_target_changed_count_ = 0;
 };
 
 // Returns the embed parent AX tree id for `rfh` by querying the
@@ -126,55 +148,16 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
 
   struct ConnectorTestContext {
     ConnectorTestContext() = default;
-    ConnectorTestContext(ConnectorTestContext&& other) {
-      parent_shell = other.parent_shell;
-      other.parent_shell = nullptr;
-      parent_web_contents = other.parent_web_contents;
-      other.parent_web_contents = nullptr;
-      child_web_contents = std::move(other.child_web_contents);
-      rwhvcf = other.rwhvcf;
-      other.rwhvcf = nullptr;
-      connector = other.connector;
-      other.connector = nullptr;
-    }
-    ConnectorTestContext& operator=(ConnectorTestContext&& other) {
-      if (this != &other) {
-        // Clear raw_ptrs before closing the shell, since auto-detach in the
-        // parent's destructor will destroy the connector and its view.
-        connector = nullptr;
-        rwhvcf = nullptr;
-        parent_web_contents = nullptr;
-        if (parent_shell) {
-          Shell* shell = parent_shell;
-          parent_shell = nullptr;
-          shell->Close();
-        }
-        parent_shell = other.parent_shell;
-        other.parent_shell = nullptr;
-        parent_web_contents = other.parent_web_contents;
-        other.parent_web_contents = nullptr;
-        child_web_contents = std::move(other.child_web_contents);
-        rwhvcf = other.rwhvcf;
-        other.rwhvcf = nullptr;
-        connector = other.connector;
-        other.connector = nullptr;
-      }
-      return *this;
-    }
+    ConnectorTestContext(ConnectorTestContext&& other) = default;
+    ConnectorTestContext& operator=(ConnectorTestContext&& other) = default;
     ~ConnectorTestContext() {
-      // Clear raw_ptrs before closing the shell, since auto-detach in the
-      // parent's destructor will destroy the connector and its view.
+      // Clear raw_ptrs before destroying child_web_contents, since auto-detach
+      // in WebContents destruction will destroy the connector and view.
       connector = nullptr;
       rwhvcf = nullptr;
       parent_web_contents = nullptr;
-      if (parent_shell) {
-        Shell* shell = parent_shell;
-        parent_shell = nullptr;
-        shell->Close();
-      }
     }
 
-    raw_ptr<Shell> parent_shell = nullptr;
     raw_ptr<WebContents> parent_web_contents = nullptr;
     std::unique_ptr<WebContents> child_web_contents;
     raw_ptr<RenderWidgetHostViewChildFrame> rwhvcf = nullptr;
@@ -199,11 +182,7 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
               kDelegateToParentWebContents) {
     ConnectorTestContext context;
 
-    context.parent_shell =
-        Shell::CreateNewWindow(GetParentWebContents()->GetBrowserContext(),
-                               GURL(), nullptr, Shell::GetShellDefaultSize());
-    WebContentsImpl* parent_web_contents_impl =
-        static_cast<WebContentsImpl*>(context.parent_shell->web_contents());
+    WebContentsImpl* parent_web_contents_impl = GetParentWebContents();
     context.parent_web_contents = parent_web_contents_impl;
 
     WebContents::CreateParams create_params(
@@ -237,6 +216,57 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(context.rwhvcf);
 
     return context;
+  }
+
+  // Sets up the parent WebContents and creates a navigated child WebContents
+  // ready for embedding or capture.
+  std::unique_ptr<WebContents> SetupParentAndChild() {
+    auto* parent_impl = GetParentWebContents();
+    EXPECT_TRUE(NavigateToURL(parent_impl, GURL("about:blank")));
+    WebContents::CreateParams create_params(parent_impl->GetBrowserContext());
+    std::unique_ptr<WebContents> child_web_contents =
+        WebContents::Create(create_params);
+    EXPECT_TRUE(NavigateToURL(child_web_contents.get(), GURL("about:blank")));
+    return child_web_contents;
+  }
+
+  // Attaches `child_web_contents` to the parent main frame with scale-child
+  // pinch gesture mode and returns the connector.
+  SurfaceEmbedConnectorImpl* AttachChildToParent(
+      WebContents* child_web_contents,
+      MockSurfaceEmbedConnectorDelegate* delegate) {
+    EXPECT_CALL(*delegate,
+                SetFrameSinkId(testing::_, /*allow_paint_holding=*/false))
+        .Times(1);
+    SurfaceEmbedConnector::Attach(
+        child_web_contents, GetParentWebContents()->GetPrimaryMainFrame(),
+        delegate,
+        SurfaceEmbedConnector::PinchGestureMode::kScaleChildWebContents);
+    testing::Mock::VerifyAndClearExpectations(delegate);
+    return static_cast<SurfaceEmbedConnectorImpl*>(
+        child_web_contents->GetSurfaceEmbedConnector());
+  }
+
+  // Starts capturing `web_contents` and returns a scoped handle that stops
+  // capturing when destroyed.
+  base::ScopedClosureRunner StartCapturing(WebContentsImpl* web_contents) {
+    return web_contents->IncrementCapturerCount(
+        gfx::Size(/*width=*/800, /*height=*/600), /*stay_hidden=*/false,
+        /*stay_awake=*/true, /*is_activity=*/true);
+  }
+
+  // Helper to create visual properties with a valid screen info for testing.
+  blink::FrameVisualProperties CreateFrameVisualProperties(
+      const viz::LocalSurfaceId& local_surface_id,
+      const gfx::Size& local_frame_size = gfx::Size(/*width=*/100,
+                                                    /*height=*/100)) {
+    blink::FrameVisualProperties visual_properties;
+    display::ScreenInfo screen_info;
+    screen_info.device_scale_factor = 1.0f;
+    visual_properties.screen_infos = display::ScreenInfos(screen_info);
+    visual_properties.local_frame_size = local_frame_size;
+    visual_properties.local_surface_id = local_surface_id;
+    return visual_properties;
   }
 
   void SetViewportIntersectionState(
@@ -279,21 +309,27 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, BasicConnection) {
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
                        ParentDestruction) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupConnectorTest(&delegate);
+  WebContents::CreateParams create_params(
+      GetParentWebContents()->GetBrowserContext());
+  std::unique_ptr<WebContents> parent_web_contents =
+      WebContents::Create(create_params);
+  ASSERT_TRUE(NavigateToURL(parent_web_contents.get(), GURL("about:blank")));
 
-  // Clear raw_ptrs that will dangle when parent is destroyed and auto-detach
-  // triggers.
-  context.connector = nullptr;
-  context.rwhvcf = nullptr;
-  context.parent_web_contents = nullptr;
-  Shell* shell = context.parent_shell;
-  context.parent_shell = nullptr;
-  shell->Close();
+  std::unique_ptr<WebContents> child_web_contents =
+      WebContents::Create(create_params);
+  auto* child_impl = static_cast<WebContentsImpl*>(child_web_contents.get());
+  EXPECT_CALL(delegate,
+              SetFrameSinkId(testing::_, /*allow_paint_holding=*/false))
+      .Times(1);
+  SurfaceEmbedConnector::Attach(
+      child_impl, parent_web_contents->GetPrimaryMainFrame(), &delegate);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  ASSERT_NE(child_impl->GetSurfaceEmbedConnector(), nullptr);
+
+  parent_web_contents.reset();
 
   // After parent destruction, child should be auto-detached: connector is
   // destroyed.
-  auto* child_impl =
-      static_cast<WebContentsImpl*>(context.child_web_contents.get());
   EXPECT_EQ(child_impl->GetSurfaceEmbedConnector(), nullptr);
 }
 
@@ -889,12 +925,23 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
-                       HideSetsKeepSurfaceAliveFalse) {
+                       ShowWithoutCaptureDoesNotKeepSurfaceAlive) {
   MockSurfaceEmbedConnectorDelegate delegate;
   auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+
+  const viz::LocalSurfaceId surface_id(
+      /*parent_sequence_number=*/1,
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3));
+  connector->SynchronizeVisualProperties(
+      CreateFrameVisualProperties(surface_id), /*propagate=*/false);
+  ASSERT_TRUE(context.rwhvcf->GetCurrentSurfaceId().is_valid());
+
+  context.rwhvcf->Show();
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
 
   context.rwhvcf->Hide();
-  EXPECT_FALSE(HasKeepSurfaceAlive(context.connector.get()));
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
@@ -939,33 +986,371 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   MockSurfaceEmbedConnectorDelegate delegate;
   auto context = SetupConnectorTest(&delegate);
   auto* connector = context.connector.get();
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
 
   // Ensure we start with an invalid surface ID.
   ASSERT_FALSE(context.rwhvcf->GetCurrentSurfaceId().is_valid());
 
-  // Request to keep surface alive.
-  connector->SetKeepSurfaceAlive(true);
+  // Start capturing the child WebContents.
+  base::ScopedClosureRunner capturer_handle = StartCapturing(child_impl);
 
-  // The intent should be saved, but we cannot actually keep it alive yet
-  // because the surface ID is invalid.
-  EXPECT_TRUE(connector->IsKeepingAlive());
+  // Surface should not be kept alive yet because the surface ID is invalid.
   EXPECT_FALSE(HasKeepSurfaceAlive(connector));
 
   // Now make the surface ID valid by synchronizing visual properties.
-  blink::FrameVisualProperties visual_properties;
-  display::ScreenInfo screen_info;
-  screen_info.device_scale_factor = 1.0f;
-  visual_properties.screen_infos = display::ScreenInfos(screen_info);
-  visual_properties.local_surface_id =
-      viz::LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(2, 3));
-  connector->SynchronizeVisualProperties(visual_properties, false);
+  const viz::LocalSurfaceId surface_id(
+      /*parent_sequence_number=*/1,
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3));
+  connector->SynchronizeVisualProperties(
+      CreateFrameVisualProperties(surface_id), /*propagate=*/false);
 
   // The surface ID should now be valid.
   ASSERT_TRUE(context.rwhvcf->GetCurrentSurfaceId().is_valid());
 
   // The keep-alive should have been automatically refreshed and now be active.
-  EXPECT_TRUE(connector->IsKeepingAlive());
   EXPECT_TRUE(HasKeepSurfaceAlive(connector));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SurfaceEmbedConnectorImplBrowserTest,
+    KeepSurfaceAliveRefreshesWhenChildUpdatesLocalSurfaceId) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+
+  base::ScopedClosureRunner capturer_handle = StartCapturing(child_impl);
+  ASSERT_FALSE(connector->GetLocalSurfaceId().is_valid());
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
+
+  const base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3);
+  const viz::LocalSurfaceId parent_initial_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/1, token);
+  connector->OnSynchronizeVisualProperties(
+      CreateFrameVisualProperties(parent_initial_id));
+  EXPECT_EQ(parent_initial_id, connector->GetLocalSurfaceId());
+  EXPECT_TRUE(HasKeepSurfaceAlive(connector));
+
+  const viz::LocalSurfaceId updated_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/2, token);
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(updated_id)).Times(1);
+  connector->DidUpdateChildLocalSurfaceId(updated_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_TRUE(HasKeepSurfaceAlive(connector));
+  EXPECT_EQ(updated_id, connector->GetLocalSurfaceId());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       ChildUpdateBeforeInitIsIgnored) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+
+  base::ScopedClosureRunner capturer_handle = StartCapturing(child_impl);
+  ASSERT_FALSE(connector->GetLocalSurfaceId().is_valid());
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
+
+  const base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3);
+  const viz::LocalSurfaceId pre_init_child_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/2, token);
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(pre_init_child_id))
+      .Times(1);
+  connector->DidUpdateChildLocalSurfaceId(pre_init_child_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_FALSE(connector->GetLocalSurfaceId().is_valid());
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       MismatchedEmbedTokenRejected) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+
+  const base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3);
+  const viz::LocalSurfaceId parent_initial_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/1, token);
+  connector->OnSynchronizeVisualProperties(
+      CreateFrameVisualProperties(parent_initial_id));
+  EXPECT_EQ(parent_initial_id, connector->GetLocalSurfaceId());
+
+  // Child update with mismatched embed token must be ignored.
+  const viz::LocalSurfaceId mismatched_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/5,
+      base::UnguessableToken::CreateForTesting(/*high=*/4, /*low=*/5));
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(testing::_)).Times(0);
+  connector->DidUpdateChildLocalSurfaceId(mismatched_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_EQ(parent_initial_id, connector->GetLocalSurfaceId());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       ConcurrentParentChildUpdatesAreMerged) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+
+  base::ScopedClosureRunner capturer_handle = StartCapturing(child_impl);
+
+  const base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3);
+  const viz::LocalSurfaceId parent_initial_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/1, token);
+  blink::FrameVisualProperties visual_properties =
+      CreateFrameVisualProperties(parent_initial_id);
+  connector->OnSynchronizeVisualProperties(visual_properties);
+  EXPECT_EQ(parent_initial_id, connector->GetLocalSurfaceId());
+
+  const viz::LocalSurfaceId first_child_updated_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/2, token);
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(first_child_updated_id))
+      .Times(1);
+  connector->DidUpdateChildLocalSurfaceId(first_child_updated_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  EXPECT_EQ(first_child_updated_id, connector->GetLocalSurfaceId());
+
+  // A parent sync with an older child sequence number and unchanged resize
+  // parameters preserves the newer child sequence number.
+  visual_properties.local_surface_id = viz::LocalSurfaceId(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/1, token);
+  connector->OnSynchronizeVisualProperties(visual_properties);
+  EXPECT_EQ(first_child_updated_id, connector->GetLocalSurfaceId());
+
+  const viz::LocalSurfaceId second_child_updated_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/3, token);
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(second_child_updated_id))
+      .Times(1);
+  connector->DidUpdateChildLocalSurfaceId(second_child_updated_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  EXPECT_EQ(second_child_updated_id, connector->GetLocalSurfaceId());
+
+  // A parent resize sync merges sequence numbers.
+  const viz::LocalSurfaceId parent_resized_id(
+      /*parent_sequence_number=*/2, /*child_sequence_number=*/1, token);
+  visual_properties.local_frame_size = gfx::Size(/*width=*/200, /*height=*/200);
+  visual_properties.local_surface_id = parent_resized_id;
+  connector->OnSynchronizeVisualProperties(visual_properties);
+  const viz::LocalSurfaceId expected_merged_id(
+      /*parent_sequence_number=*/2, /*child_sequence_number=*/3, token);
+  EXPECT_EQ(expected_merged_id, connector->GetLocalSurfaceId());
+  EXPECT_EQ(gfx::Size(/*width=*/200, /*height=*/200),
+            connector->GetLocalFrameSizeInPixels());
+  EXPECT_TRUE(HasKeepSurfaceAlive(connector));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SurfaceEmbedConnectorImplBrowserTest,
+    ResizeWithoutAdvancingParentSequenceNumberReportsBadMessage) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+
+  const base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3);
+  const viz::LocalSurfaceId parent_initial_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/1, token);
+  blink::FrameVisualProperties visual_properties =
+      CreateFrameVisualProperties(parent_initial_id);
+  connector->OnSynchronizeVisualProperties(visual_properties);
+
+  const viz::LocalSurfaceId child_updated_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/2, token);
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(child_updated_id))
+      .Times(1);
+  connector->DidUpdateChildLocalSurfaceId(child_updated_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Changing resize parameters without advancing the parent sequence number
+  // must report a bad message, even after a child sequence number update.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  blink::FrameVisualProperties invalid_resize_properties = visual_properties;
+  invalid_resize_properties.local_frame_size =
+      gfx::Size(/*width=*/200, /*height=*/200);
+  invalid_resize_properties.local_surface_id = viz::LocalSurfaceId(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/1, token);
+  connector->OnSynchronizeVisualProperties(invalid_resize_properties);
+  EXPECT_EQ(
+      "SurfaceEmbedConnectorImpl: Resize parameters changed but the local "
+      "surface ID remained unchanged.",
+      bad_message_observer.WaitForBadMessage());
+  EXPECT_EQ(child_updated_id, connector->GetLocalSurfaceId());
+  EXPECT_EQ(gfx::Size(/*width=*/100, /*height=*/100),
+            connector->GetLocalFrameSizeInPixels());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       ChildUpdatePreservesParentSequenceNumber) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+
+  const base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3);
+  const viz::LocalSurfaceId parent_initial_id(
+      /*parent_sequence_number=*/2, /*child_sequence_number=*/1, token);
+  connector->OnSynchronizeVisualProperties(
+      CreateFrameVisualProperties(parent_initial_id));
+  EXPECT_EQ(parent_initial_id, connector->GetLocalSurfaceId());
+
+  // DidUpdateChildLocalSurfaceId must not advance the parent sequence number.
+  const viz::LocalSurfaceId child_with_newer_parent_id(
+      /*parent_sequence_number=*/3, /*child_sequence_number=*/4, token);
+  const viz::LocalSurfaceId expected_canonical_id(
+      /*parent_sequence_number=*/2, /*child_sequence_number=*/4, token);
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(expected_canonical_id))
+      .Times(1);
+  connector->DidUpdateChildLocalSurfaceId(child_with_newer_parent_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  EXPECT_EQ(expected_canonical_id, connector->GetLocalSurfaceId());
+
+  // DidUpdateChildLocalSurfaceId must not regress the parent sequence number.
+  const viz::LocalSurfaceId child_with_older_parent_id(
+      /*parent_sequence_number=*/1, /*child_sequence_number=*/5, token);
+  const viz::LocalSurfaceId expected_canonical_id_2(
+      /*parent_sequence_number=*/2, /*child_sequence_number=*/5, token);
+  EXPECT_CALL(delegate, UpdateLocalSurfaceIdFromChild(expected_canonical_id_2))
+      .Times(1);
+  connector->DidUpdateChildLocalSurfaceId(child_with_older_parent_id);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  EXPECT_EQ(expected_canonical_id_2, connector->GetLocalSurfaceId());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       AttachAndDetachWhileCapturedUpdatesCaptureTarget) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  std::unique_ptr<WebContents> child_web_contents = SetupParentAndChild();
+  ASSERT_TRUE(child_web_contents);
+  auto* parent_impl = GetParentWebContents();
+  auto* child_impl = static_cast<WebContentsImpl*>(child_web_contents.get());
+
+  CaptureTargetObserver observer(child_impl);
+  base::ScopedClosureRunner capturer_handle = StartCapturing(child_impl);
+  EXPECT_TRUE(child_impl->IsBeingCaptured());
+
+  const viz::FrameSinkId initial_sink_id =
+      child_impl->GetCaptureTarget().sink_id;
+  EXPECT_TRUE(initial_sink_id.is_valid());
+  const gfx::NativeView initial_view = child_impl->GetCaptureTarget().view;
+  EXPECT_TRUE(initial_view);
+
+  SurfaceEmbedConnectorImpl* connector =
+      AttachChildToParent(child_impl, &delegate);
+  ASSERT_TRUE(connector);
+  EXPECT_GE(observer.capture_target_changed_count(), 1);
+
+  // Attaching preserves the FrameSinkId while switching the target NativeView
+  // to the parent's view.
+  const viz::FrameSinkId attached_sink_id =
+      child_impl->GetCaptureTarget().sink_id;
+  EXPECT_TRUE(attached_sink_id.is_valid());
+  EXPECT_EQ(initial_sink_id, attached_sink_id);
+  EXPECT_EQ(connector->GetFrameSinkId(), attached_sink_id);
+  const gfx::NativeView attached_view = child_impl->GetCaptureTarget().view;
+  EXPECT_TRUE(attached_view);
+  EXPECT_NE(initial_view, attached_view);
+  EXPECT_EQ(parent_impl->GetCaptureTarget().view, attached_view);
+
+  const int count_before_detach = observer.capture_target_changed_count();
+  SurfaceEmbedConnector::Detach(child_impl);
+  EXPECT_GT(observer.capture_target_changed_count(), count_before_detach);
+  const gfx::NativeView detached_view = child_impl->GetCaptureTarget().view;
+  EXPECT_TRUE(detached_view);
+  EXPECT_NE(attached_view, detached_view);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       CrossSiteNavigationWhileCapturedUpdatesCaptureTarget) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  // Navigating cross-site swaps the child frame view, so drop the raw_ptr to
+  // the initial view to avoid a dangling pointer.
+  context.rwhvcf = nullptr;
+  auto* parent_impl = GetParentWebContents();
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+  auto* connector = context.connector.get();
+  ASSERT_TRUE(connector);
+
+  EXPECT_CALL(delegate, SetFrameSinkId(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ASSERT_TRUE(NavigateToURL(
+      child_impl, embedded_test_server()->GetURL("a.com", "/title1.html")));
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  CaptureTargetObserver observer(child_impl);
+  base::ScopedClosureRunner capturer_handle = StartCapturing(child_impl);
+  EXPECT_TRUE(child_impl->IsBeingCaptured());
+
+  const viz::FrameSinkId sink_id_a = child_impl->GetCaptureTarget().sink_id;
+  EXPECT_TRUE(sink_id_a.is_valid());
+  EXPECT_EQ(connector->GetFrameSinkId(), sink_id_a);
+  EXPECT_EQ(parent_impl->GetCaptureTarget().view,
+            child_impl->GetCaptureTarget().view);
+
+  const int count_before_nav = observer.capture_target_changed_count();
+  EXPECT_CALL(delegate, SetFrameSinkId(testing::_, testing::_))
+      .Times(testing::AtLeast(1));
+  ASSERT_TRUE(NavigateToURL(
+      child_impl, embedded_test_server()->GetURL("b.com", "/title1.html")));
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_GT(observer.capture_target_changed_count(), count_before_nav);
+  const viz::FrameSinkId sink_id_b = child_impl->GetCaptureTarget().sink_id;
+  EXPECT_TRUE(sink_id_b.is_valid());
+  EXPECT_NE(sink_id_a, sink_id_b);
+  EXPECT_EQ(connector->GetFrameSinkId(), sink_id_b);
+  EXPECT_EQ(parent_impl->GetCaptureTarget().view,
+            child_impl->GetCaptureTarget().view);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       AttachAndHideWhileCapturedKeepsSurfaceAlive) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  std::unique_ptr<WebContents> child_web_contents = SetupParentAndChild();
+  ASSERT_TRUE(child_web_contents);
+  auto* child_impl = static_cast<WebContentsImpl*>(child_web_contents.get());
+
+  base::ScopedClosureRunner capturer_handle = StartCapturing(child_impl);
+  EXPECT_TRUE(child_impl->IsBeingCaptured());
+
+  SurfaceEmbedConnectorImpl* connector =
+      AttachChildToParent(child_impl, &delegate);
+  ASSERT_TRUE(connector);
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
+
+  const viz::LocalSurfaceId visual_properties_surface_id(
+      /*parent_sequence_number=*/1,
+      base::UnguessableToken::CreateForTesting(/*high=*/2, /*low=*/3));
+  connector->SynchronizeVisualProperties(
+      CreateFrameVisualProperties(visual_properties_surface_id),
+      /*propagate=*/false);
+  EXPECT_TRUE(HasKeepSurfaceAlive(connector));
+
+  // Hiding the view while captured must preserve keep-alive.
+  auto* rwhvcf = static_cast<RenderWidgetHostViewChildFrame*>(
+      child_impl->GetRenderWidgetHostView());
+  ASSERT_TRUE(rwhvcf);
+  rwhvcf->Hide();
+  EXPECT_TRUE(HasKeepSurfaceAlive(connector));
+
+  // Stopping capture must release keep-alive.
+  capturer_handle.RunAndReset();
+  EXPECT_FALSE(child_impl->IsBeingCaptured());
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
 }
 
 // Tests that GetFocusedWebContents, GetFocusedFrameTree, GetFocusedFrame,

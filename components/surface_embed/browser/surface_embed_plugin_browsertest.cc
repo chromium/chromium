@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/surface_embed/browser/surface_embed_handle.h"
 #include "components/surface_embed/browser/surface_embed_host.h"
@@ -20,6 +21,7 @@
 #include "components/surface_embed/common/features.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -446,6 +448,40 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
       return connector && connector->GetLocalFrameSizeInPixelsForTesting() ==
                               gfx::Size(150, 150);
     }));
+  }
+
+  // Resizes the <embed> element to `css_size_dip` and returns the
+  // LocalSurfaceId sent by SurfaceEmbedWebPlugin to `host` during the
+  // resulting visual properties sync.
+  viz::LocalSurfaceId SyncAndGetPluginLocalSurfaceId(
+      content::WebContents* child_contents,
+      SurfaceEmbedHost* host,
+      int css_size_dip) {
+    auto* connector = child_contents->GetSurfaceEmbedConnector();
+    EXPECT_NE(nullptr, connector);
+
+    // Flush the RenderWidgetHost so any prior UpdateLocalSurfaceIdFromChild
+    // Mojo message reaches SurfaceEmbedWebPlugin before the resize below.
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->FlushForTesting();
+
+    EXPECT_TRUE(content::ExecJs(
+        web_contents(),
+        content::JsReplace("let embed = document.querySelector('embed');"
+                           "embed.style.width = $1 + 'px';"
+                           "embed.style.height = $1 + 'px';",
+                           css_size_dip)));
+
+    const gfx::Size expected_pixel_size = gfx::ScaleToRoundedSize(
+        gfx::Size(css_size_dip, css_size_dip), kTestDeviceScaleFactor);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return connector->GetLocalFrameSizeInPixelsForTesting() ==
+             expected_pixel_size;
+    }));
+
+    return host->GetLastSynchronizedLocalSurfaceIdForTesting();
   }
 
  private:
@@ -2540,6 +2576,97 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
       CheckHasPixelInColorInBitmapBounds(SK_ColorRED, scaled_top_left_bounds));
   EXPECT_TRUE(CheckHasPixelInColorInBitmapBounds(SK_ColorGREEN,
                                                  scaled_bottom_right_bounds));
+}
+
+// Verifies that SurfaceEmbedWebPlugin only accepts child LocalSurfaceId updates
+// with a matching embed token and advancing child sequence number.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, UpdateLocalSurfaceIdFromChild) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  WaitForHostCount(kSingleEmbedCount);
+  SurfaceEmbedHost* host = GetHost(/*index=*/0);
+  ASSERT_NE(nullptr, host);
+
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, connector);
+
+  // Wait for initial visual properties and rendered frame.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetLocalFrameSizeInPixelsForTesting() ==
+               gfx::Size(/*width=*/150, /*height=*/150) &&
+           host->GetLastSynchronizedLocalSurfaceIdForTesting().is_valid();
+  }));
+  VerifyRedPixelInBounds(
+      gfx::Rect(/*x=*/10, /*y=*/10, /*width=*/100, /*height=*/100));
+
+  const viz::LocalSurfaceId initial_id =
+      host->GetLastSynchronizedLocalSurfaceIdForTesting();
+
+  // 1. Mismatched embed token: SurfaceEmbedWebPlugin must reject the update.
+  {
+    SCOPED_TRACE("Mismatched embed token");
+    const viz::LocalSurfaceId mismatched_token_id(
+        initial_id.parent_sequence_number(),
+        initial_id.child_sequence_number() + 10,
+        base::UnguessableToken::Create());
+    host->UpdateLocalSurfaceIdFromChild(mismatched_token_id);
+    const viz::LocalSurfaceId id_after_mismatch =
+        SyncAndGetPluginLocalSurfaceId(child_contents.get(), host,
+                                       /*css_size_dip=*/140);
+    EXPECT_EQ(initial_id.embed_token(), id_after_mismatch.embed_token());
+    EXPECT_GT(id_after_mismatch.parent_sequence_number(),
+              initial_id.parent_sequence_number());
+    EXPECT_EQ(initial_id.child_sequence_number(),
+              id_after_mismatch.child_sequence_number());
+  }
+
+  const viz::LocalSurfaceId id_after_mismatch =
+      host->GetLastSynchronizedLocalSurfaceIdForTesting();
+
+  // 2. Matching embed token with an advanced child sequence number: accepted.
+  const uint32_t expected_child_sequence_number =
+      initial_id.child_sequence_number() + 5;
+  {
+    SCOPED_TRACE("Matching embed token with advancing child sequence number");
+    const viz::LocalSurfaceId valid_child_id(
+        id_after_mismatch.parent_sequence_number(),
+        expected_child_sequence_number, initial_id.embed_token());
+    host->UpdateLocalSurfaceIdFromChild(valid_child_id);
+    const viz::LocalSurfaceId id_after_advancing =
+        SyncAndGetPluginLocalSurfaceId(child_contents.get(), host,
+                                       /*css_size_dip=*/160);
+    EXPECT_EQ(initial_id.embed_token(), id_after_advancing.embed_token());
+    EXPECT_GT(id_after_advancing.parent_sequence_number(),
+              id_after_mismatch.parent_sequence_number());
+    EXPECT_EQ(expected_child_sequence_number,
+              id_after_advancing.child_sequence_number());
+  }
+
+  const viz::LocalSurfaceId id_after_advancing =
+      host->GetLastSynchronizedLocalSurfaceIdForTesting();
+
+  // 3. Matching embed token but non-advancing child sequence number: rejected.
+  {
+    SCOPED_TRACE(
+        "Matching embed token with non-advancing child sequence number");
+    const viz::LocalSurfaceId non_advancing_child_id(
+        id_after_advancing.parent_sequence_number(),
+        expected_child_sequence_number - 1, initial_id.embed_token());
+    host->UpdateLocalSurfaceIdFromChild(non_advancing_child_id);
+    const viz::LocalSurfaceId id_after_non_advancing =
+        SyncAndGetPluginLocalSurfaceId(child_contents.get(), host,
+                                       /*css_size_dip=*/200);
+    EXPECT_EQ(initial_id.embed_token(), id_after_non_advancing.embed_token());
+    EXPECT_GT(id_after_non_advancing.parent_sequence_number(),
+              id_after_advancing.parent_sequence_number());
+    EXPECT_EQ(expected_child_sequence_number,
+              id_after_non_advancing.child_sequence_number());
+  }
+
+  VerifyRedPixelInBounds(
+      gfx::Rect(/*x=*/150, /*y=*/150, /*width=*/10, /*height=*/10));
 }
 
 }  // namespace surface_embed

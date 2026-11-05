@@ -93,8 +93,6 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   ui::AXTreeID GetParentAXTreeID() const override;
 
   // FrameConnector:
-  void SetKeepSurfaceAlive(bool keep_alive) override;
-  bool IsKeepingAlive() const override;
   void SetView(RenderWidgetHostViewChildFrame* view,
                bool allow_paint_holding) override;
   RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override;
@@ -134,7 +132,7 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   bool IsSubtreeThrottled() override;
   bool IsDisplayLocked() override;
   void DidUpdateChildLocalSurfaceId(
-      const viz::LocalSurfaceId& local_surface_id) override;
+      const viz::LocalSurfaceId& child_local_surface_id) override;
   void SetVisibilityForChildViews(bool visible) override;
   void SetLocalFrameSize(const gfx::Size& local_frame_size) override;
   void SetRectInParentView(const gfx::Rect& rect_in_parent_view) override;
@@ -160,6 +158,10 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // Called by WebContentsImpl before the connector is cleared. Notifies the
   // parent WebContents.
   void OnDetachedFromParent();
+
+  // Updates whether the child's current surface is kept alive on the root
+  // compositor based on whether the child WebContents is being captured.
+  void UpdateKeepSurfaceAlive();
 
   // Returns nullptr if the focus is outside of this connector's child
   // WebContents.
@@ -271,10 +273,7 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   bool subtree_throttled_ = false;
   bool display_locked_ = false;
 
-  void MaybeRefreshKeepSurfaceAlive();
-
   ui::Compositor::ScopedKeepSurfaceAliveCallback keep_surface_alive_;
-  bool should_keep_alive_ = false;
 };
 
 }  // namespace content

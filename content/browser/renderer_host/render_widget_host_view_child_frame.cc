@@ -264,10 +264,6 @@ bool RenderWidgetHostViewChildFrame::IsSurfaceAvailableForCopy() {
 
 void RenderWidgetHostViewChildFrame::ShowWithVisibility(
     PageVisibilityState /*page_visibility*/) {
-  if (frame_connector_) {
-    frame_connector_->SetKeepSurfaceAlive(true);
-  }
-
   if (!host()->IsHidden()) {
     return;
   }
@@ -286,10 +282,6 @@ void RenderWidgetHostViewChildFrame::Show() {
 }
 
 void RenderWidgetHostViewChildFrame::Hide() {
-  if (frame_connector_) {
-    frame_connector_->SetKeepSurfaceAlive(false);
-  }
-
   if (host()->IsHidden()) {
     return;
   }
