@@ -100,6 +100,7 @@ ${this.sessions_.length === 0 ? html`
                   <th>Time</th>
                   <th>Direction</th>
                   <th>Payload Types</th>
+                  <th>Status</th>
                   <th>Message</th>
                 </tr>
               </thead>
@@ -118,6 +119,9 @@ ${this.sessions_.length === 0 ? html`
                     </td>
                     <td class="event-payload-types">
                       ${event.payloadTypes.join(', ')}
+                    </td>
+                    <td class="event-status">
+                      ${this.getStatusLabel_(event)}
                     </td>
                     <td class="event-message">
                       ${event.message.length > 80 ? html`

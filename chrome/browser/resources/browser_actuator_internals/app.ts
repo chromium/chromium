@@ -5,12 +5,13 @@
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {browserProxyFactory, MessageDirection} from './browser_actuator_internals.mojom-webui.js';
-import type {SessionSummary} from './browser_actuator_internals.mojom-webui.js';
+import {browserProxyFactory, DownstreamDeliveryStatus, MessageDirection} from './browser_actuator_internals.mojom-webui.js';
+import type {RecordedEvent, SessionSummary} from './browser_actuator_internals.mojom-webui.js';
 
 // TODO(crbug.com/567639192): Truncate only individual `proto_payload` values in
 // the backend so transport envelope metadata (sequence numbers, capabilities,
@@ -72,6 +73,29 @@ export class BrowserActuatorInternalsAppElement extends CrLitElement {
   protected getDirectionClass_(direction: MessageDirection): string {
     return direction === MessageDirection.kDownstream ? 'downstream' :
                                                         'upstream';
+  }
+
+  protected getStatusLabel_(event: RecordedEvent): string {
+    if (event.direction === MessageDirection.kUpstream) {
+      if (event.httpResponseCode === 0) {
+        return 'Pending/Unknown';
+      }
+      if (event.httpResponseCode < 0) {
+        return `Error (${event.httpResponseCode})`;
+      }
+      return `HTTP ${event.httpResponseCode}`;
+    }
+
+    switch (event.downstreamStatus) {
+      case DownstreamDeliveryStatus.kSuccess:
+        return 'Success';
+      case DownstreamDeliveryStatus.kFailure:
+        return 'Failure';
+      case DownstreamDeliveryStatus.kUnknown:
+        return 'Unknown';
+      default:
+        assertNotReachedCase(event.downstreamStatus);
+    }
   }
 
   protected formatTime_(time: Date|null): string {

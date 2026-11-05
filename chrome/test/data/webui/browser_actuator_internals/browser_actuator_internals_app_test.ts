@@ -114,19 +114,53 @@ suite('BrowserActuatorInternalsAppTest', () => {
         direction: MessageDirection.kUpstream,
         payloadTypes: ['TypeB', 'TypeC'],
       }),
+      makeEvent({
+        direction: MessageDirection.kDownstream,
+        downstreamStatus: DownstreamDeliveryStatus.kSuccess,
+        payloadTypes: ['TypeD'],
+      }),
+      makeEvent({
+        direction: MessageDirection.kDownstream,
+        downstreamStatus: DownstreamDeliveryStatus.kFailure,
+        payloadTypes: ['TypeE'],
+      }),
+      makeEvent({
+        direction: MessageDirection.kUpstream,
+        httpResponseCode: 200,
+        payloadTypes: ['TypeF'],
+      }),
+      makeEvent({
+        direction: MessageDirection.kUpstream,
+        httpResponseCode: -1,
+        payloadTypes: ['TypeG'],
+      }),
     ];
-    await render([makeSession({events, totalEvents: 2})]);
+    await render([makeSession({events, totalEvents: 6})]);
 
     const card = app.shadowRoot.querySelector('.session-card')!;
     const details = card.querySelector<HTMLDetailsElement>('details.events')!;
     assertFalse(details.open);
 
     const rows = card.querySelectorAll('.event-row');
-    assertEquals(2, rows.length);
+    assertEquals(6, rows.length);
     assertEquals('Downstream', getText(rows[0]!, '.event-direction'));
     assertEquals('TypeA', getText(rows[0]!, '.event-payload-types'));
+    assertEquals('Unknown', getText(rows[0]!, '.event-status'));
     assertEquals('Upstream', getText(rows[1]!, '.event-direction'));
     assertEquals('TypeB, TypeC', getText(rows[1]!, '.event-payload-types'));
+    assertEquals('Pending/Unknown', getText(rows[1]!, '.event-status'));
+    assertEquals('Downstream', getText(rows[2]!, '.event-direction'));
+    assertEquals('TypeD', getText(rows[2]!, '.event-payload-types'));
+    assertEquals('Success', getText(rows[2]!, '.event-status'));
+    assertEquals('Downstream', getText(rows[3]!, '.event-direction'));
+    assertEquals('TypeE', getText(rows[3]!, '.event-payload-types'));
+    assertEquals('Failure', getText(rows[3]!, '.event-status'));
+    assertEquals('Upstream', getText(rows[4]!, '.event-direction'));
+    assertEquals('TypeF', getText(rows[4]!, '.event-payload-types'));
+    assertEquals('HTTP 200', getText(rows[4]!, '.event-status'));
+    assertEquals('Upstream', getText(rows[5]!, '.event-direction'));
+    assertEquals('TypeG', getText(rows[5]!, '.event-payload-types'));
+    assertEquals('Error (-1)', getText(rows[5]!, '.event-status'));
 
     const content = app.shadowRoot.textContent || '';
     assertFalse(content.includes('↓'));
