@@ -231,7 +231,6 @@ class GlicCueTabState;
 class GlicGeminiWebWarmingObserver;
 class GlicInstanceHelper;
 class GlicMarketingPageTabHelper;
-class GlicPromotionSourceNavigationObserver;
 class GlicTabIndicatorHelper;
 class GlicSidePanelCoordinator;
 class GlicSelectionObserver;
@@ -614,8 +613,6 @@ class TabFeatures {
   std::unique_ptr<glic::GlicPageFeaturesManager> glic_page_features_manager_;
   std::unique_ptr<glic::GlicMarketingPageTabHelper>
       glic_marketing_page_tab_helper_;
-  std::unique_ptr<glic::GlicPromotionSourceNavigationObserver>
-      glic_promotion_source_navigation_observer_;
   std::unique_ptr<glic::GlicGeminiWebWarmingObserver>
       glic_gemini_web_warming_observer_;
 

@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
-#include "chrome/browser/glic/navigation_capture/synthetic_trial_constants.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
@@ -219,31 +218,6 @@ TEST_F(GlicMetricsProviderTest, ProvideCurrentSessionData_OnboardingStatus) {
                                GlicProfilesAllSomeNone::kSome, 1);
   EXPECT_TRUE(variations::ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(), "GlicOnboardingStatus", "PromptAndOptIn"));
-}
-
-TEST_F(GlicMetricsProviderTest, PromotionSourceSyntheticTrialReconciliation) {
-  profile1()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
-                                    kGlicPromotionSourceNonZss);
-  GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
-  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
-      GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
-      kGlicPromotionSourceNonZss));
-
-  // Matching cohort in second profile preserves the group.
-  profile2()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
-                                    kGlicPromotionSourceNonZss);
-  GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
-  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
-      GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
-      kGlicPromotionSourceNonZss));
-
-  // Conflicting cohort in second profile registers MultiProfileDetected.
-  profile2()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
-                                    kGlicPromotionSourceZss);
-  GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
-  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
-      GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
-      kGlicPromotionSourceMultiProfileDetected));
 }
 
 TEST_F(GlicMetricsProviderTest, ProvideCurrentSessionData_GlicProvider_Gemini) {

@@ -4,18 +4,12 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-source_set("synthetic_trial_constants") {
-  sources = [ "synthetic_trial_constants.h" ]
-}
-
 source_set("navigation_capture") {
   sources = [
     "glic_marketing_page_tab_helper.cc",
     "glic_marketing_page_tab_helper.h",
     "glic_navigation_throttle.cc",
     "glic_navigation_throttle.h",
-    "glic_promotion_source_navigation_observer.cc",
-    "glic_promotion_source_navigation_observer.h",
     "glic_share_link_navigation_throttle.cc",
     "glic_share_link_navigation_throttle.h",
   ]
@@ -28,7 +22,6 @@ source_set("navigation_capture") {
   ]
 
   deps = [
-    ":synthetic_trial_constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/public:features",
@@ -54,12 +47,10 @@ if (!is_android) {
     sources = [
       "glic_marketing_page_tab_helper_browsertest.cc",
       "glic_navigation_throttle_browsertest.cc",
-      "glic_promotion_source_navigation_observer_browsertest.cc",
     ]
 
     deps = [
       ":navigation_capture",
-      ":synthetic_trial_constants",
       "//base",
       "//base/test:test_support",
       "//chrome/browser:browser_process",
@@ -85,7 +76,6 @@ if (!is_android) {
       "//chrome/test/base:testing_browser_process",
       "//components/keyed_service/content",
       "//components/prefs",
-      "//components/variations",
       "//content/public/browser",
       "//content/test:test_support",
       "//extensions/common",

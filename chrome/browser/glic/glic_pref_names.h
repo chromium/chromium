@@ -244,11 +244,6 @@ inline constexpr char kGlicPreviouslyNotAllowed[] =
 inline constexpr char kGlicMarketingAutoOpenCount[] =
     "glic.marketing_auto_open_count";
 
-// String pref that records whether a Glic promotion page visit originated from
-// zss or a non-zss source.
-inline constexpr char kGlicPromotionSourceCohort[] =
-    "glic.promotion_source_cohort";
-
 #if BUILDFLAG(IS_MAC)
 inline constexpr char kGlicUseAltOSIcon[] = "glic.use_alt_os_icon";
 #endif

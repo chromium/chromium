@@ -1213,6 +1213,10 @@ inline constexpr char kTabsFromOtherDevicesAutoPinnedMigration[] =
 inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
     "safebrowsing.bundled_settings.checked_migrate_user_to_enhanced_bundle";
 
+// Deprecated 11/2026.
+inline constexpr char kGlicPromotionSourceCohort[] =
+    "glic.promotion_source_cohort";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1749,6 +1753,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 11/2026.
   registry->RegisterBooleanPref(
       kBundledSettingsCheckedMigrateUserToEnhancedBundle, false);
+
+  // Deprecated 11/2026.
+  registry->RegisterStringPref(kGlicPromotionSourceCohort, std::string());
 }
 
 }  // namespace
@@ -3226,6 +3233,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 11/2026.
   profile_prefs->ClearPref(kBundledSettingsCheckedMigrateUserToEnhancedBundle);
+
+  // Added 11/2026.
+  profile_prefs->ClearPref(kGlicPromotionSourceCohort);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
