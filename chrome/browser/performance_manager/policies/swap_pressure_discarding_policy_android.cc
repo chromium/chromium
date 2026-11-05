@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -27,6 +28,8 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 
 namespace performance_manager::policies {
 
@@ -80,6 +83,15 @@ std::optional<base::ByteSize> GetLmkdFilecacheMin() {
 bool IsLiveTabNode(const PageNode* page_node) {
   if (page_node->GetType() != PageType::kTab ||
       !page_node->GetPrimaryMainFrameNode()) {
+    return false;
+  }
+  // In production, `PerformanceManagerTabHelper` is 1:1 with `WebContents` and
+  // synchronously removes the `PageNode` in `WebContentsDestroyed()` before
+  // `~WeakPtrFactory<WebContentsImpl>` invalidates `GetWebContents()`, so
+  // `contents` is only null in synthetic `GraphTestHarness` unit tests.
+  if (base::WeakPtr<content::WebContents> contents =
+          page_node->GetWebContents();
+      contents && !tabs::TabInterface::MaybeGetFromContents(contents.get())) {
     return false;
   }
   const auto* live_state_data =
