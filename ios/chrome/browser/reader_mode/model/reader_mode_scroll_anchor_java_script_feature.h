@@ -15,6 +15,10 @@ class ReaderModeScrollAnchorJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static ReaderModeScrollAnchorJavaScriptFeature* GetInstance();
 
+  // Records the paragraph closest to the middle of the viewport and the scroll
+  // progress within it so its text can be hashed later via `FindScrollAnchor`.
+  void PrepareScrollAnchor(web::WebFrame* web_frame);
+
   // Finds the paragraph closest to the middle of the viewport.
   void FindScrollAnchor(web::WebFrame* web_frame);
 

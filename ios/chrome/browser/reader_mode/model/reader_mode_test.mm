@@ -17,6 +17,7 @@
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
+#import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/fake_infobar_overlay_request_factory.h"
@@ -85,7 +86,8 @@ void ReaderModeTest::SetUp() {
       profile_.get(),
       {ReaderModeJavaScriptFeature::GetInstance(),
        ReaderModeScrollAnchorJavaScriptFeature::GetInstance(),
-       language::LanguageDetectionJavaScriptFeature::GetInstance()});
+       language::LanguageDetectionJavaScriptFeature::GetInstance(),
+       translate::TranslateJavaScriptFeature::GetInstance()});
 }
 
 void ReaderModeTest::TearDown() {

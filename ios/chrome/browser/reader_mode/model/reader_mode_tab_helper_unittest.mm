@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
 #import "base/scoped_observation.h"
+#import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
@@ -12,6 +13,8 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/translate/core/browser/language_state.h"
+#import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
@@ -27,13 +30,16 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -961,6 +967,64 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeContentDidCancelRequestForwarding) {
   EXPECT_EQ(GURL("https://referrer.url/"), load_params.referrer.url);
   EXPECT_EQ(web::ReferrerPolicyStrictOriginWhenCrossOrigin,
             load_params.referrer.policy);
+}
+
+// Tests that when activating Reader Mode on a translated page, the scroll
+// anchor element is prepared before reverting the translation on the source
+// page, and the scroll anchor text is hashed after reverting the translation.
+TEST_F(ReaderModeTabHelperTest, RevertsTranslationBeforeFindingScrollAnchor) {
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+  task_environment()->FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+
+  ChromeIOSTranslateClient::CreateForWebState(
+      web_state(), InfoBarManagerImpl::FromWebState(web_state()));
+  ChromeIOSTranslateClient* translate_client =
+      ChromeIOSTranslateClient::FromWebState(web_state());
+  translate::LanguageState* language_state =
+      translate_client->GetTranslateManager()->GetLanguageState();
+  language_state->SetSourceLanguage("fr");
+  language_state->SetCurrentLanguage("en");
+  ASSERT_TRUE(language_state->IsPageTranslated());
+
+  web::FakeWebFrame* main_frame = static_cast<web::FakeWebFrame*>(
+      web_state()
+          ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+          ->GetMainWebFrame());
+  ASSERT_NE(nullptr, main_frame);
+
+  bool prepare_scroll_anchor_called = false;
+  bool revert_translation_called = false;
+  bool find_scroll_anchor_called = false;
+  main_frame->SetJavaScriptFunctionCallback(
+      "readerModeScrollAnchor.prepareScrollAnchor",
+      base::BindLambdaForTesting([&]() {
+        EXPECT_FALSE(revert_translation_called);
+        EXPECT_FALSE(find_scroll_anchor_called);
+        prepare_scroll_anchor_called = true;
+      }));
+  main_frame->SetJavaScriptFunctionCallback(
+      "translate.revertTranslation", base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(prepare_scroll_anchor_called);
+        EXPECT_FALSE(find_scroll_anchor_called);
+        revert_translation_called = true;
+      }));
+  main_frame->SetJavaScriptFunctionCallback(
+      "readerModeScrollAnchor.findScrollAnchor",
+      base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(prepare_scroll_anchor_called);
+        EXPECT_TRUE(revert_translation_called);
+        find_scroll_anchor_called = true;
+      }));
+
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  EXPECT_TRUE(prepare_scroll_anchor_called);
+  EXPECT_TRUE(revert_translation_called);
+  EXPECT_TRUE(find_scroll_anchor_called);
 }
 
 INSTANTIATE_TEST_SUITE_P(

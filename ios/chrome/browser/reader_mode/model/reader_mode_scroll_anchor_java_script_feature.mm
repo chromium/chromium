@@ -75,6 +75,12 @@ void ReaderModeScrollAnchorJavaScriptFeature::ScriptMessageReceived(
   }
 }
 
+void ReaderModeScrollAnchorJavaScriptFeature::PrepareScrollAnchor(
+    web::WebFrame* web_frame) {
+  CallJavaScriptFunction(web_frame,
+                         "readerModeScrollAnchor.prepareScrollAnchor", {});
+}
+
 void ReaderModeScrollAnchorJavaScriptFeature::FindScrollAnchor(
     web::WebFrame* web_frame) {
   CallJavaScriptFunction(web_frame, "readerModeScrollAnchor.findScrollAnchor",
