@@ -103,7 +103,7 @@ CSSVariableData* CSSVariableData::Create(const String& original_text,
 }
 
 String CSSVariableData::Serialize() const {
-  if (length_ > 0 && UNSAFE_TODO(OriginalText()[length_ - 1]) == '\\') {
+  if (OriginalText().ends_with('\\')) {
     // https://drafts.csswg.org/css-syntax/#consume-escaped-code-point
     // '\' followed by EOF is consumed as U+FFFD.
     // https://drafts.csswg.org/css-syntax/#consume-string-token
