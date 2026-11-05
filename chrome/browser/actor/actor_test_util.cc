@@ -5,6 +5,8 @@
 #include "chrome/browser/actor/actor_test_util.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -16,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
@@ -55,8 +58,10 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/point.h"
@@ -912,6 +917,18 @@ void ExpectElementDisabledResultWithReason(ActResultFuture& future,
   expected_message += reason;
   expected_message += ".";
   EXPECT_EQ(expected_message, result->message);
+}
+
+std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
+                                        std::string_view query_selector) {
+  const content::GlobalRenderFrameHostToken frame_token =
+      rfh.GetGlobalFrameToken();
+  ASSIGN_OR_RETURN(int node_id, content::GetDOMNodeId(rfh, query_selector));
+  ASSIGN_OR_RETURN(
+      std::string document_identifier,
+      DocumentIdentifierUserData::GetDocumentIdentifier(frame_token));
+  return DomNode{.node_id = node_id,
+                 .document_identifier = std::move(document_identifier)};
 }
 
 bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,

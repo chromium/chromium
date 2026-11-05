@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +19,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/shared_types.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -36,24 +34,6 @@ namespace actor {
 namespace {
 
 using ::content::EvalJs;
-using ::content::GetDOMNodeId;
-using ::optimization_guide::DocumentIdentifierUserData;
-
-std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
-                                        std::string_view query_selector) {
-  std::optional<int> node_id = GetDOMNodeId(rfh, query_selector);
-  if (!node_id) {
-    return std::nullopt;
-  }
-  std::optional<std::string> document_identifier =
-      DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken());
-  if (!document_identifier) {
-    return std::nullopt;
-  }
-  return DomNode{.node_id = *node_id,
-                 .document_identifier = std::move(*document_identifier)};
-}
 
 class ChangePasswordToolBrowserTest : public ActorToolsTest {
  public:

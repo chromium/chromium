@@ -19,7 +19,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -217,19 +216,6 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
   std::unique_ptr<TestJournalObserver> observer_ = nullptr;
   base::CallbackListSubscription create_services_subscription_;
 };
-
-// Gets the dom node or returns nullopt when the node id or document token
-// cannot be retrieved.
-std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
-                                        std::string_view query_selector) {
-  ASSIGN_OR_RETURN(int node_id, GetDOMNodeId(rfh, query_selector));
-  ASSIGN_OR_RETURN(
-      std::string document_identifier,
-      optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
-  return DomNode{.node_id = node_id,
-                 .document_identifier = std::move(document_identifier)};
-}
 
 // Gets the DOM node in an iframe.
 std::optional<DomNode> GetDomNodeInIframe(content::RenderFrameHost& main_rfh,

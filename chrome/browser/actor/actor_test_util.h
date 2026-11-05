@@ -331,6 +331,11 @@ void ExpectErrorResult(ActResultFuture& future,
 void ExpectElementDisabledResultWithReason(ActResultFuture& future,
                                            std::string_view reason);
 
+// Gets the DOM node matching `query_selector` in `rfh`, or returns
+// `std::nullopt` when the node ID or document identifier cannot be retrieved.
+std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
+                                        std::string_view query_selector);
+
 // Sets up GLIC_ACTION_PAGE_BLOCK to block the given host via component updater.
 bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,
                                               const std::string& blocked_host);

@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -35,7 +34,6 @@
 #include "components/autofill/core/browser/actor/mock_actor_form_filling_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -144,19 +142,6 @@ std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
       std::vector<FormFillingRequest>{
           CreateFormFillingRequest(requested_data, std::move(trigger_fields))},
       std::string(credit_card_opaque_token), enqueued_click);
-}
-
-// Gets the dom node or returns nullopt when the node id or document token
-// cannot be retrieved.
-std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
-                                        std::string_view query_selector) {
-  ASSIGN_OR_RETURN(int node_id, GetDOMNodeId(rfh, query_selector));
-  ASSIGN_OR_RETURN(
-      std::string document_identifier,
-      optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
-  return DomNode{.node_id = node_id,
-                 .document_identifier = std::move(document_identifier)};
 }
 
 class MockExecutionEngine : public ExecutionEngine {
