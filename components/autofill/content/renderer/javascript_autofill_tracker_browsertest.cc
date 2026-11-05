@@ -171,11 +171,14 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   LoadHTML(R"(
       <form id="form_id">
         <input id="text_1">
+        <input id="text_2">
         <input type="button" id="button_id">
       </form>)");
 
   blink::WebFormControlElement text1 =
       GetWebElementById("text_1").DynamicTo<blink::WebFormControlElement>();
+  blink::WebFormControlElement text2 =
+      GetWebElementById("text_2").DynamicTo<blink::WebFormControlElement>();
 
   // Helper to trigger JS set value.
   auto js_set_value = [this](const char* id, const char* value) {
@@ -224,21 +227,30 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   SelectDropdownOption("text_1", "opt_btn");
   EXPECT_TRUE(logs.empty());
 
-  // 5. JS change to the SAME value with user activation -> should log.
-  AttachCustomDropdownOption("text_1", "opt_same", {{"text_1", "js_val_3"}});
+  // 5. JS change to the SAME value on `text_1` accompanied by a non-empty write
+  // on `text_2` -> should log `kTrivial` for `text_1`.
+  AttachCustomDropdownOption("text_1", "opt_same",
+                             {{"text_1", "js_val_3"}, {"text_2", "aux_1"}});
   SelectDropdownOption("text_1", "opt_same");
 
-  ASSERT_EQ(logs.size(), 1u);
+  ASSERT_EQ(logs.size(), 2u);
   EXPECT_EQ(logs[0].field_id, form_util::GetFieldRendererId(text1));
   EXPECT_EQ(logs[0].previous_value, u"js_val_3");
+  EXPECT_EQ(logs[1].field_id, form_util::GetFieldRendererId(text2));
+  EXPECT_EQ(logs[1].previous_value, u"");
 
   // 6. JS change to a prefix completion -> should log kPrefixCompletion.
-  EXPECT_CALL(autofill_driver(),
-              DidDetectJavaScriptAutofill(
-                  _, form_util::GetFieldRendererId(text1),
-                  ElementsAre(IsFieldModification(
-                      "text_1", mojom::JavaScriptModificationType::kTrivial)),
-                  _));
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _, form_util::GetFieldRendererId(text1),
+          ElementsAre(
+              IsFieldModification("text_1",
+                                  mojom::JavaScriptModificationType::kTrivial),
+              IsFieldModification(
+                  "text_2",
+                  mojom::JavaScriptModificationType::kEmptyToNonEmpty)),
+          _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_prefix",
                              {{"text_1", "js_val_3_more"}});
@@ -262,7 +274,8 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0].previous_value, u"js_val_3_more");
 
-  // 8. JS change from non-empty to empty -> should log kClearing.
+  // 8. JS change from non-empty to empty on `text_1` accompanied by a non-empty
+  // write on `text_2` -> should log kClearing for `text_1`.
   EXPECT_CALL(autofill_driver(),
               DidDetectJavaScriptAutofill(
                   _, form_util::GetFieldRendererId(text1),
@@ -271,18 +284,26 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
                       mojom::JavaScriptModificationType::kSubstringCompletion)),
                   _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  AttachCustomDropdownOption("text_1", "opt_clear", {{"text_1", ""}});
+  AttachCustomDropdownOption("text_1", "opt_clear",
+                             {{"text_1", ""}, {"text_2", "aux_2"}});
   SelectDropdownOption("text_1", "opt_clear");
-  ASSERT_EQ(logs.size(), 1u);
+  ASSERT_EQ(logs.size(), 2u);
+  EXPECT_EQ(logs[0].field_id, form_util::GetFieldRendererId(text1));
   EXPECT_EQ(logs[0].previous_value, u"prefix_js_val_3_more");
+  EXPECT_EQ(logs[1].field_id, form_util::GetFieldRendererId(text2));
+  EXPECT_EQ(logs[1].previous_value, u"aux_1");
 
   // 9. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
-  EXPECT_CALL(autofill_driver(),
-              DidDetectJavaScriptAutofill(
-                  _, form_util::GetFieldRendererId(text1),
-                  ElementsAre(IsFieldModification(
-                      "text_1", mojom::JavaScriptModificationType::kClearing)),
-                  _));
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _, form_util::GetFieldRendererId(text1),
+          ElementsAre(
+              IsFieldModification("text_1",
+                                  mojom::JavaScriptModificationType::kClearing),
+              IsFieldModification(
+                  "text_2", mojom::JavaScriptModificationType::kReassignment)),
+          _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_new", {{"text_1", "new_val"}});
   SelectDropdownOption("text_1", "opt_new");
@@ -318,9 +339,10 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
       {{"text_2_1", "val_1"}, {"text_2_2", "val_2"}, {"text_2_3", "val_3"}});
 
   // Dropdown attached to text_2_1 in form_2 that modifies fields in form_2.
-  AttachCustomDropdownOption(
-      "text_2_1", "option_2_1",
-      {{"text_2_1", "val_1"}, {"text_2_2", "val_2"}, {"text_2_3", "val_3"}});
+  AttachCustomDropdownOption("text_2_1", "option_2_1",
+                             {{"text_2_1", "new_val_1"},
+                              {"text_2_2", "new_val_2"},
+                              {"text_2_3", "new_val_3"}});
 
   EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
 
@@ -643,6 +665,64 @@ TEST_F(JavaScriptAutofillTrackerTest,
               "state", mojom::JavaScriptModificationType::kPrefixCompletion)),
           _));
 
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+}
+
+// Test that tracking windows where every modified field is only cleared
+// (`kClearing`) or trivially re-assigned (`kTrivial`) are discarded in the
+// renderer without notifying the browser, while mixed windows containing at
+// least one non-empty modification are still reported.
+TEST_F(JavaScriptAutofillTrackerTest, IgnoreAllTrivialOrClearingModifications) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="street" value="1600 Amphitheatre Pkwy">
+        <input id="line2" value="">
+        <input id="city" value="Mountain View">
+      </form>)");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  // 1. All `kTrivial` (e.g., framework re-assigning current values on blur).
+  AttachCustomDropdownOption("street", "noop_rerender",
+                             {{"street", "1600 Amphitheatre Pkwy"},
+                              {"line2", ""},
+                              {"city", "Mountain View"}});
+  SelectDropdownOption("street", "noop_rerender");
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+
+  // 2. Mix of `kClearing` (`street`, `city`) and `kTrivial` (`line2` already
+  // empty), e.g., clicking a custom `<span>` "Clear form" link.
+  AttachCustomDropdownOption("street", "clear_link",
+                             {{"street", ""}, {"line2", ""}, {"city", ""}});
+  SelectDropdownOption("street", "clear_link");
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+
+  // 3. Selecting an option that sets `line2` first, then switching to an
+  // option without `line2`: `line2` is `kClearing`, while `street` and `city`
+  // receive new non-empty values -> reported with all 3 modifications.
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('street').value = '100 Old St';
+    document.getElementById('line2').value = 'Apt 4B';
+    document.getElementById('city').value = 'San Francisco';
+  )");
+  AttachCustomDropdownOption("street", "new_address",
+                             {{"street", "1600 Amphitheatre Pkwy"},
+                              {"line2", ""},
+                              {"city", "Mountain View"}});
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _, form_util::GetFieldRendererId(GetWebElementById("street")),
+          ElementsAre(
+              IsFieldModification(
+                  "street", mojom::JavaScriptModificationType::kReassignment),
+              IsFieldModification("line2",
+                                  mojom::JavaScriptModificationType::kClearing),
+              IsFieldModification(
+                  "city", mojom::JavaScriptModificationType::kReassignment)),
+          _));
+  SelectDropdownOption("street", "new_address");
   task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 

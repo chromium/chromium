@@ -4,6 +4,8 @@
 
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
@@ -151,6 +153,21 @@ mojom::JavaScriptModificationType GetJavaScriptModificationType(
     }
   }
   return mojom::JavaScriptModificationType::kReassignment;
+}
+
+// Returns true if `type` represents a modification that sets a new non-empty
+// value on the field.
+bool IsNonEmptyModification(mojom::JavaScriptModificationType type) {
+  switch (type) {
+    case mojom::JavaScriptModificationType::kTrivial:
+    case mojom::JavaScriptModificationType::kClearing:
+      return false;
+    case mojom::JavaScriptModificationType::kReassignment:
+    case mojom::JavaScriptModificationType::kEmptyToNonEmpty:
+    case mojom::JavaScriptModificationType::kPrefixCompletion:
+    case mojom::JavaScriptModificationType::kSubstringCompletion:
+      return true;
+  }
 }
 
 }  // namespace
@@ -310,8 +327,17 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
         record.timestamp));
   }
 
-  if (field_modifications.empty() ||
-      field_modifications.size() >= kJsAutofillMaxFieldsChanged) {
+  if (field_modifications.size() >= kJsAutofillMaxFieldsChanged) {
+    return;
+  }
+
+  if (std::ranges::none_of(
+          field_modifications, &IsNonEmptyModification,
+          &mojom::JavaScriptFieldModification::modification_type)) {
+    // Require at least one field to transition to a new non-empty value. This
+    // avoids unnecessary work when all modifications are `kClearing` or
+    // `kTrivial` (e.g., clicking a custom `<span>` "Clear" link, or a framework
+    // re-assigning `.value = .value` across fields on blur).
     return;
   }
 
