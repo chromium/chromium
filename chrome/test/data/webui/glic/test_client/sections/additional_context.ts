@@ -69,10 +69,10 @@ async function renderContext(context: AdditionalContext) {
       if (part.pendingRegion.region.rect) {
         const rect = part.pendingRegion.region.rect;
         const id = part.pendingRegion.id;
-        pre.innerText += `Pending Region ID ${id} Bounds: ${rect.x}, ${
-            rect.y}, ${rect.width}, ${rect.height}\n`;
+        pre.innerText += `Region: ${rect.x}, ${rect.y}, ${rect.width}, ${
+            rect.height} (pending ID ${id})\n`;
       } else {
-        pre.innerText += 'Pending Region: present but no rect\n';
+        pre.innerText += 'Region: present but no rect (pending)\n';
       }
     }
   }

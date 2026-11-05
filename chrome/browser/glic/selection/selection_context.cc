@@ -63,9 +63,7 @@ mojom::AdditionalContextPtr CreateRegionSelectionContext(
   for (auto& region : regions) {
     parts.push_back(mojom::AdditionalContextPart::NewPendingRegion(
         mojom::PendingCapturedRegion::New(region.first,
-                                          region.second.Clone())));
-    parts.push_back(
-        mojom::AdditionalContextPart::NewRegion(std::move(region.second)));
+                                          std::move(region.second))));
   }
   context->source = mojom::AdditionalContextSource::kRegionSelection;
   context->tab_id = tab.GetHandle().raw_value();

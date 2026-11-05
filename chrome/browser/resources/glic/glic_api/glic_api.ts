@@ -210,6 +210,10 @@ export declare interface AdditionalContextPart {
   annotatedPageData?: AnnotatedPageData;
   pdf?: PdfDocumentData;
   tabContext?: TabContextResult;
+  /**
+   * Deprecated: Chrome no longer sends `region`. Read `pendingRegion`
+   * instead.
+   */
   region?: CapturedRegion;
   pendingRegion?: PendingCapturedRegion;
   parentConversationMetadata?: ParentConversationMetadata;

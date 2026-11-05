@@ -66,13 +66,11 @@ TEST(SelectionContextRegionTest, RegionSelection) {
 
   EXPECT_EQ(context->source, mojom::AdditionalContextSource::kRegionSelection);
   EXPECT_EQ(context->tab_id, tab.GetHandle().raw_value());
-  ASSERT_EQ(context->parts.size(), 3u);
+  ASSERT_EQ(context->parts.size(), 2u);
   EXPECT_TRUE(context->parts[0]->is_tab_context());
   ASSERT_TRUE(context->parts[1]->is_pending_region());
   EXPECT_EQ(context->parts[1]->get_pending_region()->id, id);
   EXPECT_EQ(context->parts[1]->get_pending_region()->region->get_rect(), rect);
-  ASSERT_TRUE(context->parts[2]->is_region());
-  EXPECT_EQ(context->parts[2]->get_region()->get_rect(), rect);
 }
 
 }  // namespace
