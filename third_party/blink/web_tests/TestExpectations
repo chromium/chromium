@@ -8511,3 +8511,4 @@ crbug.com/576326793 external/wpt/css/css-contain/content-visibility/content-visi
 crbug.com/566874115 [ Linux ] virtual/fedcm-delegation/external/wpt/fedcm/fedcm-delegation/evt-basic.https.html [ Failure Pass ]
 crbug.com/526682330 external/wpt/digital-credentials/create.tentative.https.html [ Crash Pass Timeout ]
 crbug.com/580249385 external/wpt/webmcp/declarative/executeTool-respondWith-reject.https.html [ Failure Pass Timeout ]
+crbug.com/574451292 crbug.com/575210275 external/wpt/largest-contentful-paint/video-data-uri.html [ Pass Timeout ]
