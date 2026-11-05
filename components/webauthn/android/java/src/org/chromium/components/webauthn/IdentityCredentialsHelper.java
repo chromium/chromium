@@ -19,8 +19,6 @@ import com.google.android.gms.identitycredentials.IdentityCredentialClient;
 import com.google.android.gms.identitycredentials.IdentityCredentialManager;
 import com.google.android.gms.identitycredentials.SignalCredentialStateRequest;
 
-import org.jni_zero.JNINamespace;
-
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -31,7 +29,6 @@ import org.chromium.components.webauthn.AndroidApiCallMetrics.ApiCallEvent;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 
 /** Handles requests dispatched to the identity_credentials GmsCore module. */
-@JNINamespace("webauthn")
 @NullMarked
 public class IdentityCredentialsHelper {
     private static final String TAG = "IdentityCredentialsHelper";
@@ -42,12 +39,6 @@ public class IdentityCredentialsHelper {
             "WebAuthentication.Android.IdentityCredentialsApiCall.SignalCredentialState";
 
     private final AuthenticationContextProvider mAuthenticationContextProvider;
-
-    // A callback that provides an AuthenticatorStatus error in the first argument, and optionally a
-    // metrics recording outcome in the second.
-    public interface ErrorCallback {
-        void onResult(int error, @Nullable Integer metricsOutcome);
-    }
 
     public IdentityCredentialsHelper(AuthenticationContextProvider authenticationContextProvider) {
         mAuthenticationContextProvider = authenticationContextProvider;
