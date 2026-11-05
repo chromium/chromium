@@ -7,7 +7,9 @@ import("//build/config/android/rules.gni")
 robolectric_binary("media_session_junit_tests") {
   enable_android_resources = false
   testonly = true
+  shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
   sources = [
+    "src/org/chromium/services/media_session/MediaImageUnitTest.java",
     "src/org/chromium/services/media_session/MediaMetadataUnitTest.java",
     "src/org/chromium/services/media_session/MediaPositionUnitTest.java",
   ]
@@ -19,5 +21,7 @@ robolectric_binary("media_session_junit_tests") {
     "//services/media_session/public/cpp/android:media_session_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }

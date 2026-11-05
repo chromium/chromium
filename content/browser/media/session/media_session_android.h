@@ -62,6 +62,11 @@ class MediaSessionAndroid final
   void SeekTo(JNIEnv* env, const int64_t millis);
   void DidReceiveAction(JNIEnv* env, int32_t action);
   void RequestSystemAudioFocus(JNIEnv* env);
+  void GetMediaImageBitmap(JNIEnv* env,
+                           const base::android::JavaRef<jobject>& j_media_image,
+                           int minimum_size_px,
+                           int desired_size_px,
+                           const base::android::JavaRef<jobject>& j_callback);
 
  private:
   friend class WebContentsObserverProxy;

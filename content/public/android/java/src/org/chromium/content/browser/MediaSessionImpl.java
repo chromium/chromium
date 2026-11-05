@@ -4,11 +4,14 @@
 
 package org.chromium.content.browser;
 
+import android.graphics.Bitmap;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
@@ -122,6 +125,21 @@ public class MediaSessionImpl extends MediaSession {
         return mIsControllable;
     }
 
+    @Override
+    public void getMediaImageBitmap(
+            MediaImage image,
+            int minimumSizePx,
+            int desiredSizePx,
+            Callback<@Nullable Bitmap> callback) {
+        if (mNativeMediaSessionAndroid == 0) {
+            callback.onResult(null);
+            return;
+        }
+        MediaSessionImplJni.get()
+                .getMediaImageBitmap(
+                        mNativeMediaSessionAndroid, image, minimumSizePx, desiredSizePx, callback);
+    }
+
     @CalledByNative
     private boolean hasObservers() {
         return !mObservers.isEmpty();
@@ -215,6 +233,13 @@ public class MediaSessionImpl extends MediaSession {
         void didReceiveAction(long nativeMediaSessionAndroid, int action);
 
         void requestSystemAudioFocus(long nativeMediaSessionAndroid);
+
+        void getMediaImageBitmap(
+                long nativeMediaSessionAndroid,
+                MediaImage image,
+                int minimumSizePx,
+                int desiredSizePx,
+                Callback<@Nullable Bitmap> callback);
 
         MediaSessionImpl getMediaSessionFromWebContents(WebContents contents);
     }

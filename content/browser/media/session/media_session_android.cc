@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -15,6 +16,8 @@
 #include "services/media_session/public/cpp/media_image.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/MediaSessionImpl_jni.h"
@@ -203,6 +206,39 @@ void MediaSessionAndroid::RequestSystemAudioFocus(JNIEnv* env) {
   CHECK(media_session_, base::NotFatalUntil::M160);
   media_session_->RequestSystemAudioFocus(
       media_session::mojom::AudioFocusType::kGain);
+}
+
+void MediaSessionAndroid::GetMediaImageBitmap(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_media_image,
+    int minimum_size_px,
+    int desired_size_px,
+    const base::android::JavaRef<jobject>& j_callback) {
+  if (!j_callback) {
+    return;
+  }
+
+  if (!media_session_) {
+    base::android::RunObjectCallbackAndroid(j_callback, nullptr);
+    return;
+  }
+
+  media_session::MediaImage image =
+      media_session::MediaImage::FromJavaObject(env, j_media_image);
+
+  media_session_->GetMediaImageBitmap(
+      image, minimum_size_px, desired_size_px,
+      base::BindOnce(
+          [](const base::android::JavaRef<jobject>& j_callback,
+             const SkBitmap& bitmap) {
+            base::android::ScopedJavaLocalRef<jobject> j_bitmap;
+            if (!bitmap.drawsNothing()) {
+              j_bitmap = gfx::ConvertToJavaBitmap(
+                  bitmap, gfx::OomBehavior::kReturnNullOnOom);
+            }
+            base::android::RunObjectCallbackAndroid(j_callback, j_bitmap);
+          },
+          base::android::ScopedJavaGlobalRef<jobject>(env, j_callback)));
 }
 
 ScopedJavaLocalRef<jobject> MediaSessionAndroid::GetJavaObject() {

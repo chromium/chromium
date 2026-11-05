@@ -41,6 +41,11 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaImage {
   // Creates a Java MediaImage instance and returns the JNI ref.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
       JNIEnv* env) const;
+
+  // Creates a native MediaImage from a Java MediaImage.
+  static MediaImage FromJavaObject(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_image);
 #endif
 
   // MUST be a valid url. If an icon doesn't have a valid URL, it will not be

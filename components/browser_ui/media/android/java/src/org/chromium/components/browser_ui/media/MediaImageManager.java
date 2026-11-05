@@ -14,12 +14,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.FileUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.ImageDownloadCallback;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.services.media_session.MediaImage;
 import org.chromium.url.GURL;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -27,7 +25,7 @@ import java.util.List;
  *
  * The manager takes a list of {@link MediaMetadata.MediaImage} as input, and
  * selects one of them based on scoring and start download through
- * {@link WebContents} asynchronously. When the download successfully finishes,
+ * {@link MediaSession} asynchronously. When the download successfully finishes,
  * the manager runs the callback function to notify the completion and pass the
  * downloaded Bitmap.
  *
@@ -48,7 +46,7 @@ import java.util.List;
  *     the long edge.
  */
 @NullMarked
-public class MediaImageManager implements ImageDownloadCallback {
+public class MediaImageManager {
     // The default score of unknown image size.
     private static final double DEFAULT_IMAGE_SIZE_SCORE = 0.4;
     // The scores for different image types. Keep them sorted by value.
@@ -59,17 +57,15 @@ public class MediaImageManager implements ImageDownloadCallback {
     private static final double TYPE_SCORE_XICON = 0.4;
     private static final double TYPE_SCORE_GIF = 0.3;
 
-    @VisibleForTesting static final int MAX_BITMAP_SIZE_FOR_DOWNLOAD = 2048;
-
-    private @Nullable WebContents mWebContents;
+    private @Nullable MediaSession mMediaSession;
     // The minimum image size. Images that are smaller than |mMinimumSize| will be ignored.
     final int mMinimumSize;
     // The ideal image size. Images that are too large than |mIdealSize| will be ignored.
     final int mIdealSize;
-    // The pending download image request id, which is set when calling
-    // {@link WebContents#downloadImage()}, and reset when image download completes or
+    // The pending download image request id, which is incremented when calling
+    // {@link MediaSession#getMediaImageBitmap()}, and reset when image download completes or
     // {@link #clearRequests()} is called.
-    private int mRequestId;
+    private int mCurrentRequestId;
     // The callback to be called when the pending download image request completes.
     private @Nullable MediaImageCallback mCallback;
 
@@ -91,21 +87,24 @@ public class MediaImageManager implements ImageDownloadCallback {
     }
 
     /**
-     * Called when the WebContent changes.
-     * @param contents The new WebContents.
+     * Called when the MediaSession changes.
+     *
+     * @param mediaSession The new MediaSession.
      */
-    public void setWebContents(@Nullable WebContents contents) {
-        mWebContents = contents;
+    public void setMediaSession(@Nullable MediaSession mediaSession) {
+        mMediaSession = mediaSession;
+        mLastImageSrc = null;
         clearRequests();
     }
 
     /**
      * Select the best image from |images| and start download.
+     *
      * @param images The list of images to choose from. Null is equivalent to empty list.
      * @param callback The callback when image download completes.
      */
-    public void downloadImage(List<MediaImage> images, MediaImageCallback callback) {
-        if (mWebContents == null) return;
+    public void downloadImage(@Nullable List<MediaImage> images, MediaImageCallback callback) {
+        if (mMediaSession == null) return;
 
         mCallback = callback;
         MediaImage image = selectImage(images);
@@ -120,57 +119,29 @@ public class MediaImageManager implements ImageDownloadCallback {
         if (image.getSrc().equals(mLastImageSrc)) return;
         mLastImageSrc = image.getSrc();
 
-        // Limit |maxBitmapSize| to |MAX_BITMAP_SIZE_FOR_DOWNLOAD| to avoid passing huge bitmaps
-        // through JNI. |maxBitmapSize| does not prevent huge images to be downloaded. It is used to
-        // filter/rescale the download images. See documentation of
-        // {@link WebContents#downloadImage()} for details.
-        mRequestId =
-                mWebContents.downloadImage(
-                        image.getSrc(), // url
-                        false, // isFavicon
-                        MAX_BITMAP_SIZE_FOR_DOWNLOAD, // maxBitmapSize
-                        false, // bypassCache
-                        this); // callback
+        final int requestId = ++mCurrentRequestId;
+        mMediaSession.getMediaImageBitmap(
+                image,
+                mMinimumSize,
+                mIdealSize,
+                (bitmap) -> onFinishDownloadImage(requestId, bitmap));
     }
 
-    /**
-     * ImageDownloadCallback implementation. This method is called when an download image request is
-     * completed. The class will only keep the latest request. If some call to this method is
-     * corresponding to a previous request, it will be ignored.
-     */
-    @Override
-    public void onFinishDownloadImage(
-            int id,
-            int httpStatusCode,
-            GURL imageUrl,
-            List<Bitmap> bitmaps,
-            List<Rect> originalImageSizes) {
-        if (id != mRequestId) return;
+    @VisibleForTesting
+    void onFinishDownloadImage(int requestId, @Nullable Bitmap bitmap) {
+        if (requestId != mCurrentRequestId) return;
 
-        Iterator<Bitmap> iterBitmap = bitmaps.iterator();
-        Iterator<Rect> iterSize = originalImageSizes.iterator();
-
-        Bitmap bestBitmap = null;
-        double bestScore = 0;
-        while (iterBitmap.hasNext() && iterSize.hasNext()) {
-            Bitmap bitmap = iterBitmap.next();
-            Rect size = iterSize.next();
-            double newScore = getImageSizeScore(size);
-            if (bestScore < newScore) {
-                bestBitmap = bitmap;
-                bestScore = newScore;
-            }
-        }
         assumeNonNull(mCallback);
-        mCallback.onImageDownloaded(bestBitmap);
+        mCallback.onImageDownloaded(bitmap);
         clearRequests();
     }
 
     /**
      * Select the best image from the |images|.
+     *
      * @param images The list of images to select from. Null is equivalent to empty list.
      */
-    private @Nullable MediaImage selectImage(List<MediaImage> images) {
+    private @Nullable MediaImage selectImage(@Nullable List<MediaImage> images) {
         if (images == null) return null;
 
         MediaImage selectedImage = null;
@@ -186,7 +157,7 @@ public class MediaImageManager implements ImageDownloadCallback {
     }
 
     private void clearRequests() {
-        mRequestId = -1;
+        mCurrentRequestId++;
         mCallback = null;
     }
 

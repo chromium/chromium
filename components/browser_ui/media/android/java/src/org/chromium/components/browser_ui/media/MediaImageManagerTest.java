@@ -5,12 +5,11 @@
 package org.chromium.components.browser_ui.media;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -21,12 +20,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.services.media_session.MediaImage;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -39,55 +41,43 @@ public class MediaImageManagerTest {
     private static final int TINY_IMAGE_SIZE_PX = 50;
     private static final int MIN_IMAGE_SIZE_PX = 100;
     private static final int IDEAL_IMAGE_SIZE_PX = 200;
-    private static final int REQUEST_ID_1 = 1;
-    private static final int REQUEST_ID_2 = 2;
     private static final GURL IMAGE_URL_1 = JUnitTestGURLs.URL_1;
     private static final GURL IMAGE_URL_2 = JUnitTestGURLs.URL_2;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private WebContents mWebContents;
+    @Mock private MediaSession mMediaSession;
     @Mock private MediaImageCallback mCallback;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
 
     private MediaImageManager mMediaImageManager;
 
     // Prepared data for feeding.
     private ArrayList<MediaImage> mImages;
-    private ArrayList<Bitmap> mBitmaps;
-    private ArrayList<Rect> mOriginalImageSizes;
+    private Bitmap mBitmap;
 
     @Before
     public void setUp() {
-        doReturn(REQUEST_ID_1)
-                .when(mWebContents)
-                .downloadImage(
-                        any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
         mMediaImageManager = new MediaImageManager(MIN_IMAGE_SIZE_PX, IDEAL_IMAGE_SIZE_PX);
-        mMediaImageManager.setWebContents(mWebContents);
+        mMediaImageManager.setMediaSession(mMediaSession);
 
         mImages = new ArrayList<>();
         mImages.add(new MediaImage(IMAGE_URL_1, "", new ArrayList<>()));
 
-        mBitmaps = new ArrayList<>();
-        mBitmaps.add(
+        mBitmap =
                 Bitmap.createBitmap(
-                        IDEAL_IMAGE_SIZE_PX, IDEAL_IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888));
-
-        mOriginalImageSizes = new ArrayList<>();
-        mOriginalImageSizes.add(new Rect(0, 0, IDEAL_IMAGE_SIZE_PX, IDEAL_IMAGE_SIZE_PX));
+                        IDEAL_IMAGE_SIZE_PX, IDEAL_IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888);
     }
 
     @Test
     public void testDownloadImage() {
         mMediaImageManager.downloadImage(mImages, mCallback);
-        verify(mWebContents)
-                .downloadImage(
-                        eq(IMAGE_URL_1),
-                        eq(false),
-                        eq(MediaImageManager.MAX_BITMAP_SIZE_FOR_DOWNLOAD),
-                        eq(false),
-                        eq(mMediaImageManager));
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmap);
 
         verify(mCallback).onImageDownloaded((Bitmap) isNotNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNull());
@@ -97,25 +87,18 @@ public class MediaImageManagerTest {
     public void testDownloadSameImageTwice() {
         // First download.
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmap);
 
         // Second download.
-        doReturn(REQUEST_ID_2)
-                .when(mWebContents)
-                .downloadImage(
-                        any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_2, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
 
-        verify(mWebContents, times(1))
-                .downloadImage(
-                        eq(IMAGE_URL_1),
-                        eq(false),
-                        eq(MediaImageManager.MAX_BITMAP_SIZE_FOR_DOWNLOAD),
-                        eq(false),
-                        eq(mMediaImageManager));
+        verify(mMediaSession, times(1)).getMediaImageBitmap(any(), anyInt(), anyInt(), any());
         verify(mCallback, times(1)).onImageDownloaded((Bitmap) isNotNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNull());
     }
@@ -123,27 +106,20 @@ public class MediaImageManagerTest {
     @Test
     public void testDownloadSameImageTwiceButFailed() {
         // First download.
-        mBitmaps.clear();
-        mOriginalImageSizes.clear();
-
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 404, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(null);
 
         // Second download.
+        // The second download request will never be initiated because the src is the same.
         mMediaImageManager.downloadImage(mImages, mCallback);
-        // The second download request will never be initiated and the callback
-        // will be ignored.
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
 
-        verify(mWebContents, times(1))
-                .downloadImage(
-                        eq(IMAGE_URL_1),
-                        eq(false),
-                        eq(MediaImageManager.MAX_BITMAP_SIZE_FOR_DOWNLOAD),
-                        eq(false),
-                        eq(mMediaImageManager));
+        verify(mMediaSession, times(1)).getMediaImageBitmap(any(), anyInt(), anyInt(), any());
         verify(mCallback, times(1)).onImageDownloaded((Bitmap) isNull());
     }
 
@@ -151,35 +127,28 @@ public class MediaImageManagerTest {
     public void testDownloadDifferentImagesTwice() {
         // First download.
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmap);
 
         // Second download.
-        doReturn(REQUEST_ID_2)
-                .when(mWebContents)
-                .downloadImage(
-                        any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
         mImages.clear();
-        mImages.add(new MediaImage(IMAGE_URL_2, "", new ArrayList<>()));
+        MediaImage image2 = new MediaImage(IMAGE_URL_2, "", new ArrayList<>());
+        mImages.add(image2);
 
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_2, 200, IMAGE_URL_2, mBitmaps, mOriginalImageSizes);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(image2),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmap);
 
-        verify(mWebContents, times(1))
-                .downloadImage(
-                        eq(IMAGE_URL_1),
-                        eq(false),
-                        eq(MediaImageManager.MAX_BITMAP_SIZE_FOR_DOWNLOAD),
-                        eq(false),
-                        eq(mMediaImageManager));
-        verify(mWebContents, times(1))
-                .downloadImage(
-                        eq(IMAGE_URL_2),
-                        eq(false),
-                        eq(MediaImageManager.MAX_BITMAP_SIZE_FOR_DOWNLOAD),
-                        eq(false),
-                        eq(mMediaImageManager));
         verify(mCallback, times(2)).onImageDownloaded((Bitmap) isNotNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNull());
     }
@@ -188,60 +157,60 @@ public class MediaImageManagerTest {
     public void testDownloadAnotherImageBeforeResponse() {
         // First download.
         mMediaImageManager.downloadImage(mImages, mCallback);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        Callback<Bitmap> firstCallback = mCallbackCaptor.getValue();
 
         // Second download.
-        doReturn(REQUEST_ID_2)
-                .when(mWebContents)
-                .downloadImage(
-                        any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
         mImages.clear();
-        mImages.add(new MediaImage(IMAGE_URL_2, "", new ArrayList<>()));
+        MediaImage image2 = new MediaImage(IMAGE_URL_2, "", new ArrayList<>());
+        mImages.add(image2);
 
         mMediaImageManager.downloadImage(mImages, mCallback);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(image2),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        Callback<Bitmap> secondCallback = mCallbackCaptor.getValue();
 
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_2, 200, IMAGE_URL_2, mBitmaps, mOriginalImageSizes);
+        // The second reply arrives.
+        secondCallback.onResult(mBitmap);
 
-        // This reply should not be sent to the client.
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
-
-        verify(mWebContents, times(1))
-                .downloadImage(
-                        eq(IMAGE_URL_1),
-                        eq(false),
-                        eq(MediaImageManager.MAX_BITMAP_SIZE_FOR_DOWNLOAD),
-                        eq(false),
-                        eq(mMediaImageManager));
-        verify(mWebContents, times(1))
-                .downloadImage(
-                        eq(IMAGE_URL_2),
-                        eq(false),
-                        eq(MediaImageManager.MAX_BITMAP_SIZE_FOR_DOWNLOAD),
-                        eq(false),
-                        eq(mMediaImageManager));
+        // The first reply arrives afterwards and should be ignored.
+        firstCallback.onResult(mBitmap);
 
         verify(mCallback, times(1)).onImageDownloaded((Bitmap) isNotNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNull());
     }
 
     @Test
-    public void testDuplicateResponce() {
+    public void testDuplicateResponse() {
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        Callback<Bitmap> callback = mCallbackCaptor.getValue();
+
+        callback.onResult(mBitmap);
+        callback.onResult(mBitmap);
 
         verify(mCallback, times(1)).onImageDownloaded((Bitmap) isNotNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNull());
     }
 
     @Test
-    public void testWrongResponceId() {
+    public void testWrongResponseId() {
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_2, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
+        mMediaImageManager.onFinishDownloadImage(999, mBitmap);
 
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNull());
@@ -255,28 +224,7 @@ public class MediaImageManagerTest {
         mImages.add(new MediaImage(IMAGE_URL_1, "", sizes));
         mMediaImageManager.downloadImage(mImages, mCallback);
 
-        verify(mWebContents, times(0))
-                .downloadImage(
-                        any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
-        verify(mCallback).onImageDownloaded((Bitmap) isNull());
-        verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());
-    }
-
-    @Test
-    public void testTinyImagesRemovedAfterDownloading() {
-        mMediaImageManager.downloadImage(mImages, mCallback);
-
-        // Reset the data for feeding.
-        mBitmaps.clear();
-        mBitmaps.add(
-                Bitmap.createBitmap(
-                        TINY_IMAGE_SIZE_PX, TINY_IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888));
-        mOriginalImageSizes.clear();
-        mOriginalImageSizes.add(new Rect(0, 0, TINY_IMAGE_SIZE_PX, TINY_IMAGE_SIZE_PX));
-
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 200, IMAGE_URL_1, mBitmaps, mOriginalImageSizes);
-
+        verify(mMediaSession, never()).getMediaImageBitmap(any(), anyInt(), anyInt(), any());
         verify(mCallback).onImageDownloaded((Bitmap) isNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());
     }
@@ -284,8 +232,13 @@ public class MediaImageManagerTest {
     @Test
     public void testDownloadImageFails() {
         mMediaImageManager.downloadImage(mImages, mCallback);
-        mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 404, IMAGE_URL_1, new ArrayList<>(), new ArrayList<>());
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(null);
 
         verify(mCallback).onImageDownloaded((Bitmap) isNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());
@@ -296,9 +249,7 @@ public class MediaImageManagerTest {
         mImages.clear();
         mMediaImageManager.downloadImage(mImages, mCallback);
 
-        verify(mWebContents, times(0))
-                .downloadImage(
-                        any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
+        verify(mMediaSession, never()).getMediaImageBitmap(any(), anyInt(), anyInt(), any());
         verify(mCallback).onImageDownloaded((Bitmap) isNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());
     }
@@ -307,10 +258,37 @@ public class MediaImageManagerTest {
     public void testNullImageList() {
         mMediaImageManager.downloadImage(null, mCallback);
 
-        verify(mWebContents, times(0))
-                .downloadImage(
-                        any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
+        verify(mMediaSession, never()).getMediaImageBitmap(any(), anyInt(), anyInt(), any());
         verify(mCallback).onImageDownloaded((Bitmap) isNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());
+    }
+
+    @Test
+    public void testNullMediaSession() {
+        mMediaImageManager.setMediaSession(null);
+        mMediaImageManager.downloadImage(mImages, mCallback);
+
+        verify(mMediaSession, never()).getMediaImageBitmap(any(), anyInt(), anyInt(), any());
+        verify(mCallback, never()).onImageDownloaded(any());
+    }
+
+    @Test
+    public void testSetMediaSessionResetsLastImageSrc() {
+        // First download.
+        mMediaImageManager.downloadImage(mImages, mCallback);
+        verify(mMediaSession)
+                .getMediaImageBitmap(
+                        eq(mImages.get(0)),
+                        eq(MIN_IMAGE_SIZE_PX),
+                        eq(IDEAL_IMAGE_SIZE_PX),
+                        mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmap);
+
+        // Resetting the MediaSession should clear the cached last image src, allowing the same
+        // image URL to be downloaded again for the new session.
+        mMediaImageManager.setMediaSession(mMediaSession);
+        mMediaImageManager.downloadImage(mImages, mCallback);
+
+        verify(mMediaSession, times(2)).getMediaImageBitmap(any(), anyInt(), anyInt(), any());
     }
 }

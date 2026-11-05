@@ -427,8 +427,6 @@ public class MediaSessionHelper implements MediaImageCallback {
 
         if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
 
-        mMediaImageManager.setWebContents(webContents);
-
         if (webContents == null) {
             mWebContentsObserver = null;
             cleanupMediaSessionObserver();
@@ -505,11 +503,13 @@ public class MediaSessionHelper implements MediaImageCallback {
 
         cleanupMediaSessionObserver();
         if (mediaSession != null) {
+            mMediaImageManager.setMediaSession(mediaSession);
             mMediaSessionObserver = createMediaSessionObserver(mediaSession);
         }
     }
 
     private void cleanupMediaSessionObserver() {
+        mMediaImageManager.setMediaSession(null);
         if (mMediaSessionObserver == null) return;
         mMediaSessionObserver.stopObserving();
         mMediaSessionObserver = null;

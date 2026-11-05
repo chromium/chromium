@@ -4,10 +4,15 @@
 
 package org.chromium.content_public.browser;
 
+import android.graphics.Bitmap;
+
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.media_session.mojom.MediaSession.SuspendType;
+import org.chromium.services.media_session.MediaImage;
 
 /** The MediaSession Java wrapper to allow communicating with the native MediaSession object. */
 @NullMarked
@@ -70,4 +75,15 @@ public abstract class MediaSession {
 
     /** Removes an observer from this media session. */
     public abstract void removeObserver(MediaSessionObserver observer);
+
+    /**
+     * Gets/Downloads the bitmap version of a MediaImage at least |minimumSizePx| and closest to
+     * |desiredSizePx|. If the download failed, was too small or the image did not come from the
+     * media session then returns a null image.
+     */
+    public abstract void getMediaImageBitmap(
+            MediaImage image,
+            int minimumSizePx,
+            int desiredSizePx,
+            Callback<@Nullable Bitmap> callback);
 }
