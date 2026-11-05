@@ -40,6 +40,7 @@ specific_include_rules = {
     "+chrome/browser/global_features.h",
   ],
   "os_settings_manager_unittest\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
   ],

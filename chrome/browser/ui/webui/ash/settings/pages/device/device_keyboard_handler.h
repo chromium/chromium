@@ -56,7 +56,7 @@ class KeyboardHandler : public content::WebUIMessageHandler,
   void HandleInitialize(const base::ListValue& args);
 
   // Shows the Ash shortcut customization app.
-  void HandleShowShortcutCustomizationApp(const base::ListValue& args) const;
+  void HandleShowShortcutCustomizationApp(const base::ListValue& args);
 
   // Determines what types of keyboards are attached.
   void HandleKeyboardChange(const base::ListValue& args);

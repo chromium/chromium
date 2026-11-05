@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/display/screen.h"
@@ -110,8 +110,8 @@ void KeyboardHandler::HandleInitialize(const base::ListValue& args) {
 }
 
 void KeyboardHandler::HandleShowShortcutCustomizationApp(
-    const base::ListValue& args) const {
-  ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
+    const base::ListValue& args) {
+  ash::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui()),
                                ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
 }
 

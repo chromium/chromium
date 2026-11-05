@@ -4,22 +4,34 @@
 
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 
+#include <memory>
+
 #include "base/check_deref.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/reset/reset_section.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// #include "components/user_manager/fake_chrome_user_manager.h"
 namespace ash::settings {
+
+namespace {
+
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test-user@testdomain.com",
+                                            GaiaId::Literal("1234567890"));
+constexpr auto kSecondaryAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("secondary-user@testdomain.com",
+                                            GaiaId::Literal("2345678901"));
+
+}  // namespace
 
 class OsSettingsFeaturesUtilTest : public testing::Test {
  public:
@@ -27,70 +39,91 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
   ~OsSettingsFeaturesUtilTest() override = default;
 
   void SetUp() override {
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            browser_process->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                browser_process));
   }
 
-  void TearDown() override { fake_user_manager_.Reset(); }
+  void TearDown() override { user_session_test_environment_.reset(); }
 
-  ash::FakeChromeUserManager* FakeChromeUserManager() {
-    return fake_user_manager_.Get();
+  test::UserSessionTestEnvironment& user_session_test_environment() {
+    return *user_session_test_environment_;
   }
 
-  const AccountId MakeAccountId() {
-    return AccountId::FromUserEmailGaiaId("test-user@testdomain.com",
-                                          GaiaId("1234567890"));
+  StubInstallAttributes& stub_install_attributes() {
+    return CHECK_DEREF(cros_settings_test_helper_.InstallAttributes());
   }
 
-  ash::StubInstallAttributes& stub_install_attributes() {
-    return *stub_install_attributes_.Get();
+  Profile* GetProfile(const AccountId& account_id) {
+    return Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
   }
 
  private:
-  ash::ScopedStubInstallAttributes stub_install_attributes_;
-  // Owned by |scoped_user_manager_|.
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  content::BrowserTaskEnvironment task_environment_;
+  ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashAllowedForRegularUser) {
-  const AccountId account_id = MakeAccountId();
-  auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  const auto& user =
-      CHECK_DEREF(fake_chrome_user_manager_->AddUser(account_id));
-  fake_chrome_user_manager_->LoginUser(account_id);
+  const user_manager::User* user =
+      user_session_test_environment().AddRegularUser(kAccountId);
+  ASSERT_TRUE(user);
+  user_session_test_environment().LogIn(kAccountId);
 
-  EXPECT_TRUE(IsPowerwashAllowed(user));
+  EXPECT_TRUE(IsPowerwashAllowed(*user));
 }
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForGuestUser) {
-  auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  const auto& user = CHECK_DEREF(fake_chrome_user_manager_->AddGuestUser());
-  fake_chrome_user_manager_->LoginUser(user.GetAccountId());
+  const user_manager::User* user =
+      user_session_test_environment().AddGuestUser();
+  ASSERT_TRUE(user);
+  user_session_test_environment().LogIn(user->GetAccountId());
 
-  EXPECT_FALSE(IsPowerwashAllowed(user));
+  EXPECT_FALSE(IsPowerwashAllowed(*user));
 }
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForChildUser) {
-  const AccountId account_id = MakeAccountId();
-  auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  const auto& user =
-      CHECK_DEREF(fake_chrome_user_manager_->AddChildUser(account_id));
-  fake_chrome_user_manager_->set_current_user_child(true);
-  fake_chrome_user_manager_->LoginUser(account_id);
+  const user_manager::User* user =
+      user_session_test_environment().AddChildUser(kAccountId);
+  ASSERT_TRUE(user);
+  user_session_test_environment().LogIn(kAccountId);
 
-  EXPECT_FALSE(IsPowerwashAllowed(user));
+  EXPECT_FALSE(IsPowerwashAllowed(*user));
 }
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForManagedUser) {
   stub_install_attributes().SetCloudManaged("fake-managed.com", "device-id");
 
-  const AccountId account_id = MakeAccountId();
-  auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  const auto& user =
-      CHECK_DEREF(fake_chrome_user_manager_->AddUser(account_id));
-  fake_chrome_user_manager_->LoginUser(account_id);
+  const user_manager::User* user =
+      user_session_test_environment().AddRegularUser(kAccountId);
+  ASSERT_TRUE(user);
+  user_session_test_environment().LogIn(kAccountId);
 
-  EXPECT_FALSE(IsPowerwashAllowed(user));
+  EXPECT_FALSE(IsPowerwashAllowed(*user));
+}
+
+TEST_F(OsSettingsFeaturesUtilTest, ParentalControlSettingsShownForPrimaryUser) {
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(kAccountId));
+  user_session_test_environment().LogIn(kAccountId);
+
+  EXPECT_TRUE(ShouldShowParentalControlSettings(GetProfile(kAccountId)));
+}
+
+TEST_F(OsSettingsFeaturesUtilTest,
+       ParentalControlSettingsHiddenForSecondaryUser) {
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(kAccountId));
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kSecondaryAccountId));
+  user_session_test_environment().LogIn(kAccountId);
+  user_session_test_environment().LogIn(kSecondaryAccountId);
+
+  EXPECT_FALSE(
+      ShouldShowParentalControlSettings(GetProfile(kSecondaryAccountId)));
 }
 
 }  // namespace ash::settings
