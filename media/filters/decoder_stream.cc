@@ -30,6 +30,8 @@
 namespace media {
 
 namespace {
+constexpr size_t kDurationTrackerWindow = 8;
+
 perfetto::NamedTrack GetTracingTrack(
     const DecoderStream<DemuxerStream::VIDEO>* stream) {
   return perfetto::NamedTrack::FromPointer("VideoDecoderStream", stream);
@@ -127,7 +129,7 @@ DecoderStream<StreamType>::DecoderStream(
       decoding_eos_(false),
       preparing_output_(false),
       pending_decode_requests_(0),
-      duration_tracker_(8),
+      duration_tracker_(kDurationTrackerWindow),
       received_config_change_during_reinit_(false),
       pending_demuxer_read_(false) {
   FUNCTION_DVLOG(1);
@@ -564,12 +566,23 @@ void DecoderStream<StreamType>::DecodeInternal(
   if (is_eos) {
     decoding_eos_ = true;
   } else {
-    if (buffer->duration() != kNoTimestamp) {
-      duration_tracker_.AddSample(buffer->duration());
-    } else if (last_buffer_timestamp_ != kNoTimestamp) {
-      duration_tracker_.AddSample(buffer->timestamp() - last_buffer_timestamp_);
+    auto duration = buffer->duration();
+    if (duration == kNoTimestamp && last_buffer_timestamp_ != kNoTimestamp &&
+        !buffer->timestamp().is_inf() &&
+        buffer->timestamp() >= last_buffer_timestamp_) {
+      duration = buffer->timestamp() - last_buffer_timestamp_;
     }
-    last_buffer_timestamp_ = buffer->timestamp();
+    // Ignore negative durations (e.g., from out-of-order timestamps) and
+    // durations large enough that summing `kDurationTrackerWindow` samples
+    // would saturate `duration_tracker_`'s internal `base::TimeDelta` sum to
+    // infinity and CHECK when later evicted.
+    if (duration >= base::TimeDelta() &&
+        duration <= kInfiniteDuration / kDurationTrackerWindow) {
+      duration_tracker_.AddSample(duration);
+    }
+    if (!buffer->timestamp().is_inf()) {
+      last_buffer_timestamp_ = buffer->timestamp();
+    }
   }
 
   ++pending_decode_requests_;

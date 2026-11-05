@@ -81,6 +81,7 @@ class AudioDecoderStreamTest : public testing::Test {
 
   MockDemuxerStream* demuxer_stream() { return &demuxer_stream_; }
   MockAudioDecoder* decoder() { return decoder_; }
+  AudioDecoderStream* audio_decoder_stream() { return &audio_decoder_stream_; }
 
   void ReadAudioBuffer(base::OnceClosure closure) {
     audio_decoder_stream_.Read(
@@ -168,6 +169,42 @@ TEST_F(AudioDecoderStreamTest, FlushOnConfigChange) {
   // processing the last decode.
   EXPECT_CALL(*decoder(), Initialize_(_, _, _, _, _));
   RunUntilIdle();
+}
+
+TEST_F(AudioDecoderStreamTest, ExtremeTimestampDeltasDoNotCrash) {
+  const base::TimeDelta kTimestamps[] = {
+      base::TimeDelta::FiniteMin() / 2,
+      base::TimeDelta::FiniteMax() / 2,
+      base::TimeDelta::FiniteMin() / 2,
+      base::Milliseconds(-50),
+      base::Milliseconds(-20),
+      base::Milliseconds(-40),
+      base::Milliseconds(0),
+      base::Milliseconds(30),
+      base::Milliseconds(60),
+      base::Milliseconds(90),
+      base::Milliseconds(120),
+      base::Milliseconds(150),
+      base::Milliseconds(180),
+      base::Milliseconds(210),
+  };
+
+  for (base::TimeDelta timestamp : kTimestamps) {
+    auto buffer = base::MakeRefCounted<DecoderBuffer>(12);
+    buffer->set_timestamp(timestamp);
+    buffer->set_duration(kNoTimestamp);
+    DemuxerStream::DecoderBufferVector buffers = {std::move(buffer)};
+    EXPECT_CALL(*demuxer_stream(), OnRead(_))
+        .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, std::move(buffers)));
+    EXPECT_CALL(*decoder(), Decode(IsRegularDecoderBuffer(), _))
+        .WillOnce(Invoke(this, &AudioDecoderStreamTest::ProduceDecoderOutput));
+    base::RunLoop run_loop;
+    ReadAudioBuffer(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(audio_decoder_stream()->AverageDuration(),
+            base::Microseconds(31250));
 }
 
 }  // namespace media
