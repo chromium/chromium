@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -44,6 +45,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -355,10 +357,13 @@ class ManifestAssetInstallerPolicy final : public ComponentInstallerPolicy {
 
 // Installer policy for the component that contains the model manifest config.
 class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
+  using ReadyCallback = optimization_guide::ManifestProvider::ReadyCallback;
+
  public:
-  explicit ManifestConfigInstallerPolicy(
-      base::RepeatingCallback<void(base::FilePath)> on_ready_callback)
-      : on_ready_callback_(std::move(on_ready_callback)) {}
+  explicit ManifestConfigInstallerPolicy(ReadyCallback on_ready_callback,
+                                         base::FilePath required_file_name)
+      : on_ready_callback_(std::move(on_ready_callback)),
+        required_file_name_(std::move(required_file_name)) {}
 
   ManifestConfigInstallerPolicy(const ManifestConfigInstallerPolicy&) = delete;
   ManifestConfigInstallerPolicy& operator=(
@@ -395,8 +400,7 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
 
   bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override {
-    return base::PathExists(
-        install_dir.Append(optimization_guide::kManifestFileName));
+    return base::PathExists(install_dir.Append(required_file_name_));
   }
 
   base::FilePath GetRelativeInstallDir() const override {
@@ -425,21 +429,90 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
         FROM_HERE, base::BindOnce(on_ready_callback_, install_dir));
   }
 
-  base::RepeatingCallback<void(base::FilePath)> on_ready_callback_;
+  ReadyCallback on_ready_callback_;
+  // The file expected in the component installation directory. Verification
+  // policy rejects the installation if this path does not exist.
+  const base::FilePath required_file_name_;
+};
+
+class ManifestProviderImpl final : public optimization_guide::ManifestProvider {
+ public:
+  ManifestProviderImpl(
+      base::FilePath required_file_name,
+      base::TaskPriority task_priority,
+      std::optional<OnDemandUpdater::Priority> on_demand_priority)
+      : required_file_name_(std::move(required_file_name)),
+        task_priority_(task_priority),
+        on_demand_priority_(on_demand_priority) {}
+
+  base::CallbackListSubscription ListenForManifestReady(
+      ReadyCallback on_ready) override {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+    if (!manifest_dir_.empty()) {
+      on_ready.Run(manifest_dir_);
+    }
+    auto subscription = manifest_ready_callbacks_.Add(std::move(on_ready));
+    MaybeRegisterManifestComponent();
+    return subscription;
+  }
+
+ private:
+  void MaybeRegisterManifestComponent() {
+    if (manifest_registered_ || !g_browser_process) {
+      return;
+    }
+
+    ComponentUpdateService* cus = g_browser_process->component_updater();
+    if (!cus) {
+      return;
+    }
+
+    manifest_registered_ = true;
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<ManifestConfigInstallerPolicy>(
+            base::BindRepeating(&ManifestProviderImpl::OnManifestReady,
+                                weak_ptr_factory_.GetWeakPtr()),
+            required_file_name_),
+        /*action_handler=*/nullptr, task_priority_);
+    installer->Register(
+        cus, base::BindOnce(
+                 [](std::optional<OnDemandUpdater::Priority> priority) {
+                   if (priority) {
+                     OnDeviceModelUpdater::OnDemandInstall(
+                         crx_file::id_util::GenerateIdFromHash(
+                             kManifestPublicKeySHA256),
+                         *priority);
+                   }
+                 },
+                 on_demand_priority_));
+  }
+
+  void OnManifestReady(base::FilePath install_dir) {
+    manifest_dir_ = std::move(install_dir);
+    manifest_ready_callbacks_.Notify(manifest_dir_);
+  }
+
+  const base::FilePath required_file_name_;
+  const base::TaskPriority task_priority_;
+  const std::optional<OnDemandUpdater::Priority> on_demand_priority_;
+  bool manifest_registered_ = false;
+  base::FilePath manifest_dir_;
+  base::RepeatingCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
+  base::WeakPtrFactory<ManifestProviderImpl> weak_ptr_factory_{this};
 };
 
 class ManifestAssetManagerDelegateImpl final
     : public optimization_guide::ManifestAssetManagerDelegate {
  public:
+  ManifestAssetManagerDelegateImpl()
+      : manifest_provider_(
+            base::FilePath(optimization_guide::kManifestFileName),
+            base::TaskPriority::USER_VISIBLE,
+            OnDemandUpdater::Priority::FOREGROUND) {}
+
   base::CallbackListSubscription ListenForManifestReady(
-      base::RepeatingCallback<void(base::FilePath)> on_ready) override {
-    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-    auto subscription = manifest_ready_callbacks_.Add(std::move(on_ready));
-    if (!manifest_dir_.empty()) {
-      manifest_ready_callbacks_.Notify(manifest_dir_);
-    }
-    MaybeRegisterManifestComponent();
-    return subscription;
+      ReadyCallback on_ready) override {
+    return manifest_provider_.ListenForManifestReady(std::move(on_ready));
   }
 
   void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteSize>)>
@@ -528,42 +601,7 @@ class ManifestAssetManagerDelegateImpl final
   }
 
  private:
-  void MaybeRegisterManifestComponent() {
-    if (manifest_registered_) {
-      return;
-    }
-    manifest_registered_ = true;
-    if (!g_browser_process) {
-      return;
-    }
-
-    ComponentUpdateService* cus = g_browser_process->component_updater();
-    if (!cus) {
-      return;
-    }
-
-    auto installer = base::MakeRefCounted<ComponentInstaller>(
-        std::make_unique<ManifestConfigInstallerPolicy>(base::BindRepeating(
-            &ManifestAssetManagerDelegateImpl::OnManifestReady,
-            weak_ptr_factory_.GetWeakPtr())));
-    installer->Register(
-        cus, base::BindOnce([] {
-          OnDeviceModelUpdater::OnDemandInstall(
-              crx_file::id_util::GenerateIdFromHash(kManifestPublicKeySHA256),
-              OnDemandUpdater::Priority::FOREGROUND);
-        }));
-  }
-
-  void OnManifestReady(base::FilePath install_dir) {
-    manifest_dir_ = std::move(install_dir);
-    manifest_ready_callbacks_.Notify(manifest_dir_);
-  }
-
-  base::FilePath manifest_dir_;
-  bool manifest_registered_ = false;
-  base::RepeatingCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
-  base::WeakPtrFactory<ManifestAssetManagerDelegateImpl> weak_ptr_factory_{
-      this};
+  ManifestProviderImpl manifest_provider_;
 };
 
 }  // namespace

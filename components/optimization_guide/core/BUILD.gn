@@ -262,6 +262,11 @@ source_set("model_execution") {
   }
 }
 
+source_set("manifest_provider") {
+  sources = [ "model_execution/manifest_provider.h" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("ondevice") {
   # TODO: crbug.com/421262905 - Should not need these without model_execution
   sources = [
@@ -379,6 +384,7 @@ source_set("ondevice") {
 
 if (build_with_model_execution) {
   source_set("manifest_broker") {
+    public_deps = [ ":manifest_provider" ]
     sources = [
       "model_execution/manifest_broker/asset_priorities.cc",
       "model_execution/manifest_broker/asset_priorities.h",

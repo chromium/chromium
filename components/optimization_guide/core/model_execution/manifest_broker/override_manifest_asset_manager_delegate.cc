@@ -53,7 +53,7 @@ OverrideManifestAssetManagerDelegate::~OverrideManifestAssetManagerDelegate() =
 
 base::CallbackListSubscription
 OverrideManifestAssetManagerDelegate::ListenForManifestReady(
-    base::RepeatingCallback<void(base::FilePath)> on_ready) {
+    ReadyCallback on_ready) {
   if (!manifest_path_.empty()) {
     on_ready.Run(manifest_path_);
   }

@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/byte_size.h"
-#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
 
 namespace optimization_guide {
 
@@ -28,13 +28,9 @@ std::optional<std::string> GetCrxIdFromPublicKeyHex(
 
 // Delegate for `ManifestMonitor` to avoid depending on the InstallPolicy
 // directly.
-class ManifestMonitorDelegate {
+class ManifestMonitorDelegate : public ManifestProvider {
  public:
-  virtual ~ManifestMonitorDelegate() = default;
-
-  // Returns the base install directory for on-demand models.
-  virtual base::CallbackListSubscription ListenForManifestReady(
-      base::RepeatingCallback<void(base::FilePath)> on_ready) = 0;
+  ~ManifestMonitorDelegate() override = default;
 
   // Gets the available free disk space in the install directory on a
   // background thread.
