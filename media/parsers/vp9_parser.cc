@@ -15,7 +15,6 @@
 #include <array>
 #include <ranges>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
@@ -286,10 +285,7 @@ bool IsByteNEncrypted(size_t byte,
 
 template <typename T>
 bool ContainsZero(const T& data) {
-  base::span<const uint8_t> span = base::as_byte_span(data);
-  // TODO(crbug.com/40284755): We should compare the performance differences
-  // between `memchr` and `std::range::find`.
-  return UNSAFE_TODO(memchr(span.data(), 0, span.size())) != nullptr;
+  return std::ranges::contains(base::as_byte_span(data), uint8_t{0});
 }
 
 }  // namespace
