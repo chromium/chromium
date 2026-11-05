@@ -333,7 +333,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAuxiliarySearchDonation,
     &kAuxiliarySearchHistoryDonation,
     &kAvoidRecreateOnTouchscreenOrColorModeChange,
-    &kAvoidTaskTrampolines,
     &kBackGestureReflectsDesktopBehavior,
     &kBlockIntentsWhileLocked,
     &kBookmarkPaneAndroid,
@@ -1060,7 +1059,6 @@ BASE_FEATURE(kWebAppShortEdgesCutoutMode, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebUiAndroidTheming, BUILDFLAG(IS_DESKTOP_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT : base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kXplatSyncedSetupThemes, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_RUNTIME_MUTABLE_FEATURE(kAvoidTaskTrampolines, base::FEATURE_ENABLED_BY_DEFAULT);
 // go/keep-sorted end
 // BASE_FEATURE_END
 

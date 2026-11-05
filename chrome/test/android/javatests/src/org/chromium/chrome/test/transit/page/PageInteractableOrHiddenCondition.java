@@ -6,7 +6,6 @@ package org.chromium.chrome.test.transit.page;
 
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.function.Supplier;
@@ -30,14 +29,10 @@ public class PageInteractableOrHiddenCondition extends UiThreadCondition {
 
         boolean isUserInteractable = tab.isUserInteractable();
         boolean isHidden = tab.isHidden();
-        boolean canDeliverTouchInput =
-                !(tab.getContext() instanceof CustomTabActivity)
-                        || ((CustomTabActivity) tab.getContext()).canDeliverTouchInput();
         return whether(
-                (isUserInteractable && canDeliverTouchInput) || isHidden,
-                "isUserInteractable=%b, canDeliverTouchInput=%b, isHidden=%b",
+                isUserInteractable || isHidden,
+                "isUserInteractable=%b, isHidden=%b",
                 isUserInteractable,
-                canDeliverTouchInput,
                 isHidden);
     }
 }
