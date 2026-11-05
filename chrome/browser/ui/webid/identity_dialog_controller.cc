@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/identity_provider_permission_request.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/permissions/permission_request_manager.h"
@@ -33,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/origin.h"
@@ -49,24 +52,63 @@ using content::webid::FederatedLoginResult;
 
 namespace {
 
+// Estimates the likely `LoginState` for a given list of accounts for HaT
+// surveys where the user dismisses the offer without selecting an account.
+// Returns `kSignIn` if any account is for signing in, otherwise `kSignUp`
+// (including if there are no available accounts).
+content::IdentityRequestAccount::LoginState EstimateLoginStateForHats(
+    const std::vector<IdentityRequestAccountPtr>& accounts) {
+  return std::ranges::any_of(
+             accounts,
+             [](const auto& account) {
+               return account->idp_claimed_login_state.value_or(
+                          account->browser_trusted_login_state) ==
+                      content::IdentityRequestAccount::LoginState::kSignIn;
+             })
+             ? content::IdentityRequestAccount::LoginState::kSignIn
+             : content::IdentityRequestAccount::LoginState::kSignUp;
+}
+
 // Triggers HaT survey about the personalization experience with FedCM. Only
 // shows the survey when the user did not close or switch the tab and the user
 // is eligible according to the HaTS guidelines.
 void MaybeTriggerPersonalizationAndTrustHatsSurvey(
     content::WebContents* web_contents,
-    const std::string& trigger) {
-  if (!web_contents) {
+    const std::string& trigger,
+    blink::mojom::RpMode rp_mode,
+    content::IdentityRequestAccount::LoginState login_state) {
+  if (!web_contents ||
+      !base::FeatureList::IsEnabled(
+          autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey)) {
     return;
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (HatsService* hats_service = HatsServiceFactory::GetForProfile(
-          profile, /*create_if_necessary=*/true)) {
-    // Launch survey with delay of 0ms in order to avoid running it
-    // synchronously which might disrupt tear-down on dismissal surveys.
-    hats_service->LaunchDelayedSurveyForWebContents(trigger, web_contents,
-                                                    /*timeout_ms=*/0);
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
   }
+
+  SurveyStringData survey_data{
+      {"FedCM UI mode",
+       rp_mode == blink::mojom::RpMode::kActive ? "active" : "passive"},
+      {"FedCM interaction type",
+       login_state == content::IdentityRequestAccount::LoginState::kSignIn
+           ? "sign-in"
+           : "sign-up"},
+      {"Origin of the website (eTLD+1)",
+       net::registry_controlled_domains::GetDomainAndRegistry(
+           web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)},
+  };
+  // Launch survey with delay of 0ms in order to avoid running it
+  // synchronously which might disrupt tear-down on dismissal surveys.
+  hats_service->LaunchDelayedSurveyForWebContents(
+      trigger, web_contents,
+      /*timeout_ms=*/0,
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/std::move(survey_data));
 }
 
 }  // namespace
@@ -302,6 +344,13 @@ bool IdentityDialogController::ShowAccountsDialog(
   // because the caller may have destroyed this object.
   if (account_view_->Show(rp_data, identity_provider_data, accounts, rp_mode,
                           new_accounts)) {
+    if (on_account_selection_) {
+      // `OnAccountSelected()` may be called synchronously from `Show()`, e.g.
+      // after the IdP login pop-up. Only set this estimate if
+      // `OnAccountSelected()`, which sets `login_state_` to a more accurate
+      // value, was not yet executed.
+      login_state_ = EstimateLoginStateForHats(accounts);
+    }
     DidInvokeShowUi();
     return true;
   }
@@ -538,7 +587,7 @@ void IdentityDialogController::OnAccountSelected(
   }
   CHECK(on_account_selection_);
 
-  was_account_explicitly_selected_ = true;
+  login_state_ = login_state;
   CollectTrainingData(UserAction::kSuccess);
 
   // We only allow dismiss after account selection on active modes and not on
@@ -566,20 +615,21 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
     if (dismiss_reason == DismissReason::kCloseButton ||
         dismiss_reason == DismissReason::kSwipe) {
       CollectTrainingData(UserAction::kClosed);
-      if (on_account_selection_) {
+      if (on_account_selection_ && login_state_.has_value()) {
         // Only trigger if the user dismissed the account selection dialog
         // without selecting an account (excludes error/failure dialogs and
         // post-selection cancellation in active mode).
         MaybeTriggerPersonalizationAndTrustHatsSurvey(
             web_contents(),
-            kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed);
+            kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
+            rp_mode_, *login_state_);
       }
     } else {
       CollectTrainingData(UserAction::kIgnored);
     }
   }
 
-  was_account_explicitly_selected_ = false;
+  login_state_.reset();
   on_account_selection_.Reset();
   on_native_result_.Reset();
   std::move(on_dismiss_).Run(dismiss_reason);
@@ -605,12 +655,15 @@ content::WebContents* IdentityDialogController::GetWebContents() {
 }
 
 void IdentityDialogController::OnFedCmFederatedLogin(bool success) {
-  if (success && was_account_explicitly_selected_) {
+  if (success && login_state_.has_value()) {
+    // `login_state_` is only populated when the account selection dialog was
+    // shown to the user (excludes flows like auto-reauthn or actor login).
     MaybeTriggerPersonalizationAndTrustHatsSurvey(
         web_contents(),
-        kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted);
+        kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
+        rp_mode_, *login_state_);
   }
-  was_account_explicitly_selected_ = false;
+  login_state_.reset();
 }
 
 void IdentityDialogController::ShowUrl(LinkType type, const GURL& url) {

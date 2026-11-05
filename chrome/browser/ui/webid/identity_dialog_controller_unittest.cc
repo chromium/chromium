@@ -7,8 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,11 +45,13 @@
 
 using testing::_;
 using testing::An;
+using testing::DoAll;
 using testing::ElementsAre;
 using testing::Field;
 using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
+using testing::UnorderedElementsAreArray;
 
 namespace {
 
@@ -190,17 +195,29 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
   }
 
+  std::vector<IdentityRequestAccountPtr> CreateAccounts(size_t count) {
+    std::vector<IdentityRequestAccountPtr> accounts;
+    accounts.reserve(count);
+    for (size_t i = 1; i <= count; ++i) {
+      accounts.push_back(base::MakeRefCounted<Account>(
+          /*id=*/base::StrCat({"account_id", base::NumberToString(i)}),
+          /*display_identifier=*/"", /*display_name=*/"", /*email=*/"", "", "",
+          /*picture=*/GURL(), /*phone=*/"",
+          /*username=*/"",
+          /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
+          /*login_hints=*/std::vector<std::string>(),
+          /*domain_hints=*/std::vector<std::string>(),
+          /*labels=*/std::vector<std::string>(),
+          /*idp_claimed_login_state=*/
+          content::IdentityRequestAccount::LoginState::kSignIn,
+          /*browser_trusted_login_state=*/
+          content::IdentityRequestAccount::LoginState::kSignUp));
+    }
+    return accounts;
+  }
+
   std::vector<IdentityRequestAccountPtr> CreateAccount() {
-    return {base::MakeRefCounted<Account>(
-        kAccountId, "", "", "", "", "", GURL(), "", "",
-        /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
-        /*login_hints=*/std::vector<std::string>(),
-        /*domain_hints=*/std::vector<std::string>(),
-        /*labels=*/std::vector<std::string>(),
-        /*idp_claimed_login_state=*/
-        content::IdentityRequestAccount::LoginState::kSignIn,
-        /*browser_trusted_login_state=*/
-        content::IdentityRequestAccount::LoginState::kSignUp)};
+    return CreateAccounts(1);
   }
 
   IdentityProviderDataPtr CreateIdentityProviderData(
@@ -221,8 +238,9 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
   void ShowAccountsDialog(
       IdentityDialogController* controller,
       blink::mojom::RpMode rp_mode,
+      std::vector<IdentityRequestAccountPtr> accounts,
       DismissCallback dismiss_callback = base::DoNothing()) {
-    accounts_ = CreateAccount();
+    accounts_ = std::move(accounts);
     IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
     controller->ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
@@ -231,6 +249,14 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
         /*on_selected=*/base::DoNothing(),
         /*on_add_account=*/base::DoNothing(), std::move(dismiss_callback),
         /*accounts_displayed_callback=*/base::DoNothing());
+  }
+
+  void ShowAccountsDialog(
+      IdentityDialogController* controller,
+      blink::mojom::RpMode rp_mode,
+      DismissCallback dismiss_callback = base::DoNothing()) {
+    ShowAccountsDialog(controller, rp_mode, CreateAccount(),
+                       std::move(dismiss_callback));
   }
 
   segmentation_platform::MockSegmentationPlatformService*
@@ -1309,7 +1335,13 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Accept) {
       *mock_hats_service,
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
-          web_contents(), 0, _, _, _, _, _, _, _));
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "passive"},
+              {"FedCM interaction type", "sign-in"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
   controller->OnAccountSelected(
       GURL(kIdpEtldPlusOne), kAccountId,
       content::IdentityRequestAccount::LoginState::kSignIn);
@@ -1339,8 +1371,42 @@ TEST_F(IdentityDialogControllerTest,
   controller->OnFedCmFederatedLogin(/*success=*/false);
 }
 
+// Tests that the survey PSD specifies "active" mode and "sign-up" when FedCM
+// runs in active mode with a sign-up account.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_Accept_ActiveMode) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kActive);
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "active"},
+              {"FedCM interaction type", "sign-up"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
+  controller->OnAccountSelected(
+      GURL(kIdpEtldPlusOne), kAccountId,
+      content::IdentityRequestAccount::LoginState::kSignUp);
+  controller->OnFedCmFederatedLogin(/*success=*/true);
+}
+
 // Tests that a HaT survey about personalization and trust is launched when the
-// user dismisses a FedCM dialog.
+// user dismisses a FedCM dialog. If both sign-up and sign-in accounts are
+// present, the interaction type is estimated as sign-in.
 TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Dismiss) {
   base::test::ScopedFeatureList feature_list{
       autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
@@ -1352,13 +1418,94 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Dismiss) {
   auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
   ON_CALL(*mock_view, Show).WillByDefault(Return(true));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccounts(2);
+  accounts[0]->idp_claimed_login_state =
+      content::IdentityRequestAccount::LoginState::kSignUp;
+  accounts[1]->idp_claimed_login_state =
+      content::IdentityRequestAccount::LoginState::kSignIn;
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
+                     accounts);
 
   EXPECT_CALL(
       *mock_hats_service,
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
-          web_contents(), 0, _, _, _, _, _, _, _));
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "passive"},
+              {"FedCM interaction type", "sign-in"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
+  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
+}
+
+// Tests that the survey PSD specifies "sign-in" when the user dismisses an
+// accounts dialog where only the browser-trusted state is sign-in.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_Dismiss_BrowserTrustedSignIn) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+  accounts[0]->idp_claimed_login_state = std::nullopt;
+  accounts[0]->browser_trusted_login_state =
+      content::IdentityRequestAccount::LoginState::kSignIn;
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
+                     accounts);
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "passive"},
+              {"FedCM interaction type", "sign-in"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
+  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
+}
+
+// Tests that the survey PSD specifies "sign-up" when the user dismisses an
+// accounts dialog with sign-up accounts.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_Dismiss_SignUp) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+  accounts[0]->idp_claimed_login_state =
+      content::IdentityRequestAccount::LoginState::kSignUp;
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
+                     accounts);
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "passive"},
+              {"FedCM interaction type", "sign-up"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
   controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
 }
 
@@ -1407,4 +1554,117 @@ TEST_F(IdentityDialogControllerTest,
 
   EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
   controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
+}
+
+// Tests that no HaT survey is launched when login completes via auto-reauthn
+// without showing an account selection dialog.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_DoNotTrigger_AutoReauthn) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, ShowVerifyingDialog).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts);
+  controller->ShowVerifyingDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u""),
+      idp_data, accounts[0], content::IdentityRequestAccount::SignInMode::kAuto,
+      blink::mojom::RpMode::kPassive, base::DoNothing());
+
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
+  controller->OnFedCmFederatedLogin(/*success=*/true);
+}
+
+// Tests that no HaT survey is launched on account acceptance when the survey
+// feature is disabled.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_DoNotTrigger_FeatureDisabled_Accept) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey);
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
+  controller->OnAccountSelected(
+      GURL(kIdpEtldPlusOne), kAccountId,
+      content::IdentityRequestAccount::LoginState::kSignIn);
+  controller->OnFedCmFederatedLogin(/*success=*/true);
+}
+
+// Tests that no HaT survey is launched on dialog dismissal when the survey
+// feature is disabled.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_DoNotTrigger_FeatureDisabled_Dismiss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey);
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
+  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
+}
+
+// Tests that the product-specific string data keys supplied to HaTS match the
+// fields configured in the survey configs.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_PsdKeysMatchSurveyConfig) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  SurveyStringData psd;
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents)
+      .WillOnce(
+          DoAll(SaveArg<4>(&psd), Return(HatsService::LaunchError::kNone)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
+
+  hats::SurveyConfigs survey_configs;
+  hats::GetActiveSurveyConfigs(survey_configs);
+  const std::vector<std::string>& accepted_keys =
+      survey_configs
+          [kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted]
+              .product_specific_string_data_fields;
+  const std::vector<std::string>& dismissed_keys =
+      survey_configs
+          [kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed]
+              .product_specific_string_data_fields;
+
+  // Confirm both survey triggers require the same PSD schema.
+  EXPECT_EQ(accepted_keys, dismissed_keys);
+
+  const std::vector<std::string> actual_keys =
+      base::ToVector(psd, &std::pair<const std::string, std::string>::first);
+  EXPECT_THAT(actual_keys, UnorderedElementsAreArray(accepted_keys));
 }

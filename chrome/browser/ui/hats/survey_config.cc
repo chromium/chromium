@@ -924,18 +924,29 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           // Number of results that were found for the last query.
           "Query results count",
       }));
+  const std::vector<std::string>
+      autofill_personalization_and_trust_fedcm_product_specific_data{
+          // Whether the FedCM request was triggered using active or
+          // passive mode.
+          "FedCM UI mode",
+          // Whether the FedCM interaction was a sign-in or sign-up.
+          "FedCM interaction type",
+          // eTLD+1 of the origin of the primary main frame where the survey
+          // was triggered.
+          "Origin of the website (eTLD+1)",
+      };
   survey_configs.emplace_back(
       &::autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/std::vector<std::string>{});
+      autofill_personalization_and_trust_fedcm_product_specific_data);
   survey_configs.emplace_back(
       &::autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/std::vector<std::string>{});
+      autofill_personalization_and_trust_fedcm_product_specific_data);
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
