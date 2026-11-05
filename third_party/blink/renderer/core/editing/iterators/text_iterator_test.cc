@@ -30,6 +30,9 @@
 
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 
+#include <tuple>
+#include <vector>
+
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
@@ -112,6 +115,11 @@ class TextIteratorTest : public EditingTestBase {
  private:
   template <typename Tree>
   std::string IterateWithIterator(typename Tree::TextIteratorType&);
+
+  // Turns FastCommonGraphemeClusterPrefixLength on for every test, so that no
+  // test depends on the flag's default. CurrentContainerMatchesLegacy turns it
+  // off to get the legacy containers.
+  ScopedFastCommonGraphemeClusterPrefixLengthForTest scoped_feature_{true};
 };
 
 template <typename Tree>
@@ -1240,6 +1248,71 @@ TEST_F(TextIteratorTest, ExcludeAutofilledValueListboxSelect) {
   // text is emitted).
   ScopedTextIteratorExcludeAutofilledSelectFixForTest disable_fix(false);
   EXPECT_EQ("[Two]", IteratePartial<DomTree>(start, end, behavior));
+}
+
+using RunContainers =
+    std::vector<std::tuple<const Node*, wtf_size_t, wtf_size_t>>;
+
+// Returns the container, and the start and end offsets in it, of every run of
+// a text iterator over the contents of `body`, getting the container first.
+template <typename Tree>
+RunContainers GetRunContainers(const Element& body,
+                               const TextIteratorBehavior& behavior) {
+  using PositionType = typename Tree::PositionType;
+  typename Tree::TextIteratorType it(
+      PositionType(&body, 0), PositionType(&body, Tree::CountChildren(body)),
+      behavior);
+  RunContainers runs;
+  for (; !it.AtEnd(); it.Advance()) {
+    const Node* container = &it.CurrentContainer();
+    runs.emplace_back(container, it.StartOffsetInCurrentContainer(),
+                      it.EndOffsetInCurrentContainer());
+  }
+  return runs;
+}
+
+// With FastCommonGraphemeClusterPrefixLength, CurrentContainer() doesn't
+// compute the offsets in the container of a run emitted for a node. Checks that
+// it returns the same container, and that the offsets are the same, as without
+// it, for every run, including the ones emitted for line breaks, replaced
+// elements, blocks, table cells, text controls and shadow hosts, with and
+// without entering text controls and open shadow roots.
+TEST_F(TextIteratorTest, CurrentContainerMatchesLegacy) {
+  SetBodyContent(
+      "<div>ab<br>cd<img width='10' height='10'>ef</div>"
+      "<p>gh   <b>ij</b> <span style='display:none'>hidden</span> "
+      "<span> </span>kl</p>"
+      "<table><tr><td>m</td><td>n</td></tr></table>"
+      "<ul><li>o</li></ul>"
+      "<input value='p  q'><input><textarea>r\n\ns\n</textarea>"
+      "<textarea></textarea>t"
+      "<div id='open-host'><a></a><b></b><img slot=c alt=C></div>"
+      "<div id='closed-host'>light</div>");
+  GetElementById("open-host")
+      ->AttachShadowRootForTesting(ShadowRootMode::kOpen)
+      .SetInnerHTMLWithoutTrustedTypes("A<br><slot name=c></slot>");
+  GetElementById("closed-host")
+      ->AttachShadowRootForTesting(ShadowRootMode::kClosed)
+      .SetInnerHTMLWithoutTrustedTypes("wx<br><slot></slot><br>yz");
+  UpdateAllLifecyclePhasesForTest();
+  const Element& body = *GetDocument().body();
+  for (const TextIteratorBehavior& behavior :
+       {TextIteratorBehavior(), EmitsImageAltTextBehavior(),
+        EmitsObjectReplacementCharacterBehavior(),
+        EmitsCharactersBetweenAllVisiblePositionsBehavior(),
+        EntersTextControlsBehavior(), EntersOpenShadowRootsBehavior()}) {
+    RunContainers legacy_dom;
+    RunContainers legacy_flat;
+    {
+      ScopedFastCommonGraphemeClusterPrefixLengthForTest legacy_feature(false);
+      legacy_dom = GetRunContainers<DomTree>(body, behavior);
+      legacy_flat = GetRunContainers<FlatTree>(body, behavior);
+    }
+    EXPECT_FALSE(legacy_dom.empty());
+    EXPECT_FALSE(legacy_flat.empty());
+    EXPECT_EQ(legacy_dom, GetRunContainers<DomTree>(body, behavior));
+    EXPECT_EQ(legacy_flat, GetRunContainers<FlatTree>(body, behavior));
+  }
 }
 
 }  // namespace text_iterator_test

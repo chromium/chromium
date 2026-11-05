@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/editing/state_machines/forward_code_point_state_machine.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -76,8 +77,25 @@ wtf_size_t ComputeCommonGraphemeClusterPrefixLength(
       TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
   const Position selection_start_container_node_start(
       selection_start.ComputeContainerNode(), 0);
+  const bool skip_runs_in_other_containers =
+      RuntimeEnabledFeatures::FastCommonGraphemeClusterPrefixLengthEnabled();
   int offset = 0;
   while (!forward_iterator.AtEnd()) {
+    // The start position of a character is in the container of its text
+    // iterator run, so it can't be the position we're looking for in a run in
+    // another container. Skip the rest of such a run without computing the
+    // positions of its characters, as that can be slow. For example, the
+    // position of the newline emitted for a <br> is the <br>'s index in its
+    // parent, found by counting its previous siblings, so computing it for
+    // every <br> before the selection is quadratic in the number of <br>s.
+    if (skip_runs_in_other_containers &&
+        &forward_iterator.CurrentContainer() !=
+            selection_start_container_node_start.AnchorNode()) {
+      const wtf_size_t run_length = forward_iterator.length();
+      forward_iterator.Advance(run_length);
+      offset += static_cast<int>(run_length);
+      continue;
+    }
     const Position& current_position = forward_iterator.StartPosition();
     if (current_position == selection_start_container_node_start)
       break;

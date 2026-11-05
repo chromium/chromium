@@ -968,6 +968,16 @@ template <typename Strategy>
 const Node& TextIteratorAlgorithm<Strategy>::CurrentContainer() const {
   if (!text_state_.PositionNode())
     return *end_container_;
+  if (!text_state_.PositionContainerNode() &&
+      RuntimeEnabledFeatures::FastCommonGraphemeClusterPrefixLengthEnabled()) {
+    // Return the parent of the position node, which is the container that
+    // EnsurePositionContainer() sets, without computing the offsets in it.
+    // They're the position node's index, which takes time linear in the index
+    // to find. ComputeCommonGraphemeClusterPrefixLength() relies on this to
+    // check the container of every run before the selection quickly.
+    const ContainerNode* parent = Strategy::Parent(*text_state_.PositionNode());
+    return *parent;
+  }
   EnsurePositionContainer();
   return *text_state_.PositionContainerNode();
 }
