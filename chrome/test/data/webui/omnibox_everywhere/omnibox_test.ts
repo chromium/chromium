@@ -2619,8 +2619,6 @@ suite('OmniboxEverywhereAppTest', () => {
             '', app.style.getPropertyValue('--voice_search_minimum_width'));
       });
 
-  // TODO(crbug.com/552283274): Flaky on Mac.
-  // <if expr="not is_macosx">
   test(
       'open-voice-search reflects attribute on app and hides MV tiles and ' +
           'content',
@@ -2669,6 +2667,7 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(!!searchbox);
         assertTrue(!!mvContainer);
         assertFalse(appWithMv.hasAttribute('show-voice-search-overlay_'));
+        assertEquals('flex', window.getComputedStyle(mvContainer).display);
 
         searchbox.fire('open-voice-search');
         await microtasksFinished();
@@ -2696,7 +2695,6 @@ suite('OmniboxEverywhereAppTest', () => {
         assertEquals('block', window.getComputedStyle(content).display);
         assertEquals('flex', window.getComputedStyle(mvContainer).display);
       });
-  // </if>
 
   test(
       'MVT container hides when context menu, screenshot menu, or user input is present',
@@ -4158,6 +4156,12 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       smallFont: false,
       isPersistentMode: true,
     });
+    const mostVisitedHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+    const {instance: mostVisitedInstance} =
+        browserProxyFactory.createForTest(mostVisitedHandler);
+    browserProxyFactory.setInstance(mostVisitedInstance);
+    mostVisitedHandler.setResultFor(
+        'getMostVisitedExpandedState', Promise.resolve({isExpanded: false}));
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
     testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();

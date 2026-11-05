@@ -45,8 +45,29 @@ class OmniboxEverywhereWebUITest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, TabSelectionAndRestoration) {
-  RunTest("omnibox_everywhere/omnibox_test.js", "mocha.run();");
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, Omnibox) {
+  RunTest("omnibox_everywhere/omnibox_test.js",
+          "runMochaSuite('OmniboxEverywhereOmniboxTest');");
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, Composebox) {
+  RunTest("omnibox_everywhere/omnibox_test.js",
+          "runMochaSuite('OmniboxEverywhereComposeboxTest');");
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, App) {
+  RunTest("omnibox_everywhere/omnibox_test.js",
+          "runMochaSuite('OmniboxEverywhereAppTest');");
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, ProfileIcon) {
+  RunTest("omnibox_everywhere/omnibox_test.js",
+          "runMochaSuite('OmniboxEverywhereProfileIconTest');");
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, ContextMenu) {
+  RunTest("omnibox_everywhere/omnibox_test.js",
+          "runMochaSuite('OmniboxEverywhereContextMenuTest');");
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, FreModal) {
