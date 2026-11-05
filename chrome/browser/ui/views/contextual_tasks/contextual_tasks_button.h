@@ -20,9 +20,14 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class BrowserWindowInterface;
 class PinnedToolbarButtonStatusIndicator;
+
+namespace gfx {
+class Point;
+}  // namespace gfx
 
 namespace ui {
 class ImageModel;
@@ -74,6 +79,8 @@ class ContextualTasksButton
 
   // views::View:
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+  void ShowContextMenu(const gfx::Point& p,
+                       ui::mojom::MenuSourceType source_type) override;
 
  protected:
   bool ShouldShowMenu() override;
