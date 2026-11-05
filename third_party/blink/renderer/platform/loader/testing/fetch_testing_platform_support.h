@@ -25,8 +25,6 @@ class FetchTestingPlatformSupport : public TestingPlatformSupport {
   URLLoaderMockFactory* GetURLLoaderMockFactory();
 
  private:
-  class FetchTestingURLLoaderMockFactory;
-
   std::unique_ptr<URLLoaderMockFactory> url_loader_mock_factory_;
 };
 

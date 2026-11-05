@@ -161,7 +161,6 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
 
  private:
   friend class URLLoaderClientImpl;
-  friend class URLResponseBodyConsumer;
 
   struct PendingRequestInfo {
     PendingRequestInfo(scoped_refptr<ResourceRequestClient> client,

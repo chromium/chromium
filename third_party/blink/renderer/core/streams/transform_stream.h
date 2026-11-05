@@ -85,7 +85,6 @@ class CORE_EXPORT TransformStream final : public ScriptWrappable {
  private:
   friend class TransformStreamDefaultController;
 
-  class ControllerInterface;
   class FlushAlgorithm;
   class TransformAlgorithm;
   class ReturnStartPromiseAlgorithm;

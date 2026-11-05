@@ -163,7 +163,6 @@ class CORE_EXPORT ScriptPromiseResolverBase
   size_t runtime_type_id_ = 0;
 #endif
 
-  class ExceptionStateScope;
   enum ResolutionState {
     kPending,
     kResolving,

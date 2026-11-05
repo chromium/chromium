@@ -152,7 +152,6 @@ class BLINK_PLATFORM_EXPORT URLLoader {
 
  private:
   class Context;
-  class RequestPeerImpl;
 
   void Cancel();
 

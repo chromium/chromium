@@ -44,7 +44,6 @@ class MediaControlsMediaEventListener;
 class MediaControlsDisplayCutoutDelegate;
 class MediaControlsOrientationLockDelegate;
 class MediaControlsRotateToFullscreenDelegate;
-class MediaControlsWindowEventListener;
 class MediaControlAnimatedArrowContainerElement;
 class MediaControlButtonPanelElement;
 class MediaControlCastButtonElement;
@@ -222,9 +221,6 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   // order to not expose accessors only for this component, a friendship is
   // declared.
   friend class MediaControlsMediaEventListener;
-  // Same as above but handles the menus hiding when the window is interacted
-  // with, allowing MediaControlsImpl to not have the boilerplate.
-  friend class MediaControlsWindowEventListener;
 
   // For tests.
   friend class MediaControlsDisplayCutoutDelegateTest;

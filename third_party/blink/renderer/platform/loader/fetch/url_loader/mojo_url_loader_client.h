@@ -87,8 +87,6 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   class DeferredOnReceiveResponse;
   class DeferredOnReceiveRedirect;
   class DeferredOnUploadProgress;
-  class DeferredOnReceiveCachedMetadata;
-  class DeferredOnStartLoadingResponseBody;
   class DeferredOnComplete;
 
   bool NeedsStoringMessage() const;

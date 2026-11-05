@@ -94,7 +94,6 @@ class CORE_EXPORT EventListenerMap final {
   void Trace(Visitor*) const;
 
  private:
-  friend class EventListenerIterator;
 
   // We use HeapVector instead of HeapHashMap because
   //  - HeapVector is much more space efficient than HeapHashMap.

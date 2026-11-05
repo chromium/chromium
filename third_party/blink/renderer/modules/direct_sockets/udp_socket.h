@@ -33,7 +33,6 @@ class IPEndPoint;
 
 namespace blink {
 class ScriptState;
-class SocketCloseOptions;
 class UDPSocketOpenInfo;
 class UDPSocketOptions;
 

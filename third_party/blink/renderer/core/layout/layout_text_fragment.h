@@ -119,7 +119,6 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   String PlainText() const override;
 
  protected:
-  friend class LayoutObjectFactory;
   void WillBeDestroyed(const ComputedStyle*) override;
 
  private:

@@ -1881,8 +1881,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                        GLsizei height,
                                        const char* function_name);
 
-  friend class WebGLStateRestorer;
-  friend class WebGLRenderingContextEvictionManager;
 
   static void ActivateContext(WebGLRenderingContextBase*);
   static void DeactivateContext(WebGLRenderingContextBase*);

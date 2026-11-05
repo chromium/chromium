@@ -49,8 +49,6 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  friend class DescriptorReadValueCallback;
-
   BluetoothRemoteGATTServer* GetGatt() const {
     return characteristic_->GetGatt();
   }

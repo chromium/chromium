@@ -58,7 +58,6 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 
  private:
   class Data;
-  class BaseTaskRunner;
   scoped_refptr<Data> data_;
 
   explicit FakeTaskRunner(scoped_refptr<Data> data);

@@ -312,7 +312,6 @@ class CORE_EXPORT ReadableStream
 
   class PullAlgorithm;
   class CancelAlgorithm;
-  class ReadHandleImpl;
   class IterationSource;
   class IterationReadRequest;
 

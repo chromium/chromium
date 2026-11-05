@@ -35,7 +35,6 @@ class IPEndPoint;
 }  // namespace net
 
 namespace blink {
-class SocketCloseOptions;
 class TCPSocketOpenInfo;
 class TCPSocketOptions;
 

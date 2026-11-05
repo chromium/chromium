@@ -420,7 +420,6 @@ class CORE_EXPORT SerializedScriptValue
   DataBufferPtr ConsumeAndTakeBuffer() &&;
 
  private:
-  friend class ScriptValueSerializer;
   friend class V8ScriptValueSerializer;
   friend class UnpackedSerializedScriptValue;
 

@@ -142,8 +142,6 @@ class CORE_EXPORT BodyStreamBuffer final
   void Trace(Visitor*) const override;
 
  private:
-  friend class BodyStreamBufferUnderlyingByteSource;
-  friend class BodyStreamBufferUnderlyingSource;
 
   class LoaderClient;
 

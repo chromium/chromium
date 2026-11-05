@@ -177,11 +177,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
  private:
   Member<InlineNodeData> inline_node_data_;
-
- protected:
-  // LayoutRubyBase objects need to be able to split and merge, moving their
-  // children around (calling MakeChildrenNonInline).
-  friend class LayoutRubyBase;
 };
 
 template <>

@@ -228,7 +228,6 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
   Vector<HtmlEquivalentTagMapping> original_html_equivalent_tags_;
 
   friend class HTMLElementEquivalent;
-  friend class HTMLAttributeEquivalent;
 };
 
 class StyleChange {

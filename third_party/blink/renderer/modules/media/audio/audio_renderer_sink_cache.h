@@ -65,7 +65,6 @@ class MODULES_EXPORT AudioRendererSinkCache {
 
  private:
   friend class AudioRendererSinkCacheTest;
-  friend class CacheEntryFinder;
   friend class AudioRendererSinkCache::WindowObserver;
 
   struct CacheEntry;

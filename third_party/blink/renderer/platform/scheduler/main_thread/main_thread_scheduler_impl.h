@@ -96,7 +96,6 @@ class AgentGroupSchedulerImpl;
 class CPUTimeBudgetPool;
 class FrameSchedulerImpl;
 class PageSchedulerImpl;
-class WebRenderWidgetSchedulingState;
 class WidgetSchedulerImpl;
 
 class PLATFORM_EXPORT MainThreadSchedulerImpl
@@ -416,7 +415,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   virtual void PerformMicrotaskCheckpoint();
 
  private:
-  friend class WebRenderWidgetSchedulingState;
   friend class MainThreadMetricsHelper;
 
   friend class MainThreadMetricsHelperTest;
@@ -496,8 +494,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool IsQueueEnabled(MainThreadTaskQueue*, const SchedulingSettings&) const;
     void WriteIntoTrace(perfetto::TracedValue context) const;
   };
-
-  class TaskDurationMetricTracker;
 
   class RendererPauseHandleImpl
       : public MainThreadScheduler::RendererPauseHandle {

@@ -62,8 +62,6 @@ class PLATFORM_EXPORT BMPImageReader final {
   bool DecodeBMP(bool only_size);
 
  private:
-  friend class PixelChangedScoper;
-
   // The various BMP compression types.  We don't currently decode all
   // these.
   enum CompressionType {

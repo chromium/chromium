@@ -56,7 +56,6 @@ class MainThreadSchedulerImpl;
 class MainThreadTaskQueue;
 class PageSchedulerImpl;
 class PolicyUpdater;
-class ResourceLoadingTaskRunnerHandleImpl;
 
 namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplTest;
@@ -224,7 +223,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   friend class frame_scheduler_impl_unittest::FrameSchedulerImplTest;
   friend class page_scheduler_impl_unittest::PageSchedulerImplTest;
   friend class PerAgentSchedulingBaseTest;
-  friend class ResourceLoadingTaskRunnerHandleImpl;
   friend class ::blink::MainThreadSchedulerTest;
 
   // A class that adds and removes itself from the passed in weak pointer. While

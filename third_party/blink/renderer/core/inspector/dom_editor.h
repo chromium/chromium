@@ -84,7 +84,6 @@ class DOMEditor final : public GarbageCollected<DOMEditor> {
   protocol::Response SetNodeValue(Node* parent_node, const String& value);
 
  private:
-  class DOMAction;
   class RemoveChildAction;
   class InsertBeforeAction;
   class RemoveAttributeAction;

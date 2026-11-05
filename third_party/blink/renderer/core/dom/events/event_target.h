@@ -420,7 +420,6 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
 
   Member<EventTargetData> data_;
 
-  friend class EventListenerIterator;
 };
 
 DISABLE_CFI_PERF

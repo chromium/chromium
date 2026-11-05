@@ -157,8 +157,6 @@ class CORE_EXPORT SVGImage final : public Image {
   // Forwards calls to the various *ForContainer methods and other parts of
   // the the Image interface.
   friend class SVGImageForContainer;
-  // Forwards calls to the sizing methods.
-  friend class SVGImageView;
 
   SVGImage(ImageObserver*, bool is_multipart);
   ~SVGImage() override;

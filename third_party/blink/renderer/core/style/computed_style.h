@@ -296,8 +296,6 @@ class ComputedStyle final : public ComputedStyleBase {
   friend class StyleCascade;
   // Editing has to only reveal unvisited info.
   friend class EditingStyle;
-  // Saves Border/Background information for later comparison.
-  friend class CachedUAStyle;
   // Accesses visited and unvisited colors.
   friend class ColorPropertyFunctions;
   // Accesses inset and sizing property values.

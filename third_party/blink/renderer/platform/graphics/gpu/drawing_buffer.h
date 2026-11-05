@@ -372,7 +372,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   }
 
  private:
-  friend class ScopedRGBEmulationForBlitFramebuffer;
   friend class ScopedStateRestorer;
   friend class ColorBuffer;
 

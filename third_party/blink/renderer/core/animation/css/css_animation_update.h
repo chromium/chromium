@@ -394,8 +394,6 @@ class CORE_EXPORT CSSAnimationUpdate final {
   ActiveInterpolationsMap active_interpolations_for_transitions_;
 
   bool needs_named_trigger_update_ = false;
-
-  friend class PendingAnimationUpdate;
 };
 
 }  // namespace blink

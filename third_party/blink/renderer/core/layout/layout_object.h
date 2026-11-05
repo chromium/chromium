@@ -4117,7 +4117,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
  private:
-  friend class LineLayoutItem;
   friend class LocalFrameView;
 
   Member<const ComputedStyle> style_;

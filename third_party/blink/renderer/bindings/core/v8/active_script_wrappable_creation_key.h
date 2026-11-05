@@ -34,7 +34,6 @@ class ActiveScriptWrappableCreationKey final {
   template <typename Traits>
   friend class DecoderTemplate;
   friend class DedicatedWorker;
-  friend class DocumentTransition;
   friend class DOMFileSystem;
   friend class DOMWebSocket;
   friend class EditContext;
@@ -100,8 +99,6 @@ class ActiveScriptWrappableCreationKey final {
   friend class ServiceWorker;
   friend class ServiceWorkerRegistration;
   friend class SharedWorker;
-  friend class SmartCardReader;
-  friend class SmartCardReaderPresenceObserver;
   friend class SourceBuffer;
   friend class SpeechRecognition;
   friend class SVGImageElement;

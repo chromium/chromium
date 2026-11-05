@@ -69,7 +69,6 @@ class CORE_EXPORT ReadableByteStreamController
 
  private:
   friend class BodyStreamBuffer;
-  friend class BodyStreamBufferUnderlyingByteSource;
   friend class ByteStreamTeeEngine;
   friend class ReadableStream;
   friend class ReadableStreamBYOBReader;

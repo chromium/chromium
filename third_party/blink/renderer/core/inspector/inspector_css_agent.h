@@ -634,8 +634,6 @@ class CORE_EXPORT InspectorCSSAgent final
   // This is set via `trackComputedStyleUpdatesForNode` call.
   std::optional<int> node_id_for_computed_style_updated_events_;
 
-  friend class InspectorResourceContentLoaderCallback;
-  friend class StyleSheetBinder;
   friend class InspectorCSSAgentTest;
 };
 

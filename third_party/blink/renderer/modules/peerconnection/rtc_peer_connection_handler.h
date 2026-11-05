@@ -60,7 +60,6 @@ class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandlerClient;
 class RTCSessionDescriptionInit;
 class RTCVoidRequest;
-class SetLocalDescriptionRequest;
 
 // Helper class for passing pre-parsed session descriptions to functions.
 // Create a ParsedSessionDescription by calling one of the Parse functions.
@@ -250,8 +249,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   friend class Observer;
   class WebRtcSetDescriptionObserverImpl;
   friend class WebRtcSetDescriptionObserverImpl;
-  class SetLocalDescriptionRequest;
-  friend class SetLocalDescriptionRequest;
 
   void OnSessionDescriptionsUpdated(
       std::unique_ptr<webrtc::SessionDescriptionInterface>

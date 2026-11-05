@@ -1086,7 +1086,6 @@ class CORE_EXPORT HTMLMediaElement
   friend class AutoplayPolicy;
   friend class AutoplayUmaHelperTest;
   friend class Internals;
-  friend class TrackDisplayUpdateScope;
   friend class MediaControlsImplTest;
   friend class HTMLMediaElementTest;
   friend class HTMLMediaElementEventListenersTest;
