@@ -15,4 +15,10 @@ bool IsCaaEnabledInIsolatedMode() {
   return base::FeatureList::IsEnabled(kEnterpriseIsolatedModeMilestone2);
 }
 
+// For now extension telemetry reporting in Isolated Mode is controlled by the
+// same flag as Milestone 2.
+bool IsExtensionTelemetryEnabledInIsolatedMode() {
+  return base::FeatureList::IsEnabled(kEnterpriseIsolatedModeMilestone2);
+}
+
 }  // namespace enterprise_isolated_mode
