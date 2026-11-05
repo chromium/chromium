@@ -24,7 +24,7 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.Dismis
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
@@ -249,10 +249,10 @@ public class ActionConfirmationManager {
             syncingTabGroups = syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
         }
 
-        @Nullable CoreAccountInfo coreAccountInfo = getCoreAccountInfo();
+        @Nullable AccountInfo accountInfo = getPrimaryAccountInfo();
         String description =
-                syncingTabGroups && coreAccountInfo != null
-                        ? mContext.getString(withSyncDescriptionRes, coreAccountInfo.getEmail())
+                syncingTabGroups && accountInfo != null
+                        ? mContext.getString(withSyncDescriptionRes, accountInfo.getEmail())
                         : mContext.getString(noSyncDescriptionRes);
 
         if (shouldSkipDialog(stopShowingPref)) {
@@ -283,7 +283,7 @@ public class ActionConfirmationManager {
                 onDialogInteracted);
     }
 
-    private @Nullable CoreAccountInfo getCoreAccountInfo() {
+    private @Nullable AccountInfo getPrimaryAccountInfo() {
         IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
         @Nullable IdentityManager identityManager =
                 identityServicesProvider.getIdentityManager(mProfile);
