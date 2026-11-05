@@ -605,6 +605,34 @@ AutocompleteController::~AutocompleteController() {
   // notifying observers or using `kClobbered` to clear provider caches and
   // state, since the observers and providers are being destroyed too.
   Stop(AutocompleteStopReason::kInteraction);
+  // Later providers in `providers_` (such as `CalculatorProvider` and
+  // `HistoryClusterProvider`) hold `raw_ptr`s to earlier providers (such as
+  // `SearchProvider`, `HistoryURLProvider`, and `HistoryQuickProvider`), so
+  // `providers_` must be destroyed in LIFO order. Because `providers_` is
+  // declared before the `*_provider_` raw_ptr members and `internal_result_` /
+  // `published_result_` (whose matches also hold `raw_ptr`s to providers),
+  // destroying `providers_` here before member destruction requires clearing
+  // those references first to avoid dangling `raw_ptr`s.
+  bookmark_provider_ = nullptr;
+  history_quick_provider_ = nullptr;
+  document_provider_ = nullptr;
+  history_url_provider_ = nullptr;
+  keyword_provider_ = nullptr;
+  unscoped_extension_provider_ = nullptr;
+  search_provider_ = nullptr;
+  zero_suggest_provider_ = nullptr;
+  on_device_head_provider_ = nullptr;
+  clipboard_provider_ = nullptr;
+  voice_suggest_provider_ = nullptr;
+  open_tab_provider_ = nullptr;
+  tab_group_provider_ = nullptr;
+  featured_search_provider_ = nullptr;
+  contextual_search_provider_ = nullptr;
+  internal_result_.Reset();
+  published_result_.Reset();
+  while (!providers_.empty()) {
+    providers_.pop_back();
+  }
 }
 
 void AutocompleteController::AddObserver(Observer* observer) {

@@ -672,9 +672,9 @@ class ProcessMemoryMetricsEmitterTest
       auto frame_node =
           CreateFrameNodeAutoId(process_node.get(), page_node.get());
 
-      nodes.push_back(std::move(process_node));
-      nodes.push_back(std::move(page_node));
       nodes.push_back(std::move(frame_node));
+      nodes.push_back(std::move(page_node));
+      nodes.push_back(std::move(process_node));
     }
 
     // Process kTestRendererPid202 always has 2 URL
@@ -698,11 +698,11 @@ class ProcessMemoryMetricsEmitterTest
       auto frame_node2 =
           CreateFrameNodeAutoId(process_node.get(), page_node2.get());
 
-      nodes.push_back(std::move(process_node));
-      nodes.push_back(std::move(page_node1));
       nodes.push_back(std::move(frame_node1));
-      nodes.push_back(std::move(page_node2));
+      nodes.push_back(std::move(page_node1));
       nodes.push_back(std::move(frame_node2));
+      nodes.push_back(std::move(page_node2));
+      nodes.push_back(std::move(process_node));
     }
 
     return nodes;

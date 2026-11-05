@@ -178,7 +178,12 @@ void DevToolsSession::Dispose() {
   dispatcher_.reset();
   for (auto& pair : handlers_)
     pair.second->Disable();
-  handlers_.clear();
+  // Destroy handlers in reverse order: `handlers_` is sorted by domain name,
+  // and `PageHandler` holds `raw_ptr`s to `BrowserHandler` and
+  // `EmulationHandler`, which sort before "Page".
+  while (!handlers_.empty()) {
+    handlers_.erase(std::prev(handlers_.end()));
+  }
 }
 
 DevToolsSession* DevToolsSession::GetRootSession() {

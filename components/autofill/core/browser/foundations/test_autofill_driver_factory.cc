@@ -28,6 +28,12 @@ TestAutofillDriverFactory::~TestAutofillDriverFactory() {
   for (auto& observer : AutofillDriverFactory::observers()) {
     observer.OnAutofillDriverFactoryDestroyed(*this);
   }
+  // Destroy drivers in LIFO order because child TestAutofillDrivers hold a
+  // raw_ptr to their parent driver and are appended to `drivers_` after their
+  // parent.
+  while (!drivers_.empty()) {
+    drivers_.pop_back();
+  }
 }
 
 bool TestAutofillDriverFactory::IsOwned(TestAutofillDriver& driver) const {
@@ -75,7 +81,12 @@ void TestAutofillDriverFactory::DeleteAll() {
     SetLifecycleStateAndNotifyObservers(*driver,
                                         LifecycleState::kPendingDeletion);
   }
-  drivers_.clear();
+  // Destroy drivers in LIFO order because child TestAutofillDrivers hold a
+  // raw_ptr to their parent driver and are appended to `drivers_` after their
+  // parent.
+  while (!drivers_.empty()) {
+    drivers_.pop_back();
+  }
 }
 
 std::vector<AutofillDriver*> TestAutofillDriverFactory::GetExistingDrivers() {

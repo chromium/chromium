@@ -40,6 +40,12 @@ void OwnedLayerImplList::clear() {
   picture_layers_with_animated_images_.clear();
   picture_layers_with_worklets_.clear();
   num_picture_layers_ = 0u;
+  // Destroy layers in LIFO order so child layers (which may hold raw_ptrs to
+  // ancestor layers, e.g. BlendStateCheckLayer::comparison_layer_) are
+  // destroyed before earlier layers in the tree.
+  while (!detached_layers.empty()) {
+    detached_layers.pop_back();
+  }
 }
 
 void OwnedLayerImplList::push_back(std::unique_ptr<LayerImpl>&& value) {

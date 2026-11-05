@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 
+#include <iterator>
+
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -72,6 +74,12 @@ ProfileManagementFlowController::ProfileManagementFlowController(
 
 ProfileManagementFlowController::~ProfileManagementFlowController() {
   flow_tracker_.ExitedFlow();
+  // Destroy steps in reverse order of `Step` so later steps (such as
+  // `kSearchEngineChoice`, which holds a `raw_ptr` to the `WebContents` owned
+  // by `kPostSignInFlow`) are destroyed before earlier steps.
+  while (!initialized_steps_.empty()) {
+    initialized_steps_.erase(std::prev(initialized_steps_.end()));
+  }
 }
 
 void ProfileManagementFlowController::SwitchToStep(
@@ -213,7 +221,8 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
             .Then(std::move(post_host_cleared_callback.value()));
   }
 
-  bool open_command_line_urls = ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened();
+  bool open_command_line_urls =
+      ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened();
   ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(false);
 
   // Start by opening the browser window, to ensure that we have another
