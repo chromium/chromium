@@ -2255,8 +2255,16 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
       response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
 }
 
+// TODO(crbug.com/581632118): Disabled on Windows ASan due to flakiness.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_GetScreenshotTabClosedDuringCapture \
+  DISABLED_GetScreenshotTabClosedDuringCapture
+#else
+#define MAYBE_GetScreenshotTabClosedDuringCapture \
+  GetScreenshotTabClosedDuringCapture
+#endif
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       GetScreenshotTabClosedDuringCapture) {
+                       MAYBE_GetScreenshotTabClosedDuringCapture) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
