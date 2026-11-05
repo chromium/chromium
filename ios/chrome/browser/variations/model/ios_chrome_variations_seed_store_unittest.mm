@@ -49,6 +49,8 @@ std::unique_ptr<variations::SeedResponse> GetSeed(bool valid) {
   seed->signature =
       valid ? TestSeedData().base64_signature : "invalid signature";
   seed->data = data;
+  seed->country = "us";
+  seed->geo_level1 = "us-ca";
   seed->is_gzip_compressed = true;
   seed->date = base::Time::Now();
   return seed;
@@ -132,6 +134,11 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
     EXPECT_EQ(applied, trial_exists);
   }
 
+  // Returns the variations service.
+  variations::VariationsService* variations_service() {
+    return variations_service_.get();
+  }
+
  private:
   // Test set up dependencies.
   base::test::TaskEnvironment task_environment_;
@@ -160,6 +167,7 @@ TEST_F(IOSChromeVariationsSeedStoreTest, testGoodSeedFetched) {
   SetUpVariationsService();
   EXPECT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
             SeedApplicationStage::kSeedImported);
+  EXPECT_EQ(variations_service()->GetLatestGeoLevel1(), "us-ca");
   SetUpFieldTrials();
   EXPECT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
             SeedApplicationStage::kSeedApplied);

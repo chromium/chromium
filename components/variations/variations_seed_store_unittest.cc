@@ -3669,6 +3669,8 @@ TEST_F(VariationsSeedStoreTest, ImportInitialSeed_Success) {
   const VariationsSeed test_seed = CreateTestSeed();
   auto initial_seed = std::make_unique<SeedResponse>();
   initial_seed->data = Gzip(SerializeSeed(test_seed));
+  initial_seed->country = "us";
+  initial_seed->geo_level1 = "us-ca";
   initial_seed->date = base::Time::Now();
   initial_seed->is_gzip_compressed = true;
 
@@ -3683,6 +3685,8 @@ TEST_F(VariationsSeedStoreTest, ImportInitialSeed_Success) {
 
   EXPECT_EQ(SerializeSeedBase64(test_seed),
             prefs.GetString(prefs::kVariationsCompressedSeed));
+  EXPECT_EQ("us", seed_store.GetLatestCountry());
+  EXPECT_EQ("us-ca", seed_store.GetLatestGeoLevel1());
   histogram_tester.ExpectUniqueSample("Variations.FirstRunResult",
                                       FirstRunSeedImportResult::kSuccess, 1);
 }
@@ -3755,16 +3759,18 @@ TEST_F(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   const std::string test_seed_data = "raw_seed_data_test";
   const std::string test_seed_signature = "seed_signature_test";
   const std::string test_seed_country = "seed_country_code_test";
+  const std::string test_seed_geo_level1 = "seed_geo_level1_test";
   const int64_t test_response_date = 1234567890;
   const bool test_is_gzip_compressed = true;
-  android::SetJavaFirstRunPrefsForTesting(test_seed_data, test_seed_signature,
-                                          test_seed_country, test_response_date,
-                                          test_is_gzip_compressed);
+  android::SetJavaFirstRunPrefsForTesting(
+      test_seed_data, test_seed_signature, test_seed_country,
+      test_seed_geo_level1, test_response_date, test_is_gzip_compressed);
 
   auto seed = android::GetVariationsFirstRunSeed();
   EXPECT_EQ(test_seed_data, seed->data);
   EXPECT_EQ(test_seed_signature, seed->signature);
   EXPECT_EQ(test_seed_country, seed->country);
+  EXPECT_EQ(test_seed_geo_level1, seed->geo_level1);
   EXPECT_EQ(test_response_date, seed->date.InMillisecondsSinceUnixEpoch());
   EXPECT_EQ(test_is_gzip_compressed, seed->is_gzip_compressed);
 
@@ -3773,6 +3779,7 @@ TEST_F(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   EXPECT_EQ("", seed->data);
   EXPECT_EQ("", seed->signature);
   EXPECT_EQ("", seed->country);
+  EXPECT_EQ("", seed->geo_level1);
   EXPECT_EQ(0, seed->date.InMillisecondsSinceUnixEpoch());
   EXPECT_FALSE(seed->is_gzip_compressed);
 }
@@ -3793,11 +3800,12 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   const std::string test_seed_data = "raw_seed_data_test";
   const std::string test_seed_signature = "seed_signature_test";
   const std::string test_seed_country = "seed_country_code_test";
+  const std::string test_seed_geo_level1 = "seed_geo_level1_test";
   const int64_t test_response_date = 1234567890;
   const bool test_is_gzip_compressed = true;
-  android::SetJavaFirstRunPrefsForTesting(test_seed_data, test_seed_signature,
-                                          test_seed_country, test_response_date,
-                                          test_is_gzip_compressed);
+  android::SetJavaFirstRunPrefsForTesting(
+      test_seed_data, test_seed_signature, test_seed_country,
+      test_seed_geo_level1, test_response_date, test_is_gzip_compressed);
 
   const VariationsSeed test_seed = CreateTestSeed();
   const std::string seed_data = SerializeSeed(test_seed);
@@ -3805,6 +3813,7 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   seed->data = seed_data;
   seed->signature = "java_seed_signature";
   seed->country = "java_seed_country";
+  seed->geo_level1 = "us-ca";
   seed->date = base::Time::FromMillisecondsSinceUnixEpoch(test_response_date) +
                base::Days(1);
   seed->is_gzip_compressed = false;
@@ -3823,6 +3832,7 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   EXPECT_EQ(test_seed_data, seed->data);
   EXPECT_EQ(test_seed_signature, seed->signature);
   EXPECT_EQ(test_seed_country, seed->country);
+  EXPECT_EQ(test_seed_geo_level1, seed->geo_level1);
   EXPECT_EQ(test_response_date, seed->date.InMillisecondsSinceUnixEpoch());
   EXPECT_EQ(test_is_gzip_compressed, seed->is_gzip_compressed);
   if (use_first_run_prefs) {
@@ -3831,10 +3841,11 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
     EXPECT_FALSE(android::HasMarkedPrefsForTesting());
   }
 
-  // Seed should be stored in prefs.
+  // Seed and geo_level1 should be stored.
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   EXPECT_EQ(SerializeSeedBase64(test_seed),
             prefs.GetString(prefs::kVariationsCompressedSeed));
+  EXPECT_EQ("us-ca", seed_store.GetLatestGeoLevel1());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

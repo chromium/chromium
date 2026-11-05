@@ -414,6 +414,9 @@ public class VariationsSeedFetcher {
         // If you add fields, see VariationsTestUtils.
         public @Nullable String signature;
         public @Nullable String country;
+        // TODO(crbug.com/576284821): Plumb geoLevel1 through WebView (AwVariationsSeed,
+        // VariationsUtils, and AwFeatureListCreator::SetUpFieldTrials).
+        public @Nullable String geoLevel1;
         // Date according to the Variations server in milliseconds since UNIX epoch GMT.
         public long date;
         public boolean isGzipCompressed;
@@ -483,6 +486,8 @@ public class VariationsSeedFetcher {
                         + signature
                         + "\" country=\""
                         + country
+                        + "\" geoLevel1=\""
+                        + geoLevel1
                         + "\" date=\""
                         + date
                         + "\" isGzipCompressed="
@@ -534,6 +539,7 @@ public class VariationsSeedFetcher {
                         info.seedData,
                         info.signature,
                         info.country,
+                        info.geoLevel1,
                         info.date,
                         info.isGzipCompressed);
             }
@@ -633,6 +639,7 @@ public class VariationsSeedFetcher {
                 SeedInfo seedInfo = new SeedInfo();
                 seedInfo.signature = getHeaderFieldOrEmpty(connection, "X-Seed-Signature");
                 seedInfo.country = getHeaderFieldOrEmpty(connection, "X-Country");
+                seedInfo.geoLevel1 = getHeaderFieldOrEmpty(connection, "X-Geo-Level-1");
                 seedInfo.date = connection.getHeaderFieldDate("Date", 0);
                 recordSeedDateMetrics(seedInfo.date);
 
