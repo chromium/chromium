@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -42,6 +43,7 @@
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace {
@@ -94,7 +96,17 @@ class AIEmbeddingsComponentInstallerPolicy
         update_client::InstallError::NONE);
   }
 
-  void OnCustomUninstall() override {}
+  // Runs on the installer's background sequence after the files are deleted.
+  void OnCustomUninstall() override {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce([] {
+          // Doesn't create the launcher: without one, no model is loaded.
+          if (AISemanticEmbedderServiceLauncher* launcher =
+                  AISemanticEmbedderServiceLauncher::GetIfExists()) {
+            launcher->OnComponentUninstalled();
+          }
+        }));
+  }
 
   bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override {
@@ -105,6 +117,29 @@ class AIEmbeddingsComponentInstallerPolicy
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
                       base::DictValue manifest) override {
+    PrefService* local_state =
+        g_browser_process ? g_browser_process->local_state() : nullptr;
+    if (!local_state) {
+      // Local state only goes away with the browser process, at shutdown. The
+      // setting and policy can't be checked without it, so don't load the
+      // model.
+      return;
+    }
+    if (!component_updater::IsAIEmbeddingsModelAllowed(local_state)) {
+      // The setting or policy changed while the component was registering or
+      // updating: don't load the model; unregister the component and delete
+      // its files instead.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce([] {
+            if (g_browser_process && g_browser_process->local_state()) {
+              component_updater::ManageAIEmbeddingsComponentRegistration(
+                  g_browser_process->component_updater(),
+                  g_browser_process->local_state());
+            }
+          }));
+      return;
+    }
+
     optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
     metadata.set_input_window_size(2048);
     metadata.set_output_size(768);
@@ -186,26 +221,40 @@ void RegisterAIEmbeddingsComponent(
   installer->Register(cus, base::BindOnce(std::move(callback), true));
 }
 
+bool IsAIEmbeddingsModelAllowed(const PrefService* local_state) {
+  CHECK(local_state);
+  return local_state->GetBoolean(
+             optimization_guide::model_execution::prefs::localstate::
+                 kOnDeviceAiUserSettingsEnabled) &&
+         optimization_guide::model_execution::prefs::
+                 GetGenAILocalFoundationalModelEnterprisePolicySettings(
+                     local_state) !=
+             optimization_guide::model_execution::prefs::
+                 GenAILocalFoundationalModelEnterprisePolicySettings::
+                     kDisallowed;
+}
+
 void ManageAIEmbeddingsComponentRegistration(ComponentUpdateService* cus,
                                              PrefService* local_state) {
-  if (!local_state->GetBoolean(
-          optimization_guide::model_execution::prefs::localstate::
-              kOnDeviceAiUserSettingsEnabled) ||
-      optimization_guide::model_execution::prefs::
-              GetGenAILocalFoundationalModelEnterprisePolicySettings(
-                  local_state) ==
-          optimization_guide::model_execution::prefs::
-              GenAILocalFoundationalModelEnterprisePolicySettings::
-                  kDisallowed) {
+  if (!IsAIEmbeddingsModelAllowed(local_state)) {
     local_state->SetBoolean(optimization_guide::model_execution::prefs::
                                 localstate::kEmbeddingApiModelDownloadEligible,
                             false);
-    base::MakeRefCounted<ComponentInstaller>(
-        std::make_unique<AIEmbeddingsComponentInstallerPolicy>())
-        ->Uninstall();
+    // Unregistering also uninstalls. If the component isn't registered right
+    // now, delete any files left on disk.
+    if (!cus || !cus->UnregisterComponent(GetAIEmbeddingsComponentId())) {
+      base::MakeRefCounted<ComponentInstaller>(
+          std::make_unique<AIEmbeddingsComponentInstallerPolicy>())
+          ->Uninstall();
+    }
   } else if (local_state->GetBoolean(
                  optimization_guide::model_execution::prefs::localstate::
                      kEmbeddingApiModelDownloadEligible)) {
+    // A model may be on disk from an earlier session. Create the launcher so
+    // that it watches the setting and policy, and purges the model if either
+    // turns it off, even when the component isn't registered below because
+    // the APIs that use it are off.
+    AISemanticEmbedderServiceLauncher::Get();
     RegisterAIEmbeddingsComponent(cus, local_state);
   }
 }

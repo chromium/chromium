@@ -131,7 +131,10 @@ source_set("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  deps = [ ":ai" ]
+  deps = [
+    ":ai",
+    "//components/component_updater:component_updater_paths",
+  ]
 }
 
 source_set("unit_tests") {

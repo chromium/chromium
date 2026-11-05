@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -142,7 +143,8 @@ void AITestUtils::TestStreamingResponder::OnContextOverflow() {
 
 AITestUtils::AITestBase::AITestBase()
     : ChromeRenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      component_user_dir_override_(component_updater::DIR_COMPONENT_USER) {
 #if BUILDFLAG(IS_ANDROID)
   scoped_feature_list_.InitAndDisableFeature(
       optimization_guide::kOptimizationGuideManifestBroker);

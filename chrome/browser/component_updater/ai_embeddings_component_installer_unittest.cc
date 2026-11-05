@@ -14,19 +14,27 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/browser/ai/ai_semantic_embedder_service_launcher.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -66,6 +74,11 @@ class AIEmbeddingsComponentInstallerTest : public testing::Test {
   }
 
  protected:
+  // Uninstalling deletes files under DIR_COMPONENT_USER, which unit tests
+  // otherwise resolve to the real user data directory. Declared before
+  // `task_environment_` so it outlives the pending deletions that run when the
+  // task environment is destroyed.
+  base::ScopedPathOverride component_user_dir_override_{DIR_COMPONENT_USER};
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   testing::NiceMock<MockComponentUpdateService> mock_cus_;
@@ -95,6 +108,11 @@ TEST_F(AIEmbeddingsComponentInstallerTest, VerifyInstallation) {
 }
 
 TEST_F(AIEmbeddingsComponentInstallerTest, ComponentReady) {
+  // The model is only loaded while the "On-device AI" setting allows it.
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kOnDeviceAiUserSettingsEnabled,
+      true);
   base::DictValue manifest;
   CreateValidPackage();
   base::Version version("1.2.3.4");
@@ -106,6 +124,76 @@ TEST_F(AIEmbeddingsComponentInstallerTest, ComponentReady) {
             GetInstallDir().AppendASCII("model.tflite"));
   EXPECT_EQ(controller->sp_model_path(),
             GetInstallDir().AppendASCII("tokenizer.spm"));
+}
+
+// TestingBrowserProcess has no component updater on Android.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       ComponentReadyWhenDisallowedUnregisters) {
+  auto cus = std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
+  EXPECT_CALL(*cus, UnregisterComponent(GetAIEmbeddingsComponentId()))
+      .WillOnce(testing::Return(true));
+  TestingBrowserProcess::GetGlobal()->SetComponentUpdater(std::move(cus));
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetBoolean(optimization_guide::model_execution::prefs::
+                              localstate::kEmbeddingApiModelDownloadEligible,
+                          true);
+  // The setting was turned off while the component was being installed.
+  local_state->SetBoolean(optimization_guide::model_execution::prefs::
+                              localstate::kOnDeviceAiUserSettingsEnabled,
+                          false);
+
+  CreateValidPackage();
+  policy_->ComponentReady(base::Version("1.2.3.4"), GetInstallDir(),
+                          base::DictValue());
+  // ComponentReady() posts ManageAIEmbeddingsComponentRegistration(), which
+  // clears the pref and unregisters the component.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !local_state->GetBoolean(
+        optimization_guide::model_execution::prefs::localstate::
+            kEmbeddingApiModelDownloadEligible);
+  }));
+
+  auto* controller = AISemanticEmbedderServiceLauncher::Get()->controller();
+  EXPECT_FALSE(controller->IsModelAvailable());
+  TestingBrowserProcess::GetGlobal()->SetComponentUpdater(nullptr);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       ComponentReadyWithoutLocalStateDoesNotLoadModel) {
+  // Local state goes away with the browser process at shutdown, while a
+  // ComponentReady() posted after an install may still run.
+  auto* controller = AISemanticEmbedderServiceLauncher::Get()->controller();
+  ASSERT_FALSE(controller->IsModelAvailable());
+  TestingBrowserProcess::DeleteInstance();
+  CreateValidPackage();
+  policy_->ComponentReady(base::Version("1.2.3.4"), GetInstallDir(),
+                          base::DictValue());
+
+  EXPECT_FALSE(controller->IsModelAvailable());
+  TestingBrowserProcess::CreateInstance();
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest, UninstallDropsLoadedModel) {
+  // An update finished after the setting was turned off and back on, so
+  // ComponentReady() loaded it. The unregister that was deferred until the end
+  // of the update then deletes its files.
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kOnDeviceAiUserSettingsEnabled,
+      true);
+  CreateValidPackage();
+  policy_->ComponentReady(base::Version("1.2.3.4"), GetInstallDir(),
+                          base::DictValue());
+  auto* controller = AISemanticEmbedderServiceLauncher::Get()->controller();
+  ASSERT_TRUE(controller->IsModelAvailable());
+
+  base::MakeRefCounted<ComponentInstaller>(
+      GetAIEmbeddingsComponentInstallerPolicyForTesting())
+      ->Uninstall();
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !controller->IsModelAvailable(); }));
 }
 
 TEST_F(AIEmbeddingsComponentInstallerTest, PolicyAttributes) {
@@ -257,6 +345,117 @@ TEST_F(AIEmbeddingsComponentInstallerTest,
   // Should not be registered.
   EXPECT_CALL(mock_cus_, RegisterComponent(_)).Times(0);
   ManageAIEmbeddingsComponentRegistration(&mock_cus_, &pref_service_);
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest, IsModelAllowed) {
+  EXPECT_TRUE(IsAIEmbeddingsModelAllowed(&pref_service_));
+
+  pref_service_.SetBoolean(optimization_guide::model_execution::prefs::
+                               localstate::kOnDeviceAiUserSettingsEnabled,
+                           false);
+  EXPECT_FALSE(IsAIEmbeddingsModelAllowed(&pref_service_));
+
+  pref_service_.SetBoolean(optimization_guide::model_execution::prefs::
+                               localstate::kOnDeviceAiUserSettingsEnabled,
+                           true);
+  pref_service_.SetInteger(
+      optimization_guide::model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(optimization_guide::model_execution::prefs::
+                           GenAILocalFoundationalModelEnterprisePolicySettings::
+                               kDisallowed));
+  EXPECT_FALSE(IsAIEmbeddingsModelAllowed(&pref_service_));
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       ManageRegistrationUnregistersWhenUserSettingDisabled) {
+  pref_service_.SetBoolean(optimization_guide::model_execution::prefs::
+                               localstate::kEmbeddingApiModelDownloadEligible,
+                           true);
+  pref_service_.SetBoolean(optimization_guide::model_execution::prefs::
+                               localstate::kOnDeviceAiUserSettingsEnabled,
+                           false);
+
+  EXPECT_CALL(mock_cus_, RegisterComponent(_)).Times(0);
+  EXPECT_CALL(mock_cus_, UnregisterComponent(GetAIEmbeddingsComponentId()))
+      .WillOnce(testing::Return(true));
+  ManageAIEmbeddingsComponentRegistration(&mock_cus_, &pref_service_);
+
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kEmbeddingApiModelDownloadEligible));
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       ManageRegistrationUninstallsWhenDisallowedAndNotRegistered) {
+  pref_service_.SetBoolean(optimization_guide::model_execution::prefs::
+                               localstate::kEmbeddingApiModelDownloadEligible,
+                           true);
+  pref_service_.SetInteger(
+      optimization_guide::model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(optimization_guide::model_execution::prefs::
+                           GenAILocalFoundationalModelEnterprisePolicySettings::
+                               kDisallowed));
+
+  // A version installed in an earlier session.
+  const base::FilePath install_root =
+      base::PathService::CheckedGet(DIR_COMPONENT_USER)
+          .Append(policy_->GetRelativeInstallDir());
+  const base::FilePath installed_version = install_root.AppendASCII("1.2.3.4");
+  ASSERT_TRUE(base::CreateDirectory(installed_version));
+  ASSERT_TRUE(base::PathExists(installed_version));
+
+  // Not registered in this session: falls back to deleting installed files.
+  EXPECT_CALL(mock_cus_, RegisterComponent(_)).Times(0);
+  EXPECT_CALL(mock_cus_, UnregisterComponent(GetAIEmbeddingsComponentId()))
+      .WillOnce(testing::Return(false));
+  ManageAIEmbeddingsComponentRegistration(&mock_cus_, &pref_service_);
+
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kEmbeddingApiModelDownloadEligible));
+  // The uninstall deletes the version directories on a ThreadPool sequence,
+  // then the emptied install directory; OnCustomUninstall() then posts to the
+  // UI thread, which wakes RunUntil().
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !base::PathExists(install_root); }));
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       ManageRegistrationWatchesSettingWhenFeaturesDisabled) {
+  // A model was downloaded in an earlier session, and the APIs that use it are
+  // off in this one, so the component isn't registered and ComponentReady()
+  // never runs.
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({},
+                                 {blink::features::kAIEmbeddingsAPI,
+                                  blink::features::kAIEmbeddingsAPIForWorkers,
+                                  blink::features::kAIDecisionModelAPI});
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetBoolean(optimization_guide::model_execution::prefs::
+                              localstate::kOnDeviceAiUserSettingsEnabled,
+                          true);
+  local_state->SetBoolean(optimization_guide::model_execution::prefs::
+                              localstate::kEmbeddingApiModelDownloadEligible,
+                          true);
+  const base::FilePath install_root =
+      base::PathService::CheckedGet(DIR_COMPONENT_USER)
+          .Append(policy_->GetRelativeInstallDir());
+  ASSERT_TRUE(base::CreateDirectory(install_root.AppendASCII("1.2.3.4")));
+
+  EXPECT_CALL(mock_cus_, RegisterComponent(_)).Times(0);
+  ManageAIEmbeddingsComponentRegistration(&mock_cus_, local_state);
+
+  // Turning off "On-device AI" later in the session deletes the model.
+  local_state->SetBoolean(optimization_guide::model_execution::prefs::
+                              localstate::kOnDeviceAiUserSettingsEnabled,
+                          false);
+  ASSERT_FALSE(local_state->GetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kEmbeddingApiModelDownloadEligible));
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !base::PathExists(install_root); }));
 }
 
 }  // namespace

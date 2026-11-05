@@ -35,8 +35,15 @@ void RegisterAIEmbeddingsComponent(
     PrefService* local_state,
     base::OnceCallback<void(bool /*registered*/)> callback = base::DoNothing());
 
+// Returns true if the user setting and the enterprise policy allow the AI
+// embeddings model to be installed and used.
+bool IsAIEmbeddingsModelAllowed(const PrefService* local_state);
+
 // Manages registration/deletion of the AI Embeddings component based on policy
-// and eligibility.
+// and eligibility. When the model is not allowed, the component is
+// unregistered (if registered) and its files are deleted. When it is allowed
+// and a model may be on disk, this also creates the launcher, which then
+// watches the setting and policy for the rest of the session.
 void ManageAIEmbeddingsComponentRegistration(ComponentUpdateService* cus,
                                              PrefService* local_state);
 
