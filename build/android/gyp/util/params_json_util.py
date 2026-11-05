@@ -94,9 +94,10 @@ def _get_json(path):
     """Reads a JSON file and records the path for depfile tracking."""
     path = os.path.join(_output_dir_path, path)
     _input_paths.append(path)
-    with open(path, encoding='utf-8') as f:
-        config = json.loads(f.read())
-    return config
+    # Unbuffered binary reads use fewer syscalls than text mode, which adds
+    # up when reading thousands of files.
+    with open(path, 'rb', buffering=0) as f:
+        return json.loads(f.readall())
 
 
 @functools.cache
