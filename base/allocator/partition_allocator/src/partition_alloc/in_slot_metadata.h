@@ -411,6 +411,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   }
 
  private:
+  friend class PartitionAllocTest;
+
   PA_NOINLINE static void UpdateMaxRefCountSlow(uint32_t ref_count);
 
   // If there are some dangling raw_ptr<>. Turn on the error flag, and
@@ -460,10 +462,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     // !kMemoryHeldByAllocator.
     PA_CHECK((old_count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
                            kUnprotectedPtrCountMask)) != 0);
-    CountType new_masked_count = (old_count & kCountMask) + kInc;
-    if (new_masked_count >= kMinTrackedRefCount * kInc) [[unlikely]] {
-      // Check overflow.
-      PA_CHECK((old_count & kCountMask) != kMaxCount);
+    CountType old_masked_count = old_count & kCountMask;
+    if (old_masked_count >= (kMinTrackedRefCount - 1) * kInc) [[unlikely]] {
+      // Check overflow before adding `kInc` (which could wrap around if the
+      // count is at the max).
+      // IMPORTANT: Use `< kMaxCount` (not `!= kMaxCount`) so that concurrent
+      // threads that `fetch_add` past `kMaxCount` also crash immediately
+      // (see crbug.com/577445653).
+      PA_CHECK(old_masked_count < kMaxCount);
+      CountType new_masked_count = old_masked_count + kInc;
       if (std::has_single_bit(new_masked_count)) [[unlikely]] {
         UpdateMaxRefCountSlow(
             static_cast<uint32_t>(new_masked_count >> kCountShift));
