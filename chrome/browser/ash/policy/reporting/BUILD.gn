@@ -22,8 +22,6 @@ static_library("reporting") {
     "arc_app_install_policy_data.h",
     "arc_app_install_policy_data_helper.cc",
     "arc_app_install_policy_data_helper.h",
-    "install_event_log_collector_base.cc",
-    "install_event_log_collector_base.h",
     "install_event_log_util.cc",
     "install_event_log_util.h",
     "install_event_logger_base.h",

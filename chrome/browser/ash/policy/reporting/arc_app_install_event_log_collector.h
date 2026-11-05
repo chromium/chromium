@@ -11,13 +11,15 @@
 #include <set>
 #include <string>
 
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
-#include "chrome/browser/ash/policy/reporting/install_event_log_collector_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/mojom/policy.mojom-forward.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 class PrefService;
 class Profile;
@@ -28,9 +30,11 @@ class AppInstallReportLogEvent;
 namespace policy {
 
 // Listens for and logs events related to app push-installs.
-class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
-                                       public arc::ArcPolicyBridge::Observer,
-                                       public ArcAppListPrefs::Observer {
+class ArcAppInstallEventLogCollector
+    : public chromeos::PowerManagerClient::Observer,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver,
+      public arc::ArcPolicyBridge::Observer,
+      public ArcAppListPrefs::Observer {
  public:
   // The delegate that events are forwarded to for inclusion in the log.
   class Delegate {
@@ -74,9 +78,9 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   // Called whenever the list of pending app-install requests changes.
   void OnPendingPackagesChanged(const std::set<std::string>& pending_packages);
 
-  // chromeos::PowerManagerClient::Observer:
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(base::TimeDelta sleep_duration) override;
+  // Event handlers for the login and logout events.
+  void OnLogin();
+  void OnLogout();
 
   // arc::ArcPolicyBridge::Observer:
   void OnPlayStoreLocalPolicySet(
@@ -89,18 +93,31 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
                               bool success,
                               bool is_launchable_app) override;
 
- protected:
-  // Overrides to handle events from InstallEventLogCollectorBase.
-  void OnLoginInternal() override;
-  void OnLogoutInternal() override;
-  void OnConnectionStateChanged(
+ private:
+  // chromeos::PowerManagerClient::Observer:
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
- private:
+  // Whether the device is currently online.
+  bool online_;
+  const raw_ptr<Profile> profile_;
+  const raw_ref<PrefService> local_state_;
   const raw_ptr<Delegate> delegate_;
 
   // Set of apps whose push-install is currently pending.
   std::set<std::string> pending_packages_;
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observation_{this};
+  base::ScopedObservation<
+      network::NetworkConnectionTracker,
+      network::NetworkConnectionTracker::NetworkConnectionObserver>
+      network_connection_observation_{this};
 };
 
 }  // namespace policy

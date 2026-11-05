@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_collector.h"
 
+#include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_pref_names.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -21,6 +24,20 @@ namespace em = enterprise_management;
 namespace policy {
 
 namespace {
+
+bool GetOnlineState() {
+  ash::NetworkStateHandler::NetworkStateList network_state_list;
+  ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+      ash::NetworkTypePattern::Default(), true /* configured_only */,
+      false /* visible_only */, 0 /* limit */, &network_state_list);
+
+  for (const ash::NetworkState* network_state : network_state_list) {
+    if (network_state->connection_state() == shill::kStateOnline) {
+      return true;
+    }
+  }
+  return false;
+}
 
 std::unique_ptr<em::AppInstallReportLogEvent> CreateSessionChangeEvent(
     em::AppInstallReportLogEvent::SessionStateChangeType type) {
@@ -43,9 +60,15 @@ ArcAppInstallEventLogCollector::ArcAppInstallEventLogCollector(
     Delegate* delegate,
     Profile* profile,
     const std::set<std::string>& pending_packages)
-    : InstallEventLogCollectorBase(local_state, profile),
+    : online_(GetOnlineState()),
+      profile_(profile),
+      local_state_(CHECK_DEREF(local_state)),
       delegate_(delegate),
       pending_packages_(pending_packages) {
+  power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
+  network_connection_observation_.Observe(
+      content::GetNetworkConnectionTracker());
+
   // Might not be available in unit test.
   arc::ArcPolicyBridge* const policy_bridge =
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
@@ -75,14 +98,27 @@ void ArcAppInstallEventLogCollector::OnPendingPackagesChanged(
   pending_packages_ = pending_packages;
 }
 
-void ArcAppInstallEventLogCollector::OnLoginInternal() {
+void ArcAppInstallEventLogCollector::OnLogin() {
+  // Don't log in case session is restarted or recovered from crash.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kLoginUser) ||
+      ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
+    return;
+  }
+
+  online_ = GetOnlineState();
   std::unique_ptr<em::AppInstallReportLogEvent> event =
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::LOGIN);
   event->set_online(online_);
   delegate_->AddForAllPackages(std::move(event));
 }
 
-void ArcAppInstallEventLogCollector::OnLogoutInternal() {
+void ArcAppInstallEventLogCollector::OnLogout() {
+  // Don't log in case session is restarted.
+  if (local_state_->GetBoolean(ash::chrome_prefs::kWasRestarted)) {
+    return;
+  }
+
   delegate_->AddForAllPackages(
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::LOGOUT));
 }
@@ -99,8 +135,14 @@ void ArcAppInstallEventLogCollector::SuspendDone(
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::RESUME));
 }
 
-void ArcAppInstallEventLogCollector::OnConnectionStateChanged(
+void ArcAppInstallEventLogCollector::OnConnectionChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
+  const bool currently_online = GetOnlineState();
+  if (currently_online == online_) {
+    return;
+  }
+  online_ = currently_online;
+
   std::unique_ptr<em::AppInstallReportLogEvent> event =
       std::make_unique<em::AppInstallReportLogEvent>();
   event->set_event_type(em::AppInstallReportLogEvent::CONNECTIVITY_CHANGE);
