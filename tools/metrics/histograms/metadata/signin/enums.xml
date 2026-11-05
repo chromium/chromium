@@ -1721,16 +1721,21 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="User clicked signout from clear browsing data page">
     User clicked sign-out in the clear browsing data page.
   </int>
-  <int value="22" label="AccountReconcilor GaiaCookiesUpdated">
+  <int value="22"
+      label="(Obsolete) AccountReconcilor GaiaCookiesUpdated. Deprecated as of
+             11/2026.">
     The reconcilor cleared the signin primary account on a Gaia cookie update.
   </int>
-  <int value="23" label="AccountReconcilor Reconcile">
+  <int value="23"
+      label="(Obsolete) AccountReconcilor Reconcile. Deprecated as of 11/2026.">
     The reconcilor cleared the signin primary account during reconcilation.
   </int>
   <int value="24" label="SigninManager UpdateUnconsentedPrimaryAccount">
     SigninManager decides to clear the prrimary (includes web sign out).
   </int>
-  <int value="25" label="User deleted account cookies">
+  <int value="25"
+      label="(Obsolete) User deleted account cookies. Deprecated as of
+             11/2026.">
     User cleared account cookies when there's no sync consent, which has caused
     sign out.
   </int>

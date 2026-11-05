@@ -252,9 +252,6 @@ bool IsAlwaysAllowedSignoutSources(
         kUserClickedSignoutFromClearBrowsingDataPage:
     case signin_metrics::ProfileSignout::
         kIosAccountRemovedFromDeviceAfterRestore:
-    case signin_metrics::ProfileSignout::kUserDeletedAccountCookies:
-    case signin_metrics::ProfileSignout::kGaiaCookieUpdated:
-    case signin_metrics::ProfileSignout::kAccountReconcilorReconcile:
     case signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu:
     case signin_metrics::ProfileSignout::kAccountEmailUpdated:
     case signin_metrics::ProfileSignout::kSigninManagerUpdateUPA:
@@ -360,7 +357,6 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kAccountRemovedFromDevice,
     signin_metrics::ProfileSignout::kSigninNotAllowedOnProfileInit,
     signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,
-    signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
     signin_metrics::ProfileSignout::kIosAccountRemovedFromDeviceAfterRestore,
     signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
     signin_metrics::ProfileSignout::kSigninRetriggered,
@@ -369,8 +365,6 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kAccountEmailUpdated,
     signin_metrics::ProfileSignout::
         kUserClickedSignoutFromClearBrowsingDataPage,
-    signin_metrics::ProfileSignout::kGaiaCookieUpdated,
-    signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
     signin_metrics::ProfileSignout::kSigninManagerUpdateUPA,
     signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
     signin_metrics::ProfileSignout::
@@ -402,7 +396,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
 
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
-const int kNumberOfObsoleteSignoutSources = 7;
+const int kNumberOfObsoleteSignoutSources = 10;
 static_assert(std::size(kSignoutSources) + kNumberOfObsoleteSignoutSources ==
                   static_cast<int>(signin_metrics::ProfileSignout::kMaxValue) +
                       1,

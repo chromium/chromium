@@ -86,14 +86,14 @@ enum class ProfileSignout {
   // User clicked on sign-out from the clear browsing data page.
   kUserClickedSignoutFromClearBrowsingDataPage = 21,
   // Profile Signout during reconciliation triggered by a Gaia cookie update.
-  kGaiaCookieUpdated = 22,
+  // Deprecated: kGaiaCookieUpdated = 22,
   // Profile Signout during reconciliation.
-  kAccountReconcilorReconcile = 23,
+  // Deprecated: kAccountReconcilorReconcile = 23,
   // Signin manager updates the unconsented primary account.
   kSigninManagerUpdateUPA = 24,
   // User cleared account cookies when there's no sync consent, which has caused
   // sign out.
-  kUserDeletedAccountCookies = 25,
+  // Deprecated: kUserDeletedAccountCookies = 25,
   // User tapped 'Undo' in a snackbar that is shown right after sign-in through
   // promo in bookmarks and reading list page. iOS only.
   kUserTappedUndoRightAfterSignIn = 26,
