@@ -49,6 +49,11 @@ BASE_I18N_EXPORT void ReplaceIllegalCharactersInPath(
     FilePath::StringType* file_name,
     char replace_char);
 
+// Same as ReplaceIllegalCharactersInPath(), but always operates on a UTF-16
+// string.
+BASE_I18N_EXPORT void ReplaceIllegalCharacters(std::u16string* str,
+                                               char replace_char);
+
 // Compares two filenames using the current locale information. This can be
 // used to sort directory listings. It behaves like "operator<" for use in
 // std::sort.

@@ -78,6 +78,7 @@ component("printing_base") {
   ]
   deps = [
     "//base",
+    "//base:i18n",
     "//third_party/icu",
     "//ui/gfx",
     "//ui/gfx/geometry",

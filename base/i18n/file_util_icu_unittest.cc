@@ -145,6 +145,22 @@ TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathWithIllegalEndCharTest) {
 
 #endif
 
+TEST_F(FileUtilICUTest, ReplaceIllegalCharactersTest) {
+  for (auto i : kIllegalCharacterCases) {
+    std::u16string bad_name = i.bad_name;
+    ReplaceIllegalCharacters(&bad_name, '-');
+    EXPECT_EQ(i.good_name_with_dash, bad_name);
+  }
+}
+
+TEST_F(FileUtilICUTest, ReplaceIllegalCharactersWithIllegalEndCharTest) {
+  for (auto i : kIllegalCharacterCases) {
+    std::u16string bad_name = i.bad_name;
+    ReplaceIllegalCharacters(&bad_name, ' ');
+    EXPECT_EQ(i.good_name_with_space, bad_name);
+  }
+}
+
 TEST_F(FileUtilICUTest, IsFilenameLegalTest) {
   EXPECT_TRUE(IsFilenameLegal(std::u16string()));
 

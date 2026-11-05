@@ -184,14 +184,15 @@ UChar32 GetNextCodePoint(const FilePath::StringType* const file_name,
   return code_point;
 }
 
-}  // namespace
-
-bool IsFilenameLegal(const std::u16string& file_name) {
-  return IllegalCharacters::GetInstance()->IsAllowedName(file_name);
+// Overload for use with ReplaceIllegalCharacters().
+UChar32 GetNextCodePoint(const std::u16string* const str, int& cursor) {
+  UChar32 code_point;
+  U16_NEXT(*str, cursor, static_cast<int>(str->size()), code_point);
+  return code_point;
 }
 
-void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
-                                    char replace_char) {
+template <typename StringT>
+void ReplaceIllegalCharactersImpl(StringT* str, char replace_char) {
   IllegalCharacters* illegal = IllegalCharacters::GetInstance();
 
   DCHECK(!(illegal->IsDisallowedEverywhere(replace_char)));
@@ -199,9 +200,8 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
       illegal->IsDisallowedLeadingOrTrailing(replace_char);
 #if BUILDFLAG(IS_WIN)
   bool could_be_short_name =
-      file_name->size() <= 12 &&
-      illegal->HasValidDotPositionForShortName<FilePath::StringType>(
-          *file_name);
+      str->size() <= 12 &&
+      illegal->HasValidDotPositionForShortName<StringT>(*str);
 #endif
   // Keep track of the earliest and latest legal begin/end characters and file-
   // extension separator encountered, -1 if none yet.
@@ -217,16 +217,16 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
   // Loop through the file name, looking for any characters which are invalid in
   // an 8.3 short file name. If any of these characters exist, it's not an 8.3
   // file name and we don't need to replace the '~' character.
-  while (could_be_short_name && cursor < static_cast<int>(file_name->size())) {
-    const UChar32 code_point = GetNextCodePoint(file_name, cursor);
+  while (could_be_short_name && cursor < static_cast<int>(str->size())) {
+    const UChar32 code_point = GetNextCodePoint(str, cursor);
     could_be_short_name = !illegal->IsDisallowedShortNameCharacter(code_point);
   }
 #endif
 
   cursor = 0;
-  while (cursor < static_cast<int>(file_name->size())) {
+  while (cursor < static_cast<int>(str->size())) {
     int char_begin = cursor;
-    const UChar32 code_point = GetNextCodePoint(file_name, cursor);
+    const UChar32 code_point = GetNextCodePoint(str, cursor);
 
     const bool is_illegal_at_ends =
         illegal->IsDisallowedLeadingOrTrailing(code_point);
@@ -236,9 +236,9 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
         (could_be_short_name &&
          illegal->IsDisallowedIfMayBeShortName(code_point)) ||
 #endif
-        ((char_begin == 0 || cursor == static_cast<int>(file_name->size())) &&
+        ((char_begin == 0 || cursor == static_cast<int>(str->size())) &&
          is_illegal_at_ends && !is_replace_char_illegal_at_ends)) {
-      file_name->replace(char_begin, cursor - char_begin, 1, replace_char);
+      str->replace(char_begin, cursor - char_begin, 1, replace_char);
       // We just made the potentially multi-byte/word char into one that only
       // takes one byte/word, so need to adjust the cursor to point to the next
       // character again.
@@ -255,35 +255,50 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
     }
   }
 
-  // If |replace_char| is not a legal starting/ending character, ensure that
-  // |replace_char| is not the first nor last character in |file_name|.
+  // If `replace_char` is not a legal starting/ending character, ensure that
+  // `replace_char` is not the first nor last character in `str`.
   if (is_replace_char_illegal_at_ends) {
     if (unreplaced_legal_range_begin == -1) {
-      // |file_name| has no characters that are legal at ends; enclose in '_'s.
-      file_name->insert(file_name->begin(), FILE_PATH_LITERAL('_'));
-      file_name->append(FILE_PATH_LITERAL("_"));
+      // `str` has no characters that are legal at ends; enclose in '_'s.
+      str->insert(str->begin(), '_');
+      str->push_back('_');
     } else {
-      // Trim trailing instances of |replace_char| and other characters that are
+      // Trim trailing instances of `replace_char` and other characters that are
       // illegal at ends.
-      file_name->erase(unreplaced_legal_range_end, FilePath::StringType::npos);
+      str->erase(unreplaced_legal_range_end, StringT::npos);
 
-      // Trim leading instances of |replace_char| and other characters that are
+      // Trim leading instances of `replace_char` and other characters that are
       // illegal at ends, while ensuring that the file-extension separator is
       // not removed if present. The file-extension separator is considered the
-      // last '.' in |file_name| followed by a legal character.
+      // last '.' in `str` followed by a legal character.
       if (last_extension_separator != -1 &&
           last_extension_separator == unreplaced_legal_range_begin - 1) {
         // If the file-extension separator is at the start of the resulting
-        // |file_name|, prepend '_' instead of trimming it, e.g.,
+        // `str`, prepend '_' instead of trimming it, e.g.,
         // "***.txt" -> "_.txt".
-        file_name->erase(0, last_extension_separator);
-        file_name->insert(file_name->begin(), FILE_PATH_LITERAL('_'));
+        str->erase(0, last_extension_separator);
+        str->insert(str->begin(), '_');
       } else {
-        file_name->erase(0, unreplaced_legal_range_begin);
+        str->erase(0, unreplaced_legal_range_begin);
       }
     }
-    DCHECK(!file_name->empty());
+    DCHECK(!str->empty());
   }
+}
+
+}  // namespace
+
+bool IsFilenameLegal(const std::u16string& file_name) {
+  return IllegalCharacters::GetInstance()->IsAllowedName(file_name);
+}
+
+void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
+                                    char replace_char) {
+  ReplaceIllegalCharactersImpl(file_name, replace_char);
+}
+
+void ReplaceIllegalCharacters(std::u16string* str, char replace_char) {
+  ReplaceIllegalCharactersImpl(str, replace_char);
 }
 
 bool LocaleAwareCompareFilenames(const FilePath& a, const FilePath& b) {

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,9 +47,10 @@ std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
   std::u16string no_controls(title);
   std::erase_if(no_controls, &u_iscntrl);
 
+  base::i18n::ReplaceIllegalCharacters(&no_controls, '_');
+
   static constexpr const char* kCharsToReplace[] = {
-      "\\", "/", "<", ">", ":", "\"", "'", "|",
-      "?",  "*", "~", "(", ")", "{",  "}",
+      "'", "~", "(", ")", "{", "}",
   };
   for (const char* c : kCharsToReplace) {
     base::ReplaceChars(no_controls, base::ASCIIToUTF16(c), u"_", &no_controls);
