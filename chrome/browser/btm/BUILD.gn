@@ -59,7 +59,6 @@ if (!is_android) {
     sources = [ "btm_devtools_browsertest.cc" ]
     deps = [
       "//base",
-      "//chrome/browser/ui/tabs/organizer",
       "//chrome/test:test_support",
       "//content/public/browser",
       "//content/test:test_support",

@@ -69,7 +69,6 @@ if (!is_android) {
       "//chrome/browser/subresource_filter:test_support",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs/organizer",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
       "//chrome/test/base:in_process_browser_test",

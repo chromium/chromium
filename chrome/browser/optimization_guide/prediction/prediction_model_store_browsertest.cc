@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -253,11 +252,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
 class PredictionModelStoreBrowserTest
     : public PredictionModelStoreBrowserTestBase {
  public:
-  PredictionModelStoreBrowserTest() {
-    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
-    scoped_feature_list_.InitAndDisableFeature(
-        organizer_panel::kOrganizerPanel);
-  }
+  PredictionModelStoreBrowserTest() = default;
   ~PredictionModelStoreBrowserTest() override = default;
 
   PredictionModelStoreBrowserTest(const PredictionModelStoreBrowserTest&) =

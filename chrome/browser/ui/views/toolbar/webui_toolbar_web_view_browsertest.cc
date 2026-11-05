@@ -72,7 +72,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -5303,9 +5302,7 @@ class WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest
              features::kWebUIHomeButton, features::kWebUIExtensionsContainer,
              features::kSkipIPCChannelPausingForNonGuests,
              features::kWebUIInProcessResourceLoadingV2},
-            {// TODO(crbug.com/579030694): Investigate lazy loading
-             // OrganizerPanel.
-             organizer_panel::kOrganizerPanel}) {
+            {}) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kInitialWebUI,
         {{"use_separate_process", GetParam() ? "true" : "false"}});
