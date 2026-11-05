@@ -796,7 +796,8 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
   // allows opportunistic "in-between" consumptions by the popup client.
   LocalFrame::NotifyUserActivation(
       popup_client_->OwnerElement().GetDocument().GetFrame(),
-      mojom::blink::UserActivationNotificationType::kInteraction);
+      mojom::blink::UserActivationNotificationType::kInteraction,
+      RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
   return MainFrame().GetEventHandler().KeyEvent(event);
 }
 
@@ -846,6 +847,8 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
   if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
+  // TODO(crbug.com/40091540): Why is kGestureTapDown triggering user
+  // activation here?
   if (event.GetType() == WebInputEvent::Type::kGestureTap ||
       event.GetType() == WebInputEvent::Type::kGestureTapDown) {
     if (!IsViewportPointInWindow(event.PositionInWidget().x(),
@@ -855,7 +858,8 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     }
     LocalFrame::NotifyUserActivation(
         popup_client_->OwnerElement().GetDocument().GetFrame(),
-        mojom::blink::UserActivationNotificationType::kInteraction);
+        mojom::blink::UserActivationNotificationType::kInteraction,
+        RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupGestureTapExceedsOwnerWindowBounds);
@@ -917,7 +921,8 @@ void WebPagePopupImpl::HandleMouseDown(LocalFrame& main_frame,
                               event.PositionInWidget().y())) {
     LocalFrame::NotifyUserActivation(
         popup_client_->OwnerElement().GetDocument().GetFrame(),
-        mojom::blink::UserActivationNotificationType::kInteraction);
+        mojom::blink::UserActivationNotificationType::kInteraction,
+        RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupMouseDownExceedsOwnerWindowBounds);
