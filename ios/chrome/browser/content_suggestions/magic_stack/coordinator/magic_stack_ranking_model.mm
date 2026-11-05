@@ -1204,35 +1204,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   }
 }
 
-// Returns the number of remaining tasks for the given `category`.
-- (int)remainingTasksForCategory:(LevelUpTaskCategory)category {
-  if (!_levelUpService) {
-    return 0;
-  }
-  int remaining = 0;
-  for (const auto& [type, taskInfo] : _levelUpService->GetTasks()) {
-    if (taskInfo->GetCategory() == category &&
-        !_levelUpService->IsTaskCompleted(type)) {
-      remaining++;
-    }
-  }
-  return remaining;
-}
-
-// Returns the total number of tasks for the given `category`.
-- (int)totalTasksForCategory:(LevelUpTaskCategory)category {
-  if (!_levelUpService) {
-    return 0;
-  }
-  int total = 0;
-  for (const auto& [type, taskInfo] : _levelUpService->GetTasks()) {
-    if (taskInfo->GetCategory() == category) {
-      total++;
-    }
-  }
-  return total;
-}
-
 // Returns YES if the Level Up module should be added into the Magic Stack.
 - (BOOL)shouldShowLevelUp {
   return IsLevelUpEnabled() && _prefService &&
@@ -1249,12 +1220,11 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   if (!category) {
     return nil;
   }
+  auto [remaining, total] = _levelUpService->GetTasksRemainingForNextLevel();
   LevelUpConfig* config = [[LevelUpConfig alloc] init];
   config.titleText = [self titleForCategory:*category];
-  int remaining = [self remainingTasksForCategory:*category];
   config.descriptionText = l10n_util::GetPluralNSStringF(
       IDS_IOS_LEVEL_UP_TASKS_REMAINING, remaining);
-  int total = [self totalTasksForCategory:*category];
   config.progressTotal = total;
   config.progressCompleted = total - remaining;
   config.commandHandler = self.levelUpHandler;
