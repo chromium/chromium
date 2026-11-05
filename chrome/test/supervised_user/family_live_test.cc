@@ -27,7 +27,9 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/supervised_user/browser_user.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/test_support/account_repository.h"
@@ -79,24 +81,16 @@ bool HasAuthError(syncer::SyncServiceImpl* service) {
 
 class SyncSetupChecker : public SingleClientStatusChangeChecker {
  public:
-  SyncSetupChecker(syncer::SyncServiceImpl* service,
-                   bool is_browser_user_supervised)
-      : SingleClientStatusChangeChecker(service),
-        is_browser_user_supervised_(is_browser_user_supervised) {}
+  explicit SyncSetupChecker(syncer::SyncServiceImpl* service)
+      : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for sync setup to complete";
     if (service()->GetTransportState() ==
-        syncer::SyncService::TransportState::ACTIVE) {
-      if (!is_browser_user_supervised_) {
-        return true;
-      } else if (service()->GetActiveDataTypes().Has(
-                     syncer::SUPERVISED_USER_SETTINGS)) {
-        // For supervised user we wait until the sync service is active and the
-        // data type used for Family Link settings is active (i.e. can be
-        // received from the sync server).
-        return true;
-      }
+            syncer::SyncService::TransportState::ACTIVE &&
+        service()->GetActiveDataTypes().Has(syncer::SUPERVISED_USER_SETTINGS)) {
+      // Family Link settings sync must be active before seeding state.
+      return true;
     }
     // Sync is blocked by an auth error.
     if (HasAuthError(service())) {
@@ -105,9 +99,6 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
     // Still waiting on sync setup.
     return false;
   }
-
- private:
-  bool is_browser_user_supervised_ = false;
 };
 
 test_accounts::FamilyMember CreateTestAccountFromCredentialsSwitch(
@@ -167,7 +158,10 @@ BrowserUser& FamilyLiveTest::rpc_issuer() const {
 }
 
 void FamilyLiveTest::SigninToBrowser() {
-  SigninToBrowserFor(*head_of_household_);
+  // The parent browser is only needed to issue RPCs in `kProd` mode.
+  if (rpc_mode_ == RpcMode::kProd) {
+    SigninToBrowserFor(*head_of_household_);
+  }
   SigninToBrowserFor(*child_);
 }
 
@@ -184,18 +178,16 @@ void FamilyLiveTest::SigninToBrowserFor(BrowserUser& browser_user) {
                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
   }
 
-  if (IsSwitchEnabled(kWaitForSyncInvalidationReadySwitch)) {
-    // After signing in the browser, wait until:
-    // the sync engine has started and it can listen for changed and
-    // receive parental controls synced data types for supervised user.
+  // Only the child profile needs to wait for Family Link settings and
+  // invalidations.
+  if (&browser_user == child_.get() &&
+      IsSwitchEnabled(kWaitForSyncInvalidationReadySwitch)) {
     LOG(INFO) << "Waiting for sync service to set up invalidations.";
     syncer::SyncServiceImpl* service =
         SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
             &browser_user.profile());
-    bool is_supervised_user = (&browser_user == child_.get());
 
-    CHECK(SyncSetupChecker(service, is_supervised_user).Wait())
-        << "SyncSetupChecker timed out.";
+    CHECK(SyncSetupChecker(service).Wait()) << "SyncSetupChecker timed out.";
     CHECK(InvalidationsStatusChecker(service, /*expected_status=*/true).Wait())
         << "Invalidation checker timed out.";
     LOG(INFO) << "Invalidations ready.";
@@ -268,6 +260,12 @@ void FamilyLiveTest::TearDownOnMainThread() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   for (const BrowserUser* user : {child_.get(), head_of_household_.get()}) {
     if (!user) {
+      continue;
+    }
+    // Skip accounts that were never signed in.
+    if (!user->identity_manager().HasPrimaryAccount(
+            signin::ConsentLevel::kSignin) &&
+        user->identity_manager().GetAccountsWithRefreshTokens().empty()) {
       continue;
     }
     // Signs out the account, so the server is notified to no longer attempt to

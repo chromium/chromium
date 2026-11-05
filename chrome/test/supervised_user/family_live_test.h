@@ -65,9 +65,7 @@ class FamilyLiveTest : public signin::test::LiveTest {
   // Signs in the user to the browser for eligible users depending on the
   // ::rpc_mode_ (see ::SigninToBrowserFor).
   void SigninToBrowser();
-  // Sings in the user to the browser and waits for the sync subsystem available
-  // to signed-in users to start.
-  // Manages the list of open service tabs.
+  // Signs in `browser_user` and (for `child_`) waits for sync invalidations.
   void SigninToBrowserFor(BrowserUser& browser_user);
 
  protected:
@@ -101,7 +99,7 @@ class FamilyLiveTest : public signin::test::LiveTest {
   std::unique_ptr<BrowserUser> MakeSignedInBrowser(
       const test_accounts::FamilyMember& credentials);
 
-  // Empty, if rpc_mode_ is kImpersonation.
+  // Left signed out by `SigninToBrowser()` in `kTestImpersonation` mode.
   std::unique_ptr<BrowserUser> head_of_household_;
 
   // Subject of testing.

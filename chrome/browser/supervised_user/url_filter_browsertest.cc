@@ -330,7 +330,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
-  SigninToBrowser();
+  // Both browsers are needed: parent opens Family Link UI in all RpcModes.
+  SigninToBrowserFor(head_of_household());
+  SigninToBrowserFor(child());
 
   // Child and parent activity is happening in these tabs.
   int child_tab_index = 0;

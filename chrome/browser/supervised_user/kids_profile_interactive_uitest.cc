@@ -133,8 +133,8 @@ IN_PROC_BROWSER_TEST_P(KidsProfileUiTest, DisplayInterstitialInPendingState) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     KidsProfileUiTest,
-    testing::Values(FamilyLiveTest::RpcMode::kProd,
-                    FamilyLiveTest::RpcMode::kTestImpersonation),
+    // Only the child browser is used, so the parent is not needed.
+    testing::Values(FamilyLiveTest::RpcMode::kTestImpersonation),
     [](const testing::TestParamInfo<FamilyLiveTest::RpcMode>& info) {
       return ToString(info.param);
     });
