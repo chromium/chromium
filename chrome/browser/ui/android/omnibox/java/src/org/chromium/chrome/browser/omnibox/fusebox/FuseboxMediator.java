@@ -911,6 +911,13 @@ class FuseboxMediator implements BackPressHandler {
                 intent, this::onTabPickerResult, R.string.low_memory_error);
     }
 
+    private void abortTabPicker() {
+        if (mModelList != null) {
+            TabLoadingService.getInstance().checkpointLoadDurations(mModelList.getAttachedTabIds());
+        }
+        handlePickerCanceled();
+    }
+
     private void handlePickerCanceled() {
         mIsPickerPending = false;
         if (!isInInputSession()) return;
@@ -933,17 +940,23 @@ class FuseboxMediator implements BackPressHandler {
     /* package */ void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (!isInInputSession()) return;
 
-        @Nullable ArrayList<Integer> tabIds = null;
-        if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
-            tabIds = data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS);
+        // Explicit error returned by the picker activity.
+        if (data != null && data.hasExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR)) {
+            onAttachmentUploadFailed();
+            abortTabPicker();
+            return;
         }
 
+        // Manual user exit (canceled, dismissed, or back-pressed).
+        if (resultCode != Activity.RESULT_OK) {
+            abortTabPicker();
+            return;
+        }
+
+        // Malformed success: RESULT_OK claimed, but tab IDs payload is missing.
+        List<Integer> tabIds = ChromeItemPickerUtils.getSelectedTabIdsFromIntent(data);
         if (tabIds == null) {
-            TabLoadingService.getInstance().checkpointLoadDurations(mModelList.getAttachedTabIds());
-            if (data != null && data.hasExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR)) {
-                onAttachmentUploadFailed();
-            }
-            handlePickerCanceled();
+            abortTabPicker();
             return;
         }
 
