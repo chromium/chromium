@@ -53,6 +53,13 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
   // Mode thread. Returns whether the side panel was opened.
   bool RestoreJourneyInSidePanel();
 
+  // Returns whether the contextual cue for this tab's journey should show: the
+  // journey can be restored in the side panel, and its cue hasn't shown yet.
+  bool ShouldShowCue() const;
+
+  // Records that the contextual cue for this tab's journey has shown.
+  void OnCueShown();
+
   // content::WebContentsObserver:
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;

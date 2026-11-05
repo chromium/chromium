@@ -141,6 +141,23 @@ bool SearchJourneyTabFeature::RestoreJourneyInSidePanel() {
   return true;
 }
 
+bool SearchJourneyTabFeature::ShouldShowCue() const {
+  if (!CanRestoreJourneyInSidePanel()) {
+    return false;
+  }
+  const JourneyState* journey = tracker_->GetRestorableJourney(
+      sessions::SessionTabHelper::IdForTab(web_contents()),
+      GetLastCommittedEntryId(web_contents()));
+  return journey && !journey->cue_shown;
+}
+
+void SearchJourneyTabFeature::OnCueShown() {
+  if (tracker_ && web_contents()) {
+    tracker_->OnJourneyCueShown(
+        sessions::SessionTabHelper::IdForTab(web_contents()));
+  }
+}
+
 void SearchJourneyTabFeature::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {

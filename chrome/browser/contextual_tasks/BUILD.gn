@@ -709,6 +709,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser:browser_process",
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/page_content_annotations",
@@ -717,14 +718,18 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/browser/tab_list",
+      "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",
+      "//chrome/browser/ui/page_action",
+      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/test:dialog",
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views/frame:browser_view_header",
@@ -740,6 +745,7 @@ if (!is_android) {
       "//components/omnibox/browser:test_support",
       "//components/omnibox/common:features",
       "//components/optimization_guide/core:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/page_content_annotations/core",
       "//components/page_content_annotations/core:test_support",
       "//components/passage_embeddings/core",
@@ -748,6 +754,7 @@ if (!is_android) {
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
+      "//components/strings:components_strings",
       "//components/tabs:test_support",
       "//content/test:test_support",
       "//google_apis",
@@ -755,6 +762,8 @@ if (!is_android) {
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/lens_server_proto:lens_overlay_proto",
+      "//ui/actions",
+      "//ui/base",
       "//ui/base/interaction:test_support",
       "//ui/webui/tracked_element",
     ]
@@ -923,6 +932,30 @@ source_set("unit_tests") {
 }
 
 if (!is_android) {
+  # The contextual cue for ABA search journeys. Separate from `impl`, which only
+  # `//chrome/browser` can depend on, because tab features register it.
+  source_set("search_journey_cue") {
+    sources = [
+      "aba_search_journey_cue_target.cc",
+      "aba_search_journey_cue_target.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/contextual_cueing",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//ui/base",
+    ]
+    deps = [
+      ":contextual_tasks",
+      "//chrome/app/vector_icons",
+      "//components/omnibox/browser:vector_icons",
+      "//components/strings:components_strings",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//ui/color",
+    ]
+  }
+
   source_set("interactive_ui_test_support") {
     testonly = true
     sources = [

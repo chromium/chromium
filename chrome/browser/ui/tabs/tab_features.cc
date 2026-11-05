@@ -37,6 +37,7 @@
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
 #include "chrome/browser/contextual_search/contextual_search_cue_target.h"
+#include "chrome/browser/contextual_tasks/aba_search_journey_cue_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
@@ -975,6 +976,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, &tab);
     glic::GlicCueTarget::Register(tab);
     contextual_search::ContextualSearchCueTarget::Register(tab);
+    if (contextual_tasks::IsABASearchJourneysEnabled()) {
+      contextual_tasks::AbaSearchJourneyCueTarget::Register(tab);
+    }
   }
 
   if (auto* contextual_cueing_service =

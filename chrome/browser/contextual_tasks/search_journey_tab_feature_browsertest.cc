@@ -12,8 +12,17 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/contextual_cueing/cue_target.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
@@ -22,15 +31,23 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_observer.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -46,6 +63,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
@@ -588,6 +607,211 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyRestoreBrowserTest,
   EXPECT_FALSE(feature->CanRestoreJourneyInSidePanel());
   EXPECT_FALSE(feature->RestoreJourneyInSidePanel());
   EXPECT_FALSE(tracker()->GetActiveJourneysForTesting().empty());
+}
+
+// Turns on contextual cues, so tabs get the ABA search journey cue target.
+class SearchJourneyCueBrowserTest : public SearchJourneyRestoreBrowserTest {
+ public:
+  SearchJourneyCueBrowserTest() {
+    cueing_feature_list_.InitWithFeatures(
+        {contextual_cueing::kContextualCueingV2,
+         contextual_cueing::kContextualCueingV2MultiSource},
+        {});
+  }
+
+ protected:
+  contextual_cueing::CueTarget* GetCueTarget(tabs::TabInterface* tab) {
+    auto* controller = contextual_cueing::ContextualCueingController::From(tab);
+    return controller ? controller->GetTarget(
+                            contextual_cueing::CueTargetType::kAbaSearchJourney)
+                      : nullptr;
+  }
+
+  // Blocks loud cues, as after the user dismisses a cue, so only quiet
+  // (omnibox chip) cues can show.
+  void BlockLoudCues() {
+    contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
+        GetProfile())
+        ->OnCueDismissed(contextual_cueing::CueTargetType::kGlic,
+                         /*record_ucb_stats=*/false);
+  }
+
+  // Starts a journey, returns to the source tab, and only then registers
+  // restore parameters so returning doesn't already show and use up the cue.
+  tabs::TabInterface* StartJourneyAndReturnWithoutShowingCue() {
+    tabs::TabInterface* source_tab = StartJourney(std::nullopt);
+    tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
+    if (!source_tab || !search_tab) {
+      return nullptr;
+    }
+    tab_list()->ActivateTab(source_tab->GetHandle());
+    EXPECT_TRUE(tracker()->OnAimPromoParamsReceived(
+        sessions::SessionTabHelper::IdForTab(search_tab->GetContents()),
+        u"how do tides work", CreatePromoParams(),
+        {AimPromoQueryHint::kEduHomework}));
+    return source_tab;
+  }
+
+ private:
+  base::test::ScopedFeatureList cueing_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, EligibleOnlyOnceReturned) {
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  contextual_cueing::CueTarget* cue_target = GetCueTarget(source_tab);
+  ASSERT_TRUE(cue_target);
+  EXPECT_FALSE(cue_target->IsEligible());
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  EXPECT_TRUE(cue_target->IsEligible());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       NotEligibleWithoutPromoParams) {
+  tabs::TabInterface* source_tab = StartJourney(std::nullopt);
+  ASSERT_TRUE(source_tab);
+  contextual_cueing::CueTarget* cue_target = GetCueTarget(source_tab);
+  ASSERT_TRUE(cue_target);
+
+  base::HistogramTester histogram_tester;
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  EXPECT_FALSE(cue_target->IsEligible());
+  // Returning doesn't evaluate a cue that can't show.
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.Decision", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       NotEligibleWhilePanelIsOpen) {
+  tabs::TabInterface* source_tab = StartJourneyAndReturnWithoutShowingCue();
+  ASSERT_TRUE(source_tab);
+  contextual_cueing::CueTarget* cue_target = GetCueTarget(source_tab);
+  ASSERT_TRUE(cue_target);
+  ASSERT_TRUE(cue_target->IsEligible());
+
+  SidePanelUI::From(browser())->Show(SidePanelEntryId::kContextualTasks);
+  ContextualTasksPanelController* panel_controller =
+      ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return panel_controller->IsPanelOpenForContextualTask(); }));
+  EXPECT_FALSE(cue_target->IsEligible());
+}
+
+// Tests that the cue falls back to a quiet omnibox chip when loud cues are
+// blocked.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       ShowsAsChipWhenLoudCuesBlocked) {
+  BlockLoudCues();
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().showing; }));
+  EXPECT_FALSE(observer.GetCurrentPageActionState().anchored_message_showing);
+  EXPECT_FALSE(GetCueTarget(source_tab)->IsEligible());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, GeneratesCueText) {
+  tabs::TabInterface* source_tab = StartJourneyAndReturnWithoutShowingCue();
+  ASSERT_TRUE(source_tab);
+  contextual_cueing::CueTarget* cue_target = GetCueTarget(source_tab);
+  ASSERT_TRUE(cue_target);
+
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      eligibility;
+  cue_target->CheckEligibility(source_tab->GetContents()->GetWeakPtr(),
+                               contextual_cueing::CueIntrusiveness::kLoud,
+                               eligibility.GetCallback());
+  auto [eligible, generator] = eligibility.Take();
+  ASSERT_TRUE(eligible);
+  ASSERT_TRUE(generator);
+
+  base::test::TestFuture<
+      std::optional<optimization_guide::proto::ContextualCue>>
+      cue;
+  std::move(generator).Run(cue.GetCallback());
+  ASSERT_TRUE(cue.Get().has_value());
+  EXPECT_EQ(
+      cue.Get()->anchored_message_cue().action_text(),
+      l10n_util::GetStringUTF8(IDS_CONTEXTUAL_TASKS_SEARCH_JOURNEY_CUE_ACTION));
+  EXPECT_EQ(cue.Get()->anchored_message_cue().anchored_message_text(),
+            l10n_util::GetStringUTF8(
+                IDS_CONTEXTUAL_TASKS_SEARCH_JOURNEY_CUE_ANCHORED_MESSAGE));
+}
+
+// Tests that the cue shows when the user returns to the source tab, and that
+// clicking it restores the journey in the side panel.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       ShowsCueOnReturnAndRestoresJourneyOnClick) {
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  EXPECT_EQ(observer.GetCurrentPageActionState().tooltip,
+            l10n_util::GetStringUTF16(
+                IDS_CONTEXTUAL_TASKS_SEARCH_JOURNEY_CUE_ACTION));
+
+  EXPECT_CALL(*ui_service(),
+              StartTaskUiInSidePanelImpl(testing::_, source_tab, testing::_,
+                                         testing::_, testing::_));
+  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action);
+  action->InvokeAction();
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !observer.GetCurrentPageActionState().showing; }));
+}
+
+// Tests that the cue shows at most once per journey, even if the user returns
+// to the source tab again after it's gone.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, ShowsCueOncePerJourney) {
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  contextual_cueing::CueTarget* cue_target = GetCueTarget(source_tab);
+  ASSERT_TRUE(cue_target);
+  EXPECT_FALSE(cue_target->IsEligible());
+
+  // The cue goes away, as when the user dismisses it, and then the user goes
+  // back to the search tab and returns again.
+  contextual_cueing::ContextualCueingController::From(source_tab)->HideCue();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !observer.GetCurrentPageActionState().showing; }));
+  tab_list()->ActivateTab(search_tab->GetHandle());
+  tab_list()->ActivateTab(source_tab->GetHandle());
+
+  EXPECT_FALSE(cue_target->IsEligible());
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+  // The journey itself can still be restored.
+  EXPECT_TRUE(SearchJourneyTabFeature::From(source_tab)
+                  ->CanRestoreJourneyInSidePanel());
 }
 
 class SearchJourneyTabFeatureDisabledBrowserTest : public InProcessBrowserTest {

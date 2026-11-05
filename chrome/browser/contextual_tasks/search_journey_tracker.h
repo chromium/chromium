@@ -101,6 +101,8 @@ struct JourneyState {
   std::optional<AimPromoParams> promo_params;
   // Labels registered along with `promo_params`.
   AimPromoQueryHints query_hints;
+  // Whether the journey's contextual cue has shown. It only shows once.
+  bool cue_shown = false;
 };
 
 // Profile-keyed service that tracks ABA search journeys: the user leaves an
@@ -208,6 +210,10 @@ class SearchJourneyTracker : public KeyedService,
   // Drops the journey whose Tab A is `source_tab_id` once its AI Overview has
   // been restored, so it can't be restored again.
   void OnJourneyRestored(SessionID source_tab_id);
+
+  // Records that the contextual cue for the journey whose Tab A is
+  // `source_tab_id` has shown, so that it doesn't show again.
+  void OnJourneyCueShown(SessionID source_tab_id);
 
   // Clears copy records for `tab_id` and any journey whose Tab A is `tab_id`.
   // Journeys whose Tab B is `tab_id` are kept and marked as closed.

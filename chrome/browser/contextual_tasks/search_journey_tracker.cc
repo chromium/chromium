@@ -276,6 +276,13 @@ void SearchJourneyTracker::OnJourneyRestored(SessionID source_tab_id) {
   active_journeys_.erase(source_tab_id);
 }
 
+void SearchJourneyTracker::OnJourneyCueShown(SessionID source_tab_id) {
+  auto it = active_journeys_.find(source_tab_id);
+  if (it != active_journeys_.end()) {
+    it->second.cue_shown = true;
+  }
+}
+
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
   std::erase_if(ring_buffer_, [tab_id](const CopyRecord& record) {
     return record.source_tab_id == tab_id;

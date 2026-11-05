@@ -585,6 +585,33 @@ TEST_F(SearchJourneyTrackerTest, OnJourneyRestoredDropsJourney) {
   EXPECT_FALSE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
 }
 
+TEST_F(SearchJourneyTrackerTest, OnJourneyCueShownMarksJourney) {
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  ASSERT_TRUE(GetJourney(kSourceTab1));
+  EXPECT_FALSE(GetJourney(kSourceTab1)->cue_shown);
+
+  tracker_.OnJourneyCueShown(kSourceTab1);
+
+  ASSERT_TRUE(GetJourney(kSourceTab1));
+  EXPECT_TRUE(GetJourney(kSourceTab1)->cue_shown);
+}
+
+TEST_F(SearchJourneyTrackerTest, NewSearchInSearchTabResetsCueShown) {
+  StartJourney(kSourceTab1, kSearchTab1, u"first query");
+  tracker_.OnJourneyCueShown(kSourceTab1);
+
+  tracker_.OnSearchNavigationCommitted(kSearchTab1, u"second query");
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_FALSE(journey->cue_shown);
+}
+
+TEST_F(SearchJourneyTrackerTest, OnJourneyCueShownWithoutJourneyIsIgnored) {
+  tracker_.OnJourneyCueShown(kSourceTab1);
+  EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
 TEST_F(SearchJourneyTrackerTest, JourneyTtlExpiry) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
