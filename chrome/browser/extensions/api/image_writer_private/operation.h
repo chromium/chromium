@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -173,13 +174,9 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // continuation.
   void CompleteAndContinue(base::OnceClosure continuation);
 
-  // If `file_size` is non-zero, only `file_size` bytes will be read from file,
-  // otherwise the entire file will be read.
-  // `progress_scale` is a percentage to which the progress will be scale, e.g.
-  // a scale of 50 means it will increment from 0 to 50 over the course of the
-  // sum.  `progress_offset` is an percentage that will be added to the progress
-  // of the MD5 sum before updating `progress_` but after scaling.
-  void GetMD5SumOfFile(const base::FilePath& file,
+  // Computes the lowercase hex MD5 digest of `file_path` on `task_runner_`,
+  // updating stage progress from 0 to 100, and passes it to `callback`.
+  void GetMD5SumOfFile(const base::FilePath& file_path,
                        base::OnceCallback<void(const std::string&)> callback);
 
   bool IsRunningInCorrectSequence() const;
@@ -253,9 +250,10 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Incrementally calculates the MD5 sum of a file.
   void MD5Chunk(base::File file,
                 crypto::obsolete::Md5 md5,
-                size_t bytes_processed,
-                size_t bytes_total,
-                const base::OnceCallback<void(const std::string&)> callback);
+                base::HeapArray<uint8_t> buffer,
+                int64_t bytes_processed,
+                int64_t bytes_total,
+                base::OnceCallback<void(const std::string&)> callback);
 
   // Callbacks for Extractor.
   void OnExtractOpenComplete(const base::FilePath& image_path);

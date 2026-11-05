@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 
+#include <algorithm>
+#include <limits>
 #include <string_view>
 #include <utility>
 
@@ -43,6 +45,8 @@ crypto::obsolete::Md5 MakeMd5HasherForImageWriter() {
 }
 
 namespace {
+
+constexpr size_t kMd5BufferSize = 256 * 1024;  // 256 KiB
 
 // Returns true if the file at |image_path| is an archived image.
 bool IsArchive(const base::FilePath& image_path) {
@@ -329,15 +333,18 @@ void Operation::GetMD5SumOfFile(
   }
 
   int64_t file_size = file.GetLength();
-  if (file_size < 0) {
+  if (file_size < 0 ||
+      file_size > std::numeric_limits<int64_t>::max() / kProgressComplete) {
     Error(error::kImageOpenError);
     return;
   }
 
+  const size_t chunk_size =
+      static_cast<size_t>(std::min<int64_t>(file_size, kMd5BufferSize));
+  auto buffer = base::HeapArray<uint8_t>::Uninit(chunk_size);
   PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
-                          MakeMd5HasherForImageWriter(), 0,
-                          base::checked_cast<size_t>(file_size),
-                          std::move(callback)));
+                          MakeMd5HasherForImageWriter(), std::move(buffer), 0,
+                          file_size, std::move(callback)));
 }
 
 bool Operation::IsRunningInCorrectSequence() const {
@@ -347,35 +354,40 @@ bool Operation::IsRunningInCorrectSequence() const {
 void Operation::MD5Chunk(
     base::File file,
     crypto::obsolete::Md5 md5,
-    size_t bytes_processed,
-    size_t bytes_total,
+    base::HeapArray<uint8_t> buffer,
+    int64_t bytes_processed,
+    int64_t bytes_total,
     base::OnceCallback<void(const std::string&)> callback) {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (IsCancelled()) {
     return;
   }
 
+  CHECK_GE(bytes_processed, 0);
   CHECK_LE(bytes_processed, bytes_total);
 
-  std::array<uint8_t, 1024> buffer;
-  size_t read_size = std::min(bytes_total - bytes_processed, buffer.size());
+  const size_t read_size = static_cast<size_t>(
+      std::min<int64_t>(bytes_total - bytes_processed, buffer.size()));
 
   if (read_size == 0) {
     // Nothing to read, we are done.
     std::move(callback).Run(base::HexEncodeLower(md5.Finish()));
   } else {
-    int64_t offset = base::checked_cast<int64_t>(bytes_processed);
-    auto target = base::span(buffer).first(read_size);
+    base::span<uint8_t> target = buffer.as_span().first(read_size);
 
-    if (file.ReadAndCheck(offset, target)) {
+    if (file.ReadAndCheck(bytes_processed, target)) {
       // Process data.
       md5.Update(target);
-      bytes_processed += read_size;
-      int percent_curr = (bytes_processed * kProgressComplete) / bytes_total;
+      bytes_processed += static_cast<int64_t>(read_size);
+      // Cannot overflow: `GetMD5SumOfFile()` verifies `bytes_total <=
+      // INT64_MAX / kProgressComplete`, and `bytes_processed <= bytes_total`.
+      int percent_curr =
+          static_cast<int>((bytes_processed * kProgressComplete) / bytes_total);
       SetProgress(percent_curr);
 
       PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
-                              std::move(md5), bytes_processed, bytes_total,
+                              std::move(md5), std::move(buffer),
+                              bytes_processed, bytes_total,
                               std::move(callback)));
       // Skip closing the file.
       return;

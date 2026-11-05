@@ -136,6 +136,32 @@ class ImageWriterWriteFromUrlOperationTest : public ImageWriterUnitTestBase {
     return operation;
   }
 
+  void RunVerifyDownloadAndFlush(
+      scoped_refptr<WriteFromUrlOperationForTest> operation) {
+    {
+      base::RunLoop run_loop;
+      // The OnProgress tasks are posted with USER_VISIBLE priority so post the
+      // quit closure with the same priority to ensure it doesn't run too soon.
+      operation->VerifyDownload(base::BindOnce(
+          [](base::OnceClosure quit_closure) {
+            content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+                ->PostTask(FROM_HERE, std::move(quit_closure));
+          },
+          run_loop.QuitClosure()));
+      run_loop.Run();
+    }
+
+    operation->Cancel();
+
+    // The OnProgress calls we're expecting are posted to the Operation's
+    // SequencedTaskRunner. Flush it before the mock's expectations are checked.
+    {
+      base::RunLoop run_loop;
+      operation->PostTask(run_loop.QuitClosure());
+      run_loop.Run();
+    }
+  }
+
   TestingProfile test_profile_;
   content::URLLoaderInterceptor url_loader_interceptor_;
   int url_interception_count_;
@@ -214,9 +240,6 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
       CreateOperation(GURL(""), expected_hash);
 
   EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
-                                   image_writer_api::Stage::kVerifyDownload, _))
-      .Times(AtLeast(1));
-  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
                                    image_writer_api::Stage::kVerifyDownload, 0))
       .Times(AtLeast(1));
   EXPECT_CALL(manager_,
@@ -225,30 +248,66 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
       .Times(AtLeast(1));
 
   operation->SetImagePath(test_utils_.GetImagePath());
-  {
-    base::RunLoop run_loop;
-    // The OnProgress tasks are posted with priority USER_VISIBLE priority so
-    // post the quit closure with the same priority to ensure it doesn't run too
-    // soon.
-    operation->VerifyDownload(base::BindOnce(
-        [](base::OnceClosure quit_closure) {
-          content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
-              ->PostTask(FROM_HERE, std::move(quit_closure));
-        },
-        run_loop.QuitClosure()));
+  RunVerifyDownloadAndFlush(operation);
+}
 
-    run_loop.Run();
+TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyMultiChunkLargeFile) {
+  // Exceeds the 256 KiB MD5 chunk buffer across >2 chunks with an unaligned
+  // trailing chunk.
+  constexpr size_t kLargeImageSize = 600 * 1024 + 137;
+  auto large_buffer = base::HeapArray<uint8_t>::Uninit(kLargeImageSize);
+  for (size_t i = 0; i < kLargeImageSize; ++i) {
+    large_buffer[i] = static_cast<uint8_t>((i * 31 + 17) & 0xFF);
   }
+  base::FilePath large_image_path =
+      test_utils_.GetTempDir().AppendASCII("large_verify.bin");
+  ASSERT_TRUE(base::WriteFile(large_image_path, large_buffer.as_span()));
 
-  operation->Cancel();
+  const std::string expected_hash = base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(large_buffer.as_span()));
 
-  // The OnProgress calls we're expecting are posted to the Operation's
-  // SequencedTaskRunner. Flush it before the mock's expectations are checked.
-  {
-    base::RunLoop run_loop;
-    operation->PostTask(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  scoped_refptr<WriteFromUrlOperationForTest> operation =
+      CreateOperation(GURL(""), expected_hash);
+
+  EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyDownload, 0))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyDownload,
+                                   testing::AllOf(Gt(0), Lt(100))))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId,
+                         image_writer_api::Stage::kVerifyDownload, 100))
+      .Times(AtLeast(1));
+
+  operation->SetImagePath(large_image_path);
+  RunVerifyDownloadAndFlush(operation);
+}
+
+TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyEmptyFile) {
+  base::FilePath empty_image_path =
+      test_utils_.GetTempDir().AppendASCII("empty_verify.bin");
+  ASSERT_TRUE(base::WriteFile(empty_image_path, base::span<const uint8_t>()));
+
+  const std::string expected_hash = base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::span<const uint8_t>()));
+
+  scoped_refptr<WriteFromUrlOperationForTest> operation =
+      CreateOperation(GURL(""), expected_hash);
+
+  EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyDownload, 0))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId,
+                         image_writer_api::Stage::kVerifyDownload, 100))
+      .Times(AtLeast(1));
+
+  operation->SetImagePath(empty_image_path);
+  RunVerifyDownloadAndFlush(operation);
 }
 
 }  // namespace image_writer
