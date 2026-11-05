@@ -182,15 +182,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                    base::span<const uint8_t> data,
                                    base::TimeDelta presentation_time);
 
-  // Gets the address of the data in the given output buffer given by |index|
-  // and |offset|. The number of bytes available to read is written to
-  // |*capacity| and the address is written to |*addr|. Returns
-  // kError if an error occurs, or kOk otherwise.
-  MediaCodecResult GetOutputBufferAddress(int index,
-                                          size_t offset,
-                                          const uint8_t** addr,
-                                          size_t* capacity);
-
   void ReportAnyErrorToUMA(MediaCodecStatus status);
 
   const bool use_block_model_;

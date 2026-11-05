@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_TUNEABLE_H_
 #define MEDIA_BASE_TUNEABLE_H_
 
-#include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -40,10 +39,6 @@ class MEDIA_EXPORT Tuneable {
  private:
   T t_;
 };
-
-// Set the random number seed that the tuneable will use to choose its value.
-// Must be called before the first tuneable is constructed.
-void MEDIA_EXPORT SetRandomSeedForTuneables(const base::UnguessableToken& seed);
 
 }  // namespace media
 

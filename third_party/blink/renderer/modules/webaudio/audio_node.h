@@ -128,7 +128,6 @@ class MODULES_EXPORT AudioNode : public EventTarget,
   bool HasOutputsConnected() const;
 
  private:
-  void WarnIfContextClosed() const;
   void Dispose();
   void DisconnectAllFromOutput(unsigned output_index);
   // Returns true if the specified AudioNodeInput was connected.

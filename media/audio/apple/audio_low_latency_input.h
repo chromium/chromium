@@ -194,9 +194,6 @@ class MEDIA_EXPORT AUAudioInputStream
   // Reinitializes the AudioUnit to use a new output device.
   void ReinitializeVoiceProcessingAudioUnit();
 
-  // Adds extra UMA stats when it has been detected that startup failed.
-  void AddHistogramsForFailedStartup();
-
   // Called from the dtor and when the stream is reset.
   void ReportAndResetStats();
 

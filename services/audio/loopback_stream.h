@@ -101,9 +101,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream {
   static constexpr double kMaxVolume = 2.0;
 
  private:
-  void AddLoopbackSource(LoopbackSource* source);
-  void RemoveLoopbackSource(LoopbackSource* source);
-
   // Drives all audio flows, pulling audio from the LoopbackSignalProvider and
   // pushing it into the InputSyncWriter. This class mainly operates on a
   // separate task runner from LoopbackStream and can only be destroyed by

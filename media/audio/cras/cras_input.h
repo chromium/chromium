@@ -90,12 +90,6 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
   // StreamError().
   void NotifyStreamError(int err);
 
-  // Convert from dB * 100 to a volume ratio.
-  double GetVolumeRatioFromDecibels(double dB) const;
-
-  // Convert from a volume ratio to dB.
-  double GetDecibelsFromVolumeRatio(double volume_ratio) const;
-
   // Return true to use AEC in CRAS for this input stream.
   inline bool UseCrasAec() const;
 

@@ -286,9 +286,6 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // counts will not be incremented.
   void RecreateStream(RecreateReason reason);
 
-  // Notifies the EventHandler that an error has occurred.
-  void ReportError();
-
   // Helper method that starts the physical stream. Must only be called in state
   // kCreated or kPaused.
   void StartStream();

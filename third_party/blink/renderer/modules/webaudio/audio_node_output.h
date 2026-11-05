@@ -79,9 +79,6 @@ class MODULES_EXPORT AudioNodeOutput final {
   // Must be called with the context's graph lock.
   void DisconnectAll();
 
-  // Disconnect a specific input or AudioParam.
-  void DisconnectAudioParam(AudioParamHandler&);
-
   void SetNumberOfChannels(unsigned);
   unsigned NumberOfChannels() const { return number_of_channels_; }
   bool IsChannelCountKnown() const { return NumberOfChannels() > 0; }

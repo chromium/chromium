@@ -160,7 +160,6 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnVideoAverageKeyframeDistanceUpdate();
   void OnAudioPipelineInfoChange(const AudioPipelineInfo& info);
   void OnVideoPipelineInfoChange(const VideoPipelineInfo& info);
-  void OnRemotePlayStateChange(MediaStatus::State state);
   void OnVideoFrameRateChange(std::optional<int> fps);
 
   // Task completion callbacks from RendererWrapper.

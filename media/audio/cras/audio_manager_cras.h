@@ -62,12 +62,6 @@ class MEDIA_EXPORT AudioManagerCras : public AudioManagerCrasBase {
  private:
   uint64_t GetPrimaryActiveInputNode();
   uint64_t GetPrimaryActiveOutputNode();
-  void GetPrimaryActiveInputNodeOnMainThread(uint64_t* active_input_node_id,
-                                             base::WaitableEvent* event);
-  void GetPrimaryActiveOutputNodeOnMainThread(uint64_t* active_output_node_id,
-                                              base::WaitableEvent* event);
-  void GetDefaultOutputBufferSizeOnMainThread(int32_t* buffer_size,
-                                              base::WaitableEvent* event);
 
   // Task runner of browser main thread. CrasAudioHandler should be only
   // accessed on this thread.

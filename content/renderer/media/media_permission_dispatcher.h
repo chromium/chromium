@@ -74,9 +74,6 @@ class MediaPermissionDispatcher : public media::MediaPermission {
 
   // Callback for |mf_preferences_| connection errors.
   void OnMediaFoundationPreferencesConnectionError();
-
-  // Callback for |mf_preferences_|
-  void OnIsHardwareSecureDecryptionAllowed(bool allowed);
 #endif
 
   // Callback for |permission_service_| calls.

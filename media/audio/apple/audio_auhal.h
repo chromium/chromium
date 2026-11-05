@@ -132,9 +132,6 @@ class AUHALStream : public AudioOutputStream {
   // Creates the AUHAL, sets its stream format, buffer-size, etc.
   bool ConfigureAUHAL();
 
-  // Creates the input and output buses.
-  void CreateIOBusses();
-
   // Returns the playout time for a given AudioTimeStamp.
   base::TimeTicks GetPlayoutTime(const AudioTimeStamp* output_time_stamp);
 

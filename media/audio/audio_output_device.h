@@ -170,13 +170,6 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   void ShutDownOnIOThread();
   void SetVolumeOnIOThread(double volume);
 
-  // Process device authorization result on the IO thread.
-  void ProcessDeviceAuthorizationOnIOThread(
-      OutputDeviceStatus device_status,
-      const AudioParameters& output_params,
-      const std::string& matched_device_id,
-      bool timed_out);
-
   void NotifyRenderCallbackOfError();
 
   OutputDeviceInfo GetOutputDeviceInfo_Signaled();
@@ -198,9 +191,6 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
 
   // For UMA stats. May only be accessed on the IO thread.
   Error had_error_ = kNoError;
-
-  // Last set volume.
-  double volume_ = 1.0;
 
   // The media session ID used to identify which input device to be started.
   // Only used by Unified IO.

@@ -82,10 +82,6 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
 
   bool GetAudioDeviceNamesImpl(bool input, AudioDeviceNames* device_names);
 
-  AudioOutputStream* MakeOutputStream(const AudioParameters& params,
-                                      const std::string& device_id,
-                                      const LogCallback& log_callback);
-
   // Listen for output device changes.
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;
 

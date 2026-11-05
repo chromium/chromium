@@ -69,7 +69,6 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
   // Must be called only once after constructor.
   void CreatePropertyListeners();
 
-  void RunCallback();
   void UpdateDevicePropertyListeners();
   void OnDevicesAddedOrRemoved();
   void UpdateSourceListeners(const std::vector<AudioObjectID>& device_ids);

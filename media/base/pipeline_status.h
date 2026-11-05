@@ -83,9 +83,6 @@ enum PipelineStatusCodes : StatusCodeType {
   PIPELINE_STATUS_MAX = DEMUXER_ERROR_PROGRESSIVE_DISABLED,
 };
 
-MEDIA_EXPORT std::string_view PipelineStatusCodeToString(
-    PipelineStatusCodes code);
-
 struct PipelineStatusTraits {
   using Codes = PipelineStatusCodes;
 
