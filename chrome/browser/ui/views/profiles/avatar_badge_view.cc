@@ -45,9 +45,8 @@
 
 namespace {
 
-// TODO(crbug.com/532163925): Revise and finalize the specs once the integrate
-// both private and public specs. These deviate slightly from the mock (CSS,
-// SVG) but produce a visual result closer to it.
+// These specs deviate slightly from the mock (CSS, SVG) but produce a visual
+// result closer to it.
 constexpr int kBadgeHeight = 22;
 constexpr int kTopPadding = 5;
 constexpr int kBottomPadding = 5;

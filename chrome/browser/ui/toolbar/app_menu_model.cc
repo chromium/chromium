@@ -541,9 +541,9 @@ ProfileSubMenuModel::ProfileSubMenuModel(
                   avatar_model, avatar_icon_size, /*has_padding=*/false,
                   /*has_background=*/false, *color_provider));
         } else if (GetAvatarAiDecoration(profile).show_decoration) {
-          // TODO(crbug.com/530147081): Clarify if the ring may show up for
-          // users with a placeholder icon. Signed in users should have always
-          // an account_info and thus they will never have a placeholder icon.
+          // The ring is only drawn around a fetched avatar image. Placeholder
+          // avatars keep the default vector icon (see above), and signed-out
+          // profiles have no AI subscription tier.
           avatar_image_model_ =
               ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
                   avatar_model, *color_provider, avatar_icon_size));
