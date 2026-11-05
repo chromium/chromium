@@ -10,13 +10,19 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_manager_service.h"
@@ -35,13 +41,16 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace page_content_annotations {
@@ -145,12 +154,20 @@ class PageContentExtractionTabStripModelObserverTest : public testing::Test {
 
  protected:
   content::WebContents* AppendTabWithUrl(TabStripModel* tab_strip_model,
-                                         const GURL& url) {
+                                         const GURL& url,
+                                         bool commit_navigation = true) {
     std::unique_ptr<content::WebContents> contents =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    content::NavigationSimulator::NavigateAndCommitFromBrowser(contents.get(),
-                                                               url);
+    if (commit_navigation) {
+      content::NavigationSimulator::NavigateAndCommitFromBrowser(contents.get(),
+                                                                 url);
+    } else {
+      contents->GetController().LoadURL(
+          url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+    }
     content::WebContents* raw_contents = contents.get();
+    content::WebContentsTester::For(raw_contents)
+        ->SetLastActiveTime(base::Time::Now());
     tab_strip_model->AppendWebContents(std::move(contents),
                                        /*foreground=*/true);
     return raw_contents;
@@ -165,7 +182,18 @@ class PageContentExtractionTabStripModelObserverTest : public testing::Test {
     return future.Take();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  std::vector<int64_t> GetCachedTabIds() {
+    base::test::TestFuture<std::vector<int64_t>> future;
+    service_->GetOnDiskCachedTabIds(future.GetCallback());
+    return future.Take();
+  }
+
+  void NotifySessionRestored(int num_tabs_restored) {
+    observer_->OnSessionRestored(&profile_, num_tabs_restored);
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_feature_init_;
   base::test::ScopedFeatureList feature_list_;
@@ -174,6 +202,152 @@ class PageContentExtractionTabStripModelObserverTest : public testing::Test {
   std::unique_ptr<TestPageContentExtractionService> service_;
   std::unique_ptr<PageContentExtractionTabStripModelObserver> observer_;
 };
+
+TEST_F(PageContentExtractionTabStripModelObserverTest,
+       PostStartupReconciliationAndMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Instantiate `observer_` before any browser windows or tabs exist (matching
+  // `Profile` initialization, where `PageContentExtractionService` is created
+  // before `StartupBrowserCreator` opens initial tabs later in the same turn).
+  observer_ = std::make_unique<PageContentExtractionTabStripModelObserver>(
+      &profile_, service_.get());
+
+  ScopedMockBrowserWindow window(&profile_);
+  TabStripModel* model = window.tab_strip_model();
+
+  // Tab 1: Active/eligible HTTP(S) tab with cached entry -> should be kept.
+  content::WebContents* contents1 =
+      AppendTabWithUrl(model, GURL("https://example.com/one"));
+  const int64_t tab_id_1 = service_->CacheContentForTab(contents1, "one");
+
+  // Tab 2: Uncommitted restored HTTP(S) tab (`GetLastCommittedURL()` is empty,
+  // while `GetVisibleURL()` returns the pending entry URL) without cached
+  // entry -> counted as not cached.
+  content::WebContents* contents2 = AppendTabWithUrl(
+      model, GURL("https://example.com/two"), /*commit_navigation=*/false);
+  const int64_t tab_id_2 = sessions::SessionTabHelper::IdForTab(contents2).id();
+  EXPECT_NE(tab_id_1, tab_id_2);
+
+  // Tab 3: Open HTTP(S) tab whose last active time exceeds max cache age (7
+  // days) -> treated as inactive/stale and evicted.
+  content::WebContents* contents_expired =
+      AppendTabWithUrl(model, GURL("https://example.com/expired"));
+  content::WebContentsTester::For(contents_expired)
+      ->SetLastActiveTime(base::Time::Now() - base::Days(8));
+  const int64_t tab_id_expired =
+      service_->CacheContentForTab(contents_expired, "expired");
+
+  // Tab 4: Open non-HTTP(S) tab -> treated as ineligible/stale and evicted.
+  content::WebContents* contents_non_http =
+      AppendTabWithUrl(model, GURL("chrome://version"));
+  const int64_t tab_id_non_http =
+      service_->CacheContentForTab(contents_non_http, "non_http");
+
+  // Stale closed tab that is no longer open in any `TabStripModel`.
+  std::unique_ptr<content::WebContents> contents_stale_closed =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(contents_stale_closed.get(),
+                                                   base::NullCallback());
+  const int64_t stale_closed_tab_id =
+      service_->CacheContentForTab(contents_stale_closed.get(), "stale_closed");
+
+  ASSERT_TRUE(GetCachedContentForTab(tab_id_1).has_value());
+  ASSERT_TRUE(GetCachedContentForTab(tab_id_expired).has_value());
+  ASSERT_TRUE(GetCachedContentForTab(tab_id_non_http).has_value());
+  ASSERT_TRUE(GetCachedContentForTab(stale_closed_tab_id).has_value());
+
+  base::StatisticsRecorder::HistogramWaiter metrics_waiter(
+      "OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage");
+  base::StatisticsRecorder::HistogramWaiter delete_waiter(
+      "OptimizationGuide.PageContentCache.DeletePageContentForTabsResult");
+
+  // Fast-forward past the 25-second delayed cleanup task.
+  task_environment_.FastForwardBy(base::Seconds(26));
+  metrics_waiter.Wait();
+  delete_waiter.Wait();
+
+  // Verify only `tab_id_1` remains in the cache; the 3 stale entries were
+  // evicted.
+  EXPECT_TRUE(GetCachedContentForTab(tab_id_1).has_value());
+  EXPECT_FALSE(GetCachedContentForTab(tab_id_expired).has_value());
+  EXPECT_FALSE(GetCachedContentForTab(tab_id_non_http).has_value());
+  EXPECT_FALSE(GetCachedContentForTab(stale_closed_tab_id).has_value());
+
+  // Verify startup reconciliation histograms:
+  // Eligible active tabs: {`tab_id_1`, `tab_id_2`} (2 total: 1 cached, 1 not
+  // cached, 50% cached). Stale cached entries: {`tab_id_expired`,
+  // `tab_id_non_http`, `stale_closed_tab_id`} (3 total).
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.TotalCacheSize", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.CachedTabsCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.NotCachedTabsCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.StaleCacheEntriesCount", 3, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.AvgPageSize", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage", 50, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.GetAllTabIdsLatency", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.DeletePageContentForTabsLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.DeletePageContentForTabsResult", true,
+      1);
+
+  EXPECT_EQ(GetCachedTabIds(), std::vector<int64_t>{tab_id_1});
+}
+
+TEST_F(PageContentExtractionTabStripModelObserverTest,
+       OnSessionRestoredRunsCleanUpOnce) {
+  base::HistogramTester histogram_tester;
+
+  observer_ = std::make_unique<PageContentExtractionTabStripModelObserver>(
+      &profile_, service_.get());
+  ScopedMockBrowserWindow window(&profile_);
+
+  content::WebContents* contents1 = AppendTabWithUrl(
+      window.tab_strip_model(), GURL("https://example.com/restored"));
+  const int64_t tab_id_1 = service_->CacheContentForTab(contents1, "restored");
+  std::unique_ptr<content::WebContents> stale_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(stale_contents.get(),
+                                                   base::NullCallback());
+  const int64_t stale_tab_id =
+      service_->CacheContentForTab(stale_contents.get(), "stale");
+
+  // Trigger `OnSessionRestored()` before the posted
+  // `RunCleanUpTasksIfNotRestoring()` task runs; it should run
+  // `RunCleanUpTasks()` and mark `has_run_cleanup_tasks_ = true` so the posted
+  // task is a no-op when pumped.
+  NotifySessionRestored(/*num_tabs_restored=*/1);
+
+  base::StatisticsRecorder::HistogramWaiter metrics_waiter(
+      "OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage");
+  base::StatisticsRecorder::HistogramWaiter delete_waiter(
+      "OptimizationGuide.PageContentCache.DeletePageContentForTabsResult");
+  task_environment_.FastForwardBy(base::Seconds(26));
+  metrics_waiter.Wait();
+  delete_waiter.Wait();
+
+  EXPECT_TRUE(GetCachedContentForTab(tab_id_1).has_value());
+  EXPECT_FALSE(GetCachedContentForTab(stale_tab_id).has_value());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.CachedTabsCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentCache.StaleCacheEntriesCount", 1, 1);
+
+  // Calling `OnSessionRestored()` again after adding another tab should not
+  // re-run startup reconciliation.
+  AppendTabWithUrl(window.tab_strip_model(), GURL("https://example.com/later"));
+  NotifySessionRestored(/*num_tabs_restored=*/1);
+  task_environment_.FastForwardBy(base::Seconds(26));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.CachedTabsCount", 1);
+}
 
 TEST_F(PageContentExtractionTabStripModelObserverTest,
        LastWindowCloseAllTabsPreservesCacheWhileSecondaryWindowCloseEvicts) {

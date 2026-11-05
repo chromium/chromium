@@ -105,11 +105,14 @@ source_set("extraction_service_impl") {
     ]
     deps += [
       "//chrome/browser/lifetime",
+      "//chrome/browser/sessions",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/sessions",
+      "//components/tabs:public",
+      "//url",
     ]
   }
   if (is_chromeos) {
@@ -352,6 +355,7 @@ source_set("unit_tests") {
       "//components/os_crypt/async/browser:test_support",
       "//components/sessions",
       "//content/public/browser",
+      "//ui/base",
       "//url",
     ]
   }

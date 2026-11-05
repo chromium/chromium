@@ -4,11 +4,20 @@
 
 #include "chrome/browser/page_content_annotations/page_content_extraction_tab_strip_model_observer.h"
 
+#include <stdint.h>
+
+#include <set>
+
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,9 +25,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 namespace page_content_annotations {
 
@@ -40,6 +52,21 @@ PageContentExtractionTabStripModelObserver::
         return true;
       },
       BrowserCollection::Order::kCreation);
+
+  // `PageContentExtractionService` is created during `Profile` initialization,
+  // before `StartupBrowserCreator` runs later in the same turn to either start
+  // `SessionRestore` or open initial startup tabs. Post
+  // `RunCleanUpTasksIfNotRestoring()` so it runs after `StartupBrowserCreator`,
+  // and subscribe to `SessionRestore` in case a restore is still in progress
+  // when the posted task executes.
+  session_restore_subscription_ =
+      SessionRestore::RegisterOnSessionRestoredCallback(base::BindRepeating(
+          &PageContentExtractionTabStripModelObserver::OnSessionRestored,
+          weak_ptr_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PageContentExtractionTabStripModelObserver::
+                                    RunCleanUpTasksIfNotRestoring,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 PageContentExtractionTabStripModelObserver::
@@ -149,6 +176,65 @@ bool PageContentExtractionTabStripModelObserver::ShouldPreserveCacheOnTabClose(
         return true;  // Continue iterating.
       });
   return !has_other_normal_browser;
+}
+
+void PageContentExtractionTabStripModelObserver::OnSessionRestored(
+    Profile* profile,
+    int num_tabs_restored) {
+  if (profile != &*profile_) {
+    return;
+  }
+  RunCleanUpTasks();
+}
+
+void PageContentExtractionTabStripModelObserver::
+    RunCleanUpTasksIfNotRestoring() {
+  // TODO(b/579119725): Consider also deferring startup cleanup while
+  // `ExitTypeService::waiting_for_user_to_ack_crash()` is true so post-crash
+  // launches showing the "Restore pages?" bubble do not evict pre-crash cache
+  // entries before the user clicks "Restore".
+  if (SessionRestore::IsRestoring(&*profile_)) {
+    // `OnSessionRestored()` will call `RunCleanUpTasks()` once session restore
+    // finishes creating tabs and migrating their tab IDs via `UpdateTabId()`.
+    return;
+  }
+  RunCleanUpTasks();
+}
+
+void PageContentExtractionTabStripModelObserver::RunCleanUpTasks() {
+  if (has_run_cleanup_tasks_) {
+    return;
+  }
+  has_run_cleanup_tasks_ = true;
+  session_restore_subscription_ = {};
+
+  std::set<int64_t> active_tab_ids;
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta max_cache_age =
+      base::Days(features::kPageContentCacheMaxCacheAgeInDays.Get());
+  ProfileBrowserCollection::GetForProfile(&*profile_)
+      ->ForEach([&active_tab_ids, now,
+                 max_cache_age](BrowserWindowInterface* browser) {
+        for (tabs::TabInterface* tab : *browser->GetTabStripModel()) {
+          content::WebContents* contents = tab->GetContents();
+          SessionID tab_id = sessions::SessionTabHelper::IdForTab(contents);
+          CHECK(tab_id.is_valid());
+          const GURL& url = contents->GetVisibleURL();
+          // This can overcount some open tabs that wouldn't pass
+          // `IsPageContextEligible()` checks, slightly understating the
+          // startup cache-hit rate metric. Since those tabs are never cached,
+          // keeping their IDs in `active_tab_ids` has no effect on which
+          // cached entries are evicted.
+          if (now - contents->GetLastActiveTime() > max_cache_age ||
+              !url.SchemeIsHTTPOrHTTPS()) {
+            continue;
+          }
+          active_tab_ids.insert(tab_id.id());
+        }
+        return true;
+      });
+
+  service_->RunCleanUpTasksWithActiveTabs(active_tab_ids);
 }
 
 }  // namespace page_content_annotations
