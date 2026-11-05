@@ -55,7 +55,7 @@ void PopupTimersController::StartTimer(const std::string& id,
                                        const base::TimeDelta& timeout) {
   PopupTimerCollection::const_iterator iter = popup_timers_.find(id);
   if (iter != popup_timers_.end()) {
-    DCHECK(iter->second);
+    CHECK(iter->second, base::NotFatalUntil::M163);
     iter->second->Start();
     return;
   }

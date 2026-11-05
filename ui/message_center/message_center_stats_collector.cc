@@ -29,7 +29,7 @@ MessageCenterStatsCollector::NotificationStats::~NotificationStats() = default;
 
 void MessageCenterStatsCollector::NotificationStats::CollectAction(
     NotificationActionType type) {
-  DCHECK(!id_.empty());
+  CHECK(!id_.empty(), base::NotFatalUntil::M163);
 
   UMA_HISTOGRAM_ENUMERATION("Notifications.Actions", type,
                             NOTIFICATION_ACTION_COUNT);
@@ -37,7 +37,7 @@ void MessageCenterStatsCollector::NotificationStats::CollectAction(
 }
 
 void MessageCenterStatsCollector::NotificationStats::RecordAggregateStats() {
-  DCHECK(!id_.empty());
+  CHECK(!id_.empty(), base::NotFatalUntil::M163);
 
   for (size_t i = 0; i < NOTIFICATION_ACTION_COUNT; i++) {
     if (!actions_[i])

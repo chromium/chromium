@@ -75,13 +75,13 @@ gfx::ShadowValues Shadow::MakeShadowValues(
 
 Shadow::Shadow(int elevation, Style style, ElevationToColorsMap color_map)
     : elevation_(elevation), style_(style), color_map_(std::move(color_map)) {
-  DCHECK_GE(elevation_, 0);
+  CHECK_GE(elevation_, 0, base::NotFatalUntil::M163);
 }
 
 Shadow::~Shadow() = default;
 
 void Shadow::SetElevation(int elevation) {
-  DCHECK_GE(elevation, 0);
+  CHECK_GE(elevation, 0, base::NotFatalUntil::M163);
   if (elevation_ == elevation) {
     return;
   }

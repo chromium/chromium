@@ -43,7 +43,7 @@ MessageCenter* MessageCenter::Get() {
 
 // static
 void MessageCenter::Shutdown() {
-  DCHECK(g_message_center);
+  CHECK(g_message_center, base::NotFatalUntil::M163);
   delete g_message_center;
   g_message_center = nullptr;
 }

@@ -75,7 +75,7 @@ void ShadowGenerator::Draw(gfx::Canvas* canvas,
 gfx::Insets ShadowGenerator::GetNineboxApertureInsets(
     const gfx::ShadowValues& shadows,
     const gfx::RoundedCornersF& rounded_corners) {
-  DCHECK(!shadows.empty());
+  CHECK(!shadows.empty(), base::NotFatalUntil::M163);
 
   // We need enough space to render the full range of blur and the corner
   // rounding.
@@ -85,7 +85,8 @@ gfx::Insets ShadowGenerator::GetNineboxApertureInsets(
   // `is_pill_shaped` describes the shape of the content around which the
   // shadows are drawn, so their values must match.
   for (const auto& shadow : shadows) {
-    DCHECK_EQ(is_pill_shaped, shadow.is_pill_shaped());
+    CHECK_EQ(is_pill_shaped, shadow.is_pill_shaped(),
+             base::NotFatalUntil::M163);
   }
 #endif  // DCHECK_IS_ON()
   const gfx::Insets corner_insets = GetInsetsForRoundedCorners(rounded_corners);
@@ -134,7 +135,7 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
                          const gfx::RoundedCornersF& rounded_corners,
                          const gfx::Rect& bounds) {
   const int thickness = value.thickness();
-  DCHECK_GT(thickness, 0);
+  CHECK_GT(thickness, 0, base::NotFatalUntil::M163);
 
   cc::PaintFlags flags;
   flags.setStrokeWidth(thickness);
@@ -181,7 +182,7 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
 // static
 gfx::Outsets HighlightBorderGenerator::GetMargins(
     const HighlightBorderValue& value) {
-  DCHECK_GT(value.thickness(), 0);
+  CHECK_GT(value.thickness(), 0, base::NotFatalUntil::M163);
   return gfx::Outsets();
 }
 
@@ -189,7 +190,7 @@ gfx::Outsets HighlightBorderGenerator::GetMargins(
 gfx::Insets HighlightBorderGenerator::GetNineboxApertureInsets(
     const HighlightBorderValue& value,
     const gfx::RoundedCornersF& rounded_corners) {
-  DCHECK_GT(value.thickness(), 0);
+  CHECK_GT(value.thickness(), 0, base::NotFatalUntil::M163);
 
   const gfx::Insets ring_insets(2 * value.thickness());
   const gfx::Insets corner_insets = GetInsetsForRoundedCorners(rounded_corners);

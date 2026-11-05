@@ -26,7 +26,7 @@ HighlightBorder::HighlightBorder(SkColor highlight_color,
     : highlight_color_(highlight_color),
       border_color_(border_color),
       thickness_(thickness) {
-  DCHECK_GT(thickness_, 0);
+  CHECK_GT(thickness_, 0, base::NotFatalUntil::M163);
 }
 
 HighlightBorder::~HighlightBorder() = default;
@@ -42,7 +42,7 @@ void HighlightBorder::SetColors(SkColor highlight_color, SkColor border_color) {
 }
 
 void HighlightBorder::SetThickness(int thickness) {
-  DCHECK_GT(thickness, 0);
+  CHECK_GT(thickness, 0, base::NotFatalUntil::M163);
   if (thickness_ == thickness) {
     return;
   }

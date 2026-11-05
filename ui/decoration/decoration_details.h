@@ -145,7 +145,7 @@ class DecorationCache {
     auto nine_patch_image = gfx::ImageSkia(std::move(source), image_size);
     auto [inserted_iter, success] = cache.try_emplace(
         key, spec, nine_patch_image, aperture_insets, margins);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M163);
     return inserted_iter->second;
   }
 
@@ -289,7 +289,7 @@ struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
   using Value = CompositeValue<Specs...>;
 
   static gfx::Outsets GetMargins(const Value& value) {
-    DCHECK(!value.IsEmpty());
+    CHECK(!value.IsEmpty(), base::NotFatalUntil::M163);
     gfx::Outsets margins;
     (AccumulateMargins<Specs, Generators>(value, margins), ...);
     return margins;
@@ -298,7 +298,7 @@ struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
   static gfx::Insets GetNineboxApertureInsets(
       const Value& value,
       const gfx::RoundedCornersF& rounded_corners) {
-    DCHECK(!value.IsEmpty());
+    CHECK(!value.IsEmpty(), base::NotFatalUntil::M163);
     gfx::Insets inward_insets;
     (AccumulateInwardAperture<Specs, Generators>(value, rounded_corners,
                                                  inward_insets),
@@ -312,7 +312,7 @@ struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
                    const Value& value,
                    const gfx::RoundedCornersF& rounded_corners,
                    const gfx::Rect& content_rect) {
-    DCHECK(!value.IsEmpty());
+    CHECK(!value.IsEmpty(), base::NotFatalUntil::M163);
     // Painter's order: parts are drawn in the order they are listed, so a part
     // listed later sits on top of one listed earlier.
     (DrawPart<Specs, Generators>(canvas, value, rounded_corners, content_rect),

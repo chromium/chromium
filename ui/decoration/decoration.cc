@@ -213,7 +213,7 @@ void Decoration::CrossFadeToNewAppearance(base::TimeDelta duration) {
   StopObservingImplicitAnimations();
 
   // The old decoration layer is the new fading out layer.
-  DCHECK(decoration_layer());
+  CHECK(decoration_layer(), base::NotFatalUntil::M163);
   fading_layer_owner_.Reset(decoration_layer_owner_.ReleaseLayer());
   fading_appearance_ = active_appearance_;
   RecreateDecorationLayer();
