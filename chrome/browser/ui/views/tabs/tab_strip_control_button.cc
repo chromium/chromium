@@ -111,8 +111,13 @@ TabStripControlButton::TabStripControlButton(
   background_frame_inactive_color_id_ =
       kColorNewTabButtonBackgroundFrameInactive;
 
-  inkdrop_hover_color_id_ = kColorTabStripControlButtonInkDrop;
-  inkdrop_ripple_color_id_ = kColorTabStripControlButtonInkDropRipple;
+  inkdrop_hover_frame_active_color_id_ = kColorTabStripControlButtonInkDrop;
+  inkdrop_hover_frame_inactive_color_id_ =
+      kColorTabStripControlButtonInkDropFrameInactive;
+  inkdrop_ripple_frame_active_color_id_ =
+      kColorTabStripControlButtonInkDropRipple;
+  inkdrop_ripple_frame_inactive_color_id_ =
+      kColorTabStripControlButtonInkDropRippleFrameInactive;
 
   UpdateIcon();
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -159,19 +164,23 @@ void TabStripControlButton::SetBackgroundFrameInactiveColorId(
 
 void TabStripControlButton::SetInkdropHoverColorId(
     const ChromeColorIds new_color_id) {
-  if (inkdrop_hover_color_id_ == new_color_id) {
+  if (inkdrop_hover_frame_active_color_id_ == new_color_id &&
+      inkdrop_hover_frame_inactive_color_id_ == new_color_id) {
     return;
   }
-  inkdrop_hover_color_id_ = new_color_id;
+  inkdrop_hover_frame_active_color_id_ = new_color_id;
+  inkdrop_hover_frame_inactive_color_id_ = new_color_id;
   UpdateInkDrop();
 }
 
 void TabStripControlButton::SetInkdropRippleColorId(
     const ChromeColorIds new_color_id) {
-  if (inkdrop_ripple_color_id_ == new_color_id) {
+  if (inkdrop_ripple_frame_active_color_id_ == new_color_id &&
+      inkdrop_ripple_frame_inactive_color_id_ == new_color_id) {
     return;
   }
-  inkdrop_ripple_color_id_ = new_color_id;
+  inkdrop_ripple_frame_active_color_id_ = new_color_id;
+  inkdrop_ripple_frame_inactive_color_id_ = new_color_id;
   UpdateInkDrop();
 }
 
@@ -389,8 +398,16 @@ void TabStripControlButton::UpdateInkDrop() {
     return;
   }
 
-  CreateToolbarInkdropCallbacks(this, inkdrop_hover_color_id_,
-                                inkdrop_ripple_color_id_);
+  const bool frame_active = GetWidget()->ShouldPaintAsActive();
+  CreateToolbarInkdropCallbacks(
+      this,
+      frame_active ? inkdrop_hover_frame_active_color_id_
+                   : inkdrop_hover_frame_inactive_color_id_,
+      frame_active ? inkdrop_ripple_frame_active_color_id_
+                   : inkdrop_ripple_frame_inactive_color_id_);
+  if (views::InkDrop::Get(this)->HasInkDrop()) {
+    views::InkDrop::Get(this)->GetInkDrop()->HostViewThemeChanged();
+  }
 }
 
 void TabStripControlButton::OnGlassFrameEligibilityChanged(bool is_eligible) {

@@ -178,8 +178,10 @@ class TabStripControlButton : public views::LabelButton,
   ui::ColorId background_frame_inactive_color_id_;
 
   // ColorIds used for the InkDrop hover and ripple effects.
-  ChromeColorIds inkdrop_hover_color_id_;
-  ChromeColorIds inkdrop_ripple_color_id_;
+  ChromeColorIds inkdrop_hover_frame_active_color_id_;
+  ChromeColorIds inkdrop_hover_frame_inactive_color_id_;
+  ChromeColorIds inkdrop_ripple_frame_active_color_id_;
+  ChromeColorIds inkdrop_ripple_frame_inactive_color_id_;
 
   // Optional radii for setting different edges on each side of the button.
   std::optional<int> left_corner_radius_;

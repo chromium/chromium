@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -53,8 +52,6 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundSelectedFrameInactive] = {
       ui::GetResultingPaintColor(ui::kColorSysStateHeaderSelect,
                                  kColorTabBackgroundInactiveFrameInactive)};
-  mixer[kColorTabStripScrollButtonBackground] = {
-      kColorTabBackgroundInactiveFrameActive};
   mixer[kColorTabBackgroundSelectedHoverFrameActive] = {
       ui::GetResultingPaintColor(ui::kColorSysStateHoverDimBlendProtection,
                                  kColorTabBackgroundSelectedFrameActive)};
@@ -93,6 +90,4 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfacePrimary};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
       ui::kColorSysOnSurfacePrimaryInactive};
-
-  mixer[kColorTabStripScrollButtonIcon] = {ui::kColorSysOnSurfaceSecondary};
 }

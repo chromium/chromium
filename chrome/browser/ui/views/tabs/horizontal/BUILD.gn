@@ -77,11 +77,27 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "horizontal_tab_strip_layout_unittest.cc" ]
+  sources = [
+    "horizontal_tab_strip_layout_unittest.cc",
+    "tab_scroll_button_container_unittest.cc",
+  ]
   deps = [
+    ":horizontal",
+    ":impl",
     "//base",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs:tab_strip_button",
     "//chrome/browser/ui/views/tabs/common:impl",
+    "//chrome/test:test_support",
+    "//skia",
+    "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/interaction",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
 }

@@ -162,13 +162,9 @@ TabScrollButtonContainer::TabScrollButtonContainer(
                                     ? IDS_ACCNAME_TAB_SCROLL_TRAILING
                                     : IDS_ACCNAME_TAB_SCROLL_LEADING));
   start_scroll_button_->SetForegroundFrameActiveColorId(
-      kColorTabStripScrollButtonIcon);
+      kColorTabForegroundInactiveFrameActive);
   start_scroll_button_->SetForegroundFrameInactiveColorId(
-      kColorTabStripScrollButtonIcon);
-  start_scroll_button_->SetBackgroundFrameActiveColorId(
-      kColorTabStripScrollButtonBackground);
-  start_scroll_button_->SetBackgroundFrameInactiveColorId(
-      kColorTabStripScrollButtonBackground);
+      kColorTabForegroundInactiveFrameInactive);
   start_scroll_button_->set_paint_transparent_for_glass(true);
 
   end_scroll_button_ = AddChildView(std::make_unique<TabStripControlButton>(
@@ -184,13 +180,9 @@ TabScrollButtonContainer::TabScrollButtonContainer(
       base::i18n::IsRTL() ? IDS_ACCNAME_TAB_SCROLL_LEADING
                           : IDS_ACCNAME_TAB_SCROLL_TRAILING));
   end_scroll_button_->SetForegroundFrameActiveColorId(
-      kColorTabStripScrollButtonIcon);
+      kColorTabForegroundInactiveFrameActive);
   end_scroll_button_->SetForegroundFrameInactiveColorId(
-      kColorTabStripScrollButtonIcon);
-  end_scroll_button_->SetBackgroundFrameActiveColorId(
-      kColorTabStripScrollButtonBackground);
-  end_scroll_button_->SetBackgroundFrameInactiveColorId(
-      kColorTabStripScrollButtonBackground);
+      kColorTabForegroundInactiveFrameInactive);
   end_scroll_button_->set_paint_transparent_for_glass(true);
   start_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   end_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
