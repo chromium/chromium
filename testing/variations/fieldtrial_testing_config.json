@@ -19148,6 +19148,27 @@
             ]
         }
     ],
+    "VerticalTabsIPHUpdate": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261105",
+                    "params": {
+                        "x_min_tabs_for_promo": "10"
+                    },
+                    "enable_features": [
+                        "IPHVerticalTabstripTutorialFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoConferenceRollout": [
         {
             "platforms": [
