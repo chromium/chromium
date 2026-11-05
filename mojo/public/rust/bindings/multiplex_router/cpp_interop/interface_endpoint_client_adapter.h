@@ -93,12 +93,6 @@ class InterfaceEndpointClientAdapter
 
   ~InterfaceEndpointClientAdapter() override;
 
-  // Rust performs its own validation, so don't bother doing anything in C++.
-  class NoOpValidator : public mojo::MessageReceiver {
-   public:
-    bool Accept(mojo::Message* message) override;
-  };
-
   // Pointer to data that Rust needs to run its handlers
   std::optional<::rust::Box<EndpointInfo>> info_;
 

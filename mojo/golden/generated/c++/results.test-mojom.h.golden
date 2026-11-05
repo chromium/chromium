@@ -211,13 +211,13 @@ class ResultInterfaceStub
  private:
   ImplPointerType sink_;
 };
-class  ResultInterfaceRequestValidator : public mojo::MessageReceiver {
+class  ResultInterfaceRequestValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
-class  ResultInterfaceResponseValidator : public mojo::MessageReceiver {
+class  ResultInterfaceResponseValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
 
 

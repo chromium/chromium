@@ -22,7 +22,6 @@
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
@@ -332,8 +331,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   // The number of pending tasks for |CallDispatchNextMessageFromPipe|.
   size_t num_pending_dispatch_tasks_ = 0;
-
-  MessageHeaderValidator header_validator_;
 
 #if defined(ENABLE_IPC_FUZZER)
   std::unique_ptr<MessageReceiver> message_dumper_;

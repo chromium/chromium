@@ -18,7 +18,7 @@ MessageDispatcher::MessageDispatcher(MessageDispatcher&& other) {
 
 MessageDispatcher& MessageDispatcher::operator=(MessageDispatcher&& other) {
   std::swap(sink_, other.sink_);
-  validator_ = std::move(other.validator_);
+  std::swap(validator_, other.validator_);
   filter_ = std::move(other.filter_);
   return *this;
 }
@@ -35,7 +35,7 @@ bool MessageDispatcher::Accept(Message* message) {
 
   DCHECK(sink_);
   if (validator_) {
-    if (!validator_->Accept(message)) {
+    if (!validator_(message)) {
       return false;
     }
   }
@@ -56,10 +56,9 @@ bool MessageDispatcher::Accept(Message* message) {
   return result;
 }
 
-void MessageDispatcher::SetValidator(
-    std::unique_ptr<MessageReceiver> validator) {
+void MessageDispatcher::SetValidator(MessageValidatorFunc validator) {
   DCHECK(!validator_);
-  validator_ = std::move(validator);
+  validator_ = validator;
 }
 
 void MessageDispatcher::SetFilter(std::unique_ptr<MessageFilter> filter) {

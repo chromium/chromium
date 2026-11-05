@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedInterfacePtrStateBase {
   MessageReceiverWithResponder* Bind(
       ScopedInterfaceEndpointHandle&& handle,
       uint32_t version,
-      std::unique_ptr<MessageReceiver> validator,
+      MessageValidatorFunc validator,
       scoped_refptr<base::SequencedTaskRunner>&& runner,
       const char* interface_name,
       MessageToMethodInfoCallback method_info_callback,
@@ -110,14 +110,14 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
   void Bind(AssociatedInterfacePtrInfo<Interface> info,
             scoped_refptr<base::SequencedTaskRunner> runner) {
     DCHECK(!proxy_);
-    std::unique_ptr<MessageReceiver> validator;
+    MessageValidatorFunc validator = nullptr;
     if constexpr (!std::is_same_v<typename Interface::ResponseValidator_,
                                   PassThroughFilter>) {
-      validator = std::make_unique<typename Interface::ResponseValidator_>();
+      validator = &Interface::ResponseValidator_::Accept;
     }
     MessageReceiverWithResponder* endpoint =
         AssociatedInterfacePtrStateBase::Bind(
-            std::move(info.handle_), info.version(), std::move(validator),
+            std::move(info.handle_), info.version(), validator,
             std::move(runner), Interface::Name_,
             Interface::MessageToMethodInfo_, Interface::MessageToMethodName_);
     proxy_ = std::make_unique<Proxy>(endpoint);

@@ -28,20 +28,9 @@ bool ValidateMessageHeader(base::span<const uint8_t> data,
 
 }  // namespace internal
 
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageHeaderValidator
-    : public MessageReceiver {
+class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageHeaderValidator {
  public:
-  MessageHeaderValidator();
-  explicit MessageHeaderValidator(const std::string& description);
-
-  // Sets the description associated with this validator. Used for reporting
-  // more detailed validation errors.
-  void SetDescription(const std::string& description);
-
-  bool Accept(Message* message) override;
-
- private:
-  std::string description_;
+  static bool Accept(Message* message);
 };
 
 }  // namespace mojo

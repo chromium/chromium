@@ -139,13 +139,13 @@ class IFaceStub
  private:
   ImplPointerType sink_;
 };
-class  IFaceRequestValidator : public mojo::MessageReceiver {
+class  IFaceRequestValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
-class  IFaceResponseValidator : public mojo::MessageReceiver {
+class  IFaceResponseValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
 
 

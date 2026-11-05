@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageDispatcher
 
   ~MessageDispatcher() override;
 
-  void SetValidator(std::unique_ptr<MessageReceiver> validator);
+  void SetValidator(MessageValidatorFunc validator);
   void SetFilter(std::unique_ptr<MessageFilter> filter);
 
   // Doesn't take ownership of |sink|. Therefore |sink| has to stay alive while
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageDispatcher
   bool Accept(Message* message) override;
 
  private:
-  std::unique_ptr<MessageReceiver> validator_;
+  MessageValidatorFunc validator_ = nullptr;
   std::unique_ptr<MessageFilter> filter_;
 
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).

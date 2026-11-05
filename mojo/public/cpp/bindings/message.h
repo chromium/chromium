@@ -414,6 +414,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFilter {
   virtual void DidDispatchOrReject(Message* message, bool accepted) = 0;
 };
 
+using MessageValidatorFunc = bool (*)(Message*);
+
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageReceiver {
  public:
   virtual ~MessageReceiver() = default;
@@ -453,18 +455,9 @@ class MessageReceiverWithResponderStatus : public MessageReceiver {
       std::unique_ptr<internal::ResponderThunk> responder) = 0;
 };
 
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter
-    : public MessageReceiver {
+class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter {
  public:
-  PassThroughFilter();
-
-  PassThroughFilter(const PassThroughFilter&) = delete;
-  PassThroughFilter& operator=(const PassThroughFilter&) = delete;
-
-  ~PassThroughFilter() override;
-
-  // MessageReceiver:
-  bool Accept(Message* message) override;
+  static bool Accept(Message* message);
 };
 
 // Reports the currently dispatching Message as bad. Note that this is only

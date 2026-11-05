@@ -166,7 +166,7 @@ MessageReceiverWithResponder* InterfacePtrStateBase::InitializeEndpointClient(
     bool passes_associated_kinds,
     bool has_sync_methods,
     bool has_uninterruptable_methods,
-    std::unique_ptr<MessageReceiver> payload_validator,
+    MessageValidatorFunc payload_validator,
     const char* interface_name,
     MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {
@@ -185,7 +185,7 @@ MessageReceiverWithResponder* InterfacePtrStateBase::InitializeEndpointClient(
                                     interface_name);
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), nullptr,
-      std::move(payload_validator),
+      payload_validator,
       /* sync_method_ordinals= */ base::span<const uint32_t>(),
       std::move(runner_),
       // The version is only queried from the client so the value passed here

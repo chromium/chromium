@@ -128,7 +128,7 @@ scoped_refptr<internal::MultiplexRouter> BindingStateBase::RouterForTesting() {
 void BindingStateBase::Bind(PendingReceiverState* receiver_state,
                             scoped_refptr<base::SequencedTaskRunner>&& runner,
                             const char* interface_name,
-                            std::unique_ptr<MessageReceiver> request_validator,
+                            MessageValidatorFunc request_validator,
                             bool passes_associated_kinds,
                             base::span<const uint32_t> sync_method_ordinals,
                             MessageReceiverWithResponderStatus* stub,
@@ -154,9 +154,9 @@ void BindingStateBase::Bind(PendingReceiverState* receiver_state,
 
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), stub,
-      std::move(request_validator), sync_method_ordinals,
-      std::move(sequenced_runner), interface_version, interface_name,
-      method_info_callback, method_name_callback);
+      request_validator, sync_method_ordinals, std::move(sequenced_runner),
+      interface_version, interface_name, method_info_callback,
+      method_name_callback);
   endpoint_client_->SetIdleTrackingEnabledCallback(
       base::BindOnce(&MultiplexRouter::SetConnectionGroup, router_));
 

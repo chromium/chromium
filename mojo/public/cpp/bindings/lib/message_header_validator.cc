@@ -137,16 +137,7 @@ bool ValidateMessageHeader(base::span<const uint8_t> data,
 
 }  // namespace internal
 
-MessageHeaderValidator::MessageHeaderValidator()
-    : MessageHeaderValidator("MessageHeaderValidator") {}
-
-MessageHeaderValidator::MessageHeaderValidator(const std::string& description)
-    : description_(description) {}
-
-void MessageHeaderValidator::SetDescription(const std::string& description) {
-  description_ = description;
-}
-
+// static
 bool MessageHeaderValidator::Accept(Message* message) {
   // Don't bother validating unserialized message headers.
   if (!message->is_serialized()) {
@@ -154,7 +145,7 @@ bool MessageHeaderValidator::Accept(Message* message) {
   }
 
   return internal::ValidateMessageHeader(message->data_as_span(), message,
-                                         description_.c_str());
+                                         "MessageHeaderValidator");
 }
 
 }  // namespace mojo

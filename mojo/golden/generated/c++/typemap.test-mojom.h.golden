@@ -140,13 +140,13 @@ class IFaceWithTypemapStub
  private:
   ImplPointerType sink_;
 };
-class  IFaceWithTypemapRequestValidator : public mojo::MessageReceiver {
+class  IFaceWithTypemapRequestValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
-class  IFaceWithTypemapResponseValidator : public mojo::MessageReceiver {
+class  IFaceWithTypemapResponseValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
 
 

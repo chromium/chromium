@@ -186,8 +186,7 @@ class ChannelAssociatedGroupController
         control_message_proxy_(&control_message_proxy_thunk_) {
     control_message_handler_.SetDescription(
         "IPC::mojom::Bootstrap [primary] PipeControlMessageHandler");
-    dispatcher_.SetValidator(std::make_unique<mojo::MessageHeaderValidator>(
-        "IPC::mojom::Bootstrap [primary] MessageHeaderValidator"));
+    dispatcher_.SetValidator(&mojo::MessageHeaderValidator::Accept);
 
     GetMemoryDumpProvider().AddController(this);
 

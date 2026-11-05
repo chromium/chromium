@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
   void Bind(PendingReceiverState* receiver_state,
             scoped_refptr<base::SequencedTaskRunner>&& runner,
             const char* interface_name,
-            std::unique_ptr<MessageReceiver> request_validator,
+            MessageValidatorFunc request_validator,
             bool passes_associated_kinds,
             base::span<const uint32_t> sync_method_ordinals,
             MessageReceiverWithResponderStatus* stub,
@@ -113,12 +113,12 @@ class BindingState : public BindingStateBase {
 
   void Bind(PendingReceiverState* receiver_state,
             scoped_refptr<base::SequencedTaskRunner> runner) {
-    BindingStateBase::Bind(
-        receiver_state, std::move(runner), Interface::Name_,
-        std::make_unique<typename Interface::RequestValidator_>(),
-        Interface::PassesAssociatedKinds_,
-        SyncMethodTraits<Interface>::GetOrdinals(), &stub_, Interface::Version_,
-        Interface::MessageToMethodInfo_, Interface::MessageToMethodName_);
+    BindingStateBase::Bind(receiver_state, std::move(runner), Interface::Name_,
+                           &Interface::RequestValidator_::Accept,
+                           Interface::PassesAssociatedKinds_,
+                           SyncMethodTraits<Interface>::GetOrdinals(), &stub_,
+                           Interface::Version_, Interface::MessageToMethodInfo_,
+                           Interface::MessageToMethodName_);
   }
 
   PendingReceiver<Interface> Unbind() {

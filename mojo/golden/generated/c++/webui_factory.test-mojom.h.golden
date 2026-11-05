@@ -333,17 +333,17 @@ class WebUiPageHandlerFactoryStub
  private:
   ImplPointerType sink_;
 };
-class  PageRequestValidator : public mojo::MessageReceiver {
+class  PageRequestValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
-class  PageHandlerRequestValidator : public mojo::MessageReceiver {
+class  PageHandlerRequestValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
-class  WebUiPageHandlerFactoryRequestValidator : public mojo::MessageReceiver {
+class  WebUiPageHandlerFactoryRequestValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };
 
 

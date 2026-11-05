@@ -69,11 +69,6 @@ class RustResponder : public mojo::MessageReceiver {
   const uint64_t rust_request_id_;
 };
 
-bool InterfaceEndpointClientAdapter::NoOpValidator::Accept(
-    mojo::Message* message) {
-  return true;
-}
-
 InterfaceEndpointClientAdapter::InterfaceEndpointClientAdapter(
     mojo::ScopedInterfaceEndpointHandle handle,
     ::rust::Box<EndpointInfo> info,
@@ -84,7 +79,7 @@ InterfaceEndpointClientAdapter::InterfaceEndpointClientAdapter(
       associated_group_(handle),
       client_(std::move(handle),
               /*receiver=*/this,
-              /*payload_validator=*/std::make_unique<NoOpValidator>(),
+              /*payload_validator=*/nullptr,
               /*sync_method_ordinals=*/{},
               task_runner_,
               /*interface_version=*/0,

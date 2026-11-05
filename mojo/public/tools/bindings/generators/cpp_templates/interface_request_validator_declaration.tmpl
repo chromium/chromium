@@ -1,4 +1,4 @@
-class {{export_attribute}} {{interface.name}}RequestValidator : public mojo::MessageReceiver {
+class {{export_attribute}} {{interface.name}}RequestValidator {
  public:
-  bool Accept(mojo::Message* message) override;
+  static bool Accept(mojo::Message* message);
 };

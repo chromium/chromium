@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // `receiver` may be null, but if non-null it must outlive this object.
   InterfaceEndpointClient(ScopedInterfaceEndpointHandle handle,
                           MessageReceiverWithResponderStatus* receiver,
-                          std::unique_ptr<MessageReceiver> payload_validator,
+                          MessageValidatorFunc payload_validator,
                           base::span<const uint32_t> sync_method_ordinals,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           uint32_t interface_version,

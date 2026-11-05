@@ -17,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,6 +25,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/c/system/quota.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
+#include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/bindings/sync_handle_watcher.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
@@ -133,11 +133,7 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
                      const char* interface_name)
     : message_pipe_(std::move(message_pipe)),
       error_(false),
-      interface_name_(interface_name),
-      header_validator_(
-          base::JoinString({interface_name ? interface_name : "Generic",
-                            "MessageHeaderValidator"},
-                           "")) {
+      interface_name_(interface_name) {
   if (config == MULTI_THREADED_SEND) {
     lock_.emplace();
   }
@@ -454,7 +450,7 @@ bool Connector::DispatchMessage(ScopedMessageHandle handle) {
     return false;
   }
 
-  if (!header_validator_.Accept(&message)) {
+  if (!MessageHeaderValidator::Accept(&message)) {
     HandleError(/*force_pipe_reset=*/true, /*force_async_handler=*/false);
     return false;
   }

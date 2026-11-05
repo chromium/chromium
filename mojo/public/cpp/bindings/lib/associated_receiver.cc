@@ -78,7 +78,7 @@ AssociatedReceiverBase::~AssociatedReceiverBase() = default;
 void AssociatedReceiverBase::Bind(
     ScopedInterfaceEndpointHandle handle,
     MessageReceiverWithResponderStatus* receiver,
-    std::unique_ptr<MessageReceiver> payload_validator,
+    MessageValidatorFunc payload_validator,
     base::span<const uint32_t> sync_method_ordinals,
     scoped_refptr<base::SequencedTaskRunner> runner,
     uint32_t interface_version,
@@ -88,8 +88,7 @@ void AssociatedReceiverBase::Bind(
   DCHECK(handle.is_valid());
 
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
-      std::move(handle), receiver, std::move(payload_validator),
-      sync_method_ordinals,
+      std::move(handle), receiver, payload_validator, sync_method_ordinals,
       internal::GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)),
       interface_version, interface_name, method_info_callback,
       method_name_callback);

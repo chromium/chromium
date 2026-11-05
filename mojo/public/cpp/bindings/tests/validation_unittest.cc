@@ -223,22 +223,10 @@ void RunValidationTests(const std::string& prefix,
   }
 }
 
-class TwoStepValidator : public MessageReceiver {
- public:
-  TwoStepValidator(std::unique_ptr<MessageReceiver> first_validator,
-                   std::unique_ptr<MessageReceiver> second_validator)
-      : first_validator_(std::move(first_validator)),
-        second_validator_(std::move(second_validator)) {}
-
-  bool Accept(Message* message) override {
-    return first_validator_->Accept(message) &&
-           second_validator_->Accept(message);
-  }
-
- private:
-  std::unique_ptr<MessageReceiver> first_validator_;
-  std::unique_ptr<MessageReceiver> second_validator_;
-};
+template <MessageValidatorFunc SecondValidator>
+bool TwoStepValidator(Message* message) {
+  return MessageHeaderValidator::Accept(message) && SecondValidator(message);
+}
 
 class DummyMessageReceiver : public MessageReceiver {
  public:
@@ -431,9 +419,8 @@ TEST_F(ValidationTest, InputParser) {
 TEST_F(ValidationTest, Conformance) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
-  validators.SetValidator(std::make_unique<TwoStepValidator>(
-      std::make_unique<mojo::MessageHeaderValidator>(),
-      std::make_unique<ConformanceTestInterface::RequestValidator_>()));
+  validators.SetValidator(
+      &TwoStepValidator<&ConformanceTestInterface::RequestValidator_::Accept>);
 
   RunValidationTests("conformance_", &validators);
 }
@@ -441,10 +428,9 @@ TEST_F(ValidationTest, Conformance) {
 TEST_F(ValidationTest, AssociatedConformace) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
-  validators.SetValidator(std::make_unique<TwoStepValidator>(
-      std::make_unique<mojo::MessageHeaderValidator>(),
-      std::make_unique<
-          AssociatedConformanceTestInterface::RequestValidator_>()));
+  validators.SetValidator(
+      &TwoStepValidator<
+          &AssociatedConformanceTestInterface::RequestValidator_::Accept>);
 
   RunValidationTests("associated_conformance_", &validators);
 }
@@ -455,9 +441,8 @@ TEST_F(ValidationTest, AssociatedConformace) {
 TEST_F(ValidationTest, BoundsCheck) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
-  validators.SetValidator(std::make_unique<TwoStepValidator>(
-      std::make_unique<mojo::MessageHeaderValidator>(),
-      std::make_unique<BoundsCheckTestInterface::RequestValidator_>()));
+  validators.SetValidator(
+      &TwoStepValidator<&BoundsCheckTestInterface::RequestValidator_::Accept>);
   RunValidationTests("boundscheck_", &validators);
 }
 
@@ -465,9 +450,8 @@ TEST_F(ValidationTest, BoundsCheck) {
 TEST_F(ValidationTest, ResponseConformance) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
-  validators.SetValidator(std::make_unique<TwoStepValidator>(
-      std::make_unique<mojo::MessageHeaderValidator>(),
-      std::make_unique<ConformanceTestInterface::ResponseValidator_>()));
+  validators.SetValidator(
+      &TwoStepValidator<&ConformanceTestInterface::ResponseValidator_::Accept>);
 
   RunValidationTests("resp_conformance_", &validators);
 }
@@ -476,9 +460,8 @@ TEST_F(ValidationTest, ResponseConformance) {
 TEST_F(ValidationTest, ResponseBoundsCheck) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
-  validators.SetValidator(std::make_unique<TwoStepValidator>(
-      std::make_unique<mojo::MessageHeaderValidator>(),
-      std::make_unique<BoundsCheckTestInterface::ResponseValidator_>()));
+  validators.SetValidator(
+      &TwoStepValidator<&BoundsCheckTestInterface::ResponseValidator_::Accept>);
 
   RunValidationTests("resp_boundscheck_", &validators);
 }
