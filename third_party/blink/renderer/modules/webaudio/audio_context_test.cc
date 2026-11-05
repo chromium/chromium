@@ -6,6 +6,8 @@
 
 #include <array>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/synchronization/waitable_event.h"
 #include "base/test/run_until.h"
@@ -28,6 +30,7 @@
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -40,9 +43,13 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -76,6 +83,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -370,6 +378,96 @@ class MockAudioContextManager : public mojom::blink::AudioContextManager {
   mojo::ReceiverSet<mojom::blink::AudioContextManager> receivers_;
 };
 
+// Records the settlements of suspend(), resume() and close() promises in order,
+// each with the context state at that time, or "rejected" for a rejected
+// promise. Also records the number of statechange events and the context state
+// at the last one.
+class SettlementLog final : public GarbageCollected<SettlementLog> {
+ public:
+  void Trace(Visitor*) const {}
+
+  Vector<String> entries;
+  int statechange_count = 0;
+  String last_statechange_state;
+};
+
+class RecordFulfillment final
+    : public ThenCallable<IDLUndefined, RecordFulfillment> {
+ public:
+  RecordFulfillment(AudioContext* context,
+                    SettlementLog* log,
+                    const String& name)
+      : context_(context), log_(log), name_(name) {}
+
+  void React(ScriptState*) {
+    log_->entries.push_back(
+        StrCat({name_, " : ",
+                V8AudioContextState(context_->ContextState()).AsStringView()}));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(context_);
+    visitor->Trace(log_);
+    ThenCallable<IDLUndefined, RecordFulfillment>::Trace(visitor);
+  }
+
+ private:
+  Member<AudioContext> context_;
+  Member<SettlementLog> log_;
+  String name_;
+};
+
+class RecordRejection final : public ThenCallable<IDLAny, RecordRejection> {
+ public:
+  RecordRejection(SettlementLog* log, const String& name)
+      : log_(log), name_(name) {}
+
+  void React(ScriptState*, ScriptValue) {
+    log_->entries.push_back(StrCat({name_, " : rejected"}));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(log_);
+    ThenCallable<IDLAny, RecordRejection>::Trace(visitor);
+  }
+
+ private:
+  Member<SettlementLog> log_;
+  String name_;
+};
+
+class RecordStateChange final : public NativeEventListener {
+ public:
+  RecordStateChange(AudioContext* context, SettlementLog* log)
+      : context_(context), log_(log) {}
+
+  void Invoke(ExecutionContext*, Event*) override {
+    ++log_->statechange_count;
+    log_->last_statechange_state =
+        V8AudioContextState(context_->ContextState()).AsString();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(context_);
+    visitor->Trace(log_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<AudioContext> context_;
+  Member<SettlementLog> log_;
+};
+
+void RecordWhenSettled(ScriptState* script_state,
+                       ScriptPromise<IDLUndefined> promise,
+                       AudioContext* context,
+                       SettlementLog* log,
+                       const String& name) {
+  promise.Then(script_state,
+               MakeGarbageCollected<RecordFulfillment>(context, log, name),
+               MakeGarbageCollected<RecordRejection>(log, name));
+}
+
 }  // namespace
 
 class AudioContextTest : public PageTestBase {
@@ -481,6 +579,110 @@ class AudioContextTest : public PageTestBase {
         WebFeature::kAudioContextAsyncTransitionToRunningStateRead);
     GetDocument().ClearUseCounterForTesting(
         WebFeature::kAudioContextAsyncTransitionToSuspendedStateRead);
+  }
+
+  // Disables 'media-playback-while-not-visible' so that an AudioContext defers
+  // resume() while the frame visibility is unknown.
+  void DisableMediaPlaybackWhileNotVisible() {
+    ExecutionContext* execution_context = GetFrame().DomWindow();
+    SecurityContext& security_context = execution_context->GetSecurityContext();
+    security_context.SetSecurityOriginForTesting(nullptr);
+    security_context.SetSecurityOrigin(
+        SecurityOrigin::CreateFromString(kSecurityOrigin));
+
+    network::ParsedPermissionsPolicy policy;
+    policy.emplace_back(
+        network::mojom::PermissionsPolicyFeature::kMediaPlaybackWhileNotVisible,
+        /*allowed_origins=*/
+        std::vector<network::OriginWithPossibleWildcards>(),
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false);
+    security_context.SetPermissionsPolicy(
+        network::PermissionsPolicy::CreateFromParsedPolicy(
+            policy, security_context.GetSecurityOrigin()->ToUrlOrigin()));
+    ASSERT_FALSE(execution_context->IsFeatureEnabled(
+        network::mojom::PermissionsPolicyFeature::
+            kMediaPlaybackWhileNotVisible));
+    ASSERT_FALSE(GetFrame().IsHiddenForMediaPlayback().has_value());
+  }
+
+  struct CallSettlementsTestCase {
+    std::string initial_state;  // "running" or "suspended".
+
+    std::vector<std::string> calls;  // "suspend", "resume" or "close".
+
+    // Whether to add idle between each call, so that the pending transitions
+    // finish before the next call. Otherwise all the calls are invoked in the
+    // same task.
+    bool idle_between_calls = false;
+  };
+
+  // Creates an AudioContext, waits for the state in test_case.initial_state,
+  // calls the audio context methods described in test_case.calls, and returns
+  // the settlements of the promises of the method calls in order, followed by
+  // the number of statechange events and the state at the last one.
+  Vector<String> RecordCallSettlements(
+      const CallSettlementsTestCase& test_case) {
+    SCOPED_TRACE(testing::Message()
+                 << "initial_state: " << test_case.initial_state
+                 << ", calls: " << testing::PrintToString(test_case.calls)
+                 << ", idle_between_calls: " << test_case.idle_between_calls);
+    ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+    ScriptState::Scope scope(script_state);
+    AudioContext* context = AudioContext::Create(GetFrame().DomWindow(),
+                                                 AudioContextOptions::Create(),
+                                                 ASSERT_NO_EXCEPTION);
+    ExpectContextBecomesRunningAsync(context);
+    if (test_case.initial_state == "suspended") {
+      context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+      ExpectContextBecomesSuspendedAsync(context);
+    } else {
+      CHECK_EQ(test_case.initial_state, "running");
+    }
+
+    // Let the statechange events of the setup fire before recording.
+    test::RunPendingTasks();
+
+    auto* log = MakeGarbageCollected<SettlementLog>();
+    context->addEventListener(
+        event_type_names::kStatechange,
+        MakeGarbageCollected<RecordStateChange>(context, log));
+
+    int promise_id = 0;
+    for (const std::string& call : test_case.calls) {
+      ScriptPromise<IDLUndefined> promise;
+      if (call == "suspend") {
+        promise = context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+      } else if (call == "resume") {
+        promise = context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+      } else {
+        CHECK_EQ(call, "close");
+        promise = context->closeContext(script_state, ASSERT_NO_EXCEPTION);
+      }
+      RecordWhenSettled(script_state, promise, context, log,
+                        StrCat({"promise #", String::Number(++promise_id),
+                                " - ", String::FromUtf8(call), "()"}));
+      if (test_case.idle_between_calls) {
+        test::RunPendingTasks();
+      }
+    }
+
+    test::RunPendingTasks();
+    ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+    EXPECT_EQ(context->PendingPromiseResolverCountForTesting(), 0u);
+    // The destination renders if and only if the state at the last statechange
+    // event is "running".
+    if (!log->last_statechange_state.empty()) {
+      EXPECT_EQ(context->IsPullingAudioGraph(),
+                log->last_statechange_state == "running");
+    }
+
+    Vector<String> logs = log->entries;
+    logs.push_back(StrCat(
+        {"onstatechange - count : ", String::Number(log->statechange_count),
+         ", last state : ", log->last_statechange_state}));
+    return logs;
   }
 
  private:
@@ -2667,6 +2869,109 @@ TEST_F(AudioContextTest, SuspendWhileInterruptedStaysSuspended) {
   ExpectContextSuspended(audio_context);
 }
 
+// Verifies that resume() is rejected when an interruption starts before the
+// call or after it but before its transition to "running", and that the
+// context stays interrupted, without rendering, until the interruption ends.
+TEST_F(AudioContextTest, InterruptionBeforeAndAfterResume) {
+  ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(true);
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  for (bool interruption_before_resume : {true, false}) {
+    SCOPED_TRACE(interruption_before_resume ? "interruption before resume()"
+                                            : "interruption after resume()");
+    AudioContext* audio_context = AudioContext::Create(
+        GetFrame().DomWindow(), AudioContextOptions::Create(),
+        ASSERT_NO_EXCEPTION);
+    ExpectContextBecomesRunningAsync(audio_context);
+    audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+    ExpectContextBecomesSuspendedAsync(audio_context);
+    ExpectContextSuspended(audio_context);
+
+    if (interruption_before_resume) {
+      audio_context->StartContextInterruption();
+    }
+
+    ScriptPromiseTester resume_tester(
+        script_state,
+        audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION));
+
+    if (!interruption_before_resume) {
+      audio_context->StartContextInterruption();
+    }
+
+    resume_tester.WaitUntilSettled();
+    EXPECT_TRUE(resume_tester.IsRejected());
+    ExpectContextInterrupted(audio_context);
+
+    // The context becomes running when the interruption ends.
+    audio_context->EndContextInterruption();
+    ExpectContextRunning(audio_context);
+  }
+}
+
+// Verifies that a resume() promise blocked by autoplay resolves before a later
+// resume() promise whose transition runs when the context is already running.
+TEST_F(AudioContextTest,
+       PendingResumeResolvesBeforeLaterResumeWhenAlreadyRunning) {
+  ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(true);
+  GetFrame().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kDocumentUserActivationRequired);
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  AudioContext* audio_context =
+      AudioContext::Create(GetFrame().DomWindow(),
+                           AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  auto* log = MakeGarbageCollected<SettlementLog>();
+
+  // Under kDocumentUserActivationRequired, the context is not allowed to
+  // start before user activation, so resume() keeps its promise pending
+  // instead of queueing a transition to "running".
+  auto promise_1 =
+      audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(audio_context->ContextState(),
+            V8AudioContextState::Enum::kSuspended);
+  EXPECT_EQ(promise_1.V8Promise()->State(), v8::Promise::kPending);
+  RecordWhenSettled(script_state, promise_1, audio_context, log,
+                    "promise #1 - resume()");
+
+  // An interruption while suspended doesn't change the state until resume()
+  // is called. Then resume() makes the context interrupted, rejects its
+  // promise, and marks the context to become running when the interruption
+  // ends.
+  audio_context->StartContextInterruption();
+  auto promise_2 =
+      audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(audio_context->ContextState(),
+            V8AudioContextState::Enum::kInterrupted);
+  EXPECT_EQ(promise_2.V8Promise()->State(), v8::Promise::kRejected);
+  RecordWhenSettled(script_state, promise_2, audio_context, log,
+                    "promise #2 - resume()");
+
+  // User activation allows the context to start, and ending the interruption
+  // makes the context running.
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  audio_context->EndContextInterruption();
+  EXPECT_EQ(audio_context->ContextState(), V8AudioContextState::Enum::kRunning);
+  EXPECT_EQ(promise_1.V8Promise()->State(), v8::Promise::kPending);
+
+  auto promise_3 =
+      audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(promise_3.V8Promise()->State(), v8::Promise::kPending);
+  RecordWhenSettled(script_state, promise_3, audio_context, log,
+                    "promise #3 - resume()");
+
+  test::RunPendingTasks();
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  EXPECT_THAT(log->entries,
+              testing::ElementsAre("promise #2 - resume() : rejected",
+                                   "promise #1 - resume() : running",
+                                   "promise #3 - resume() : running"));
+}
+
 // Internal logging must not record the AudioContext async-state
 // UseCounters. AudioContext::SendLogMessage() and the constructor of
 // MediaStreamAudioDestinationNode get the context state for the log
@@ -3354,14 +3659,9 @@ TEST_F(AudioContextTest, TestPromiseWhenSuspendAndResume) {
                                           : suspend_tester.IsFulfilled());
             }
 
+            // A resume() waiting for its transition is rejected by close().
             resume_tester.WaitUntilSettled();
-            if (feature_enabled &&
-                suspend_timing == kSuspendAfterInitialTransition &&
-                resume_timing == kResumeBeforeSuspendTransition) {
-              EXPECT_TRUE(resume_tester.IsFulfilled());
-            } else {
-              EXPECT_TRUE(resume_tester.IsRejected());
-            }
+            EXPECT_TRUE(resume_tester.IsRejected());
           } else {
             // Wait until "running".
             ExpectContextBecomesRunningAsync(audio_context);
@@ -3493,6 +3793,465 @@ TEST_F(AudioContextTest, TestSuspendTransitionResolvesOnlyItsOwnPromise) {
   EXPECT_TRUE(suspend_2_tester.IsFulfilled());
 }
 
+// Verifies that promises of suspend(), resume() and close() settle in the
+// order of the calls, for each initial state and with or without idle time
+// between the calls, and verifies the number of statechange events and the
+// state at the last one.
+TEST_F(AudioContextTest, SuspendResumeClosePromisesSettleInCallOrder) {
+  ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(true);
+
+  for (bool idle_between_calls : {false, true}) {
+    SCOPED_TRACE(testing::Message()
+                 << "idle_between_calls: " << idle_between_calls);
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - resume() : running",
+                    "onstatechange - count : 2, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "resume", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - resume() : running",
+                    "promise #3 - suspend() : suspended",
+                    "onstatechange - count : 3, last state : suspended",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "resume", "suspend", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - resume() : running",
+                    "promise #3 - suspend() : suspended",
+                    "promise #4 - resume() : running",
+                    "onstatechange - count : 4, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - suspend() : suspended",
+                    "onstatechange - count : 2, last state : suspended",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "suspend", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - suspend() : suspended",
+                    "promise #3 - resume() : running",
+                    "onstatechange - count : 3, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "suspend", "resume", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - suspend() : suspended",
+                    "promise #3 - resume() : running",
+                    "promise #4 - suspend() : suspended",
+                    "onstatechange - count : 4, last state : suspended",
+                }));
+
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - suspend() : suspended",
+                    "onstatechange - count : 1, last state : suspended",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - resume() : running",
+                    "onstatechange - count : 1, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "suspend", "resume", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - suspend() : suspended",
+                    "promise #3 - resume() : running",
+                    "promise #4 - resume() : running",
+                    "onstatechange - count : 2, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "resume", "suspend", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - resume() : running",
+                    "promise #3 - suspend() : suspended",
+                    "promise #4 - suspend() : suspended",
+                    "onstatechange - count : 2, last state : suspended",
+                }));
+
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "onstatechange - count : 0, last state : ",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - resume() : running",
+                    "onstatechange - count : 1, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend", "resume", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - resume() : running",
+                    "promise #3 - suspend() : suspended",
+                    "onstatechange - count : 2, last state : suspended",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend", "suspend", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - suspend() : suspended",
+                    "promise #2 - suspend() : suspended",
+                    "promise #3 - resume() : running",
+                    "onstatechange - count : 1, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "onstatechange - count : 0, last state : ",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - suspend() : suspended",
+                    "onstatechange - count : 1, last state : suspended",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume", "suspend", "resume"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - suspend() : suspended",
+                    "promise #3 - resume() : running",
+                    "onstatechange - count : 2, last state : running",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume", "resume", "suspend"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    "promise #1 - resume() : running",
+                    "promise #2 - resume() : running",
+                    "promise #3 - suspend() : suspended",
+                    "onstatechange - count : 1, last state : suspended",
+                }));
+
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - suspend() : suspended"
+                                       : "promise #1 - suspend() : rejected",
+                    "promise #2 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 2, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "resume", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - suspend() : suspended"
+                                       : "promise #1 - suspend() : rejected",
+                    idle_between_calls ? "promise #2 - resume() : running"
+                                       : "promise #2 - resume() : rejected",
+                    "promise #3 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 3, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"suspend", "resume", "suspend", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - suspend() : suspended"
+                                       : "promise #1 - suspend() : rejected",
+                    idle_between_calls ? "promise #2 - resume() : running"
+                                       : "promise #2 - resume() : rejected",
+                    idle_between_calls ? "promise #3 - suspend() : suspended"
+                                       : "promise #3 - suspend() : rejected",
+                    "promise #4 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 4, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(
+        RecordCallSettlements({
+            /*initial_state=*/"running",
+            /*calls=*/{"suspend", "resume", "suspend", "resume", "close"},
+            idle_between_calls,
+        }),
+        testing::ElementsAreArray({
+            idle_between_calls ? "promise #1 - suspend() : suspended"
+                               : "promise #1 - suspend() : rejected",
+            idle_between_calls ? "promise #2 - resume() : running"
+                               : "promise #2 - resume() : rejected",
+            idle_between_calls ? "promise #3 - suspend() : suspended"
+                               : "promise #3 - suspend() : rejected",
+            idle_between_calls ? "promise #4 - resume() : running"
+                               : "promise #4 - resume() : rejected",
+            "promise #5 - close() : closed",
+            idle_between_calls
+                ? "onstatechange - count : 5, last state : closed"
+                : "onstatechange - count : 1, last state : closed",
+        }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - resume() : running"
+                                       : "promise #1 - resume() : rejected",
+                    "promise #2 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 2, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "suspend", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - resume() : running"
+                                       : "promise #1 - resume() : rejected",
+                    idle_between_calls ? "promise #2 - suspend() : suspended"
+                                       : "promise #2 - suspend() : rejected",
+                    "promise #3 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 3, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"resume", "suspend", "resume", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - resume() : running"
+                                       : "promise #1 - resume() : rejected",
+                    idle_between_calls ? "promise #2 - suspend() : suspended"
+                                       : "promise #2 - suspend() : rejected",
+                    idle_between_calls ? "promise #3 - resume() : running"
+                                       : "promise #3 - resume() : rejected",
+                    "promise #4 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 4, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(
+        RecordCallSettlements({
+            /*initial_state=*/"suspended",
+            /*calls=*/{"resume", "suspend", "resume", "suspend", "close"},
+            idle_between_calls,
+        }),
+        testing::ElementsAreArray({
+            idle_between_calls ? "promise #1 - resume() : running"
+                               : "promise #1 - resume() : rejected",
+            idle_between_calls ? "promise #2 - suspend() : suspended"
+                               : "promise #2 - suspend() : rejected",
+            idle_between_calls ? "promise #3 - resume() : running"
+                               : "promise #3 - resume() : rejected",
+            idle_between_calls ? "promise #4 - suspend() : suspended"
+                               : "promise #4 - suspend() : rejected",
+            "promise #5 - close() : closed",
+            idle_between_calls
+                ? "onstatechange - count : 5, last state : closed"
+                : "onstatechange - count : 1, last state : closed",
+        }));
+
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - suspend() : suspended"
+                                       : "promise #1 - suspend() : rejected",
+                    "promise #2 - close() : closed",
+                    "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend", "resume", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - suspend() : suspended"
+                                       : "promise #1 - suspend() : rejected",
+                    idle_between_calls ? "promise #2 - resume() : running"
+                                       : "promise #2 - resume() : rejected",
+                    "promise #3 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 2, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend", "resume", "suspend", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - suspend() : suspended"
+                                       : "promise #1 - suspend() : rejected",
+                    idle_between_calls ? "promise #2 - resume() : running"
+                                       : "promise #2 - resume() : rejected",
+                    idle_between_calls ? "promise #3 - suspend() : suspended"
+                                       : "promise #3 - suspend() : rejected",
+                    "promise #4 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 3, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"suspended",
+                    /*calls=*/{"suspend", "suspend", "resume", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - suspend() : suspended"
+                                       : "promise #1 - suspend() : rejected",
+                    idle_between_calls ? "promise #2 - suspend() : suspended"
+                                       : "promise #2 - suspend() : rejected",
+                    idle_between_calls ? "promise #3 - resume() : running"
+                                       : "promise #3 - resume() : rejected",
+                    "promise #4 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 2, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - resume() : running"
+                                       : "promise #1 - resume() : rejected",
+                    "promise #2 - close() : closed",
+                    "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume", "suspend", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - resume() : running"
+                                       : "promise #1 - resume() : rejected",
+                    idle_between_calls ? "promise #2 - suspend() : suspended"
+                                       : "promise #2 - suspend() : rejected",
+                    "promise #3 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 2, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume", "suspend", "resume", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - resume() : running"
+                                       : "promise #1 - resume() : rejected",
+                    idle_between_calls ? "promise #2 - suspend() : suspended"
+                                       : "promise #2 - suspend() : rejected",
+                    idle_between_calls ? "promise #3 - resume() : running"
+                                       : "promise #3 - resume() : rejected",
+                    "promise #4 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 3, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+    EXPECT_THAT(RecordCallSettlements({
+                    /*initial_state=*/"running",
+                    /*calls=*/{"resume", "resume", "suspend", "close"},
+                    idle_between_calls,
+                }),
+                testing::ElementsAreArray({
+                    idle_between_calls ? "promise #1 - resume() : running"
+                                       : "promise #1 - resume() : rejected",
+                    idle_between_calls ? "promise #2 - resume() : running"
+                                       : "promise #2 - resume() : rejected",
+                    idle_between_calls ? "promise #3 - suspend() : suspended"
+                                       : "promise #3 - suspend() : rejected",
+                    "promise #4 - close() : closed",
+                    idle_between_calls
+                        ? "onstatechange - count : 2, last state : closed"
+                        : "onstatechange - count : 1, last state : closed",
+                }));
+  }
+}
+
 // Verifies that a resume() deferred while the frame visibility is unknown is
 // tracked as a pending promise resolver once the visibility becomes known, so
 // that RejectPendingPromiseResolversWithException() rejects it.
@@ -3502,27 +4261,7 @@ TEST_F(AudioContextTest, DeferredResumeRegistersPendingPromiseResolver) {
   ScriptState::Scope scope(script_state);
 
   ExecutionContext* execution_context = GetFrame().DomWindow();
-  SecurityContext& security_context = execution_context->GetSecurityContext();
-  security_context.SetSecurityOriginForTesting(nullptr);
-  security_context.SetSecurityOrigin(
-      SecurityOrigin::CreateFromString(kSecurityOrigin));
-
-  // Disables 'media-playback-while-not-visible' so that an AudioContext defers
-  // resume() while the frame visibility is unknown.
-  network::ParsedPermissionsPolicy policy;
-  policy.emplace_back(
-      network::mojom::PermissionsPolicyFeature::kMediaPlaybackWhileNotVisible,
-      /*allowed_origins=*/
-      std::vector<network::OriginWithPossibleWildcards>(),
-      /*self_if_matches=*/std::nullopt,
-      /*matches_all_origins=*/false,
-      /*matches_opaque_src=*/false);
-  security_context.SetPermissionsPolicy(
-      network::PermissionsPolicy::CreateFromParsedPolicy(
-          policy, security_context.GetSecurityOrigin()->ToUrlOrigin()));
-  ASSERT_FALSE(execution_context->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kMediaPlaybackWhileNotVisible));
-  ASSERT_FALSE(GetFrame().IsHiddenForMediaPlayback().has_value());
+  ASSERT_NO_FATAL_FAILURE(DisableMediaPlaybackWhileNotVisible());
 
   AudioContext* audio_context = AudioContext::Create(
       execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
@@ -3553,6 +4292,88 @@ TEST_F(AudioContextTest, DeferredResumeRegistersPendingPromiseResolver) {
 
   resume_tester.WaitUntilSettled();
   EXPECT_TRUE(resume_tester.IsRejected());
+}
+
+// Verifies that a resume() deferred while the frame visibility is unknown
+// settles after an earlier suspend(), and the context ends up "running".
+TEST_F(AudioContextTest, DeferredResumeSettlesAfterEarlierSuspend) {
+  ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(true);
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  ASSERT_NO_FATAL_FAILURE(DisableMediaPlaybackWhileNotVisible());
+
+  AudioContext* audio_context = AudioContext::Create(
+      execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  ExpectContextBecomesRunningAsync(audio_context);
+
+  auto* log = MakeGarbageCollected<SettlementLog>();
+  RecordWhenSettled(
+      script_state,
+      audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION),
+      audio_context, log, "promise #1 - suspend()");
+  // The frame visibility is unknown, so resume() is deferred.
+  RecordWhenSettled(
+      script_state,
+      audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION),
+      audio_context, log, "promise #2 - resume()");
+
+  // The deferred resume() queues its transition to "running" after the
+  // transition to "suspended" queued by suspend().
+  GetFrame().OnFrameVisibilityChangedForMediaPlayback(/*is_hidden=*/false);
+
+  test::RunPendingTasks();
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  EXPECT_THAT(log->entries,
+              testing::ElementsAre("promise #1 - suspend() : suspended",
+                                   "promise #2 - resume() : running"));
+  ExpectContextRunning(audio_context);
+  EXPECT_EQ(audio_context->PendingPromiseResolverCountForTesting(), 0u);
+}
+
+// Verifies that a resume() deferred while the frame visibility is unknown
+// settles before a suspend() called after the visibility becomes known, and
+// the context ends up "suspended".
+TEST_F(AudioContextTest, DeferredResumeSettlesBeforeLaterSuspend) {
+  ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(true);
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  ASSERT_NO_FATAL_FAILURE(DisableMediaPlaybackWhileNotVisible());
+
+  AudioContext* audio_context = AudioContext::Create(
+      execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  ExpectContextBecomesRunningAsync(audio_context);
+
+  audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+  ExpectContextBecomesSuspendedAsync(audio_context);
+  auto* log = MakeGarbageCollected<SettlementLog>();
+
+  // The frame visibility is unknown, so resume() is deferred.
+  RecordWhenSettled(
+      script_state,
+      audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION),
+      audio_context, log, "promise #1 - resume()");
+
+  // The deferred resume() queues its transition to "running" before the
+  // transition to "suspended" queued by the following suspend().
+  GetFrame().OnFrameVisibilityChangedForMediaPlayback(/*is_hidden=*/false);
+  RecordWhenSettled(
+      script_state,
+      audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION),
+      audio_context, log, "promise #2 - suspend()");
+
+  test::RunPendingTasks();
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  EXPECT_THAT(log->entries,
+              testing::ElementsAre("promise #1 - resume() : running",
+                                   "promise #2 - suspend() : suspended"));
+  ExpectContextSuspended(audio_context);
+  EXPECT_EQ(audio_context->PendingPromiseResolverCountForTesting(), 0u);
 }
 
 TEST_F(AudioContextTest, SetSinkIdPermissionsPolicy) {

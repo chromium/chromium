@@ -880,6 +880,14 @@ void BaseAudioContext::RejectPendingPromiseResolversWithException(
   }
 }
 
+void BaseAudioContext::RemovePendingPromiseResolver(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  DCHECK(IsMainThread());
+
+  DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+  Erase(pending_promise_resolvers_, resolver);
+}
+
 void BaseAudioContext::RemovePendingPromiseResolvers(
     const HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>& resolvers) {
   DCHECK(IsMainThread());
@@ -888,6 +896,17 @@ void BaseAudioContext::RemovePendingPromiseResolvers(
   EraseIf(pending_promise_resolvers_, [&resolvers](const auto& resolver) {
     return resolvers.Contains(resolver);
   });
+}
+
+bool BaseAudioContext::HasPendingPromiseResolver(
+    ScriptPromiseResolver<IDLUndefined>* resolver) const {
+  DCHECK(IsMainThread());
+
+  if (!resolver) {
+    return false;
+  }
+  DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+  return pending_promise_resolvers_.Contains(resolver);
 }
 
 void BaseAudioContext::RejectPendingDecodeAudioDataResolvers() {
