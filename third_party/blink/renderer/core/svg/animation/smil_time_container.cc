@@ -190,6 +190,11 @@ void SMILTimeContainer::Schedule(SVGSMILElement* animation) {
   DCHECK_EQ(animation->TimeContainer(), this);
   DCHECK(animation->HasValidTarget());
   CHECK(AnimationTargetsMutationsAllowed());
+
+  if (priority_queue_.IsEmpty()) {
+    WillScheduleFirstTimedElement();
+  }
+
   animated_targets_.insert(animation->targetElement());
   // Enter the element into the queue with the "latest" possible time. The
   // timed element will update its position in the queue when (re)evaluating
@@ -226,6 +231,17 @@ void SMILTimeContainer::Reschedule(SVGSMILElement* animation,
     return;
   CancelAnimationFrame();
   ScheduleWakeUp(base::TimeDelta(), kSynchronizeAnimations);
+}
+
+void SMILTimeContainer::WillScheduleFirstTimedElement() {
+  if (!IsStarted()) {
+    return;
+  }
+  // Update `latest_update_time_` to the current presentation time. This means
+  // that the timed element that is about to be inserted will not need to
+  // "catch up" on the time between the latest update and the current
+  // presentation time.
+  latest_update_time_ = Elapsed();
 }
 
 bool SMILTimeContainer::HasAnimations() const {

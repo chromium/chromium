@@ -93,6 +93,7 @@ class CORE_EXPORT SMILTimeContainer final
     kAnimationFrame
   };
 
+  void WillScheduleFirstTimedElement();
   bool IsTimelineRunning() const;
   void SynchronizeToDocumentTimeline();
   void ScheduleAnimationFrame(base::TimeDelta delay_time,

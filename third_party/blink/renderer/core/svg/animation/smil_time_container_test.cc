@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
@@ -194,6 +195,110 @@ TEST_F(SMILTimeContainerTest, ServiceAnimationsNoSuspendOnAnimationSync) {
   // The timeline should not have been suspended (i.e the time elapsed on the
   // timeline should equal the currently elapsed time).
   EXPECT_EQ(SMILTime::FromTimeDelta(elapsed), time_container->Elapsed());
+}
+
+class RepeatEventCounterListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override { num_invocations_++; }
+  size_t GetCount() const { return num_invocations_; }
+
+ private:
+  size_t num_invocations_ = 0;
+};
+
+TEST_F(SMILTimeContainerTest, TimeContainerForwardsTimingStateWhenReinserted) {
+  Load(R"HTML(
+    <svg id="container">
+      <rect width="100" height="100" fill="blue">
+        <animate attributeName="fill" dur="1s" repeatCount="indefinite"
+                 values="lime; blue" id="anim"/>
+      </rect>
+    </svg>
+  )HTML");
+  test::RunPendingTasks();
+
+  auto* repeat_event_listener =
+      MakeGarbageCollected<RepeatEventCounterListener>();
+  auto* svg_root = To<SVGSVGElement>(GetElementById("container"));
+  ASSERT_TRUE(svg_root);
+  auto* animation = GetElementById("anim");
+  ASSERT_TRUE(animation);
+  animation->addEventListener(event_type_names::kRepeatEvent,
+                              repeat_event_listener);
+
+  SMILTimeContainer* time_container = svg_root->TimeContainer();
+  EXPECT_TRUE(time_container->IsStarted());
+  EXPECT_FALSE(time_container->IsPaused());
+
+  // Like PageAnimator::PostAnimate(). Allows the clock to adjust for/during
+  // the timer delay.
+  GetAnimationClock().SetAllowedToDynamicallyUpdateTime(true);
+
+  // Remove the SVG fragment.
+  svg_root->remove();
+
+  // Step an hour ahead. The animations in the detached SVG fragment are
+  // inactive. Add an additional 0.5s to step in the middle of a repetition.
+  StepTime(base::Minutes(60) + base::Milliseconds(500));
+
+  // Re-insert the SVG fragment.
+  GetDocument().body()->AppendChild(svg_root);
+
+  // Flush the pending timer and ensure a new animation frame.
+  test::RunPendingTasks();
+  SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
+
+  // No 'repeatEvent's should've been dispatched for the re-inserted timed
+  // element.
+  EXPECT_EQ(repeat_event_listener->GetCount(), 0u);
+}
+
+TEST_F(SMILTimeContainerTest, TimeContainerForwardsTimingStateWhenRepopulated) {
+  Load(R"HTML(
+    <svg id="container">
+      <rect width="100" height="100" fill="blue">
+        <animate attributeName="fill" dur="1s" repeatCount="indefinite"
+                 values="lime; blue" id="anim"/>
+      </rect>
+    </svg>
+  )HTML");
+  test::RunPendingTasks();
+
+  auto* repeat_event_listener =
+      MakeGarbageCollected<RepeatEventCounterListener>();
+  auto* svg_root = To<SVGSVGElement>(GetElementById("container"));
+  ASSERT_TRUE(svg_root);
+  auto* animation = GetElementById("anim");
+  ASSERT_TRUE(animation);
+  animation->addEventListener(event_type_names::kRepeatEvent,
+                              repeat_event_listener);
+
+  SMILTimeContainer* time_container = svg_root->TimeContainer();
+  EXPECT_TRUE(time_container->IsStarted());
+  EXPECT_FALSE(time_container->IsPaused());
+
+  // Like PageAnimator::PostAnimate(). Allows the clock to adjust for/during
+  // the timer delay.
+  GetAnimationClock().SetAllowedToDynamicallyUpdateTime(true);
+
+  // Remove the animation element. The time container is now empty.
+  auto* rect = animation->parentElement();
+  animation->remove();
+
+  // Step an hour ahead. The animations in the detached SVG fragment are
+  // inactive. Add an additional 0.5s to step in the middle of a repetition.
+  StepTime(base::Minutes(60) + base::Milliseconds(500));
+
+  // Re-insert the animation element.
+  rect->AppendChild(animation);
+
+  // Flush the pending timer and ensure a new animation frame.
+  test::RunPendingTasks();
+  SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
+
+  // No 'repeatEvent's should've been dispatched for the re-inserted timed
+  // element.
+  EXPECT_EQ(repeat_event_listener->GetCount(), 0u);
 }
 
 class ContentLoadedEventListener final : public NativeEventListener {
