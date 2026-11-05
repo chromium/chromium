@@ -874,7 +874,7 @@ suite('TabPickerTest', () => {
         'rgb(255, 255, 255)', window.getComputedStyle(dialog).backgroundColor);
     assertEquals('rgb(31, 31, 31)', window.getComputedStyle(item0).color);
     assertEquals(
-        'rgba(0, 0, 0, 0.04)',
+        'rgba(10, 10, 10, 0.08)',
         window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
     assertEquals(
         '#0b57d0',
@@ -893,7 +893,7 @@ suite('TabPickerTest', () => {
         'rgb(44, 46, 54)', window.getComputedStyle(dialog).backgroundColor);
     assertEquals('rgb(230, 232, 240)', window.getComputedStyle(item0).color);
     assertEquals(
-        'rgb(53, 53, 53)',
+        'rgba(230, 232, 240, 0.08)',
         window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
     assertEquals(
         '#a8c7fa',
