@@ -11750,6 +11750,8 @@ from previous Chrome versions.
   <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
   <int value="-985031079"
       label="WebAssemblyExperimentalSharedEverything:enabled"/>
+  <int value="-984465496"
+      label="DeviceTrustConnectorDesktopFormFactors:enabled"/>
   <int value="-984340827" label="OidcAuthProfileManagement:enabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983845861" label="ShowCastPermissionRejectedError:disabled"/>
@@ -19206,6 +19208,8 @@ from previous Chrome versions.
   <int value="1250398558" label="NetworkServiceSandbox:enabled"/>
   <int value="1250728565" label="HttpsFirstBalancedMode:enabled"/>
   <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
+  <int value="1250863953"
+      label="DeviceTrustConnectorDesktopFormFactors:disabled"/>
   <int value="1251097300"
       label="CCTResizableSideSheetDiscoverFeedSettings:enabled"/>
   <int value="1251663392" label="ArcImageCopyPasteCompat:disabled"/>

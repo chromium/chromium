@@ -6250,6 +6250,13 @@ inline constexpr char kDeviceTrustConnectorAndroidDescription[] =
     "and profiles to share device signals with policy-configured "
     "identity providers.";
 
+inline constexpr char kDeviceTrustConnectorDesktopFormFactorsName[] =
+    "Device Trust Connector on desktop form factors";
+inline constexpr char kDeviceTrustConnectorDesktopFormFactorsDescription[] =
+    "Allows the Device Trust Connector to run on desktop form factors. Also "
+    "requires the Device Trust Connector on Android flag. Has no effect on "
+    "other form factors.";
+
 inline constexpr char kEdgeToEdgeTopInsetName[] = "Edge-to-Edge Top Inset";
 inline constexpr char kEdgeToEdgeTopInsetDescription[] =
     "Enables the prototype Edge-to-Edge top inset feature and refactor, which "

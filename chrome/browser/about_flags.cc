@@ -14362,6 +14362,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeviceTrustConnectorAndroidName,
      flag_descriptions::kDeviceTrustConnectorAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(enterprise_connectors::kDeviceTrustConnectorAndroid)},
+    {"device-trust-connector-desktop-form-factors",
+     flag_descriptions::kDeviceTrustConnectorDesktopFormFactorsName,
+     flag_descriptions::kDeviceTrustConnectorDesktopFormFactorsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         enterprise_connectors::kDeviceTrustConnectorDesktopFormFactors)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-oauth2-token-fix",
