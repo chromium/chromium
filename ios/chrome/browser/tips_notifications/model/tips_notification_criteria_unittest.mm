@@ -127,7 +127,6 @@ class TipsNotificationCriteriaTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
@@ -150,7 +149,6 @@ TEST_F(TipsNotificationCriteriaTest, TestShouldSendDefaultBrowser_Default) {
 // has previously canceled the promo.
 TEST_F(TipsNotificationCriteriaTest,
        TestShouldSendDefaultBrowser_PromoCanceled) {
-  feature_list_.InitAndDisableFeature(kIOSOneTimeDefaultBrowserNotification);
   SetFalseChromeLikelyDefaultBrowser();
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
   EXPECT_FALSE(
@@ -161,7 +159,6 @@ TEST_F(TipsNotificationCriteriaTest,
 // previously dismissed the promo.
 TEST_F(TipsNotificationCriteriaTest,
        TestShouldSendDefaultBrowser_PromoDismissed) {
-  feature_list_.InitAndDisableFeature(kIOSOneTimeDefaultBrowserNotification);
   SetFalseChromeLikelyDefaultBrowser();
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   EXPECT_TRUE(
@@ -172,7 +169,6 @@ TEST_F(TipsNotificationCriteriaTest,
 // previously tapped "Remind Me Later".
 TEST_F(TipsNotificationCriteriaTest,
        TestShouldSendDefaultBrowser_PromoRemindMeLater) {
-  feature_list_.InitAndDisableFeature(kIOSOneTimeDefaultBrowserNotification);
   SetFalseChromeLikelyDefaultBrowser();
   RecordDefaultBrowserPromoLastAction(
       IOSDefaultBrowserPromoAction::kRemindMeLater);
@@ -183,40 +179,7 @@ TEST_F(TipsNotificationCriteriaTest,
 // Tests that the Default Browser notification should be sent when the user has
 // not interacted with the promo and Chrome is not the default.
 TEST_F(TipsNotificationCriteriaTest, TestShouldSendDefaultBrowser_NoAction) {
-  feature_list_.InitAndDisableFeature(kIOSOneTimeDefaultBrowserNotification);
   SetFalseChromeLikelyDefaultBrowser();
-  EXPECT_TRUE(
-      criteria_->ShouldSendNotification(TipsNotificationType::kDefaultBrowser));
-}
-
-// Tests that the Default Browser notification should not be sent if a default
-// browser promo has been seen in the last 2 weeks.
-TEST_F(TipsNotificationCriteriaTest,
-       TestShouldSendDefaultBrowser_ShouldNotTriggerOneTime) {
-  feature_list_.InitAndEnableFeature(kIOSOneTimeDefaultBrowserNotification);
-  SetFalseChromeLikelyDefaultBrowser();
-  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
-  EXPECT_CALL(
-      *mock_tracker_,
-      WouldTriggerHelpUI(testing::Ref(
-          feature_engagement::kIPHiOSOneTimeDefaultBrowserNotificationFeature)))
-      .WillOnce(testing::Return(false));
-  EXPECT_FALSE(
-      criteria_->ShouldSendNotification(TipsNotificationType::kDefaultBrowser));
-}
-
-// Tests that the Default Browser notification should be sent if a default
-// browser promo has not been seen in the last 2 weeks.
-TEST_F(TipsNotificationCriteriaTest,
-       TestShouldSendDefaultBrowser_ShouldTriggerOneTime) {
-  feature_list_.InitAndEnableFeature(kIOSOneTimeDefaultBrowserNotification);
-  SetFalseChromeLikelyDefaultBrowser();
-  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
-  EXPECT_CALL(
-      *mock_tracker_,
-      WouldTriggerHelpUI(testing::Ref(
-          feature_engagement::kIPHiOSOneTimeDefaultBrowserNotificationFeature)))
-      .WillOnce(testing::Return(true));
   EXPECT_TRUE(
       criteria_->ShouldSendNotification(TipsNotificationType::kDefaultBrowser));
 }

@@ -149,11 +149,6 @@ class TipsNotificationClient : public PushNotificationClient {
   // settings.
   std::optional<TipsNotificationType> forced_type_;
 
-  // If set, previous notification request(s) will be cleared and the given
-  // type will be sent one time with a 24 hour trigger. This will be used in
-  // conjunction with the kIOSOneTimeDefaultBrowserNotification feature.
-  std::optional<TipsNotificationType> one_time_type_;
-
   // Observes changes to permitted pref.
   PrefChangeRegistrar pref_change_registrar_;
 
