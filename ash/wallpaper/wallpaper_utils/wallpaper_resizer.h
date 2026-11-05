@@ -25,7 +25,7 @@ class ASH_EXPORT WallpaperResizer {
   // Returns a unique identifier corresponding to |image|, suitable for
   // comparison against the value returned by original_image_id(). If the image
   // is modified, its ID will change.
-  static uint32_t GetImageId(const gfx::ImageSkia& image);
+  static uint64_t GetImageId(const gfx::ImageSkia& image);
 
   // Synchronously resizes the image while maintaining the aspect ratio.
   static gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image,
@@ -41,7 +41,7 @@ class ASH_EXPORT WallpaperResizer {
   ~WallpaperResizer();
 
   const gfx::ImageSkia& image() const { return image_; }
-  uint32_t original_image_id() const { return original_image_id_; }
+  uint64_t original_image_id() const { return original_image_id_; }
   const WallpaperInfo& wallpaper_info() const { return wallpaper_info_; }
 
   // Called on the UI thread to run Resize() on the task runner and post an
@@ -59,7 +59,7 @@ class ASH_EXPORT WallpaperResizer {
   gfx::ImageSkia image_;
 
   // Unique identifier corresponding to the original (i.e. pre-resize) |image_|.
-  uint32_t original_image_id_;
+  uint64_t original_image_id_;
 
   gfx::Size target_size_;
 

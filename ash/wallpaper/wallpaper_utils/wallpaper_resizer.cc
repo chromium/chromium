@@ -112,7 +112,7 @@ gfx::ImageSkia Resize(const gfx::ImageSkia image,
 }  // namespace
 
 // static
-uint32_t WallpaperResizer::GetImageId(const gfx::ImageSkia& image) {
+uint64_t WallpaperResizer::GetImageId(const gfx::ImageSkia& image) {
   const gfx::ImageSkiaRep& image_rep = image.GetRepresentation(1.0f);
   return image_rep.is_null() ? 0 : image_rep.GetBitmap().getGenerationID();
 }
