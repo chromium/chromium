@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -70,7 +71,9 @@
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/polling_state_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace contextual_tasks {
@@ -80,6 +83,7 @@ namespace {
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId);
 // WebContents of the two WebUI omnibox popup surfaces. The classic popup hosts
 // the suggestion list plus the context entrypoint; selecting a tab from its
 // context menu swaps it for the AIM popup, which hosts the composebox.
@@ -733,6 +737,41 @@ class ContextualTasksContextManagementInteractiveTestBase
         InstrumentNonTabWebView(kSidePanelWebContentsId,
                                 "SidePanelContentWebViewName"),
         WaitForElementExists(kSidePanelWebContentsId, kComposeboxContainer));
+  }
+
+  // Waits for a full-tab Contextual Tasks navigation
+  // (`chrome://contextual-tasks/`) and its embedded `<webview>`
+  // (`#threadFrame`) to finish initializing, including
+  // `ContextualTasksUI::CreatePageHandler` and `FrameNavObserver`'s
+  // `window.history.replaceState` URL sync. Navigating away before the initial
+  // `<webview>` load and `replaceState` settle causes `NavigateWebContents` to
+  // observe the in-flight same-document `replaceState` URL change instead of
+  // the new navigation.
+  auto WaitForFullTabContextualTasksLoaded(
+      const ui::ElementIdentifier& contents_id) {
+    StateChange initial_load_done;
+    initial_load_done.type = StateChange::Type::kExistsAndConditionTrue;
+    initial_load_done.where = {"contextual-tasks-app"};
+    initial_load_done.test_function =
+        "el => el.hasFinishedTopLevelNavigationForTesting_ === true && "
+        "!el.isFrameLoading && !el.pendingUrl_";
+    initial_load_done.event = kElementExistsEvent;
+    initial_load_done.continue_across_navigation = true;
+
+    return Steps(
+        WaitForWebContentsNavigation(contents_id),
+        CheckElement(
+            contents_id,
+            [](ui::TrackedElement* el) {
+              return AsInstrumentedWebContents(el)
+                  ->web_contents()
+                  ->GetLastCommittedURL()
+                  .host();
+            },
+            std::string(chrome::kChromeUIContextualTasksHost)),
+        InstrumentInnerWebContents(kInnerWebContentsId, contents_id, 0),
+        WaitForStateChange(contents_id, initial_load_done),
+        UninstrumentWebContents(kInnerWebContentsId));
   }
 
   // Returns the task ID that the tab at `index` is associated with in
@@ -1715,6 +1754,70 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
             OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)));
   }
 
+  // Clicks the classic popup's "+" and picks the second (non-current) tab out
+  // of the native "Add tabs" submenu.
+  auto SelectSecondTabFromOmniboxAddTabsMenu() {
+    return Steps(
+        InSameContext(ClickElementAcrossNavigation(kClassicPopupWebContentsId,
+                                                   kClassicContextEntrypoint)),
+        InAnyContext(WaitForShow(
+            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
+        InSameContext(SelectMenuItem(
+            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
+        InAnyContext(WaitForShow(
+            OmniboxContextMenuController::kSecondTabMenuItemIdForTesting)),
+        InSameContext(SelectMenuItem(
+            OmniboxContextMenuController::kSecondTabMenuItemIdForTesting)));
+  }
+
+  // Opens the AIM composebox's "+" context menu and expands the "Add tabs" /
+  // "Sharing n tabs" submenu without selecting a tab item.
+  auto OpenAimAddTabsSubmenu() {
+    return Steps(
+        InAnyContext(WaitForElementToRenderAcrossNavigation(
+            kAimPopupWebContentsId, kAimContextEntrypoint)),
+        InAnyContext(ExecuteJsAt(kAimPopupWebContentsId, kAimContextEntrypoint,
+                                 "el => el.click()")),
+        InAnyContext(WaitForShow(
+            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
+        InSameContext(SelectMenuItem(
+            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
+        InAnyContext(WaitForShow(
+            OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)));
+  }
+
+  // Verifies the Views submenu trigger label ("Add tabs" vs "Sharing n tabs").
+  auto VerifyOmniboxSharedTabsSubmenuLabel(int expected_shared_count) {
+    const std::u16string expected_label =
+        expected_shared_count > 0
+            ? l10n_util::GetPluralStringFUTF16(IDS_COMPOSE_SHARING_TABS,
+                                               expected_shared_count)
+            : l10n_util::GetStringUTF16(IDS_COMPOSE_ADD_TABS);
+    return InAnyContext(CheckViewProperty(
+        OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting,
+        &views::MenuItemView::title, expected_label));
+  }
+
+  // Verifies whether a tab row in the Views submenu has a checkmark minor icon.
+  auto VerifyOmniboxTabMenuItemChecked(ui::ElementIdentifier item_id,
+                                       bool expected_checked) {
+    return InAnyContext(CheckView(
+        item_id,
+        [](views::MenuItemView* item) {
+          return !item->GetMinorIcon().IsEmpty();
+        },
+        expected_checked));
+  }
+
+  // Clicks the AIM composebox's "+" and picks the first tab out of the native
+  // "Sharing n tabs" / "Add tabs" submenu (used to deselect or re-select it).
+  auto SelectFirstTabFromAimAddTabsMenu() {
+    return Steps(
+        OpenAimAddTabsSubmenu(),
+        InSameContext(SelectMenuItem(
+            OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)));
+  }
+
   // Clicks the AIM composebox's "+" and picks the second tab out of the native
   // "Sharing 1 tab" / "Add tabs" submenu.
   //
@@ -1728,14 +1831,7 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
   // coordinates, so a JS click is equivalent minus the race.
   auto SelectSecondTabFromAimAddTabsMenu() {
     return Steps(
-        InAnyContext(WaitForElementToRenderAcrossNavigation(
-            kAimPopupWebContentsId, kAimContextEntrypoint)),
-        InAnyContext(ExecuteJsAt(kAimPopupWebContentsId, kAimContextEntrypoint,
-                                 "el => el.click()")),
-        InAnyContext(WaitForShow(
-            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
-        InSameContext(SelectMenuItem(
-            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
+        OpenAimAddTabsSubmenu(),
         InAnyContext(WaitForShow(
             OmniboxContextMenuController::kSecondTabMenuItemIdForTesting)),
         InSameContext(SelectMenuItem(
@@ -1878,16 +1974,21 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksOmniboxContextManagementInteractiveUiTest,
       WaitForAimPopupReady(), WaitForAimComposeboxCoins(1),
       VerifyUnderlinedTabs({0}),
 
+      // The Views context menu reflects "Sharing 1 tab" and a checkmark on the
+      // current tab row, while the unshared tab row has no checkmark.
+      OpenAimAddTabsSubmenu(), VerifyOmniboxSharedTabsSubmenuLabel(1),
+      VerifyOmniboxTabMenuItemChecked(
+          OmniboxContextMenuController::kFirstTabMenuItemIdForTesting, true),
+      VerifyOmniboxTabMenuItemChecked(
+          OmniboxContextMenuController::kSecondTabMenuItemIdForTesting, false),
+
       // Submitting with the current tab in context opens the side panel.
       SubmitAimComposeboxQuery("What is on this page?"),
       InstrumentOpenedSidePanel(),
 
       // The context carries over, and the side panel signposts it the same
-      // way: tab 0 still underlined, and a single favicon coin on the side
+      // way: tab 0 still underlined and a single favicon coin on the side
       // panel composebox's "+" button.
-      //
-      // TODO(crbug.com/564561893): Also assert the tab is checked in the side
-      // panel's Add Tabs flyout.
       VerifyUnderlinedTabs({0}),
       VerifyPlusButtonCoins(kSidePanelWebContentsId, 1));
 }
@@ -1926,6 +2027,14 @@ IN_PROC_BROWSER_TEST_F(
       SelectSecondTabFromAimAddTabsMenu(), WaitForAimComposeboxCoins(2),
       VerifyUnderlinedTabs({0, 2}),
 
+      // Verify the Views context menu reflects "Sharing 2 tabs" with
+      // checkmarks on both selected tabs.
+      OpenAimAddTabsSubmenu(), VerifyOmniboxSharedTabsSubmenuLabel(2),
+      VerifyOmniboxTabMenuItemChecked(
+          OmniboxContextMenuController::kFirstTabMenuItemIdForTesting, true),
+      VerifyOmniboxTabMenuItemChecked(
+          OmniboxContextMenuController::kSecondTabMenuItemIdForTesting, true),
+
       // Submitting with the current tab + another tab in context must open the
       // Contextual Tasks side panel with both tabs preserved.
       SubmitAimComposeboxQuery("Compare these two pages"),
@@ -1933,6 +2042,83 @@ IN_PROC_BROWSER_TEST_F(
 
       VerifyUnderlinedTabs({0, 2}),
       VerifyPlusButtonCoins(kSidePanelWebContentsId, 2));
+}
+
+// Deselecting a tab from the AIM popup's "+" context menu removes its coin,
+// tab-strip underline, and Views menu checkmark, returning the submenu label
+// to "Add tabs".
+IN_PROC_BROWSER_TEST_F(ContextualTasksOmniboxContextManagementInteractiveUiTest,
+                       OmniboxAimPopup_DeselectTab_ClearsSignposting) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kUrl1),
+      AddInstrumentedTab(kBackgroundTab1, kUrl2),
+      SelectTab(kTabStripElementId, 0), VerifyUnderlinedTabs({}),
+
+      // Select Tab 0 from the classic omnibox "+" menu to enter the AIM popup.
+      OpenOmniboxDropdown(), SelectCurrentTabFromOmniboxAddTabsMenu(),
+      InAnyContext(WaitForHide(kClassicPopupWebContentsId)),
+      WaitForAimPopupReady(), WaitForAimComposeboxCoins(1),
+      VerifyUnderlinedTabs({0}),
+
+      // Open the AIM "+" submenu and verify the Views menu reflects 1 shared
+      // tab with a checkmark on the first tab item, then click to deselect it.
+      OpenAimAddTabsSubmenu(), VerifyOmniboxSharedTabsSubmenuLabel(1),
+      VerifyOmniboxTabMenuItemChecked(
+          OmniboxContextMenuController::kFirstTabMenuItemIdForTesting, true),
+      VerifyOmniboxTabMenuItemChecked(
+          OmniboxContextMenuController::kSecondTabMenuItemIdForTesting, false),
+      InSameContext(SelectMenuItem(
+          OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)),
+
+      // Verify coin and tab-strip underline are removed, and the Views menu
+      // returns to "Add tabs" with no checkmarks.
+      WaitForAimComposeboxCoins(0), VerifyUnderlinedTabs({}),
+      OpenAimAddTabsSubmenu(), VerifyOmniboxSharedTabsSubmenuLabel(0),
+      VerifyOmniboxTabMenuItemChecked(
+          OmniboxContextMenuController::kFirstTabMenuItemIdForTesting, false));
+}
+
+// Selecting only a non-current (background) tab from the omnibox "+" menu
+// fulfills in the active tab (full-page Contextual Tasks UI) rather than the
+// side panel, keeps the background tab underlined while on the AIM page, and
+// clears the underline when the user navigates the active tab away.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksOmniboxContextManagementInteractiveUiTest,
+    OmniboxAddNonCurrentTab_FulfillsInAimFullPageAndCleansUpOnExit) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kUrl1),
+      AddInstrumentedTab(kBackgroundTab1, kUrl2),
+      SelectTab(kTabStripElementId, 0), VerifyUnderlinedTabs({}),
+
+      // Select only the background tab (Tab 1) from the classic omnibox "+"
+      // menu while Tab 0 is active.
+      OpenOmniboxDropdown(), SelectSecondTabFromOmniboxAddTabsMenu(),
+      InAnyContext(WaitForHide(kClassicPopupWebContentsId)),
+      WaitForAimPopupReady(), WaitForAimComposeboxCoins(1),
+      VerifyUnderlinedTabs({1}),
+
+      // Submit the query. Because the active tab (Tab 0) is not in context,
+      // `ContextualSearchboxHandler::OpenUrl` navigates Tab 0 to the AIM full
+      // page (`chrome://contextual-tasks/`) rather than opening the side panel.
+      SubmitAimComposeboxQuery("Summarize background tab"),
+      WaitForFullTabContextualTasksLoaded(kPrimaryTab),
+      VerifyUnderlinedTabs({1}),
+
+      // Navigating Tab 0 away from the AIM page clears the task session and
+      // removes Tab 1's underline.
+      NavigateWebContents(kPrimaryTab, kUrl1), VerifyUnderlinedTabs({}));
 }
 
 // -----------------------------------------------------------------------------
