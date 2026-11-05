@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -51,7 +52,7 @@ class OverlayArrowView : public views::View {
     return SkPathBuilder()
         .moveTo(4.8164f, 42.8729f)
         .lineTo(2.78675f, 45.1224f)
-        .lineTo(-0.000137253f, 42.4539f)
+        .lineTo(kHeadTip)
         .lineTo(3.10647f, 40.2981f)
         .lineTo(4.8164f, 42.8729f)
         .close()
@@ -82,8 +83,7 @@ class OverlayArrowView : public views::View {
     // span on the other side of it. See OnPaint().
     const float left = base::i18n::IsRTL() ? end_dip.x() - path_bounds.fRight
                                            : end_dip.x() + path_bounds.fLeft;
-    gfx::RectF arrow_rect(left,
-                          path_bounds.fTop + end_dip.y() - kArrowYOffsetDip,
+    gfx::RectF arrow_rect(left, path_bounds.fTop + end_dip.y() - kHeadTip.y(),
                           path_bounds.width(), path_bounds.height());
 
     gfx::Rect bounds = gfx::ToEnclosingRect(arrow_rect);
@@ -121,8 +121,9 @@ class OverlayArrowView : public views::View {
         color_.value_or(GetColorProvider()->GetColor(ui::kColorAccent)));
     flags.setAntiAlias(true);
 
+    // Places the head's tip on `end_`.
     gfx::Transform transform;
-    transform.Translate(end_.x(), end_.y() - kArrowYOffsetDip);
+    transform.Translate(end_.x(), end_.y() - kHeadTip.y());
     if (base::i18n::IsRTL()) {
       // The paths are drawn head near the origin, tail extending to the
       // right, which points the arrow leftward at the window's right edge. In
@@ -139,7 +140,9 @@ class OverlayArrowView : public views::View {
   }
 
  private:
-  static constexpr int kArrowYOffsetDip = 65;
+  // The head's tip in path space, as GetHeadPath() draws it. Its x is within
+  // a thousandth of a DIP of 0, so only its y offsets the drawing.
+  static constexpr SkPoint kHeadTip = {-0.000137253f, 42.4539f};
   static constexpr int kPaddingDip = 15;
 
   gfx::Point start_;

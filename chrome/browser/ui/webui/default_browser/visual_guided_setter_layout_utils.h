@@ -40,10 +40,10 @@ gfx::Point ComputeArrowStartPointFromAnchor(const gfx::Rect& anchor_rect);
 // Computes the ending point of the guidance arrow (in physical pixels, screen
 // coordinates) relative to the Settings window rect.
 //
-// `settings_hwnd` supplies the scale factor for the layout padding, and bounds
-// the result to the window so a resize cannot leave the arrow pointing past it.
-gfx::Point ComputeArrowEndPoint(HWND settings_hwnd,
-                                const gfx::Rect& target_rect);
+// `measured_top_offset_px` is the row's distance below the window's top, as
+// measured by SettingsRowLocatorWin. The result stays inside `target_rect`.
+gfx::Point ComputeArrowEndPoint(const gfx::Rect& target_rect,
+                                int measured_top_offset_px);
 
 // Returns true if the target docking rect is on a monitor with the same DPI
 // scaling as the Chrome window.

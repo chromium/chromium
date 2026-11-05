@@ -18,10 +18,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/win/windows_types.h"
+#include "chrome/browser/default_browser/win/settings_row_locator_win.h"
 #include "chrome/browser/default_browser/win/settings_window_finder_win.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -40,6 +42,12 @@ class GuidedSetterOverlayWindowWin;
 class VisualGuidedSetterControllerWin : public views::WidgetObserver,
                                         public content::WebContentsObserver {
  public:
+  // Lets the Settings layout settle after a size change before measuring the
+  // row.
+  static constexpr base::TimeDelta kMeasureDebounce = base::Milliseconds(300);
+  // Before measuring again after a failed measurement, while budget remains.
+  static constexpr base::TimeDelta kMeasureRetryDelay = base::Seconds(1);
+
   // Specifies the behavior of the Settings window.
   enum class TopmostPolicy {
     // The Settings window drops its topmost state when Chrome loses focus.
@@ -141,6 +149,9 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   bool is_running() const { return is_running_; }
   bool has_anchor_rect() const { return has_anchor_rect_; }
   HWND settings_hwnd_for_testing() const { return settings_hwnd_; }
+  bool has_pending_row_measurement_for_testing() const {
+    return measure_debounce_timer_.IsRunning();
+  }
 
  protected:
   // Virtual for testing.
@@ -153,6 +164,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   virtual bool IsChromeWindowActive() const;
   virtual void LaunchSettings();
   virtual std::unique_ptr<SettingsWindowFinderWin> CreateSettingsWindowFinder();
+  virtual std::unique_ptr<SettingsRowLocatorWin> CreateSettingsRowLocator();
   virtual bool IsDpiCompatibleForDocking(HWND hwnd,
                                          const gfx::Rect& target_rect) const;
   virtual void CloseSettingsWindow();
@@ -184,11 +196,20 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   // Outcome::kSettingsLaunchFailed instead of waiting for the finder timeout.
   void OnLaunchSettingsResult(bool succeeded);
 
+  // Starts measuring the row: opens the service's handle to the Settings
+  // process on the thread pool, then asks the locator. Run by the debounce
+  // timer; protected so tests can trigger it.
+  void MeasureRowNow();
+
   // Returns the rect to dock the Settings window to, in physical screen
   // pixels. Virtual for testing.
   virtual gfx::Rect ComputeDockedSettingsRect() const;
 
  private:
+  // Failed measurements in a row before this flow stops measuring. More than
+  // one, since a new window can race its own first layout.
+  static constexpr int kMaxConsecutiveMeasurementFailures = 3;
+
   // Starts the polling and event-hooking logic to find the Settings window.
   void StartFindSettingsWindow();
   void OnSettingsWindowFound(HWND hwnd, base::Process process);
@@ -210,6 +231,25 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
 
   void UpdateOverlay();
   void UpdateOverlayColor();
+
+  // Drops the stale offset and schedules a measurement when the Settings
+  // window's size has changed. Called on every layout pass.
+  void MaybeScheduleRowMeasurement(const gfx::Size& settings_size);
+
+  // (Re)starts the timer that runs MeasureRowNow() after `delay`.
+  void ScheduleRowMeasurement(base::TimeDelta delay);
+
+  // `measured_size` is the Settings window's size when the request was made.
+  // Runs once the service's handle to the Settings process has been opened
+  // on the thread pool, and hands it to the locator.
+  void OnSettingsProcessOpened(gfx::Size measured_size,
+                               base::Process settings_process);
+  void OnRowMeasured(gfx::Size measured_size,
+                     SettingsRowLocatorWin::Result result);
+
+  // Stops measuring for the rest of this flow and drops the locator, which
+  // abandons any measurement in flight.
+  void StopRowMeasurement();
 
   gfx::Rect GetAnchorRectScreenDip() const;
 
@@ -288,6 +328,20 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   std::unique_ptr<SettingsWindowFinderWin> settings_window_finder_;
   base::TimeTicks find_settings_start_time_;
   base::RepeatingTimer dock_timer_;
+
+  // Created on first measurement; dropped when this flow stops measuring.
+  std::unique_ptr<SettingsRowLocatorWin> row_locator_;
+  base::OneShotTimer measure_debounce_timer_;
+  int consecutive_measurement_failures_ = 0;
+  bool stopped_measuring_ = false;
+
+  // Physical pixels from the Settings window's top to the row. Reset on each
+  // size change; no arrow is drawn while empty.
+  std::optional<int> measured_arrow_offset_px_;
+
+  // The Settings window's size at the last layout pass that scheduled a
+  // measurement. A different size schedules a new one.
+  std::optional<gfx::Size> last_seen_settings_size_;
 
   TopmostPolicy topmost_policy_ = TopmostPolicy::kRequiresFocus;
   bool is_running_ = false;

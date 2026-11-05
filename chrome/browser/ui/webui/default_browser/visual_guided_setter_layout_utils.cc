@@ -66,11 +66,6 @@ constexpr int kBreakpointMarginDip = 20;
 struct LayoutScaleEntry {
   float text_scale;
   int wrap_client_width_dip;  // Below this, button wraps below text (x=43).
-  int subtitle_wrap_client_width_dip;  // Below this, subtitle wraps onto 2
-                                       // lines.
-  int button_center_wrapped_dip;       // Center when subtitle wraps (2 lines).
-  int button_center_narrow_dip;  // Center when narrow collapsed (< 800 DIP).
-  int button_center_wide_dip;    // Center when wide pane (>= 800 DIP).
 };
 
 // Rounds to the nearest int, halves up, which is what std::round() does for the
@@ -81,11 +76,11 @@ constexpr int RoundToInt(float value) {
   return static_cast<int>(value + 0.5f);
 }
 
-// Each layout parameter below is a smooth function of the text scale, fitted
+// The layout parameter below is a smooth function of the text scale, fitted
 // to the page measured at the scales in kLayoutScaleTable. That table is
-// generated from these functions, so the two cannot drift apart; between those
+// generated from this function, so the two cannot drift apart; between those
 // scales InterpolateLayoutEntry() interpolates the table rather than evaluating
-// the fits, which are only known to hold where they were fitted.
+// the fit, which is only known to hold where it was fitted.
 
 // Below this client width the "Set default" button stops sitting beside the
 // name Chrome is registered under and stacks underneath it.
@@ -93,47 +88,14 @@ constexpr int WrapClientWidthDip(float text_scale) {
   return RoundToInt(376.0f + 112.0f * (text_scale - 1.0f));
 }
 
-// Below this client width the subtitle under that name wraps onto a second
-// line, which moves the button down further. The fit is to the rows at text
-// scale 1.25 and above. At 1.0 the subtitle still fits on one line at every
-// width that keeps the button beside it, so that row is the button's own wrap
-// width; between the two rows the table is interpolated, so which of the two
-// this returns there never matters.
-constexpr int SubtitleWrapClientWidthDip(float text_scale) {
-  if (text_scale < 1.25f) {
-    return WrapClientWidthDip(text_scale);
-  }
-  // Never below the button's wrap width: the wrapped-subtitle layout is only
-  // reachable while the button is still beside the subtitle.
-  return std::max(WrapClientWidthDip(text_scale),
-                  RoundToInt(556.0f + 224.0f * (text_scale - 1.25f)));
-}
-
-constexpr int ButtonCenterWrappedDip(float text_scale) {
-  return RoundToInt(164.0f + 32.0f * (text_scale - 1.0f));
-}
-
-constexpr int ButtonCenterNarrowDip(float text_scale) {
-  return RoundToInt(164.0f + 22.0f * (text_scale - 1.0f));
-}
-
-constexpr int ButtonCenterWideDip(float text_scale) {
-  const float ds = text_scale - 1.0f;
-  return RoundToInt(175.0f + 21.0f * ds + 32.0f * ds * ds);
-}
-
 constexpr LayoutScaleEntry MakeLayoutScaleEntry(float text_scale) {
   return LayoutScaleEntry{
       text_scale,
       WrapClientWidthDip(text_scale),
-      SubtitleWrapClientWidthDip(text_scale),
-      ButtonCenterWrappedDip(text_scale),
-      ButtonCenterNarrowDip(text_scale),
-      ButtonCenterWideDip(text_scale),
   };
 }
 
-// The text scales the page was measured at. The values the fits above produce
+// The text scales the page was measured at. The values the fit above produces
 // for them are what was measured;
 // VisualGuidedSetterLayoutUtilsTest.FittedLayoutMatchesMeasuredLayout holds
 // them to that.
@@ -170,18 +132,6 @@ LayoutScaleEntry InterpolateLayoutEntry(float text_scale) {
           text_scale,
           gfx::Tween::LinearIntValueBetween(progress, low.wrap_client_width_dip,
                                             high.wrap_client_width_dip),
-          gfx::Tween::LinearIntValueBetween(
-              progress, low.subtitle_wrap_client_width_dip,
-              high.subtitle_wrap_client_width_dip),
-          gfx::Tween::LinearIntValueBetween(progress,
-                                            low.button_center_wrapped_dip,
-                                            high.button_center_wrapped_dip),
-          gfx::Tween::LinearIntValueBetween(progress,
-                                            low.button_center_narrow_dip,
-                                            high.button_center_narrow_dip),
-          gfx::Tween::LinearIntValueBetween(progress,
-                                            low.button_center_wide_dip,
-                                            high.button_center_wide_dip),
       };
     }
   }
@@ -227,26 +177,6 @@ int GetClientWidthDip(HWND settings_hwnd, const gfx::Rect& window_rect_px) {
   }
   const float monitor_scale = GetMonitorScaleFactor(window_rect_px);
   return base::ClampRound(client_width_px / monitor_scale);
-}
-
-int GetButtonCenterFromClientWidthAndTextScale(int client_width_dip,
-                                               float text_scale) {
-  const LayoutScaleEntry entry = InterpolateLayoutEntry(text_scale);
-
-  if (client_width_dip >= kPaneCollapseClientWidthDip) {
-    return entry.button_center_wide_dip;
-  }
-  if (client_width_dip >= entry.subtitle_wrap_client_width_dip) {
-    return entry.button_center_narrow_dip;
-  }
-  return entry.button_center_wrapped_dip;
-}
-
-int GetButtonCenterFromWindowTopDip(HWND settings_hwnd,
-                                    const gfx::Rect& window_rect_px) {
-  const int client_width_dip = GetClientWidthDip(settings_hwnd, window_rect_px);
-  return GetButtonCenterFromClientWidthAndTextScale(client_width_dip,
-                                                    GetTextScaleFactor());
 }
 
 }  // namespace
@@ -342,19 +272,11 @@ gfx::Point ComputeArrowStartPointFromAnchor(const gfx::Rect& anchor_rect) {
                              : anchor_rect.right_center();
 }
 
-gfx::Point ComputeArrowEndPoint(HWND settings_hwnd,
-                                const gfx::Rect& target_rect) {
-  // Distance from the window's top down to the row the guidance indicates,
-  // which depends on window width and Windows text scale.
-  const int button_center_dip =
-      GetButtonCenterFromWindowTopDip(settings_hwnd, target_rect);
-  const float monitor_scale = GetMonitorScaleFactor(target_rect);
-  const int button_center_px =
-      base::ClampRound(button_center_dip * monitor_scale);
-
-  return gfx::Point(
-      base::i18n::IsRTL() ? target_rect.x() : target_rect.right(),
-      target_rect.y() + std::min(button_center_px, target_rect.height()));
+gfx::Point ComputeArrowEndPoint(const gfx::Rect& target_rect,
+                                int measured_top_offset_px) {
+  return gfx::Point(base::i18n::IsRTL() ? target_rect.x() : target_rect.right(),
+                    target_rect.y() + std::clamp(measured_top_offset_px, 0,
+                                                 target_rect.height()));
 }
 
 bool IsDpiCompatibleForDocking(HWND chrome_hwnd,

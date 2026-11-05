@@ -72,6 +72,7 @@ if (is_win) {
       ":visual_guided_setter_mojo_bindings",
       "//base",
       "//chrome/browser/default_browser/win",
+      "//chrome/browser/default_browser/win:settings_row_locator",
       "//ui/gfx",
     ]
 

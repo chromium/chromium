@@ -15,9 +15,11 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/ui/webui/default_browser/guided_setter_overlay_window_win.h"
 #include "chrome/browser/ui/webui/default_browser/visual_guided_setter_layout_utils.h"
@@ -404,6 +406,7 @@ void VisualGuidedSetterControllerWin::StopAllTimers() {
     settings_window_finder_->StopObservingLocationChanges();
   }
   dock_timer_.Stop();
+  measure_debounce_timer_.Stop();
 }
 
 void VisualGuidedSetterControllerWin::ResumeLayoutObservation() {
@@ -438,6 +441,11 @@ void VisualGuidedSetterControllerWin::PauseLayoutObservation() {
     settings_window_finder_->StopObservingLocationChanges();
   }
   dock_timer_.Stop();
+  // Forget the size so it is measured once visible again.
+  if (measure_debounce_timer_.IsRunning()) {
+    measure_debounce_timer_.Stop();
+    last_seen_settings_size_.reset();
+  }
 }
 
 void VisualGuidedSetterControllerWin::OnWebContentsHidden() {
@@ -729,6 +737,8 @@ std::optional<gfx::Rect> VisualGuidedSetterControllerWin::GetAnchorRectScreen()
 void VisualGuidedSetterControllerWin::EnterDegradedFloating(Outcome reason) {
   outcome_ = reason;
   HideOverlayArrow();
+  // Degraded is for the rest of this flow, and the arrow is gone with it.
+  StopRowMeasurement();
   if (IsSettingsWindowAlive()) {
     ::SetWindowPos(
         settings_hwnd_, HWND_NOTOPMOST, 0, 0, 0, 0,
@@ -802,10 +812,148 @@ void VisualGuidedSetterControllerWin::UpdateOverlay() {
     return;
   }
 
+  MaybeScheduleRowMeasurement(settings_rect->size());
+
+  // Only point at a measured row.
+  if (!measured_arrow_offset_px_.has_value()) {
+    HideOverlayArrow();
+    return;
+  }
+
   ShowOverlayArrow(visual_guided_setter::ComputeArrowStartPointFromAnchor(
                        *anchor_rect_screen),
-                   visual_guided_setter::ComputeArrowEndPoint(settings_hwnd_,
-                                                              *settings_rect));
+                   visual_guided_setter::ComputeArrowEndPoint(
+                       *settings_rect, *measured_arrow_offset_px_));
+}
+
+void VisualGuidedSetterControllerWin::MaybeScheduleRowMeasurement(
+    const gfx::Size& settings_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Restarting the debounce on every layout pass would keep it from firing.
+  if (stopped_measuring_ || last_seen_settings_size_ == settings_size) {
+    return;
+  }
+
+  last_seen_settings_size_ = settings_size;
+  measured_arrow_offset_px_.reset();
+  ScheduleRowMeasurement(kMeasureDebounce);
+}
+
+void VisualGuidedSetterControllerWin::ScheduleRowMeasurement(
+    base::TimeDelta delay) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  measure_debounce_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&VisualGuidedSetterControllerWin::MeasureRowNow,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void VisualGuidedSetterControllerWin::MeasureRowNow() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (stopped_measuring_ || !last_seen_settings_size_) {
+    return;
+  }
+
+  // A reused handle could now belong to a Chrome window, and querying one
+  // turns on Chrome's accessibility mode. The probe re-checks too.
+  if (!is_running_ || is_degraded_ || !IsSettingsWindowValid() ||
+      !IsValidSettingsProcess(settings_hwnd_)) {
+    // Lets the next layout pass reschedule this size.
+    last_seen_settings_size_.reset();
+    return;
+  }
+
+  // The service gets its own handle to the Settings process. Opening one is
+  // not cheap (see base::Process::Duplicate()), so it happens on the thread
+  // pool, by pid rather than from `settings_process_`, which the pool must not
+  // touch: `settings_process_` pins the pid for as long as this flow holds it,
+  // and TearDownInternal(), which closes it, also drops this reply.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](base::ProcessId pid) {
+            return pid == base::kNullProcessId
+                       ? base::Process()
+                       : base::Process::OpenWithAccess(
+                             pid, PROCESS_QUERY_LIMITED_INFORMATION);
+          },
+          settings_process_.IsValid() ? settings_process_.Pid()
+                                      : base::kNullProcessId),
+      base::BindOnce(&VisualGuidedSetterControllerWin::OnSettingsProcessOpened,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     *last_seen_settings_size_));
+}
+
+void VisualGuidedSetterControllerWin::OnSettingsProcessOpened(
+    gfx::Size measured_size,
+    base::Process settings_process) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The flow may have moved on while the handle was being opened.
+  if (stopped_measuring_ || !is_running_ || is_degraded_ ||
+      last_seen_settings_size_ != measured_size) {
+    return;
+  }
+
+  if (!row_locator_) {
+    row_locator_ = CreateSettingsRowLocator();
+  }
+  if (!row_locator_) {
+    last_seen_settings_size_.reset();
+    return;
+  }
+
+  // An invalid handle (the process exited meanwhile) is answered kWindowGone.
+  row_locator_->Measure(
+      settings_hwnd_, std::move(settings_process),
+      base::BindOnce(&VisualGuidedSetterControllerWin::OnRowMeasured,
+                     weak_ptr_factory_.GetWeakPtr(), measured_size));
+}
+
+void VisualGuidedSetterControllerWin::OnRowMeasured(
+    gfx::Size measured_size,
+    SettingsRowLocatorWin::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // A superseded request is followed by a newer one, and a reply for a size
+  // the window has since left says nothing about where the row is now.
+  // Neither counts as a failure.
+  using FailureReason = SettingsRowLocatorWin::FailureReason;
+  const bool superseded =
+      !result.has_value() && result.error() == FailureReason::kSuperseded;
+  if (!is_running_ || superseded || last_seen_settings_size_ != measured_size) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    if (++consecutive_measurement_failures_ >=
+        kMaxConsecutiveMeasurementFailures) {
+      StopRowMeasurement();
+      return;
+    }
+    // The layout pass alone would not try again: the size has not changed.
+    // Retrying lets the budget run on a window that has since settled.
+    ScheduleRowMeasurement(kMeasureRetryDelay);
+    return;
+  }
+
+  consecutive_measurement_failures_ = 0;
+  // A retry still pending for this size is moot now.
+  measure_debounce_timer_.Stop();
+  measured_arrow_offset_px_ = *result;
+  UpdateOverlay();
+}
+
+void VisualGuidedSetterControllerWin::StopRowMeasurement() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  stopped_measuring_ = true;
+  measure_debounce_timer_.Stop();
+  // Also ends a measurement in flight, and with it the service process, which
+  // would otherwise keep probing for up to its full wait. Safe from within the
+  // locator's own reply: nothing in it runs after the callback.
+  row_locator_.reset();
 }
 
 std::optional<gfx::Rect>
@@ -908,6 +1056,11 @@ VisualGuidedSetterControllerWin::CreateSettingsWindowFinder() {
   return std::make_unique<SettingsWindowFinderWin>();
 }
 
+std::unique_ptr<SettingsRowLocatorWin>
+VisualGuidedSetterControllerWin::CreateSettingsRowLocator() {
+  return std::make_unique<SettingsRowLocatorWin>();
+}
+
 bool VisualGuidedSetterControllerWin::IsDpiCompatibleForDocking(
     HWND hwnd,
     const gfx::Rect& target_rect) const {
@@ -921,6 +1074,13 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
 
   HideOverlayArrow();
   overlay_.reset();
+
+  measured_arrow_offset_px_.reset();
+  last_seen_settings_size_.reset();
+  consecutive_measurement_failures_ = 0;
+  stopped_measuring_ = false;
+  // Abandons a measurement in flight, and with it the service process.
+  row_locator_.reset();
 
   if (IsSettingsWindowAlive()) {
     ::SetWindowPos(

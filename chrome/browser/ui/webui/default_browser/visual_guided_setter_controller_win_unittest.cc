@@ -11,10 +11,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
@@ -22,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/win/message_window.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/win/settings_window_finder_win.h"
@@ -153,6 +158,35 @@ class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
   int stop_observing_called_count_ = 0;
 };
 
+// Captures measurement requests so a test can answer them by hand. Overriding
+// Measure() means no service process is ever launched.
+class TestSettingsRowLocatorWin : public SettingsRowLocatorWin {
+ public:
+  void Measure(HWND settings_hwnd,
+               base::Process settings_process,
+               MeasurementCallback callback) override {
+    ++measure_count_;
+    pending_ = std::move(callback);
+  }
+
+  int measure_count() const { return measure_count_; }
+  bool has_pending() const { return !pending_.is_null(); }
+
+  void Answer(SettingsRowLocatorWin::Result result) {
+    ASSERT_FALSE(pending_.is_null());
+    std::move(pending_).Run(std::move(result));
+  }
+
+  base::WeakPtr<TestSettingsRowLocatorWin> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  MeasurementCallback pending_;
+  int measure_count_ = 0;
+  base::WeakPtrFactory<TestSettingsRowLocatorWin> weak_ptr_factory_{this};
+};
+
 class TestVisualGuidedSetterControllerWin
     : public VisualGuidedSetterControllerWin {
  public:
@@ -169,6 +203,9 @@ class TestVisualGuidedSetterControllerWin
   }
   void SetChromeWindowActive(bool active) { chrome_window_active_ = active; }
   void SetDpiCompatible(bool compatible) { dpi_compatible_ = compatible; }
+  // Fakes IsValidSettingsProcess() from now on. Until a test calls this, the
+  // real check runs.
+  void SetSettingsProcessValid(bool valid) { settings_process_valid_ = valid; }
 
   void CloseSettingsWindow() override { close_settings_window_called_ = true; }
   bool close_settings_window_called() const {
@@ -232,9 +269,40 @@ class TestVisualGuidedSetterControllerWin
     return finder;
   }
 
+  std::unique_ptr<SettingsRowLocatorWin> CreateSettingsRowLocator() override {
+    auto locator = std::make_unique<TestSettingsRowLocatorWin>();
+    test_locator_ = locator->GetWeakPtr();
+    return locator;
+  }
+
+  // Null until the first measurement, and again once the controller has
+  // dropped the locator.
+  TestSettingsRowLocatorWin* test_locator() const {
+    return test_locator_.get();
+  }
+
+  // Runs what the debounce timer would run, without waiting it out, and lets
+  // the request reach the locator: the handle is opened on the thread pool
+  // first, so this flushes the pool and then the reply posted back here.
+  void TriggerRowMeasurement() {
+    MeasureRowNow();
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   bool IsDpiCompatibleForDocking(HWND hwnd,
                                  const gfx::Rect& target_rect) const override {
     return dpi_compatible_;
+  }
+
+  bool IsValidSettingsProcess(HWND hwnd) const override {
+    if (settings_process_valid_.has_value()) {
+      return *settings_process_valid_;
+    }
+    return VisualGuidedSetterControllerWin::IsValidSettingsProcess(hwnd);
   }
 
   void ShowOverlayArrow(const gfx::Point& start,
@@ -295,6 +363,7 @@ class TestVisualGuidedSetterControllerWin
   bool settings_window_closed_ = false;
   bool chrome_window_active_ = true;
   bool dpi_compatible_ = true;
+  std::optional<bool> settings_process_valid_;
   bool close_settings_window_called_ = false;
   gfx::Rect docked_rect_ = kTestDockedRect;
   bool chrome_minimized_ = false;
@@ -307,6 +376,7 @@ class TestVisualGuidedSetterControllerWin
   std::vector<HWND> applied_z_orders_;
   base::OnceClosure run_loop_quit_closure_;
   mutable raw_ptr<TestSettingsWindowFinderWin> test_finder_ = nullptr;
+  base::WeakPtr<TestSettingsRowLocatorWin> test_locator_;
 };
 
 // Routes the window-state predicates back to the REAL implementations and
@@ -448,6 +518,262 @@ class VisualGuidedSetterControllerWinTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<TestVisualGuidedSetterControllerWin> controller_;
 };
+
+// Measuring the row costs a cross-process tree walk each time, so the flow
+// only keeps paying for it while it is working.
+class VisualGuidedSetterMeasuredArrowTest
+    : public VisualGuidedSetterControllerWinTest {
+ protected:
+  using FailureReason = SettingsRowLocatorWin::FailureReason;
+
+  void SetUp() override {
+    VisualGuidedSetterControllerWinTest::SetUp();
+    // A real window of this process, so the controller's own window and
+    // process checks pass.
+    settings_window_.emplace();
+    ASSERT_TRUE(settings_window_->Create(base::BindRepeating(
+        [](UINT, WPARAM, LPARAM, LRESULT*) { return false; })));
+  }
+
+  // Starts the flow with a Settings window found, which is what the layout
+  // pass needs before it will ask for a measurement.
+  void StartWithSettingsWindow() {
+    controller_->Start();
+    controller_->test_finder()->TriggerFound(settings_window_->hwnd());
+  }
+
+  void MeasureAndAnswer(SettingsRowLocatorWin::Result result) {
+    controller_->TriggerRowMeasurement();
+    ASSERT_TRUE(controller_->test_locator());
+    ASSERT_TRUE(controller_->test_locator()->has_pending());
+    controller_->test_locator()->Answer(std::move(result));
+  }
+
+  std::optional<base::win::MessageWindow> settings_window_;
+};
+
+TEST_F(VisualGuidedSetterMeasuredArrowTest,
+       StopsMeasuringAfterRepeatedFailures) {
+  StartWithSettingsWindow();
+
+  // A Settings build without the control never grows one, so after a few of
+  // these the flow stops asking, and lets the locator and its service go.
+  for (int i = 0; i < 3; ++i) {
+    MeasureAndAnswer(base::unexpected(FailureReason::kNotFound));
+  }
+  EXPECT_FALSE(controller_->test_locator());
+  EXPECT_FALSE(controller_->has_pending_row_measurement_for_testing());
+
+  controller_->TriggerRowMeasurement();
+
+  EXPECT_FALSE(controller_->test_locator());
+  controller_->Stop();
+}
+
+// A failure on a window that has settled at its size is retried from the
+// clock alone, so the rest of the budget does not wait for a resize that may
+// never come.
+TEST_F(VisualGuidedSetterMeasuredArrowTest, FailureIsRetriedWithoutAResize) {
+  StartWithSettingsWindow();
+  task_environment()->FastForwardBy(
+      VisualGuidedSetterControllerWin::kMeasureDebounce);
+  ASSERT_TRUE(controller_->test_locator());
+  ASSERT_EQ(controller_->test_locator()->measure_count(), 1);
+
+  // The window raced its own first layout.
+  controller_->test_locator()->Answer(
+      base::unexpected(FailureReason::kUnusable));
+  EXPECT_TRUE(controller_->has_pending_row_measurement_for_testing());
+  EXPECT_EQ(controller_->show_overlay_count(), 0);
+
+  task_environment()->FastForwardBy(
+      VisualGuidedSetterControllerWin::kMeasureRetryDelay);
+  ASSERT_TRUE(controller_->test_locator());
+  ASSERT_EQ(controller_->test_locator()->measure_count(), 2);
+  controller_->test_locator()->Answer(164);
+
+  EXPECT_GT(controller_->show_overlay_count(), 0);
+  EXPECT_FALSE(controller_->has_pending_row_measurement_for_testing());
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterMeasuredArrowTest, RetriesEndWithTheBudget) {
+  StartWithSettingsWindow();
+  task_environment()->FastForwardBy(
+      VisualGuidedSetterControllerWin::kMeasureDebounce);
+
+  for (int attempt = 1; attempt <= 3; ++attempt) {
+    ASSERT_TRUE(controller_->test_locator());
+    ASSERT_EQ(controller_->test_locator()->measure_count(), attempt);
+    controller_->test_locator()->Answer(
+        base::unexpected(FailureReason::kNotFound));
+    task_environment()->FastForwardBy(
+        VisualGuidedSetterControllerWin::kMeasureRetryDelay);
+  }
+
+  EXPECT_FALSE(controller_->test_locator());
+  EXPECT_FALSE(controller_->has_pending_row_measurement_for_testing());
+  controller_->Stop();
+}
+
+// Stopping with a measurement in flight drops the locator, which abandons the
+// request instead of letting the service probe on for its full wait.
+TEST_F(VisualGuidedSetterMeasuredArrowTest, StoppingDropsAMeasurementInFlight) {
+  StartWithSettingsWindow();
+  controller_->TriggerRowMeasurement();
+  ASSERT_TRUE(controller_->test_locator());
+  ASSERT_TRUE(controller_->test_locator()->has_pending());
+
+  controller_->Stop();
+
+  EXPECT_FALSE(controller_->test_locator());
+}
+
+TEST_F(VisualGuidedSetterMeasuredArrowTest,
+       DegradingDropsAMeasurementInFlight) {
+  StartWithSettingsWindow();
+  controller_->TriggerRowMeasurement();
+  ASSERT_TRUE(controller_->test_locator());
+  ASSERT_TRUE(controller_->test_locator()->has_pending());
+
+  controller_->test_finder()->TriggerMoveSize(/*in_progress=*/true);
+
+  EXPECT_FALSE(controller_->test_locator());
+  EXPECT_FALSE(controller_->has_pending_row_measurement_for_testing());
+  controller_->Stop();
+}
+
+// A measurement the flow superseded itself says nothing about whether
+// measuring works, so it must not count against the budget -- otherwise a
+// resize would switch measuring off exactly when it is wanted.
+TEST_F(VisualGuidedSetterMeasuredArrowTest,
+       SupersededMeasurementsAreNotFailures) {
+  StartWithSettingsWindow();
+
+  for (int i = 0; i < 5; ++i) {
+    MeasureAndAnswer(base::unexpected(FailureReason::kSuperseded));
+  }
+
+  controller_->TriggerRowMeasurement();
+
+  EXPECT_EQ(controller_->test_locator()->measure_count(), 6);
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterMeasuredArrowTest, SuccessResetsTheFailureBudget) {
+  StartWithSettingsWindow();
+
+  MeasureAndAnswer(base::unexpected(FailureReason::kTimedOut));
+  MeasureAndAnswer(base::unexpected(FailureReason::kTimedOut));
+  MeasureAndAnswer(164);
+  MeasureAndAnswer(base::unexpected(FailureReason::kTimedOut));
+  MeasureAndAnswer(base::unexpected(FailureReason::kTimedOut));
+
+  // Five attempts, but never three failures in a row, so the flow is still
+  // asking.
+  controller_->TriggerRowMeasurement();
+
+  EXPECT_EQ(controller_->test_locator()->measure_count(), 6);
+  controller_->Stop();
+}
+
+// The first dock is itself a resize, so the flow's very first measurement is
+// waiting on the debounce when the window appears. Hiding the tab in that
+// window must not take the size for measured: shown again, the layout pass has
+// to schedule it afresh.
+TEST_F(VisualGuidedSetterMeasuredArrowTest,
+       HidingTheTabDuringTheDebounceKeepsTheSizeMeasurable) {
+  StartWithSettingsWindow();
+  ASSERT_TRUE(controller_->has_pending_row_measurement_for_testing());
+
+  web_contents_->WasHidden();
+  EXPECT_FALSE(controller_->has_pending_row_measurement_for_testing());
+
+  web_contents_->WasShown();
+  EXPECT_TRUE(controller_->has_pending_row_measurement_for_testing());
+
+  controller_->Stop();
+}
+
+// A handle that no longer belongs to the Settings process is not sent anywhere:
+// asking whatever window it now names for its accessibility object could turn
+// on Chrome's own accessibility mode.
+TEST_F(VisualGuidedSetterMeasuredArrowTest,
+       NoMeasurementWhenTheWindowIsNoLongerSettings) {
+  StartWithSettingsWindow();
+  MeasureAndAnswer(164);
+  ASSERT_EQ(controller_->test_locator()->measure_count(), 1);
+
+  // Destroyed, so the handle no longer names a window of the process the flow
+  // found it in, and the real check refuses it.
+  settings_window_.reset();
+  controller_->TriggerRowMeasurement();
+
+  EXPECT_EQ(controller_->test_locator()->measure_count(), 1);
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterMeasuredArrowTest, ReplyForAnOldSizeIsDropped) {
+  StartWithSettingsWindow();
+  controller_->TriggerRowMeasurement();
+  ASSERT_TRUE(controller_->test_locator()->has_pending());
+
+  // Resized while the measurement is in flight; the next layout pass sees it.
+  controller_->set_settings_window_rect(gfx::Rect(1000, 300, 700, 600));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  ASSERT_TRUE(controller_->has_pending_row_measurement_for_testing());
+
+  controller_->clear_overlay_counts();
+  controller_->test_locator()->Answer(164);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(controller_->show_overlay_count(), 0);
+
+  // The new size is measured once the debounce runs out.
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_EQ(controller_->test_locator()->measure_count(), 2);
+  controller_->Stop();
+}
+
+// The arrow only ever points at a measured row: nothing is drawn before the
+// first measurement lands, and it is drawn as soon as one does.
+TEST_F(VisualGuidedSetterMeasuredArrowTest, ArrowHiddenUntilRowIsMeasured) {
+  StartWithSettingsWindow();
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(controller_->show_overlay_count(), 0);
+
+  MeasureAndAnswer(164);
+
+  EXPECT_GT(controller_->show_overlay_count(), 0);
+  controller_->Stop();
+}
+
+// A failed measurement leaves nothing to point at, so still no arrow.
+TEST_F(VisualGuidedSetterMeasuredArrowTest, ArrowHiddenWhenMeasurementFails) {
+  StartWithSettingsWindow();
+
+  MeasureAndAnswer(base::unexpected(FailureReason::kNotFound));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  EXPECT_EQ(controller_->show_overlay_count(), 0);
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterMeasuredArrowTest,
+       OverlayShownWhenMeasuredAndHiddenWhenInvalid) {
+  StartWithSettingsWindow();
+  MeasureAndAnswer(164);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  EXPECT_GT(controller_->show_overlay_count(), 0);
+  controller_->clear_overlay_counts();
+  controller_->SetSettingsWindowValid(false);
+
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_GT(controller_->hide_overlay_count(), 0);
+  EXPECT_EQ(controller_->show_overlay_count(), 0);
+
+  controller_->Stop();
+}
 
 TEST_F(VisualGuidedSetterControllerWinTest, StartFindsSettingsWindow) {
   base::HistogramTester histograms;
@@ -973,7 +1299,17 @@ TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
        ChromeWindowOcclusionDoesNotDegrade) {
   base::HistogramTester histograms;
 
+  // The fixture's Settings handle is not a real window, so the real process
+  // check would refuse to measure it.
+  controller_->SetSettingsProcessValid(true);
   StartAndFindSettingsWindow();
+  // The arrow is only drawn once the debounced measurement has landed.
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  ASSERT_TRUE(controller_->test_locator());
+  ASSERT_TRUE(controller_->test_locator()->has_pending());
+  controller_->test_locator()->Answer(164);
+  ASSERT_EQ(controller_->show_overlay_count(), 1);
+  controller_->clear_overlay_counts();
 
   web_contents_->WasOccluded();
   EXPECT_EQ(controller_->hide_overlay_count(), 1);
@@ -1349,14 +1685,12 @@ TEST_F(VisualGuidedSetterControllerWinTest,
       TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowClosed, 1);
 }
 
-TEST_F(VisualGuidedSetterControllerWinTest,
-       OverlayShownWhenDockedAndHiddenWhenInvalid) {
+TEST_F(VisualGuidedSetterControllerWinTest, OverlayHiddenWhenInvalid) {
   HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
   controller_->Start();
   controller_->test_finder()->TriggerFound(fake_hwnd);
   task_environment()->FastForwardBy(base::Milliseconds(100));
 
-  EXPECT_GT(controller_->show_overlay_count(), 0);
   controller_->clear_overlay_counts();
   controller_->SetSettingsWindowValid(false);
 

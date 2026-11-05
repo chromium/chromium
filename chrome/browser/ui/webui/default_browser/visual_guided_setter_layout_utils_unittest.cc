@@ -26,13 +26,9 @@ namespace visual_guided_setter {
 
 namespace {
 
-// Distance from the top of the Settings window down to the center of the "Set
-// default" button, for a window narrow enough that the subtitle wraps, at text
-// scale 1.0.
-constexpr int kButtonCenterDip = 164;
-
-// The same distance at text scale 1.75, used by the large-text fixture below.
-constexpr int kButtonCenterLargeTextDip = 188;
+// An offset from the top of the Settings window down to the row, as the row
+// locator would report it.
+constexpr int kMeasuredOffsetPx = 164;
 
 // The narrowest anchor that can host a docked Settings window:
 // kNoWrapClientWidthDip (410) + kHorizontalFrameDip (16) + two
@@ -52,19 +48,15 @@ constexpr int kBreakpointMarginDip = 20;
 struct MeasuredLayout {
   float text_scale;
   int wrap_client_width_dip;
-  int subtitle_wrap_client_width_dip;
-  int button_center_wrapped_dip;
-  int button_center_narrow_dip;
-  int button_center_wide_dip;
 };
 
 constexpr auto kMeasuredLayouts = std::to_array<MeasuredLayout>({
-    {1.00f, 376, 376, 164, 164, 175},
-    {1.25f, 404, 556, 172, 170, 182},
-    {1.50f, 432, 612, 180, 175, 194},
-    {1.58f, 441, 630, 183, 177, 198},
-    {1.75f, 460, 668, 188, 181, 209},
-    {2.00f, 488, 724, 196, 186, 228},
+    {1.00f, 376},
+    {1.25f, 404},
+    {1.50f, 432},
+    {1.58f, 441},
+    {1.75f, 460},
+    {2.00f, 488},
 });
 
 // Stands in for the Windows "Make text bigger" accessibility setting so the
@@ -192,14 +184,17 @@ TEST_F(VisualGuidedSetterLayoutUtilsTest, ComputeArrowStartAndEndPoints) {
   EXPECT_EQ(start.y(), 300);
 
   gfx::Rect target(200, 300, 200, 400);
-  gfx::Point end = ComputeArrowEndPoint(fake_hwnd(), target);
+  gfx::Point end = ComputeArrowEndPoint(target, kMeasuredOffsetPx);
   EXPECT_EQ(end.x(), 400);
-  EXPECT_EQ(end.y(), 300 + kButtonCenterDip);
+  EXPECT_EQ(end.y(), 300 + kMeasuredOffsetPx);
 }
 
+// A measurement is taken from one layout and applied to whatever window is on
+// screen now. Those can disagree -- the window shrank between the two -- so
+// the arrow must still end inside the window.
 TEST_F(VisualGuidedSetterLayoutUtilsTest, ArrowEndPointStaysInsideTheWindow) {
   gfx::Rect short_target(200, 300, 200, 40);
-  gfx::Point end = ComputeArrowEndPoint(fake_hwnd(), short_target);
+  gfx::Point end = ComputeArrowEndPoint(short_target, 5000);
   EXPECT_LE(end.y(), short_target.bottom());
   EXPECT_GE(end.y(), short_target.y());
 }
@@ -216,32 +211,12 @@ TEST_F(VisualGuidedSetterLayoutUtilsTest, IsDpiCompatibleForDocking) {
 }
 
 TEST_F(VisualGuidedSetterLayoutUtilsTest, FittedLayoutMatchesMeasuredLayout) {
-  // Taller than any button center, so the arrow is never clamped to the
-  // window's bottom edge.
+  // Any height will do; only the width decides whether the layout is stable.
   constexpr int kTallEnoughDip = 400;
 
   for (const MeasuredLayout& measured : kMeasuredLayouts) {
     SCOPED_TRACE(testing::Message() << "text scale " << measured.text_scale);
     SetTextScale(measured.text_scale);
-
-    auto button_center = [&](int client_width_dip) {
-      gfx::Rect target(0, 0, client_width_dip, kTallEnoughDip);
-      return ComputeArrowEndPoint(fake_hwnd(), target).y();
-    };
-
-    // Too narrow for a one-line subtitle: it takes two, pushing the button
-    // down.
-    EXPECT_EQ(button_center(measured.subtitle_wrap_client_width_dip - 1),
-              measured.button_center_wrapped_dip);
-
-    // Wide enough for a one-line subtitle, still narrow enough that the
-    // navigation pane stays collapsed.
-    EXPECT_EQ(button_center(measured.subtitle_wrap_client_width_dip),
-              measured.button_center_narrow_dip);
-
-    // Wide enough for the navigation pane to expand.
-    EXPECT_EQ(button_center(kPaneCollapseClientWidthDip),
-              measured.button_center_wide_dip);
 
     // Below the wrap width the button stacks under the subtitle, and where it
     // lands then is not modeled, so docking is declined instead of guessed at.
@@ -267,19 +242,12 @@ TEST_F(VisualGuidedSetterLayoutUtilsTest, LayoutIsUnstableOnThePaneBreakpoint) {
   EXPECT_TRUE(stable(kPaneCollapseClientWidthDip + kBreakpointMarginDip + 1));
 }
 
-// The Settings page lays itself out against the Windows text scale, so the row
-// the arrow points at moves down as that setting grows.
+// The Settings page lays itself out against the Windows text scale.
 class VisualGuidedSetterLayoutUtilsLargeTextTest
     : public VisualGuidedSetterLayoutUtilsTest {
  protected:
   float GetTestTextScale() const override { return 1.75f; }
 };
-
-TEST_F(VisualGuidedSetterLayoutUtilsLargeTextTest, ArrowEndPointFollowsText) {
-  gfx::Rect target(200, 300, 200, 400);
-  gfx::Point end = ComputeArrowEndPoint(fake_hwnd(), target);
-  EXPECT_EQ(end.y(), 300 + kButtonCenterLargeTextDip);
-}
 
 TEST_F(VisualGuidedSetterLayoutUtilsLargeTextTest,
        MinimumAnchorWidthDoesNotFollowText) {
@@ -306,9 +274,9 @@ TEST_F(VisualGuidedSetterLayoutUtilsRTLTest, ArrowPointsTheOtherWay) {
   EXPECT_EQ(start.y(), 300);
 
   gfx::Rect target(200, 300, 200, 2000);
-  gfx::Point end = ComputeArrowEndPoint(fake_hwnd(), target);
+  gfx::Point end = ComputeArrowEndPoint(target, kMeasuredOffsetPx);
   EXPECT_EQ(end.x(), 200);
-  EXPECT_EQ(end.y(), 300 + kButtonCenterDip);
+  EXPECT_EQ(end.y(), 300 + kMeasuredOffsetPx);
 }
 
 }  // namespace visual_guided_setter
