@@ -1045,7 +1045,7 @@ suite('OrganizerListSectionTest', () => {
   });
 
   test(
-      'records IndexOf histograms on item and action button clicks',
+      'records IndexOf and TimeTo histograms on item and action button clicks',
       async () => {
         const items: Array<OrganizerListSectionItem<unknown>> = [
           {
@@ -1089,6 +1089,14 @@ suite('OrganizerListSectionTest', () => {
             0,
             metrics.count(
                 'Tabs.Organizer.WebUI.IndexOfSwitchTabInFilteredList'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList'));
+        assertEquals(
+            0,
+            metrics.count(
+                'Tabs.Organizer.WebUI.TimeToSwitchTabInFilteredList'));
 
         listItems[2]!.shadowRoot.querySelector<HTMLElement>(
                                     '#actionButton')!.click();
@@ -1101,8 +1109,15 @@ suite('OrganizerListSectionTest', () => {
             0,
             metrics.count(
                 'Tabs.Organizer.WebUI.IndexOfCloseTabInFilteredList'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.TimeToCloseTabInUnfilteredList'));
+        assertEquals(
+            0,
+            metrics.count('Tabs.Organizer.WebUI.TimeToCloseTabInFilteredList'));
 
-        // Filter items and verify filtered index is recorded.
+        // Filter items and verify filtered index and time are recorded.
         listSection.searchQuery = 'YouTube';
         await microtasksFinished();
 
@@ -1115,6 +1130,10 @@ suite('OrganizerListSectionTest', () => {
             1,
             metrics.count(
                 'Tabs.Organizer.WebUI.IndexOfSwitchTabInFilteredList', 1));
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.TimeToSwitchTabInFilteredList'));
 
         listItems[0]!.shadowRoot.querySelector<HTMLElement>(
                                     '#actionButton')!.click();
@@ -1123,10 +1142,13 @@ suite('OrganizerListSectionTest', () => {
             1,
             metrics.count(
                 'Tabs.Organizer.WebUI.IndexOfCloseTabInFilteredList', 0));
+        assertEquals(
+            1,
+            metrics.count('Tabs.Organizer.WebUI.TimeToCloseTabInFilteredList'));
       });
 
   test(
-      'does not record action button IndexOf histogram when action is undefined',
+      'does not record action button histograms when action is undefined',
       async () => {
         const items: Array<OrganizerListSectionItem<unknown>> = [
           {
@@ -1157,11 +1179,23 @@ suite('OrganizerListSectionTest', () => {
             0,
             metrics.count(
                 'Tabs.Organizer.WebUI.IndexOfSwitchTabInUnfilteredList'));
+        assertEquals(
+            0,
+            metrics.count(
+                'Tabs.Organizer.WebUI.TimeToCloseTabInUnfilteredList'));
+        assertEquals(
+            0,
+            metrics.count(
+                'Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList'));
 
         listItems[0]!.click();
         assertEquals(
             1,
             metrics.count(
                 'Tabs.Organizer.WebUI.IndexOfSwitchTabInUnfilteredList', 0));
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList'));
       });
 });

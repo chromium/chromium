@@ -78,6 +78,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private sectionStateChangedListenerId_: number|null = null;
+  private windowShownTimestamp_: number = performance.now();
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   accessor expanded: boolean = true;
@@ -128,6 +129,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   // so all sections need to refetch their data upon visibility change.
   private onVisibilityChange_: () => void = () => {
     if (document.visibilityState === 'visible') {
+      this.windowShownTimestamp_ = performance.now();
       this.updateItems_();
       this.updateSectionState_();
     }
@@ -296,19 +298,20 @@ export class OrganizerListSectionElement extends CrLitElement implements
         this.delegate.getId(), this.showAll_);
   }
 
-  private recordIndexMetric_(action: OrganizerAction, index: number) {
+  private recordActionMetrics_(action: OrganizerAction, index: number) {
+    const state = this.isSearching_() ? 'Filtered' : 'Unfiltered';
     chrome.histograms.recordSmallCount(
-        this.isSearching_() ?
-            `Tabs.Organizer.WebUI.IndexOf${action}InFilteredList` :
-            `Tabs.Organizer.WebUI.IndexOf${action}InUnfilteredList`,
-        index);
+        `Tabs.Organizer.WebUI.IndexOf${action}In${state}List`, index);
+    chrome.histograms.recordMediumTime(
+        `Tabs.Organizer.WebUI.TimeTo${action}In${state}List`,
+        Math.round(performance.now() - this.windowShownTimestamp_));
   }
 
   protected onItemClick_(e: Event) {
     const target = e.currentTarget as OrganizerListSectionItemElement;
     assert(target.item);
     assert(this.delegate);
-    this.recordIndexMetric_(
+    this.recordActionMetrics_(
         this.delegate.getItemClickAction(), Number(target.dataset['index']));
     this.delegate.onItemClick(target.item);
     this.browserProxy_.handler.closePanel();
@@ -324,7 +327,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     const itemElement = e.currentTarget as OrganizerListSectionItemElement;
     const action = this.delegate.getActionButtonClickAction?.();
     if (action) {
-      this.recordIndexMetric_(action, Number(itemElement.dataset['index']));
+      this.recordActionMetrics_(action, Number(itemElement.dataset['index']));
     }
     await this.delegate.onItemActionButtonClicked?.(
         e.detail.item, e.detail.buttonElement);
