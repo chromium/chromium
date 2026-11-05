@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
   // accelerator is not present this function will DCHECK.
   const V& Get(const Accelerator& accelerator) const {
     auto iter = FindImpl(accelerator);
-    DCHECK(iter != map_.end());
+    CHECK(iter != map_.end(), base::NotFatalUntil::M163);
     return iter->second;
   }
 
@@ -120,12 +120,12 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
       accelerator_copy.reset_code();
       auto value_copy = std::make_pair(accelerator_copy, value.second);
       auto result = map_.insert(value_copy);
-      DCHECK(result.second);
+      CHECK(result.second, base::NotFatalUntil::M163);
       return;
     }
 #endif
     auto result = map_.insert(value);
-    DCHECK(result.second);
+    CHECK(result.second, base::NotFatalUntil::M163);
   }
 
   // Iterators for the internal map.
@@ -189,7 +189,8 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
 #if BUILDFLAG(IS_CHROMEOS)
     auto iter = map_.find(RemapAcceleratorForLookup(accelerator));
     // Sanity check that a DomCode was never inserted into the map.
-    DCHECK(iter == map_.end() || iter->first.code() == DomCode::NONE);
+    CHECK(iter == map_.end() || iter->first.code() == DomCode::NONE,
+          base::NotFatalUntil::M163);
     return iter;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -34,7 +34,7 @@ class ListModel {
 
   // Adds |item| at the |index| into |items_|. Returns a raw pointer.
   ItemType* AddAt(size_t index, std::unique_ptr<ItemType> item) {
-    DCHECK_LE(index, item_count());
+    CHECK_LE(index, item_count(), base::NotFatalUntil::M163);
     ItemType* item_ptr = item.get();
     items_.insert(items_.begin() + index, std::move(item));
     NotifyItemsAdded(index, 1);
@@ -49,7 +49,7 @@ class ListModel {
   // Removes the item at |index| from |items_| without deleting it.
   // Returns a scoped pointer containing the removed item.
   std::unique_ptr<ItemType> RemoveAt(size_t index) {
-    DCHECK_LT(index, item_count());
+    CHECK_LT(index, item_count(), base::NotFatalUntil::M163);
     std::unique_ptr<ItemType> item = std::move(items_[index]);
     items_.erase(items_.begin() + index);
     NotifyItemsRemoved(index, 1);
@@ -81,8 +81,8 @@ class ListModel {
   // Moves the item at |index| to |target_index|. |target_index| is in terms
   // of the model *after* the item at |index| is removed.
   void Move(size_t index, size_t target_index) {
-    DCHECK_LT(index, item_count());
-    DCHECK_LT(target_index, item_count());
+    CHECK_LT(index, item_count(), base::NotFatalUntil::M163);
+    CHECK_LT(target_index, item_count(), base::NotFatalUntil::M163);
 
     if (index == target_index)
       return;
@@ -120,7 +120,7 @@ class ListModel {
   size_t item_count() const { return items_.size(); }
 
   const ItemType* GetItemAt(size_t index) const {
-    DCHECK_LT(index, item_count());
+    CHECK_LT(index, item_count(), base::NotFatalUntil::M163);
     return items_[index].get();
   }
   ItemType* GetItemAt(size_t index) {

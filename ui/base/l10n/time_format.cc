@@ -49,7 +49,7 @@ std::u16string TimeFormat::DetailedWithMonthAndYear(
     int cutoff,
     const base::TimeDelta& delta,
     bool with_month_and_year) {
-  DCHECK_GE(delta, base::TimeDelta());
+  CHECK_GE(delta, base::TimeDelta(), base::NotFatalUntil::M163);
 
   // Negative cutoff: always use two-value format.
   if (cutoff < 0) {
@@ -123,24 +123,24 @@ std::u16string TimeFormat::DetailedWithMonthAndYear(
                         &time_string);
     }
   } else if (delta < kYear) {
-    DCHECK(with_month_and_year);
+    CHECK(with_month_and_year, base::NotFatalUntil::M163);
     const int month = base::ClampFloor(delta / kMonth);
-    DCHECK_GE(month, 1);
-    DCHECK_LE(month, 12);
+    CHECK_GE(month, 1, base::NotFatalUntil::M163);
+    CHECK_LE(month, 12, base::NotFatalUntil::M163);
     formatter->Format(Formatter::UNIT_MONTH, month, &time_string);
   } else {
-    DCHECK(with_month_and_year);
+    CHECK(with_month_and_year, base::NotFatalUntil::M163);
     const int year = base::ClampFloor(delta / kYear);
     formatter->Format(Formatter::UNIT_YEAR, year, &time_string);
   }
 
   const int32_t capacity = time_string.length() + 1;
-  DCHECK_GT(capacity, 1);
+  CHECK_GT(capacity, 1, base::NotFatalUntil::M163);
   std::u16string result;
   UErrorCode error = U_ZERO_ERROR;
   time_string.extract(base::WriteInto(&result, static_cast<size_t>(capacity)),
                       capacity, error);
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M163);
   return result;
 }
 

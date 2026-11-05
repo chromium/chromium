@@ -183,11 +183,11 @@ void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
     bool success = compression::GzipUncompress(
         base::as_byte_span(data),
         GetBufferForWriting(output, uncompressed_size));
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M163);
   } else if (!data.empty() && HasBrotliHeader(data)) {
     TRACE_EVENT0("ui", "DecompressIfNeeded::BrotliDecompress");
     bool success = BrotliDecompress(data, output);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M163);
   } else {
     base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
     std::ranges::copy(data, dest.data());
@@ -684,7 +684,7 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
 
   // The load was successful, so cache the image.
   auto inserted = images_.emplace(resource_id, image);
-  DCHECK(inserted.second);
+  CHECK(inserted.second, base::NotFatalUntil::M163);
   return inserted.first->second;
 }
 
@@ -721,7 +721,7 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
   // resulting image.
   auto inserted = image_models_.emplace(
       resource_id, ParseLottieAsThemedStillImage(std::move(*data)));
-  DCHECK(inserted.second);
+  CHECK(inserted.second, base::NotFatalUntil::M163);
   return inserted.first->second;
 }
 
@@ -889,14 +889,12 @@ bool ResourceBundle::IsBrotli(int resource_id) const {
 }
 
 std::u16string ResourceBundle::GetLocalizedString(int resource_id) {
-#if DCHECK_IS_ON()
   {
     base::AutoLock lock_scope(*locale_resources_data_lock_);
     // Overriding locale strings isn't supported if the first string resource
     // has already been queried.
     can_override_locale_string_resources_ = false;
   }
-#endif
   DCHECK(!IsGzipped(resource_id) && !IsBrotli(resource_id))
       << "Compressed string encountered, perhaps use "
          "ResourceBundle::LoadLocalizedResourceString instead";
@@ -959,7 +957,9 @@ const gfx::FontList& ResourceBundle::GetFontListForDetails(
   }
 
   auto styled = font_cache_.emplace(details, base_font_list);
-  DCHECK(styled.second);  // Otherwise font_cache_.find(..) would have found it.
+  CHECK(styled.second,
+        base::NotFatalUntil::M163);  // Otherwise font_cache_.find(..) would
+                                     // have found it.
   styled.first->second = sized.first->second.Derive(
       0, sized.first->second.GetFontStyle(), details.weight);
 
@@ -1012,10 +1012,8 @@ ResourceScaleFactor ResourceBundle::GetMaxResourceScaleFactor() const {
 }
 
 void ResourceBundle::CheckCanOverrideStringResources() {
-#if DCHECK_IS_ON()
   base::AutoLock lock_scope(*locale_resources_data_lock_);
-  DCHECK(can_override_locale_string_resources_);
-#endif
+  CHECK(can_override_locale_string_resources_, base::NotFatalUntil::M163);
 }
 
 ResourceBundle::ResourceBundle(Delegate* delegate)
@@ -1092,7 +1090,7 @@ void ResourceBundle::AddDataPackFromPathInternal(
     bool optional) {
   // Do not pass an empty |path| value to this method. If the absolute path is
   // unknown pass just the pack file name.
-  DCHECK(!path.empty());
+  CHECK(!path.empty(), base::NotFatalUntil::M163);
 
   base::FilePath pack_path = path;
   if (delegate_)
@@ -1183,7 +1181,7 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
                                 int resource_id,
                                 SkBitmap* bitmap,
                                 bool* fell_back_to_1x) const {
-  DCHECK(fell_back_to_1x);
+  CHECK(fell_back_to_1x, base::NotFatalUntil::M163);
   scoped_refptr<base::RefCountedMemory> memory(
       data_handle.GetStaticMemory(static_cast<uint16_t>(resource_id)));
   if (!memory.get())
@@ -1211,12 +1209,12 @@ bool ResourceBundle::LoadBitmap(int resource_id,
                                 ResourceScaleFactor* scale_factor,
                                 SkBitmap* bitmap,
                                 bool* fell_back_to_1x) const {
-  DCHECK(fell_back_to_1x);
+  CHECK(fell_back_to_1x, base::NotFatalUntil::M163);
   base::AutoLock lock_scope(*resource_handles_lock_);
   for (const auto& pack : resource_handles_) {
     if (pack->GetResourceScaleFactor() == ui::kScaleFactorNone &&
         LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
-      DCHECK(!*fell_back_to_1x);
+      CHECK(!*fell_back_to_1x, base::NotFatalUntil::M163);
       *scale_factor = ui::kScaleFactorNone;
       return true;
     }

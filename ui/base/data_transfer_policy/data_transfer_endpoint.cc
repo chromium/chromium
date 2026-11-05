@@ -18,7 +18,7 @@ DataTransferEndpoint::DataTransferEndpoint(const GURL& url,
       url_(url),
       off_the_record_(options.off_the_record),
       notify_if_restricted_(options.notify_if_restricted) {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M163);
 }
 
 DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
@@ -27,7 +27,7 @@ DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
       url_(std::nullopt),
       off_the_record_(options.off_the_record),
       notify_if_restricted_(options.notify_if_restricted) {
-  DCHECK_NE(type, EndpointType::kUrl);
+  CHECK_NE(type, EndpointType::kUrl, base::NotFatalUntil::M163);
 }
 
 DataTransferEndpoint::DataTransferEndpoint(const DataTransferEndpoint& other) =

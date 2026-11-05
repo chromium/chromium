@@ -14,7 +14,8 @@ namespace ui {
 GlobalAcceleratorListener::GlobalAcceleratorListener() = default;
 
 GlobalAcceleratorListener::~GlobalAcceleratorListener() {
-  DCHECK(accelerator_map_.empty());  // Make sure we've cleaned up.
+  CHECK(accelerator_map_.empty(),
+        base::NotFatalUntil::M163);  // Make sure we've cleaned up.
 }
 
 bool GlobalAcceleratorListener::RegisterAccelerator(
@@ -51,7 +52,7 @@ void GlobalAcceleratorListener::UnregisterAccelerator(
   // We should never get asked to unregister something that we didn't register.
   CHECK(it != accelerator_map_.end());
   // The caller should call this function with the right observer.
-  DCHECK(it->second == observer);
+  CHECK(it->second == observer, base::NotFatalUntil::M163);
 
   if (!shortcut_handling_suspended_) {
     StopListeningForAccelerator(accelerator);

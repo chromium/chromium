@@ -118,17 +118,17 @@ gfx::Size ImageModel::Size() const {
 }
 
 VectorIconModel ImageModel::GetVectorIcon() const {
-  DCHECK(IsVectorIcon());
+  CHECK(IsVectorIcon(), base::NotFatalUntil::M163);
   return std::get<VectorIconModel>(icon_);
 }
 
 gfx::Image ImageModel::GetImage() const {
-  DCHECK(IsImage());
+  CHECK(IsImage(), base::NotFatalUntil::M163);
   return std::get<gfx::Image>(icon_);
 }
 
 ImageModel::ImageGenerator ImageModel::GetImageGenerator() const {
-  DCHECK(IsImageGenerator());
+  CHECK(IsImageGenerator(), base::NotFatalUntil::M163);
   return std::get<ImageGeneratorAndSize>(icon_).generator;
 }
 
@@ -142,7 +142,7 @@ gfx::ImageSkia ImageModel::Rasterize(
 #if BUILDFLAG(IS_IOS)
     NOTREACHED();
 #else
-    DCHECK(color_provider);
+    CHECK(color_provider, base::NotFatalUntil::M163);
     return ThemedVectorIcon(GetVectorIcon()).GetImageSkia(color_provider);
 #endif
   }

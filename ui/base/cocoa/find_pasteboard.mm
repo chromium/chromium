@@ -60,12 +60,12 @@ NSString* kFindPasteboardChangedNotification =
 }
 
 - (void)setFindText:(NSString*)newText {
-  DCHECK(newText);
+  CHECK(newText, base::NotFatalUntil::M163);
   if (!newText) {
     return;
   }
 
-  DCHECK(NSThread.isMainThread);
+  CHECK(NSThread.isMainThread, base::NotFatalUntil::M163);
 
   BOOL textChanged = ![_findText isEqualToString:newText];
   if (textChanged) {

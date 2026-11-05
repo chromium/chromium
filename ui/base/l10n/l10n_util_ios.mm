@@ -33,7 +33,7 @@ class LocaleCache {
       cache = tls_cache.Get();
     }
 
-    DCHECK(cache);
+    CHECK(cache, base::NotFatalUntil::M163);
     return cache->LocaleForIdentifierInternal(identifier);
   }
 
@@ -43,7 +43,7 @@ class LocaleCache {
       locale_ = [[NSLocale alloc] initWithLocaleIdentifier:identifier];
     }
 
-    DCHECK(locale_);
+    CHECK(locale_, base::NotFatalUntil::M163);
     return locale_;
   }
 

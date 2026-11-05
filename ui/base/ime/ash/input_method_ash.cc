@@ -121,7 +121,7 @@ InputMethodAsh::PendingAutocorrectRange::PendingAutocorrectRange(
 InputMethodAsh::PendingAutocorrectRange::~PendingAutocorrectRange() = default;
 
 ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
-  DCHECK(!(event->flags() & ui::EF_IS_SYNTHESIZED));
+  CHECK(!(event->flags() & ui::EF_IS_SYNTHESIZED), base::NotFatalUntil::M163);
 
   // For OS_CHROMEOS build of Chrome running on Linux, the IME keyboard cannot
   // track the Caps Lock state by itself, so need to call SetCapsLockEnabled()
@@ -221,7 +221,7 @@ void InputMethodAsh::ProcessKeyEventDone(
     ui::KeyEvent* event,
     base::ScopedClosureRunner in_flight,
     ui::ime::KeyEventHandledState handled_state) {
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   in_flight.ReplaceClosure(base::BindOnce(
       &InputMethodAsh::FinishHandlingKeyEvent, weak_ptr_factory_.GetWeakPtr()));
   bool is_handled_by_char_composer = false;
@@ -323,8 +323,8 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   }
 
   // The current text input type should not be NONE if |context_| is focused.
-  DCHECK(client == GetTextInputClient());
-  DCHECK(!IsTextInputTypeNone());
+  CHECK(client == GetTextInputClient(), base::NotFatalUntil::M163);
+  CHECK(!IsTextInputTypeNone(), base::NotFatalUntil::M163);
 
   TextInputMethod* engine = GetEngine();
   if (engine) {
@@ -398,8 +398,8 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   if (GetEngine()) {
     // TODO(b/245020074): Handle the case where selection is before the offset.
     const uint32_t offset = text_range.start();
-    DCHECK_GE(selection_range.start(), offset);
-    DCHECK_GE(selection_range.end(), offset);
+    CHECK_GE(selection_range.start(), offset, base::NotFatalUntil::M163);
+    CHECK_GE(selection_range.end(), offset, base::NotFatalUntil::M163);
     const gfx::Range relative_selection_range(selection_range.start() - offset,
                                               selection_range.end() - offset);
     GetEngine()->SetSurroundingText(surrounding_text, relative_selection_range,
@@ -828,7 +828,7 @@ ui::EventDispatchDetails InputMethodAsh::ProcessUnfilteredKeyPressEvent(
 void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
                                                           bool handled) {
   TextInputClient* client = GetTextInputClient();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M163);
 
   if (pending_commit_) {
     if (handled && NeedInsertChar()) {
@@ -1063,7 +1063,7 @@ TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
 
 void InputMethodAsh::SendKeyEvent(ui::KeyEvent* event) {
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
-  DCHECK(!details.dispatcher_destroyed);
+  CHECK(!details.dispatcher_destroyed, base::NotFatalUntil::M163);
 }
 
 SurroundingTextInfo InputMethodAsh::GetSurroundingTextInfo() {
@@ -1178,8 +1178,9 @@ CompositionText InputMethodAsh::ExtractCompositionText(
     }
   }
 
-  DCHECK(text.selection.start() <= text.selection.end());
-  DCHECK(text.selection.end() <= char_length);
+  CHECK(text.selection.start() <= text.selection.end(),
+        base::NotFatalUntil::M163);
+  CHECK(text.selection.end() <= char_length, base::NotFatalUntil::M163);
   if (text.selection.start() < text.selection.end()) {
     const size_t start =
         std::min(text.selection.start(), static_cast<size_t>(char_length));

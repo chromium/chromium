@@ -90,7 +90,7 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
   TRACE_EVENT2("ui", "CommandDispatcher::performKeyEquivalent", "window num",
                _owner.windowNumber, "is keyWin", NSApp.keyWindow == _owner);
-  DCHECK_EQ(NSEventTypeKeyDown, event.type);
+  CHECK_EQ(NSEventTypeKeyDown, event.type, base::NotFatalUntil::M163);
 
   // If the event is being redispatched, then this is the second time
   // performKeyEquivalent: is being called on the event. The first time, a
@@ -164,8 +164,9 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
     }
 
     id appController = [NSApp delegate];
-    DCHECK([appController
-        respondsToSelector:@selector(validateUserInterfaceItem:)]);
+    CHECK([appController
+              respondsToSelector:@selector(validateUserInterfaceItem:)],
+          base::NotFatalUntil::M163);
     if ([appController validateUserInterfaceItem:item])
       return YES;
   }
@@ -190,10 +191,10 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   TRACE_EVENT2("ui", "CommandDispatcher::redispatchKeyEvent", "window num",
                _owner.windowNumber, "event window num",
                event.window.windowNumber);
-  DCHECK(!_isRedispatchingKeyEvent);
+  CHECK(!_isRedispatchingKeyEvent, base::NotFatalUntil::M163);
   base::AutoReset<BOOL> resetter(&_isRedispatchingKeyEvent, YES);
 
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   NSEventType eventType = event.type;
   CHECK(eventType == NSEventTypeKeyDown || eventType == NSEventTypeKeyUp ||
         eventType == NSEventTypeFlagsChanged);

@@ -11,7 +11,7 @@ namespace ui {
 std::unique_ptr<MediaKeysListener> MediaKeysListener::Create(
     MediaKeysListener::Delegate* delegate,
     MediaKeysListener::Scope scope) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
 
   if (scope == Scope::kGlobal) {
     // We should never have more than one global media keys listener.

@@ -71,7 +71,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
                                owner:(id)owner
                             userData:(void*)data
                         assumeInside:(BOOL)assumeInside {
-  DCHECK_EQ(_trackingRectOwner, nil);
+  CHECK_EQ(_trackingRectOwner, nil, base::NotFatalUntil::M163);
   _trackingRectOwner = owner;
   _trackingRectUserData = data;
   return kTrackingRectTag;
@@ -83,8 +83,8 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
                              userData:(void*)data
                          assumeInside:(BOOL)assumeInside
                        useTrackingNum:(int)tag {
-  DCHECK(tag == 0 || tag == kTrackingRectTag);
-  DCHECK_EQ(_trackingRectOwner, nil);
+  CHECK(tag == 0 || tag == kTrackingRectTag, base::NotFatalUntil::M163);
+  CHECK_EQ(_trackingRectOwner, nil, base::NotFatalUntil::M163);
   _trackingRectOwner = owner;
   _trackingRectUserData = data;
   return kTrackingRectTag;
@@ -97,9 +97,10 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
          assumeInsideList:(BOOL*)assumeInsideList
              trackingNums:(NSTrackingRectTag*)trackingNums
                     count:(int)count {
-  DCHECK_EQ(count, 1);
-  DCHECK(trackingNums[0] == 0 || trackingNums[0] == kTrackingRectTag);
-  DCHECK_EQ(_trackingRectOwner, nil);
+  CHECK_EQ(count, 1, base::NotFatalUntil::M163);
+  CHECK(trackingNums[0] == 0 || trackingNums[0] == kTrackingRectTag,
+        base::NotFatalUntil::M163);
+  CHECK_EQ(_trackingRectOwner, nil, base::NotFatalUntil::M163);
   _trackingRectOwner = owner;
   _trackingRectUserData = userDataList[0];
   trackingNums[0] = kTrackingRectTag;
@@ -137,7 +138,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
     if (tag == 0) {
       continue;
     }
-    DCHECK_EQ(tag, kTrackingRectTag);
+    CHECK_EQ(tag, kTrackingRectTag, base::NotFatalUntil::M163);
     _trackingRectOwner = nil;
     _trackingRectUserData = nullptr;
   }

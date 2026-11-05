@@ -55,7 +55,7 @@ ScopedPasswordInputEnabler::ScopedPasswordInputEnabler() {
 
 ScopedPasswordInputEnabler::~ScopedPasswordInputEnabler() {
   --g_password_input_counter;
-  DCHECK_LE(0, g_password_input_counter);
+  CHECK_LE(0, g_password_input_counter, base::NotFatalUntil::M163);
   if (!g_password_input_counter) {
     SetPasswordInputEnabled(false);
   }

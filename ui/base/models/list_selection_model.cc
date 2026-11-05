@@ -69,7 +69,7 @@ std::optional<size_t> GetIndexAfterMove(size_t source_position,
                                         size_t destination_position,
                                         size_t range_size,
                                         std::optional<size_t> original_index) {
-  DCHECK_LE(destination_position, source_position);
+  CHECK_LE(destination_position, source_position, base::NotFatalUntil::M163);
 
   if (!original_index.has_value()) {
     return std::nullopt;
@@ -154,7 +154,7 @@ void ListSelectionModel::AddIndexToSelection(size_t index) {
 
 void ListSelectionModel::AddIndexRangeToSelection(size_t index_start,
                                                   size_t index_end) {
-  DCHECK_LE(index_start, index_end);
+  CHECK_LE(index_start, index_end, base::NotFatalUntil::M163);
 
   if (index_start == index_end)
     return AddIndexToSelection(index_start);
@@ -200,8 +200,8 @@ void ListSelectionModel::Move(size_t old_index,
                               size_t new_index,
                               size_t length) {
   // |length| many items are moving from index |old_index| to index |new_index|.
-  DCHECK_NE(old_index, new_index);
-  DCHECK_GT(length, 0u);
+  CHECK_NE(old_index, new_index, base::NotFatalUntil::M163);
+  CHECK_GT(length, 0u, base::NotFatalUntil::M163);
 
   // Remap move-to-higher-index operations to the equivalent move-to-lower-index
   // operation. As an example, the permutation "ABCDEFG" -> "CDEFABG" can be
@@ -231,8 +231,8 @@ void ListSelectionModel::Move(size_t old_index,
   size_t pivot_value = new_index + length;
   for (auto it = low; it != middle; ++it) {
     (*it) += length;
-    DCHECK_LE(pivot_value, *it);
-    DCHECK_LT(*it, old_index + length);
+    CHECK_LE(pivot_value, *it, base::NotFatalUntil::M163);
+    CHECK_LT(*it, old_index + length, base::NotFatalUntil::M163);
   }
 
   // The items originally in the interval [old_index, old_index + length) are
@@ -240,8 +240,8 @@ void ListSelectionModel::Move(size_t old_index,
   // decrease.
   for (auto it = middle; it != high; ++it) {
     (*it) -= (old_index - new_index);
-    DCHECK_LE(new_index, *it);
-    DCHECK_LT(*it, pivot_value);
+    CHECK_LE(new_index, *it, base::NotFatalUntil::M163);
+    CHECK_LT(*it, pivot_value, base::NotFatalUntil::M163);
   }
 
   // Reorder the ranges [low, middle), and [middle, high) so that the elements

@@ -129,8 +129,8 @@ void SortVectorWithStringKey(const std::string& locale,
                              size_t begin_index,
                              size_t end_index,
                              bool needs_stable_sort) {
-  DCHECK_LT(begin_index, end_index);
-  DCHECK_LE(end_index, elements->size());
+  CHECK_LT(begin_index, end_index, base::NotFatalUntil::M163);
+  CHECK_LE(end_index, elements->size(), base::NotFatalUntil::M163);
   UErrorCode error = U_ZERO_ERROR;
   icu::Locale loc(locale.c_str());
   std::unique_ptr<icu::Collator> collator(

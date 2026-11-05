@@ -114,8 +114,8 @@ void MediaKeysListenerImpl::StartEventTapIfNecessary() {
   if (event_tap_) {
     return;
   }
-  DCHECK(!event_tap_);
-  DCHECK(!event_tap_source_);
+  CHECK(!event_tap_, base::NotFatalUntil::M163);
+  CHECK(!event_tap_source_, base::NotFatalUntil::M163);
 
   // Add an event tap to intercept the system defined media key events.
   event_tap_.reset(CGEventTapCreate(
@@ -148,8 +148,8 @@ void MediaKeysListenerImpl::StopEventTapIfNecessary() {
   CFRunLoopRemoveSource(CFRunLoopGetCurrent(), event_tap_source_.get(),
                         kCFRunLoopCommonModes);
   // Ensure both event tap and source are initialized.
-  DCHECK(event_tap_);
-  DCHECK(event_tap_source_);
+  CHECK(event_tap_, base::NotFatalUntil::M163);
+  CHECK(event_tap_source_, base::NotFatalUntil::M163);
 
   // Invalidate the event tap.
   CFMachPortInvalidate(event_tap_.get());

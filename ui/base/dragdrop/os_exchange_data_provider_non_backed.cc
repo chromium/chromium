@@ -135,7 +135,7 @@ std::vector<ClipboardUrlInfo> OSExchangeDataProviderNonBacked::GetURLs(
   if ((formats_ & OSExchangeData::URL) == 0) {
     if (std::optional<GURL> plaintext_url = GetPlainTextURL();
         plaintext_url.has_value()) {
-      DCHECK(plaintext_url->is_valid());
+      CHECK(plaintext_url->is_valid(), base::NotFatalUntil::M163);
       url_infos.push_back(
           ClipboardUrlInfo{plaintext_url.value(), std::u16string()});
     }
@@ -302,7 +302,7 @@ DataTransferEndpoint* OSExchangeDataProviderNonBacked::GetSource() const {
 
 void OSExchangeDataProviderNonBacked::CopyData(
     OSExchangeDataProviderNonBacked* provider) const {
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
   provider->formats_ = formats_;
   provider->string_ = string_;
   provider->url_ = url_;

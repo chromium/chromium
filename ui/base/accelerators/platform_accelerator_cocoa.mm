@@ -26,7 +26,7 @@ namespace ui {
 
 KeyEquivalentAndModifierMask* GetKeyEquivalentAndModifierMaskFromAccelerator(
     const ui::Accelerator& accelerator) {
-  DCHECK_NE(ui::VKEY_UNKNOWN, accelerator.key_code());
+  CHECK_NE(ui::VKEY_UNKNOWN, accelerator.key_code(), base::NotFatalUntil::M163);
   NSUInteger cocoa_modifiers = 0;
   if (accelerator.IsShiftDown()) {
     cocoa_modifiers |= NSEventModifierFlagShift;
@@ -48,7 +48,7 @@ KeyEquivalentAndModifierMask* GetKeyEquivalentAndModifierMaskFromAccelerator(
   unichar character;
   int result = ui::MacKeyCodeForWindowsKeyCode(
       accelerator.key_code(), cocoa_modifiers, &shifted_character, &character);
-  DCHECK_NE(result, -1);
+  CHECK_NE(result, -1, base::NotFatalUntil::M163);
 
   // If the key equivalent is itself shifted, then drop Shift from the modifier
   // flags, otherwise Shift will be required. E.g., curly braces and plus are

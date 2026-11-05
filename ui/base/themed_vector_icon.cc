@@ -41,7 +41,7 @@ ThemedVectorIcon::~ThemedVectorIcon() = default;
 
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(
     const ColorProvider* color_provider) const {
-  DCHECK(!empty());
+  CHECK(!empty(), base::NotFatalUntil::M163);
   return GetImageSkia(color_provider, (icon_size_ > 0)
                                           ? icon_size_
                                           : GetDefaultSizeOfVectorIcon(*icon_));
@@ -50,12 +50,12 @@ gfx::ImageSkia ThemedVectorIcon::GetImageSkia(
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(
     const ColorProvider* color_provider,
     int icon_size) const {
-  DCHECK(!empty());
+  CHECK(!empty(), base::NotFatalUntil::M163);
   return GetImageSkia(GetColor(color_provider), icon_size);
 }
 
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(SkColor color) const {
-  DCHECK(!empty());
+  CHECK(!empty(), base::NotFatalUntil::M163);
   return GetImageSkia(color, (icon_size_ > 0)
                                  ? icon_size_
                                  : GetDefaultSizeOfVectorIcon(*icon_));

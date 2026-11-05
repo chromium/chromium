@@ -31,7 +31,7 @@ HRESULT DragSourceWin::GiveFeedback(DWORD effect) {
 }
 
 void DragSourceWin::OnDragSourceDrop() {
-  DCHECK(data_);
+  CHECK(data_, base::NotFatalUntil::M163);
   OSExchangeDataProviderWin::GetDataObjectImpl(*data_)->set_in_drag_loop(false);
 }
 

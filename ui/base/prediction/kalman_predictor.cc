@@ -75,7 +75,7 @@ std::unique_ptr<InputPredictor::InputData> KalmanPredictor::GeneratePrediction(
   if (!HasPrediction())
     return nullptr;
 
-  DCHECK(last_points_.size());
+  CHECK(last_points_.size(), base::NotFatalUntil::M163);
   float pred_dt =
       (predict_time - last_points_.back().time_stamp).InMillisecondsF();
 

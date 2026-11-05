@@ -124,7 +124,7 @@ class DBusScreenSaverWatcher {
   }
 
   void OnServiceHasOwner(std::optional<bool> name_has_owner) {
-    DCHECK_LT(current_service_, kServiceCount);
+    CHECK_LT(current_service_, kServiceCount, base::NotFatalUntil::M163);
 
     if (!name_has_owner.value_or(false)) {
       VLOG(1) << kServices[current_service_].service_name
@@ -148,9 +148,10 @@ class DBusScreenSaverWatcher {
   void OnActiveChangedSignalConnected(const std::string& interface,
                                       const std::string& signal,
                                       bool succeeded) {
-    DCHECK_LT(current_service_, kServiceCount);
-    DCHECK_EQ(interface, kServices[current_service_].interface);
-    DCHECK_EQ(signal, kSignalName);
+    CHECK_LT(current_service_, kServiceCount, base::NotFatalUntil::M163);
+    CHECK_EQ(interface, kServices[current_service_].interface,
+             base::NotFatalUntil::M163);
+    CHECK_EQ(signal, kSignalName, base::NotFatalUntil::M163);
 
     if (!succeeded) {
       VLOG(1) << "Cannot connect to " << kSignalName << " signal of "
@@ -176,7 +177,7 @@ class DBusScreenSaverWatcher {
   }
 
   void OnGetActive(dbus::Response* response, dbus::ErrorResponse*) {
-    DCHECK_LT(current_service_, kServiceCount);
+    CHECK_LT(current_service_, kServiceCount, base::NotFatalUntil::M163);
 
     if (!response || !UpdateLockState(response)) {
       VLOG(1)

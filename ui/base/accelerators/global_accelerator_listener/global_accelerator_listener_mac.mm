@@ -40,7 +40,7 @@ GlobalAcceleratorListenerMac::GlobalAcceleratorListenerMac() {
   if (!content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled()) {
     media_keys_listener_ = ui::MediaKeysListener::Create(
         this, ui::MediaKeysListener::Scope::kGlobal);
-    DCHECK(media_keys_listener_);
+    CHECK(media_keys_listener_, base::NotFatalUntil::M163);
   }
   if (base::FeatureList::IsEnabled(kLayoutAwareGlobalHotkeys)) {
     layout_change_listener_ = [NSNotificationCenter.defaultCenter
@@ -95,18 +95,19 @@ void GlobalAcceleratorListenerMac::ReregisterAllHotKeys() {
 
 void GlobalAcceleratorListenerMac::StartListening() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(!accelerator_ids_.empty());
-  DCHECK(!id_accelerators_.empty());
-  DCHECK(!is_listening_);
+  CHECK(!accelerator_ids_.empty(), base::NotFatalUntil::M163);
+  CHECK(!id_accelerators_.empty(), base::NotFatalUntil::M163);
+  CHECK(!is_listening_, base::NotFatalUntil::M163);
 
   is_listening_ = true;
 }
 
 void GlobalAcceleratorListenerMac::StopListening() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(accelerator_ids_.empty());  // Make sure the set is clean.
-  DCHECK(id_accelerators_.empty());
-  DCHECK(is_listening_);
+  CHECK(accelerator_ids_.empty(),
+        base::NotFatalUntil::M163);  // Make sure the set is clean.
+  CHECK(id_accelerators_.empty(), base::NotFatalUntil::M163);
+  CHECK(is_listening_, base::NotFatalUntil::M163);
 
   is_listening_ = false;
 }
@@ -114,7 +115,8 @@ void GlobalAcceleratorListenerMac::StopListening() {
 void GlobalAcceleratorListenerMac::OnHotKeyEvent(EventHotKeyID hot_key_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   // This hot key should be registered.
-  DCHECK(id_accelerators_.find(hot_key_id.id) != id_accelerators_.end());
+  CHECK(id_accelerators_.find(hot_key_id.id) != id_accelerators_.end(),
+        base::NotFatalUntil::M163);
   // Look up the accelerator based on this hot key ID.
   const ui::Accelerator& accelerator = id_accelerators_[hot_key_id.id];
   NotifyKeyPressed(accelerator);
@@ -123,7 +125,8 @@ void GlobalAcceleratorListenerMac::OnHotKeyEvent(EventHotKeyID hot_key_id) {
 bool GlobalAcceleratorListenerMac::StartListeningForAccelerator(
     const ui::Accelerator& accelerator) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(accelerator_ids_.find(accelerator) == accelerator_ids_.end());
+  CHECK(accelerator_ids_.find(accelerator) == accelerator_ids_.end(),
+        base::NotFatalUntil::M163);
 
   if (accelerator.IsMediaKey()) {
     // We should listen for media key presses through a MediaKeysListener. If
@@ -134,7 +137,7 @@ bool GlobalAcceleratorListenerMac::StartListeningForAccelerator(
             IsMediaKeysListenerManagerEnabled()) {
       content::MediaKeysListenerManager* media_keys_listener_manager =
           content::MediaKeysListenerManager::GetInstance();
-      DCHECK(media_keys_listener_manager);
+      CHECK(media_keys_listener_manager, base::NotFatalUntil::M163);
 
       if (!media_keys_listener_manager->StartWatchingMediaKey(
               accelerator.key_code(), this)) {
@@ -164,7 +167,8 @@ bool GlobalAcceleratorListenerMac::StartListeningForAccelerator(
 void GlobalAcceleratorListenerMac::StopListeningForAccelerator(
     const ui::Accelerator& accelerator) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(accelerator_ids_.find(accelerator) != accelerator_ids_.end());
+  CHECK(accelerator_ids_.find(accelerator) != accelerator_ids_.end(),
+        base::NotFatalUntil::M163);
 
   // Unregister the hot_key if it's a keyboard accelerator.
   if (!accelerator.IsMediaKey()) {
@@ -183,7 +187,7 @@ void GlobalAcceleratorListenerMac::StopListeningForAccelerator(
             IsMediaKeysListenerManagerEnabled()) {
       content::MediaKeysListenerManager* media_keys_listener_manager =
           content::MediaKeysListenerManager::GetInstance();
-      DCHECK(media_keys_listener_manager);
+      CHECK(media_keys_listener_manager, base::NotFatalUntil::M163);
 
       media_keys_listener_manager->StopWatchingMediaKey(accelerator.key_code(),
                                                         this);
@@ -266,7 +270,8 @@ bool GlobalAcceleratorListenerMac::RegisterHotKey(
 void GlobalAcceleratorListenerMac::UnregisterHotKey(
     const ui::Accelerator& accelerator) {
   // Ensure this accelerator is already registered.
-  DCHECK(accelerator_ids_.find(accelerator) != accelerator_ids_.end());
+  CHECK(accelerator_ids_.find(accelerator) != accelerator_ids_.end(),
+        base::NotFatalUntil::M163);
   // Get the ref corresponding to this accelerator.
   KeyId key_id = accelerator_ids_[accelerator];
   EventHotKeyRef ref = id_hot_key_refs_[key_id];
@@ -278,7 +283,7 @@ void GlobalAcceleratorListenerMac::UnregisterHotKey(
 }
 
 void GlobalAcceleratorListenerMac::StartWatchingHotKeys() {
-  DCHECK(!event_handler_);
+  CHECK(!event_handler_, base::NotFatalUntil::M163);
   EventHandlerUPP hot_key_function = NewEventHandlerUPP(HotKeyHandler);
   EventTypeSpec event_type;
   event_type.eventClass = kEventClassKeyboard;
@@ -288,7 +293,7 @@ void GlobalAcceleratorListenerMac::StartWatchingHotKeys() {
 }
 
 void GlobalAcceleratorListenerMac::StopWatchingHotKeys() {
-  DCHECK(event_handler_);
+  CHECK(event_handler_, base::NotFatalUntil::M163);
   RemoveEventHandler(event_handler_);
   event_handler_ = nullptr;
 }

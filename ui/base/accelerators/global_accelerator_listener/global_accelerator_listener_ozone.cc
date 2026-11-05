@@ -87,8 +87,8 @@ GlobalAcceleratorListenerOzone::~GlobalAcceleratorListenerOzone() {
 }
 
 void GlobalAcceleratorListenerOzone::StartListening() {
-  DCHECK(!is_listening_);
-  DCHECK(!registered_hot_keys_.empty());
+  CHECK(!is_listening_, base::NotFatalUntil::M163);
+  CHECK(!registered_hot_keys_.empty(), base::NotFatalUntil::M163);
 
   if (platform_global_shortcut_listener_) {
     platform_global_shortcut_listener_->StartListening();
@@ -98,8 +98,8 @@ void GlobalAcceleratorListenerOzone::StartListening() {
 }
 
 void GlobalAcceleratorListenerOzone::StopListening() {
-  DCHECK(is_listening_);
-  DCHECK(registered_hot_keys_.empty());
+  CHECK(is_listening_, base::NotFatalUntil::M163);
+  CHECK(registered_hot_keys_.empty(), base::NotFatalUntil::M163);
 
   if (platform_global_shortcut_listener_) {
     platform_global_shortcut_listener_->StopListening();
@@ -110,7 +110,7 @@ void GlobalAcceleratorListenerOzone::StopListening() {
 
 bool GlobalAcceleratorListenerOzone::StartListeningForAccelerator(
     const ui::Accelerator& accelerator) {
-  DCHECK(!registered_hot_keys_.contains(accelerator));
+  CHECK(!registered_hot_keys_.contains(accelerator), base::NotFatalUntil::M163);
 
   if (!platform_global_shortcut_listener_) {
     return false;
@@ -128,9 +128,9 @@ bool GlobalAcceleratorListenerOzone::StartListeningForAccelerator(
 
 void GlobalAcceleratorListenerOzone::StopListeningForAccelerator(
     const ui::Accelerator& accelerator) {
-  DCHECK(registered_hot_keys_.contains(accelerator));
+  CHECK(registered_hot_keys_.contains(accelerator), base::NotFatalUntil::M163);
   // Otherwise how could the accelerator be registered?
-  DCHECK(platform_global_shortcut_listener_);
+  CHECK(platform_global_shortcut_listener_, base::NotFatalUntil::M163);
 
   platform_global_shortcut_listener_->UnregisterAccelerator(
       accelerator.key_code(), accelerator.IsAltDown(), accelerator.IsCtrlDown(),

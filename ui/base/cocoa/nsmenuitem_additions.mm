@@ -141,7 +141,7 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
   if (![self isEnabled])
     return NO;
 
-  DCHECK(event.type == NSEventTypeKeyDown);
+  CHECK(event.type == NSEventTypeKeyDown, base::NotFatalUntil::M163);
   // In System Preferences->Keyboard->Keyboard Shortcuts, it is possible to add
   // arbitrary keyboard shortcuts to applications. It is not documented how this
   // works in detail, but |NSMenuItem| has a method |userKeyEquivalent| that
@@ -300,7 +300,7 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
 
 - (void)cr_setKeyEquivalent:(NSString*)aString
                modifierMask:(NSEventModifierFlags)mask {
-  DCHECK(aString);
+  CHECK(aString, base::NotFatalUntil::M163);
   self.keyEquivalent = aString;
   self.keyEquivalentModifierMask = mask;
 }

@@ -207,7 +207,7 @@ bool TSFEventRouter::Delegate::IsImeComposing() {
 
 // static
 gfx::Range TSFEventRouter::Delegate::GetCompositionRange(ITfContext* context) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M163);
   Microsoft::WRL::ComPtr<ITfContextComposition> context_composition;
   if (FAILED(context->QueryInterface(IID_PPV_ARGS(&context_composition))))
     return gfx::Range::InvalidRange();
@@ -235,7 +235,7 @@ gfx::Range TSFEventRouter::Delegate::GetCompositionRange(ITfContext* context) {
 }
 
 bool TSFEventRouter::Delegate::IsCandidateWindowInternal(DWORD element_id) {
-  DCHECK(ui_element_manager_.Get());
+  CHECK(ui_element_manager_.Get(), base::NotFatalUntil::M163);
   Microsoft::WRL::ComPtr<ITfUIElement> ui_element;
   if (FAILED(ui_element_manager_->GetUIElement(element_id, &ui_element)))
     return false;
@@ -247,7 +247,7 @@ bool TSFEventRouter::Delegate::IsCandidateWindowInternal(DWORD element_id) {
 
 TSFEventRouter::TSFEventRouter(TSFEventRouterObserver* observer)
     : observer_(observer) {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M163);
   delegate_ = Microsoft::WRL::Make<Delegate>();
   delegate_->SetRouter(this);
 }

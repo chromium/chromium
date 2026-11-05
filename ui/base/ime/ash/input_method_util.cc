@@ -616,7 +616,7 @@ std::u16string InputMethodUtil::GetInputMethodLongNameInternal(
     text = base::UTF8ToUTF16(localized_display_name);
   }
 
-  DCHECK(!text.empty());
+  CHECK(!text.empty(), base::NotFatalUntil::M163);
   return text;
 }
 
@@ -653,7 +653,7 @@ bool InputMethodUtil::GetInputMethodIdsFromLanguageCodeInternal(
     std::string_view normalized_language_code,
     InputMethodType type,
     std::vector<std::string>* out_input_method_ids) {
-  DCHECK(out_input_method_ids);
+  CHECK(out_input_method_ids, base::NotFatalUntil::M163);
   out_input_method_ids->clear();
 
   bool result = false;
@@ -731,7 +731,7 @@ InputMethodUtil::GetLanguageCodesFromInputMethodIds(
       DVLOG(1) << "Unknown input method ID: " << i;
       continue;
     }
-    DCHECK(!input_method->language_codes().empty());
+    CHECK(!input_method->language_codes().empty(), base::NotFatalUntil::M163);
     const std::string& language_code = input_method->language_codes().at(0);
     std::optional<base::i18n::LanguageTag> language_tag =
         base::i18n::GetLanguageTagFromString(language_code);
@@ -808,6 +808,8 @@ bool InputMethodUtil::GetMigratedInputMethodIDs(
 }
 
 void InputMethodUtil::UpdateHardwareLayoutCache() {
+  // CHECK-exclusion: `ThreadChecker` is `ThreadCheckerDoNothing` if
+  // DCHECK_IS_ON() is false.
   DCHECK(thread_checker_.CalledOnValidThread());
   hardware_layouts_.clear();
   hardware_login_layouts_.clear();
@@ -862,14 +864,14 @@ void InputMethodUtil::SetHardwareKeyboardLayoutForTesting(
 }
 
 const std::vector<std::string>& InputMethodUtil::GetHardwareInputMethodIds() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   UpdateHardwareLayoutCache();
   return hardware_layouts_;
 }
 
 const std::vector<std::string>&
 InputMethodUtil::GetHardwareLoginInputMethodIds() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   UpdateHardwareLayoutCache();
   return hardware_login_layouts_;
 }
@@ -889,7 +891,7 @@ bool InputMethodUtil::IsOobeAllowlisted(
 
 void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {
   for (const auto& input_method : imes) {
-    DCHECK(!input_method.language_codes().empty());
+    CHECK(!input_method.language_codes().empty(), base::NotFatalUntil::M163);
     const std::vector<std::string>& language_codes =
         input_method.language_codes();
     id_to_descriptor_[input_method.id()] = input_method;

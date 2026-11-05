@@ -554,14 +554,15 @@ bool DataPack::WritePack(const base::FilePath& path,
     }
   }
 
-  DCHECK(std::is_sorted(resource_ids.begin(), resource_ids.end()));
+  CHECK(std::is_sorted(resource_ids.begin(), resource_ids.end()),
+        base::NotFatalUntil::M163);
 
   // These values are guaranteed to fit in a uint16_t due to the earlier
   // check of |resources_count|.
   const uint16_t alias_count = static_cast<uint16_t>(aliases.size());
   const uint16_t entry_count = static_cast<uint16_t>(resource_ids.size());
-  DCHECK_EQ(static_cast<size_t>(entry_count) + static_cast<size_t>(alias_count),
-            resources_count);
+  CHECK_EQ(static_cast<size_t>(entry_count) + static_cast<size_t>(alias_count),
+           resources_count, base::NotFatalUntil::M163);
 
   file.Write(base::byte_span_from_ref(kFileFormatV5));
   file.Write(base::byte_span_from_ref(encoding));

@@ -18,7 +18,7 @@ std::unique_ptr<I18nSourceStream> I18nSourceStream::Create(
     std::unique_ptr<SourceStream> upstream,
     net::SourceStreamType type,
     const TemplateReplacements* replacements) {
-  DCHECK(replacements);
+  CHECK(replacements, base::NotFatalUntil::M163);
   std::unique_ptr<I18nSourceStream> source(
       new I18nSourceStream(std::move(upstream), type, replacements));
   return source;

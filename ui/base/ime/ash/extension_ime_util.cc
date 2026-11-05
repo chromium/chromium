@@ -31,22 +31,22 @@ namespace extension_ime_util {
 
 std::string GetInputMethodID(const std::string& extension_id,
                              const std::string& engine_id) {
-  DCHECK(!extension_id.empty());
-  DCHECK(!engine_id.empty());
+  CHECK(!extension_id.empty(), base::NotFatalUntil::M163);
+  CHECK(!engine_id.empty(), base::NotFatalUntil::M163);
   return kExtensionIMEPrefix + extension_id + engine_id;
 }
 
 std::string GetComponentInputMethodID(const std::string& extension_id,
                                       const std::string& engine_id) {
-  DCHECK(!extension_id.empty());
-  DCHECK(!engine_id.empty());
+  CHECK(!extension_id.empty(), base::NotFatalUntil::M163);
+  CHECK(!engine_id.empty(), base::NotFatalUntil::M163);
   return kComponentExtensionIMEPrefix + extension_id + engine_id;
 }
 
 std::string GetArcInputMethodID(const std::string& extension_id,
                                 const std::string& engine_id) {
-  DCHECK(!extension_id.empty());
-  DCHECK(!engine_id.empty());
+  CHECK(!extension_id.empty(), base::NotFatalUntil::M163);
+  CHECK(!engine_id.empty(), base::NotFatalUntil::M163);
   return kArcIMEPrefix + extension_id + engine_id;
 }
 

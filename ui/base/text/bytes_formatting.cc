@@ -35,7 +35,8 @@ std::u16string FormatBytesInternal(base::ByteSize bytes,
                                    DataUnits units,
                                    bool show_units,
                                    const base::span<const int> suffix) {
-  DCHECK(units >= DataUnits::kByte && units <= DataUnits::kPebibyte);
+  CHECK(units >= DataUnits::kByte && units <= DataUnits::kPebibyte,
+        base::NotFatalUntil::M163);
 
   // Put the quantity in the right units.
   double unit_amount = bytes.InBytesF();
@@ -82,7 +83,8 @@ DataUnits GetByteDisplayUnits(base::ByteSize bytes) {
   }
 
   DataUnits units = static_cast<DataUnits>(unit_index);
-  DCHECK(units >= DataUnits::kByte && units <= DataUnits::kPebibyte);
+  CHECK(units >= DataUnits::kByte && units <= DataUnits::kPebibyte,
+        base::NotFatalUntil::M163);
   return units;
 }
 

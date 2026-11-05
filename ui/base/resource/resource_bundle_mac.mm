@@ -120,7 +120,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
   }
 
   auto inserted = images_.emplace(resource_id, image);
-  DCHECK(inserted.second);
+  CHECK(inserted.second, base::NotFatalUntil::M163);
   return inserted.first->second;
 }
 

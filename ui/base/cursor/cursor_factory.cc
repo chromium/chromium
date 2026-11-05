@@ -34,12 +34,12 @@ CursorFactory::CursorFactory() {
 }
 
 CursorFactory::~CursorFactory() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M163);
   g_instance = nullptr;
 }
 
 CursorFactory* CursorFactory::GetInstance() {
-  DCHECK(g_instance);
+  CHECK(g_instance, base::NotFatalUntil::M163);
   return g_instance;
 }
 

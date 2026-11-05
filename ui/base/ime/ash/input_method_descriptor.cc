@@ -53,7 +53,7 @@ std::u16string InputMethodDescriptor::GetIndicator() const {
       return base::UTF8ToUTF16(
           base::ToUpperASCII(keyboard_layout_.substr(0, 2)));
     }
-    DCHECK(language_codes_.size() > 0);
+    CHECK(language_codes_.size() > 0, base::NotFatalUntil::M163);
     return base::UTF8ToUTF16(
         base::ToUpperASCII(language_codes_[0].substr(0, 2)));
   }

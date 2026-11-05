@@ -40,7 +40,7 @@ const std::string& GetLocaleOverride() {
 
 void OverrideLocaleWithCocoaLocale() {
   // NSBundle really should only be called on the main thread.
-  DCHECK(NSThread.isMainThread);
+  CHECK(NSThread.isMainThread, base::NotFatalUntil::M163);
 
   // Chrome really only has one concept of locale, but macOS has locale and
   // language that can be set independently.  After talking with Chrome UX folks

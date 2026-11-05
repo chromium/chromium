@@ -70,15 +70,15 @@ std::u16string TableModel::GetAXNameForHeaderCell(
 std::u16string TableModel::GetAXNameForRow(
     size_t row,
     const std::vector<int>& visible_column_ids) const {
-  DCHECK_LT(row, RowCount());
-  DCHECK(!visible_column_ids.empty());
+  CHECK_LT(row, RowCount(), base::NotFatalUntil::M163);
+  CHECK(!visible_column_ids.empty(), base::NotFatalUntil::M163);
   return GetText(row, visible_column_ids[0]);
 }
 
 int TableModel::CompareValues(size_t row1, size_t row2, int column_id) const {
-  DCHECK_LT(row1, RowCount());
-  DCHECK_LT(row2, RowCount());
-  DCHECK(g_collator);
+  CHECK_LT(row1, RowCount(), base::NotFatalUntil::M163);
+  CHECK_LT(row2, RowCount(), base::NotFatalUntil::M163);
+  CHECK(g_collator, base::NotFatalUntil::M163);
 
   std::u16string value1 = GetText(row1, column_id);
   std::u16string value2 = GetText(row2, column_id);

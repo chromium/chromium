@@ -19,8 +19,8 @@ bool GlobalMediaKeysListenerWin::has_instance_ = false;
 GlobalMediaKeysListenerWin::GlobalMediaKeysListenerWin(
     MediaKeysListener::Delegate* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
-  DCHECK(!has_instance_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
+  CHECK(!has_instance_, base::NotFatalUntil::M163);
   has_instance_ = true;
 }
 
@@ -29,7 +29,7 @@ GlobalMediaKeysListenerWin::~GlobalMediaKeysListenerWin() {
 }
 
 bool GlobalMediaKeysListenerWin::StartWatchingMediaKey(KeyboardCode key_code) {
-  DCHECK(IsMediaKeycode(key_code));
+  CHECK(IsMediaKeycode(key_code), base::NotFatalUntil::M163);
 
   // If the hotkey is already registered, do nothing.
   if (key_codes_hotkey_observers_.contains(key_code))
@@ -51,7 +51,7 @@ bool GlobalMediaKeysListenerWin::StartWatchingMediaKey(KeyboardCode key_code) {
 }
 
 void GlobalMediaKeysListenerWin::StopWatchingMediaKey(KeyboardCode key_code) {
-  DCHECK(IsMediaKeycode(key_code));
+  CHECK(IsMediaKeycode(key_code), base::NotFatalUntil::M163);
 
   // Deleting the observer automatically unregisters the hot key.
   key_codes_hotkey_observers_.erase(key_code);
@@ -62,13 +62,14 @@ void GlobalMediaKeysListenerWin::OnWndProc(HWND hwnd,
                                            WPARAM wparam,
                                            LPARAM lparam) {
   // SingletonHwndHotKeyObservers should only send us hot key messages.
-  DCHECK_EQ(WM_HOTKEY, static_cast<int>(message));
+  CHECK_EQ(WM_HOTKEY, static_cast<int>(message), base::NotFatalUntil::M163);
 
   WORD win_key_code = HIWORD(lparam);
   KeyboardCode key_code = KeyboardCodeForWindowsKeyCode(win_key_code);
 
   // We should only receive hot key events for keys that we're observing.
-  DCHECK(key_codes_hotkey_observers_.contains(key_code));
+  CHECK(key_codes_hotkey_observers_.contains(key_code),
+        base::NotFatalUntil::M163);
 
   int modifiers = 0;
   modifiers |= (LOWORD(lparam) & MOD_SHIFT) ? ui::EF_SHIFT_DOWN : 0;

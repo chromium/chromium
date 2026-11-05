@@ -58,8 +58,8 @@ gfx::ImageSkia CreateImageSkia(lottie::Animation* content) {
   gfx::Canvas canvas(&record_canvas, 1.0);
 #if DCHECK_IS_ON()
   gfx::Rect clip_rect;
-  DCHECK(canvas.GetClipBounds(&clip_rect));
-  DCHECK(clip_rect.Contains(gfx::Rect(size)));
+  CHECK(canvas.GetClipBounds(&clip_rect), base::NotFatalUntil::M163);
+  CHECK(clip_rect.Contains(gfx::Rect(size)), base::NotFatalUntil::M163);
 #endif
   content->PaintFrame(&canvas, 0.f, size);
 

@@ -43,7 +43,7 @@ uint32_t ConvertFromTextInputFlags(uint32_t text_input_flags) {
   }
 
   // Making sure all the bits are converted.
-  DCHECK_EQ(text_input_flags, 0u);
+  CHECK_EQ(text_input_flags, 0u, base::NotFatalUntil::M163);
   return result;
 }
 

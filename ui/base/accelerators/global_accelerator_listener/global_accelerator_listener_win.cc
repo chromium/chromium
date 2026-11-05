@@ -42,15 +42,21 @@ GlobalAcceleratorListenerWin::~GlobalAcceleratorListenerWin() {
 
 void GlobalAcceleratorListenerWin::StartListening() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(!is_listening_);     // Don't start twice.
-  DCHECK(!hotkeys_.empty());  // Also don't start if no hotkey is registered.
+  CHECK(!is_listening_, base::NotFatalUntil::M163);  // Don't start twice.
+  CHECK(!hotkeys_.empty(),
+        base::NotFatalUntil::M163);  // Also don't start if no hotkey is
+                                     // registered.
   is_listening_ = true;
 }
 
 void GlobalAcceleratorListenerWin::StopListening() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(is_listening_);     // No point if we are not already listening.
-  DCHECK(hotkeys_.empty());  // Make sure the map is clean before ending.
+  CHECK(
+      is_listening_,
+      base::NotFatalUntil::M163);  // No point if we are not already listening.
+  CHECK(
+      hotkeys_.empty(),
+      base::NotFatalUntil::M163);  // Make sure the map is clean before ending.
   is_listening_ = false;
 }
 
@@ -59,7 +65,7 @@ void GlobalAcceleratorListenerWin::OnWndProc(HWND hwnd,
                                              WPARAM wparam,
                                              LPARAM lparam) {
   // SingletonHwndHotKeyObservers should only send us hot key messages.
-  DCHECK_EQ(WM_HOTKEY, static_cast<int>(message));
+  CHECK_EQ(WM_HOTKEY, static_cast<int>(message), base::NotFatalUntil::M163);
 
   int key_code = HIWORD(lparam);
   int modifiers = 0;
@@ -74,7 +80,8 @@ void GlobalAcceleratorListenerWin::OnWndProc(HWND hwnd,
 
 bool GlobalAcceleratorListenerWin::StartListeningForAccelerator(
     const ui::Accelerator& accelerator) {
-  DCHECK(hotkeys_.find(accelerator) == hotkeys_.end());
+  CHECK(hotkeys_.find(accelerator) == hotkeys_.end(),
+        base::NotFatalUntil::M163);
 
   // TODO(crbug.com/40622191): We should be using
   // `media_keys_listener_manager->StartWatchingMediaKey(...)` here, but that
@@ -85,7 +92,7 @@ bool GlobalAcceleratorListenerWin::StartListeningForAccelerator(
       accelerator.IsMediaKey()) {
     content::MediaKeysListenerManager* media_keys_listener_manager =
         content::MediaKeysListenerManager::GetInstance();
-    DCHECK(media_keys_listener_manager);
+    CHECK(media_keys_listener_manager, base::NotFatalUntil::M163);
 
     registered_media_keys_++;
     media_keys_listener_manager->DisableInternalMediaKeyHandling();
@@ -123,11 +130,11 @@ void GlobalAcceleratorListenerWin::StopListeningForAccelerator(
   if (content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() &&
       accelerator.IsMediaKey()) {
     registered_media_keys_--;
-    DCHECK_GE(registered_media_keys_, 0);
+    CHECK_GE(registered_media_keys_, 0, base::NotFatalUntil::M163);
     if (registered_media_keys_ == 0) {
       content::MediaKeysListenerManager* media_keys_listener_manager =
           content::MediaKeysListenerManager::GetInstance();
-      DCHECK(media_keys_listener_manager);
+      CHECK(media_keys_listener_manager, base::NotFatalUntil::M163);
 
       media_keys_listener_manager->EnableInternalMediaKeyHandling();
     }
@@ -139,7 +146,8 @@ void GlobalAcceleratorListenerWin::StopListeningForAccelerator(
 void GlobalAcceleratorListenerWin::OnMediaKeysAccelerator(
     const ui::Accelerator& accelerator) {
   // We should not receive media key events that we didn't register for.
-  DCHECK(hotkeys_.find(accelerator) != hotkeys_.end());
+  CHECK(hotkeys_.find(accelerator) != hotkeys_.end(),
+        base::NotFatalUntil::M163);
   NotifyKeyPressed(accelerator);
 }
 

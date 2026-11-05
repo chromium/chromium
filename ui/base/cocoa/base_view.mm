@@ -59,7 +59,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 }
 
 - (void)handleLeftMouseUp:(NSEvent*)theEvent {
-  DCHECK_EQ(theEvent.type, NSEventTypeLeftMouseUp);
+  CHECK_EQ(theEvent.type, NSEventTypeLeftMouseUp, base::NotFatalUntil::M163);
   _dragging = NO;
   if (!_pendingExitEvent) {
     return;

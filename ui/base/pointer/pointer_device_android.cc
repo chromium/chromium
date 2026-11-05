@@ -21,7 +21,7 @@ std::pair<int, int> GetAvailablePointerAndHoverTypesImpl() {
   base::android::JavaIntArrayToIntVector(
       env, Java_TouchDevice_availablePointerAndHoverTypes(env),
       &pointer_and_hover_types);
-  DCHECK_EQ(pointer_and_hover_types.size(), 2u);
+  CHECK_EQ(pointer_and_hover_types.size(), 2u, base::NotFatalUntil::M163);
   return {pointer_and_hover_types[0], pointer_and_hover_types[1]};
 }
 
@@ -46,7 +46,8 @@ PointerType GetPrimaryPointerType(int available_pointer_types) {
   if (available_pointer_types & POINTER_TYPE_FINE) {
     return POINTER_TYPE_FINE;
   }
-  DCHECK_EQ(available_pointer_types, POINTER_TYPE_NONE);
+  CHECK_EQ(available_pointer_types, POINTER_TYPE_NONE,
+           base::NotFatalUntil::M163);
   return POINTER_TYPE_NONE;
 }
 
@@ -66,7 +67,7 @@ HoverType GetPrimaryHoverType(int available_pointer_types,
   if (available_hover_types & HOVER_TYPE_NONE) {
     return HOVER_TYPE_NONE;
   }
-  DCHECK_EQ(available_hover_types, HOVER_TYPE_HOVER);
+  CHECK_EQ(available_hover_types, HOVER_TYPE_HOVER, base::NotFatalUntil::M163);
   return HOVER_TYPE_HOVER;
 }
 

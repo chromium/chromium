@@ -16,7 +16,7 @@ int GetLocalizedContentsWidthForFontList(int col_resource_id,
   int chars = 0;
   base::StringToInt(l10n_util::GetStringUTF8(col_resource_id), &chars);
   int width = font_list.GetExpectedTextWidth(chars);
-  DCHECK_GT(width, 0);
+  CHECK_GT(width, 0, base::NotFatalUntil::M163);
   return width;
 }
 
@@ -25,7 +25,7 @@ int GetLocalizedContentsHeightForFontList(int row_resource_id,
   int lines = 0;
   base::StringToInt(l10n_util::GetStringUTF8(row_resource_id), &lines);
   int height = font_list.GetHeight() * lines;
-  DCHECK_GT(height, 0);
+  CHECK_GT(height, 0, base::NotFatalUntil::M163);
   return height;
 }
 

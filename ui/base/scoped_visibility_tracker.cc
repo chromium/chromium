@@ -14,7 +14,7 @@ ScopedVisibilityTracker::ScopedVisibilityTracker(
     const base::TickClock* tick_clock,
     bool is_shown)
     : tick_clock_(tick_clock) {
-  DCHECK(tick_clock_);
+  CHECK(tick_clock_, base::NotFatalUntil::M163);
   if (is_shown)
     OnShown();
 }

@@ -87,9 +87,9 @@ class TreeNode {
   // Adds |node| as a child of this node, at |index|. Returns a raw pointer to
   // the node.
   NodeType* Add(std::unique_ptr<NodeType> node, size_t index) {
-    DCHECK(node);
-    DCHECK_LE(index, children_.size());
-    DCHECK(!node->parent_);
+    CHECK(node, base::NotFatalUntil::M163);
+    CHECK_LE(index, children_.size(), base::NotFatalUntil::M163);
+    CHECK(!node->parent_, base::NotFatalUntil::M163);
     node->parent_ = static_cast<NodeType*>(this);
     NodeType* node_ptr = node.get();
     children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
@@ -104,7 +104,7 @@ class TreeNode {
 
   // Removes the node at the given index. Returns the removed node.
   std::unique_ptr<NodeType> Remove(size_t index) {
-    DCHECK_LT(index, children_.size());
+    CHECK_LT(index, children_.size(), base::NotFatalUntil::M163);
     children_[index]->parent_ = nullptr;
     std::unique_ptr<NodeType> ptr = std::move(children_[index]);
     children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
@@ -134,7 +134,7 @@ class TreeNode {
 
   // Returns the index of |node|, or nullopt if |node| is not a child of this.
   std::optional<size_t> GetIndexOf(const NodeType* node) const {
-    DCHECK(node);
+    CHECK(node, base::NotFatalUntil::M163);
     const auto i =
         std::ranges::find(children_, node, &std::unique_ptr<NodeType>::get);
     return i != children_.end()
@@ -162,15 +162,20 @@ class TreeNode {
   // between 0 (inclusive) and the number of children (exclusive).
   void ReorderChildren(const std::vector<size_t>& new_order) {
     const size_t children_count = children_.size();
-    DCHECK_EQ(children_count, new_order.size());
+    CHECK_EQ(children_count, new_order.size(), base::NotFatalUntil::M163);
+    // CHECK-exclusion: constructs a temporary `std::set` (O(N log N) time and N
+    // heap node allocations) in release builds, even though the uniqueness
+    // invariant is already enforced in O(1) per element by the loop immediately
+    // below. Any duplicate index in new_order is therefore guaranteed to fail
+    // `CHECK(!new_children[new_index])`.
     DCHECK_EQ(children_count,
               std::set(new_order.begin(), new_order.end()).size());
     TreeNodes new_children(children_count);
     for (size_t old_index = 0; old_index < children_count; ++old_index) {
       const size_t new_index = new_order[old_index];
-      DCHECK_LT(new_index, children_count);
-      DCHECK(children_[old_index]);
-      DCHECK(!new_children[new_index]);
+      CHECK_LT(new_index, children_count, base::NotFatalUntil::M163);
+      CHECK(children_[old_index], base::NotFatalUntil::M163);
+      CHECK(!new_children[new_index], base::NotFatalUntil::M163);
       new_children[new_index] = std::move(children_[old_index]);
     }
     children_ = std::move(new_children);

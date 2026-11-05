@@ -84,7 +84,8 @@ void LinearResampling::Update(const InputData& new_input) {
   events_queue_.push_front(new_input);
   if (events_queue_.size() > kNumEventsForResampling)
     events_queue_.pop_back();
-  DCHECK(events_queue_.size() <= kNumEventsForResampling);
+  CHECK(events_queue_.size() <= kNumEventsForResampling,
+        base::NotFatalUntil::M163);
 
   if (events_queue_.size() == kNumEventsForResampling)
     events_dt_ = events_queue_[0].time_stamp - events_queue_[1].time_stamp;

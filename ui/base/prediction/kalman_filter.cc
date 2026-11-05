@@ -108,7 +108,7 @@ double KalmanFilter::GetAcceleration() const {
 }
 
 void KalmanFilter::Predict(double dt) {
-  DCHECK_GT(iteration_count_, 0u);
+  CHECK_GT(iteration_count_, 0u, base::NotFatalUntil::M163);
   state_transition_matrix_ = GetStateTransition(dt);
   // X = F * X
   state_estimation_ =

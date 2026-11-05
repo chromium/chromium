@@ -114,7 +114,7 @@ void MenuModel::ActivatedAt(size_t index, int event_flags) {
 
 void MenuModel::SetMenuModelDelegate(MenuModelDelegate* delegate) {
   // A non-null delegate overwriting our non-null delegate is not allowed.
-  DCHECK(!(menu_model_delegate_ && delegate));
+  CHECK(!(menu_model_delegate_ && delegate), base::NotFatalUntil::M163);
   if (menu_model_delegate_)
     menu_model_delegate_->OnMenuClearingDelegate();
   menu_model_delegate_ = delegate;

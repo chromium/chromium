@@ -163,7 +163,7 @@ std::string ClassMetaData::ClassMemberIterator::GetCurrentCollectionName()
 }
 
 void ClassMetaData::ClassMemberIterator::IncrementHelper() {
-  DCHECK_LT(current_vector_index_, SIZE_MAX);
+  CHECK_LT(current_vector_index_, SIZE_MAX, base::NotFatalUntil::M163);
   ++current_vector_index_;
 
   if (current_vector_index_ >= current_collection_->members().size()) {

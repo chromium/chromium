@@ -252,7 +252,7 @@ std::unique_ptr<icu::PluralRules> BuildPluralRules() {
     err = U_ZERO_ERROR;
     icu::UnicodeString fallback_rules("one: n is 1", -1, US_INV);
     rules.reset(icu::PluralRules::createRules(fallback_rules, err));
-    DCHECK(U_SUCCESS(err));
+    CHECK(U_SUCCESS(err), base::NotFatalUntil::M163);
   }
   return rules;
 }
@@ -263,7 +263,7 @@ void FormatNumberInPlural(const icu::MessageFormat& format, int number,
   icu::Formattable formattable(number);
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   format.format(&formattable, 1, *result, ignore, *err);
-  DCHECK(U_SUCCESS(*err));
+  CHECK(U_SUCCESS(*err), base::NotFatalUntil::M163);
   return;
 }
 
@@ -314,8 +314,8 @@ Formatter::~Formatter() = default;
 void Formatter::Format(Unit unit,
                        int value,
                        icu::UnicodeString* formatted_string) const {
-  DCHECK(simple_format_[unit]);
-  DCHECK(formatted_string->isEmpty());
+  CHECK(simple_format_[unit], base::NotFatalUntil::M163);
+  CHECK(formatted_string->isEmpty(), base::NotFatalUntil::M163);
   UErrorCode error = U_ZERO_ERROR;
   FormatNumberInPlural(*simple_format_[unit], value, formatted_string, &error);
   DCHECK(U_SUCCESS(error)) << "Error in icu::PluralFormat::format().";
@@ -330,14 +330,14 @@ void Formatter::Format(TwoUnits units,
       << "Detailed() not implemented for your (format, length) combination!";
   DCHECK(detailed_format_[units][1])
       << "Detailed() not implemented for your (format, length) combination!";
-  DCHECK(formatted_string->isEmpty());
+  CHECK(formatted_string->isEmpty(), base::NotFatalUntil::M163);
   UErrorCode error = U_ZERO_ERROR;
   FormatNumberInPlural(*detailed_format_[units][0], value_1, formatted_string,
                        &error);
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M163);
   FormatNumberInPlural(*detailed_format_[units][1], value_2, formatted_string,
                        &error);
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M163);
   return;
 }
 
@@ -353,7 +353,7 @@ std::unique_ptr<icu::MessageFormat> Formatter::CreateFallbackFormat(
   UErrorCode error = U_ZERO_ERROR;
   std::unique_ptr<icu::MessageFormat> format(
       new icu::MessageFormat(pattern, error));
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M163);
   return format;
 }
 
@@ -366,7 +366,7 @@ std::unique_ptr<icu::MessageFormat> Formatter::InitFormat(
         icu::UnicodeString(false, pattern.data(),
                            base::checked_cast<int32_t>(pattern.length())),
         error));
-    DCHECK(U_SUCCESS(error));
+    CHECK(U_SUCCESS(error), base::NotFatalUntil::M163);
     if (format.get())
       return format;
   }

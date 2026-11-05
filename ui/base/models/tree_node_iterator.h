@@ -57,7 +57,7 @@ class TreeNodeIterator {
 
   // Returns the next descendant.
   NodeType* Next() {
-    DCHECK(has_next());
+    CHECK(has_next(), base::NotFatalUntil::M163);
 
     // There must always be a valid node in the current Position index.
     NodeType* result =

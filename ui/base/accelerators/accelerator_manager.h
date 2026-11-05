@@ -98,7 +98,8 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetUsePositionalLookup(bool use_positional_lookup) {
-    DCHECK(::features::IsImprovedKeyboardShortcutsEnabled());
+    CHECK(::features::IsImprovedKeyboardShortcutsEnabled(),
+          base::NotFatalUntil::M163);
     accelerators_.set_use_positional_lookup(use_positional_lookup);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

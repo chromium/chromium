@@ -40,14 +40,14 @@ IdlePollingService* IdlePollingService::GetInstance() {
 
 const IdlePollingService::State& IdlePollingService::GetIdleState() {
   // |last_state_| won't be valid if we aren't polling.
-  DCHECK(timer_.IsRunning());
+  CHECK(timer_.IsRunning(), base::NotFatalUntil::M163);
   return last_state_;
 }
 
 void IdlePollingService::AddObserver(Observer* observer) {
   // Fetch the current state and start polling if this was the first observer.
   if (observers_.empty()) {
-    DCHECK(!timer_.IsRunning());
+    CHECK(!timer_.IsRunning(), base::NotFatalUntil::M163);
     PollIdleState();
     // We still use the polling logic for idle time calculation.
     timer_.Start(FROM_HERE, poll_interval_,
@@ -60,7 +60,7 @@ void IdlePollingService::AddObserver(Observer* observer) {
 }
 
 void IdlePollingService::RemoveObserver(Observer* observer) {
-  DCHECK(timer_.IsRunning());
+  CHECK(timer_.IsRunning(), base::NotFatalUntil::M163);
   observers_.RemoveObserver(observer);
 
   // Stop polling when there are no observers to save resources.
@@ -79,7 +79,7 @@ void IdlePollingService::SetProviderForTest(
 }
 
 void IdlePollingService::SetPollIntervalForTest(base::TimeDelta poll_interval) {
-  DCHECK(!timer_.IsRunning());
+  CHECK(!timer_.IsRunning(), base::NotFatalUntil::M163);
   poll_interval_ = poll_interval;
 }
 
@@ -95,7 +95,7 @@ void IdlePollingService::SetTaskRunnerForTest(
 IdlePollingService::IdlePollingService()
     : poll_interval_(kPollInterval),
       provider_(std::make_unique<DefaultIdleProvider>()) {
-  DCHECK(!timer_.IsRunning());
+  CHECK(!timer_.IsRunning(), base::NotFatalUntil::M163);
 }
 
 IdlePollingService::~IdlePollingService() = default;

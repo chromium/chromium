@@ -257,7 +257,7 @@ void ResourceBundle::LoadCommonResources() {
   bool success =
       LoadFromApkOrFile("assets/chrome_100_percent.pak", &disk_path,
                         &g_chrome_100_percent_fd, &g_chrome_100_percent_region);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M163);
 
   AddDataPackFromFileRegion(base::File(g_chrome_100_percent_fd),
                             g_chrome_100_percent_region, k100Percent);
@@ -379,21 +379,21 @@ void LoadPackFileFromApk(const std::string& path,
 
 FileDescriptor GetMainAndroidPackFd(
     base::MemoryMappedFile::Region* out_region) {
-  DCHECK_GE(g_resources_pack_fd, 0);
+  CHECK_GE(g_resources_pack_fd, 0, base::NotFatalUntil::M163);
   *out_region = g_resources_pack_region;
   return g_resources_pack_fd;
 }
 
 FileDescriptor GetCommonResourcesPackFd(
     base::MemoryMappedFile::Region* out_region) {
-  DCHECK_GE(g_chrome_100_percent_fd, 0);
+  CHECK_GE(g_chrome_100_percent_fd, 0, base::NotFatalUntil::M163);
   *out_region = g_chrome_100_percent_region;
   return g_chrome_100_percent_fd;
 }
 
 FileDescriptor Get200PercentResourcesPackFd(
     base::MemoryMappedFile::Region* out_region) {
-  DCHECK_GE(g_chrome_200_percent_fd, 0);
+  CHECK_GE(g_chrome_200_percent_fd, 0, base::NotFatalUntil::M163);
   *out_region = g_chrome_200_percent_region;
   return g_chrome_200_percent_fd;
 }

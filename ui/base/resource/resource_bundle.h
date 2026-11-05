@@ -454,12 +454,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   }
 
   const std::string& GetLoadedLocale() const { return loaded_locale_; }
-#if DCHECK_IS_ON()
+
   // Gets whether overriding locale strings is supported.
   bool get_can_override_locale_string_resources_for_test() {
     return can_override_locale_string_resources_;
   }
-#endif
 
   const base::FilePath& GetOverriddenPakPath() const;
 
@@ -605,9 +604,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   IdToStringMap overridden_locale_strings_;
 
-#if DCHECK_IS_ON()
   bool can_override_locale_string_resources_ = true;
-#endif
 
   bool is_test_resources_ = false;
   bool mangle_localized_strings_ = false;
