@@ -32,6 +32,9 @@ class PromoStyleViewControllerTest : public PlatformTest {
     configuration.secondaryActionString = @"Secondary";
     view_controller_ =
         [[PromoStyleViewController alloc] initWithConfiguration:configuration];
+    // Keep the default content minimal so that it is always fully displayed
+    // without scrolling (`isScrolledToBottom` is YES) unless a test explicitly
+    // adds taller content.
     view_controller_.titleText = @"Title";
     view_controller_.subtitleText = @"Subtitle";
     view_controller_.disclaimerText = @"Disclaimer";
@@ -140,33 +143,34 @@ TEST_F(PromoStyleViewControllerTest,
               view_controller_.configuration.primaryActionString);
 }
 
-// Tests that when content fits in the scroll view only while the action buttons
-// are hidden during `contentLoading`, `updateViewsForInitialScrollState` is
-// deferred until the buttons are shown and the scroll view has its final frame.
-// TODO(crbug.com/581795152): Re-enable once the test no longer depends on
-// OS-specific layout; it fails on iOS 18.
+// Tests that when content fits in the scroll view during `contentLoading`
+// before overflowing content is laid out, `updateViewsForInitialScrollState` is
+// deferred until `contentLoading` becomes NO and the layout is flushed.
 TEST_F(PromoStyleViewControllerTest,
-       DISABLED_TestContentLoadingDefersScrollCheckWhileButtonsAreHidden) {
+       TestContentLoadingDefersScrollCheckWhenInitialContentFits) {
   view_controller_.scrollToEndMandatory = YES;
   view_controller_.readMoreString = @"Read More";
   view_controller_.contentLoading = YES;
   [view_controller_ loadViewIfNeeded];
 
   // Two layout passes are needed because `viewDidLayoutSubviews` updates the
-  // content view height constraint after the first pass.
+  // content view height constraint after the first pass. The minimal default
+  // layout from `SetUp()` should always be fully displayed without scrolling.
   [view_controller_.view layoutIfNeeded];
   [view_controller_.view layoutIfNeeded];
-  [view_controller_.contentView.heightAnchor
-      constraintEqualToConstant:view_controller_.contentView.frame.size.height]
-      .active = YES;
+  ASSERT_TRUE([view_controller_ isScrolledToBottom]);
 
   // Triggering the initial scroll state check while `contentLoading` is YES
-  // must not mark `didReachBottom` as YES against the button-less scroll view.
+  // must not mark `didReachBottom` as YES while the content still fits.
   [view_controller_ updateViewsForInitialScrollState];
   EXPECT_FALSE(view_controller_.didReachBottom);
 
-  // When `contentLoading` becomes NO, unhiding the buttons shrinks the scroll
-  // view so the content now overflows and `"Read More"` is shown.
+  // Add overflowing content while loading without flushing layout; setting
+  // `contentLoading` to NO must flush the layout and show `"Read More"`.
+  [view_controller_.specificContentView.heightAnchor
+      constraintEqualToAnchor:view_controller_.view.heightAnchor
+                   multiplier:2.0]
+      .active = YES;
   view_controller_.contentLoading = NO;
   EXPECT_FALSE(view_controller_.didReachBottom);
   EXPECT_NSEQ(@"Read More", view_controller_.configuration.primaryActionString);
