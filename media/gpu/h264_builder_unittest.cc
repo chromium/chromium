@@ -93,6 +93,44 @@ TEST_F(H264BuilderTest, H264BuildParseIdentity) {
   EXPECT_EQ(*parser.GetPPS(pps_id), pps);
 }
 
+TEST_F(H264BuilderTest, H264BuildParseIdentityWithVUI) {
+  H264SPS sps = MakeTestSPS();
+  sps.vui_parameters_present_flag = true;
+  sps.video_signal_type_present_flag = true;
+  sps.video_format = 5;  // Unspecified (H.264 Table E-2).
+  sps.video_full_range_flag = true;
+  sps.colour_description_present_flag = true;
+  sps.colour_primaries = 1;           // BT.709
+  sps.transfer_characteristics = 13;  // sRGB
+  sps.matrix_coefficients = 1;        // BT.709
+  // With VUI present the builder also emits the bitstream restriction
+  // block (max_num_reorder_frames = 0, max_dec_frame_buffering =
+  // max_num_ref_frames), so mirror those in the expected struct.
+  sps.bitstream_restriction_flag = true;
+  sps.max_dec_frame_buffering = sps.max_num_ref_frames;
+  H264PPS pps = MakeTestPPS();
+
+  H26xAnnexBBitstreamBuilder bitstream_builder(
+      /*insert_emulation_prevention_bytes=*/true);
+  BuildPackedH264SPS(bitstream_builder, sps);
+  BuildPackedH264PPS(bitstream_builder, sps, pps);
+
+  H264Parser parser;
+  parser.SetStream(bitstream_builder.data());
+  H264NALU nalu;
+  EXPECT_EQ(parser.AdvanceToNextNALU(&nalu), H264Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H264NALU::kSPS);
+  int sps_id;
+  EXPECT_EQ(parser.ParseSPS(&sps_id), H264Parser::Result::kOk);
+  EXPECT_EQ(*parser.GetSPS(sps_id), sps);
+
+  EXPECT_EQ(parser.AdvanceToNextNALU(&nalu), H264Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H264NALU::kPPS);
+  int pps_id;
+  EXPECT_EQ(parser.ParsePPS(&pps_id), H264Parser::Result::kOk);
+  EXPECT_EQ(*parser.GetPPS(pps_id), pps);
+}
+
 TEST_F(H264BuilderTest, H264BuildPrefixNALU) {
   struct PrefixNALUParams {
     int nal_ref_idc;

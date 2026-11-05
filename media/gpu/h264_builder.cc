@@ -102,7 +102,17 @@ void BuildPackedH264SPS(H26xAnnexBBitstreamBuilder& bitstream_builder,
   if (sps.vui_parameters_present_flag) {
     bitstream_builder.AppendBool(false);  // aspect_ratio_info_present_flag
     bitstream_builder.AppendBool(false);  // overscan_info_present_flag
-    bitstream_builder.AppendBool(false);  // video_signal_type_present_flag
+    bitstream_builder.AppendBool(sps.video_signal_type_present_flag);
+    if (sps.video_signal_type_present_flag) {
+      bitstream_builder.AppendBits(3, sps.video_format);
+      bitstream_builder.AppendBool(sps.video_full_range_flag);
+      bitstream_builder.AppendBool(sps.colour_description_present_flag);
+      if (sps.colour_description_present_flag) {
+        bitstream_builder.AppendBits(8, sps.colour_primaries);
+        bitstream_builder.AppendBits(8, sps.transfer_characteristics);
+        bitstream_builder.AppendBits(8, sps.matrix_coefficients);
+      }
+    }
     bitstream_builder.AppendBool(false);  // chroma_loc_info_present_flag
 
     bitstream_builder.AppendBool(sps.timing_info_present_flag);

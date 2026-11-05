@@ -9,6 +9,7 @@
 #include "base/bits.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/stringprintf.h"
+#include "media/base/video_color_space.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/h264_builder.h"
 #include "media/gpu/h264_rate_control_util.h"
@@ -69,6 +70,46 @@ D3D12_VIDEO_ENCODER_LEVELS_H264 H264LevelIDCToD3D12VideoEncoderLevelsH264(
     }
   }
   NOTREACHED();
+}
+
+// Fills the VUI video signal type of |sps| from |color_space|.
+void FillSPSVideoSignalType(const gfx::ColorSpace& color_space, H264SPS& sps) {
+  const VideoColorSpace video_color_space =
+      VideoColorSpace::FromGfxColorSpace(color_space);
+
+  VideoColorSpace::PrimaryID primaries = video_color_space.primaries();
+  if (primaries == VideoColorSpace::PrimaryID::INVALID) {
+    primaries = VideoColorSpace::PrimaryID::UNSPECIFIED;
+  }
+  VideoColorSpace::TransferID transfer = video_color_space.transfer();
+  if (transfer == VideoColorSpace::TransferID::INVALID) {
+    transfer = VideoColorSpace::TransferID::UNSPECIFIED;
+  }
+  // H.264 E.2.1 only allows matrix_coefficients 0 (RGB) for 4:4:4. D3D12 H.264
+  // encoder supports 4:2:0 only.
+  VideoColorSpace::MatrixID matrix = video_color_space.matrix();
+  if (matrix == VideoColorSpace::MatrixID::INVALID ||
+      matrix == VideoColorSpace::MatrixID::RGB) {
+    matrix = VideoColorSpace::MatrixID::UNSPECIFIED;
+  }
+
+  sps.colour_primaries = static_cast<int>(primaries);
+  sps.transfer_characteristics = static_cast<int>(transfer);
+  sps.matrix_coefficients = static_cast<int>(matrix);
+  sps.colour_description_present_flag =
+      primaries != VideoColorSpace::PrimaryID::UNSPECIFIED ||
+      transfer != VideoColorSpace::TransferID::UNSPECIFIED ||
+      matrix != VideoColorSpace::MatrixID::UNSPECIFIED;
+  sps.video_full_range_flag =
+      color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL;
+  // Without the video signal type, a decoder infers limited range and an
+  // unspecified colour description, so only emit it when the frame differs.
+  sps.video_signal_type_present_flag =
+      sps.colour_description_present_flag || sps.video_full_range_flag;
+  if (sps.video_signal_type_present_flag) {
+    sps.video_format = 5;  // Unspecified, per H.264 Table E-2.
+    sps.vui_parameters_present_flag = true;
+  }
 }
 
 }  // namespace
@@ -455,6 +496,7 @@ EncoderStatus D3D12VideoEncodeH264Delegate::EncodeImpl(
       mmco;
   if (is_keyframe) {
     H264SPS sps = ToSPS();
+    FillSPSVideoSignalType(input_color_space, sps);
     H264PPS pps = ToPPS(sps);
     packed_header_.Reset();
     BuildPackedH264SPS(packed_header_, sps);

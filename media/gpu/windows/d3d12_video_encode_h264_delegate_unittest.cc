@@ -5,6 +5,7 @@
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 
 #include <array>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -391,6 +392,93 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFrame) {
   EXPECT_EQ(nalu.nal_unit_type, H264NALU::kSPS);
   ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H264Parser::Result::kOk);
   EXPECT_EQ(nalu.nal_unit_type, H264NALU::kPPS);
+}
+
+TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeKeyFrameSignalsVideoSignalType) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  struct ColourDescription {
+    int colour_primaries;
+    int transfer_characteristics;
+    int matrix_coefficients;
+  };
+  struct TestCase {
+    const char* name;
+    gfx::ColorSpace color_space;
+    bool video_full_range_flag;
+    std::optional<ColourDescription> colour_description;
+  };
+  const TestCase kTestCases[] = {
+      // RGB input is converted to BT.709 YUV and keeps its full range.
+      {"SRGB", gfx::ColorSpace::CreateSRGB(), true,
+       ColourDescription{1, 13, 1}},
+      {"REC709", gfx::ColorSpace::CreateREC709(), false,
+       ColourDescription{1, 1, 1}},
+      // Primaries without an H.264 code point are signalled as unspecified.
+      {"AdobeRGBPrimaries",
+       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::ADOBE_RGB,
+                       gfx::ColorSpace::TransferID::SRGB,
+                       gfx::ColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       false, ColourDescription{2, 13, 1}},
+      // Nothing here has a 4:2:0 H.264 code point, but full range must still
+      // be signalled.
+      {"FullRangeWithoutColourDescription",
+       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::ADOBE_RGB,
+                       gfx::ColorSpace::TransferID::GAMMA24,
+                       gfx::ColorSpace::MatrixID::GBR,
+                       gfx::ColorSpace::RangeID::FULL),
+       true, std::nullopt},
+      {"Invalid", gfx::ColorSpace(), false, std::nullopt},
+  };
+
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  constexpr size_t kBufferSize = 1024;
+  constexpr size_t kStreamSize = 512;
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillRepeatedly(
+          [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+    BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+    VideoEncoder::EncodeOptions encode_opts;
+    encode_opts.key_frame = true;
+    auto result_or_error = encoder_delegate_->Encode(
+        input_frame, gfx::Rect(config.input_visible_size),
+        test_case.color_space, bitstream_buffer, encode_opts);
+    ASSERT_TRUE(result_or_error.has_value());
+
+    H264Parser parser;
+    base::WritableSharedMemoryMapping map = shared_memory.Map();
+    parser.SetStream(map.data(), map.size());
+    H264NALU nalu;
+    ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H264Parser::Result::kOk);
+    ASSERT_EQ(nalu.nal_unit_type, H264NALU::kSPS);
+    int sps_id;
+    ASSERT_EQ(parser.ParseSPS(&sps_id), H264Parser::Result::kOk);
+    const H264SPS* sps = parser.GetSPS(sps_id);
+    ASSERT_TRUE(sps);
+
+    const bool video_signal_type_present =
+        test_case.video_full_range_flag ||
+        test_case.colour_description.has_value();
+    EXPECT_EQ(sps->vui_parameters_present_flag, video_signal_type_present);
+    EXPECT_EQ(sps->video_signal_type_present_flag, video_signal_type_present);
+    EXPECT_EQ(sps->video_full_range_flag, test_case.video_full_range_flag);
+    EXPECT_EQ(sps->colour_description_present_flag,
+              test_case.colour_description.has_value());
+    if (test_case.colour_description) {
+      EXPECT_EQ(sps->colour_primaries,
+                test_case.colour_description->colour_primaries);
+      EXPECT_EQ(sps->transfer_characteristics,
+                test_case.colour_description->transfer_characteristics);
+      EXPECT_EQ(sps->matrix_coefficients,
+                test_case.colour_description->matrix_coefficients);
+    }
+  }
 }
 
 TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {
