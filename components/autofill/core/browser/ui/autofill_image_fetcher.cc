@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -17,7 +16,6 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -169,15 +167,12 @@ void AutofillImageFetcher::OnImageFetched(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillRetryImageFetchOnFailure)) {
-    // Post a delayed task to retry the fetch.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&AutofillImageFetcher::FetchImageForURL, GetWeakPtr(),
-                       image_url, image_type),
-        kRefetchDelay);
-  }
+  // Post a delayed task to retry the fetch.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillImageFetcher::FetchImageForURL, GetWeakPtr(),
+                     image_url, image_type),
+      kRefetchDelay);
 }
 
 void AutofillImageFetcher::FetchImageForURL(const GURL& image_url,

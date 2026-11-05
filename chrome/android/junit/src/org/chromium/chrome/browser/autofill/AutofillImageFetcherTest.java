@@ -37,12 +37,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.image_fetcher.ImageFetchResult;
@@ -60,7 +57,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 // IconSpecs)} after refactor.
 /** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE)
 public class AutofillImageFetcherTest {
     private static final GURL TEST_IMAGE_URL = new GURL("https://www.google.com/test-image-url");
     private static final Bitmap TEST_IMAGE = Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
@@ -290,45 +286,6 @@ public class AutofillImageFetcherTest {
         // Verify the image cache contains the fetched image.
         assertEquals(1, cachedImages.size());
         assertTrue(treatedImage.sameAs(cachedImages.get(imageCacheKey.getSpec())));
-
-        expectedHistogram.assertExpected();
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE)
-    public void testPrefetchCardArtImages_validUrl_unsuccessfulImageFetch_retryDisabled() {
-        doAnswer(
-                        invocation -> {
-                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
-                            callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
-                            return null;
-                        })
-                .when(mMockImageFetcher)
-                .fetchImageWithRequestMetadata(any(Params.class), MockitoHelper.anyCallback());
-        // The credit card art specific histogram should not have any logs. The generic histogram
-        // should log failure.
-        HistogramWatcher expectedHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.CreditCardArt.Result",
-                                /* value= */ false,
-                                /* times= */ 1)
-                        .expectNoRecords(
-                                "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart")
-                        .build();
-
-        mAutofillImageFetcher.prefetchCardArtImages(
-                new GURL[] {TEST_IMAGE_URL}, new int[] {ImageSize.SMALL});
-
-        // Advance the clock to trigger the retry.
-        mShadowLooper.runOneTask();
-
-        // Verify that fetchImage was called only once since retry is disabled.
-        verify(mMockImageFetcher)
-                .fetchImageWithRequestMetadata(any(Params.class), MockitoHelper.anyCallback());
-
-        // Verify the image cache is empty.
-        assertTrue(mAutofillImageFetcher.getCachedImagesForTesting().isEmpty());
 
         expectedHistogram.assertExpected();
     }

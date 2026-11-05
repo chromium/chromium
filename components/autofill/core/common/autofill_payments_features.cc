@@ -358,13 +358,6 @@ BASE_FEATURE(kAutofillPreferBuyNowPayLaterBlocklists,
 BASE_FEATURE(kAutofillRequireSecureContextForIbanManualFilling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, Chrome will try to fetch payment account image resources again
-// upon failure. The number of attempts is a controllable parameter. This is a
-// kill-switch.
-// TODO(crbug.com/40276036): Clean up after M139 branch (June 23, 2025).
-BASE_FEATURE(kAutofillRetryImageFetchOnFailure,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // When enabled, the strike limit for showing the save card bottom sheet on iOS
 // is increased from 1 to the value specified in the parameter and the default

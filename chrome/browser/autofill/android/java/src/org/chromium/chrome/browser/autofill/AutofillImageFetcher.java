@@ -23,7 +23,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
@@ -278,20 +277,17 @@ public class AutofillImageFetcher {
             return;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE)) {
-            // Image fetching failed, and max retry attempts not reached -> retry fetch after a
-            // delay.
-            Callback<ImageFetchResult> onImageFetched =
-                    bitmapFetchResult ->
-                            treatAndCacheImage(
-                                    bitmapFetchResult.imageBitmap,
-                                    originalUrl,
-                                    resolvedUrl,
-                                    treatImageFunction,
-                                    imageTypeString);
-            Handler handler = new Handler();
-            handler.postDelayed(() -> fetchImage(resolvedUrl, onImageFetched), REFETCH_DELAY_MS);
-        }
+        // Image fetching failed, and max retry attempts not reached -> retry fetch after a delay.
+        Callback<ImageFetchResult> onImageFetched =
+                bitmapFetchResult ->
+                        treatAndCacheImage(
+                                bitmapFetchResult.imageBitmap,
+                                originalUrl,
+                                resolvedUrl,
+                                treatImageFunction,
+                                imageTypeString);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> fetchImage(resolvedUrl, onImageFetched), REFETCH_DELAY_MS);
     }
 
     /**
