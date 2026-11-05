@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -21,7 +22,6 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,8 +36,6 @@ namespace actor {
 namespace {
 
 using ::content::EvalJs;
-using ::content::GetDOMNodeId;
-using ::optimization_guide::DocumentIdentifierUserData;
 
 constexpr char kPageWithFileInput[] = "/actor/page_with_file_input.html";
 constexpr char kPayloadPath[] = "/actor/upload_payload.txt";
@@ -101,18 +99,13 @@ class ActorFileUploadToolBrowserTest : public ActorToolsTest {
       return nullptr;
     }
 
-    std::optional<int> input_id =
-        GetDOMNodeId(*main_frame(), "input#fileinput");
-    if (!input_id) {
+    std::optional<DomNode> input_node =
+        GetDomNodeOnPage(*main_frame(), "input#fileinput");
+    if (!input_node) {
       ADD_FAILURE() << "Could not find the file input";
       return nullptr;
     }
-
-    std::string document_identifier =
-        *DocumentIdentifierUserData::GetDocumentIdentifier(
-            main_frame()->GetGlobalFrameToken());
-    PageTarget target = DomNode{.node_id = *input_id,
-                                .document_identifier = document_identifier};
+    PageTarget target(*std::move(input_node));
 
     return std::make_unique<FileUploadToolRequest>(
         ActorSurfaceHandle::From(active_tab()->GetHandle()), std::move(target),
@@ -204,12 +197,10 @@ IN_PROC_BROWSER_TEST_F(ActorFileUploadToolBrowserTest,
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame(), 0);
   ASSERT_TRUE(subframe);
 
-  std::optional<int> input_id = GetDOMNodeId(*subframe, "input#fileinput");
-  ASSERT_TRUE(input_id);
-  PageTarget target = DomNode{
-      .node_id = *input_id,
-      .document_identifier = *DocumentIdentifierUserData::GetDocumentIdentifier(
-          subframe->GetGlobalFrameToken())};
+  std::optional<DomNode> input_node =
+      GetDomNodeOnPage(*subframe, "input#fileinput");
+  ASSERT_TRUE(input_node);
+  PageTarget target(*std::move(input_node));
   std::vector<FileUploadSource> files;
   files.emplace_back(
       embedded_https_test_server().GetURL("example.com", kPayloadPath));
