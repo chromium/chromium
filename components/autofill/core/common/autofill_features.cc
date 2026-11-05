@@ -140,6 +140,11 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kAutofillAddressSuggestionsOnTypingHasStrikeDatabase,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature flag to cap Autofill on typing candidate values per `FieldType`
+// rather than stopping after a fixed number of top profiles.
+BASE_FEATURE(kAutofillAddressSuggestionsOnTypingLimitPerFieldType,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag controlling the display of surveys when a user declines the
 // save prompt of Autofill address and a user does not have any address stored.
 // The goal is to understand the reason and work towards improving acceptance.

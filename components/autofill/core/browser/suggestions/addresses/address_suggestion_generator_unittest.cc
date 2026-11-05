@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -153,6 +154,18 @@ class AddressSuggestionGeneratorTest : public testing::Test {
     return GetSuggestionsOnTypingForProfile(autofill_client_, form, field);
   }
 
+  AutofillProfile AddProfileWithValues(
+      const std::vector<std::pair<FieldType, std::u16string>>& values,
+      size_t use_count) {
+    AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+    for (const std::pair<FieldType, std::u16string>& field_and_value : values) {
+      profile.SetRawInfo(field_and_value.first, field_and_value.second);
+    }
+    profile.usage_history().set_use_count(use_count);
+    address_data().AddProfile(profile);
+    return profile;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAutofillAddressSuggestionsOnTyping};
@@ -221,6 +234,79 @@ TEST_F(AddressSuggestionGeneratorTest,
                                    u"4398 Wallaby Way"),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kManageAddress)));
+}
+
+// Tests that when `kAutofillAddressSuggestionsOnTypingLimitPerFieldType` is
+// enabled, profiles missing a value for a given `FieldType` do not consume one
+// of the 3 per-type candidate slots.
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsOnTypingForProfile_LimitPerFieldType_SkipsEmptyValues) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAddressSuggestionsOnTypingLimitPerFieldType};
+
+  // Ranked 1st -> 4th by decreasing `use_count`: the top profile lacks
+  // `ADDRESS_HOME_LINE1`, while all 4 profiles have `NAME_FULL`.
+  AddProfileWithValues({{NAME_FULL, u"Sundar Pichai"}}, /*use_count=*/8);
+  AddProfileWithValues(
+      {{NAME_FULL, u"Larry Page"}, {ADDRESS_HOME_LINE1, u"4398 Wallaby Way"}},
+      /*use_count=*/6);
+  AddProfileWithValues({{NAME_FULL, u"Sergey Brin"},
+                        {ADDRESS_HOME_LINE1, u"742 Evergreen Terrace"}},
+                       /*use_count=*/4);
+  AddProfileWithValues({{NAME_FULL, u"Jeffrey Dean"},
+                        {ADDRESS_HOME_LINE1, u"1600 Amphitheatre Pkwy"}},
+                       /*use_count=*/2);
+
+  // The top profile's empty `ADDRESS_HOME_LINE1` does not consume a slot, so
+  // the 4th profile is reached as the 3rd `ADDRESS_HOME_LINE1` value.
+  EXPECT_THAT(
+      GetSuggestionsOnTypingWithPrefix(u"160"),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   u"1600 Amphitheatre Pkwy"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+
+  // The first 3 profiles already fill the 3-value cap for `NAME_FULL`, so the
+  // 4th profile's `NAME_FULL` is excluded.
+  EXPECT_THAT(GetSuggestionsOnTypingWithPrefix(u"Jef"), IsEmpty());
+}
+
+// Tests that when `kAutofillAddressSuggestionsOnTypingLimitPerFieldType` is
+// enabled, duplicate values across ranked profiles do not consume extra
+// per-type candidate slots or emit duplicate suggestions.
+TEST_F(
+    AddressSuggestionGeneratorTest,
+    GetSuggestionsOnTypingForProfile_LimitPerFieldType_SkipsDuplicateValues) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAddressSuggestionsOnTypingLimitPerFieldType};
+
+  const AutofillProfile top_profile = AddProfileWithValues(
+      {{EMAIL_ADDRESS, u"primary@gmail.com"}}, /*use_count=*/8);
+  AddProfileWithValues({{EMAIL_ADDRESS, u"primary@gmail.com"}},
+                       /*use_count=*/6);
+  AddProfileWithValues({{EMAIL_ADDRESS, u"work@company.com"}}, /*use_count=*/4);
+  AddProfileWithValues({{EMAIL_ADDRESS, u"secondary@gmail.com"}},
+                       /*use_count=*/2);
+
+  // The duplicate `primary@gmail.com` does not consume a 2nd slot, so the 4th
+  // profile is reached as the 3rd distinct `EMAIL_ADDRESS`.
+  EXPECT_THAT(
+      GetSuggestionsOnTypingWithPrefix(u"sec"),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   u"secondary@gmail.com"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+
+  // Typing a prefix matching the duplicated email yields a single suggestion
+  // attributed to `top_profile`.
+  EXPECT_THAT(GetSuggestionsOnTypingWithPrefix(u"pri"),
+              ElementsAre(EqualsSuggestion(
+                              SuggestionType::kAddressEntryOnTyping,
+                              u"primary@gmail.com", Suggestion::Icon::kNoIcon,
+                              Suggestion::AutofillProfilePayload(
+                                  Suggestion::Guid(top_profile.guid()))),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageAddress)));
 }
 
 // Tests Autofill on typing feature flag feature params (not all but the more
