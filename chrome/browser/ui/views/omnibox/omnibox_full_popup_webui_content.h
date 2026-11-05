@@ -35,6 +35,12 @@ class OmniboxFullPopupWebUIContent
   OmniboxFullPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
                                LocationBar* location_bar,
                                OmniboxController* controller);
+  // `contents` is a WebContents to adopt, or null; see
+  // `OmniboxPopupWebUIBaseContent`.
+  OmniboxFullPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+                               LocationBar* location_bar,
+                               OmniboxController* controller,
+                               std::unique_ptr<ContentsWrapper> contents);
   OmniboxFullPopupWebUIContent(const OmniboxFullPopupWebUIContent&) = delete;
   OmniboxFullPopupWebUIContent& operator=(const OmniboxFullPopupWebUIContent&) =
       delete;

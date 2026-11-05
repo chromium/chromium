@@ -28,6 +28,10 @@ class LocationBar;
 class OmniboxPopupPresenterDelegate;
 class OmniboxController;
 class OmniboxFullPopupWebUIContent;
+class OmniboxPopupUI;
+class OmniboxPopupWebUIBaseContent;
+template <typename T>
+class WebUIContentsWrapperT;
 
 // Implements subclass of OmniboxPopupPresenterBase to present a single full
 // WebUI (input row + suggestions dropdown) into the Omnibox popup.
@@ -79,6 +83,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void SynchronizePopupBounds() override;
   void WidgetDestroyed() override;
   void OnWidgetPresentedChanged(bool presented) override;
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
+      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
 
   // Transparent margin around the popup content reserved for the drop shadow:
   // the full shadow insets when the dropdown is expanded, or the same insets

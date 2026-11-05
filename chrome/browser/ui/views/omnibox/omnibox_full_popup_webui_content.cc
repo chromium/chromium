@@ -38,12 +38,23 @@ OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
     OmniboxPopupPresenterBase* presenter,
     LocationBar* location_bar,
     OmniboxController* controller)
+    : OmniboxFullPopupWebUIContent(presenter,
+                                   location_bar,
+                                   controller,
+                                   /*contents=*/nullptr) {}
+
+OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
+    OmniboxPopupPresenterBase* presenter,
+    LocationBar* location_bar,
+    OmniboxController* controller,
+    std::unique_ptr<ContentsWrapper> contents)
     : OmniboxPopupWebUIContent(presenter,
                                location_bar,
                                controller,
                                /*include_location_bar_cutout=*/false,
                                /*wants_focus=*/true,
-                               /*set_content_url=*/false),
+                               /*set_content_url=*/false,
+                               std::move(contents)),
       OmniboxContextMenuMixin<ui::SimpleMenuModel::Delegate>(location_bar,
                                                              controller) {
   SetContentURL(chrome::kChromeUIOmniboxPopupURL);

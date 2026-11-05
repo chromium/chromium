@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -61,10 +62,9 @@ OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
     OmniboxPopupPresenterDelegate& presenter_delegate,
     OmniboxController* controller)
     : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
-  // `location_bar` may be null in unit tests.
+  // `location_bar` may be null in unit tests, which run without content.
   if (location_bar) {
-    SetWebUIContent(std::make_unique<OmniboxFullPopupWebUIContent>(
-        this, this->location_bar(), controller));
+    ApplyWebUIContentCreationStrategy(WebUIContentCreationStrategy::kEager);
   }
 }
 
@@ -810,6 +810,13 @@ void OmniboxPopupFullPresenter::OnWidgetPresentedChanged(bool presented) {
   if (auto* content = GetWebUIContent()) {
     content->OnPopupWidgetPresentedChanged(presented);
   }
+}
+
+std::unique_ptr<OmniboxPopupWebUIBaseContent>
+OmniboxPopupFullPresenter::CreateWebUIContent(
+    std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {
+  return std::make_unique<OmniboxFullPopupWebUIContent>(
+      this, location_bar(), controller(), std::move(contents));
 }
 
 void OmniboxPopupFullPresenter::WidgetDestroyed() {

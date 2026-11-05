@@ -52,8 +52,7 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
           /*top_rounded_corners=*/!include_location_bar_cutout,
           std::move(contents)),
       wants_focus_(wants_focus) {
-  // `SetContentURL()` adopts `contents`.
-  CHECK(set_content_url || !contents_wrapper());
+  // `SetContentURL()`, here or in a subclass, adopts `contents`.
   if (set_content_url) {
     SetContentURL(chrome::kChromeUIOmniboxPopupURL);
   }

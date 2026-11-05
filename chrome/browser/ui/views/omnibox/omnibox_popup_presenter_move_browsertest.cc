@@ -191,3 +191,44 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupPresenterMoveBrowserTest, MovesBack) {
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return GetPageResultInput(contents) == "bar"; }));
 }
+
+// Tests moving the full WebUI popup's WebContents from one browser window's
+// presenter to another's.
+class OmniboxPopupFullPresenterMoveBrowserTest
+    : public OmniboxPopupPresenterMoveBrowserTest {
+ public:
+  OmniboxPopupFullPresenterMoveBrowserTest() {
+    full_feature_list_.InitAndEnableFeature(
+        omnibox::internal::kWebUIOmniboxFullPopup);
+  }
+
+ private:
+  base::test::ScopedFeatureList full_feature_list_;
+};
+
+// The full popup moves to the other window without loading a new page, and
+// the window that released it creates a new one when it next needs it.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFullPresenterMoveBrowserTest,
+                       MovesFullPopup) {
+  content::WebContents* contents = GetPopupContents(browser());
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(content::WaitForLoadStop(contents));
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  // The full popup shows while the omnibox has focus, as in a new window.
+  GetPresenter(browser())->Hide();
+  GetPresenter(other_browser)->Hide();
+  // Drop the other window's own popup, which it creates with the window.
+  ASSERT_TRUE(GetPresenter(other_browser)->ReleaseWebUIContents());
+
+  MovePopup(browser(), other_browser);
+
+  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+  EXPECT_EQ(GetPopupContents(other_browser), contents);
+
+  OmniboxPopupWebUIBaseContent* new_content =
+      GetPresenter(browser())->GetOrCreateWebUIContent(
+          OmniboxPopupPresenterBase::CreationReason::kShow);
+  ASSERT_TRUE(new_content);
+  EXPECT_NE(new_content->GetWrappedWebContents(), contents);
+}
