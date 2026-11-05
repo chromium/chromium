@@ -26,12 +26,11 @@ import org.chromium.base.Holder;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -44,8 +43,6 @@ import java.io.File;
 /** Integration tests for {@link ActiveTabCache}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class ActiveTabCacheTest {
     private static final String WINDOW_TAG = "WINDOW";
 
@@ -341,7 +338,9 @@ public class ActiveTabCacheTest {
                             mActiveTabCache.getPreLoadedActiveTabOrLoad(/* incognito= */ false);
                     assertNotNull(tabState);
                     assertEquals(tab2.getId(), tabState.tabId);
-                    assertEquals(getOriginalNativeNtpUrl(), tabState.tabState.url.getSpec());
+                    assertEquals(
+                            UrlConstantResolverFactory.getOriginalResolver().getNtpUrl(),
+                            tabState.tabState.url.getSpec());
                 });
 
         ThreadUtils.runOnUiThreadBlocking(

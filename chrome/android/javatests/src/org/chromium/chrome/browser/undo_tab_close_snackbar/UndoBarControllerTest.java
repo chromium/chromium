@@ -28,12 +28,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -60,8 +58,6 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class UndoBarControllerTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -96,6 +92,8 @@ public class UndoBarControllerTest {
     public void testCloseSingleTab_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -106,11 +104,11 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    closeTabs(TabClosureParams.closeTab(mTabModel.getTabAt(1)).build());
+                    closeTabs(TabClosureParams.closeTab(tab1).build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(1, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
@@ -127,6 +125,8 @@ public class UndoBarControllerTest {
     public void testCloseSingleTab_Dismiss() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -137,11 +137,11 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    closeTabs(TabClosureParams.closeTab(mTabModel.getTabAt(1)).build());
+                    closeTabs(TabClosureParams.closeTab(tab1).build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(1, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
@@ -978,6 +978,7 @@ public class UndoBarControllerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -996,7 +997,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(1, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
@@ -1018,6 +1019,7 @@ public class UndoBarControllerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -1036,7 +1038,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertTrue(isClosurePending(tab1));
 
@@ -1059,6 +1061,7 @@ public class UndoBarControllerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -1076,7 +1079,7 @@ public class UndoBarControllerTest {
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertTrue(isClosurePending(tab1));
 
@@ -1203,6 +1206,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
         Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -1220,7 +1224,7 @@ public class UndoBarControllerTest {
                     closeTabs(TabClosureParams.closeTab(tab1).build());
                 });
         Snackbar snackbarA = getCurrentSnackbar();
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
         assertTrue(snackbarA.getController() instanceof UndoBarController);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1238,7 +1242,7 @@ public class UndoBarControllerTest {
                 });
 
         assertSame(snackbarA, getCurrentSnackbar());
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
         assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
         assertTrue(isClosurePending(tab1));
 
@@ -1316,6 +1320,7 @@ public class UndoBarControllerTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
         Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -1374,7 +1379,7 @@ public class UndoBarControllerTest {
         assertNotNull(snackbarY);
         assertNotSame(snackbarX, snackbarY);
         assertTrue(snackbarY.getController() instanceof UndoBarController);
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
 
         clickSnackbar();
 
@@ -1394,6 +1399,7 @@ public class UndoBarControllerTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
         Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        String closedText = getClosedTabText(tab1);
 
         assertNull(getCurrentSnackbar());
         assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
@@ -1454,7 +1460,7 @@ public class UndoBarControllerTest {
         assertNotNull(snackbarY);
         assertNotSame(snackbarX, snackbarY);
         assertTrue(snackbarY.getController() instanceof UndoBarController);
-        assertSnackbarTextEqualsAllowingTruncation("Closed New tab");
+        assertSnackbarTextEqualsAllowingTruncation(closedText);
 
         clickSnackbar();
 
@@ -1523,6 +1529,13 @@ public class UndoBarControllerTest {
                 () ->
                         mSnackbarManager.dismissSnackbars(
                                 mSnackbarManager.getCurrentSnackbarForTesting().getController()));
+    }
+
+    /** Returns the snackbar text shown after closing {@code tab} on its own. */
+    private static String getClosedTabText(Tab tab) {
+        String title = ChromeTabUtils.getTitleOnUiThread(tab);
+        assertFalse("Closed tab should have a title", title.isEmpty());
+        return "Closed " + title;
     }
 
     private void assertSnackbarTextEqualsAllowingTruncation(String expected) {

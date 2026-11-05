@@ -66,11 +66,7 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures({
-    ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY,
-    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
-})
+@DisableFeatures(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)
 @Batch(Batch.PER_CLASS)
 public class TabPersistentStoreIntegrationTest {
     @Rule
@@ -513,6 +509,14 @@ public class TabPersistentStoreIntegrationTest {
         File tab0StateFile = mTabPersistentStore.getTabStateFileForTesting(tab0.getId(), false);
         waitForFile(tab0StateFile, true);
 
+        // Wait for the NTP to finish loading. Its TabStateAttributes is created before its URL
+        // is set, so it starts out UNTIDY, and later UNTIDY updates return early in
+        // updateIsDirtyInternal(). When the load stops, onLoadStopped() requests DIRTY, which
+        // updateIsDirtyInternal() turns into CLEAN for an NTP without history. Until then,
+        // recreating the activity would write its TabState file again.
+        CriteriaHelper.pollUiThread(
+                () -> UrlUtilities.isNtpUrl(tab1.getUrl()) && !tab1.isLoading());
+
         // NTP (tab1) might have a state file if it was saved.
         // We want to make sure it does NOT exist to force fallback.
         File tab1StateFile = mTabPersistentStore.getTabStateFileForTesting(tab1.getId(), false);
@@ -629,6 +633,14 @@ public class TabPersistentStoreIntegrationTest {
             // Ensure TabState for tab0W2 is saved.
             File tab0StateFile = store2.getTabStateFileForTesting(tab0W2.getId(), false);
             waitForFile(tab0StateFile, true);
+
+            // Wait for the NTP to finish loading. Its TabStateAttributes is created before its
+            // URL is set, so it starts out UNTIDY, and later UNTIDY updates return early in
+            // updateIsDirtyInternal(). When the load stops, onLoadStopped() requests DIRTY,
+            // which updateIsDirtyInternal() turns into CLEAN for an NTP without history. Until
+            // then, relaunching Activity2 would write its TabState file again.
+            CriteriaHelper.pollUiThread(
+                    () -> UrlUtilities.isNtpUrl(tab1W2.getUrl()) && !tab1W2.isLoading());
 
             // Ensure NTP (tab1W2) does NOT have a state file.
             File tab1StateFile = store2.getTabStateFileForTesting(tab1W2.getId(), false);
