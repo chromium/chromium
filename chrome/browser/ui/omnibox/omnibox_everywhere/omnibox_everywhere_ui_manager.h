@@ -327,7 +327,10 @@ class OmniboxEverywhereUIManager
 #endif
   void OnMostVisitedPrefChanged();
   OmniboxEverywhereService* GetOmniboxEverywhereService();
-  void MaybeRecordFreImpression();
+  // Ends the active FRE session when the popup is closed or destroyed. Note
+  // that `Demote()` (persistent mode deactivation) and window minimization
+  // intentionally preserve the active FRE session across reactivations.
+  void EndFreSession();
   void MaybeShowLensPromo();
   void EndLensPromo();
   static gfx::Rect CalculateWidgetBounds(int height);

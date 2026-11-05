@@ -40,41 +40,52 @@ TEST_F(OmniboxEverywhereFreControllerTest, FreStagesProgression_Impressions) {
   EXPECT_FALSE(fre_controller_->IsFreDismissed());
 
   // Increment impression 1
-  fre_controller_->IncrementImpression();
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
 
   // Increment impression 2 -> Stage 1 reaches max impressions (2).
+  // Stage stays latched at kIntroModal until the session ends.
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
+  fre_controller_->EndSession();
   // Because no hotkey is configured by default, advances to Stage 2
-  // (ShortcutSetupChin).
-  fre_controller_->IncrementImpression();
+  // (ShortcutSetupChin) for the next invocation.
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
 
-  // Configure a hotkey while in Stage 2.
+  // Start a session in Stage 2 and configure a hotkey during the open session.
+  // Stage stays latched at kShortcutSetupChin until the session ends, then
+  // advances to Stage 3 (ShortcutReminderChin).
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
   prefs::SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
   EXPECT_TRUE(prefs::HasOmniboxEverywhereHotkey(&local_state_));
-
-  // Current open still shows Stage 2.
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
-
-  // Increment impression 1 (closing the invocation where hotkey was
-  // configured). The next invocation immediately shows Stage 3
-  // (ShortcutReminderChin).
-  fre_controller_->IncrementImpression();
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(),
             FreStage::kShortcutReminderChin);
 
   // Stage 3 impressions (max 3)
-  fre_controller_->IncrementImpression();
+  fre_controller_->IncrementImpression(FreStage::kShortcutReminderChin);
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(),
             FreStage::kShortcutReminderChin);
-  fre_controller_->IncrementImpression();
+  fre_controller_->IncrementImpression(FreStage::kShortcutReminderChin);
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(),
             FreStage::kShortcutReminderChin);
-  fre_controller_->IncrementImpression();
-  // Reached 3 impressions -> FRE complete (kNone) and marked dismissed.
+  fre_controller_->IncrementImpression(FreStage::kShortcutReminderChin);
+  // Pref is marked dismissed immediately on the 3rd impression (safe if
+  // force-closed), while the active session remains latched until EndSession().
+  EXPECT_TRUE(profile_prefs_.GetBoolean(prefs::kFreDismissed));
+  EXPECT_EQ(fre_controller_->GetCurrentStage(),
+            FreStage::kShortcutReminderChin);
+  EXPECT_FALSE(fre_controller_->IsFreDismissed());
+
+  fre_controller_->EndSession();
+  // Session ended -> FRE complete (kNone) and marked dismissed.
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kNone);
   EXPECT_TRUE(fre_controller_->IsFreDismissed());
-  EXPECT_TRUE(profile_prefs_.GetBoolean(prefs::kFreDismissed));
 }
 
 TEST_F(OmniboxEverywhereFreControllerTest,
@@ -123,10 +134,11 @@ TEST_F(OmniboxEverywhereFreControllerTest,
   fre_controller_->OnStageDismissed(FreStage::kIntroModal);
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
 
-  // Configure a hotkey while in Stage 2.
+  // Start a session in Stage 2 and configure a hotkey.
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
   prefs::SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
   EXPECT_TRUE(prefs::HasOmniboxEverywhereHotkey(&local_state_));
-  // Does not immediately switch to Stage 3 before dismissal or impression cap.
+  // Does not immediately switch to Stage 3 during the active session.
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
 
   // When user dismisses Stage 2 after selecting a hotkey, Stage 3 is skipped
@@ -142,7 +154,8 @@ TEST_F(OmniboxEverywhereFreControllerTest, NullProfilePrefsSafety) {
   OmniboxEverywhereFreController null_controller(nullptr, &local_state_);
   EXPECT_EQ(null_controller.GetCurrentStage(), FreStage::kNone);
   EXPECT_TRUE(null_controller.IsFreDismissed());
-  EXPECT_NO_FATAL_FAILURE(null_controller.IncrementImpression());
+  EXPECT_NO_FATAL_FAILURE(
+      null_controller.IncrementImpression(FreStage::kIntroModal));
   EXPECT_NO_FATAL_FAILURE(
       null_controller.OnStageDismissed(FreStage::kIntroModal));
   EXPECT_NO_FATAL_FAILURE(
@@ -157,6 +170,7 @@ TEST_F(OmniboxEverywhereFreControllerTest,
 
   // User sets hotkey (e.g. in Settings) and marks Stage 2 completed.
   prefs::SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
   fre_controller_->MarkStageCompleted(FreStage::kShortcutSetupChin);
 
   // Stage 3 (reminder chin) is shown, not skipped.
@@ -179,22 +193,26 @@ TEST_F(OmniboxEverywhereFreControllerTest,
 
   // While no hotkey is selected, impressions are not capped.
   for (int i = 0; i < 5; ++i) {
-    fre_controller_->IncrementImpression();
+    fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
     EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
+    fre_controller_->EndSession();
   }
   EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreShortcutSetupImpressionCount),
             0);
 
-  // Set a hotkey while in Stage 2.
+  // Start a session in Stage 2 and select a hotkey during the open session.
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
   prefs::SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
   EXPECT_TRUE(prefs::HasOmniboxEverywhereHotkey(&local_state_));
 
-  // Does not immediately switch to Stage 3 during current open.
+  // Impression is recorded immediately when the hotkey is selected, while
+  // the displayed stage stays latched at Stage 2 during the current open.
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreShortcutSetupImpressionCount),
+            1);
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
 
-  // Increment impression 1 -> reaches impression cap (1), advances to
-  // Stage 3 on the next invocation.
-  fre_controller_->IncrementImpression();
+  // Ending the session advances to Stage 3 on the next invocation.
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(),
             FreStage::kShortcutReminderChin);
   EXPECT_FALSE(fre_controller_->IsFreDismissed());
@@ -228,9 +246,11 @@ TEST_F(OmniboxEverywhereFreControllerTest,
 
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
 
-  // Exhaust Stage 1 impressions (max 2).
-  fre_controller_->IncrementImpression();
-  fre_controller_->IncrementImpression();
+  // Exhaust Stage 1 impressions (max 2) across two sessions.
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  fre_controller_->EndSession();
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  fre_controller_->EndSession();
 
   // Transitions directly to Stage 3 (ShortcutReminderChin), skipping Stage 2.
   EXPECT_EQ(fre_controller_->GetCurrentStage(),
@@ -250,22 +270,99 @@ TEST_F(OmniboxEverywhereFreControllerTest,
 
   // Stage 1: Custom cap of 1 impression.
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
-  fre_controller_->IncrementImpression();
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
 
   // Stage 2: Custom cap of 2 impressions after hotkey is set.
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
   prefs::SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
-  fre_controller_->IncrementImpression();
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
-  fre_controller_->IncrementImpression();
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(),
             FreStage::kShortcutReminderChin);
 
   // Stage 3: Custom cap of 1 impression.
-  fre_controller_->IncrementImpression();
+  fre_controller_->IncrementImpression(FreStage::kShortcutReminderChin);
+  fre_controller_->EndSession();
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kNone);
   EXPECT_TRUE(fre_controller_->IsFreDismissed());
   EXPECT_TRUE(profile_prefs_.GetBoolean(prefs::kFreDismissed));
+}
+
+TEST_F(OmniboxEverywhereFreControllerTest,
+       SessionLatchingPreventsMidDisplayTransitionAndDuplicateImpressions) {
+  int notification_count = 0;
+  base::CallbackListSubscription subscription =
+      fre_controller_->RegisterStateChangedCallback(
+          base::BindLambdaForTesting([&]() { ++notification_count; }));
+
+  // Session 1: Calling IncrementImpression() multiple times in the same session
+  // only increments the pref once.
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreIntroImpressionCount), 1);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
+  EXPECT_EQ(notification_count, 0);
+
+  fre_controller_->EndSession();
+  EXPECT_EQ(notification_count, 1);
+
+  // Session 2: Reaching the impression cap (2) persists immediately to
+  // PrefService, but GetCurrentStage() stays latched at kIntroModal until
+  // EndSession() is called.
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreIntroImpressionCount), 2);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
+  EXPECT_EQ(notification_count, 1);
+
+  fre_controller_->EndSession();
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
+  EXPECT_EQ(notification_count, 2);
+}
+
+TEST_F(OmniboxEverywhereFreControllerTest,
+       ExplicitDismissalAndStageCompletionUnlatchActiveSessionImmediately) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxEverywhereFre,
+      {{omnibox::kOmniboxEverywhereFreMaxShortcutSetupImpressionsParam.name,
+        "2"}});
+
+  int notification_count = 0;
+  base::CallbackListSubscription subscription =
+      fre_controller_->RegisterStateChangedCallback(
+          base::BindLambdaForTesting([&]() { ++notification_count; }));
+
+  // Latch Stage 1 via IncrementImpression().
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
+  EXPECT_EQ(notification_count, 0);
+
+  // Explicitly dismissing Stage 1 mid-session unlatches immediately, fires
+  // StateChangedCallback, and advances to Stage 2 without waiting for
+  // EndSession().
+  fre_controller_->OnStageDismissed(FreStage::kIntroModal);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
+  EXPECT_GT(notification_count, 0);
+
+  // Start a Stage 2 session and configure a hotkey (impression 1 of 2).
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
+  prefs::SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreShortcutSetupImpressionCount),
+            1);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
+
+  // Completing Stage 2 (e.g. via Settings) unlatches immediately, fires
+  // StateChangedCallback, and advances to Stage 3.
+  const int notifications_before_completion = notification_count;
+  fre_controller_->MarkStageCompleted(FreStage::kShortcutSetupChin);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(),
+            FreStage::kShortcutReminderChin);
+  EXPECT_GT(notification_count, notifications_before_completion);
 }
 
 TEST_F(OmniboxEverywhereFreControllerTest, FeatureFlagDisabled) {
@@ -275,7 +372,7 @@ TEST_F(OmniboxEverywhereFreControllerTest, FeatureFlagDisabled) {
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kNone);
   EXPECT_TRUE(fre_controller_->IsFreDismissed());
 
-  fre_controller_->IncrementImpression();
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
   EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreIntroImpressionCount), 0);
 
   fre_controller_->OnStageDismissed(FreStage::kIntroModal);
@@ -366,6 +463,23 @@ TEST_F(OmniboxEverywhereFreControllerTest,
   local_state_.SetBoolean(prefs::kHotkeyEnabled, true);
   EXPECT_EQ(fre_controller_->GetCurrentStage(),
             FreStage::kShortcutReminderChin);
+
+  // Latch Stage 3 via IncrementImpression(), then disable the hotkey
+  // mid-session. Stage 3 unlatches immediately to kNone rather than staying
+  // latched with empty hotkey tokens; re-enabling and calling
+  // IncrementImpression() in the same session re-latches without
+  // double-counting the impression.
+  fre_controller_->IncrementImpression(FreStage::kShortcutReminderChin);
+  EXPECT_EQ(
+      profile_prefs_.GetInteger(prefs::kFreShortcutReminderImpressionCount), 1);
+  local_state_.SetBoolean(prefs::kHotkeyEnabled, false);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kNone);
+  local_state_.SetBoolean(prefs::kHotkeyEnabled, true);
+  fre_controller_->IncrementImpression(FreStage::kShortcutReminderChin);
+  EXPECT_EQ(
+      profile_prefs_.GetInteger(prefs::kFreShortcutReminderImpressionCount), 1);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(),
+            FreStage::kShortcutReminderChin);
 }
 
 TEST_F(OmniboxEverywhereFreControllerTest,
@@ -398,6 +512,49 @@ TEST_F(OmniboxEverywhereFreControllerTest,
     EXPECT_NE(stage, FreStage::kShortcutReminderChin);
   }
   EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kNone);
+}
+
+TEST_F(OmniboxEverywhereFreControllerTest,
+       IncrementImpressionIgnoresMismatchedStage) {
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kIntroModal);
+
+  // Stale or non-matching stages are ignored without latching or counting.
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
+  fre_controller_->IncrementImpression(FreStage::kShortcutReminderChin);
+  fre_controller_->IncrementImpression(FreStage::kNone);
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreIntroImpressionCount), 0);
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreShortcutSetupImpressionCount),
+            0);
+  EXPECT_EQ(
+      profile_prefs_.GetInteger(prefs::kFreShortcutReminderImpressionCount), 0);
+
+  // Recording the matching active stage succeeds.
+  fre_controller_->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreIntroImpressionCount), 1);
+}
+
+TEST_F(OmniboxEverywhereFreControllerTest,
+       MultipleHotkeyChangesInSingleOpenSetupSessionRecordOnce) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxEverywhereFre,
+      {{omnibox::kOmniboxEverywhereFreMaxShortcutSetupImpressionsParam.name,
+        "2"}});
+
+  fre_controller_->OnStageDismissed(FreStage::kIntroModal);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
+
+  // Open a Stage 2 session and change the hotkey multiple times within the same
+  // session; only 1 impression is recorded.
+  fre_controller_->IncrementImpression(FreStage::kShortcutSetupChin);
+  prefs::SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
+  prefs::SetOmniboxEverywhereHotkey(&local_state_, "Alt+Space");
+  EXPECT_EQ(profile_prefs_.GetInteger(prefs::kFreShortcutSetupImpressionCount),
+            1);
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
+
+  fre_controller_->EndSession();
+  EXPECT_EQ(fre_controller_->GetCurrentStage(), FreStage::kShortcutSetupChin);
 }
 
 }  // namespace

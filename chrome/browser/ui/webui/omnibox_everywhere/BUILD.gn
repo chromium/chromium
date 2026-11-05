@@ -37,6 +37,7 @@ if (is_win || is_mac) {
       "//components/prefs",
       "//components/search",
       "//components/search_engines",
+      "//content/public/browser",
       "//content/test:test_support",
       "//mojo/public/cpp/bindings",
       "//net",

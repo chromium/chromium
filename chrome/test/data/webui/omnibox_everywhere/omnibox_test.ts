@@ -3593,6 +3593,109 @@ suite('OmniboxEverywhereAppTest', () => {
       });
 
   test(
+      'rendering FRE stage calls recordFreImpression once per session',
+      async () => {
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        testProxy.handler.resetResolver('recordFreImpression');
+
+        testProxy.page.setFreState({
+          stage: FreStage.kIntroModal,
+          currentHotkeyTokens: [],
+        });
+        await microtasksFinished();
+
+        assertTrue(!!app.shadowRoot.querySelector('fre-modal'));
+        assertDeepEquals(
+            [FreStage.kIntroModal],
+            testProxy.handler.getArgs('recordFreImpression'));
+
+        // Entering and exiting composebox mode within the same session remounts
+        // fre-modal but must not record a duplicate impression.
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.fire(
+            'open-composebox', {text: '', files: [], mode: 0, model: 0});
+        await microtasksFinished();
+        assertFalse(!!app.shadowRoot.querySelector('fre-modal'));
+
+        window.dispatchEvent(new KeyboardEvent(
+            'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+        await microtasksFinished();
+        assertTrue(!!app.shadowRoot.querySelector('fre-modal'));
+        assertEquals(1, testProxy.handler.getCallCount('recordFreImpression'));
+
+        // Transitioning to a new FRE stage records an impression for the new
+        // stage.
+        testProxy.page.setFreState({
+          stage: FreStage.kShortcutSetupChin,
+          currentHotkeyTokens: [],
+        });
+        await microtasksFinished();
+        assertTrue(!!app.shadowRoot.querySelector('#freShortcutSetupChin'));
+        assertDeepEquals(
+            [FreStage.kIntroModal, FreStage.kShortcutSetupChin],
+            testProxy.handler.getArgs('recordFreImpression'));
+
+        // In persistent mode, a stage update pushed while blurred/demoted waits
+        // until the window regains focus before recording an impression.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        testProxy.page.setFreState({
+          stage: FreStage.kShortcutReminderChin,
+          currentHotkeyTokens: ['Alt', 'Space'],
+        });
+        await microtasksFinished();
+        assertEquals(2, testProxy.handler.getCallCount('recordFreImpression'));
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertDeepEquals(
+            [
+              FreStage.kIntroModal,
+              FreStage.kShortcutSetupChin,
+              FreStage.kShortcutReminderChin,
+            ],
+            testProxy.handler.getArgs('recordFreImpression'));
+
+        // Hiding and re-showing the document (new open-window session) resets
+        // the session guard and records an impression for the new session.
+        Object.defineProperty(
+            document, 'visibilityState', {value: 'hidden', configurable: true});
+        try {
+          document.dispatchEvent(new Event('visibilitychange'));
+          await microtasksFinished();
+          assertEquals(
+              3, testProxy.handler.getCallCount('recordFreImpression'));
+
+          Object.defineProperty(document, 'visibilityState', {
+            value: 'visible',
+            configurable: true,
+          });
+          document.dispatchEvent(new Event('visibilitychange'));
+          await microtasksFinished();
+          assertDeepEquals(
+              [
+                FreStage.kIntroModal,
+                FreStage.kShortcutSetupChin,
+                FreStage.kShortcutReminderChin,
+                FreStage.kShortcutReminderChin,
+              ],
+              testProxy.handler.getArgs('recordFreImpression'));
+        } finally {
+          delete (document as {visibilityState?: string}).visibilityState;
+        }
+
+        // Transitioning to FreStage.kNone does not record an impression.
+        testProxy.page.setFreState({
+          stage: FreStage.kNone,
+          currentHotkeyTokens: [],
+        });
+        await microtasksFinished();
+        assertEquals(4, testProxy.handler.getCallCount('recordFreImpression'));
+      });
+
+  test(
       'escape key with text in composebox clears text and stays in composebox',
       async () => {
         const searchbox =

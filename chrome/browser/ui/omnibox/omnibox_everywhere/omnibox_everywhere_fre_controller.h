@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_FRE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_FRE_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -45,15 +47,25 @@ class OmniboxEverywhereFreController {
       const OmniboxEverywhereFreController&) = delete;
   ~OmniboxEverywhereFreController();
 
-  // Returns the active FRE stage for the profile.
+  // Returns the active FRE stage for the profile. While an open-window session
+  // has latched a stage via `IncrementImpression()`, returns the latched stage
+  // so the displayed FRE stage does not transition mid-session.
   FreStage GetCurrentStage() const;
 
   // Returns true if the overall FRE has been dismissed/completed or if the FRE
   // feature is disabled.
   bool IsFreDismissed() const;
 
-  // Increments the impression count for the currently active FRE stage.
-  void IncrementImpression();
+  // Records an impression for `stage` if it matches the currently active FRE
+  // stage (at most once per open-window session) and latches the active stage
+  // until `EndSession()` is called.
+  void IncrementImpression(FreStage stage);
+
+  // Ends the current open-window session (called when the Omnibox Everywhere
+  // window is closed or destroyed; in persistent mode, blur/demote keeps the
+  // session open), clearing the session's impression guard and stage latch so
+  // the next invocation reflects any stage advancement.
+  void EndSession();
 
   // Records that the specified FRE stage was dismissed (or marks overall FRE
   // completed).
@@ -71,10 +83,16 @@ class OmniboxEverywhereFreController {
       base::RepeatingClosure callback);
 
  private:
+  FreStage ComputeCurrentStage() const;
+  void RecordShortcutSetupImpression();
+  void OnProfilePrefChanged();
+  void OnLocalStatePrefChanged();
   void NotifyStateChanged();
 
   raw_ptr<PrefService> profile_prefs_ = nullptr;
   raw_ptr<PrefService> local_state_ = nullptr;
+  std::optional<FreStage> latched_stage_;
+  bool impression_recorded_for_session_ = false;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   base::RepeatingClosureList state_changed_callbacks_;

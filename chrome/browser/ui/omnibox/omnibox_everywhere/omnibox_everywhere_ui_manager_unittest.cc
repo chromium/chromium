@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <optional>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -2028,34 +2027,94 @@ TEST_F(OmniboxEverywhereUIManagerTest, ExecuteMinimizeCommandKeepsWidgetAlive) {
   EXPECT_TRUE(ui_manager->web_contents());
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest, MinimizeDoesNotRecordFreImpression) {
+TEST_F(OmniboxEverywhereUIManagerTest, MinimizeDoesNotEndFreSession) {
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
   ASSERT_TRUE(ui_manager->IsVisible());
 
-  // An impression bumps the counter for whichever FRE stage is active.
-  PrefService* prefs = profile_.GetPrefs();
-  auto fre_impression_counts = [prefs]() {
-    return std::make_tuple(
-        prefs->GetInteger(omnibox_everywhere::prefs::kFreIntroImpressionCount),
-        prefs->GetInteger(
-            omnibox_everywhere::prefs::kFreShortcutSetupImpressionCount),
-        prefs->GetInteger(
-            omnibox_everywhere::prefs::kFreShortcutReminderImpressionCount));
-  };
-  const auto counts_before = fre_impression_counts();
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(service->fre_controller());
 
+  PrefService* prefs = profile_.GetPrefs();
+  // Simulate the WebUI recording an impression when the FRE is shown.
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(1, prefs->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
+
+  // Minimizing and restoring does not end the FRE session, so a subsequent
+  // IncrementImpression() in the same session does not increment the count.
   ui_manager->context_menu_controller_for_testing()->ExecuteCommand(
       omnibox_everywhere::OmniboxEverywhereContextMenuController::kMinimize, 0);
-  EXPECT_EQ(counts_before, fre_impression_counts());
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(1, prefs->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
 
-  // Close does record one, so the expectation above isn't vacuous.
+  // Closing the widget ends the FRE session so the next open can record an
+  // impression.
   ui_manager->context_menu_controller_for_testing()->ExecuteCommand(
       omnibox_everywhere::OmniboxEverywhereContextMenuController::kClose, 0);
-  EXPECT_NE(counts_before, fre_impression_counts());
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(2, prefs->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(OmniboxEverywhereUIManagerTest, DemotePreservesAndCloseEndsFreSession) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->IsVisible());
+
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(service->fre_controller());
+
+  PrefService* prefs = profile_.GetPrefs();
+  // Session 1: Record an impression while visible; duplicate calls in the same
+  // session are ignored.
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(1, prefs->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
+
+  // Demoting the widget (persistent mode deactivation) does not end the FRE
+  // session or count as a new impression when re-activated.
+  ui_manager->Demote();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(1, prefs->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
+
+  // Closing the widget ends the FRE session so the next ShowForProfile() can
+  // record the 2nd impression.
+  ui_manager->Close();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(2, prefs->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
+  // Stage stays latched at kIntroModal until the session ends.
+  EXPECT_EQ(omnibox_everywhere::FreStage::kIntroModal,
+            service->fre_controller()->GetCurrentStage());
+
+  // Closing the widget (including when a modal dialog is open) ends the FRE
+  // session and unlatches the stage to kShortcutSetupChin.
+  ui_manager->OnDrivePickerOpened();
+  ui_manager->Close();
+  ui_manager->OnDrivePickerClosed();
+  EXPECT_EQ(omnibox_everywhere::FreStage::kShortcutSetupChin,
+            service->fre_controller()->GetCurrentStage());
+}
 
 // TODO(crbug.com/546710681): Re-enable test on linux
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -3826,6 +3885,47 @@ TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
   views::test::WaitForWidgetActive(new_widget, true);
   EXPECT_TRUE(ui_manager->IsActive());
   EXPECT_EQ(origin, new_widget->GetRestoredBounds().origin());
+
+  ui_manager->Shutdown();
+}
+
+// Tests that recreating a demoted persistent widget on another virtual desktop
+// preserves the active FRE session rather than unlatching or counting a second
+// impression.
+TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
+       ReshowDemotedWidgetOnOtherDesktopPreservesFreSession) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* old_widget = ui_manager->widget();
+  ASSERT_TRUE(old_widget);
+
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(service->fre_controller());
+  PrefService* prefs = profile_.GetPrefs();
+
+  service->fre_controller()->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(1, prefs->GetInteger(prefs::kFreIntroImpressionCount));
+
+  ui_manager->Demote();
+  on_current_desktop_ = false;
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_NE(old_widget, ui_manager->widget());
+
+  // Re-invoking on another virtual desktop keeps the same FRE session open.
+  service->fre_controller()->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(1, prefs->GetInteger(prefs::kFreIntroImpressionCount));
+
+  // Explicitly closing ends the FRE session so the next open counts a new
+  // impression.
+  ui_manager->Close();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  service->fre_controller()->IncrementImpression(FreStage::kIntroModal);
+  EXPECT_EQ(2, prefs->GetInteger(prefs::kFreIntroImpressionCount));
 
   ui_manager->Shutdown();
 }

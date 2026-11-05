@@ -735,14 +735,10 @@ OmniboxEverywhereUIManager::GetOmniboxEverywhereService() {
                   : nullptr;
 }
 
-// TODO(crbug.com/558851707): Move impression recording to the FRE WebUI
-// component lifecycle (e.g. on render/mount) so that impressions are recorded
-// based on true visual visibility and both ephemeral and persistent window
-// models are handled consistently.
-void OmniboxEverywhereUIManager::MaybeRecordFreImpression() {
+void OmniboxEverywhereUIManager::EndFreSession() {
   if (auto* service = GetOmniboxEverywhereService()) {
     if (service->fre_controller()) {
-      service->fre_controller()->IncrementImpression();
+      service->fre_controller()->EndSession();
     }
   }
 }
@@ -764,7 +760,6 @@ void OmniboxEverywhereUIManager::Close() {
     return;
   }
   base::AutoReset<bool> closing_reset(&is_closing_, true);
-  MaybeRecordFreImpression();
   last_shown_time_.reset();
   CancelPendingDeactivation();
   if (widget_) {
@@ -776,6 +771,7 @@ void OmniboxEverywhereUIManager::Close() {
       // keeping the WebContents alive in case Close() is reached from inside a
       // call on it (e.g. OpenURLFromTab).
       DestroyWidget();
+      EndFreSession();
       ReleaseKeepAlives();
       return;
     }
@@ -809,6 +805,7 @@ void OmniboxEverywhereUIManager::Close() {
 #endif
     widget_->Hide();
   }
+  EndFreSession();
   ReleaseKeepAlives();
 }
 
@@ -860,6 +857,7 @@ void OmniboxEverywhereUIManager::DestroyWidgetAndWebContents() {
   contents_wrapper_.reset();
   draggable_region_.reset();
   browser_collection_observation_.Reset();
+  EndFreSession();
   ReleaseKeepAlives();
 }
 

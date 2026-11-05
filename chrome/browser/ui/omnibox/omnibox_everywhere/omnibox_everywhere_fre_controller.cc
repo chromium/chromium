@@ -36,9 +36,9 @@ OmniboxEverywhereFreController::OmniboxEverywhereFreController(
       local_state_(ResolveLocalState(local_state)) {
   if (profile_prefs_) {
     profile_pref_change_registrar_.Init(profile_prefs_);
-    auto callback =
-        base::BindRepeating(&OmniboxEverywhereFreController::NotifyStateChanged,
-                            base::Unretained(this));
+    auto callback = base::BindRepeating(
+        &OmniboxEverywhereFreController::OnProfilePrefChanged,
+        base::Unretained(this));
     profile_pref_change_registrar_.Add(prefs::kFreIntroDismissed, callback);
     profile_pref_change_registrar_.Add(prefs::kFreShortcutSetupDismissed,
                                        callback);
@@ -55,9 +55,9 @@ OmniboxEverywhereFreController::OmniboxEverywhereFreController(
 
   if (local_state_) {
     local_state_pref_change_registrar_.Init(local_state_);
-    auto callback =
-        base::BindRepeating(&OmniboxEverywhereFreController::NotifyStateChanged,
-                            base::Unretained(this));
+    auto callback = base::BindRepeating(
+        &OmniboxEverywhereFreController::OnLocalStatePrefChanged,
+        base::Unretained(this));
     local_state_pref_change_registrar_.Add(prefs::kOmniboxEverywhereHotkey,
                                            callback);
     local_state_pref_change_registrar_.Add(prefs::kHotkeyEnabled, callback);
@@ -71,7 +71,13 @@ FreStage OmniboxEverywhereFreController::GetCurrentStage() const {
       !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
     return FreStage::kNone;
   }
+  if (latched_stage_.has_value()) {
+    return latched_stage_.value();
+  }
+  return ComputeCurrentStage();
+}
 
+FreStage OmniboxEverywhereFreController::ComputeCurrentStage() const {
   if (profile_prefs_->GetBoolean(prefs::kFreDismissed)) {
     return FreStage::kNone;
   }
@@ -114,18 +120,34 @@ bool OmniboxEverywhereFreController::IsFreDismissed() const {
       !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
     return true;
   }
+  if (latched_stage_.has_value()) {
+    return false;
+  }
   return profile_prefs_->GetBoolean(prefs::kFreDismissed);
 }
 
-void OmniboxEverywhereFreController::IncrementImpression() {
+void OmniboxEverywhereFreController::IncrementImpression(FreStage stage) {
   if (!profile_prefs_ ||
       !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
     return;
   }
+  if (latched_stage_.has_value()) {
+    return;
+  }
 
-  FreStage current_stage = GetCurrentStage();
+  FreStage current_stage = ComputeCurrentStage();
+  if (current_stage == FreStage::kNone || current_stage != stage) {
+    return;
+  }
+
+  latched_stage_ = current_stage;
+  if (impression_recorded_for_session_) {
+    return;
+  }
+
   switch (current_stage) {
     case FreStage::kIntroModal: {
+      impression_recorded_for_session_ = true;
       const int next_count =
           profile_prefs_->GetInteger(prefs::kFreIntroImpressionCount) + 1;
       if (next_count >=
@@ -139,17 +161,15 @@ void OmniboxEverywhereFreController::IncrementImpression() {
     case FreStage::kShortcutSetupChin: {
       // If a hotkey isn't set, impressions are not capped so the setup chin
       // remains visible until the user selects a shortcut or explicitly
-      // dismisses it.
+      // dismisses it. If a hotkey is selected later during this same session,
+      // `OnLocalStatePrefChanged()` will record the impression then.
       if (prefs::HasOmniboxEverywhereHotkey(local_state_)) {
-        profile_prefs_->SetInteger(
-            prefs::kFreShortcutSetupImpressionCount,
-            profile_prefs_->GetInteger(
-                prefs::kFreShortcutSetupImpressionCount) +
-                1);
+        RecordShortcutSetupImpression();
       }
-      break;
+      return;
     }
     case FreStage::kShortcutReminderChin:
+      impression_recorded_for_session_ = true;
       profile_prefs_->SetInteger(
           prefs::kFreShortcutReminderImpressionCount,
           profile_prefs_->GetInteger(
@@ -161,9 +181,28 @@ void OmniboxEverywhereFreController::IncrementImpression() {
   }
 
   // If impressions have exhausted all stages, mark the overall FRE as dismissed
-  // so downstream features (such as IPH) are unblocked.
-  if (GetCurrentStage() == FreStage::kNone) {
+  // so downstream features (such as IPH) are unblocked on the next open.
+  if (ComputeCurrentStage() == FreStage::kNone) {
     profile_prefs_->SetBoolean(prefs::kFreDismissed, true);
+  }
+}
+
+void OmniboxEverywhereFreController::RecordShortcutSetupImpression() {
+  impression_recorded_for_session_ = true;
+  profile_prefs_->SetInteger(
+      prefs::kFreShortcutSetupImpressionCount,
+      profile_prefs_->GetInteger(prefs::kFreShortcutSetupImpressionCount) + 1);
+  if (ComputeCurrentStage() == FreStage::kNone) {
+    profile_prefs_->SetBoolean(prefs::kFreDismissed, true);
+  }
+}
+
+void OmniboxEverywhereFreController::EndSession() {
+  const bool was_latched = latched_stage_.has_value();
+  latched_stage_.reset();
+  impression_recorded_for_session_ = false;
+  if (was_latched) {
+    NotifyStateChanged();
   }
 }
 
@@ -172,6 +211,8 @@ void OmniboxEverywhereFreController::OnStageDismissed(FreStage stage) {
       !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
     return;
   }
+  latched_stage_.reset();
+  impression_recorded_for_session_ = false;
   switch (stage) {
     case FreStage::kIntroModal:
       if (prefs::HasOmniboxEverywhereHotkey(local_state_)) {
@@ -199,6 +240,8 @@ void OmniboxEverywhereFreController::MarkStageCompleted(FreStage stage) {
       !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
     return;
   }
+  latched_stage_.reset();
+  impression_recorded_for_session_ = false;
   switch (stage) {
     case FreStage::kIntroModal:
       profile_prefs_->SetBoolean(prefs::kFreIntroDismissed, true);
@@ -219,6 +262,30 @@ base::CallbackListSubscription
 OmniboxEverywhereFreController::RegisterStateChangedCallback(
     base::RepeatingClosure callback) {
   return state_changed_callbacks_.Add(std::move(callback));
+}
+
+void OmniboxEverywhereFreController::OnProfilePrefChanged() {
+  if (!latched_stage_.has_value()) {
+    NotifyStateChanged();
+  }
+}
+
+void OmniboxEverywhereFreController::OnLocalStatePrefChanged() {
+  if (profile_prefs_ &&
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
+    if (prefs::HasOmniboxEverywhereHotkey(local_state_)) {
+      if (latched_stage_ == FreStage::kShortcutSetupChin &&
+          !impression_recorded_for_session_) {
+        RecordShortcutSetupImpression();
+      }
+    } else if (latched_stage_ == FreStage::kShortcutReminderChin) {
+      // If the hotkey is cleared or disabled while the reminder chin is
+      // latched, unlatch so the reminder chin does not remain visible with
+      // empty key tokens.
+      latched_stage_.reset();
+    }
+  }
+  NotifyStateChanged();
 }
 
 void OmniboxEverywhereFreController::NotifyStateChanged() {

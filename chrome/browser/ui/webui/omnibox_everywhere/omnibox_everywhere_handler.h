@@ -59,6 +59,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
                    bool shift_key,
                    bool is_voice_search) override;
   void DismissFre(searchbox::mojom::FreStage stage) override;
+  void RecordFreImpression(searchbox::mojom::FreStage stage) override;
   void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds,
                           ShowHotkeyDropdownCallback callback) override;
   void OpenHotkeySettings() override;

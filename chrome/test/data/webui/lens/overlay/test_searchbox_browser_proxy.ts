@@ -36,6 +36,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'deleteContext',
       'deleteTabContext',
       'dismissFre',
+      'recordFreImpression',
       'executeAction',
       'getCyclingPlaceholderConfig',
       'getDriveDisclaimerStatus',
@@ -330,6 +331,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   dismissFre() {
     this.methodCalled('dismissFre');
+  }
+
+  recordFreImpression() {
+    this.methodCalled('recordFreImpression');
   }
 
   showHotkeyDropdown(
