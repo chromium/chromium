@@ -13,8 +13,10 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -243,6 +245,113 @@ TEST_P(AppManagementPageHandlerTestBase, DisablePreferredApp) {
   EXPECT_FALSE(updated_result.Get()->is_preferred_app);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(AppManagementPageHandlerTestBase,
+       SetPreferredAppFalseRecordsExplicitOptOut) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/abc/index.html"));
+  web_app_info->title = u"app_name";
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  // The install makes the app preferred only if link capturing is on by
+  // default. So kV2DefaultOff tests "false -> false" and kV2DefaultOn tests
+  // "true -> false".
+  ASSERT_EQ(IsAppPreferred(app_id), LinkCapturingEnabledByDefault());
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  ASSERT_EQ(provider->registrar_unsafe()
+                .GetAppById(app_id)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT);
+
+  handler()->SetPreferredApp(app_id, /*is_preferred_app=*/false);
+  AwaitWebAppCommandsComplete();
+
+  EXPECT_FALSE(IsAppPreferred(app_id));
+  EXPECT_EQ(provider->registrar_unsafe()
+                .GetAppById(app_id)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
+}
+
+TEST_P(AppManagementPageHandlerTestBase, SetPreferredAppTrueRecordsOptIn) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/abc/index.html"));
+  web_app_info->title = u"app_name";
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  handler()->SetPreferredApp(app_id, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+
+  EXPECT_TRUE(IsAppPreferred(app_id));
+  EXPECT_EQ(web_app::WebAppProvider::GetForTest(profile())
+                ->registrar_unsafe()
+                .GetAppById(app_id)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
+}
+
+TEST_P(AppManagementPageHandlerTestBase,
+       SetPreferredAppTrueRecordsOptOutForDisplacedApp) {
+  // Both apps have the scope "https://example.com/abc/", so they conflict in
+  // all link capturing modes.
+  auto web_app_info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/abc/index.html"));
+  web_app_info1->title = u"app_name1";
+  std::string app_id1 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
+  auto web_app_info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/abc/other.html"));
+  web_app_info2->title = u"app_name2";
+  std::string app_id2 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
+  const web_app::WebAppRegistrar& registrar =
+      web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
+
+  handler()->SetPreferredApp(app_id1, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+  ASSERT_TRUE(IsAppPreferred(app_id1));
+  ASSERT_FALSE(IsAppPreferred(app_id2));
+  ASSERT_EQ(registrar.GetAppById(app_id1)->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
+
+  // App Service removes `app_id1`, so its record must not stay "CAPTURE".
+  handler()->SetPreferredApp(app_id2, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+
+  EXPECT_FALSE(IsAppPreferred(app_id1));
+  EXPECT_TRUE(IsAppPreferred(app_id2));
+  EXPECT_EQ(registrar.GetAppById(app_id1)->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
+  EXPECT_EQ(registrar.GetAppById(app_id2)->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
+}
+
+TEST_P(AppManagementPageHandlerTestBase, SetPreferredAppEmptyAppIdDoesNothing) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/abc/index.html"));
+  web_app_info->title = u"app_name";
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  const web_app::WebAppRegistrar& registrar =
+      web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
+  const bool preferred_before = IsAppPreferred(app_id);
+  const web_app::proto::LinkCapturingUserPreference preference_before =
+      registrar.GetAppById(app_id)->user_link_capturing_preference();
+
+  // `SetPreferredApp()` is a Mojo endpoint, so `app_id` can be empty. This
+  // must not crash and must not change the installed app.
+  handler()->SetPreferredApp("", /*is_preferred_app=*/false);
+  handler()->SetPreferredApp("", /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+
+  EXPECT_EQ(IsAppPreferred(app_id), preferred_before);
+  EXPECT_EQ(registrar.GetAppById(app_id)->user_link_capturing_preference(),
+            preference_before);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_P(AppManagementPageHandlerTestBase, SupportedLinksWithPort) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
@@ -402,11 +511,22 @@ TEST_P(AppManagementPageHandlerTestBase,
   EXPECT_FALSE(IsAppPreferred(app_id));
 
   handler()->SetPreferredApp(app_id, /*is_preferred_app=*/true);
+#if BUILDFLAG(IS_CHROMEOS)
+  AwaitWebAppCommandsComplete();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::test::TestFuture<app_management::mojom::AppPtr> updated_result;
   handler()->GetApp(app_id, updated_result.GetCallback());
   EXPECT_FALSE(updated_result.Get()->is_preferred_app);
   EXPECT_TRUE(updated_result.Get()->supported_links.empty());
+#if BUILDFLAG(IS_CHROMEOS)
+  // The app has no supported links, so no choice is recorded.
+  EXPECT_EQ(web_app::WebAppProvider::GetForTest(profile())
+                ->registrar_unsafe()
+                .GetAppById(app_id)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_P(AppManagementPageHandlerTestBase,

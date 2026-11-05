@@ -91,6 +91,7 @@
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -716,6 +717,45 @@ void WebAppCommandScheduler::SetAppCapturesSupportedLinksDisableOverlapping(
       std::move(done), location);
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppCommandScheduler::SetUserLinkCapturingChoiceOnChromeOs(
+    const webapps::AppId& app_id,
+    bool open_in_app,
+    base::OnceClosure done,
+    const base::Location& location) {
+  CHECK(!app_id.empty());
+  ScheduleCallback(
+      "SetUserLinkCapturingChoiceOnChromeOs", AppLockDescription(app_id),
+      base::BindOnce(
+          [](const webapps::AppId& app_id, bool open_in_app, AppLock& lock,
+             base::DictValue& debug_value) {
+            debug_value.Set("app_id", app_id);
+            debug_value.Set("open_in_app", open_in_app);
+            // App Service publishes apps in both installed states as ready,
+            // so the user can make a choice for both.
+            if (!lock.registrar().IsInstallState(
+                    app_id,
+                    {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
+              debug_value.Set("result", "App not installed.");
+              return;
+            }
+            if (lock.registrar().IsSystemApp(app_id)) {
+              debug_value.Set("result", "System web app.");
+              return;
+            }
+            ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+            update->UpdateApp(app_id)->SetLinkCapturingUserPreference(
+                open_in_app
+                    ? proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE
+                    : proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
+            debug_value.Set("result", "Recorded.");
+          },
+          app_id, open_in_app),
+      std::move(done), location);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WebAppCommandScheduler::RunIconDiagnosticsForApp(
     const webapps::AppId& app_id,

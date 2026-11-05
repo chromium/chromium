@@ -49,6 +49,7 @@ source_set("app_management") {
     ]
     deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser/apps/link_capturing",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ui/ash/shelf",

@@ -636,6 +636,19 @@ class WebAppCommandScheduler {
       base::OnceClosure done,
       const base::Location& location = FROM_HERE);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Records the explicit user choice for "Opening supported links" in
+  // `WebApp::user_link_capturing_preference`. On ChromeOS, App Service keeps
+  // the effective link capturing state. This method does not change App Service
+  // or other apps. Will CHECK-fail if `app_id` is empty. Does nothing if the
+  // app is not installed or is a System Web App. See b/578641259.
+  void SetUserLinkCapturingChoiceOnChromeOs(
+      const webapps::AppId& app_id,
+      bool open_in_app,
+      base::OnceClosure done,
+      const base::Location& location = FROM_HERE);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Runs a series of icon health checks for `app_id`. See
   // `WebAppIconDiagnosticResult` for more information on what diagnostics are
   // returned.

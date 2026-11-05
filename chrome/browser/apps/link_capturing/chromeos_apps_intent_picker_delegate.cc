@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
+#include "chrome/browser/apps/link_capturing/chromeos_link_capturing_user_choice.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
@@ -197,7 +198,9 @@ void ChromeOsAppsIntentPickerDelegate::PersistIntentPreferencesForApp(
     const std::string& app_id) {
   CHECK(proxy_);
   CHECK(!app_id.empty());
-  proxy_->SetSupportedLinksPreference(app_id);
+  // Also records the choice on the affected web apps. See b/578641259.
+  SetSupportedLinksPreferenceByUser(&profile_.get(), app_id,
+                                    /*open_in_app=*/true);
 }
 
 void ChromeOsAppsIntentPickerDelegate::LaunchApp(

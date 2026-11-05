@@ -39,8 +39,13 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -442,6 +447,59 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   // Launch the app.
   intent_picker_bubble()->AcceptDialog();
   EXPECT_TRUE(VerifyPWALaunched(app_id));
+
+  // A one-time launch must not record a persistent choice. See b/578641259.
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  ASSERT_TRUE(provider);
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_EQ(provider->registrar_unsafe()
+                .GetAppById(app_id)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT);
+}
+
+// Test that "Remember my choice" with "Open in app" for a PWA records the
+// explicit user choice on the web app. See b/578641259.
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
+                       RememberPWARecordsChoice) {
+  GURL test_url(InScopeAppUrl());
+  std::string app_name = "test_name";
+  auto app_id = InstallWebApp(app_name, test_url);
+  // Disable link capturing preference for the app to ensure the bubble is
+  // shown.
+  apps_util::RemoveSupportedLinksPreferenceAndWait(profile(), app_id);
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  ASSERT_TRUE(provider);
+  EXPECT_EQ(provider->registrar_unsafe()
+                .GetAppById(app_id)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT);
+
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
+
+  // Check "Remember my choice" and choose "Open App".
+  ASSERT_TRUE(remember_selection_checkbox());
+  ASSERT_TRUE(remember_selection_checkbox()->GetEnabled());
+  remember_selection_checkbox()->SetChecked(true);
+  ASSERT_TRUE(intent_picker_bubble());
+  intent_picker_bubble()->AcceptDialog();
+  EXPECT_TRUE(VerifyPWALaunched(app_id));
+
+  apps_util::PreferredAppUpdateWaiter(profile(), app_id).Wait();
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_EQ(provider->registrar_unsafe()
+                .GetAppById(app_id)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 }
 
 // Test that show intent picker bubble multiple times without closing doesn't
@@ -786,6 +844,99 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOSParameterized,
       rfh,
       content::JsReplace("window.open($1, '_blank', 'noopener');", test_url)));
   ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
+}
+
+// Test that "Remember my choice" for an ARC app records "Open in Chrome
+// browser" on an overlapping PWA that App Service removes. See b/578641259.
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOSParameterized,
+                       RememberARCRecordsChoiceOnDisplacedPWA) {
+  GURL test_url(InScopeAppUrl());
+  auto app_id_pwa = InstallWebApp("pwa_test_name", test_url);
+  std::string app_name_arc = "arc_test_name";
+  auto app_id_arc = AddArcAppWithIntentFilter(app_name_arc, test_url);
+
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
+
+  // Make sure that the PWA is preferred when the user picks the ARC app.
+  apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id_pwa);
+  ASSERT_TRUE(apps::AppServiceProxyFactory::GetForProfile(profile())
+                  ->PreferredAppsList()
+                  .IsPreferredAppForSupportedLinks(app_id_pwa));
+
+  auto& app_info = intent_picker_bubble()->app_info_for_testing();
+  ASSERT_EQ(2U, app_info.size());
+  ClickAppAtIndexOnGrid(app_info[0].launch_name == app_id_arc ? 0 : 1);
+  ASSERT_TRUE(remember_selection_checkbox());
+  remember_selection_checkbox()->SetChecked(true);
+  intent_picker_bubble()->AcceptDialog();
+  ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name_arc, test_url));
+
+  apps_util::PreferredAppUpdateWaiter(profile(), app_id_arc).Wait();
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  ASSERT_TRUE(provider);
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_FALSE(apps::AppServiceProxyFactory::GetForProfile(profile())
+                   ->PreferredAppsList()
+                   .IsPreferredAppForSupportedLinks(app_id_pwa));
+  EXPECT_EQ(provider->registrar_unsafe()
+                .GetAppById(app_id_pwa)
+                ->user_link_capturing_preference(),
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
+}
+
+// Test that "Remember my choice" for a PWA records "Open in app" only if App
+// Service applies it. If an overlapping ARC app is preferred: with navigation
+// capturing on by default, the ARC app blocks the change and nothing is
+// recorded. With navigation capturing off by default, the PWA replaces the ARC
+// app and the record is CAPTURE. See b/578641259.
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOSParameterized,
+                       RememberPWAWithPreferredARCRecordsOnlyIfApplied) {
+  GURL test_url(InScopeAppUrl());
+  auto app_id_pwa = InstallWebApp("pwa_test_name", test_url);
+  auto app_id_arc = AddArcAppWithIntentFilter("arc_test_name", test_url);
+
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
+
+  // Make the ARC app preferred after the bubble is shown. This also removes
+  // the PWA from the preferred apps if it is preferred.
+  apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id_arc);
+
+  auto& app_info = intent_picker_bubble()->app_info_for_testing();
+  ASSERT_EQ(2U, app_info.size());
+  ClickAppAtIndexOnGrid(app_info[0].launch_name == app_id_pwa ? 0 : 1);
+  ASSERT_TRUE(remember_selection_checkbox());
+  remember_selection_checkbox()->SetChecked(true);
+  intent_picker_bubble()->AcceptDialog();
+  EXPECT_TRUE(VerifyPWALaunched(app_id_pwa));
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  ASSERT_TRUE(provider);
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // With default-on, the ARC app blocks the change. With default-off, the PWA
+  // replaces the ARC app.
+  const bool pwa_preferred =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->PreferredAppsList()
+          .IsPreferredAppForSupportedLinks(app_id_pwa);
+  EXPECT_EQ(pwa_preferred, !apps::features::IsNavigationCapturingOnByDefault());
+  EXPECT_EQ(provider->registrar_unsafe()
+                .GetAppById(app_id_pwa)
+                ->user_link_capturing_preference(),
+            pwa_preferred
+                ? web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE
+                : web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT);
 }
 
 INSTANTIATE_TEST_SUITE_P(
