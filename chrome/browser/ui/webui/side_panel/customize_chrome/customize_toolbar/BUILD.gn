@@ -66,6 +66,7 @@ source_set("browser_tests") {
   deps = [
     ":customize_toolbar",
     "//base/test:test_support",
+    "//chrome/browser/glic",
     "//chrome/browser/search_engines",
     "//chrome/browser/ttc/core:features",
     "//chrome/browser/ui:browser_actions",

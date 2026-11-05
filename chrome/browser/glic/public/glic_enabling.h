@@ -299,6 +299,13 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // feature into account.
   static bool IsLikelyDogfoodClient();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns whether `profile` belongs to a ChromeOS regular or child user
+  // session. Returns false if `profile` is null, belongs to a guest, managed
+  // guest or kiosk session, or has no signed-in user.
+  static bool IsChromeOSProfileEligible(Profile* profile);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Returns true if a profile is eligible for Glic. Some profiles - such as
   // incognito, guest, system profile, etc. - are never eligible. An eligible
   // profile is one where Glic could potentially be enabled, regardless of
@@ -797,10 +804,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       Profile* profile,
       EnablementMetricsPhase phase,
       const ProfileEnablement& enablement);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  static bool IsChromeOSProfileEligible(Profile* profile);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool recorded_startup_metrics_ = false;
 

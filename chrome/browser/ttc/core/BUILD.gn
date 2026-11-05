@@ -311,6 +311,7 @@ source_set("browser_tests") {
     "//chrome/browser/actor/tools/registry",
     "//chrome/browser/actor/ui",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/glic",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
@@ -354,7 +355,6 @@ source_set("browser_tests") {
   if (!is_android) {
     sources += [ "voice_focused_contents_tracker_browsertest.cc" ]
     deps += [
-      "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ttc/app:browser_tests",
