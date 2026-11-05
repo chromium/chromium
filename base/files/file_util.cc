@@ -4,30 +4,20 @@
 
 #include "base/files/file_util.h"
 
-#include <algorithm>
-#include <array>
-#include <string_view>
-
-#include "base/containers/fixed_flat_set.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/task/sequenced_task_runner.h"
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <io.h>
-#endif
 #include <stdio.h>
 
 #include <algorithm>
+#include <array>
 #include <fstream>
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -37,13 +27,18 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include <io.h>
 #endif
 
 namespace base {
@@ -346,6 +341,12 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
 }
 
 std::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
+  return ReadFileToBytesWithMaxSize(path, std::numeric_limits<size_t>::max());
+}
+
+std::optional<std::vector<uint8_t>> ReadFileToBytesWithMaxSize(
+    const FilePath& path,
+    size_t max_size) {
   if (path.ReferencesParent()) {
     return std::nullopt;
   }
@@ -356,8 +357,7 @@ std::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
   }
 
   std::vector<uint8_t> bytes;
-  if (!ReadStreamToSpanWithMaxSize(file_stream.get(),
-                                   std::numeric_limits<size_t>::max(),
+  if (!ReadStreamToSpanWithMaxSize(file_stream.get(), max_size,
                                    [&bytes](size_t size) {
                                      bytes.resize(size);
                                      return span(bytes);

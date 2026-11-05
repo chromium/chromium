@@ -271,6 +271,14 @@ BASE_EXPORT bool TextContentsEqual(const FilePath& filename1,
 BASE_EXPORT std::optional<std::vector<uint8_t>> ReadFileToBytes(
     const FilePath& path);
 
+// Reads the file at `path` and returns a vector of bytes on success, and
+// nullopt on error. For security reasons, a `path` containing path traversal
+// components ('..') is treated as a read error, returning nullopt. When the
+// file size exceeds `max_size`, the function returns nullopt.
+BASE_EXPORT std::optional<std::vector<uint8_t>> ReadFileToBytesWithMaxSize(
+    const FilePath& path,
+    size_t max_size);
+
 // Reads the file at |path| into |contents| and returns true on success and
 // false on error.  For security reasons, a |path| containing path traversal
 // components ('..') is treated as a read error and |contents| is set to empty.

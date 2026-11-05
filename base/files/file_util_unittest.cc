@@ -3968,27 +3968,49 @@ TEST_F(FileUtilTest, ReadFileToBytes) {
   const std::vector<uint8_t> kTestData = {'0', '1', '2', '3'};
 
   FilePath file_path =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ReadFileToStringTest"));
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ReadFileToBytesTest"));
   FilePath file_path_dangerous =
       temp_dir_.GetPath()
           .Append(FILE_PATH_LITERAL(".."))
           .Append(temp_dir_.GetPath().BaseName())
-          .Append(FILE_PATH_LITERAL("ReadFileToStringTest"));
+          .Append(FILE_PATH_LITERAL("ReadFileToBytesTest"));
 
   // Create test file.
   ASSERT_TRUE(WriteFile(file_path, kTestData));
 
   std::optional<std::vector<uint8_t>> bytes = ReadFileToBytes(file_path);
   ASSERT_TRUE(bytes.has_value());
-  EXPECT_EQ(kTestData, bytes);
+  EXPECT_EQ(kTestData, bytes.value());
+
+  EXPECT_FALSE(ReadFileToBytesWithMaxSize(file_path, 0).has_value());
+  EXPECT_FALSE(ReadFileToBytesWithMaxSize(file_path, 2).has_value());
+  EXPECT_FALSE(ReadFileToBytesWithMaxSize(file_path, 3).has_value());
+
+  bytes = ReadFileToBytesWithMaxSize(file_path, 4);
+  ASSERT_TRUE(bytes.has_value());
+  EXPECT_EQ(kTestData, bytes.value());
+
+  bytes = ReadFileToBytesWithMaxSize(file_path, 6);
+  ASSERT_TRUE(bytes.has_value());
+  EXPECT_EQ(kTestData, bytes.value());
 
   // Write empty file.
   ASSERT_TRUE(WriteFile(file_path, ""));
   bytes = ReadFileToBytes(file_path);
   ASSERT_TRUE(bytes.has_value());
-  EXPECT_TRUE(bytes->empty());
+  EXPECT_TRUE(bytes.value().empty());
 
-  ASSERT_FALSE(ReadFileToBytes(file_path_dangerous));
+  bytes = ReadFileToBytesWithMaxSize(file_path, 0);
+  ASSERT_TRUE(bytes.has_value());
+  EXPECT_TRUE(bytes.value().empty());
+
+  EXPECT_FALSE(ReadFileToBytes(file_path_dangerous).has_value());
+  EXPECT_FALSE(ReadFileToBytesWithMaxSize(file_path_dangerous, 6).has_value());
+
+  // Delete test file.
+  EXPECT_TRUE(DeleteFile(file_path));
+  EXPECT_FALSE(ReadFileToBytes(file_path).has_value());
+  EXPECT_FALSE(ReadFileToBytesWithMaxSize(file_path, 6).has_value());
 }
 
 TEST_F(FileUtilTest, ReadFileToString) {
