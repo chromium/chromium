@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanRelroAvailableImmediately">
-  <int value="0" label="Available Later"/>
-  <int value="1" label="Available Immediately"/>
-</enum>
-
 <!-- LINT.IfChange(CrxDownloaderType) -->
 
 <enum name="CrxDownloaderType">

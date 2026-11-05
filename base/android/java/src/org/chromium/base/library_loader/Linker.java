@@ -599,8 +599,6 @@ class Linker {
         // *Not* closing the RELRO FD after using it because the FD may need to be transferred to
         // another process after this point.
         if (DEBUG) Log.i(TAG, "Immediate RELRO availability: %b", relroAvailableImmediately);
-        RecordHistogram.recordBooleanHistogram(
-                "ChromiumAndroidLinker.RelroAvailableImmediately", relroAvailableImmediately);
         int status = getLinkerJni().getRelroSharingResult();
         assert status != RelroSharingStatus.NOT_ATTEMPTED;
         RecordHistogram.recordEnumeratedHistogram(

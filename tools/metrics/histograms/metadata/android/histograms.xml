@@ -10384,17 +10384,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
-    enum="BooleanRelroAvailableImmediately" expires_after="2023-12-29">
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Recorded when RELRO is replaced with a shared memory region, in all
-    processes consuming RELRO. Indicates whether the shared RELRO was available
-    synchronously right after the native library was loaded. ModernLinker only.
-  </summary>
-</histogram>
-
 <histogram name="ChromiumAndroidLinker.RelroNotSharedPercentage" units="%"
     expires_after="2027-03-28">
   <owner>pasko@chromium.org</owner>
