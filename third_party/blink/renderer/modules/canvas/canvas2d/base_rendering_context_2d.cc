@@ -1971,7 +1971,8 @@ void BaseRenderingContext2D::fillGlyphRun(const GlyphRun* glyph_run,
       shaped_text->GetText(), glyph_run->x() + x, glyph_run->y() + y,
       CanvasRenderingContext2DState::kFillPaintType,
       V8CanvasTextAlign::Enum::kLeft, shaped_text->ContextTextBaseline(),
-      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont());
+      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont(),
+      shaped_text->Direction());
 }
 
 void BaseRenderingContext2D::strokeGlyphRun(const GlyphRun* glyph_run,
@@ -1984,7 +1985,8 @@ void BaseRenderingContext2D::strokeGlyphRun(const GlyphRun* glyph_run,
       shaped_text->GetText(), glyph_run->x() + x, glyph_run->y() + y,
       CanvasRenderingContext2DState::kStrokePaintType,
       V8CanvasTextAlign::Enum::kLeft, shaped_text->ContextTextBaseline(),
-      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont());
+      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont(),
+      shaped_text->Direction());
 }
 
 void BaseRenderingContext2D::fillGlyphRuns(
@@ -2015,7 +2017,8 @@ void BaseRenderingContext2D::DrawTextInternal(
     unsigned run_start,
     unsigned run_end,
     double* max_width,
-    const Font* cluster_font) {
+    const Font* cluster_font,
+    std::optional<TextDirection> direction_override) {
   if (!std::isfinite(x) || !std::isfinite(y)) {
     return;
   }
@@ -2051,11 +2054,15 @@ void BaseRenderingContext2D::DrawTextInternal(
   const ComputedStyle* computed_style =
       canvas ? canvas->EnsureComputedStyle() : nullptr;
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  // Glyph runs must be bidi-resolved exactly as they were by shapeText(): the
+  // current context direction and the canvas unicode-bidi do not apply.
   TextDirection direction =
-      ToTextDirection(GetState().GetDirection(), host, computed_style);
+      direction_override
+          ? *direction_override
+          : ToTextDirection(GetState().GetDirection(), host, computed_style);
   bool is_rtl = direction == TextDirection::kRtl;
-  bool bidi_override =
-      computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
+  bool bidi_override = !direction_override && computed_style &&
+                       IsOverride(computed_style->GetUnicodeBidi());
 
   // Obtain `paint_canvas` and `state` after `AccessFont`,
   // `EnsureComputedStyle`, `ToTextDirection`, and `ResolveFilterIfNeeded`,

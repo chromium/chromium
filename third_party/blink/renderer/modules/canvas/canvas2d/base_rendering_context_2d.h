@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/byte_size.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -402,16 +404,20 @@ class MODULES_EXPORT BaseRenderingContext2D
   void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
   virtual void EnableAccelerationIfPossible() {}
-  void DrawTextInternal(const String& text,
-                        double x,
-                        double y,
-                        CanvasRenderingContext2DState::PaintType paint_type,
-                        V8CanvasTextAlign::Enum align,
-                        V8CanvasTextBaseline::Enum baseline,
-                        unsigned run_start,
-                        unsigned run_end,
-                        double* max_width = nullptr,
-                        const Font* cluster_font = nullptr);
+  // When set, `direction_override` is used instead of the context direction,
+  // and the canvas unicode-bidi override is ignored.
+  void DrawTextInternal(
+      const String& text,
+      double x,
+      double y,
+      CanvasRenderingContext2DState::PaintType paint_type,
+      V8CanvasTextAlign::Enum align,
+      V8CanvasTextBaseline::Enum baseline,
+      unsigned run_start,
+      unsigned run_end,
+      double* max_width = nullptr,
+      const Font* cluster_font = nullptr,
+      std::optional<TextDirection> direction_override = std::nullopt);
 
   void PutByteArray(const SkPixmap& source,
                     const gfx::Rect& source_rect,

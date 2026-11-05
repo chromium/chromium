@@ -4048,6 +4048,76 @@
     ctx.fillText(text, 10, 35);
     ctx.strokeText(text, 10, 75);
 
+- name: 2d.text.shape.fillGlyphRun-direction-change.tentative
+  desc: >-
+    Test that fillGlyphRun() and fillGlyphRuns() render with the direction
+    used when the text was shaped, even if the direction set on the context
+    has changed since.
+  size: [500, 200]
+  code: |
+    ctx.font = '30px serif';
+    ctx.textAlign = 'left';
+    ctx.direction = 'rtl';
+    // Brackets next to the paragraph edges take the paragraph direction, and
+    // are mirrored in RTL.
+    const texts = ['ab (', 'א (b)', 'Test ☺️ א World'];
+    const shaped = texts.map((text) => ctx.shapeText(text));
+
+    ctx.direction = 'ltr';
+    for (let i = 0; i < shaped.length; ++i) {
+      const y = 40 + i * 60;
+      for (const cluster of shaped[i].glyphClusters()) {
+        ctx.fillGlyphRun(cluster, 10, y);
+      }
+      ctx.fillGlyphRuns(shaped[i].glyphRuns(), 260, y);
+    }
+  reference: |
+    ctx.font = '30px serif';
+    ctx.textAlign = 'left';
+    ctx.direction = 'rtl';
+    const texts = ['ab (', 'א (b)', 'Test ☺️ א World'];
+
+    for (let i = 0; i < texts.length; ++i) {
+      const y = 40 + i * 60;
+      ctx.fillText(texts[i], 10, y);
+      ctx.fillText(texts[i], 260, y);
+    }
+
+- name: 2d.text.shape.strokeGlyphRun-direction-change.tentative
+  desc: >-
+    Test that strokeGlyphRun() and strokeGlyphRuns() render with the direction
+    used when the text was shaped, even if the direction set on the context
+    has changed since.
+  size: [500, 200]
+  code: |
+    ctx.font = '30px serif';
+    ctx.textAlign = 'left';
+    ctx.direction = 'rtl';
+    // Brackets next to the paragraph edges take the paragraph direction, and
+    // are mirrored in RTL.
+    const texts = ['ab (', 'א (b)', 'Test ☺️ א World'];
+    const shaped = texts.map((text) => ctx.shapeText(text));
+
+    ctx.direction = 'ltr';
+    for (let i = 0; i < shaped.length; ++i) {
+      const y = 40 + i * 60;
+      for (const cluster of shaped[i].glyphClusters()) {
+        ctx.strokeGlyphRun(cluster, 10, y);
+      }
+      ctx.strokeGlyphRuns(shaped[i].glyphRuns(), 260, y);
+    }
+  reference: |
+    ctx.font = '30px serif';
+    ctx.textAlign = 'left';
+    ctx.direction = 'rtl';
+    const texts = ['ab (', 'א (b)', 'Test ☺️ א World'];
+
+    for (let i = 0; i < texts.length; ++i) {
+      const y = 40 + i * 60;
+      ctx.strokeText(texts[i], 10, y);
+      ctx.strokeText(texts[i], 260, y);
+    }
+
 - name: 2d.text.drawing.style.absolute.spacing
   desc: Testing letter spacing and word spacing with absolute length
   code: |
