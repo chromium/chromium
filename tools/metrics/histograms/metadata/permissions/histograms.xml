@@ -456,9 +456,6 @@ chromium-metrics-reviews@google.com.
     The suffix of the histogram indicates which particular permission.
     {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -851,9 +848,6 @@ chromium-metrics-reviews@google.com.
     recorded for Android as that is the only platform where the DSE permissions
     were enabled. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -942,9 +936,6 @@ chromium-metrics-reviews@google.com.
     `PermissionTypes` to provide information per permission type.
     {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -963,9 +954,6 @@ chromium-metrics-reviews@google.com.
     made. Suffixed by `PermissionTypes` to provide information per permission
     type. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -1363,9 +1351,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2025-01-25 to 2025-06-27; data may
     be missing.
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -1383,9 +1368,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -1403,9 +1385,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -1423,9 +1402,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22 and from
     2026-04-20 to 2026-04-21; data may be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.AcceptedOnce{PermissionRequestGesture}"
@@ -1474,9 +1450,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.Denied.PriorIgnoreCount2{PermissionTypes}"
@@ -1493,9 +1466,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.Denied{PermissionRequestGesture}"
@@ -1527,9 +1497,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-07-09 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -1547,9 +1514,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.Geolocation.{Action}.Accuracy"
@@ -1597,9 +1561,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.Ignored.PriorIgnoreCount2{PermissionTypes}"
@@ -1616,9 +1577,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
     be missing. {PermissionTypes}
   </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.Notifications.EnabledAppLevel"
