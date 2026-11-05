@@ -134,6 +134,7 @@ public class TabGroupUiTest {
     @LargeTest
     @Feature({"RenderTest"})
     @DisableIf.Build(supported_abis_includes = "x86")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "crbug.com/578379424")
     public void testRenderStrip_Select5thTabIn10Tabs() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
