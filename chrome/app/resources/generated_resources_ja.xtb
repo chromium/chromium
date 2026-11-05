@@ -2256,7 +2256,7 @@
 <translation id="2727712005121231835">実際のサイズ</translation>
 <translation id="2729310339366257582">タブを閉じる</translation>
 <translation id="2729577602370119849">プリンタに簡単にアクセスして管理</translation>
-<translation id="2729940704980595903">Gemini アプリ アクティビティの表示と管理</translation>
+<translation id="2729940704980595903">Gemini アプリ アクティビティを表示、管理します</translation>
 <translation id="2730550884708194161">仕事用プロファイルについて</translation>
 <translation id="2730596696987224099">自分で設定</translation>
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
@@ -4980,7 +4980,7 @@
 <translation id="4779766576531456629">eSIM モバイル ネットワークの名前変更</translation>
 <translation id="4780321648949301421">ページを別名で保存...</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。</translation>
-<translation id="4784506603920819520"><ph name="TASK_TITLE" />: Gemini がこのタスクを処理するには、あなたの操作が必要です</translation>
+<translation id="4784506603920819520"><ph name="TASK_TITLE" />: Gemini がこのタスクの処理を継続できるよう、対応をお願いします</translation>
 <translation id="4785719467058219317">このウェブサイトに登録されていないセキュリティ キーを使用しています</translation>
 <translation id="4786430656008801173">オンデバイス AI</translation>
 <translation id="4787471921443575924">ユーザー名 <ph name="USER_EMAIL" /> のパスキーを編集</translation>
@@ -9018,7 +9018,7 @@
 <translation id="7915457674565721553">保護者による使用制限を設定するにはインターネットに接続してください</translation>
 <translation id="7916364730877325865">お客様の組織では、このアカウントとの同期を有効にすることは許可されていません</translation>
 <translation id="791698251820376781">組織がログインを許可していません</translation>
-<translation id="7918928051723770926">タスク完了</translation>
+<translation id="7918928051723770926">タスクを完了しました</translation>
 <translation id="7919123827536834358">これらの言語を自動的に翻訳する</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
@@ -10443,7 +10443,7 @@
 <translation id="8987736167266086032">中断したところから再開する</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
-<translation id="8989779557457435460">デフォルトで現在のタブを共有する</translation>
+<translation id="8989779557457435460">デフォルトで現在のタブを共有</translation>
 <translation id="8990243615717080992">パスワードまたはその他の復元方法でログインできます</translation>
 <translation id="8991520179165052608">サイトにマイクの使用が許可されています</translation>
 <translation id="8991694323904646277">カメラがありません</translation>
