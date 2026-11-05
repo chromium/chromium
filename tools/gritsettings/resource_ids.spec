@@ -1590,6 +1590,9 @@
   "chromeos/ash/experiences/extensions/chromeos_extensions_resources.grd": {
     "includes": [9015],
   },
+  "chromeos/ash/experiences/settings_ui/resources/ash_settings_strings.grd": {
+    "messages": [9018],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [9020],

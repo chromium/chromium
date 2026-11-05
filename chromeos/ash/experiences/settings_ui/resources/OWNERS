@@ -1,0 +1,3 @@
+# Any Chromium committer can approve changes to strings *.grd/*.grdp files.
+per-file ash_settings_strings.grd=*
+per-file ash_settings_search_tag_strings.grdp=*
