@@ -38,20 +38,23 @@ def __padding(data):
 
 def __ar_create(ctx, wd, ins):
     """Creates a thin archive without a symbol table."""
-    data = "!<thin>\n"
+    data = ["!<thin>\n"]
     offset = {}
-    content = ""
+    content_lines = []
+    content_len = 0
     for fname in ins:
-        offset[fname] = len(content)
-        content += path.rel(wd, fname) + "/\n"
-    content = __padding(content)
-    data += __file_header("//", len(content))
-    data += content
+        offset[fname] = content_len
+        entry = path.rel(wd, fname) + "/\n"
+        content_lines.append(entry)
+        content_len += len(entry)
+    content = __padding("".join(content_lines))
+    data.append(__file_header("//", len(content)))
+    data.append(content)
     for fname in ins:
         size = ctx.fs.size(fname)
         if size:
-            data += __file_header(__ref_fname(offset, fname), size)
-    return bytes(data)
+            data.append(__file_header(__ref_fname(offset, fname), size))
+    return bytes("".join(data))
 
 def __ar_entries(ctx, fname, build_dir):
     """Read entries from a thin archive. """
