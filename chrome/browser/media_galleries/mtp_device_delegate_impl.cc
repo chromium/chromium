@@ -512,7 +512,9 @@ MTPDeviceDelegateImpl::MTPFileNode::MTPFileNode(uint32_t file_id,
 MTPDeviceDelegateImpl::MTPFileNode::~MTPFileNode() {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   const size_t erased = nodes_by_id_->erase(file_id_);
-  CHECK_EQ(1U, erased, base::NotFatalUntil::M161);
+  // TODO(crbug.com/578382035): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(1U, erased);
 }
 
 const MTPDeviceDelegateImpl::MTPFileNode*
