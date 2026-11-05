@@ -997,6 +997,8 @@ TEST_F(HTMLSelectElementTest, DialogModeDefault) {
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_FALSE(select->IsInDialogMode());
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest, DialogModeBaseSelectDefault) {
@@ -1013,6 +1015,8 @@ TEST_F(HTMLSelectElementTest, DialogModeBaseSelectDefault) {
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_FALSE(select->IsInDialogMode());
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest, DialogModeBaseSelectAllowedDescendant) {
@@ -1031,6 +1035,8 @@ TEST_F(HTMLSelectElementTest, DialogModeBaseSelectAllowedDescendant) {
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_FALSE(select->IsInDialogMode());
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest, DialogModeBaseSelectButtonDescendant) {
@@ -1049,6 +1055,8 @@ TEST_F(HTMLSelectElementTest, DialogModeBaseSelectButtonDescendant) {
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_FALSE(select->IsInDialogMode());
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest, DialogModeBaseSelectButtonAndOption) {
@@ -1068,6 +1076,8 @@ TEST_F(HTMLSelectElementTest, DialogModeBaseSelectButtonAndOption) {
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_FALSE(select->IsInDialogMode());
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest, DialogModeBaseSelectDisallowedButton) {
@@ -1087,6 +1097,8 @@ TEST_F(HTMLSelectElementTest, DialogModeBaseSelectDisallowedButton) {
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_TRUE(select->IsInDialogMode());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest,
@@ -1108,6 +1120,8 @@ TEST_F(HTMLSelectElementTest,
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_TRUE(select->IsInDialogMode());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest, DialogModeBaseSelectDisallowedTabIndexElement) {
@@ -1128,6 +1142,8 @@ TEST_F(HTMLSelectElementTest, DialogModeBaseSelectDisallowedTabIndexElement) {
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_TRUE(select->IsInDialogMode());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest,
@@ -1149,6 +1165,8 @@ TEST_F(HTMLSelectElementTest,
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_TRUE(select->IsInDialogMode());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 TEST_F(HTMLSelectElementTest,
@@ -1168,6 +1186,8 @@ TEST_F(HTMLSelectElementTest,
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_TRUE(select->IsInDialogMode());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCustomizableSelectBadContentModel));
 }
 
 namespace {

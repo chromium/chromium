@@ -5394,6 +5394,7 @@ enum WebFeature {
   kCookieWriteInvalidHost = 6075,
   kOverlayPrestitialAd = 6076,
   kWebTransportErrorLegacyConstructor = 6077,
+  kCustomizableSelectBadContentModel = 6078,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

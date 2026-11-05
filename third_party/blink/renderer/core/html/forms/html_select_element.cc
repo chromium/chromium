@@ -882,6 +882,8 @@ void HTMLSelectElement::IncreaseContentModelViolationCount() {
   bool dialog_mode_changed = !content_model_violations_count_;
   ++content_model_violations_count_;
   if (dialog_mode_changed) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kCustomizableSelectBadContentModel);
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
       cache->MarkElementDirty(this);
     }
