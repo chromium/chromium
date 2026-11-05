@@ -369,6 +369,8 @@ source_set("litert_headers") {
     "src/litert/core/model/model.h",
     "src/litert/core/model/model_load.h",
     "src/litert/core/model/model_serialize.h",
+    "src/litert/core/model/shape_inference.h",
+    "src/litert/core/model/shape_inference_types.h",
     "src/litert/core/util/flatbuffer_tools.h",
     "src/litert/core/util/tensor_type_util.h",
     "src/litert/runtime/accelerator_registry.h",
@@ -568,6 +570,34 @@ tflite_static_library("litert_core") {
     "src/litert/core/model/model.cc",
     "src/litert/core/model/model_load.cc",
     "src/litert/core/model/model_serialize.cc",
+    "src/litert/core/model/ops/broadcast_args.h",
+    "src/litert/core/model/ops/broadcast_to.h",
+    "src/litert/core/model/ops/concatenation.h",
+    "src/litert/core/model/ops/convolution.h",
+    "src/litert/core/model/ops/expand_dims.h",
+    "src/litert/core/model/ops/gather.h",
+    "src/litert/core/model/ops/matmul.h",
+    "src/litert/core/model/ops/one_hot.h",
+    "src/litert/core/model/ops/op_shape_inference_utils.h",
+    "src/litert/core/model/ops/pack.h",
+    "src/litert/core/model/ops/pad.h",
+    "src/litert/core/model/ops/pooling.h",
+    "src/litert/core/model/ops/range.h",
+    "src/litert/core/model/ops/reductions.h",
+    "src/litert/core/model/ops/reshape.h",
+    "src/litert/core/model/ops/select.h",
+    "src/litert/core/model/ops/shape.h",
+    "src/litert/core/model/ops/simple_binary.h",
+    "src/litert/core/model/ops/simple_unary.h",
+    "src/litert/core/model/ops/slice.h",
+    "src/litert/core/model/ops/spatial.h",
+    "src/litert/core/model/ops/split.h",
+    "src/litert/core/model/ops/squeeze.h",
+    "src/litert/core/model/ops/tile.h",
+    "src/litert/core/model/ops/topk.h",
+    "src/litert/core/model/ops/transpose.h",
+    "src/litert/core/model/ops/unpack.h",
+    "src/litert/core/model/shape_inference.cc",
     "src/litert/core/util/flatbuffer_tools.cc",
     "src/litert/core/util/tensor_type_util.cc",
   ]
@@ -576,7 +606,13 @@ tflite_static_library("litert_core") {
   } else {
     sources += [ "src/litert/core/dynamic_loading.cc" ]
   }
-  deps = [ ":litert_headers" ]
+  deps = [
+    ":litert_headers",
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+    "//third_party/ruy",
+    "//third_party/safeint",
+  ]
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [
     "//build/config/compiler:no_chromium_code",
@@ -853,8 +889,10 @@ if (build_with_chromium && build_litert_with_ml_drift) {
       "src/ml_drift_delegate/delegate/composite/rope_parser.cc",
       "src/ml_drift_delegate/delegate/composite/runtime_batched_matmul_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/runtime_batched_matmul_parser.cc",
+      "src/ml_drift_delegate/delegate/composite/sdpa_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/sdpa_transposed_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/sdpa_transposed_parser.cc",
+      "src/ml_drift_delegate/delegate/composite/sdpa_transposed_support.cc",
       "src/ml_drift_delegate/delegate/composite/short_conv_step_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/short_conv_step_parser.cc",
     ]
@@ -910,6 +948,7 @@ if (build_with_chromium && build_litert_with_ml_drift) {
       "src/ml_drift_delegate/delegate/shared_memory_manager/shared_memory_manager_webgpu.cc",
       "src/ml_drift_delegate/delegate/shared_memory_manager/shared_memory_manager_webgpu_common.cc",
       "src/ml_drift_delegate/delegate/shared_memory_manager/shared_memory_manager_webgpu_litert.cc",
+      "src/ml_drift_delegate/delegate/shared_webgpu_env.cc",
       "src/ml_drift_delegate/delegate/task_executor.cc",
       "src/ml_drift_delegate/delegate/tflite_profile.cc",
     ]
@@ -1095,6 +1134,7 @@ if (use_litert_tflite) {
       "src/tflite/builtin_ops.h",
       "src/tflite/c/builtin_op_data.h",
       "src/tflite/c/common_internal.h",
+      "src/tflite/checked_int.h",
       "src/tflite/context.h",
       "src/tflite/context_util.h",
       "src/tflite/converter/allocation.h",
@@ -1933,6 +1973,7 @@ if (use_litert_tflite) {
       "src/tflite/c/c_api_opaque_internal.cc",
       "src/tflite/c/c_api_opaque_internal.h",
       "src/tflite/core/c/c_api.cc",
+      "src/tflite/core/c/c_api_create.cc",
       "src/tflite/core/c/c_api_opaque.cc",
       "src/tflite/core/c/c_api_opaque.h",
       "src/tflite/core/c/operator.cc",

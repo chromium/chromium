@@ -4,6 +4,13 @@
 
 config("safeint_config") {
   include_dirs = [ "src" ]
+
+  # Use standard abort() instead of _CRT_SECURE_INVALID_PARAMETER on Windows.
+  # In Windows debug builds (_DEBUG), _CRT_SECURE_INVALID_PARAMETER expands to
+  # _invalid_parameter(), which is not marked noreturn and triggers
+  # -Winvalid-noreturn in SafeInt's noreturn overflow/div-zero handlers.
+  defines = [ "SAFE_INT_USE_STDLIB" ]
+
   visibility = [ ":*" ]
 }
 
