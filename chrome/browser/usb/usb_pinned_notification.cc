@@ -11,9 +11,7 @@ UsbPinnedNotification::UsbPinnedNotification()
     : UsbSystemTrayIcon(std::make_unique<DevicePinnedNotificationRenderer>(
           this,
           "chrome://device_indicator/usb/",
-#if BUILDFLAG(IS_CHROMEOS)
           ash::NotificationCatalogName::kWebUsb,
-#endif
           IDS_WEBUSB_SYSTEM_TRAY_ICON_EXTENSION_LIST)) {
 }
 
