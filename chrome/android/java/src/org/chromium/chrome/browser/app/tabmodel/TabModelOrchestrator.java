@@ -483,6 +483,15 @@ public class TabModelOrchestrator {
         assert tabModelSelector != null;
         assert tabPersistentStore != null;
         assert tabPersistencePolicy != null;
+        if (mShadowTabPersistentStore != null
+                && mShadowTabPersistentStore != shadowPersistentStore) {
+            mShadowTabPersistentStore.destroy();
+        }
+        if (mTabPersistentStore != null
+                && !mTabPersistentStoreDestroyedEarly
+                && mTabPersistentStore != tabPersistentStore) {
+            mTabPersistentStore.destroy();
+        }
         mTabModelSelector = tabModelSelector;
         mTabPersistentStore = tabPersistentStore;
         mTabPersistencePolicy = tabPersistencePolicy;

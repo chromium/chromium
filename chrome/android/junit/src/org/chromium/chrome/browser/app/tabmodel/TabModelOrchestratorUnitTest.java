@@ -324,6 +324,23 @@ public class TabModelOrchestratorUnitTest {
         verify(mMockShadowPersistentStore).destroy();
     }
 
+    @Test
+    public void testInitForTesting_DestroysPreviousStores() {
+        TabPersistentStore replacementStore = mock(TabPersistentStore.class);
+        TabPersistentStore replacementShadowStore = mock(TabPersistentStore.class);
+
+        mTabModelOrchestrator.initForTesting(
+                mMockTabModelSelectorBase,
+                replacementStore,
+                mTabPersistencePolicy,
+                replacementShadowStore);
+
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+        verify(replacementStore, never()).destroy();
+        verify(replacementShadowStore, never()).destroy();
+    }
+
     private void readTabState(
             int numStandardTabs,
             int numIncognitoTabs,
