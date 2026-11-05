@@ -40,8 +40,6 @@
 #import "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #import "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #import "ui/base/mojom/window_open_disposition.mojom-shared.h"
-#import "ui/display/display.h"
-#import "ui/display/screen.h"
 
 namespace web {
 
@@ -791,64 +789,9 @@ void ContentWebState::CloseContents(content::WebContents* source) {
   CloseWebState();
 }
 
-int ContentWebState::GetTopControlsHeight() {
-  return ([web_view_ maxViewportInsets].top -
-          [web_view_ minViewportInsets].top) *
-         display::Screen::Get()
-             ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
-             .device_scale_factor();
-}
-
-int ContentWebState::GetTopControlsMinHeight() {
-  return 0;
-}
-
-int ContentWebState::GetBottomControlsHeight() {
-  return ([web_view_ maxViewportInsets].bottom -
-          [web_view_ minViewportInsets].bottom) *
-         display::Screen::Get()
-             ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
-             .device_scale_factor();
-}
-
-int ContentWebState::GetBottomControlsMinHeight() {
-  return 0;
-}
-
-bool ContentWebState::ShouldAnimateBrowserControlsHeightChanges() {
-  return true;
-}
-
-bool ContentWebState::DoBrowserControlsShrinkRendererSize(
-    content::WebContents* web_contents) {
-  // We want to remain consistent while scroll is in progress because
-  // we only resize the WebContents at the end of a gesture.
-  if (top_control_scroll_in_progress_) {
-    return cached_shrink_controls_;
-  }
-  UIScrollView* web_contents_view = base::apple::ObjCCastStrict<UIScrollView>(
-      web_contents->GetNativeView().Get());
-  if (web_contents_view.contentInset.top > [web_view_ minViewportInsets].top) {
-    return true;
-  }
-  return false;
-}
-
 int ContentWebState::GetVirtualKeyboardHeight(
     content::WebContents* web_contents) {
   return keyboard_height_;
-}
-
-bool ContentWebState::OnlyExpandTopControlsAtPageTop() {
-  return false;
-}
-
-void ContentWebState::SetTopControlsGestureScrollInProgress(bool in_progress) {
-  if (in_progress) {
-    cached_shrink_controls_ =
-        DoBrowserControlsShrinkRendererSize(web_contents_.get());
-  }
-  top_control_scroll_in_progress_ = in_progress;
 }
 
 // TODO(crbug.com/333624335): Consider moving notification observers to a

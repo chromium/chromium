@@ -4,6 +4,9 @@
 
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
 
+#import <cmath>
+#import <limits>
+
 #import "base/check.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
@@ -24,6 +27,8 @@
   BOOL _shouldSuppressInputViews;
 }
 @synthesize contentView = _contentView;
+@synthesize contentInset = _contentInset;
+@synthesize shouldUseViewContentInset = _shouldUseViewContentInset;
 @synthesize allowsLinkPreview = _allowsLinkPreview;
 @synthesize ignoreObscuredInsets = _ignoreObscuredInsets;
 @synthesize obscuredContentInsets = _obscuredContentInsets;
@@ -68,22 +73,36 @@
 }
 
 - (UIEdgeInsets)contentInset {
-  return _contentView.contentInset;
+  return self.shouldUseViewContentInset ? _contentView.contentInset
+                                        : _contentInset;
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset {
-  _contentView.contentInset = contentInset;
+  UIEdgeInsets oldInsets = self.contentInset;
+  CGFloat delta = std::fabs(oldInsets.top - contentInset.top) +
+                  std::fabs(oldInsets.left - contentInset.left) +
+                  std::fabs(oldInsets.bottom - contentInset.bottom) +
+                  std::fabs(oldInsets.right - contentInset.right);
+  if (delta <= std::numeric_limits<CGFloat>::epsilon()) {
+    return;
+  }
+  _contentInset = contentInset;
+  if (self.shouldUseViewContentInset) {
+    _contentView.contentInset = contentInset;
+  }
 }
 
 - (NSArray*)gestureRecognizers {
   return [_contentView gestureRecognizers];
 }
 
-- (BOOL)shouldUseViewContentInset {
-  return NO;
-}
-
 - (void)setShouldUseViewContentInset:(BOOL)shouldUseViewContentInset {
+  if (_shouldUseViewContentInset != shouldUseViewContentInset) {
+    UIEdgeInsets oldContentInset = self.contentInset;
+    self.contentInset = UIEdgeInsetsZero;
+    _shouldUseViewContentInset = shouldUseViewContentInset;
+    self.contentInset = oldContentInset;
+  }
 }
 
 - (void)registerInsets:(UIEdgeInsets)insets forCaller:(id)caller {
@@ -126,16 +145,16 @@
 }
 
 - (UIEdgeInsets)obscuredInsets {
-  return _contentView.contentInset;
+  return self.contentInset;
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
-  _contentView.contentInset = obscuredInsets;
+  [self setObscuredInsets:obscuredInsets initialVelocity:0.0];
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets
           initialVelocity:(CGFloat)initialVelocity {
-  _contentView.contentInset = obscuredInsets;
+  [self setContentInset:obscuredInsets];
 }
 
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset

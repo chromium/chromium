@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios_uiview.h"
 #include "content/browser/site_instance_group.h"
@@ -16,6 +17,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
 
 @interface RenderWidgetUIView (Testing)
 - (void)setKeyboardHeightForTesting:(CGFloat)height;
@@ -136,6 +138,79 @@ TEST_F(RenderWidgetHostViewIOSTest, NegativeKeyboardHeightClampedToZero) {
   gfx::Size requested = rwhv_ios()->GetRequestedRendererSize();
   gfx::Size visible = rwhv_ios()->GetVisibleViewportSize();
   EXPECT_EQ(requested, visible);
+}
+
+// Exercise UIKit sizing instead of the fixed viewport used by the test app.
+class RenderWidgetHostViewIOSNativeLayoutTest
+    : public RenderWidgetHostViewIOSTest {
+ protected:
+  void SetUp() override {
+    RenderWidgetHostViewIOSTest::SetUp();
+    rwhv_ios()->SetUseFixedSizeForTesting(false);
+  }
+
+  void AttachToParent(CGRect frame, UIEdgeInsets insets = UIEdgeInsetsZero) {
+    scroll_view_ = [[UIScrollView alloc] initWithFrame:frame];
+    scroll_view_.contentInset = insets;
+    rwhv_ios()->InitAsChild(gfx::NativeView(scroll_view_));
+    Layout();
+  }
+
+  void Layout() {
+    [scroll_view_ layoutIfNeeded];
+    [GetUIView() setNeedsLayout];
+    [GetUIView() layoutIfNeeded];
+  }
+
+  void ExpectViewportSize(gfx::Size expected_size) {
+    EXPECT_EQ(expected_size, gfx::Rect(GetUIView().bounds).size());
+    EXPECT_EQ(expected_size, rwhv_ios()->GetRequestedRendererSize());
+    EXPECT_EQ(expected_size,
+              rwhv_ios()->BrowserCompositor()->GetRendererSize());
+  }
+
+  void AckGesture(blink::WebInputEvent::Type type) {
+    blink::WebGestureEvent event(type, blink::WebInputEvent::kNoModifiers,
+                                 base::TimeTicks::Now(),
+                                 blink::WebGestureDevice::kTouchscreen);
+    rwhv_ios()->GestureEventAck(
+        event, blink::mojom::InputEventResultSource::kCompositorThread,
+        blink::mojom::InputEventResultState::kConsumed);
+  }
+
+  UIScrollView* scroll_view_ = nil;
+};
+
+TEST_F(RenderWidgetHostViewIOSNativeLayoutTest, LayoutBeforeScrollMetadata) {
+  AttachToParent(CGRectZero);
+  ExpectViewportSize(gfx::Size());
+
+  // A new tab receives its frame after attachment, before any scroll metadata.
+  scroll_view_.frame = CGRectMake(0, 0, 390, 700);
+  Layout();
+  ExpectViewportSize(gfx::Size(390, 700));
+
+  // The same resize path must retain padding in the obscured-inset layout.
+  scroll_view_.contentInset = UIEdgeInsetsMake(50, 4, 40, 6);
+  scroll_view_.frame = CGRectMake(0, 0, 320, 610);
+  Layout();
+  ExpectViewportSize(gfx::Size(310, 520));
+}
+
+TEST_F(RenderWidgetHostViewIOSNativeLayoutTest,
+       ParentResizeDeferredWhileScrolling) {
+  AttachToParent(CGRectMake(0, 0, 320, 610), UIEdgeInsetsMake(50, 4, 40, 6));
+  const gfx::Size initial_size = rwhv_ios()->GetRequestedRendererSize();
+  AckGesture(blink::WebInputEvent::Type::kGestureScrollBegin);
+
+  scroll_view_.frame = CGRectMake(0, 0, 390, 700);
+  Layout();
+
+  EXPECT_EQ(initial_size, rwhv_ios()->GetRequestedRendererSize());
+  EXPECT_NE(initial_size, gfx::Rect(GetUIView().bounds).size());
+
+  AckGesture(blink::WebInputEvent::Type::kGestureScrollEnd);
+  ExpectViewportSize(gfx::Size(380, 610));
 }
 
 }  // namespace content

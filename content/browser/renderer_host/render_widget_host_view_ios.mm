@@ -100,7 +100,8 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
           ui::GetGestureProviderConfig(
               ui::GestureProviderConfigType::CURRENT_PLATFORM,
               GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
-          this)) {
+          this)),
+      use_fixed_size_for_testing_(IsTesting()) {
   ui_view_ = std::make_unique<UIViewHolder>();
   ui_view_->view_ =
       [[RenderWidgetUIView alloc] initWithWidget:weak_factory_.GetWeakPtr()];
@@ -113,7 +114,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       [ui_view_->view_ viewHandle], this, host()->IsHidden(),
       host()->GetFrameSinkId());
 
-  if (IsTesting()) {
+  if (use_fixed_size_for_testing_) {
     view_bounds_ = GetDefaultSizeForTesting();
     browser_compositor_->UpdateSurfaceFromUIView(GetViewBounds().size());
   }
@@ -458,6 +459,13 @@ RenderWidgetHostViewIOS::CollectSurfaceIdsForEviction() {
 }
 
 void RenderWidgetHostViewIOS::UpdateScreenInfo() {
+  const gfx::Size native_view_size = gfx::Rect([ui_view_->view_ bounds]).size();
+  // UIKit autoresizing does not refresh the cached renderer size. Update it
+  // before publishing visual properties, preserving resize deferral during
+  // scrolling and fixed web-test sizing.
+  const bool renderer_size_changed =
+      UpdateViewBounds(gfx::Rect(view_bounds_.origin(), native_view_size));
+
   if (host()->delegate()) {
     host()->delegate()->SendScreenRects();
   }
@@ -467,21 +475,22 @@ void RenderWidgetHostViewIOS::UpdateScreenInfo() {
       display_screen->GetScreenInfosNearestDisplay(
           display_screen->GetPrimaryDisplay().id());
 
-  gfx::Rect view_bounds_dips([ui_view_->view_ bounds]);
   const bool screen_info_changed = screen_infos_ != new_screen_infos;
-  const bool size_changed =
-      view_bounds_dips.size() != browser_compositor_->GetRendererSize();
+  const bool compositor_size_changed =
+      native_view_size != browser_compositor_->GetRendererSize();
   screen_infos_ = std::move(new_screen_infos);
 
-  if (!IsTesting() && (size_changed || screen_info_changed)) {
-    browser_compositor_->UpdateSurfaceFromUIView(view_bounds_dips.size());
+  if (!use_fixed_size_for_testing_ &&
+      (compositor_size_changed || screen_info_changed)) {
+    browser_compositor_->UpdateSurfaceFromUIView(native_view_size);
   }
   ComputeDisplayFeature();
 
-  // Notify the associated RenderWidgetHostImpl when screen info has changed.
-  // That will synchronize visual properties needed for frame tree rendering
-  // and for web platform APIs that expose screen and window info and events.
-  if (size_changed || screen_info_changed) {
+  // Notify the associated RenderWidgetHostImpl when screen info or size
+  // changes. That will synchronize visual properties needed for frame tree
+  // rendering and for web platform APIs that expose screen and window info and
+  // events.
+  if (renderer_size_changed || compositor_size_changed || screen_info_changed) {
     host()->NotifyScreenInfoChanged();
   }
 }
@@ -924,13 +933,11 @@ void RenderWidgetHostViewIOS::GestureEventAck(
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd: {
       // Make sure our cached view bounds gets updated.
-      if (!IsTesting()) {
-        view_bounds_ = gfx::Rect([ui_view_->view_ bounds]);
-      }
+      is_scrolling_ = false;
+      UpdateViewBounds(gfx::Rect([ui_view_->view_ bounds]));
       if (host()->delegate()) {
         host()->delegate()->SetTopControlsGestureScrollInProgress(false);
       }
-      is_scrolling_ = false;
       CGPoint targetOffset = [scrollView contentOffset];
       [[scrollView delegate] scrollViewWillEndDragging:scrollView
                                           withVelocity:CGPoint()
@@ -969,11 +976,16 @@ void RenderWidgetHostViewIOS::UpdateFrameBounds() {
   frameBounds.origin = CGPointMake(scrollOffset.x() + parentInset.left,
                                    scrollOffset.y() + parentInset.top);
 
-  // If we are scrolling we don't resize the WebView immediately.
-  if (!is_scrolling_ && !IsTesting()) {
-    view_bounds_ = gfx::Rect(frameBounds);
-  }
+  UpdateViewBounds(gfx::Rect(frameBounds));
   [ui_view_->view_ setFrame:frameBounds];
+}
+
+bool RenderWidgetHostViewIOS::UpdateViewBounds(const gfx::Rect& bounds) {
+  if (is_scrolling_ || use_fixed_size_for_testing_ || view_bounds_ == bounds) {
+    return false;
+  }
+  view_bounds_ = bounds;
+  return true;
 }
 
 void RenderWidgetHostViewIOS::ApplyRootScrollOffsetChanged(
@@ -1148,9 +1160,10 @@ void RenderWidgetHostViewIOS::RectForEditFieldChars(
 }
 
 gfx::Size RenderWidgetHostViewIOS::GetCompositorViewportPixelSize() {
-  return gfx::ScaleToCeiledSize(
-      IsTesting() ? GetRequestedRendererSize() : GetScreenInfo().rect.size(),
-      GetDeviceScaleFactor());
+  return gfx::ScaleToCeiledSize(use_fixed_size_for_testing_
+                                    ? GetRequestedRendererSize()
+                                    : GetScreenInfo().rect.size(),
+                                GetDeviceScaleFactor());
 }
 
 void RenderWidgetHostViewIOS::ComputeDisplayFeature() {

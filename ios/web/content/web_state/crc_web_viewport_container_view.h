@@ -11,13 +11,6 @@
 
 // Container view class that manages the display of content.
 @interface CRCWebViewportContainerView : UIView <CRWViewportAdjustmentContainer>
-
-// The minimum viewport insets.
-@property(nonatomic, assign) UIEdgeInsets minViewportInsets;
-
-// The maximum viewport insets.
-@property(nonatomic, assign) UIEdgeInsets maxViewportInsets;
-
 @end
 
 #endif  // IOS_WEB_CONTENT_WEB_STATE_CRC_WEB_VIEWPORT_CONTAINER_VIEW_H_

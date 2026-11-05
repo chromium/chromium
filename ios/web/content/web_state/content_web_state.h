@@ -215,16 +215,7 @@ class ContentWebState : public WebState,
       bool user_gesture,
       bool* was_blocked) override;
   void CloseContents(content::WebContents* source) override;
-  int GetTopControlsHeight() override;
-  int GetTopControlsMinHeight() override;
-  int GetBottomControlsHeight() override;
-  int GetBottomControlsMinHeight() override;
-  bool ShouldAnimateBrowserControlsHeightChanges() override;
-  bool DoBrowserControlsShrinkRendererSize(
-      content::WebContents* web_contents) override;
   int GetVirtualKeyboardHeight(content::WebContents* web_contents) override;
-  bool OnlyExpandTopControlsAtPageTop() override;
-  void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* web_contents,
       SkColor color,
@@ -265,8 +256,6 @@ class ContentWebState : public WebState,
   std::unique_ptr<ContentNavigationManager> navigation_manager_;
   std::map<ContentWorld, std::unique_ptr<ContentWebFramesManager>> managers_;
   FaviconStatus favicon_status_;
-  bool top_control_scroll_in_progress_ = false;
-  bool cached_shrink_controls_ = false;
   bool created_with_opener_ = false;
   id keyboard_showing_observer_;
   id keyboard_hiding_observer_;

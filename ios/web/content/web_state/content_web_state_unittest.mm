@@ -6,12 +6,15 @@
 
 #import "content/public/browser/visibility.h"
 #import "content/public/browser/web_contents.h"
+#import "content/public/browser/web_contents_delegate.h"
 #import "content/public/test/browser_task_environment.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state_policy_decider.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_client.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -58,6 +61,62 @@ TEST_F(ContentWebStateTest, VisibilityTest) {
   ASSERT_TRUE(observer->was_shown_info());
   EXPECT_EQ(content_web_state(), observer->was_shown_info()->web_state);
   EXPECT_TRUE(content_web_state()->IsVisible());
+}
+
+// Native frame resizing must not also reserve toolbar space in Blink.
+TEST_F(ContentWebStateTest, NativeFrameDoesNotReserveBrowserControls) {
+  const UIEdgeInsets insets = UIEdgeInsetsMake(59, 0, 134, 0);
+  content_web_state()->GetView().frame =
+      UIEdgeInsetsInsetRect(CGRectMake(0, 0, 390, 844), insets);
+  id<CRWWebViewProxy> proxy = content_web_state()->GetWebViewProxy();
+  proxy.shouldUseViewContentInset = NO;
+  proxy.contentInset = insets;
+
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(insets, proxy.contentInset));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+      UIEdgeInsetsZero, proxy.scrollViewProxy.contentInset));
+  content::WebContentsDelegate* delegate =
+      content_web_state()->GetWebContents()->GetDelegate();
+  EXPECT_EQ(0, delegate->GetTopControlsHeight());
+  EXPECT_EQ(0, delegate->GetBottomControlsHeight());
+}
+
+// Full-size views apply obscured insets natively, with no extra Blink controls.
+TEST_F(ContentWebStateTest, NativeObscuredInsetsDoNotReserveBrowserControls) {
+  content_web_state()->GetView().frame = CGRectMake(0, 0, 390, 844);
+  id<CRWWebViewProxy> proxy = content_web_state()->GetWebViewProxy();
+  proxy.shouldUseViewContentInset = YES;
+  const UIEdgeInsets insets = UIEdgeInsetsMake(109, 0, 78, 0);
+  [proxy setObscuredInsets:insets];
+
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+      insets, proxy.scrollViewProxy.contentInset));
+  content::WebContentsDelegate* delegate =
+      content_web_state()->GetWebContents()->GetDelegate();
+  EXPECT_EQ(0, delegate->GetTopControlsHeight());
+  EXPECT_EQ(0, delegate->GetBottomControlsHeight());
+}
+
+// Switching layout modes preserves padding while clearing the old strategy.
+TEST_F(ContentWebStateTest, ContentInsetModeTransition) {
+  id<CRWWebViewProxy> proxy = content_web_state()->GetWebViewProxy();
+  const UIEdgeInsets insets = UIEdgeInsetsMake(50, 4, 40, 6);
+  proxy.contentInset = insets;
+  proxy.shouldUseViewContentInset = YES;
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+      insets, proxy.scrollViewProxy.contentInset));
+
+  const UIEdgeInsets updated_insets = UIEdgeInsetsMake(20, 2, 10, 3);
+  proxy.scrollViewProxy.contentInset = updated_insets;
+  EXPECT_TRUE(
+      UIEdgeInsetsEqualToEdgeInsets(updated_insets, proxy.contentInset));
+  proxy.shouldUseViewContentInset = NO;
+  EXPECT_TRUE(
+      UIEdgeInsetsEqualToEdgeInsets(updated_insets, proxy.contentInset));
+  EXPECT_TRUE(
+      UIEdgeInsetsEqualToEdgeInsets(updated_insets, proxy.obscuredInsets));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+      UIEdgeInsetsZero, proxy.scrollViewProxy.contentInset));
 }
 
 // Tests that setting and getting user agent override works.

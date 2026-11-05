@@ -225,6 +225,11 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
 
   bool CanBecomeFirstResponderForTesting() const;
   bool CanResignFirstResponderForTesting() const;
+  // Allows layout tests to use UIKit sizing without changing test-app behavior.
+  // Set before attaching the view to its parent.
+  void SetUseFixedSizeForTesting(bool use_fixed_size) {
+    use_fixed_size_for_testing_ = use_fixed_size;
+  }
   void ContentInsetChanged();
 #if !BUILDFLAG(IS_IOS_TVOS)
   void OnKeyboardVisibilityChanged();
@@ -267,6 +272,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ApplyRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset,
                                     bool force);
   void UpdateFrameBounds();
+  // Updates cached bounds unless resizing is deferred or test sizing is fixed.
+  // Returns whether the cached bounds changed.
+  bool UpdateViewBounds(const gfx::Rect& bounds);
   void ComputeDisplayFeature();
 
   blink::mojom::FrameWidgetInputHandler*
@@ -290,9 +298,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   // is locked.
   bool pointer_lock_unadjusted_movement_ = false;
 
-
   std::optional<gfx::PointF> last_root_scroll_offset_;
   bool is_scrolling_ = false;
+  bool use_fixed_size_for_testing_;
 
   // This stores the underlying view bounds. The UIView might change size but
   // we do not change its size during scroll.
