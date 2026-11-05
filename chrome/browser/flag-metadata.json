@@ -1819,6 +1819,11 @@
       "expiry_milestone": 140
   },
   {
+    "name": "cache-is-google-signed",
+    "owners": [ "ender@chromium.org", "clank-app-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "camera-and-microphone-elements",
     "owners": [ "ravjit@chromium.org", "tungnh@chromium.org" ],
     "expiry_milestone": 160

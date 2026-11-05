@@ -5774,6 +5774,15 @@ inline constexpr char kAndroidWindowOcclusionDescription[] =
     "Enables occlusion tracking on Android, which can save CPU and memory in "
     "multi-window environments.";
 
+inline constexpr char kCacheIsGoogleSignedName[] =
+    "Cache Google-signed package verification results";
+inline constexpr char kCacheIsGoogleSignedDescription[] =
+    "Persists the result of verifying whether another installed package (e.g. "
+    "the Google app) is Google-signed, instead of asking Google Play services "
+    "every time. Disable this if first-party integrations are unexpectedly "
+    "unavailable, e.g. in a work profile. This is a cached flag: changing it "
+    "requires restarting Chrome twice to take effect.";
+
 inline constexpr char kCCTEarlyInitPowerManagerName[] =
     "CCT Early Init PowerManager";
 inline constexpr char kCCTEarlyInitPowerManagerDescription[] =

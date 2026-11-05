@@ -13811,6 +13811,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCctTabResumption)},
 #endif
 #if BUILDFLAG(IS_ANDROID)
+    {"cache-is-google-signed", flag_descriptions::kCacheIsGoogleSignedName,
+     flag_descriptions::kCacheIsGoogleSignedDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCacheIsGoogleSigned)},
+#endif
+#if BUILDFLAG(IS_ANDROID)
     {"ntp-aurora", flag_descriptions::kNtpAuroraName,
      flag_descriptions::kNtpAuroraDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kNtpAurora,

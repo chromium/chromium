@@ -17230,6 +17230,7 @@ from previous Chrome versions.
   <int value="663027937" label="NewTabPageCustomLinks:enabled"/>
   <int value="663069508" label="TabToGTSAnimation:enabled"/>
   <int value="663252940" label="CellularUseSecondEuicc:enabled"/>
+  <int value="663281653" label="CacheIsGoogleSigned:disabled"/>
   <int value="663294302" label="ForceUseAPDownloadProtection:disabled"/>
   <int value="663377046" label="NtpDriveModuleHistorySyncRequirement:disabled"/>
   <int value="663423662" label="HybridChargerNotifications:enabled"/>
@@ -20344,6 +20345,7 @@ from previous Chrome versions.
   <int value="1586022426" label="AutofillCreditCardAssist:enabled"/>
   <int value="1586251544" label="VoiceButtonInTopToolbar:disabled"/>
   <int value="1586476635" label="LargeFaviconFromGoogle:enabled"/>
+  <int value="1586777252" label="CacheIsGoogleSigned:enabled"/>
   <int value="1587521886" label="SSLCommittedInterstitials:enabled"/>
   <int value="1587972722" label="TimeOfDayWallpaper:disabled"/>
   <int value="1588173358" label="CastStreamingMaxVideoBitrate:10 Mbps"/>
