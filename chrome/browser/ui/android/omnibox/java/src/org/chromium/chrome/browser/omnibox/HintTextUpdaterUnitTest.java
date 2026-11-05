@@ -55,11 +55,13 @@ import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.contextual_search.InputStateBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
@@ -208,6 +210,10 @@ public class HintTextUpdaterUnitTest {
         when(mComposeboxQueryControllerBridge.getInputStateSupplier())
                 .thenReturn(mInputStateSupplier);
         mInputStateSupplier.set(inputState);
+    }
+
+    private static ModelConfig createModelConfig(@ModelMode int modelMode, String hintText) {
+        return ModelConfig.newBuilder().setModelValue(modelMode).setHintText(hintText).build();
     }
 
     @Test
@@ -359,6 +365,56 @@ public class HintTextUpdaterUnitTest {
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
         verify(mUpdateHintTextCallback).onResult(eq("Ask anything"));
+    }
+
+    @Test
+    public void testGetOmniboxHintText_NoToolMatch_UsesActiveModelHintText() {
+        setInputState(
+                new InputStateBuilder()
+                        .withHintText("Server Default Hint")
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withModelConfigs(
+                                createModelConfig(ModelMode.MODEL_MODE_GEMINI_REGULAR, "Fast Hint"),
+                                createModelConfig(ModelMode.MODEL_MODE_GEMINI_PRO, "Pro Hint"))
+                        .build());
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        verify(mUpdateHintTextCallback).onResult(eq("Pro Hint"));
+    }
+
+    @Test
+    public void testGetOmniboxHintText_ToolHintTakesPrecedenceOverModelHint() {
+        ToolConfig imageGenConfig =
+                ToolConfig.newBuilder()
+                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setHintText("Image Gen Tool Hint")
+                        .build();
+        setInputState(
+                new InputStateBuilder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withToolConfigs(imageGenConfig)
+                        .withModelConfigs(
+                                createModelConfig(ModelMode.MODEL_MODE_GEMINI_PRO, "Pro Hint"))
+                        .build());
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+
+        verify(mUpdateHintTextCallback).onResult(eq("Image Gen Tool Hint"));
+    }
+
+    @Test
+    public void testGetOmniboxHintText_ModelMatchWithEmptyHint_UsesInputStateHintText() {
+        setInputState(
+                new InputStateBuilder()
+                        .withHintText("Server Default Hint")
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withModelConfigs(createModelConfig(ModelMode.MODEL_MODE_GEMINI_PRO, ""))
+                        .build());
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        verify(mUpdateHintTextCallback).onResult(eq("Server Default Hint"));
     }
 
     @Test

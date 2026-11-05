@@ -322,4 +322,17 @@ public class InputStateTest {
         assertNull(state.getToolConfig(ToolMode.TOOL_MODE_CANVAS));
         assertNull(new InputStateBuilder().build().getToolConfig(ToolMode.TOOL_MODE_IMAGE_GEN));
     }
+
+    @Test
+    public void testGetModelConfig() {
+        ModelConfig regularConfig =
+                ModelConfig.newBuilder().setModelValue(ModelMode.MODEL_MODE_GEMINI_REGULAR).build();
+        ModelConfig proConfig =
+                ModelConfig.newBuilder().setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO).build();
+        InputState state =
+                new InputStateBuilder().withModelConfigs(regularConfig, proConfig).build();
+
+        assertEquals(proConfig, state.getModelConfig(ModelMode.MODEL_MODE_GEMINI_PRO));
+        assertNull(state.getModelConfig(ModelMode.MODEL_MODE_GEMINI_PRO_LATEST));
+    }
 }

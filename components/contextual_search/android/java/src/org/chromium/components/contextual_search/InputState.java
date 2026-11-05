@@ -161,6 +161,16 @@ public class InputState {
         return mLazyModelConfigs;
     }
 
+    /** Returns the {@link ModelConfig} matching {@code modelMode}, or null if absent. */
+    public @Nullable ModelConfig getModelConfig(@ModelMode int modelMode) {
+        for (ModelConfig config : getModelConfigs()) {
+            if (config.getModelValue() == modelMode) {
+                return config;
+            }
+        }
+        return null;
+    }
+
     public SectionConfig getModelSectionConfig() {
         if (mLazyModelSectionConfig == null) {
             mLazyModelSectionConfig = parseSectionConfig(mRawModelSectionConfig);

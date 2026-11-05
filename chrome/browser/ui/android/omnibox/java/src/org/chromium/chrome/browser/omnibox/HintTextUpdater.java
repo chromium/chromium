@@ -33,6 +33,7 @@ import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
@@ -239,7 +240,8 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
 
     /**
      * Returns the hint text from the server-provided {@link InputState}, or null when no server
-     * hint applies. The active tool's hint takes precedence over the default searchbox hint.
+     * hint applies. The active tool's hint takes precedence, followed by the active model's hint
+     * and then the default searchbox hint.
      */
     private @Nullable String getHintFromInputState() {
         if (mCurrentInput == null) {
@@ -273,10 +275,14 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         @ToolMode
         int activeTool =
                 ToolModeUtils.getToolModeForRequestType(requestType, /* hasAttachments= */ false);
-        for (ToolConfig config : inputState.getToolConfigs()) {
-            if (config.getToolValue() == activeTool && !config.getHintText().isEmpty()) {
-                return config.getHintText();
-            }
+        ToolConfig toolConfig = inputState.getToolConfig(activeTool);
+        if (toolConfig != null && !toolConfig.getHintText().isEmpty()) {
+            return toolConfig.getHintText();
+        }
+
+        ModelConfig modelConfig = inputState.getModelConfig(inputState.activeModel);
+        if (modelConfig != null && !modelConfig.getHintText().isEmpty()) {
+            return modelConfig.getHintText();
         }
 
         return TextUtils.isEmpty(inputState.hintText) ? null : inputState.hintText;
