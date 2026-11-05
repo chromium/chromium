@@ -126,6 +126,12 @@ interface Page {
   // changes.
   OnSidePanelPinStateChanged(bool is_pinned);
 
+  // Called by the browser process (C++) when the user's eligibility to pin
+  // the side panel changes (e.g. the account becomes ineligible while the side
+  // panel is open). The UI hides the pin/unpin menu item when `is_eligible` is
+  // false.
+  OnPinButtonEligibilityChanged(bool is_eligible);
+
   // Called by the browser process (C++) to notify the UI when the AI page
   // status changes.
   OnAiPageStatusChanged(bool is_ai_page);

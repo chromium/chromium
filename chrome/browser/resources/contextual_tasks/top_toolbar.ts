@@ -181,6 +181,10 @@ export class TopToolbarElement extends TopToolbarElementBase {
           .addListener((isPinned: boolean) => {
             this.isPinned = isPinned;
           }),
+      this.toolbarBrowserProxy_.callbackRouter.onPinButtonEligibilityChanged
+          .addListener((isEligible: boolean) => {
+            this.isPinButtonEnabled = isEligible;
+          }),
       this.toolbarBrowserProxy_.callbackRouter.onContextUpdated.addListener(
           (contextInfos: ContextInfo[]) => {
             this.contextInfos = contextInfos;
