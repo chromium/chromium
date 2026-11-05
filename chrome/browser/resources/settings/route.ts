@@ -145,13 +145,38 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 }
 
 /**
+ * Add all of the child routes that originate from the people/home route.
+ */
+function addSharedPeopleRoutes(r: Partial<SettingsRoutes>, parent: Route) {
+  if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+    r.ACCOUNT = parent.createChild('/account');
+    r.GOOGLE_SERVICES = parent.createChild('/googleServices');
+  }
+  // <if expr="not is_chromeos">
+  r.SIGN_OUT = parent.createChild('/signOut');
+  r.SIGN_OUT.isNavigableDialog = true;
+  r.IMPORT_DATA = parent.createChild('/importData');
+  r.IMPORT_DATA.isNavigableDialog = true;
+  r.MANAGE_PROFILE = parent.createChild('/manageProfile');
+  // </if>
+
+  r.SYNC = parent.createChild('/syncSetup');
+  r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
+}
+
+/**
  * Adds Route objects for each path.
  */
 function createRoutes(): SettingsRoutes {
   const r: Partial<SettingsRoutes> = {};
+  const isSettingsRefresh2026Enabled =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   // Root page.
   r.BASIC = new Route('/');
+  if (isSettingsRefresh2026Enabled) {
+    r.BASIC.section = 'home';
+  }
 
   r.ABOUT = r.BASIC.createSection(
       '/help', 'about', loadTimeData.getString('aboutPageTitle'));
@@ -164,26 +189,15 @@ function createRoutes(): SettingsRoutes {
   }
 
   const visibility = pageVisibility || {};
-  const isSettingsRefresh2026Enabled =
-      loadTimeData.getString('settingsRefresh2026') !== '';
 
-  if (visibility.people !== false) {
+  if (isSettingsRefresh2026Enabled) {
+    if (visibility.home !== false) {
+      addSharedPeopleRoutes(r, r.BASIC);
+    }
+  } else if (visibility.people !== false) {
     r.PEOPLE = r.BASIC.createSection(
         '/people', 'people', loadTimeData.getString('peoplePageTitle'));
-    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
-      r.ACCOUNT = r.PEOPLE.createChild('/account');
-      r.GOOGLE_SERVICES = r.PEOPLE.createChild('/googleServices');
-    }
-    // <if expr="not is_chromeos">
-    r.SIGN_OUT = r.PEOPLE.createChild('/signOut');
-    r.SIGN_OUT.isNavigableDialog = true;
-    r.IMPORT_DATA = r.PEOPLE.createChild('/importData');
-    r.IMPORT_DATA.isNavigableDialog = true;
-    r.MANAGE_PROFILE = r.PEOPLE.createChild('/manageProfile');
-    // </if>
-
-    r.SYNC = r.PEOPLE.createChild('/syncSetup');
-    r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
+    addSharedPeopleRoutes(r, r.PEOPLE);
   }
 
   if (visibility.ai !== false && loadTimeData.getBoolean('showAiPage')) {
@@ -374,7 +388,8 @@ export let routes: SettingsRoutes = Router.getInstance().getRoutes();
 // Returns the "effective" route when at chrome://settings/.
 export function getTopLevelRoute(): Route {
   if (!loadTimeData.getBoolean('isGuest')) {
-    return routes.PEOPLE;
+    return loadTimeData.getString('settingsRefresh2026') !== '' ? routes.BASIC :
+                                                                  routes.PEOPLE;
   }
 
   let guestTopLevelRoute = routes.SEARCH;

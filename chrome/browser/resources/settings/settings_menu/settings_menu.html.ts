@@ -12,15 +12,21 @@ export function getHtml(this: SettingsMenuElement) {
       <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
           attr-for-selected="href" @iron-activate="${this.onIronActivate_}"
           @click="${this.onLinkClick_}" selected-attribute="selected">
-        <a role="menuitem"
-            id="people" href="/people"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.people)}"
-            class="cr-nav-menu-item">
-          ${this.settingsRefresh2026Enabled_ ? html`
+        ${this.settingsRefresh2026Enabled_ ? html`
+          <a role="menuitem"
+              id="home" href="/"
+              ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.home)}"
+              class="cr-nav-menu-item">
             <cr-icon icon="settings20:home"></cr-icon>
             <!-- TODO(b/574662686): Update "Home" string -->
             <span class="menu-label">Home</span>
-          ` : html`
+            <cr-ripple></cr-ripple>
+          </a>
+        ` : html`
+          <a role="menuitem"
+              id="people" href="/people"
+              ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.people)}"
+              class="cr-nav-menu-item">
 <if expr="not _google_chrome">
             <cr-icon icon="settings:person"></cr-icon>
 </if>
@@ -28,9 +34,9 @@ export function getHtml(this: SettingsMenuElement) {
             <cr-icon icon="settings-internal:google-g"></cr-icon>
 </if>
             <span class="menu-label">$i18n{peoplePageTitle}</span>
-          `}
-          <cr-ripple></cr-ripple>
-        </a>
+            <cr-ripple></cr-ripple>
+          </a>
+        `}
         <a role="menuitem" id="autofill" href="/autofill"
             @click="${this.onAutofillClick_}"
             class="cr-nav-menu-item"

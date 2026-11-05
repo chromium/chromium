@@ -4,7 +4,7 @@
 
 import type {SettingsMenuElement} from 'chrome://settings/settings.js';
 import {resetPageVisibilityForTesting} from 'chrome://settings/settings.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('SettingsMenuInteractiveUITest', () => {
   let settingsMenu: SettingsMenuElement;
@@ -23,7 +23,10 @@ suite('SettingsMenuInteractiveUITest', () => {
 
     createMenu();
     settingsMenu.focusFirstItem();
-    assertEquals(settingsMenu.$.people, settingsMenu.shadowRoot.activeElement);
+    const people =
+        settingsMenu.shadowRoot.querySelector<HTMLElement>('#people');
+    assertTrue(!!people);
+    assertEquals(people, settingsMenu.shadowRoot.activeElement);
 
     resetPageVisibilityForTesting({
       people: false,

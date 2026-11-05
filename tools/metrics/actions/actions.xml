@@ -34531,6 +34531,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SettingsMenu_HomeClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Home&quot; item in the settings menu.
+  </description>
+</action>
+
 <action name="SettingsMenu_LanguagesClicked">
   <owner>mickeyburks@google.com</owner>
   <description>

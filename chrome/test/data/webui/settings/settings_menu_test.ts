@@ -49,10 +49,13 @@ suite('SettingsMenu', function() {
     const selector = settingsMenu.$.menu;
     const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
         'iron-select', selector);
-    settingsMenu.$.people.click();
+    const people =
+        settingsMenu.shadowRoot.querySelector<HTMLElement>('#people');
+    assertTrue(!!people);
+    people.click();
     const event = await whenIronSelect;
 
-    assertEquals(settingsMenu.$.people, event.detail.item);
+    assertEquals(people, event.detail.item);
     assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
 
@@ -74,8 +77,11 @@ suite('SettingsMenu', function() {
     Router.getInstance().navigateTo(routes.PEOPLE);
     const event = await whenIronSelect;
 
+    const people =
+        settingsMenu.shadowRoot.querySelector<HTMLElement>('#people');
+    assertTrue(!!people);
     assertTrue(!!selector.selected);
-    assertEquals(settingsMenu.$.people, event.detail.item);
+    assertEquals(people, event.detail.item);
     assertEquals('/people', selector.selected);
   });
 
@@ -384,7 +390,7 @@ suite('SettingsMenuRefresh2026', () => {
     const hrefs = links.map(link => link.getAttribute('href'));
     assertDeepEquals(
         [
-          '/people',
+          '/',
           '/autofill',
           '/privacy',
           '/performance',
@@ -400,7 +406,7 @@ suite('SettingsMenuRefresh2026', () => {
         hrefs);
 
     const selector = settingsMenu.$.menu;
-    assertFalse(!!selector.selected);
+    assertEquals('/', selector.selected);
 
     let whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
         'iron-select', selector);
@@ -420,15 +426,17 @@ suite('SettingsMenuRefresh2026', () => {
     testMetricsBrowserProxy.resetResolver('recordAction');
     whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
         'iron-select', selector);
-    settingsMenu.$.people.click();
+    const home = settingsMenu.shadowRoot.querySelector<HTMLElement>('#home');
+    assertTrue(!!home);
+    home.click();
     await whenIronSelect;
-    assertEquals('/people', selector.selected);
+    assertEquals('/', selector.selected);
     assertEquals(
-        Router.getInstance().getRoutes().PEOPLE,
+        Router.getInstance().getRoutes().BASIC,
         Router.getInstance().getCurrentRoute());
-    assertEquals('/people', window.location.pathname);
+    assertEquals('/', window.location.pathname);
     assertEquals(
-        'SettingsMenu_PeopleClicked',
+        'SettingsMenu_HomeClicked',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 });

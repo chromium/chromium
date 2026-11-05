@@ -22,14 +22,19 @@ ${this.showResetProfileBanner_ ? html`
 ` : ''}
 
 <cr-view-manager id="switcher" ?show-all="${this.shouldShowAll_()}">
-  ${cache(this.showPage_(this.pageVisibility_?.people) ? html`
-    <div slot="view" id="people">
-      ${cache(this.settingsRefresh2026Enabled_ &&
-          this.renderPlugin_(this.routes_.PEOPLE) ? html`
+  ${cache(this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.home) ? html`
+    <div slot="view" id="home">
+      ${cache(this.renderPlugin_(this.routes_.BASIC) ? html`
         <div>Home page placeholder</div>
       ` : '')}
-      ${cache(!this.settingsRefresh2026Enabled_ &&
-          this.renderPlugin_(this.routes_.PEOPLE) ? html`
+    </div>
+  ` : '')}
+
+  ${cache(!this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.people) ? html`
+    <div slot="view" id="people">
+      ${cache(this.renderPlugin_(this.routes_.PEOPLE) ? html`
         <settings-people-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-people-page-index>
       ` : '')}

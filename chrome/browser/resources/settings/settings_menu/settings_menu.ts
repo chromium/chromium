@@ -35,7 +35,6 @@ export interface SettingsMenuElement {
   $: {
     autofill: HTMLLinkElement,
     menu: CrMenuSelectorElement,
-    people: HTMLLinkElement,
   };
 }
 
@@ -103,6 +102,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       ['/help', 'SettingsMenu_AboutClicked'],
     ]);
     if (this.settingsRefresh2026Enabled_) {
+      this.pathToActionMap_.set('/', 'SettingsMenu_HomeClicked');
       this.pathToActionMap_.set('/general', 'SettingsMenu_GeneralClicked');
     }
   }

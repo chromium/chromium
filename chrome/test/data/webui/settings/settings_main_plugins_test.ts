@@ -172,8 +172,8 @@ suite('SettingsMain', function() {
         'about',
         'appearance',
         'general',
+        'home',
         'languages',
-        'people',
         'performance',
         'search',
       ];
@@ -193,6 +193,7 @@ suite('SettingsMain', function() {
 
       assertFalse(!!queryView('downloads'));
       assertFalse(!!queryView('onStartup'));
+      assertFalse(!!queryView('people'));
       assertFalse(!!queryView('reset'));
       // <if expr="not is_chromeos">
       assertFalse(!!queryView('defaultBrowser'));
@@ -258,7 +259,7 @@ suite('SettingsMain', function() {
     let active = settingsMain.$.switcher.querySelector<HTMLElement>(
         '.active[slot=view]');
     assertTrue(!!active);
-    assertEquals('people', active.id);
+    assertEquals('home', active.id);
     assertFalse(!!active.querySelector('settings-people-page-index'));
 
     Router.getInstance().navigateTo(routes.GENERAL);
@@ -269,12 +270,12 @@ suite('SettingsMain', function() {
     assertEquals('general', active.id);
     assertTrue(!!active.querySelector('settings-general-page-index'));
 
-    Router.getInstance().navigateTo(routes.PEOPLE);
+    Router.getInstance().navigateTo(routes.BASIC);
     await settingsMain.whenViewSwitchingDone();
     active = settingsMain.$.switcher.querySelector<HTMLElement>(
         '.active[slot=view]');
     assertTrue(!!active);
-    assertEquals('people', active.id);
+    assertEquals('home', active.id);
   });
 
   test('SettingsRefresh2026GuestViews', async function() {
@@ -283,6 +284,7 @@ suite('SettingsMain', function() {
       settingsRefresh2026: 'settings-refresh-2026',
     });
     await settingsMain.whenViewSwitchingDone();
+    assertFalse(!!queryView('home'));
     assertFalse(!!queryView('people'));
     assertFalse(!!queryView('general'));
   });

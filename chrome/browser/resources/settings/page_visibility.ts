@@ -16,6 +16,7 @@ export interface PageVisibility {
   downloads?: boolean;
   extensions?: boolean;
   general?: boolean;
+  home?: boolean;
   languages?: boolean;
   onStartup?: boolean;
   people?: boolean;
@@ -99,6 +100,7 @@ function createPageVisibility(): PageVisibility|undefined {
 
   if (loadTimeData.getString('settingsRefresh2026') !== '') {
     pageVisibility.general = false;
+    pageVisibility.home = false;
   }
 
   return pageVisibility;
