@@ -1004,7 +1004,7 @@
 <translation id="4161488339191275792">Crea grupos de pestañas para organizar tus pestañas abiertas</translation>
 <translation id="4163699139741158298">{count,plural, =1{Marcador guardado en {title}. Solo se guarda en este dispositivo.}other{{count} marcadores guardados en {title}. Solo se guardan en este dispositivo.}}</translation>
 <translation id="4164514562270305824">Eliminar descargas automáticamente</translation>
-<translation id="4165986682804962316">Configuración del sitio</translation>
+<translation id="4165986682804962316">Ajustes de los sitios web</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que termina en <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="417138788035229076">Gestionar grupo</translation>
