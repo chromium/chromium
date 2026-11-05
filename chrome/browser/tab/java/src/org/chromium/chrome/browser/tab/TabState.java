@@ -13,6 +13,7 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.io.File;
+import java.util.Map;
 
 /** Object that contains the state of a tab, including its navigation history. */
 @NullMarked
@@ -75,6 +76,9 @@ public class TabState {
 
     /** The current URL of the tab. */
     public @Nullable GURL url;
+
+    /** Extra data for features. */
+    public @Nullable Map<String, String> extraData;
 
     /** Returns true if the tab has a theme color set. */
     public boolean hasThemeColor() {

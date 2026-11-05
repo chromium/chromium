@@ -140,6 +140,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -348,6 +349,9 @@ class TabImpl implements Tab, TabInternal {
     /** Title of the ContentViews webpage. */
     private String mTitle = "";
 
+    /** Extra data for features restored from TabState. */
+    private @Nullable Map<String, String> mExtraData;
+
     /** URL of the page currently loading. Used as a fall-back in case tab restore fails. */
     private @Nullable GURL mUrl;
 
@@ -480,6 +484,11 @@ class TabImpl implements Tab, TabInternal {
     @Override
     public @Nullable WebContents getWebContents() {
         return mWebContents;
+    }
+
+    @Override
+    public @Nullable Map<String, String> getExtraData() {
+        return mExtraData;
     }
 
     @Override
@@ -1917,6 +1926,7 @@ class TabImpl implements Tab, TabInternal {
         setUserAgent(state.userAgent);
         setTabHasSensitiveContent(state.tabHasSensitiveContent);
         setIsPinned(state.isPinned);
+        mExtraData = state.extraData;
     }
 
     /**

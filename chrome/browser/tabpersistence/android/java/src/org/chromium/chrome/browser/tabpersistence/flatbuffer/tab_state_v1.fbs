@@ -12,6 +12,12 @@ struct TabGroupIdToken {
   low:long;
 }
 
+// A key-value entry for feature-specific extra data.
+table ExtraDataEntry {
+  key:string;
+  value:string;
+}
+
 // Version 1 places all fields together. The intention
 // is to experiment with different refactorings (e.g. move
 // WebcontentsState to its own Table for delayed acquisition).
@@ -54,5 +60,8 @@ table TabStateFlatBufferV1 {
 
     // Represents the current URL of the tab.
     url:string;
+
+    // Extra data for features.
+    extra_data:[ExtraDataEntry];
 }
 

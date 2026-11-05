@@ -14,6 +14,8 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import androidx.annotation.Nullable;
 
+import com.google.flatbuffers.FlatBufferBuilder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
+import org.chromium.chrome.browser.tab.flatbuffer.TabStateFlatBufferV1;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.browser.tabpersistence.FlatBufferTabStateSerializer.TabStateFlatBufferDeserializeResult;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager.RestoreTabStateException;
@@ -51,6 +54,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Map;
 
 /** Unit tests for {@link TabStateFileManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -140,6 +144,48 @@ public class TabStateFileManagerUnitTest {
         FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(false);
         Assert.assertNull(serializer.deserialize(ByteBuffer.wrap(bytes)));
         histograms.assertExpected();
+    }
+
+    @Test
+    public void testFlatBufferSerializationWithExtraData() {
+        TabState state = createTabStateWithDefaultContents();
+        state.extraData = Map.of("key1", "value1", "key2", "value2");
+
+        TabState deserialized = serializeAndDeserialize(state);
+        Assert.assertEquals(state.extraData, deserialized.extraData);
+    }
+
+    @Test
+    public void testFlatBufferSerializationWithNullExtraData() {
+        TabState state = createTabStateWithDefaultContents();
+        state.extraData = null;
+
+        TabState deserialized = serializeAndDeserialize(state);
+        Assert.assertNull(deserialized.extraData);
+    }
+
+    @Test
+    public void testFlatBufferSerializationWithEmptyExtraData() {
+        TabState state = createTabStateWithDefaultContents();
+        state.extraData = Map.of();
+
+        TabState deserialized = serializeAndDeserialize(state);
+        Assert.assertNull(deserialized.extraData);
+    }
+
+    @Test
+    public void testFlatBufferDeserializationWithMissingExtraDataField() {
+        FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(false);
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
+        int webContentsState = fbb.createByteVector(CONTENTS_STATE_BYTES);
+        TabStateFlatBufferV1.startTabStateFlatBufferV1(fbb);
+        TabStateFlatBufferV1.addWebContentsStateBytes(fbb, webContentsState);
+        int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
+        fbb.finish(r);
+
+        TabState deserialized = serializer.deserialize(fbb.dataBuffer());
+        Assert.assertNotNull(deserialized);
+        Assert.assertNull(deserialized.extraData);
     }
 
     @Test
@@ -687,6 +733,23 @@ public class TabStateFileManagerUnitTest {
         } finally {
             StreamUtil.closeQuietly(fileInputStream);
         }
+    }
+
+    private static TabState createTabStateWithDefaultContents() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
+        buffer.put(CONTENTS_STATE_BYTES);
+        buffer.rewind();
+        WebContentsState contentsState =
+                new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        return createTabState(contentsState, null);
+    }
+
+    private static TabState serializeAndDeserialize(TabState state) {
+        FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(false);
+        ByteBuffer serialized = serializer.serialize(state);
+        TabState deserialized = serializer.deserialize(serialized);
+        Assert.assertNotNull(deserialized);
+        return deserialized;
     }
 
     private static TabState createTabState(

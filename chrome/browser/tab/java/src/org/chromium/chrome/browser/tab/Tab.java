@@ -33,6 +33,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Map;
 
 /**
  * Tab is a visual/functional unit that encapsulates the content (not just web site content from
@@ -128,6 +129,9 @@ public interface Tab extends TabLifecycle {
     default WindowAndroid getWindowAndroidChecked() {
         return assertNonNull(getWindowAndroid());
     }
+
+    /** Returns extra metadata associated with this tab, or null if none. */
+    @Nullable Map<String, String> getExtraData();
 
     /**
      * Update the attachment state to Window(Activity).

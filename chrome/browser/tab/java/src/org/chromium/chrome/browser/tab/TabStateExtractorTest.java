@@ -28,6 +28,7 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
 
 /** Tests for {@link TabStateExtractor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -200,5 +201,15 @@ public class TabStateExtractorTest {
         state = TabStateExtractor.from(mTabMock);
         assertNotNull(state);
         assertEquals(TabState.UNSPECIFIED_THEME_COLOR, state.themeColor);
+    }
+
+    @Test
+    public void testFrom_extraData() {
+        doReturn(true).when(mTabMock).isInitialized();
+        Map<String, String> extraData = Map.of("key", "val");
+        doReturn(extraData).when(mTabMock).getExtraData();
+        TabState state = TabStateExtractor.from(mTabMock);
+        assertNotNull(state);
+        assertEquals(extraData, state.extraData);
     }
 }

@@ -50,6 +50,9 @@ public class TabStateExtractor {
         tabState.tabHasSensitiveContent = tab.getTabHasSensitiveContent();
         tabState.isPinned = tab.getIsPinned();
         tabState.url = tab.getUrl();
+        Map<String, String> extraData = tab.getExtraData();
+        tabState.extraData =
+                (extraData != null && !extraData.isEmpty()) ? Map.copyOf(extraData) : null;
         return tabState;
     }
 

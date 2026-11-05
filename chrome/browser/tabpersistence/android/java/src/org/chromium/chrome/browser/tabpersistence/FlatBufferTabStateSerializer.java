@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.flatbuffer.ExtraDataEntry;
 import org.chromium.chrome.browser.tab.flatbuffer.TabGroupIdToken;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.TabStateFlatBufferV1;
@@ -27,6 +28,8 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 /** {@link TabStateSerializer} backed by a FlatBuffer */
 @NullMarked
@@ -78,6 +81,18 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         int openerAppId =
                 fbb.createString(state.openerAppId == null ? NULL_STR : state.openerAppId);
         int url = fbb.createString(state.url == null ? NULL_STR : state.url.getSpec());
+        int extraData = 0;
+        if (state.extraData != null && !state.extraData.isEmpty()) {
+            int[] entryOffsets = new int[state.extraData.size()];
+            int i = 0;
+            for (Map.Entry<String, String> entry : state.extraData.entrySet()) {
+                int keyOffset = fbb.createString(entry.getKey());
+                int valueOffset = fbb.createString(entry.getValue());
+                entryOffsets[i++] =
+                        ExtraDataEntry.createExtraDataEntry(fbb, keyOffset, valueOffset);
+            }
+            extraData = TabStateFlatBufferV1.createExtraDataVector(fbb, entryOffsets);
+        }
         TabStateFlatBufferV1.startTabStateFlatBufferV1(fbb);
         TabStateFlatBufferV1.addParentId(fbb, state.parentId);
         TabStateFlatBufferV1.addRootId(fbb, state.rootId);
@@ -102,6 +117,9 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         TabStateFlatBufferV1.addIsPinned(fbb, state.isPinned);
 
         TabStateFlatBufferV1.addUrl(fbb, url);
+        if (extraData != 0) {
+            TabStateFlatBufferV1.addExtraData(fbb, extraData);
+        }
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
@@ -140,6 +158,23 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             String url = tabStateFlatBuffer.url();
             state.url = NULL_STR.equals(url) ? null : new GURL(url);
             if (state.url != null && !state.url.isValid()) state.url = null;
+
+            int extraDataLength = tabStateFlatBuffer.extraDataLength();
+            if (extraDataLength > 0) {
+                Map<String, String> map = new HashMap<>(extraDataLength);
+                ExtraDataEntry entry = new ExtraDataEntry();
+                for (int i = 0; i < extraDataLength; i++) {
+                    tabStateFlatBuffer.extraData(entry, i);
+                    String key = entry.key();
+                    String value = entry.value();
+                    if (key != null && value != null) {
+                        map.put(key, value);
+                    }
+                }
+                if (!map.isEmpty()) {
+                    state.extraData = map;
+                }
+            }
 
             @Nullable ByteBuffer rawBuffer = tabStateFlatBuffer.webContentsStateBytesAsByteBuffer();
             ByteBuffer webContentsStateBuffer =
