@@ -104,10 +104,12 @@ BASE_FEATURE_PARAM(bool,
                    "fishfood_feedback",
                    false);
 
-BASE_FEATURE_PARAM(std::string,
-                   kTopicsFeedbackFormUrl,
-                   &browser::context_hub::mojom::kTopics,
-                   "feedback_form_url",
-                   "https://goto.google.com/jbi-fishfood-feedback-form");
+BASE_FEATURE_PARAM(
+    std::string,
+    kTopicsFeedbackFormUrl,
+    &browser::context_hub::mojom::kTopics,
+    "feedback_form_url",
+    "https://docs.google.com/forms/d/e/"
+    "1FAIpQLScveRiPPpd8I1qCa042yaHr8dj7AphFLtMlzh_WYjkDB1vjMQ/viewform");
 
 }  // namespace context_hub::features
