@@ -4,33 +4,25 @@
 
 #include "ui/events/test/keyboard_layout.h"
 
+#include <cstdlib>
+
 #include "base/check_op.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
 
 namespace ui {
 
 PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout) {
-  const char* input_source_id = nullptr;
-  switch (layout) {
-    case KEYBOARD_LAYOUT_ENGLISH_US:
-      input_source_id = "com.apple.keylayout.US";
-      break;
-    case KEYBOARD_LAYOUT_DVORAK:
-      input_source_id = "com.apple.keylayout.Dvorak";
-      break;
-    default:
-      NOTREACHED() << "Unsupported keyboard layout";
-  }
+  // On macOS, TISSelectInputSource() mutates the global login-session keyboard
+  // layout across all processes and persists to com.apple.HIToolbox.plist. Only
+  // US English is supported via ScopedKeyboardLayout on macOS.
+  CHECK_EQ(KEYBOARD_LAYOUT_ENGLISH_US, layout);
 
   base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> input_source_list_filter(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  base::apple::ScopedCFTypeRef<CFStringRef> input_source_id_ref =
-      base::SysUTF8ToCFStringRef(input_source_id);
   CFDictionaryAddValue(input_source_list_filter.get(),
-                       kTISPropertyInputSourceID, input_source_id_ref.get());
+                       kTISPropertyInputSourceID,
+                       CFSTR("com.apple.keylayout.US"));
   base::apple::ScopedCFTypeRef<CFArrayRef> input_source_list(
       TISCreateInputSourceList(input_source_list_filter.get(),
                                /*includeAllInstalled=*/true));
@@ -44,6 +36,12 @@ PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout) {
 }
 
 PlatformKeyboardLayout ScopedKeyboardLayout::GetActiveLayout() {
+  // On Swarming bots, always restore KEYBOARD_LAYOUT_ENGLISH_US on teardown so
+  // a bot whose OS keyboard layout was previously poisoned is healed back to US
+  // English rather than having the poisoned layout restored.
+  if (std::getenv("SWARMING_TASK_ID") != nullptr) {
+    return GetPlatformKeyboardLayout(KEYBOARD_LAYOUT_ENGLISH_US);
+  }
   return PlatformKeyboardLayout(TISCopyCurrentKeyboardInputSource());
 }
 

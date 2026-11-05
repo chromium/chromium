@@ -243,7 +243,8 @@ char32_t ReadLastUnicodeCharacter(NSString* characters) {
 // NsKeyCodeAndModifiersToCharacter() is efficient (around 6E-4 ms).
 std::tuple<UniChar, bool> NsKeyCodeAndModifiersToCharacter(
     unsigned short key_code,
-    int modifiers) {
+    int modifiers,
+    TISInputSourceRef input_source) {
   // Convert NSEvent modifiers to format UCKeyTranslate accepts. See docs
   // on UCKeyTranslate for more info.
   int unicode_modifiers = 0;
@@ -263,16 +264,19 @@ std::tuple<UniChar, bool> NsKeyCodeAndModifiersToCharacter(
   UInt32 modifier_key_state = (unicode_modifiers >> 8) & 0xFF;
 
   UInt32 dead_key_state = 0;
-  base::apple::ScopedCFTypeRef<TISInputSourceRef> input_source(
-      TISCopyCurrentKeyboardLayoutInputSource());
+  base::apple::ScopedCFTypeRef<TISInputSourceRef> current_input_source;
+  if (!input_source) {
+    current_input_source.reset(TISCopyCurrentKeyboardLayoutInputSource());
+    input_source = current_input_source.get();
+  }
   UniChar translated_char = TranslatedUnicodeCharFromKeyCode(
-      input_source.get(), static_cast<UInt16>(key_code), kUCKeyActionDown,
+      input_source, static_cast<UInt16>(key_code), kUCKeyActionDown,
       modifier_key_state, LMGetKbdLast(), &dead_key_state);
 
   bool is_dead_key = dead_key_state != 0;
   if (is_dead_key) {
     translated_char = TranslatedUnicodeCharFromKeyCode(
-        input_source.get(), static_cast<UInt16>(kVK_Space), kUCKeyActionDown, 0,
+        input_source, static_cast<UInt16>(kVK_Space), kUCKeyActionDown, 0,
         LMGetKbdLast(), &dead_key_state);
   }
 

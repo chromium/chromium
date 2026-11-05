@@ -7,56 +7,64 @@
 #include <Carbon/Carbon.h>
 
 #include "base/apple/scoped_cftyperef.h"
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/test/keyboard_layout.h"
 
 namespace ui {
 
-TEST(KeyboardCodeConversionMac, DvorakLayoutTranslation) {
-  // Switch to Dvorak layout.
-  ui::ScopedKeyboardLayout scoped_layout(ui::KEYBOARD_LAYOUT_DVORAK);
+namespace {
 
-  // Verify that the layout switched successfully.
-  base::apple::ScopedCFTypeRef<TISInputSourceRef> current_layout(
-      TISCopyCurrentKeyboardInputSource());
-  if (current_layout) {
-    CFStringRef layout_id = (CFStringRef)TISGetInputSourceProperty(
-        current_layout.get(), kTISPropertyInputSourceID);
-    if (std::string layout_str = base::SysCFStringRefToUTF8(layout_id);
-        layout_str != "com.apple.keylayout.Dvorak") {
-      GTEST_SKIP() << "Failed to switch to Dvorak layout (current is "
-                   << layout_str << ")";
-    }
-  } else {
-    GTEST_SKIP() << "Failed to get current keyboard layout";
+base::apple::ScopedCFTypeRef<TISInputSourceRef> GetKeyboardLayoutById(
+    CFStringRef input_source_id) {
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> filter(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  CFDictionaryAddValue(filter.get(), kTISPropertyInputSourceID,
+                       input_source_id);
+  base::apple::ScopedCFTypeRef<CFArrayRef> list(
+      TISCreateInputSourceList(filter.get(), /*includeAllInstalled=*/true));
+  if (!list || CFArrayGetCount(list.get()) != 1) {
+    return base::apple::ScopedCFTypeRef<TISInputSourceRef>();
   }
+  return base::apple::ScopedCFTypeRef<TISInputSourceRef>(
+      (TISInputSourceRef)CFArrayGetValueAtIndex(list.get(), 0),
+      base::scoped_policy::RETAIN);
+}
+
+}  // namespace
+
+TEST(KeyboardCodeConversionMac, DvorakLayoutTranslation) {
+  // Query the Dvorak layout resource directly without calling
+  // TISSelectInputSource(), which would mutate the global macOS login-session
+  // keyboard layout across all parallel test processes.
+  base::apple::ScopedCFTypeRef<TISInputSourceRef> dvorak_layout =
+      GetKeyboardLayoutById(CFSTR("com.apple.keylayout.Dvorak"));
+  ASSERT_TRUE(dvorak_layout);
 
   // Physical key 'G' (kVK_ANSI_G, 0x05) in Dvorak produces 'i'.
   auto [translated_char, is_dead_key] =
-      ui::NsKeyCodeAndModifiersToCharacter(kVK_ANSI_G, 0);
+      ui::NsKeyCodeAndModifiersToCharacter(kVK_ANSI_G, 0, dvorak_layout.get());
   EXPECT_EQ('i', translated_char);
   EXPECT_FALSE(is_dead_key);
 
   // Physical key 'U' (kVK_ANSI_U, 0x20) in Dvorak produces 'g'.
   auto [translated_char2, is_dead_key2] =
-      ui::NsKeyCodeAndModifiersToCharacter(kVK_ANSI_U, 0);
+      ui::NsKeyCodeAndModifiersToCharacter(kVK_ANSI_U, 0, dvorak_layout.get());
   EXPECT_EQ('g', translated_char2);
   EXPECT_FALSE(is_dead_key2);
 
   // Test with shift modifier (physical 'G' -> 'I').
   auto [translated_char_shift, is_dead_key_shift] =
-      ui::NsKeyCodeAndModifiersToCharacter(kVK_ANSI_G,
-                                           NSEventModifierFlagShift);
+      ui::NsKeyCodeAndModifiersToCharacter(kVK_ANSI_G, NSEventModifierFlagShift,
+                                           dvorak_layout.get());
   EXPECT_EQ('I', translated_char_shift);
   EXPECT_FALSE(is_dead_key_shift);
 
   // Test with control modifier (should ignore control and return base character
   // 'i').
   auto [translated_char_ctrl, is_dead_key_ctrl] =
-      ui::NsKeyCodeAndModifiersToCharacter(kVK_ANSI_G,
-                                           NSEventModifierFlagControl);
+      ui::NsKeyCodeAndModifiersToCharacter(
+          kVK_ANSI_G, NSEventModifierFlagControl, dvorak_layout.get());
   EXPECT_EQ('i', translated_char_ctrl);
   EXPECT_FALSE(is_dead_key_ctrl);
 }

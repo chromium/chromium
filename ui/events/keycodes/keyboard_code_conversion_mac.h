@@ -54,7 +54,8 @@ EVENTS_BASE_EXPORT KeyboardCode KeyboardCodeFromNSEvent(NSEvent* event);
 
 EVENTS_BASE_EXPORT std::tuple<UniChar, bool> NsKeyCodeAndModifiersToCharacter(
     unsigned short key_code,
-    int modifiers);
+    int modifiers,
+    TISInputSourceRef input_source = nullptr);
 
 EVENTS_BASE_EXPORT DomCode DomCodeFromNSEvent(NSEvent* event);
 
