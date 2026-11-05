@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/physical_direction.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
@@ -251,30 +252,45 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
 
   if (RuntimeEnabledFeatures::TimelineTriggerEnabled() &&
       (snapshot_changed || update_triggers_)) {
-    for (TimelineTrigger* trigger : GetTriggers()) {
-      bool trigger_changed = !trigger->Update();
-      if (trigger_changed) {
-        for (auto& [animation, behaviors] : trigger->BehaviorMap()) {
-          // A time-driven animation triggered by a TimelineTrigger should not
-          // be idle (it should have a resolved current time) because triggers
-          // should not remain attached to idle animations.
-          // scroll-driven animations pick up their start times post-layout
-          // and may not yet have resolved current times.
-          if (animation->timeline() &&
-              animation->timeline()->IsMonotonicallyIncreasing()) {
-            DCHECK(animation->CurrentTimeInternal());
-          }
-          // Avoid superfluous snapshot validation, by skipping the call if it
-          // will be invoked in the loop below.
-          if (!animations.Contains(animation)) {
-            if (should_skip_validation(animation)) {
-              continue;
-            }
-            animation->OnValidateSnapshot(true);
-          }
-        }
+    // Resolving style-dependent timeline offsets during TimelineTrigger::Update
+    // or Animation::OnValidateSnapshot can synchronously recalculate slot
+    // assignments, detaching elements and cancelling CSS animations. That
+    // disassociates animations from triggers and removes emptied triggers from
+    // `triggers_`, so copy the triggers upfront and collect triggered
+    // animations before validating snapshots.
+    HeapVector<Member<TimelineTrigger>> triggers(GetTriggers());
+    HeapVector<Member<Animation>> animations_to_validate;
+    for (TimelineTrigger* trigger : triggers) {
+      if (trigger->Update()) {
+        continue;
       }
-      snapshot_changed |= trigger_changed;
+      snapshot_changed = true;
+      for (Animation* animation : trigger->BehaviorMap().Keys()) {
+        // A time-driven animation triggered by a TimelineTrigger should not
+        // be idle (it should have a resolved current time) because triggers
+        // should not remain attached to idle animations.
+        // scroll-driven animations pick up their start times post-layout
+        // and may not yet have resolved current times.
+        if (animation->timeline() &&
+            animation->timeline()->IsMonotonicallyIncreasing()) {
+          DCHECK(animation->CurrentTimeInternal());
+        }
+        // Avoid superfluous snapshot validation, by skipping the call if it
+        // will be invoked in the loop below.
+        if (animations.Contains(animation) ||
+            should_skip_validation(animation)) {
+          continue;
+        }
+        animations_to_validate.push_back(animation);
+      }
+    }
+    for (Animation* animation : animations_to_validate) {
+      // A later TimelineTrigger::Update or earlier OnValidateSnapshot call may
+      // have cancelled `animation` and disassociated it from its trigger.
+      if (animation->GetTriggers().empty()) {
+        continue;
+      }
+      animation->OnValidateSnapshot(true);
     }
     update_triggers_ = false;
   }
