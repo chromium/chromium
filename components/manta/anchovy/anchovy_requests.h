@@ -12,6 +12,14 @@
 #include "base/memory/raw_ref.h"
 
 namespace manta::anchovy {
+
+// Description type strings used in the parsed Manta response dictionary.
+inline constexpr char kTypePrimaryCaption[] = "PRIMARY_CAPTION";
+inline constexpr char kTypeSecondaryCaption[] = "SECONDARY_CAPTION";
+inline constexpr char kTypeCaption[] = "CAPTION";
+inline constexpr char kTypeLabel[] = "LABEL";
+inline constexpr char kTypeOcr[] = "OCR";
+
 struct COMPONENT_EXPORT(MANTA) ImageDescriptionRequest {
   ImageDescriptionRequest(std::string source_id,
                           std::string lang_tag,

@@ -4,24 +4,33 @@
 
 #include "components/manta/anchovy/anchovy_proto_helper.h"
 
+#include <cmath>
+#include <string_view>
+
+#include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
+#include "base/values.h"
+#include "components/manta/anchovy/anchovy_requests.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/proto/anchovy.pb.h"
 
 namespace manta::anchovy {
 
 namespace {
-std::string AnchovyDescriptionTypeToString(
+std::string_view AnchovyDescriptionTypeToString(
     proto::AnchovyDescription::Type type) {
   switch (type) {
+    // Distinguish primary conceptual captions (GARCON_CONCEPTUAL) from
+    // secondary noun-phrase appendices (GARCON_CNP) so the caller only uses
+    // secondary captions when paired with a primary caption.
     case proto::AnchovyDescription_Type_PRIMARY_CAPTION:
+      return kTypePrimaryCaption;
     case proto::AnchovyDescription_Type_SECONDARY_CAPTION:
-      return "CAPTION";
+      return kTypeSecondaryCaption;
     case proto::AnchovyDescription_Type_LABEL:
-      return "LABEL";
+      return kTypeLabel;
     case proto::AnchovyDescription_Type_OCR:
-      return "OCR";
+      return kTypeOcr;
     case proto::AnchovyDescription_Type_UNKNOWN:
     case proto::AnchovyDescription_Type_UNUSED:
     case proto::
@@ -30,6 +39,7 @@ std::string AnchovyDescriptionTypeToString(
         AnchovyDescription_Type_AnchovyDescription_Type_INT_MAX_SENTINEL_DO_NOT_USE_:
       return "";
   }
+  return "";
 }
 }  // namespace
 
@@ -72,25 +82,33 @@ void AnchovyProtoHelper::HandleImageDescriptionResponse(
 
   CHECK(manta_response);
 
-  // An empty response is still an acceptable response.
-  if (manta_response->output_data_size() < 1 ||
-      !manta_response->output_data(0).has_custom()) {
-    std::move(callback).Run(base::DictValue(),
-                            {MantaStatusCode::kOk, std::string()});
-    return;
-  }
-
   base::ListValue results;
   for (const auto& data : manta_response->output_data()) {
-    if (data.has_custom()) {
-      proto::AnchovyDescription description;
-      description.ParseFromString(data.custom().value());
-      results.Append(
-          base::DictValue()
-              .Set("text", description.text())
-              .Set("type", AnchovyDescriptionTypeToString(description.type()))
-              .Set("score", data.score()));
+    // Skip output entries without a valid serialized AnchovyDescription proto,
+    // non-finite score, empty text, or an unrecognized description type.
+    if (!data.has_custom() || !std::isfinite(data.score())) {
+      continue;
     }
+    proto::AnchovyDescription description;
+    if (!description.ParseFromString(data.custom().value()) ||
+        description.text().empty()) {
+      continue;
+    }
+    std::string_view type = AnchovyDescriptionTypeToString(description.type());
+    if (type.empty()) {
+      continue;
+    }
+    results.Append(base::DictValue()
+                       .Set("text", description.text())
+                       .Set("type", type)
+                       .Set("score", data.score()));
+  }
+
+  // An empty response (or one with no valid entries) is still an acceptable
+  // response.
+  if (results.empty()) {
+    std::move(callback).Run(base::DictValue(), std::move(manta_status));
+    return;
   }
 
   std::move(callback).Run(base::DictValue().Set("results", std::move(results)),

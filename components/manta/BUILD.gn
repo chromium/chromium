@@ -58,6 +58,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "anchovy/anchovy_provider_unittest.cc",
     "base_provider_test_helper.cc",
     "base_provider_test_helper.h",
   ]

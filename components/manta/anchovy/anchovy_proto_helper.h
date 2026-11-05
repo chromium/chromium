@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROTO_HELPER_H_
+#define COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROTO_HELPER_H_
+
+#include "base/component_export.h"
 #include "components/manta/anchovy/anchovy_requests.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 
-#ifndef COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROTO_HELPER_H_
-#define COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROTO_HELPER_H_
-
 namespace manta::anchovy {
 
-class AnchovyProtoHelper {
+class COMPONENT_EXPORT(MANTA) AnchovyProtoHelper {
  public:
   static proto::Request ComposeRequest(
       const anchovy::ImageDescriptionRequest& request);

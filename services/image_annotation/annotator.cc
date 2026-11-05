@@ -46,9 +46,10 @@ constexpr size_t kServerLangsMaxResponseSize = 1024;             // 1KB.
 
 constexpr auto kAnnotationTypes =
     base::MakeFixedFlatMap<std::string_view, mojom::AnnotationType>({
-        {"OCR", mojom::AnnotationType::kOcr},
-        {"CAPTION", mojom::AnnotationType::kCaption},
-        {"LABEL", mojom::AnnotationType::kLabel},
+        {manta::anchovy::kTypeOcr, mojom::AnnotationType::kOcr},
+        {manta::anchovy::kTypeCaption, mojom::AnnotationType::kCaption},
+        {manta::anchovy::kTypePrimaryCaption, mojom::AnnotationType::kCaption},
+        {manta::anchovy::kTypeLabel, mojom::AnnotationType::kLabel},
     });
 
 net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
@@ -902,17 +903,17 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
       CHECK(type);
 
       // The better score in image descriptions is the larger number.
-      if (*type == "OCR") {
+      if (*type == manta::anchovy::kTypeOcr) {
         ReportOcrAnnotation(*score, false);
         if (!best_ocr_score.has_value() || *score > *best_ocr_score) {
           best_ocr_score = score;
           best_ocr = result_dict;
         }
-      } else {
-        if (auto itr = kAnnotationTypes.find(*type);
-            itr != kAnnotationTypes.end()) {
-          ReportDescAnnotation(itr->second, *score, false);
-        }
+      } else if (auto itr = kAnnotationTypes.find(*type);
+                 itr != kAnnotationTypes.end()) {
+        // Ignore unrecognized or standalone secondary caption types rather than
+        // failing CHECK(annotation_type.has_value()) downstream.
+        ReportDescAnnotation(itr->second, *score, false);
         if (!best_score.has_value() || *score > *best_score) {
           best_score = score;
           best = result_dict;

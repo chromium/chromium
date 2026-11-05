@@ -19,7 +19,7 @@ namespace manta {
 
 // The Anchovy provider for the Manta project. Provides a method for clients to
 // call the relevant google API, handling OAuth and http fetching.
-class COMPONENT_EXPORT(MANTA) AnchovyProvider : public BaseProvider {
+class COMPONENT_EXPORT(MANTA) AnchovyProvider : virtual public BaseProvider {
  public:
   AnchovyProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
