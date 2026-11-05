@@ -638,6 +638,7 @@ chromium-metrics-reviews@google.com.
   <int value="58" label="Response Stopped Success"/>
   <int value="59" label="WebUI State Guest Loaded"/>
   <int value="60" label="Input Focused"/>
+  <int value="61" label="WebUI State Pending Provider Change Gemini To GEiC"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->
@@ -1688,6 +1689,9 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Glic is unavailable due to account capabilities"/>
   <int value="16"
       label="Web view is displayed while waiting for web client or timeout"/>
+  <int value="17"
+      label="A pending Gemini to GEiC provider change needs a browser
+             relaunch"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_webui.mojom:WebUiState) -->

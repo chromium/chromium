@@ -28,6 +28,7 @@ std::optional<GlicCuiOutcome> GlicResponseCompletionCuiTracker::GetEventOutcome(
     case GlicInstanceEvent::kWebUiStateDisabledByAdmin:
     case GlicInstanceEvent::kWebUiStateLocationMismatch:
     case GlicInstanceEvent::kWebUiStateIneligibleAccount:
+    case GlicInstanceEvent::kWebUiStatePendingProviderChangeGeminiToGeic:
       return GlicCuiOutcome::kFailed;
     case GlicInstanceEvent::kResponseStoppedByUser:
     case GlicInstanceEvent::kClose:

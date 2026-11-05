@@ -251,7 +251,10 @@ enum class ClientLoadErrorReason {
   // not allowed to use the Glic API, so the web client can never connect.
   kGuestApiNotAllowed = 14,
 
-  kMaxValue = kGuestApiNotAllowed,
+  // The configured provider differs from the one latched for the profile.
+  kPendingProviderChange = 15,
+
+  kMaxValue = kPendingProviderChange,
 };
 // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
 

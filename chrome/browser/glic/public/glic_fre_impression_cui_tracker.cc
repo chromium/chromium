@@ -30,6 +30,7 @@ std::optional<GlicCuiOutcome> GlicFreImpressionCuiTracker::GetEventOutcome(
     case GlicInstanceEvent::kWebUiStateDisabledByAdmin:
     case GlicInstanceEvent::kWebUiStateLocationMismatch:
     case GlicInstanceEvent::kWebUiStateIneligibleAccount:
+    case GlicInstanceEvent::kWebUiStatePendingProviderChangeGeminiToGeic:
       return GlicCuiOutcome::kFailed;
     case GlicInstanceEvent::kClose:
     case GlicInstanceEvent::kInstanceHidden:

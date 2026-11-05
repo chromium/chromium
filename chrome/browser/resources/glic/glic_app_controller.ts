@@ -427,6 +427,7 @@ export class GlicAppController implements WebviewDelegate {
       case WebUiState.kDisabledByAdmin:
       case WebUiState.kLocationMismatch:
       case WebUiState.kIneligibleAccount:
+      case WebUiState.kPendingProviderChangeGeminiToGeic:
         return true;
       default:
         assertNotReachedCase(state);

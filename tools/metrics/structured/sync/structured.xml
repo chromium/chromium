@@ -3730,6 +3730,7 @@
     <variant value="12">WARMED_TIMEOUT</variant>
     <variant value="13">GUEST_ORIGIN_BLOCKED</variant>
     <variant value="14">GUEST_API_NOT_ALLOWED</variant>
+    <variant value="15">PENDING_PROVIDER_CHANGE</variant>
   </enum>
 
   <enum name="GlicEmbedderType">

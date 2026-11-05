@@ -94,6 +94,8 @@ ClientLoadErrorReason ToClientLoadErrorReason(
       return ClientLoadErrorReason::kGuestOriginBlocked;
     case mojom::ClientLoadErrorReason::kGuestApiNotAllowed:
       return ClientLoadErrorReason::kGuestApiNotAllowed;
+    case mojom::ClientLoadErrorReason::kPendingProviderChange:
+      return ClientLoadErrorReason::kPendingProviderChange;
   }
 }
 

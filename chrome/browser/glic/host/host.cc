@@ -798,6 +798,7 @@ bool Host::ComputeIsShowingNativeLoading() const {
     case mojom::WebUiState::kLocationMismatch:
     case mojom::WebUiState::kIneligibleAccount:
     case mojom::WebUiState::kGuestLoaded:
+    case mojom::WebUiState::kPendingProviderChangeGeminiToGeic:
       return false;
   }
 }

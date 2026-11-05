@@ -188,6 +188,8 @@ ToStructuredReason(ClientLoadErrorReason reason) {
       return Reason::GUEST_ORIGIN_BLOCKED;
     case ClientLoadErrorReason::kGuestApiNotAllowed:
       return Reason::GUEST_API_NOT_ALLOWED;
+    case ClientLoadErrorReason::kPendingProviderChange:
+      return Reason::PENDING_PROVIDER_CHANGE;
   }
 }
 #endif
@@ -1146,6 +1148,11 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.GuestLoaded"));
       LogEvent(GlicInstanceEvent::kWebUiStateGuestLoaded);
+      break;
+    case mojom::WebUiState::kPendingProviderChangeGeminiToGeic:
+      base::RecordAction(base::UserMetricsAction(
+          "Glic.Instance.WebUiStateChanged.PendingProviderChangeGeminiToGeic"));
+      LogEvent(GlicInstanceEvent::kWebUiStatePendingProviderChangeGeminiToGeic);
       break;
   }
 }

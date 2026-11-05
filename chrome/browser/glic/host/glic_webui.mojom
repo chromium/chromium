@@ -189,6 +189,10 @@ enum WebUiState {
   // Guest main page has loaded and web view is displayed while waiting for the
   // web client to initialize, or until `kMaxWaitTimeMs` timeout is reached.
   kGuestLoaded = 16,
+  // Provider change panel is displayed; the configured provider differs from
+  // the one latched for the profile. Only Gemini to GEiC is possible here:
+  // GEiC profiles use the NoWebview overlay, not this WebUI.
+  kPendingProviderChangeGeminiToGeic = 17,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
@@ -224,6 +228,7 @@ enum ClientLoadErrorReason {
   kWarmedTimeout = 12,
   [MinVersion=1] kGuestOriginBlocked = 13,
   [MinVersion=1] kGuestApiNotAllowed = 14,
+  [MinVersion=2] kPendingProviderChange = 15,
 };
 
 // The result of `PrepareForClient()`.
