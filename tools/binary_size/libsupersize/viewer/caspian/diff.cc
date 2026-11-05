@@ -6,52 +6,52 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <deque>
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
+// Sentinel indicating that a symbol cannot match in the current pass (either
+// because it fails a pass precondition like IsNameUnique(), or because its
+// scope has no unmatched symbols on the opposite side).
+constexpr uint32_t kInvalidScopeId = ~0u;
+
+// Hash table key for a single matching pass in MatchSymbols().
+// Rather than storing and hashing (SectionId, container_name, path) strings on
+// every pass, DiffHelper interns each unique scope tuple into a 32-bit
+// |scope_id|.
 struct SymbolMatchIndex {
   SymbolMatchIndex() = default;
-  SymbolMatchIndex(caspian::SectionId id,
-                   std::string_view container_name,
+  SymbolMatchIndex(uint32_t scope_id,
                    std::string_view name,
-                   std::string_view path,
                    int size_without_padding)
-      : nonempty(true),
-        id(id),
-        container_name(container_name),
-        name(name),
-        path(path),
-        size_without_padding(size_without_padding) {
-    this->name = name;
-  }
+      : scope_id(scope_id),
+        size_without_padding(size_without_padding),
+        name(name) {}
 
-  operator bool() const { return nonempty; }
+  operator bool() const { return scope_id != kInvalidScopeId; }
 
   bool operator==(const SymbolMatchIndex& other) const {
-    return id == other.id && container_name == other.container_name &&
-           name == other.name && path == other.path &&
-           size_without_padding == other.size_without_padding;
+    return scope_id == other.scope_id &&
+           size_without_padding == other.size_without_padding &&
+           name == other.name;
   }
 
   template <typename H>
   friend H AbslHashValue(H h, const SymbolMatchIndex& k) {
-    return H::combine(std::move(h), k.id, k.container_name, k.name, k.path,
-                      k.size_without_padding);
+    return H::combine(std::move(h), k.scope_id, k.size_without_padding, k.name);
   }
 
-  bool nonempty = false;
-  caspian::SectionId id = caspian::SectionId::kNone;
-  std::string_view container_name;
-  std::string_view name;
-  std::string_view path;
+  uint32_t scope_id = kInvalidScopeId;
   int size_without_padding = 0;
+  std::string_view name;
 };
 
 // Copied from /base/stl_util.h
@@ -60,7 +60,7 @@ void Erase(std::vector<T, Allocator>& container, const Value& value) {
   std::erase(container, value);
 }
 
-std::string_view GetIdPath(const caspian::Symbol& sym) {
+const char* GetIdPath(const caspian::Symbol& sym) {
   return (sym.SourcePath() && *sym.SourcePath()) ? sym.SourcePath()
                                                  : sym.ObjectPath();
 }
@@ -128,7 +128,80 @@ int MatchSymbols(
 
 class DiffHelper {
  public:
-  DiffHelper() = default;
+  DiffHelper(const caspian::SizeInfo* before, const caspian::SizeInfo* after)
+      : before_base_(before->raw_symbols.data()),
+        after_base_(after->raw_symbols.data()) {
+    // Passes 1-3 only match symbols that share the same (path, container_name,
+    // section_id) "scope". Pre-compute an integer scope_id for every symbol in
+    // |before| and |after| using a two-level lookup:
+    // 1. |ptr_to_scope| is a per-SizeInfo map keyed by raw (const char* path,
+    //    const Container*, SectionId) pointers. Because symbols within a single
+    //    SizeInfo share path pointers (into info->source_paths / object_paths)
+    //    and Container pointers, this avoids calling strlen(path) and hashing
+    //    strings for every symbol.
+    // 2. |scope_ids_| is shared across |before| and |after| and keyed by
+    //    string_view contents, ensuring identical (path, container, section)
+    //    strings in the two separate SizeInfo buffers receive the same
+    //    scope_id.
+    auto intern = [&](const caspian::SizeInfo* info) {
+      absl::flat_hash_map<std::tuple<const char*, const caspian::Container*,
+                                     caspian::SectionId>,
+                          uint32_t>
+          ptr_to_scope;
+      ptr_to_scope.reserve(info->object_paths.size() + 256);
+      std::vector<uint32_t> ret;
+      ret.reserve(info->raw_symbols.size());
+      for (const caspian::Symbol& sym : info->raw_symbols) {
+        const char* path = GetIdPath(sym);
+        auto [it, inserted] = ptr_to_scope.try_emplace(
+            {path, sym.container_, sym.section_id_}, 0);
+        if (inserted) {
+          it->second = scope_ids_
+                           .try_emplace({path ? path : "", sym.ContainerName(),
+                                         sym.section_id_},
+                                        scope_ids_.size())
+                           .first->second;
+        }
+        ret.push_back(it->second);
+      }
+      return ret;
+    };
+    scope_ids_.reserve(before->object_paths.size() +
+                       after->object_paths.size() + 256);
+    before_scopes_ = intern(before);
+    after_scopes_ = intern(after);
+  }
+
+  // Looks up the precomputed scope_id for |sym|. Every Symbol passed to
+  // MatchSymbols() or Diff() lives in either |before->raw_symbols| or
+  // |after->raw_symbols|. Using unsigned uintptr_t subtraction checks whether
+  // |&sym| falls within [before_base_, before_base_ + before_scopes_.size()) in
+  // a single comparison, and pointer subtraction recovers its vector index in
+  // O(1) without storing a scope field on Symbol.
+  uint32_t RawScopeId(const caspian::Symbol& sym) const {
+    uintptr_t offset = reinterpret_cast<uintptr_t>(&sym) -
+                       reinterpret_cast<uintptr_t>(before_base_);
+    if (offset < before_scopes_.size() * sizeof(caspian::Symbol)) {
+      return before_scopes_[&sym - before_base_];
+    }
+    return after_scopes_[&sym - after_base_];
+  }
+
+  // Recomputes which scope_ids still have unmatched symbols in both |before|
+  // and |after|. A symbol in scope S can only match in passes 1-3 if S has at
+  // least one unmatched symbol on each side (bit 1 = after, bit 2 = before,
+  // mask == 3 = active on both sides).
+  void UpdateActiveScopes(
+      const std::vector<const caspian::Symbol*>& unmatched_before,
+      const std::vector<const caspian::Symbol*>& unmatched_after) {
+    scope_mask_.assign(scope_ids_.size(), 0);
+    for (const caspian::Symbol* sym : unmatched_after) {
+      scope_mask_[RawScopeId(*sym)] |= 1;
+    }
+    for (const caspian::Symbol* sym : unmatched_before) {
+      scope_mask_[RawScopeId(*sym)] |= 2;
+    }
+  }
 
   std::string_view StripNumbers(std::string_view in) {
     size_t first_digit = in.find_first_of("0123456789");
@@ -184,52 +257,95 @@ class DiffHelper {
   }
 
   auto SectionAndFullNameAndPathAndSize() {
-    return [](const caspian::Symbol& sym) {
-      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
-                              sym.full_name_, GetIdPath(sym),
+    return [this](const caspian::Symbol& sym) {
+      return SymbolMatchIndex(ActiveScopeId(sym), sym.full_name_,
                               sym.SizeWithoutPadding());
     };
   }
 
   auto SectionAndFullNameAndPath() {
     return [this](const caspian::Symbol& sym) {
-      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
-                              StripNumbers(sym.full_name_), GetIdPath(sym), 0);
+      // Skip StripNumbers() if this symbol's scope has no unmatched symbols on
+      // the opposite side.
+      uint32_t scope_id = ActiveScopeId(sym);
+      if (scope_id == kInvalidScopeId) {
+        return SymbolMatchIndex();
+      }
+      return SymbolMatchIndex(scope_id, StripNumbers(sym.full_name_), 0);
     };
   }
 
   // Allows signature changes (uses |Name()| rather than |FullName()|)
   auto SectionAndNameAndPath() {
     return [this](const caspian::Symbol& sym) {
+      // Skip sym.Name() (which triggers lazy DeriveNames() template/argument
+      // parsing) if this symbol's scope has no unmatched symbols on the
+      // opposite side.
+      uint32_t scope_id = ActiveScopeId(sym);
+      if (scope_id == kInvalidScopeId) {
+        return SymbolMatchIndex();
+      }
       std::string_view name = sym.Name();
       if (!name.empty() && name[0] == '*') {
         name = NormalizeStarSymbols(name);
       }
-      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(), name,
-                              GetIdPath(sym), 0);
+      return SymbolMatchIndex(scope_id, name, 0);
     };
   }
 
   // Match on full name, but without path (to account for file moves)
   auto SectionAndFullName() {
-    return [](const caspian::Symbol& sym) {
+    return [this](const caspian::Symbol& sym) {
       // For string literals that contain a prefix of the string in the name,
       // allow matching up via name + size.
       if (!sym.full_name_.empty() && sym.full_name_[0] == '"') {
-        return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
-                                sym.full_name_, "", sym.SizeWithoutPadding());
+        return SymbolMatchIndex(NoPathScopeId(sym), sym.full_name_,
+                                sym.SizeWithoutPadding());
       }
       if (!sym.IsNameUnique()) {
         return SymbolMatchIndex();
       }
-      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
-                              sym.full_name_, "", 0);
+      return SymbolMatchIndex(NoPathScopeId(sym), sym.full_name_, 0);
     };
   }
 
   void ClearStrings() { tmp_strings_.clear(); }
 
  private:
+  // Returns the symbol's scope_id if that scope has unmatched symbols in both
+  // |before| and |after| (mask == 3), or kInvalidScopeId so MatchSymbols()
+  // skips the symbol.
+  uint32_t ActiveScopeId(const caspian::Symbol& sym) const {
+    uint32_t id = RawScopeId(sym);
+    return scope_mask_[id] == 3 ? id : kInvalidScopeId;
+  }
+
+  // Pass 4 matches symbols across file moves (ignoring path), so intern a
+  // pathless ("", container_name, section_id) scope tuple.
+  uint32_t NoPathScopeId(const caspian::Symbol& sym) {
+    return scope_ids_
+        .try_emplace({"", sym.ContainerName(), sym.section_id_},
+                     scope_ids_.size())
+        .first->second;
+  }
+
+  // Base pointers of |before->raw_symbols| and |after->raw_symbols|, used by
+  // RawScopeId() to compute a symbol's index in |before_scopes_| or
+  // |after_scopes_|.
+  const caspian::Symbol* before_base_;
+  const caspian::Symbol* after_base_;
+  // Maps (path, container_name, section_id) -> dense scope_id.
+  absl::flat_hash_map<
+      std::tuple<std::string_view, std::string_view, caspian::SectionId>,
+      uint32_t>
+      scope_ids_;
+  // Parallel to |before->raw_symbols| and |after->raw_symbols|: maps symbol
+  // index -> scope_id.
+  std::vector<uint32_t> before_scopes_;
+  std::vector<uint32_t> after_scopes_;
+  // Indexed by scope_id: bit 1 = has unmatched after symbols, bit 2 = has
+  // unmatched before symbols.
+  std::vector<uint8_t> scope_mask_;
   // Holds strings created during number stripping/star symbol normalization.
   std::deque<std::string> tmp_strings_;
 };
@@ -264,9 +380,12 @@ DeltaSizeInfo Diff(const SizeInfo* before,
   // Attempt several rounds to use increasingly loose matching on unmatched
   // symbols.  Any symbols still unmatched are tried in the next round.
   int step = 0;
-  DiffHelper helper;
+  DiffHelper helper(before, after);
   absl::flat_hash_map<SectionId, float> padding_by_section_name;
   auto run_pass = [&](auto key_func) {
+    if (step < 3) {
+      helper.UpdateActiveScopes(unmatched_before, unmatched_after);
+    }
     int n_matched_symbols =
         MatchSymbols(key_func, &ret.delta_symbols, &unmatched_before,
                      &unmatched_after, &padding_by_section_name, is_sparse);

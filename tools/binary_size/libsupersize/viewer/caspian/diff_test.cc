@@ -80,7 +80,12 @@ std::unique_ptr<SizeInfo> CreateSizeInfo() {
   info->raw_symbols.push_back(MakeSymbol(SectionId::kText, 50, "b"));
   info->raw_symbols.push_back(MakeSymbol(SectionId::kText, 60, ""));
 
-  for (auto sym : info->raw_symbols) {
+  for (Symbol& sym : info->raw_symbols) {
+    // Copy path literals into |owned_strings| so that |size_info1_| and
+    // |size_info2_| do not share identical const char* path pointers (matching
+    // real .size files parsed into separate buffers).
+    info->owned_strings.push_back(sym.object_path_);
+    sym.object_path_ = info->owned_strings.back().c_str();
     sym.container_ = &info->containers[0];
   }
   return info;
@@ -451,6 +456,8 @@ TEST_F(DiffTest, TestManySymbolsRehash) {
 
   DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
                             &removed_sources_, &added_sources_);
+  DeltaSizeInfo::Results expected_counts{6, 200, 2, 0};
+  EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
   EXPECT_EQ(800, SumOfSymbolPadding(diff));
   EXPECT_EQ(1600, SumOfSymbolSizes(diff));
 }
