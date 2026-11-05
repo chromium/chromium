@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
+#include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/autofill/android/jni_headers/EntityAttributeUpdateDetails_jni.h"

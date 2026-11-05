@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoor
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiWalletNoticeFunnelEvents;
+import org.chromium.components.autofill.autofill_ai.EntityAttributeUpdateType;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.styles.NewLabelUtils;

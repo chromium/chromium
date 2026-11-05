@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_ENTITY_ATTRIBUTE_UPDATE_DETAILS_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_ENTITY_ATTRIBUTE_UPDATE_DETAILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_AI_ENTITY_ATTRIBUTE_UPDATE_DETAILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_AI_ENTITY_ATTRIBUTE_UPDATE_DETAILS_H_
 
 #include <iosfwd>
 #include <optional>
@@ -15,7 +15,7 @@
 
 namespace autofill {
 
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill.autofill_ai
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai
 enum class EntityAttributeUpdateType {
   // A new attribute has been added to the entity. For example, the vehicle
   // make attribute (`kVehicleMake`) has been added to the vehicle info entity.
@@ -76,4 +76,4 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_ENTITY_ATTRIBUTE_UPDATE_DETAILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_AI_ENTITY_ATTRIBUTE_UPDATE_DETAILS_H_

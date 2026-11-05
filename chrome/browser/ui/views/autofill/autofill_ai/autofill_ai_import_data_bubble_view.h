@@ -8,9 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
-#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
+#include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {

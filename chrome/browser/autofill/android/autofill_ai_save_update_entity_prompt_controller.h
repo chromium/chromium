@@ -14,10 +14,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
-#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 
 namespace content {
 class WebContents;

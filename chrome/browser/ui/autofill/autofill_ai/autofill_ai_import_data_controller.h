@@ -10,10 +10,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 #include "content/public/browser/web_contents.h"
 
 class GURL;

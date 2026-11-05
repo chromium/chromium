@@ -4,23 +4,10 @@
 
 import("//build/config/chrome_build.gni")
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
-if (is_android) {
-  java_cpp_enum("autofill_ai_ui_java_enums") {
-    sources = [ "entity_attribute_update_details.h" ]
-  }
-}
-
 source_set("autofill_ai_ui_utils") {
-  sources = [
-    "autofill_ai_import_string_utils.h",
-    "entity_attribute_update_details.h",
-  ]
+  sources = [ "autofill_ai_import_string_utils.h" ]
   public_deps = [
     "//components/autofill/core/browser",
     "//ui/base",
@@ -28,10 +15,7 @@ source_set("autofill_ai_ui_utils") {
 }
 
 source_set("autofill_ai_ui_utils_impl") {
-  sources = [
-    "autofill_ai_import_string_utils.cc",
-    "entity_attribute_update_details.cc",
-  ]
+  sources = [ "autofill_ai_import_string_utils.cc" ]
   public_deps = [
     ":autofill_ai_ui_utils",
     "//components/autofill/core/browser",

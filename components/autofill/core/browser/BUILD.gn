@@ -1269,6 +1269,8 @@ static_library("browser") {
     "suggestions/valuables/valuable_suggestion_generator.h",
     "ui/addresses/autofill_address_util.cc",
     "ui/addresses/autofill_address_util.h",
+    "ui/autofill_ai/entity_attribute_update_details.cc",
+    "ui/autofill_ai/entity_attribute_update_details.h",
     "ui/autofill_external_delegate.cc",
     "ui/autofill_external_delegate.h",
     "ui/autofill_image_fetcher_base.h",
@@ -1676,6 +1678,7 @@ if (is_android) {
       "data_model/autofill_ai/entity_type.h",
       "integrators/autofill_ai/metrics/autofill_ai_metrics.h",
       "permissions/autofill_ai/autofill_ai_permission_util.h",
+      "ui/autofill_ai/entity_attribute_update_details.h",
     ]
     deps = [ ":entity_schema_enums_and_functions" ]
   }
@@ -2331,6 +2334,7 @@ source_set("unit_tests") {
     "suggestions/trusted_vault/trusted_vault_error_suggestion_generator_unittest.cc",
     "suggestions/valuables/valuable_suggestion_generator_unittest.cc",
     "ui/addresses/autofill_address_util_unittest.cc",
+    "ui/autofill_ai/entity_attribute_update_details_unittest.cc",
     "ui/autofill_external_delegate_unittest.cc",
     "ui/country_combobox_model_unittest.cc",
     "ui/payments/autofill_error_dialog_controller_impl_unittest.cc",

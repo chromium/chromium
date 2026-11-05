@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.autofill.autofill_ai.EntityAttributeUpdateType;
 
 /** Represents information of an entity attribute displayed in the save/update prompt. */
 @JNINamespace("autofill")
