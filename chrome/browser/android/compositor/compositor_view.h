@@ -23,6 +23,7 @@ class SolidColorLayer;
 
 namespace content {
 class Compositor;
+class WebContents;
 }
 
 namespace ui {
@@ -52,56 +53,42 @@ class CompositorView : public content::CompositorClient,
 
   ui::ResourceManager* GetResourceManager();
   base::android::ScopedJavaLocalRef<jobject> GetResourceManager(JNIEnv* env);
-  void SetNeedsComposite(JNIEnv* env);
-  void SetDrawPaused(JNIEnv* env, bool paused);
-  void FinalizeLayers(JNIEnv* env);
-  void SetLayoutBounds(JNIEnv* env);
-  void SurfaceCreated(JNIEnv* env);
-  void SurfaceDestroyed(JNIEnv* env);
+  void SetNeedsComposite();
+  void SetDrawPaused(bool paused);
+  void FinalizeLayers();
+  void SetLayoutBounds();
+  void SurfaceCreated();
+  void SurfaceDestroyed();
   std::optional<int> SurfaceChanged(
-      JNIEnv* env,
       int32_t format,
       int32_t width,
       int32_t height,
       bool can_be_used_with_surface_control,
       const base::android::JavaRef<jobject>& surface,
       const base::android::JavaRef<jobject>& browser_input_token);
-  void OnPhysicalBackingSizeChanged(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jweb_contents,
-      int32_t width,
-      int32_t height,
-      bool is_fluid_resize);
-  void OnControlsResizeViewChanged(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jweb_contents,
-      bool controls_resize_view);
-  void NotifyVirtualKeyboardOverlayRect(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jweb_contents,
-      int32_t x,
-      int32_t y,
-      int32_t width,
-      int32_t height);
+  void OnPhysicalBackingSizeChanged(content::WebContents* web_contents,
+                                    int32_t width,
+                                    int32_t height,
+                                    bool is_fluid_resize);
+  void OnControlsResizeViewChanged(content::WebContents* web_contents,
+                                   bool controls_resize_view);
+  void NotifyVirtualKeyboardOverlayRect(content::WebContents* web_contents,
+                                        int32_t x,
+                                        int32_t y,
+                                        int32_t width,
+                                        int32_t height);
 
-  void SetOverlayVideoMode(JNIEnv* env,
-                           bool enabled);
-  void SetOverlayImmersiveArMode(
-      JNIEnv* env,
-      bool enabled);
-  void SetOverlayXrFullScreenMode(
-      JNIEnv* env,
-      bool enabled);
+  void SetOverlayVideoMode(bool enabled);
+  void SetOverlayImmersiveArMode(bool enabled);
+  void SetOverlayXrFullScreenMode(bool enabled);
   void SetSceneLayer(JNIEnv* env,
                      const base::android::JavaRef<jobject>& jscene_layer);
-  void SetCompositorWindow(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& window_android);
-  void CacheBackBufferForCurrentSurface(JNIEnv* env);
-  void EvictCachedBackBuffer(JNIEnv* env);
-  void OnTabChanged(JNIEnv* env);
-  void PreserveChildSurfaceControls(JNIEnv* env);
-  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, bool enable);
+  void SetCompositorWindow(ui::WindowAndroid* window_android);
+  void CacheBackBufferForCurrentSurface();
+  void EvictCachedBackBuffer();
+  void OnTabChanged();
+  void PreserveChildSurfaceControls();
+  void SetDidSwapBuffersCallbackEnabled(bool enable);
 
   // CompositorClient implementation:
   void RecreateSurface() override;

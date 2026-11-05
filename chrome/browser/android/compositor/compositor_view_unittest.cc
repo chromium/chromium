@@ -111,18 +111,16 @@ class CompositorViewTest : public ::testing::Test {
 };
 
 TEST_F(CompositorViewTest, SetOverlayXrFullScreenMode) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
   // Enable XR mode.
   EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorTRANSPARENT));
-  compositor_view_->SetOverlayXrFullScreenMode(env, true);
+  compositor_view_->SetOverlayXrFullScreenMode(true);
 
   // Calling again with true should do nothing.
-  compositor_view_->SetOverlayXrFullScreenMode(env, true);
+  compositor_view_->SetOverlayXrFullScreenMode(true);
 
   // Disable XR mode.
   EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorWHITE));
-  compositor_view_->SetOverlayXrFullScreenMode(env, false);
+  compositor_view_->SetOverlayXrFullScreenMode(false);
 }
 
 }  // namespace android

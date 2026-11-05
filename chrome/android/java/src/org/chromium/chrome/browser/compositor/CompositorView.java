@@ -1022,7 +1022,7 @@ public class CompositorView extends FrameLayout
     interface Natives {
         JniUniquePtr<NativeCompositorView> init(
                 CompositorView self,
-                WindowAndroid windowAndroid,
+                @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
                 TabContentManager tabContentManager);
 
         boolean isSurfaceControlEnabled();
@@ -1047,19 +1047,19 @@ public class CompositorView extends FrameLayout
 
         void onPhysicalBackingSizeChanged(
                 JniPtr<NativeCompositorView> self,
-                WebContents webContents,
+                @JniType("content::WebContents*") WebContents webContents,
                 int width,
                 int height,
                 boolean isFluidResize);
 
         void onControlsResizeViewChanged(
                 JniPtr<NativeCompositorView> self,
-                WebContents webContents,
+                @JniType("content::WebContents*") WebContents webContents,
                 boolean controlsResizeView);
 
         void notifyVirtualKeyboardOverlayRect(
                 JniPtr<NativeCompositorView> self,
-                WebContents webContents,
+                @JniType("content::WebContents*") WebContents webContents,
                 int x,
                 int y,
                 int width,
@@ -1081,7 +1081,9 @@ public class CompositorView extends FrameLayout
 
         void setSceneLayer(JniPtr<NativeCompositorView> self, SceneLayer sceneLayer);
 
-        void setCompositorWindow(JniPtr<NativeCompositorView> self, WindowAndroid window);
+        void setCompositorWindow(
+                JniPtr<NativeCompositorView> self,
+                @JniType("ui::WindowAndroid*") WindowAndroid window);
 
         void cacheBackBufferForCurrentSurface(JniPtr<NativeCompositorView> self);
 
