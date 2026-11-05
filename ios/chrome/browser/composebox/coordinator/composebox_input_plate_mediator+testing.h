@@ -43,7 +43,7 @@ class WebState;
                        identifier:(base::UnguessableToken)identifier;
 - (void)reloadSuggestions;
 - (void)sendAIMFollowup:(NSString*)text;
-- (void)didCreateSearchURL:(GURL)URL;
+- (void)didCreateSearchURL:(GURL)URL fromVoiceSearch:(BOOL)fromVoiceSearch;
 
 @end
 

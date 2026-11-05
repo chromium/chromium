@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_coordinator_delegate.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -131,6 +132,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     OmniboxFocusDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate,
+    VoiceSearchCoordinatorDelegate,
     WebLocationBarDelegate>
 @end
 
@@ -415,10 +417,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
   if (IsVoiceSearchEvolutionPhase1Enabled()) {
     [self stopVoiceSearchCoordinator];
-    // TODO(crbug.com/571184218): Implement `VoiceSearchCoordinatorDelegate` to
-    // submit recognized queries and stop the coordinator on dismissal.
     _voiceSearchCoordinator = ios::provider::CreateVoiceSearchCoordinator(
-        _viewController, self.browser, /*delegate=*/nil);
+        _viewController, self.browser, self);
     [_voiceSearchCoordinator start];
     return;
   }
@@ -705,6 +705,30 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)omniboxDidEndEditing {
+}
+
+#pragma mark - VoiceSearchCoordinatorDelegate
+
+- (void)voiceSearchCoordinator:(ChromeCoordinator*)coordinator
+             didRecognizeQuery:(NSString*)query {
+  CHECK_EQ(coordinator, _voiceSearchCoordinator);
+  [self stopVoiceSearchCoordinator];
+  [_mediator sendVoiceSearchQuery:query];
+}
+
+- (void)voiceSearchCoordinator:(ChromeCoordinator*)coordinator
+        didRequestEditingQuery:(NSString*)query {
+  CHECK_EQ(coordinator, _voiceSearchCoordinator);
+  [self stopVoiceSearchCoordinator];
+  [self focusComposebox];
+  if ([_omniboxCoordinator isOmniboxFirstResponder]) {
+    [_omniboxCoordinator insertTextToOmnibox:query];
+  }
+}
+
+- (void)voiceSearchCoordinatorDidFinish:(ChromeCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _voiceSearchCoordinator);
+  [self stopVoiceSearchCoordinator];
 }
 
 #pragma mark - Private helpers

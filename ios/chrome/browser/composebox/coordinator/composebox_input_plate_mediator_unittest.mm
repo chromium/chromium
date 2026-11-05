@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -1213,6 +1214,22 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   histogram_tester.ExpectTotalCount(kActionOnHomeHistogram, 0);
   histogram_tester.ExpectTotalCount(kActionOnNTPHistogram, 0);
   histogram_tester.ExpectTotalCount(kActionOnStartHistogram, 0);
+}
+
+// Tests that a query sent by Voice Search marks the navigation as a Voice
+// Search result.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       SendVoiceSearchQueryMarksNavigationAsVoiceSearch) {
+  web::WebState* web_state = web_state_list_->GetActiveWebState();
+  VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
+  FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
+  mediator_.URLLoader = fake_loader;
+
+  [mediator_ sendVoiceSearchQuery:@"voice query"];
+
+  EXPECT_TRUE(fake_loader.loadedURL.is_valid());
+  EXPECT_TRUE(VoiceSearchNavigationTabHelper::FromWebState(web_state)
+                  ->IsExpectingVoiceSearch());
 }
 
 // Tests that sending text in regular search mode with no attachments bypasses
@@ -3036,7 +3053,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   OCMExpect([mock_scene_handler showAssistantWithNewSession]);
 
   GURL search_url("https://www.google.com/search?q=test&udm=50");
-  [mediator didCreateSearchURL:search_url];
+  [mediator didCreateSearchURL:search_url fromVoiceSearch:NO];
 
   EXPECT_OCMOCK_VERIFY(mock_browser_coordinator_handler);
   EXPECT_OCMOCK_VERIFY(mock_scene_handler);
@@ -3131,7 +3148,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
       });
 
   GURL search_url("https://www.google.com/search?q=test&udm=50");
-  [mediator didCreateSearchURL:search_url];
+  [mediator didCreateSearchURL:search_url fromVoiceSearch:NO];
 
   EXPECT_FALSE(composebox_hidden);
   EXPECT_FALSE(assistant_shown);

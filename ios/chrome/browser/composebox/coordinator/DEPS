@@ -49,6 +49,7 @@ include_rules = [
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/variations/model/client",
+  "+ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h",
   "+ios/chrome/browser/web/model",
   "+mojo/public/cpp/base/big_buffer.h",
   "+third_party/lens_server_proto",
