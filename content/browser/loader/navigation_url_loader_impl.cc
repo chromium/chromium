@@ -1167,7 +1167,9 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
   // redirect. No interceptors wanted to intercept the redirected request,
   // so let the loader just follow the redirect.
   if (loader_holder_.url_loader()) {
-    CHECK(!redirect_info_.new_url.is_empty(), base::NotFatalUntil::M160);
+    // TODO(crbug.com/579071902): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!redirect_info_.new_url.is_empty());
     // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
     DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(),
                           LoaderHolder::State::kLoadingViaLoader);
