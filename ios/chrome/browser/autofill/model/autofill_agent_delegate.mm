@@ -34,8 +34,4 @@
                            completionAction:completionAction];
 }
 
-- (void)showAtMemoryForField:(autofill::FieldGlobalId)fieldId {
-  [_atMemoryHandler showAtMemoryForField:fieldId];
-}
-
 @end

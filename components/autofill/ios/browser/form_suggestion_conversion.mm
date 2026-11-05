@@ -11,18 +11,14 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
-#import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "components/strings/grit/components_strings.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/image/image.h"
 
@@ -78,32 +74,6 @@ UIImage* CreateCreditCardIcon(const Suggestion& popup_suggestion) {
         .ToUIImage();
   }
   return nil;
-}
-
-// Creates the synthetic AtMemory search button appended after the Autofill
-// suggestions. It has no `popup_suggestion_index` because it doesn't map to an
-// Autofill suggestion.
-FormSuggestion* CreateAtMemoryButtonSuggestion(
-    const base::WeakPtr<AutofillSuggestionDelegate>& delegate,
-    FormGlobalId form_id,
-    FieldGlobalId field_id) {
-  FormSuggestionMetadata metadata;
-  metadata.suggestion_delegate = delegate;
-  metadata.form_id = form_id;
-  metadata.field_id = field_id;
-  return [FormSuggestion
-              suggestionWithValue:
-                  l10n_util::GetNSString(
-                      IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE)
-                       minorValue:nil
-               displayDescription:nil
-                             icon:nil
-                             type:SuggestionType::kAutocompleteAtMemoryButton
-                          payload:Suggestion::Payload()
-      fieldByFieldFillingTypeUsed:FieldType::EMPTY_TYPE
-                   requiresReauth:NO
-       acceptanceA11yAnnouncement:nil
-                         metadata:metadata];
 }
 
 }  // namespace
@@ -309,8 +279,7 @@ NSArray<FormSuggestion*>* FormSuggestionsFromAutofillSuggestions(
     const std::vector<Suggestion>& suggestions,
     const base::WeakPtr<AutofillSuggestionDelegate>& delegate,
     FormGlobalId form_id,
-    FieldGlobalId field_id,
-    const AutofillClient* client) {
+    FieldGlobalId field_id) {
   NSMutableArray<FormSuggestion*>* form_suggestions =
       [[NSMutableArray alloc] init];
   for (size_t i = 0; i < suggestions.size(); ++i) {
@@ -325,12 +294,6 @@ NSArray<FormSuggestion*>* FormSuggestionsFromAutofillSuggestions(
     } else {
       [form_suggestions addObject:form_suggestion];
     }
-  }
-
-  if (form_suggestions.count > 0 && client &&
-      MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, *client)) {
-    [form_suggestions
-        addObject:CreateAtMemoryButtonSuggestion(delegate, form_id, field_id)];
   }
   return form_suggestions;
 }

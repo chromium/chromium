@@ -407,12 +407,9 @@ void UndoInSessionSuppressedEntity(
 - (void)startManualFillFromButton:(UIButton*)button
                       forDataType:(manual_fill::ManualFillDataType)dataType
          invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+  // `ManualFillDataType::kAtMemory` is unused while AtMemory is being removed
+  // and is not supported by `ExpandedManualFillCoordinator`.
   if (dataType == manual_fill::ManualFillDataType::kAtMemory) {
-    std::optional<FieldGlobalId> fieldId =
-        [_formInputAccessoryMediator lastFocusedFieldGlobalId];
-    // `showAtMemoryForField:` records the outcome for all entry points,
-    // including the `kNoFocusedField` reason for a default empty field.
-    [self showAtMemoryForField:fieldId.value_or(FieldGlobalId{})];
     return;
   }
 

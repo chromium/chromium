@@ -55,7 +55,6 @@
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
-#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -387,29 +386,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
         });
   }
 
-  if (suggestion.type == SuggestionType::kAutocompleteAtMemoryButton) {
-    if (_webState) {
-      web::WebFrame* frame =
-          AutofillJavaScriptFeature::GetInstance()
-              ->GetWebFramesManager(_webState)
-              ->GetFrameWithId(base::SysNSStringToUTF8(frameID));
-      if (frame &&
-          GURL::SchemeIsCryptographic(frame->GetSecurityOrigin().scheme())) {
-        if (autofill::AutofillDriverIOS* driver =
-                autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState,
-                                                                     frame)) {
-          FieldGlobalId fieldId(driver->GetFrameToken(), fieldRendererID);
-          [self.delegate showAtMemoryForField:fieldId];
-        }
-      }
-    }
-    if (SuggestionHandledCompletion c =
-            std::exchange(_suggestionHandledCompletion, nil)) {
-      c();
-    }
-    return;
-  }
-
   if (suggestion.type == SuggestionType::kAutocompleteEntry ||
       suggestion.type == SuggestionType::kAddressEntry ||
       suggestion.type == SuggestionType::kCreditCardEntry ||
@@ -601,12 +577,9 @@ bool HasGuid(const Suggestion::Payload& payload) {
   }
 
   // Convert the suggestions into an NSArray for the keyboard.
-  autofill::AutofillClientIOS* client =
-      _webState ? autofill::AutofillClientIOS::FromWebState(_webState)
-                : nullptr;
   NSArray<FormSuggestion*>* suggestions =
       autofill::FormSuggestionsFromAutofillSuggestions(
-          popup_suggestions, delegate, formId, fieldId, client);
+          popup_suggestions, delegate, formId, fieldId);
 
   // Primary autofill suggestions carry their delegate directly in
   // `FormSuggestionMetadata` for stateless routing. `_lastReceivedDelegate`,

@@ -85,9 +85,8 @@ TEST_F(FormSuggestionConversionTest, ConvertsListWithUndoFirst) {
   };
 
   NSArray<FormSuggestion*>* form_suggestions =
-      FormSuggestionsFromAutofillSuggestions(suggestions,
-                                             delegate_.GetWeakPtr(), form_id_,
-                                             field_id_, /*client=*/nullptr);
+      FormSuggestionsFromAutofillSuggestions(
+          suggestions, delegate_.GetWeakPtr(), form_id_, field_id_);
 
   ASSERT_EQ(2U, form_suggestions.count);
   EXPECT_EQ(SuggestionType::kUndo, form_suggestions[0].type);

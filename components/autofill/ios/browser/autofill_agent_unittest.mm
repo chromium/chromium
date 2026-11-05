@@ -33,7 +33,6 @@
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
-#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -1612,43 +1611,6 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_Undo) {
                      }];
 }
 
-// Tests selecting the AtMemory button suggestion.
-TEST_F(AutofillAgentTest, DidSelectSuggestion_AutocompleteAtMemoryButton) {
-  // Mock the agent delegate.
-  id delegate_mock = OCMProtocolMock(@protocol(AutofillAgentDelegate));
-  autofill_agent_.delegate = delegate_mock;
-
-  // Expect `showAtMemoryForField:` to be called.
-  autofill::AutofillDriverIOS* driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
-                                                           fake_main_frame_);
-  ASSERT_TRUE(driver);
-  autofill::FieldGlobalId expected_field_id(driver->GetFrameToken(),
-                                            FieldRendererId(2));
-  OCMExpect([delegate_mock showAtMemoryForField:expected_field_id]);
-
-  // Select suggestion to trigger AtMemory.
-  __block BOOL completion_handler_called = NO;
-  FormSuggestion* form_suggestion = SimpleFormSuggestion(
-      u"Test AtMemory", autofill::SuggestionType::kAutocompleteAtMemoryButton);
-  [autofill_agent_ didSelectSuggestion:form_suggestion
-                               atIndex:0
-                                  form:@"single-username-form"
-                        formRendererID:FormRendererId(1)
-                       fieldIdentifier:@"username-field-1"
-                       fieldRendererID:FieldRendererId(2)
-                               frameID:base::SysUTF8ToNSString(kTestFrameId)
-                     completionHandler:^() {
-                       completion_handler_called = YES;
-                     }];
-
-  // Verify that the delegate method was called.
-  EXPECT_OCMOCK_VERIFY(delegate_mock);
-
-  // Check that the completion handler was called.
-  EXPECT_TRUE(completion_handler_called);
-}
-
 // Tests selecting suggestion payload forwarding when the original payload
 // feature is enabled.
 TEST_F(AutofillAgentTest,
@@ -1967,75 +1929,6 @@ TEST_F(AutofillAgentTest,
                        completionHandler:^{
                        }];
   }
-}
-
-// Tests that the AtMemory suggestion chip is appended when AutofillAtMemory is
-// enabled and suggestions are present.
-TEST_F(AutofillAgentTest, ShowAtMemorySuggestion_AppendedWithSuggestions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{autofill::features::kAutofillAtMemory,
-                            autofill::features::debug::
-                                kAtMemorySkipEnablementChecks},
-      /*disabled_features=*/{});
-
-  std::vector<autofill::Suggestion> suggestions = {
-      autofill::Suggestion(u"John Doe",
-                           autofill::SuggestionType::kAddressEntry),
-  };
-
-  __block NSArray<FormSuggestion*>* received_suggestions = nil;
-  auto completionHandler = ^(NSArray<FormSuggestion*>* form_suggestions,
-                             id<FormSuggestionProvider> delegate) {
-    received_suggestions = form_suggestions;
-  };
-
-  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
-  [autofill_agent_ showAutofillPopup:suggestions
-                  suggestionDelegate:mock_delegate.GetWeakPtr()
-                              formId:{}
-                             fieldId:{}];
-  [autofill_agent_ retrieveSuggestionsForForm:nil
-                                     webState:&fake_web_state_
-                            completionHandler:completionHandler];
-
-  ASSERT_EQ(2U, received_suggestions.count);
-  EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
-            received_suggestions[0].type);
-  EXPECT_EQ(autofill::SuggestionType::kAutocompleteAtMemoryButton,
-            received_suggestions[1].type);
-}
-
-// Tests that the AtMemory suggestion chip is not appended when AutofillAtMemory
-// is enabled but suggestions are empty.
-TEST_F(AutofillAgentTest, ShowAtMemorySuggestion_NotAppendedWhenEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{autofill::features::kAutofillAtMemory,
-                            autofill::features::debug::
-                                kAtMemorySkipEnablementChecks},
-      /*disabled_features=*/{});
-
-  std::vector<autofill::Suggestion> empty_suggestions = {};
-
-  __block BOOL completion_called = NO;
-  __block NSArray<FormSuggestion*>* received_suggestions = nil;
-  auto completionHandler = ^(NSArray<FormSuggestion*>* form_suggestions,
-                             id<FormSuggestionProvider> delegate) {
-    completion_called = YES;
-    received_suggestions = form_suggestions;
-  };
-
-  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
-  [autofill_agent_ showAutofillPopup:empty_suggestions
-                  suggestionDelegate:mock_delegate.GetWeakPtr()
-                              formId:{}
-                             fieldId:{}];
-  [autofill_agent_ retrieveSuggestionsForForm:nil
-                                     webState:&fake_web_state_
-                            completionHandler:completionHandler];
-  EXPECT_TRUE(completion_called);
-  EXPECT_EQ(0U, received_suggestions.count);
 }
 
 // Tests that form_id, field_id, and popup_suggestion_index passed to

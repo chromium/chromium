@@ -16,7 +16,6 @@
 
 namespace autofill {
 
-class AutofillClient;
 class AutofillSuggestionDelegate;
 struct Suggestion;
 
@@ -34,14 +33,12 @@ FormSuggestion* FormSuggestionFromAutofillSuggestion(
 
 // Converts `suggestions` into keyboard accessory `FormSuggestion`s using
 // `FormSuggestionFromAutofillSuggestion`. The Undo suggestion is moved to the
-// front and, if `client` is non-null and allows it, an AtMemory search button
-// (without `popup_suggestion_index`) is appended to a non-empty result.
+// front.
 NSArray<FormSuggestion*>* FormSuggestionsFromAutofillSuggestions(
     const std::vector<Suggestion>& suggestions,
     const base::WeakPtr<AutofillSuggestionDelegate>& delegate,
     FormGlobalId form_id,
-    FieldGlobalId field_id,
-    const AutofillClient* client);
+    FieldGlobalId field_id);
 
 }  // namespace autofill
 
