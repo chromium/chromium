@@ -333,4 +333,37 @@ TEST_F(ImageButtonFactoryWidgetTest,
       toggle_image_button->GetRenderedTooltipText(gfx::Point()));
 }
 
+TEST_F(ImageButtonFactoryWidgetTest,
+       ToggleImageButtonExplicitlyEmptyDescription) {
+  std::unique_ptr<ToggleImageButton> toggle_image_button =
+      CreateVectorToggleImageButton(Button::PressedCallback());
+  toggle_image_button->GetViewAccessibility().SetDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  // Toggling with no tooltips set skips `SetName()` in `UpdateAccessibleName()`
+  // and directly exercises `ToggleImageButton::UpdateTooltipText()` when name,
+  // tooltip, and description are all empty.
+  toggle_image_button->SetToggled(true);
+  ui::AXNodeData node_data;
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      u"");
+  EXPECT_EQ(node_data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  toggle_image_button->SetTooltipText(u"Untoggled Tooltip");
+  toggle_image_button->SetToggledTooltipText(u"Toggled Tooltip");
+  toggle_image_button->SetToggled(false);
+  toggle_image_button->SetToggled(true);
+
+  node_data = ui::AXNodeData();
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      u"");
+  EXPECT_EQ(node_data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+}
+
 }  // namespace views

@@ -552,7 +552,8 @@ void ViewAccessibility::SetName(std::u16string name,
     // is a common pattern, and then the View sets the accessible name to the
     // same string, we need to make sure that we clear the description.
     // Otherwise we'll end up with the same accessible name and description.
-    if (GetCachedName() == view_->GetTooltipText() &&
+    if (!view_->GetTooltipText().empty() &&
+        GetCachedName() == view_->GetTooltipText() &&
         GetCachedDescription() == view_->GetTooltipText()) {
       RemoveDescription();
     }
@@ -971,6 +972,13 @@ std::u16string ViewAccessibility::GetCachedDescription() const {
 void ViewAccessibility::OnTooltipTextChanged(
     std::optional<std::u16string> old_tooltip_text) {
   if (!view_) {
+    return;
+  }
+
+  // `kAttributeExplicitlyEmpty` opts out of alternative description sources
+  // such as the tooltip text.
+  if (data_.GetDescriptionFrom() ==
+      ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
     return;
   }
 

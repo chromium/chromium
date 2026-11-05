@@ -1478,6 +1478,105 @@ TEST_F(ViewTest, SetAccessibleDescriptionExplicitlyEmptyToRemoveDescription) {
             ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
+TEST_F(ViewTest, SetAccessibleDescriptionExplicitlyEmptyIgnoresTooltipChanges) {
+  TestView v;
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  v.SetTooltipText(u"Tooltip");
+  v.GetViewAccessibility().SetName(u"Name");
+  v.SetTooltipText(u"Updated Tooltip");
+
+  ui::AXNodeData data;
+  v.GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"");
+  EXPECT_EQ(data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  // Applying `kAttributeExplicitlyEmpty` after a tooltip is already set also
+  // prevents subsequent tooltip updates from restoring a tooltip description.
+  TestView v_with_tooltip;
+  v_with_tooltip.SetTooltipText(u"Initial Tooltip");
+  v_with_tooltip.GetViewAccessibility().SetDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  v_with_tooltip.SetTooltipText(u"Changed Tooltip");
+
+  data = ui::AXNodeData();
+  v_with_tooltip.GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v_with_tooltip.GetViewAccessibility().GetCachedDescription(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"");
+  EXPECT_EQ(data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(ViewTest,
+       SetAccessibleDescriptionExplicitlyEmptyPreservedOnEmptyNameAndTooltip) {
+  TestView v;
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  v.SetTooltipText(u"Tooltip");
+  v.GetViewAccessibility().SetName(u"Tooltip");
+
+  // Clearing both tooltip and name must not strip `kAttributeExplicitlyEmpty`.
+  v.SetTooltipText(u"");
+  v.GetViewAccessibility().SetName(u"");
+
+  ui::AXNodeData data;
+  v.GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"");
+  EXPECT_EQ(data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  v.SetTooltipText(u"Another Tooltip");
+  data = ui::AXNodeData();
+  v.GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(), u"");
+  EXPECT_EQ(data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(ViewTest,
+       SetAccessibleDescriptionExplicitlyEmptyCanBeOverriddenAndRemoved) {
+  TestView v;
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  // An explicit non-empty `SetDescription()` call overrides it.
+  v.GetViewAccessibility().SetDescription(u"Explicit Description");
+  ui::AXNodeData data;
+  v.GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(),
+            u"Explicit Description");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Explicit Description");
+  EXPECT_EQ(data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAriaDescription);
+
+  // `RemoveDescription()` clears `kAttributeExplicitlyEmpty` so subsequent
+  // tooltip updates fall back to the tooltip text again.
+  v.GetViewAccessibility().SetDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  v.GetViewAccessibility().RemoveDescription();
+  v.SetTooltipText(u"Fallback Tooltip");
+
+  data = ui::AXNodeData();
+  v.GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(),
+            u"Fallback Tooltip");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Fallback Tooltip");
+  EXPECT_EQ(data.GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAriaDescription);
+}
+
 TEST_F(ViewTest, SetIsLeafUnpruneSubtreeWithLeafView) {
   TestView v;
   ui::AXNodeData data = ui::AXNodeData();

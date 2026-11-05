@@ -464,7 +464,8 @@ void ToggleImageButton::UpdateTooltipText() {
   UpdateAccessibleName();
 
   // This corner case was needed to be handled separately.
-  if (GetViewAccessibility().GetCachedName() == GetTooltipText() &&
+  if (!GetTooltipText().empty() &&
+      GetViewAccessibility().GetCachedName() == GetTooltipText() &&
       GetViewAccessibility().GetCachedDescription() == GetTooltipText()) {
     GetViewAccessibility().RemoveDescription();
   }
