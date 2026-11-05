@@ -337,6 +337,40 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
                             "'toolbar-app')).display"));
 }
 
+// Verifies that when only `WebUIReloadButton` is enabled (the `InitialWebUI`
+// startup configuration), chrome://webui-toolbar.top-chrome/ only defines
+// `<toolbar-app>` and the main-bundle navigation buttons without loading or
+// defining non-navigation toolbar custom elements from `lazy_load.js`.
+IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+                       ReloadOnlyToolbarSkipsLazyControls) {
+  GURL url(chrome::kChromeUIWebUIToolbarURL);
+  WebUIToolbarInitializer initializer(browser());
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateAndNavigateWebContents(url, &initializer);
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents.get()));
+
+  EXPECT_EQ(true, content::EvalJs(web_contents.get(), R"(
+      customElements.whenDefined('toolbar-app').then(
+          () => !!customElements.get('reload-button') &&
+                !!customElements.get('back-forward-button') &&
+                !!customElements.get('home-button') &&
+                !!customElements.get('split-tabs-button') &&
+                !!document.querySelector('toolbar-app').shadowRoot))"));
+  // `lazy_load.js` would be requested from an idle callback registered by
+  // `<toolbar-app>`, so wait for a later idle callback before checking that
+  // it was never requested.
+  EXPECT_EQ(false, content::EvalJs(web_contents.get(), R"(
+      new Promise(resolve => requestIdleCallback(resolve, {timeout: 1000}))
+          .then(() =>
+              !!document.querySelector('script[src$="lazy_load.js"]') ||
+              !!customElements.get('location-bar') ||
+              !!customElements.get('readonly-omnibox') ||
+              !!customElements.get('app-menu-button') ||
+              !!customElements.get('avatar-button') ||
+              !!customElements.get('webui-toolbar-extensions') ||
+              !!customElements.get('pinned-toolbar-actions')))"));
+}
+
 // Initial WebUI process should not be shared with non-Initial WebUI per
 // https://crrev.com/c/7508984.
 // However, both should have the TopChrome WebUI flag set.

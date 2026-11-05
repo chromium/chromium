@@ -65,6 +65,7 @@ void WebUIToolbarWebViewTestBase::SetUpOnMainThread() {
   // Force the color mode to light to avoid flakiness.
   ThemeServiceFactory::GetForProfile(browser()->GetProfile())
       ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
+  WaitForInitialWebUIToolbar(browser());
 }
 
 ToolbarView* WebUIToolbarWebViewTestBase::GetToolbarView(

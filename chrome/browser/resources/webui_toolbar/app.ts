@@ -4,20 +4,9 @@
 
 import './back_forward_button.js';
 import './reload_button.js';
-import './location_bar.js';
 import './split_tabs_button.js';
 import './home_button.js';
-import './battery_saver_button.js';
-import './performance_intervention_button.js';
-import './pinned_toolbar_actions.js';
-import './extensions.js';
-import './app_menu_button.js';
-import './glic_button.js';
-import './avatar_button.js';
-import './media_button.js';
-import './overflow_button.js';
 import '/shared/icon_table.js';
-import '/shared/icon_from_table.js';
 import './icons.js';
 
 import {assert} from '//resources/js/assert.js';
@@ -36,10 +25,10 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl, INVALID_TOOLBAR_STATE_LISTENER_HANDLE, ToolbarStateKey} from './browser_proxy.js';
+import {BrowserProxyImpl, createDefaultLocationBarState, INVALID_TOOLBAR_STATE_LISTENER_HANDLE, ToolbarStateKey} from './browser_proxy.js';
 import type {BrowserProxy, InitialStateReader, ToolbarStateListenerHandle} from './browser_proxy.js';
+import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import type {ExtensionsElement} from './extensions.js';
-import {createDefaultLocationBarState} from './location_bar.js';
 import type {LocationBarElement} from './location_bar.js';
 import type {OverflowButtonElement} from './overflow_button.js';
 import type {ResponsiveControl} from './responsive_control.js';
@@ -68,6 +57,12 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
   {selector: '#app-menu', id: 'kToolbarAppMenuButtonElementId'},
 ];
+
+// Resolves once `el` is upgraded and has completed its initial render.
+async function whenUpgraded(el: CrLitElement): Promise<void> {
+  await customElements.whenDefined(el.localName);
+  await el.updateComplete;
+}
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
@@ -345,6 +340,16 @@ export class ToolbarAppElement extends AppElementBase {
     if (this.webUIToolbarFullyEnabled_) {
       this.setAttribute('webui-toolbar-fully-enabled', '');
     }
+    if (this.hasNonNavigationControlsEnabled_()) {
+      // Request loading of the lazy loaded module within an idle callback.
+      // Pass a timeout because untimed idle callbacks only run during Blink
+      // idle periods, which never start while the toolbar has a zero-width
+      // viewport (e.g. when only hidden controls are enabled).
+      requestIdleCallback(async () => {
+        await ensureLazyLoaded();
+        this.scheduleLayoutResponsiveControls_();
+      }, {timeout: 500});
+    }
 
     const sessionId = ++this.initializeSessionId_;
 
@@ -397,22 +402,30 @@ export class ToolbarAppElement extends AppElementBase {
               const isFirstToolbarState = !this.hasReceivedToolbarState_;
               if (isFirstToolbarState) {
                 this.hasReceivedToolbarState_ = true;
-                this.updateComplete.then(() => {
+                this.updateComplete.then(async () => {
                   const avatar =
-                      this.shadowRoot.querySelector<HTMLElement>('#avatar');
-                  if (avatar) {
-                    requestAnimationFrame(() => {
-                      avatar.classList.remove('initial-load');
-                    });
-                  }
+                      this.shadowRoot.querySelector<CrLitElement>('#avatar');
                   const extensions =
                       this.shadowRoot.querySelector<ExtensionsElement>(
                           '#extensions');
-                  if (extensions) {
-                    requestAnimationFrame(() => {
-                      extensions.markInitialStateRendered();
-                    });
-                  }
+                  await Promise.all([
+                    (async () => {
+                      if (avatar) {
+                        await whenUpgraded(avatar);
+                        requestAnimationFrame(() => {
+                          avatar.classList.remove('initial-load');
+                        });
+                      }
+                    })(),
+                    (async () => {
+                      if (extensions) {
+                        await whenUpgraded(extensions);
+                        requestAnimationFrame(() => {
+                          extensions.markInitialStateRendered();
+                        });
+                      }
+                    })(),
+                  ]);
                 });
               }
 
@@ -445,10 +458,35 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
-  private initializePage_(sessionId: number) {
+  // Returns whether any control other than the navigation buttons (back,
+  // forward, reload, home and split tabs) is enabled. Only the navigation
+  // buttons are in the main webui_toolbar.js bundle; all other controls are
+  // defined by lazy_load.js, which is only loaded if this returns true.
+  private hasNonNavigationControlsEnabled_(): boolean {
+    return this.webUIToolbarFullyEnabled_ || this.isLocationBarEnabled_ ||
+        this.isExtensionsContainerEnabled_ ||
+        this.isPinnedToolbarActionsEnabled_ ||
+        this.isBatterySaverButtonEnabled_ ||
+        this.isPerformanceInterventionButtonEnabled_ ||
+        this.isGlicButtonEnabled_ || this.isAvatarButtonEnabled_ ||
+        this.isMediaButtonEnabled_ || this.isAppMenuButtonEnabled_;
+  }
+
+  private async initializePage_(sessionId: number) {
     if (sessionId !== this.initializeSessionId_ || !this.isConnected ||
         this.isPageInitialized_) {
       return;
+    }
+
+    const undefinedElements =
+        this.shadowRoot.querySelectorAll(':not(:defined)');
+    if (undefinedElements.length > 0) {
+      await Promise.all(Array.from(
+          undefinedElements, el => customElements.whenDefined(el.localName)));
+      if (sessionId !== this.initializeSessionId_ || !this.isConnected ||
+          this.isPageInitialized_) {
+        return;
+      }
     }
     this.isPageInitialized_ = true;
 
@@ -490,12 +528,12 @@ export class ToolbarAppElement extends AppElementBase {
         waitSelectors.map(s => this.shadowRoot.querySelector<CrLitElement>(s))
             .filter(el => !!el)
             .map(el => el.updateComplete);
-    Promise.all(promises).then(() => {
-      if (sessionId !== this.initializeSessionId_ || !this.isConnected) {
-        return;
-      }
-      this.browserProxy_.toolbarUIHandler.onPageInitialized();
-    });
+    await Promise.all(promises);
+    if (sessionId !== this.initializeSessionId_ || !this.isConnected) {
+      return;
+    }
+    this.layoutIfNeeded_();
+    this.browserProxy_.toolbarUIHandler.onPageInitialized();
   }
 
   /**
@@ -863,6 +901,13 @@ export class ToolbarAppElement extends AppElementBase {
     // If `webUIToolbarFullyEnabled_` is false, the C++ FlexLayout class will
     // handle laying out controls.
     if (!this.webUIToolbarFullyEnabled_) {
+      return;
+    }
+
+    // Wait until the initial template has rendered (#location-bar and
+    // #overflow exist in shadowRoot) and lazy_load.js has upgraded the
+    // ResponsiveControl elements (so methods like shouldBeShown() exist).
+    if (!this.isInitialized_ || !customElements.get('overflow-button')) {
       return;
     }
 

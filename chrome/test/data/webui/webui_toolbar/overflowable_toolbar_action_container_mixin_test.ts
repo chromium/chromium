@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import {assertNotReached} from '//resources/js/assert.js';
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {OverflowableToolbarActionContainerMixin, OverflowableToolbarActionMixin, PinnedToolbarAction} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
-import type {OverflowableToolbarActionElement, OverflowMenuItem} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {OverflowableToolbarActionContainerMixin, OverflowableToolbarActionMixin} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
+import type {OverflowableToolbarActionElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
+import {PinnedToolbarAction} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {OverflowMenuItem} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 const DummyActionElementBase = OverflowableToolbarActionMixin(CrLitElement);
 

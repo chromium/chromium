@@ -30,6 +30,7 @@ build_webui("build") {
     "content_settings_icons.html.ts",
     "content_settings_icons.ts",
     "cr_lazy_iconset.ts",
+    "ensure_lazy_loaded.ts",
     "extension.html.ts",
     "extension.ts",
     "extensions.html.ts",
@@ -43,6 +44,7 @@ build_webui("build") {
     "home_button.html.ts",
     "home_button.ts",
     "icons.ts",
+    "lazy_load.ts",
     "location_bar.ts",
     "location_bar.html.ts",
     "location_icon.ts",
@@ -116,7 +118,10 @@ build_webui("build") {
   generate_code_cache = enable_webui_generate_code_cache
   if (optimize) {
     optimize_webui_host = "webui-toolbar.top-chrome"
-    optimize_webui_in_files = [ "webui_toolbar.js" ]
+    optimize_webui_in_files = [
+      "webui_toolbar.js",
+      "lazy_load.js",
+    ]
     optimize_webui_external_paths = [
       "chrome://webui-toolbar.top-chrome|" +
           rebase_path(

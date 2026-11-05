@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
+
 import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import type {MediaButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHandler} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
-import type {MediaButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('ToolbarButtonTest', function() {
   test('GetClickSourceType', function() {

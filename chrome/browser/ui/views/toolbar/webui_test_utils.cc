@@ -154,6 +154,8 @@ void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
     return;
   }
 
+  WaitForInitialWebUIToolbar(browser);
+
   webui_toolbar->SetDidFirstNonEmptyPaintCallbackForTesting(
       run_loop.QuitClosure());
   run_loop.Run();
@@ -207,6 +209,8 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
   *web_view_out = views::AsViewClass<views::WebView>(
       (*webui_toolbar_view_out)->children()[0].get());
   ASSERT_TRUE(*web_view_out);
+
+  WaitForInitialWebUIToolbar(browser);
 
   // Wait for the WebView to finish composition.
   content::WaitForCopyableViewInWebContents((*web_view_out)->GetWebContents());
@@ -1393,8 +1397,8 @@ const char kGetAllAnimationsJS[] = R"(
   // WebUI-side suppression (HighlightTracker in toolbar_button.ts). Import the
   // setter via the page's entry module (which re-exports it) rather than
   // '/shared/toolbar_button.js' directly: in optimized builds the shared module
-  // is bundled into webui_toolbar.js, so importing it by its own URL would
-  // create a second module instance that the toolbar's buttons don't use.
+  // is bundled, so importing it by its own URL would create a second module
+  // instance that the toolbar's buttons don't use.
   content::WebContents* web_contents =
       toolbar->GetWebViewForTesting()->web_contents();
   if (!web_contents) {
