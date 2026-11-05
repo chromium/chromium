@@ -576,7 +576,7 @@ class TabImpl implements Tab, TabInternal {
         // detached so callers of getWindowAndroid() do not crash with NullPointerException, while
         // callers (e.g. ReparentingTask#detach()) clear webContents.setTopLevelNativeWindow(null).
         updateIsDetachedFromActivity(/* window= */ null);
-        if (isNativePage() && !mNativePage.isFrozen()) {
+        if (hasLiveNativePage()) {
             Activity activity = getActivity(mWindowAndroid);
             if (ChromeFeatureList.sDeferDetachedNativePageFreeze.isEnabled()
                     && activity != null
@@ -591,9 +591,7 @@ class TabImpl implements Tab, TabInternal {
                             if (newState >= ActivityState.STOPPED) {
                                 unregisterAndClearDetachedNativePageFreezeListener();
                                 if (mIsDestroyed) return;
-                                if (mIsDetachedFromActivity
-                                        && isNativePage()
-                                        && !mNativePage.isFrozen()) {
+                                if (mIsDetachedFromActivity && hasLiveNativePage()) {
                                     freezeDetachedNativePage();
                                 }
                             }
@@ -755,6 +753,12 @@ class TabImpl implements Tab, TabInternal {
         return mNativePage != null;
     }
 
+    /** Returns whether {@link #mNativePage} is set and not frozen (i.e. it has a live view). */
+    @EnsuresNonNullIf("mNativePage")
+    private boolean hasLiveNativePage() {
+        return mNativePage != null && !mNativePage.isFrozen();
+    }
+
     /**
      * @returns Whether the tab is displaying a PDF native page, either a local file (file://,
      *     content://) or a transiently downloaded one (http://, https://, blob:, data:).
@@ -867,9 +871,7 @@ class TabImpl implements Tab, TabInternal {
 
     @Override
     public void freezeNativePage() {
-        if (mNativePage == null || mNativePage.isFrozen()) {
-            return;
-        }
+        if (!hasLiveNativePage()) return;
         View view = mNativePage.getView();
         if (view == null || view.getParent() != null) {
             return;
@@ -884,9 +886,7 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private void detachNativePageView() {
-        if (mNativePage == null || mNativePage.isFrozen()) {
-            return;
-        }
+        if (!hasLiveNativePage()) return;
         View view = mNativePage.getView();
         if (view != null) {
             UiUtils.removeViewFromParent(view);
@@ -2737,10 +2737,10 @@ class TabImpl implements Tab, TabInternal {
         assert nativePage != null;
         if (mNativePage == nativePage) return;
         hideNativePage(
-                true,
+                /* notify= */ true,
                 () -> {
                     mNativePage = nativePage;
-                    if (!mNativePage.isFrozen()) {
+                    if (hasLiveNativePage()) {
                         View view = mNativePage.getView();
                         assumeNonNull(view);
                         view.addOnAttachStateChangeListener(mAttachStateChangeListener);
@@ -2772,7 +2772,7 @@ class TabImpl implements Tab, TabInternal {
         }
         NativePage previousNativePage = mNativePage;
         if (mNativePage != null) {
-            if (!mNativePage.isFrozen()) {
+            if (hasLiveNativePage()) {
                 View view = mNativePage.getView();
                 assumeNonNull(view);
                 view.removeOnAttachStateChangeListener(mAttachStateChangeListener);
