@@ -55,6 +55,12 @@ void ReadAloudDecoderSequencer::SetPumpStatusCallback(
   pump_status_callback_ = std::move(callback);
 }
 
+void ReadAloudDecoderSequencer::SetChunkDecodedCallback(
+    ChunkDecodedCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  chunk_decoded_callback_ = std::move(callback);
+}
+
 void ReadAloudDecoderSequencer::StartPumping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pump_timer_.IsRunning()) {
@@ -182,6 +188,8 @@ void ReadAloudDecoderSequencer::OnAudioDecoded(
   if (!audio_segment_queue_) {
     return;
   }
+
+  base::TimeDelta decoded_duration;
   const uint32_t min_offset = min_global_char_offset_;
   min_global_char_offset_ = 0;
   bool skipped_by_min_offset = false;
@@ -189,6 +197,7 @@ void ReadAloudDecoderSequencer::OnAudioDecoded(
     if (!segment) {
       continue;
     }
+    decoded_duration += segment->duration();
     if (min_offset > 0 && !segment->word_timings().empty()) {
       const WordTiming& timing = segment->word_timings().front();
       // Skip words that end at or before `min_offset`, while preserving a
@@ -203,6 +212,9 @@ void ReadAloudDecoderSequencer::OnAudioDecoded(
     if (audio_segment_queue_->Push(std::move(segment))) {
       produced_audio_ = true;
     }
+  }
+  if (decoded_duration.is_positive() && chunk_decoded_callback_) {
+    chunk_decoded_callback_.Run(chunk_index, decoded_duration);
   }
   if (skipped_by_min_offset) {
     produced_audio_ = true;

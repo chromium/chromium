@@ -48,6 +48,8 @@ ReadAloudPlaybackController::ReadAloudPlaybackController(
   decoder_sequencer_.SetPumpStatusCallback(
       base::BindRepeating(&ReadAloudPlaybackController::OnPumpStatusChanged,
                           base::Unretained(this)));
+  decoder_sequencer_.SetChunkDecodedCallback(base::BindRepeating(
+      &ReadAloudPlaybackController::OnChunkDecoded, base::Unretained(this)));
 }
 
 ReadAloudPlaybackController::~ReadAloudPlaybackController() {
@@ -541,6 +543,7 @@ void ReadAloudPlaybackController::ExecuteSeek(const TimelinePosition& target) {
   // ResolveSegmentOffset() and ResolveTimeOffset() both align with
   // `target.time.start_time`.
   seek_base_ = target.time.start_time;
+  seek_anchor_ = target.chunk;
   ReportProgress();
 
   // If the resolved position is at the exact end of `target.chunk`, advance
@@ -610,6 +613,7 @@ void ReadAloudPlaybackController::FlushBuffers() {
   // The decoder restarts at the beginning of the document, and the renderer's
   // media time restarts at zero below.
   seek_base_ = base::TimeDelta();
+  seek_anchor_.reset();
 
   if (!audio_resources_) {
     return;
@@ -661,6 +665,7 @@ void ReadAloudPlaybackController::ResetSession() {
   play_on_ready_timer_.Stop();
   progress_timer_.Stop();
   seek_base_ = base::TimeDelta();
+  seek_anchor_.reset();
   pending_word_seek_.reset();
   last_reported_progress_.reset();
   session_weak_factory_.InvalidateWeakPtrs();
@@ -717,12 +722,8 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
       ParseAndValidateSynthesisResponse(std::move(response_bytes), chunk);
 
   if (!result.timings.empty()) {
-    timeline_.UpdateSentenceDuration(
-        chunk_index, result.timings.back().end_time, result.timings);
-    // While playing, the next tick carries the refined duration.
-    if (!IsActivePlaybackState(playback_state_)) {
-      ReportProgress();
-    }
+    UpdateChunkTimelineAndSeekBase(chunk_index, result.timings.back().end_time,
+                                   result.timings);
   }
 
   prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index,
@@ -730,6 +731,34 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
                                         std::move(result.timings));
 
   decoder_sequencer_.ReplenishBuffer();
+}
+
+void ReadAloudPlaybackController::OnChunkDecoded(uint32_t chunk_index,
+                                                 base::TimeDelta duration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (chunk_index >= timeline_.GetChunkCount()) {
+    return;
+  }
+  UpdateChunkTimelineAndSeekBase(chunk_index, duration);
+}
+
+void ReadAloudPlaybackController::UpdateChunkTimelineAndSeekBase(
+    uint32_t chunk_index,
+    base::TimeDelta duration,
+    std::vector<WordTiming> timings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timeline_.UpdateSentenceDuration(chunk_index, duration, std::move(timings));
+  if (seek_anchor_.has_value() && chunk_index <= seek_anchor_->index) {
+    std::optional<TimelinePosition> resolved = timeline_.ResolveSegmentOffset(
+        seek_anchor_->index, seek_anchor_->start_char_offset);
+    if (resolved.has_value()) {
+      seek_base_ = resolved->time.start_time;
+    }
+  }
+  // While playing, the next tick carries the refined duration.
+  if (!IsActivePlaybackState(playback_state_)) {
+    ReportProgress();
+  }
 }
 
 void ReadAloudPlaybackController::OnWordBoundaryReached(

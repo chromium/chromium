@@ -702,4 +702,39 @@ TEST_F(ReadAloudDecoderSequencerTest,
   EXPECT_TRUE(sequencer_.is_decoding());
 }
 
+TEST_F(ReadAloudDecoderSequencerTest,
+       SetChunkDecodedCallbackReportsFullChunkDuration) {
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+
+  uint32_t reported_chunk_index = 999;
+  base::TimeDelta reported_duration;
+  sequencer_.SetChunkDecodedCallback(base::BindLambdaForTesting(
+      [&reported_chunk_index, &reported_duration](uint32_t chunk_index,
+                                                  base::TimeDelta duration) {
+        reported_chunk_index = chunk_index;
+        reported_duration = duration;
+      }));
+
+  // Seek mid-chunk so the first word segment is skipped before pushing to
+  // `audio_queue_`; the callback must still report the full decoded chunk
+  // duration.
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/0,
+                                  /*min_global_char_offset=*/6);
+
+  WordTiming word0{.start_time = base::Seconds(0),
+                   .end_time = base::Seconds(1),
+                   .start_character_offset = 0,
+                   .end_character_offset = 5};
+  WordTiming word1{.start_time = base::Seconds(0),
+                   .end_time = base::Seconds(1),
+                   .start_character_offset = 6,
+                   .end_character_offset = 12};
+  fake_decoder_.DeliverDecodedSegments(
+      {CreateSegmentWithWordTiming(word0), CreateSegmentWithWordTiming(word1)});
+
+  EXPECT_EQ(reported_chunk_index, 0u);
+  EXPECT_EQ(reported_duration, base::Seconds(2));
+}
+
 }  // namespace readaloud

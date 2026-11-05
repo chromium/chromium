@@ -163,7 +163,9 @@ void PlaybackTimeline::UpdateSentenceDuration(
   base::TimeDelta est_duration =
       chunks_[sentence_index].text.size() * kEstimatedDurationPerChar;
   deviations_1_0x_[sentence_index] = actual_duration - est_duration;
-  sentence_word_timings_[sentence_index] = std::move(word_timings);
+  if (!word_timings.empty()) {
+    sentence_word_timings_[sentence_index] = std::move(word_timings);
+  }
 }
 
 base::TimeDelta PlaybackTimeline::GetTotalDuration() const {

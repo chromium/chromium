@@ -165,6 +165,16 @@ class ReadAloudPlaybackController
   // playback is pumping, reporting how the decoded audio queue is doing.
   void OnPumpStatusChanged(ReadAloudDecoderSequencer::PumpStatus status);
 
+  // Invoked by `decoder_sequencer_` when a chunk has been decoded into PCM
+  // segments, refining the timeline with the exact decoded audio duration.
+  void OnChunkDecoded(uint32_t chunk_index, base::TimeDelta duration);
+
+  // Updates `timeline_` for `chunk_index` and refreshes `seek_base_` if a seek
+  // anchor is active at or after `chunk_index`.
+  void UpdateChunkTimelineAndSeekBase(uint32_t chunk_index,
+                                      base::TimeDelta duration,
+                                      std::vector<WordTiming> timings = {});
+
   // Halts playback: cancels any pending play-on-ready, pauses the audio output
   // stream, stops the decoder pump and reports `state`.
   void HaltPlayback(read_aloud::mojom::PlaybackState state);
@@ -226,6 +236,10 @@ class ReadAloudPlaybackController
   // added to its media time to get the overall elapsed audio playback time
   // along the timeline (reported to the UI progress bar).
   base::TimeDelta seek_base_;
+  // Canonical chunk and character offset of the last seek target, used to
+  // refresh `seek_base_` when chunks at or before the seek target have their
+  // durations or word timings refined by synthesis or decoding.
+  std::optional<IndexedCharRange> seek_anchor_;
   // `SeekToWord()` target (chunk index, character offset) received while
   // there is no text, e.g. when restoring the position after a voice change.
   // Applied by `SetTextContent()` before playback starts.

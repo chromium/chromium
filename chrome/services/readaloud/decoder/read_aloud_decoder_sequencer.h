@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 
@@ -83,6 +84,13 @@ class ReadAloudDecoderSequencer {
   using PumpStatusCallback = base::RepeatingCallback<void(PumpStatus status)>;
   void SetPumpStatusCallback(PumpStatusCallback callback);
 
+  // Callback invoked when a chunk is decoded into non-empty PCM segments,
+  // reporting the exact decoded chunk duration.
+  using ChunkDecodedCallback =
+      base::RepeatingCallback<void(uint32_t chunk_index,
+                                   base::TimeDelta duration)>;
+  void SetChunkDecodedCallback(ChunkDecodedCallback callback);
+
   uint32_t next_chunk_to_decode() const { return next_chunk_to_decode_; }
   uint32_t min_global_char_offset() const { return min_global_char_offset_; }
   bool is_decoding() const { return is_decoding_; }
@@ -107,6 +115,7 @@ class ReadAloudDecoderSequencer {
   raw_ptr<AudioSegmentQueue> audio_segment_queue_ = nullptr;
 
   PumpStatusCallback pump_status_callback_;
+  ChunkDecodedCallback chunk_decoded_callback_;
 
   uint32_t next_chunk_to_decode_ = 0;
   uint32_t min_global_char_offset_ = 0;

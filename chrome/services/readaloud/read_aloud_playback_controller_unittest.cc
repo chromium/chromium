@@ -2478,4 +2478,56 @@ TEST_F(ReadAloudPlaybackControllerTest,
   mock_renderer = nullptr;
 }
 
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekBaseRefreshesWhenTargetChunkTimingsArriveAfterMidSentenceSeek) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+
+  MockReadAloudPlaybackControllerClient::RequestSpeechSynthesisCallback
+      chunk_callback;
+  mock_client_->set_synthesis_handler(base::BindLambdaForTesting(
+      [&chunk_callback](
+          const std::u16string& /*text_chunk*/,
+          read_aloud::mojom::Speaker /*speaker*/, uint64_t /*sequence_id*/,
+          MockReadAloudPlaybackControllerClient::RequestSpeechSynthesisCallback
+              callback) { chunk_callback = std::move(callback); }));
+
+  // Single 12-char sentence ("Hello world.") estimated at 12 * 65ms = 780ms.
+  SetSingleTextSegment(u"Hello world.");
+  FlushAll();
+
+  // Seek to "world." (char offset 6) before synthesis completes.
+  // Initial estimated seek_base_ is (780ms * 6) / 12 = 390ms.
+  controller_remote_->SeekToWord(/*segment_index=*/0, /*character_offset=*/6);
+  FlushAll();
+  ASSERT_TRUE(chunk_callback);
+  mock_client_->ClearProgressHistory();
+
+  // Deliver synthesis response where "Hello" is [0ms, 200ms) and "world."
+  // starts at 200ms (with 100ms default pre-decode duration -> [200ms, 300ms)).
+  // Total chunk duration refines to 300ms and the first kept word ("world.")
+  // starts at 200ms, so `seek_base_` must refresh from 390ms to 200ms.
+  optimization_guide::proto::ReadAloudSynthesizeResponse response;
+  response.set_audio_bytes("OggS_fake_opus_audio_data");
+  optimization_guide::proto::WordTiming* timing0 = response.add_timings();
+  timing0->set_start_offset(0);
+  timing0->set_end_offset(5);
+  timing0->set_time_offset_ms(0);
+  optimization_guide::proto::WordTiming* timing1 = response.add_timings();
+  timing1->set_start_offset(6);
+  timing1->set_end_offset(12);
+  timing1->set_time_offset_ms(200);
+  std::string serialized;
+  response.SerializeToString(&serialized);
+  std::move(chunk_callback)
+      .Run(mojo_base::BigBuffer(base::as_byte_span(serialized)),
+           /*success=*/true);
+  FlushAll();
+
+  EXPECT_THAT(mock_client_->progress_history(),
+              testing::ElementsAre(testing::Pair(base::Milliseconds(200),
+                                                 base::Milliseconds(300))));
+  mock_renderer = nullptr;
+}
+
 }  // namespace readaloud
