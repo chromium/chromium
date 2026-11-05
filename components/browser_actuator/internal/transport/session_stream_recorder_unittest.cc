@@ -1020,5 +1020,40 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
   EXPECT_EQ(sessions[0].events[0].http_response_code, 200);
 }
 
+TEST(SessionStreamRecorderTest,
+     PopulatesMissingCanonicalTypeUrlOnDownstreamPayloads) {
+  SessionStreamRecorder recorder("session_123");
+
+  ActuatorDownstreamMessage downstream;
+  downstream.set_session_id("session_123");
+  downstream.set_sequence_number(7);
+  ActuatorDownstreamTypedPayload* control_payload =
+      downstream.add_typed_payloads();
+  control_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  control_payload->mutable_proto_payload()->set_value("cmd");
+  ActuatorDownstreamTypedPayload* unspecified_payload =
+      downstream.add_typed_payloads();
+  unspecified_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  unspecified_payload->mutable_proto_payload()->set_value("unknown");
+  ActuatorDownstreamTypedPayload* missing_proto_payload =
+      downstream.add_typed_payloads();
+  missing_proto_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+
+  recorder.RecordDownstreamMessage(std::move(downstream),
+                                   DownstreamDeliveryStatus::kSuccess);
+
+  ASSERT_EQ(recorder.entries().size(), 1u);
+  const auto& recorded =
+      std::get<ActuatorDownstreamMessage>(recorder.entries()[0].message);
+  ASSERT_EQ(recorded.typed_payloads_size(), 3);
+  EXPECT_EQ(recorded.typed_payloads(0).proto_payload().type_url(),
+            "type.googleapis.com/browser_actuator.ControlCommand");
+  EXPECT_TRUE(recorded.typed_payloads(1).proto_payload().type_url().empty());
+  EXPECT_FALSE(recorded.typed_payloads(2).has_proto_payload());
+}
+
 }  // namespace
 }  // namespace browser_actuator::transport

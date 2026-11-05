@@ -225,6 +225,17 @@ void SessionStreamRecorder::RecordDownstreamMessage(
     DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_.total_downstream_messages++;
+  for (ActuatorDownstreamTypedPayload& typed_payload :
+       *message.mutable_typed_payloads()) {
+    if (typed_payload.has_proto_payload() &&
+        typed_payload.proto_payload().type_url().empty()) {
+      if (std::optional<PayloadType> payload_type =
+              FromDownstreamProtoPayloadType(typed_payload.payload_type())) {
+        typed_payload.mutable_proto_payload()->set_type_url(
+            std::string(ExpectedTypeUrl(*payload_type)));
+      }
+    }
+  }
   base::TimeTicks now = base::TimeTicks::Now();
   entries_.push_back(Entry{
       .timestamp = now,
