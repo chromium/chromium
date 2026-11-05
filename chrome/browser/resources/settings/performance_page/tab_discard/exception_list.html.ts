@@ -18,13 +18,16 @@ export function getHtml(this: ExceptionListElement) {
     $i18n{add}
   </cr-button>
 </div>
-<div id="noSitesAdded" class="list-frame" ?hidden="${this.hasSites_()}">
+<div id="noSitesAdded" class="list-frame"
+    ?hidden="${this.hasSites_() || this.settingsRefresh2026Enabled_}">
   <div class="list-item secondary">$i18n{noSitesAdded}</div>
 </div>
 <div id="outer" class="list-frame" role="list" ?hidden="${!this.hasSites_()}">
   ${this.getSiteList_().map(item => html`
     <tab-discard-exception-entry .entry="${item}" role="listitem"
         @menu-click="${this.onMenuClick_}"
+        @edit-click="${this.onEntryEditClick_}"
+        @delete-click="${this.onEntryDeleteClick_}"
         @show-tooltip="${this.onShowTooltip_}">
     </tab-discard-exception-entry>
   `)}
@@ -40,6 +43,8 @@ export function getHtml(this: ExceptionListElement) {
       <div class="hr">
         <tab-discard-exception-entry .entry="${item}" role="listitem"
             @menu-click="${this.onMenuClick_}"
+            @edit-click="${this.onEntryEditClick_}"
+            @delete-click="${this.onEntryDeleteClick_}"
             @show-tooltip="${this.onShowTooltip_}">
         </tab-discard-exception-entry>
       </div>

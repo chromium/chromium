@@ -5,10 +5,13 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
+import '../../icons.html.js';
 
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
 
 import {getCss} from './exception_entry.css.js';
 import {getHtml} from './exception_entry.html.js';
@@ -38,12 +41,15 @@ export class ExceptionEntryElement extends ExceptionEntryElementBase {
     return {
       entry: {type: Object},
       exceptionsManagedPref_: {type: Object},
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
   accessor entry: ExceptionEntry;
   protected accessor exceptionsManagedPref_: chrome.settingsPrivate.PrefObject|
       undefined;
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -54,6 +60,14 @@ export class ExceptionEntryElement extends ExceptionEntryElementBase {
   protected onMenuClick_(e: Event) {
     this.fire(
         'menu-click', {target: e.target as HTMLElement, site: this.entry.site});
+  }
+
+  protected onEditClick_() {
+    this.fire('edit-click', this.entry.site);
+  }
+
+  protected onDeleteClick_() {
+    this.fire('delete-click', this.entry.site);
   }
 
   protected onShowTooltipMouseenter_() {

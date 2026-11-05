@@ -23,6 +23,7 @@ import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/c
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {TooltipMixinLit} from '../../tooltip_mixin_lit.js';
 import type {PerformanceMetricsProxy} from '../performance_metrics_proxy.js';
 import {MemorySaverModeExceptionListAction, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
@@ -64,6 +65,7 @@ export class ExceptionListElement extends
 
   static override get properties() {
     return {
+      settingsRefresh2026Enabled_: {type: Boolean},
       siteList_: {type: Array},
       overflowSiteListExpanded_: {type: Boolean},
       selectedRule_: {type: String},
@@ -74,6 +76,8 @@ export class ExceptionListElement extends
   }
 
   private accessor siteList_: ExceptionEntry[] = [];
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   protected accessor overflowSiteListExpanded_: boolean = false;
   protected accessor selectedRule_: string = '';
   protected accessor showTabbedAddDialog_: boolean = false;
@@ -131,12 +135,28 @@ export class ExceptionListElement extends
     this.$.menu.get().close();
   }
 
+  protected onEntryEditClick_(e: CustomEvent<string>) {
+    e.stopPropagation();
+    this.selectedRule_ = e.detail;
+    assert(this.selectedRule_);
+    assert(!this.showTabbedAddDialog_);
+    this.showEditDialog_ = true;
+  }
+
   protected onDeleteClick_() {
     PrefService.getInstance().deletePrefDictEntry(
         TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_);
     this.metricsProxy_.recordExceptionListAction(
         MemorySaverModeExceptionListAction.REMOVE);
     this.$.menu.get().close();
+  }
+
+  protected onEntryDeleteClick_(e: CustomEvent<string>) {
+    e.stopPropagation();
+    PrefService.getInstance().deletePrefDictEntry(
+        TAB_DISCARD_EXCEPTIONS_PREF, e.detail);
+    this.metricsProxy_.recordExceptionListAction(
+        MemorySaverModeExceptionListAction.REMOVE);
   }
 
   protected onTabbedAddDialogClose_() {
