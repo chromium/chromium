@@ -635,6 +635,28 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
       CheckPanelVisuals(tabs::kVerticalTabStripDefaultUncollapsedWidth, false));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    OrganizerPanelUiTest,
+    TabSearchButtonVisibleInExpandOnHoverWhenPreviouslyWider) {
+  RunTestSequence(
+      SetVerticalTabsEnabled(true, /*expand_on_hover_enabled=*/true),
+      ResizeVerticalTabsRegionToWidth(
+          tabs::kVerticalTabStripDefaultUncollapsedWidth + 100),
+      MoveMouseTo(kOmniboxElementId), CollapseTabStrip(), ExpandOnHover(),
+      WaitForShow(kTabSearchButtonElementId),
+      CheckView(kTabSearchButtonElementId,
+                [this](views::View* button) {
+                  auto* const top_container =
+                      BrowserElementsViews::From(browser())->GetView(
+                          kVerticalTabStripTopContainerElementId);
+                  return top_container->GetBoundsInScreen().Contains(
+                      button->GetBoundsInScreen());
+                }),
+      OpenOrganizerPanel(),
+      ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
+      CheckPanelVisuals(tabs::kVerticalTabStripDefaultUncollapsedWidth, false));
+}
+
 class OrganizerPanelAnimationUiTest : public OrganizerPanelUiTest {
  public:
   OrganizerPanelAnimationUiTest() = default;

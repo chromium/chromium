@@ -121,8 +121,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   const bool is_collapsing =
       state_controller_ && state_controller_->GetCollapseState() ==
                                tabs::VerticalTabStripCollapseState::kCollapsing;
-  const int uncollapsed_width =
-      state_controller_ ? state_controller_->GetUncollapsedWidth() : 0;
   const bool is_expand_on_hover =
       state_controller_ && state_controller_->IsExpandOnHoverEnabled();
   const bool keep_horizontal_layout =
@@ -273,14 +271,12 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
               LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
     }
 
+    const int horizontal_padding =
+        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
     const int collapsed_width =
-        tabs::kVerticalTabStripCollapsedWidth -
-        2 * GetLayoutConstant(
-                LayoutConstant::kVerticalTabStripHorizontalPadding);
+        tabs::kVerticalTabStripCollapsedWidth - 2 * horizontal_padding;
     const int expected_uncollapsed_width =
-        uncollapsed_width -
-        2 * GetLayoutConstant(
-                LayoutConstant::kVerticalTabStripHorizontalPadding);
+        tabs::kVerticalTabStripDefaultUncollapsedWidth - 2 * horizontal_padding;
     const int layout_width =
         keep_horizontal_layout
             ? std::max(host_size.width(), expected_uncollapsed_width)
@@ -502,18 +498,22 @@ bool VerticalTabStripTopContainer::ShouldShowSegmentedControl(
     return false;
   }
 
-  const bool is_collapsed = state_controller_->GetCollapseState() !=
-                            tabs::VerticalTabStripCollapseState::kExpanded;
-  if (is_collapsed && !state_controller_->IsExpandOnHoverEnabled()) {
+  const auto collapse_state = state_controller_->GetCollapseState();
+  if (collapse_state == tabs::VerticalTabStripCollapseState::kCollapsed) {
+    return state_controller_->IsExpandOnHoverEnabled();
+  }
+  if (collapse_state == tabs::VerticalTabStripCollapseState::kCollapsing &&
+      !state_controller_->IsExpandOnHoverEnabled()) {
     return false;
   }
 
   const int horizontal_padding =
       GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
   const int effective_tab_strip_width =
-      is_collapsed ? std::max(available_width + 2 * horizontal_padding,
-                              state_controller_->GetUncollapsedWidth())
-                   : available_width + 2 * horizontal_padding;
+      collapse_state == tabs::VerticalTabStripCollapseState::kCollapsing
+          ? std::max(available_width + 2 * horizontal_padding,
+                     state_controller_->GetUncollapsedWidth())
+          : available_width + 2 * horizontal_padding;
   return effective_tab_strip_width >
          organizer_panel::kOrganizerPanelMinWidth -
              organizer_panel::kOrganizerPanelMinOverlap;

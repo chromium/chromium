@@ -359,15 +359,14 @@ TEST_F(VerticalTabStripTopContainerTest,
   EXPECT_FALSE(combo_button()->GetVisible());
 
   // When fully expanded on hover, the segmented control is visible and fits
-  // within the container width.
-  top_container()->SetSize(gfx::Size(300, 40));
-  views::ProposedLayout layout = top_container()->CalculateProposedLayout(
-      views::SizeBounds(top_container()->size()));
-  auto it = std::ranges::find(layout.child_layouts, segmented_control(),
-                              &views::ChildLayout::child_view);
-  ASSERT_NE(it, layout.child_layouts.end());
-  EXPECT_TRUE(it->visible);
-  EXPECT_LE(it->bounds.right(), top_container()->width());
+  // within the default expand-on-hover container width even when the
+  // uncollapsed width is wider.
+  const int expanded_on_hover_container_width =
+      tabs::kVerticalTabStripDefaultUncollapsedWidth -
+      2 * GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+  LayoutView(expanded_on_hover_container_width);
+  EXPECT_TRUE(segmented_control()->GetVisible());
+  EXPECT_LE(segmented_control()->bounds().right(), top_container()->width());
 
   // When expand on hover is disabled while collapsed, segmented control is
   // hidden and combo button is shown.
@@ -375,6 +374,61 @@ TEST_F(VerticalTabStripTopContainerTest,
   LayoutView(tabs::kVerticalTabStripCollapseSnapWidth - 10);
   EXPECT_FALSE(segmented_control()->GetVisible());
   EXPECT_TRUE(combo_button()->GetVisible());
+}
+
+TEST_F(VerticalTabStripTopContainerTest,
+       CollapsedExpandOnHoverFromNarrowWidthShowsSegmentedControl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "true"}});
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  constexpr int kNarrowUncollapsedWidth = 180;
+  controller()->SetUncollapsedWidth(kNarrowUncollapsedWidth);
+  controller()->SetExpandOnHoverEnabled(true);
+
+  const int horizontal_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+  const int narrow_container_width =
+      kNarrowUncollapsedWidth - 2 * horizontal_padding;
+  const int combo_width = combo_button()
+                              ->GetPreferredSizeForOrientation(
+                                  views::LayoutOrientation::kHorizontal)
+                              .width();
+  ASSERT_GT(segmented_control()->GetPreferredSize().width(), combo_width);
+
+  const int caption_button_width =
+      narrow_container_width - collapse_button()->GetPreferredSize().width() -
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding) -
+      combo_width - 1;
+  ASSERT_GT(caption_button_width, 0);
+  top_container()->SetCaptionButtonWidthForLayout(caption_button_width);
+
+  // While expanded (and during kCollapsing) from a narrow strip,
+  // ShouldShowSegmentedControl matches the narrow pre-collapse width so
+  // WillWrapDueToOverflow continues to measure the combo button.
+  EXPECT_FALSE(top_container()->WillWrapDueToOverflow(narrow_container_width));
+  test_delegate().SetIsCollapsing(true);
+  EXPECT_FALSE(top_container()->WillWrapDueToOverflow(narrow_container_width));
+
+  test_delegate().SetIsCollapsing(false);
+  controller()->RequestCollapse(true);
+  EXPECT_TRUE(controller()->IsCollapsed());
+
+  // Once collapsed with expand-on-hover enabled, segmented control is shown as
+  // soon as hover expansion begins (even below the organizer panel threshold)
+  // and fits within the default expand-on-hover container width.
+  LayoutView(tabs::kVerticalTabStripCollapseSnapWidth - 10);
+  EXPECT_TRUE(segmented_control()->GetVisible());
+  EXPECT_FALSE(combo_button()->GetVisible());
+
+  const int expanded_on_hover_container_width =
+      tabs::kVerticalTabStripDefaultUncollapsedWidth - 2 * horizontal_padding;
+  LayoutView(expanded_on_hover_container_width);
+  EXPECT_TRUE(segmented_control()->GetVisible());
+  EXPECT_LE(segmented_control()->bounds().right(), top_container()->width());
 }
 
 TEST_F(VerticalTabStripTopContainerTest,
@@ -420,9 +474,12 @@ TEST_F(VerticalTabStripTopContainerTest,
   EXPECT_FALSE(combo_button()->layer()->clip_rect().IsEmpty());
 
   // When fully expanded on hover, the combo button is visible, fits within
-  // the container width, and has no layer clip rect so focus rings are not
-  // clipped.
-  LayoutView(300);
+  // the default expand-on-hover container width even when the uncollapsed
+  // width is wider, and has no layer clip rect so focus rings are not clipped.
+  const int expanded_on_hover_container_width =
+      tabs::kVerticalTabStripDefaultUncollapsedWidth -
+      2 * GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+  LayoutView(expanded_on_hover_container_width);
   EXPECT_TRUE(combo_button()->GetVisible());
   EXPECT_LE(combo_button()->bounds().right(), top_container()->width());
   EXPECT_TRUE(combo_button()->layer()->clip_rect().IsEmpty());
