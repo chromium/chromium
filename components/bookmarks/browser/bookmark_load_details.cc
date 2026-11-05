@@ -138,13 +138,24 @@ void BookmarkLoadDetails::AddManagedNode(
 }
 
 void BookmarkLoadDetails::CreateIndices() {
-  local_or_syncable_uuid_index_.insert(root_node_.get());
   static_assert(kNumDefaultTopLevelPermanentFolders == 3u,
                 "The code below assumes three permanent nodes");
+
+  size_t local_or_syncable_node_count = 1;
+  size_t account_node_count = 0;
   for (const auto& child : root_node_->children()) {
-    if (child.get() == account_bb_node_ ||
-        child.get() == account_other_folder_node_ ||
-        child.get() == account_mobile_folder_node_) {
+    if (IsAccountPermanentNode(child.get())) {
+      account_node_count += child->GetTotalNodeCount();
+    } else {
+      local_or_syncable_node_count += child->GetTotalNodeCount();
+    }
+  }
+  local_or_syncable_uuid_index_.reserve(local_or_syncable_node_count);
+  account_uuid_index_.reserve(account_node_count);
+
+  local_or_syncable_uuid_index_.insert(root_node_.get());
+  for (const auto& child : root_node_->children()) {
+    if (IsAccountPermanentNode(child.get())) {
       // Use a dedicated index for account folders and desdendants.
       AddNodeToIndexRecursive(child.get(), account_uuid_index_);
     } else {
@@ -153,6 +164,12 @@ void BookmarkLoadDetails::CreateIndices() {
   }
 
   url_index_ = base::MakeRefCounted<UrlIndex>(std::move(root_node_));
+}
+
+bool BookmarkLoadDetails::IsAccountPermanentNode(
+    const BookmarkNode* node) const {
+  return node == account_bb_node_ || node == account_other_folder_node_ ||
+         node == account_mobile_folder_node_;
 }
 
 void BookmarkLoadDetails::ResetPermanentNodePointers() {

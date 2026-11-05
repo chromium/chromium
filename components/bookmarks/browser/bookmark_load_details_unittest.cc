@@ -93,6 +93,8 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithoutAccountNodes) {
   const UuidIndex local_or_syncable_uuid_index =
       details.owned_local_or_syncable_uuid_index();
   const UuidIndex account_uuid_index = details.owned_account_uuid_index();
+  EXPECT_TRUE(details.owned_local_or_syncable_uuid_index().empty());
+  EXPECT_TRUE(details.owned_account_uuid_index().empty());
 
   EXPECT_TRUE(account_uuid_index.empty());
 
@@ -171,6 +173,8 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithAccountNodes) {
   const UuidIndex local_or_syncable_uuid_index =
       details.owned_local_or_syncable_uuid_index();
   const UuidIndex account_uuid_index = details.owned_account_uuid_index();
+  EXPECT_TRUE(details.owned_local_or_syncable_uuid_index().empty());
+  EXPECT_TRUE(details.owned_account_uuid_index().empty());
 
   // Permanent folders should be present in the local-or-syncable index.
   EXPECT_EQ(FindNodeByUuid(local_or_syncable_uuid_index,

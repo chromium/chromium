@@ -59,7 +59,10 @@ static_library("browser") {
     "uuid_index.h",
   ]
 
-  public_deps = [ "//components/bookmarks/common" ]
+  public_deps = [
+    "//components/bookmarks/common",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   deps = [
     "//base",

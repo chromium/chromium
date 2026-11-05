@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_UUID_INDEX_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_UUID_INDEX_H_
 
-#include <unordered_set>
-
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace bookmarks {
 
@@ -45,9 +45,9 @@ class NodeUuidHash {
 };
 
 using UuidIndex =
-    std::unordered_set<raw_ptr<const BookmarkNode, CtnExperimental>,
-                       NodeUuidHash,
-                       NodeUuidEquality>;
+    absl::flat_hash_set<raw_ptr<const BookmarkNode, CtnExperimental>,
+                        NodeUuidHash,
+                        NodeUuidEquality>;
 
 }  // namespace bookmarks
 

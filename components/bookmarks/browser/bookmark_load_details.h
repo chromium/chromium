@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -57,11 +58,17 @@ class BookmarkLoadDetails {
   }
 
   UuidIndex owned_local_or_syncable_uuid_index() {
-    return std::move(local_or_syncable_uuid_index_);
+    // Use `std::exchange` instead of `std::move` on Abseil sets, because on
+    // MSAN sanitizer builds, it considers nodes being left in undefined state
+    // as an error. So instead, we use `std::exchange` to zero out the value.
+    return std::exchange(local_or_syncable_uuid_index_, {});
   }
 
   UuidIndex owned_account_uuid_index() {
-    return std::move(account_uuid_index_);
+    // Use `std::exchange` instead of `std::move` on Abseil sets, because on
+    // MSAN sanitizer builds, it considers nodes being left in undefined state
+    // as an error. So instead, we use `std::exchange` to zero out the value.
+    return std::exchange(account_uuid_index_, {});
   }
 
   // Max id of the nodes.
@@ -143,6 +150,8 @@ class BookmarkLoadDetails {
   void AddNodeToIndexRecursive(BookmarkNode* node, UuidIndex& uuid_index);
 
   const BookmarkNode* GetRootNode() const;
+
+  bool IsAccountPermanentNode(const BookmarkNode* node) const;
 
   std::unique_ptr<BookmarkNode> root_node_;
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
