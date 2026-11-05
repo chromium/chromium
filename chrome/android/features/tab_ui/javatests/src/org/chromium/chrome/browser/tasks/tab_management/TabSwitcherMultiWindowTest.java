@@ -51,10 +51,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for Multi-window related behavior in grid tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
 @Restriction(DeviceFormFactor.PHONE)
 @MaxAndroidSdkLevel(value = VERSION_CODES.R, reason = "https://crbug.com/40215137")
 @Batch(Batch.PER_CLASS)

@@ -28,10 +28,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ThumbnailFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
@@ -44,7 +42,6 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Tests for the thumbnail view in Grid Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Restriction(DeviceFormFactor.PHONE)
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherThumbnailTest {
