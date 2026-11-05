@@ -63,7 +63,6 @@ source_set("autofill") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill/payments",
-    "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/passwords",
     "//components/application_locale_storage",
     "//components/autofill/content/browser",

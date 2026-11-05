@@ -8,7 +8,6 @@
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/actions/action_id.h"
@@ -83,15 +82,9 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   bool IsBubbleManagerEnabled() const;
 
-  // Migrated page action bubble controller subclasses should override this
-  // method to supply their page action's `ActionId`.
+  // Subclasses should override this method to supply their page action's
+  // `ActionId`.
   virtual std::optional<actions::ActionId> GetActionIdForPageAction();
-
-  // This method should only be overridden if `GetActionIdForPageAction` is not
-  // overridden (page action not migrated yet) or to override the
-  // `ActionId`->`PageActionIconType` mapping defined in
-  // `page_action_properties_provider.cc`.
-  virtual std::optional<PageActionIconType> GetPageActionIconType();
 
   // Subclasses should implement this method to actually show the bubble and
   // potentially log metrics.
@@ -101,11 +94,11 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   virtual void UpdatePageActionIcon();
 
   // Subclasses can override this method to provide custom page action
-  // visibility logic with the new page action framework.
+  // visibility logic.
   virtual bool ShouldShowPageAction();
 
-  // For migrated page actions, subclasses can override this method to supply
-  // custom tooltip text.
+  // Subclasses can override this method to supply custom tooltip text for their
+  // page action.
   virtual std::optional<std::u16string> GetPageActionTooltipText();
 
   // Returns `false` if a bubble is already queued to be shown.

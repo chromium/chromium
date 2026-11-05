@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -48,27 +46,6 @@ bool AutofillBubbleControllerBase::ShouldReshowOnTabVisible() const {
   return false;
 }
 
-std::optional<PageActionIconType>
-AutofillBubbleControllerBase::GetPageActionIconType() {
-#if !BUILDFLAG(IS_ANDROID)
-  std::optional<actions::ActionId> action_id = GetActionIdForPageAction();
-  if (!action_id.has_value()) {
-    return std::nullopt;
-  }
-
-  page_actions::PageActionPropertiesProvider page_action_properties_provider;
-  if (!page_action_properties_provider.Contains(*action_id)) {
-    return std::nullopt;
-  }
-
-  const auto& properties =
-      page_action_properties_provider.GetProperties(*action_id);
-  return properties.type;
-#else
-  return std::nullopt;
-#endif  //! BUILDFLAG(IS_ANDROID)
-}
-
 std::optional<actions::ActionId>
 AutofillBubbleControllerBase::GetActionIdForPageAction() {
   return std::nullopt;
@@ -93,13 +70,7 @@ AutofillBubbleControllerBase::GetPageActionTooltipText() {
 void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  std::optional<PageActionIconType> icon_type = GetPageActionIconType();
-  if (!icon_type.has_value()) {
-    return;
-  }
-
   std::optional<actions::ActionId> action_id = GetActionIdForPageAction();
-
   if (!action_id.has_value()) {
     return;
   }
