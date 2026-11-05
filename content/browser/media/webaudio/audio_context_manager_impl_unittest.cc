@@ -248,4 +248,67 @@ TEST_F(AudioContextManagerImplTest,
   EXPECT_EQ(0u, ukm_entries.size());
 }
 
+TEST_F(AudioContextManagerImplTest,
+       AudioContextAudiblePlaybackStartedIgnoredIfFrameInactive) {
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  audio_context_manager()->AudioContextCreated(1);
+
+  audio_context_manager()->AudioContextAudiblePlaybackStarted(1);
+  clock().Advance(base::Seconds(5));
+  audio_context_manager()->AudioContextAudiblePlaybackStopped(1);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+}
+
+TEST_F(AudioContextManagerImplTest,
+       RecordAudibleTimeMainFrameWhenStoppedWhileInactive) {
+  audio_context_manager()->AudioContextCreated(1);
+  audio_context_manager()->AudioContextAudiblePlaybackStarted(1);
+  clock().Advance(base::Seconds(3));
+
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  audio_context_manager()->AudioContextAudiblePlaybackStopped(1);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder().ExpectEntryMetric(ukm_entries[0],
+                                        UkmEntry::kIsMainFrameName, true);
+  test_ukm_recorder().ExpectEntryMetric(ukm_entries[0],
+                                        UkmEntry::kAudibleTimeName, 3000);
+}
+
+TEST_F(AudioContextManagerImplTest, RecordAudibleTimeSubframe) {
+  auto* main_frame_tester = RenderFrameHostTester::For(main_rfh());
+  main_frame_tester->InitializeRenderFrameIfNeeded();
+  auto* subframe = static_cast<RenderFrameHostImpl*>(
+      main_frame_tester->AppendChild("subframe"));
+  subframe->OnMediaStreamAdded(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream);
+
+  mojo::Remote<blink::mojom::AudioContextManager> service_remote;
+  auto& subframe_manager = AudioContextManagerImpl::CreateForTesting(
+      *subframe, service_remote.BindNewPipeAndPassReceiver());
+  subframe_manager.set_clock_for_testing(&clock());
+
+  subframe_manager.AudioContextCreated(1);
+  subframe_manager.AudioContextAudiblePlaybackStarted(1);
+  clock().Advance(base::Seconds(3));
+  subframe_manager.AudioContextAudiblePlaybackStopped(1);
+
+  subframe->OnMediaStreamRemoved(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder().ExpectEntryMetric(ukm_entries[0],
+                                        UkmEntry::kIsMainFrameName, false);
+  test_ukm_recorder().ExpectEntryMetric(ukm_entries[0],
+                                        UkmEntry::kAudibleTimeName, 3000);
+}
+
 }  // namespace content

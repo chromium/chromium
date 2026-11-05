@@ -76,11 +76,12 @@ void AudioContextManagerImpl::AudioContextAudiblePlaybackStarted(
     return;
   }
 
-  // Reject audibility assertions if the frame has no active audio output
-  // streams.
+  // Reject audibility assertions if the frame is inactive (e.g., in
+  // BackForwardCache) or has no active audio output streams.
   auto& render_frame_host_impl =
       static_cast<RenderFrameHostImpl&>(render_frame_host());
-  if (!render_frame_host_impl.HasMediaStreams(
+  if (!render_frame_host_impl.IsActive() ||
+      !render_frame_host_impl.HasMediaStreams(
           RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream)) {
     return;
   }
@@ -130,9 +131,11 @@ void AudioContextManagerImpl::RecordAudibleTime(base::TimeDelta audible_time) {
   CHECK(!render_frame_host().IsInLifecycleState(
       RenderFrameHost::LifecycleState::kPrerendering));
 
+  // IsInPrimaryMainFrame() is false once a frame leaves kActive; checking
+  // !GetParentOrOuterDocument() matches GetPageUkmSourceId() across freezes.
   ukm::builders::Media_WebAudio_AudioContext_AudibleTime(
       render_frame_host().GetPageUkmSourceId())
-      .SetIsMainFrame(render_frame_host().IsInPrimaryMainFrame())
+      .SetIsMainFrame(!render_frame_host().GetParentOrOuterDocument())
       .SetAudibleTime(GetBucketedTimeInMilliseconds(audible_time))
       .Record(ukm_recorder);
 }
