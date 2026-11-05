@@ -2058,7 +2058,7 @@ export const ComposeboxEmbedderMixin =
               this.queryAutocomplete(/* clearMatches= */ true);
             }
 
-            if (!this.disableCaretColorAnimation) {
+            if (!this.disableCaretColorAnimation && this.willFulfillInAim) {
               this.getInputElement().resetCaret();
             }
           } else {

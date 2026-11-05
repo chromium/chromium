@@ -45,7 +45,7 @@ suite('NewTabPageComposeboxTest', () => {
       });
 
   test(
-      'updates search-animated-glow glowMode based on willFulfillInAim',
+      'updates search-animated-glow glowMode and caret animation based on willFulfillInAim',
       async () => {
         createComposeboxElement(testProxy);
         await microtasksFinished();
@@ -53,16 +53,19 @@ suite('NewTabPageComposeboxTest', () => {
         const animatedGlow = testProxy.element.shadowRoot
                                  .querySelector<SearchAnimatedGlowElement>(
                                      'search-animated-glow');
+        const composeboxInput = testProxy.element.getInputElement();
         assertTrue(!!animatedGlow);
         assertTrue(testProxy.element.willFulfillInAim);
         assertTrue(testProxy.element.hasAttribute('will-fulfill-in-aim'));
         assertEquals(GlowMode.OUTER_GLOW, animatedGlow.glowMode);
+        assertFalse(composeboxInput.disableCaretColorAnimation);
 
         testProxy.element.willFulfillInAim = false;
         await microtasksFinished();
 
         assertFalse(testProxy.element.hasAttribute('will-fulfill-in-aim'));
         assertEquals(GlowMode.NONE, animatedGlow.glowMode);
+        assertTrue(composeboxInput.disableCaretColorAnimation);
       });
 
   test('ntp composebox uses configured forward submit icon', async () => {
