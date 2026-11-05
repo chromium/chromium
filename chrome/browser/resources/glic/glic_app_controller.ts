@@ -30,6 +30,8 @@ const kMinHoldLoadingTimeMs = loadTimeData.getInteger('minLoadingTimeMs');
 const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
 
 const kShowErrorAllowed = loadTimeData.getBoolean('showErrorAllowed');
+const kInvokeErrorRecoveryFixes =
+    loadTimeData.getBoolean('glicInvokeErrorRecoveryFixes');
 
 interface PageElementTypes {
   panelContainer: HTMLElement;
@@ -794,9 +796,11 @@ export class GlicAppController implements WebviewDelegate {
       return;
     }
     if (this.panelStateKind === PanelStateKind.kHidden) {
-      this.cancelTimeout();
-      this.trackLoadingStageEnd();
-      this.setState(WebUiState.kWarmed);
+      if (!kInvokeErrorRecoveryFixes) {
+        this.cancelTimeout();
+        this.trackLoadingStageEnd();
+        this.setState(WebUiState.kWarmed);
+      }
       return;
     }
     this.startClientLoadTimeout();
@@ -988,7 +992,11 @@ export class GlicAppController implements WebviewDelegate {
     if (this.panelStateKind !== PanelStateKind.kHidden) {
       if (this.state === WebUiState.kWarmed) {
         this.startWarmedTimeout();
-      } else if (this.state === WebUiState.kGuestLoaded && !this.loadingTimer) {
+      } else if (
+          ((kInvokeErrorRecoveryFixes &&
+            this.state === WebUiState.kFinishLoading) ||
+           this.state === WebUiState.kGuestLoaded) &&
+          !this.loadingTimer) {
         this.startClientLoadTimeout();
       }
     }

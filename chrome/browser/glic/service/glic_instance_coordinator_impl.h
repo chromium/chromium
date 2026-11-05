@@ -116,8 +116,8 @@ class GlicInstanceCoordinatorImpl
                                      bool enabled) override;
   bool IsInvoking(const GlicInstanceImpl* instance) const override;
   void CancelInvoke(GlicInstanceImpl* instance) override;
-  void CancelShowOnlyInvokes(GlicInstanceImpl* instance,
-                             GlicInvokeError error) override;
+  void CancelInvokesOnPanelClose(GlicInstanceImpl* instance,
+                                 GlicInvokeError error) override;
   // TODO(crbug.com/545714879): Remove OnInvoked, OnUserInputSubmitted, and
   // OnFreOptInShown delegate overrides when GlicOnboardingTracker is refactored
   // to free-standing profile helper functions.

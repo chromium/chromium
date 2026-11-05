@@ -260,6 +260,8 @@ BASE_DECLARE_FEATURE(kGlicShowNotTellTutorials);
 extern const base::FeatureParam<int> kGlicShowNotTellTutorialsArm;
 
 BASE_DECLARE_FEATURE(kGlicActivityHub);
+
+BASE_DECLARE_FEATURE(kGlicInvokeErrorRecoveryFixes);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

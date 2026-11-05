@@ -100,7 +100,15 @@ class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
   // puts it into live mode. The active tab stays bound to the instance.
   [[nodiscard]] TestResult<GlicInstanceImpl*> OpenLiveModeFloatyForActiveTab() {
     ASSIGN_OR_RETURN(GlicInstanceImpl * instance,
-                     OpenGlicForActiveTabAndDetach());
+                     OpenGlicForActiveTabAndWaitIdle());
+    if (!instance->IsDetached()) {
+      instance->Detach(*GetTabListInterface()->GetActiveTab());
+      bool success = RunUntil([instance]() { return instance->IsDetached(); },
+                              "Failed to wait for Glic to detach");
+      if (!success) {
+        return base::unexpected("Failed to wait for Glic to detach");
+      }
+    }
     RETURN_IF_ERROR(EnterLiveMode(instance));
     return instance;
   }
@@ -2325,7 +2333,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        LiveModeForceFloatingTextModeRequestsTextMode) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
+                       OpenGlicForActiveTabAndWaitIdle());
   ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab));
   ASSERT_OK(EnterLiveMode(instance));
 
@@ -2744,6 +2753,35 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now the success callback should be called.
   EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWaitingForFreCompletionEndsWithPanelClosed) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(Target(*tab),
+                            mojom::InvocationSource::kCaptureRegionHotkey);
+  options.fre_override = mojom::FreOverride::kTrustFirstClick;
+  options.fre_completion_wait_mode = FreCompletionWaitMode::kDefault;
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
+
+  // Wait for the client to finish loading so the invocation is blocked in
+  // WaitForFreCompletionTask.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return instance->host().client_load_state() == ClientLoadState::kReady;
+  }));
+  EXPECT_FALSE(error_future.IsReady());
+
+  instance->CloseAllEmbedders();
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
+  ASSERT_OK(WaitForInstanceDeletion(weak_instance));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
@@ -3210,6 +3248,36 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Glic.InvokeResult2.ExperimentalTriggering", GlicInvokeResult::kSuccess,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeWebUiBrowserTest,
+                       ShutdownWhileWaitingForLoadCancelsCleanly) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<GlicInvokeError> error_future;
+
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+  coordinator().Shutdown();
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInstanceDestroyedShutdown);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       ShutdownWhileWaitingForLoadCancelsCleanly) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<GlicInvokeError> error_future;
+
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+  coordinator().Shutdown();
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInstanceDestroyedShutdown);
 }
 
 IN_PROC_BROWSER_TEST_F(

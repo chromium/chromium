@@ -86,10 +86,12 @@ GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
 
 GlicWebUIContentsManager::~GlicWebUIContentsManager() {
   page_handler_ = nullptr;
-  auto callbacks = std::move(pending_wait_for_load_callbacks_);
-  pending_wait_for_load_callbacks_.clear();
-  for (auto& [_, callback] : callbacks) {
-    std::move(callback).Run(/*failed=*/true);
+  if (!base::FeatureList::IsEnabled(features::kGlicInvokeErrorRecoveryFixes)) {
+    auto callbacks = std::move(pending_wait_for_load_callbacks_);
+    pending_wait_for_load_callbacks_.clear();
+    for (auto& [_, callback] : callbacks) {
+      std::move(callback).Run(/*failed=*/true);
+    }
   }
   SetContentsManagerForWebContents(web_contents(), nullptr);
   Observe(nullptr);

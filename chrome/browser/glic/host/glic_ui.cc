@@ -377,6 +377,9 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableStructuredYieldMetadata",
       base::FeatureList::IsEnabled(features::kGlicStructuredYieldMetadata));
+  source->AddBoolean(
+      "glicInvokeErrorRecoveryFixes",
+      base::FeatureList::IsEnabled(features::kGlicInvokeErrorRecoveryFixes));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

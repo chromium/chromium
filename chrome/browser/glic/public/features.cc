@@ -355,4 +355,7 @@ const base::FeatureParam<int> kGlicShowNotTellTutorialsArm{
     &kGlicShowNotTellTutorials, "tutorials_arm", 0};
 
 BASE_FEATURE(kGlicActivityHub, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicInvokeErrorRecoveryFixes,
+             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
 }  // namespace features

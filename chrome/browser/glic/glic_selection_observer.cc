@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_selection_observer.h"
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -476,6 +478,13 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
       instance->SendAdditionalContext(std::move(context));
       return;
     }
+  }
+
+  // Clearing a previous selection only matters while the panel is open to
+  // display it; never start an invocation just to send an empty selection.
+  if (selected_text.empty() &&
+      base::FeatureList::IsEnabled(features::kGlicInvokeErrorRecoveryFixes)) {
+    return;
   }
 
   // Otherwise fall back to an invocation so the surface is resolved and shown

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/service/glic_invoke_task.h"
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -299,11 +301,13 @@ WaitForClientReadyTask::~WaitForClientReadyTask() = default;
 
 void WaitForClientReadyTask::Start(base::OnceClosure done_callback) {
   done_callback_ = std::move(done_callback);
-  if (host_->client_load_state() == ClientLoadState::kReady) {
-    CheckState(ClientLoadState::kReady);
-    return;
+  if (base::FeatureList::IsEnabled(features::kGlicInvokeErrorRecoveryFixes)) {
+    if (host_->client_load_state() == ClientLoadState::kReady) {
+      CheckState(ClientLoadState::kReady);
+      return;
+    }
+    observation_.Observe(&*host_);
   }
-  observation_.Observe(&*host_);
   // TODO(b/573171097): Have Invoke send an explicit load request to the
   // instance/host that is guaranteed to resolve, rather than triggering load
   // and waiting for load separately.
@@ -318,6 +322,9 @@ void WaitForClientReadyTask::OnWaitForLoadComplete(bool failed) {
     CheckState(ClientLoadState::kError);
     return;
   }
+  if (!base::FeatureList::IsEnabled(features::kGlicInvokeErrorRecoveryFixes)) {
+    observation_.Observe(&*host_);
+  }
   CheckState(host_->client_load_state());
 }
 
@@ -325,7 +332,8 @@ void WaitForClientReadyTask::ClientLoadStateChanged(ClientLoadState state) {
   // Before `WaitForLoad()` resolves, `ClientLoadState::kError` may reflect a
   // stale error from before `IntentToShow()` triggered a reload. Readiness is
   // authoritative in the browser process and can resolve immediately.
-  if (state == ClientLoadState::kError && !wait_for_load_complete_) {
+  if (base::FeatureList::IsEnabled(features::kGlicInvokeErrorRecoveryFixes) &&
+      state == ClientLoadState::kError && !wait_for_load_complete_) {
     return;
   }
   CheckState(state);
