@@ -65,6 +65,25 @@ bool NativePaintWorkletData::UpdateCompositedPaintStatus(
   return changed;
 }
 
+void NativePaintWorkletData::NotifyNotComposited(Animation* animation) {
+  if (GetAnimation() != animation) {
+    return;
+  }
+
+  if (composited_paint_status_ == CompositedPaintStatus::kNeedsRepaint &&
+      animation->GetCompositingDecisionState().disposition ==
+          CompositorAnimations::kAnimationHasNoVisibleChange) {
+    // Once painted, we'll get a fresh compositing decision. Leave in
+    // kNeedsRepaint state.
+    return;
+  }
+
+  bool changed = SetStatus(CompositedPaintStatus::kNotComposited);
+  if (changed) {
+    TriggerPaintInvalidation();
+  }
+}
+
 void NativePaintWorkletData::MaybeSetNeedsKeyframeSnapshot(
     const Element& element,
     const ComputedStyle& new_style,

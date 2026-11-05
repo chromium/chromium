@@ -1435,4 +1435,45 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   EXPECT_EQ(curve->GetTypedKeyframe(0).value, Color(1, 2, 3));
 }
 
+TEST_F(BackgroundColorPaintDefinitionTest, FinishOffscreen) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        from { background-color: red; }
+        to { background-color: green; }
+      }
+      #target {
+        animation: colorize 1s forwards;
+        height: 100px;
+        width: 100px;
+      }
+      #spacer {
+        height: 10000px;
+      }
+    </style>
+    <div id="target"></div>
+    <div id="spacer"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  EXPECT_EQ(element_animations->Animations().size(), 1u);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  Animation* animation = GetAnimation(element);
+  ASSERT_TRUE(animation);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Scroll the animation far off-screen and finish it.
+  GetDocument().scrollingElement()->setScrollTop(10000);
+  UpdateAllLifecyclePhasesForTest();
+  animation->finish(ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
+
 }  // namespace blink

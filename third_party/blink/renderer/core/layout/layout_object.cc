@@ -231,17 +231,32 @@ inline bool CalculateCanTraversePhysicalFragments(const LayoutObject& obj) {
   return true;
 }
 
-bool HasNativeBackgroundPainter(Node* node) {
+bool MaybeHasNativeBackgroundPainter(Node* node) {
   Element* element = DynamicTo<Element>(node);
-  if (!element)
+  if (!element) {
     return false;
+  }
 
   ElementAnimations* element_animations = element->GetElementAnimations();
-  if (!element_animations)
+  if (!element_animations) {
     return false;
+  }
 
-  return element_animations->CompositedBackgroundColorStatus() ==
-         ElementAnimations::CompositedPaintStatus::kComposited;
+  NativePaintWorkletData* npw_data =
+      element_animations->GetBackgroundColorNpwData();
+  if (!npw_data) {
+    return false;
+  }
+
+  switch (npw_data->GetCompositedPaintStatus()) {
+    case ElementAnimations::CompositedPaintStatus::kComposited:
+    case ElementAnimations::CompositedPaintStatus::kNeedsRepaint:
+      return true;
+
+    case ElementAnimations::CompositedPaintStatus::kNotComposited:
+    case ElementAnimations::CompositedPaintStatus::kNoAnimation:
+      return false;
+  }
 }
 
 bool NeedsForcedUpdateForBackgroundPainter(Node* node,
@@ -253,6 +268,12 @@ bool NeedsForcedUpdateForBackgroundPainter(Node* node,
       element_animations->GetBackgroundColorNpwData();
   CHECK(npw_data);
   if (npw_data->NeedsKeyframeSnapshotUpdate()) {
+    return true;
+  }
+
+  if (npw_data->GetCompositedPaintStatus() ==
+      ElementAnimations::CompositedPaintStatus::kNeedsRepaint) {
+    // Requires a fresh compositing decision.
     return true;
   }
 
@@ -293,7 +314,7 @@ StyleDifference AdjustForCompositableAnimationPaint(
   DCHECK(new_style);
 
   bool skip_background_color_paint_invalidation =
-      HasNativeBackgroundPainter(node)
+      MaybeHasNativeBackgroundPainter(node)
           ? !NeedsForcedUpdateForBackgroundPainter(
                 node, diff.background_color_changed)
           : !diff.background_color_changed;

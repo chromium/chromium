@@ -1636,6 +1636,46 @@ TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
           UpdatesNeededForNextFrame::kPaintInvalidated));
 }
 
+TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationFinishOffscreen) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end) forwards;
+        }
+        #spacer {
+            height: 10000px;
+        }
+    </style>
+    <div id="target" style="width: 100px; height: 100px"></div>
+    <div id="spacer"></div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  // Scroll the animation far off-screen and finish it.
+  GetDocument().scrollingElement()->setScrollTop(10000);
+  UpdateAllLifecyclePhasesForTest();
+  animation->finish(ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNotComposited);
+  EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*element->GetLayoutObject()),
+            nullptr);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
+
 // Test the case where a 2nd composited clip path animation causes a fallback to
 // the main thread. In this case, the paint properties should update to avoid
 // any crashes or paint worklets existing beyond their validity.

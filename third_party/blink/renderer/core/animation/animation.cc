@@ -896,31 +896,20 @@ bool Animation::PreCommit(
   // animation may be able to start on the compositor.
   NativePaintWorkletReasons npw_reasons = GetNativePaintWorkletReasons();
   if (!compositor_state_ &&
-      npw_reasons != NativePaintWorkletProperties::kNoPaintWorklet &&
-      compositing_decision_.disposition !=
-          CompositorAnimations::kAnimationHasNoVisibleChange) {
+      npw_reasons != NativePaintWorkletProperties::kNoPaintWorklet) {
     KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
     Element* target =
         keyframe_effect ? keyframe_effect->EffectTarget() : nullptr;
     ElementAnimations* element_animations =
         target ? target->GetElementAnimations() : nullptr;
     if (element_animations) {
-      if (npw_reasons &
-          NativePaintWorkletProperties::kBackgroundColorPaintWorklet) {
-        NativePaintWorkletData* npw_data =
-            element_animations->GetBackgroundColorNpwData();
-        if (npw_data && npw_data->GetAnimation() == this) {
-          element_animations->SetCompositedBackgroundColorStatus(
-              ElementAnimations::CompositedPaintStatus::kNotComposited);
-        }
+      if (NativePaintWorkletData* npw_data =
+              element_animations->GetBackgroundColorNpwData()) {
+        npw_data->NotifyNotComposited(this);
       }
-      if (npw_reasons & NativePaintWorkletProperties::kClipPathPaintWorklet) {
-        NativePaintWorkletData* npw_data =
-            element_animations->GetClipPathNpwData();
-        if (npw_data && npw_data->GetAnimation() == this) {
-          element_animations->SetCompositedClipPathStatus(
-              ElementAnimations::CompositedPaintStatus::kNotComposited);
-        }
+      if (NativePaintWorkletData* npw_data =
+              element_animations->GetClipPathNpwData()) {
+        npw_data->NotifyNotComposited(this);
       }
     }
   }
