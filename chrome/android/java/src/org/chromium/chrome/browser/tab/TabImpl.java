@@ -638,7 +638,7 @@ class TabImpl implements Tab, TabInternal {
         mIsContentViewDeferred = deferred;
     }
 
-    public void didChangeCloseSignalInterceptStatus() {
+    void didChangeCloseSignalInterceptStatus() {
         for (TabObserver observer : mObservers) {
             observer.onDidChangeCloseSignalInterceptStatus();
         }
@@ -1304,11 +1304,6 @@ class TabImpl implements Tab, TabInternal {
             return false;
         }
 
-        if (mProfile == null) {
-            Log.e(TAG, "loadIfNeeded called with null profile");
-            return false;
-        }
-
         return true;
     }
 
@@ -1417,28 +1412,21 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private boolean maybeHandleBeforeUnload(Runnable proceedAction) {
-        if (!mBypassBeforeUnload) {
-            BeforeUnloadCallback callback =
-                    !isDestroyed() && getUserDataHost() != null
-                            ? getUserDataHost().getUserData(BeforeUnloadCallback.class)
-                            : null;
-            if (callback != null) {
-                Runnable onProceed =
-                        () -> {
-                            if (!isDestroyed()) {
-                                mBypassBeforeUnload = true;
-                                try {
-                                    proceedAction.run();
-                                } finally {
-                                    mBypassBeforeUnload = false;
-                                }
-                            }
-                        };
-                Runnable onCancel = () -> {};
-                return callback.handleBeforeUnload(onProceed, onCancel);
-            }
-        }
-        return false;
+        if (mBypassBeforeUnload || isDestroyed()) return false;
+
+        BeforeUnloadCallback callback = getUserDataHost().getUserData(BeforeUnloadCallback.class);
+        if (callback == null) return false;
+
+        Runnable onProceed =
+                () -> {
+                    if (!isDestroyed()) {
+                        mBypassBeforeUnload = true;
+                        proceedAction.run();
+                        mBypassBeforeUnload = false;
+                    }
+                };
+        Runnable onCancel = () -> {};
+        return callback.handleBeforeUnload(onProceed, onCancel);
     }
 
     @Override
@@ -1718,7 +1706,7 @@ class TabImpl implements Tab, TabInternal {
                 : new ImmutableWeakReference<>(null);
     }
 
-    protected void updateWebContentObscured(boolean obscureWebContent) {
+    void updateWebContentObscured(boolean obscureWebContent) {
         // Update whether or not the current native tab and/or web contents are
         // currently visible (from an accessibility perspective), or whether
         // they're obscured by another view.
@@ -1949,7 +1937,7 @@ class TabImpl implements Tab, TabInternal {
     }
 
     /** Hides the current {@link NativePage}, if any, and shows the {@link WebContents}'s view. */
-    void showRenderedPage() {
+    private void showRenderedPage() {
         // During title update, we prioritize titles in NativePage instead of those from
         // WebContents. Thus we should remove the obsolete NativePage before title update.
         if (mNativePage != null) hideNativePage(true, null);
@@ -2856,6 +2844,11 @@ class TabImpl implements Tab, TabInternal {
      * history load are used.
      */
     private void restoreIfNeeded() {
+        // The sole caller, loadIfNeeded(), already returns early for a frozen tab with no
+        // mWebContentsState.
+        assert !isFrozen() || mWebContentsState != null
+                : "crbug.com/40248349: A frozen tab must have WebContentsState to restore from.";
+
         // Attempts to display the Paint Preview representation of this Tab.
         if (isFrozen() && getWindowAndroid() != null) {
             StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
@@ -2866,13 +2859,8 @@ class TabImpl implements Tab, TabInternal {
             maybeInflateContentView();
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
-            if (isFrozen()) {
-                assert mWebContentsState != null
-                        : "crbug.com/40248349: A frozen tab must have WebContentsState to restore"
-                                + " from.";
-                if (mWebContentsState == null || !unfreezeContents(/* noRenderer= */ false)) {
-                    return;
-                }
+            if (isFrozen() && !unfreezeContents(/* noRenderer= */ false)) {
+                return;
             }
             if (!needsReload()) {
                 return;
@@ -3304,11 +3292,10 @@ class TabImpl implements Tab, TabInternal {
         if (mWebContents == null) return TabDestroyStatus.NO_SHUTDOWN;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
-                && ChromeFeatureList.isEnabled(
-                        SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                && mSensitiveContentClientObserver != null) {
             SensitiveContentClient.fromWebContents(mWebContents)
-                    .removeObserver(assumeNonNull(mSensitiveContentClientObserver));
+                    .removeObserver(mSensitiveContentClientObserver);
+            mSensitiveContentClientObserver = null;
         }
 
         if (mAutofillProvider != null) {
@@ -3326,9 +3313,9 @@ class TabImpl implements Tab, TabInternal {
         updateInteractableState();
 
         WebContents contentsToDestroy = mWebContents;
-        if (contentsToDestroy.getViewAndroidDelegate() != null
-                && contentsToDestroy.getViewAndroidDelegate() instanceof TabViewAndroidDelegate) {
-            ((TabViewAndroidDelegate) contentsToDestroy.getViewAndroidDelegate()).destroy();
+        if (contentsToDestroy.getViewAndroidDelegate()
+                instanceof TabViewAndroidDelegate tabViewAndroidDelegate) {
+            tabViewAndroidDelegate.destroy();
         }
         mWebContents = null;
         if (mWebContentsDelegate != null) {
