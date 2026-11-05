@@ -687,6 +687,8 @@ TEST_F(GeminiContainerMediatorTest,
   [mediator_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
                   dormantReason:ios::provider::GeminiDormantReason::kUserStop
+                          error:nil
+                      errorCode:ios::provider::GeminiErrorCode::kNone
                       sessionID:@"session_id"
                  conversationID:@"conversation_id"];
   EXPECT_THAT(delegate_.last_processing_status_changed_,

@@ -76,10 +76,11 @@ struct GeminiContainerUIState {
 // Updates the view mode and notifies the delegate if UI state changes.
 - (void)transitionToMode:(ios::provider::GeminiViewMode)mode;
 
-// Updates the processing status, manages the thinking timer internally, and
-// notifies the delegate if UI state changes.
+// Updates the processing status with an optional `error`, manages the thinking
+// timer internally, and notifies the delegate if UI state changes.
 - (void)transitionToProcessingStatus:
-    (ios::provider::GeminiClientMode)processingStatus;
+            (ios::provider::GeminiClientMode)processingStatus
+                               error:(NSError*)error;
 
 // Handles user tapping the new chat button and notifies the delegate with the
 // new zero-state state preserving the current detent.

@@ -736,6 +736,54 @@ TEST_F(GeminiSessionHandlerTest, TestLiveSessionDormantReasonRecordsPrompt) {
   histogram_tester_.ExpectUniqueSample(kSessionFirstPromptHistogram, true, 1);
 }
 
+// Tests that the error-forwarding `didUpdateProcessingStatus:...` overload
+// forwards error details to `geminiViewStateDelegate` and records prompts on
+// transition to thinking.
+TEST_F(GeminiSessionHandlerTest, TestLiveSessionErrorOverloadRecordsPrompt) {
+  NSString* client_id = GetClientID();
+  id mock_delegate = OCMProtocolMock(@protocol(GeminiViewStateDelegate));
+  session_handler_.geminiViewStateDelegate = mock_delegate;
+  OCMExpect([mock_delegate geminiUIDidAppear]);
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
+
+  static constexpr NSInteger kTestErrorCode = 1;
+  NSString* const kTestErrorDomain = @"TestDomain";
+  NSError* error = [NSError errorWithDomain:kTestErrorDomain
+                                       code:kTestErrorCode
+                                   userInfo:nil];
+  OCMExpect([mock_delegate
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                  dormantReason:ios::provider::GeminiDormantReason::kUnknown
+                          error:error
+                      errorCode:ios::provider::GeminiErrorCode::kGenericError
+                      sessionID:client_id
+                 conversationID:kTestServerID]);
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                  dormantReason:ios::provider::GeminiDormantReason::kServerPause
+                          error:error
+                      errorCode:ios::provider::GeminiErrorCode::kGenericError
+                      sessionID:client_id
+                 conversationID:kTestServerID];
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+
+  histogram_tester_.ExpectUniqueSample(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kLivePrompt, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kLivePrompt, 1);
+
+  [session_handler_ UIDidDisappearWithClientID:client_id
+                                      serverID:kTestServerID];
+
+  histogram_tester_.ExpectTotalCount(kGeminiSessionLengthWithPromptHistogram,
+                                     1);
+  histogram_tester_.ExpectTotalCount(kGeminiSessionLengthAbandonedHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(kSessionPromptCountHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSessionFirstPromptHistogram, true, 1);
+}
+
 // Tests that a session without prompts is classified as abandoned.
 TEST_F(GeminiSessionHandlerTest, TestAbandonedSessionWithoutPrompts) {
   NSString* client_id = GetClientID();

@@ -70,6 +70,7 @@
 using enum AssistantContainerDetent;
 using ios::provider::GeminiClientMode;
 using ios::provider::GeminiDormantReason;
+using ios::provider::GeminiErrorCode;
 using ios::provider::GeminiViewMode;
 using ios::provider::GeminiViewState;
 
@@ -572,12 +573,16 @@ class GeminiContainerMediatorTabHelperObserver
                    conversationID:(NSString*)conversationID {
   [self didUpdateProcessingStatus:processingStatus
                     dormantReason:GeminiDormantReason::kUnknown
+                            error:nil
+                        errorCode:GeminiErrorCode::kNone
                         sessionID:sessionID
                    conversationID:conversationID];
 }
 
 - (void)didUpdateProcessingStatus:(GeminiClientMode)processingStatus
                     dormantReason:(GeminiDormantReason)dormantReason
+                            error:(NSError*)error
+                        errorCode:(GeminiErrorCode)errorCode
                         sessionID:(NSString*)sessionID
                    conversationID:(NSString*)conversationID {
   if (_stateManager.processingStatus == processingStatus) {
@@ -588,7 +593,7 @@ class GeminiContainerMediatorTabHelperObserver
     _eventHandler->OnProcessingStatusChanged(processingStatus, dormantReason);
   }
 
-  [_stateManager transitionToProcessingStatus:processingStatus];
+  [_stateManager transitionToProcessingStatus:processingStatus error:error];
   [self updatePageContextForLiveProcessingStatus:processingStatus];
 }
 

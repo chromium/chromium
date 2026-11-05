@@ -155,6 +155,32 @@ enum class GeminiDormantReason {
   kServerPause,
 };
 
+// Error codes for Gemini client errors.
+// This needs to stay in sync with `GCRGeminiErrorCode`.
+enum class GeminiErrorCode {
+  // None of the errors below occurred, though an unmapped error may still have
+  // happened (e.g., non-gRPC WebChannel or `GTMSessionFetcher` transport
+  // failures).
+  kNone = 0,
+  kTermsOfServiceNotAccepted,
+  kVolumeIsTooLow,
+  kNoMicPermission,
+  kServerTimeout,
+  kUnspecified,
+  kGenericServerError,
+  kNoSpeechDetected,
+  kLivePausedDueToExternalAudio,
+  kNoCameraPermission,
+  kNotEligible,
+  kQuotaExceeded,
+  kNetworkError,
+  kAudioSessionError,
+  kEncoderError,
+  kAudioRechunkerError,
+  kNoGeminiModeId,
+  kGenericError,
+};
+
 // Enum representing the Gemini view mode.
 // This needs to stay in sync with GMNGeminiViewMode in the SDK.
 enum class GeminiViewMode {
