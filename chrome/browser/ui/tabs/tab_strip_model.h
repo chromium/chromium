@@ -755,13 +755,11 @@ class TabStripModel {
   // Keeps the ephemeral `group_id` in the model after it exits focus mode,
   // e.g. while the UI animates the exit, instead of dissolving it synchronously
   // in `ExitFocusMode()`. The group is dissolved when the returned runner runs
-  // or is destroyed; if that happens before the notification returns, the
-  // group is dissolved by `ExitFocusMode()` as if no lock had been taken. The
-  // lock is only available from within the `OnTabGroupFocusChanged()`
-  // notification of a user-initiated exit; a null runner is returned when the
-  // exit is part of a structural mutation that needs the group dissolved
-  // before it continues. At most one lock may be held at a time, and detaching
-  // or moving the locked group CHECKs.
+  // or is destroyed. The lock is only available from within the
+  // `OnTabGroupFocusChanged()` notification of a user-initiated exit; a null
+  // runner is returned when the exit is part of a structural mutation that
+  // needs the group dissolved before it continues. At most one lock may be
+  // held at a time, and detaching or moving the locked group CHECKs.
   [[nodiscard]] base::ScopedClosureRunner TakeEphemeralGroupRemovalLock(
       const tab_groups::TabGroupId& group_id);
 

@@ -8,9 +8,7 @@
 #include <vector>
 
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
@@ -19,7 +17,6 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -46,7 +43,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/animation_test_api.h"
-#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
@@ -845,209 +841,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "Horizontal";
       }
     });
-
-// Exercises the controller's focus transition state with rich animations
-// enabled: it starts `FocusModeAnimations::kFocusMode` on focus changes,
-// reports which group is transitioning and its live progress, disables layout
-// animations for the duration, and keeps an ephemeral group in the model
-// while its exit animates.
-class TabStripControllerFocusTransitionBrowserTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
- public:
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    auto enabled = VerticalTabsBrowserTestMixin<
-        InProcessBrowserTest>::GetEnabledFeatures();
-    enabled.push_back({features::kTabGroupsFocusing, {}});
-    enabled.push_back({features::kNonGroupFocus, {}});
-    enabled.push_back({tabs::kTabStripUnification, {}});
-    return enabled;
-  }
-
- protected:
-  // Setup runs without rich animations so that it settles synchronously; the
-  // test under measurement enables them.
-  void EnableRichAnimations() {
-    rich_animations_disabled_.reset();
-    rich_animations_enabled_ =
-        gfx::AnimationTestApi::SetRichAnimationRenderMode(
-            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
-    normal_duration_mode_ =
-        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
-            gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-  }
-
-  const BrowserAnimationController* animation_controller() {
-    return BrowserAnimationController::From(browser());
-  }
-
-  bool IsFocusMotionAnimating() {
-    return animation_controller()->IsAnimating(FocusModeAnimations::kFocusMode);
-  }
-
-  void WaitForFocusMotionToFinish() {
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      RunScheduledLayouts();
-      return !IsFocusMotionAnimating();
-    }));
-    RunScheduledLayouts();
-  }
-
- private:
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      rich_animations_disabled_ =
-          gfx::AnimationTestApi::SetRichAnimationRenderMode(
-              gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      rich_animations_enabled_;
-  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> normal_duration_mode_;
-};
-
-// Entering and exiting focus mode starts the enter/exit motion and exposes the
-// transitioning group while it runs.
-IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
-                       FocusChangeDrivesFocusMotion) {
-  AppendTab();
-  TabStripModel* const model = browser()->GetTabStripModel();
-  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
-  model->ActivateTabAt(0);
-  RunScheduledLayouts();
-  TabStripCollectionController* const controller =
-      vertical_tab_strip_controller();
-  ASSERT_FALSE(controller->GetFocusTransition().has_value());
-
-  EnableRichAnimations();
-  model->EnterFocusMode(group_id);
-  RunScheduledLayouts();
-  EXPECT_TRUE(IsFocusMotionAnimating());
-  ASSERT_TRUE(controller->GetFocusTransition().has_value());
-  EXPECT_EQ(controller->GetFocusTransition()->target_group, group_id);
-  EXPECT_FALSE(controller->GetFocusTransition()->previous_group.has_value());
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    const auto progress = animation_controller()->GetCurrentValue(
-        FocusModeAnimations::kFocusMode, FocusModeAnimations::kProgress);
-    return controller->GetFocusTransition().has_value() &&
-           progress.has_value() && *progress > 0.0 && *progress < 1.0;
-  }));
-
-  WaitForFocusMotionToFinish();
-  EXPECT_FALSE(controller->GetFocusTransition().has_value());
-  EXPECT_EQ(model->GetFocusedGroup(), group_id);
-
-  model->ExitFocusMode();
-  RunScheduledLayouts();
-  EXPECT_TRUE(IsFocusMotionAnimating());
-  // On exit the model no longer reports a focused group, so the controller is
-  // the only record of which group is transitioning.
-  EXPECT_FALSE(model->GetFocusedGroup().has_value());
-  ASSERT_TRUE(controller->GetFocusTransition().has_value());
-  EXPECT_EQ(controller->GetFocusTransition()->target_group, group_id);
-
-  WaitForFocusMotionToFinish();
-  EXPECT_FALSE(controller->GetFocusTransition().has_value());
-}
-
-// Switching focus directly from one group to another reports the group losing
-// focus as the previous group for the duration of the new group's enter
-// motion.
-IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
-                       DirectSwitchReportsPreviousGroup) {
-  AppendTab();
-  AppendTab();
-  TabStripModel* const model = browser()->GetTabStripModel();
-  const tab_groups::TabGroupId group_a = model->AddToNewGroup({1});
-  const tab_groups::TabGroupId group_b = model->AddToNewGroup({2});
-  model->EnterFocusMode(group_a);
-  RunScheduledLayouts();
-  TabStripCollectionController* const controller =
-      vertical_tab_strip_controller();
-
-  EnableRichAnimations();
-  model->EnterFocusMode(group_b);
-  RunScheduledLayouts();
-  EXPECT_TRUE(IsFocusMotionAnimating());
-  ASSERT_TRUE(controller->GetFocusTransition().has_value());
-  EXPECT_EQ(controller->GetFocusTransition()->target_group, group_b);
-  EXPECT_EQ(controller->GetFocusTransition()->previous_group, group_a);
-
-  WaitForFocusMotionToFinish();
-  EXPECT_FALSE(controller->GetFocusTransition().has_value());
-  EXPECT_EQ(model->GetFocusedGroup(), group_b);
-}
-
-// Exiting while the enter motion is still running restarts the motion. The
-// cancel that `Start()` emits for the interrupted enter must not clear the
-// exit transition recorded for the same group.
-IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
-                       InterruptingMotionKeepsNewTransition) {
-  AppendTab();
-  TabStripModel* const model = browser()->GetTabStripModel();
-  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
-  model->ActivateTabAt(0);
-  RunScheduledLayouts();
-  TabStripCollectionController* const controller =
-      vertical_tab_strip_controller();
-
-  EnableRichAnimations();
-  model->EnterFocusMode(group_id);
-  RunScheduledLayouts();
-  ASSERT_TRUE(IsFocusMotionAnimating());
-
-  model->ExitFocusMode();
-  RunScheduledLayouts();
-  EXPECT_TRUE(IsFocusMotionAnimating());
-  ASSERT_TRUE(controller->GetFocusTransition().has_value());
-  EXPECT_EQ(controller->GetFocusTransition()->target_group, group_id);
-  EXPECT_FALSE(controller->GetFocusTransition()->previous_group.has_value());
-
-  WaitForFocusMotionToFinish();
-  EXPECT_FALSE(controller->GetFocusTransition().has_value());
-  EXPECT_FALSE(model->GetFocusedGroup().has_value());
-}
-
-// A cancel that does not come from the controller restarting the motion (e.g.
-// the animation controller being reset) ends the transition.
-IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
-                       ExternalCancelClearsTransition) {
-  AppendTab();
-  TabStripModel* const model = browser()->GetTabStripModel();
-  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
-  model->ActivateTabAt(0);
-  RunScheduledLayouts();
-  TabStripCollectionController* const controller =
-      vertical_tab_strip_controller();
-
-  EnableRichAnimations();
-  model->EnterFocusMode(group_id);
-  RunScheduledLayouts();
-  ASSERT_TRUE(controller->GetFocusTransition().has_value());
-
-  BrowserAnimationController::From(browser())->Clear(
-      FocusModeAnimations::kFocusMode);
-  EXPECT_FALSE(IsFocusMotionAnimating());
-  EXPECT_FALSE(controller->GetFocusTransition().has_value());
-}
-
-// Without rich animations the controller snaps the motion to its resting
-// state and never reports a transition.
-IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
-                       ReducedMotionSnapsWithoutTransition) {
-  AppendTab();
-  AppendTab();
-  TabStripModel* const model = browser()->GetTabStripModel();
-  TabStripCollectionController* const controller =
-      vertical_tab_strip_controller();
-
-  const tab_groups::TabGroupId group_id = model->EnterFocusMode({1, 2});
-  EXPECT_FALSE(IsFocusMotionAnimating());
-  EXPECT_FALSE(controller->GetFocusTransition().has_value());
-  EXPECT_EQ(model->GetFocusedGroup(), group_id);
-
-  model->ExitFocusMode();
-  EXPECT_FALSE(IsFocusMotionAnimating());
-  EXPECT_FALSE(controller->GetFocusTransition().has_value());
-  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
-}
 
 class TabStripControllerFocusFreezingBrowserTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,

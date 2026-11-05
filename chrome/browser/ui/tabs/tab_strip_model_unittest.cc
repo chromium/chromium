@@ -3504,45 +3504,6 @@ TEST_F(TabStripModelTest, EphemeralGroupRemovalLock_KeepsGroupUntilReleased) {
 }
 
 TEST_F(TabStripModelTest,
-       EphemeralGroupRemovalLock_ReleasedDuringNotificationDissolvesOnce) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
-
-  PrepareTabs(tabstrip(), 3);
-  tabstrip()->ForgetAllOpeners();
-  tab_groups::TabGroupId ephemeral_group = tabstrip()->EnterFocusMode({1, 2});
-
-  MockTabStripModelObserver observer;
-  tabstrip()->AddObserver(&observer);
-  EXPECT_CALL(observer,
-              OnTabGroupFocusChanged(
-                  std::optional<tab_groups::TabGroupId>(std::nullopt),
-                  std::optional<tab_groups::TabGroupId>(ephemeral_group)))
-      .WillOnce([&]() {
-        // An observer that takes the lock but finds nothing to animate (e.g.
-        // under reduced motion) releases it before this notification returns.
-        // The group must survive the release so that `ExitFocusMode()` can
-        // dissolve it exactly once after the notification.
-        base::ScopedClosureRunner lock =
-            tabstrip()->TakeEphemeralGroupRemovalLock(ephemeral_group);
-        ASSERT_TRUE(lock);
-        lock.RunAndReset();
-        EXPECT_TRUE(
-            tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
-      });
-
-  tabstrip()->ExitFocusMode(TabGroupFocusExitReason::kHeaderUnfocusButton);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-  tabstrip()->RemoveObserver(&observer);
-
-  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
-  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
-  EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(1));
-  EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(2));
-}
-
-TEST_F(TabStripModelTest,
        EphemeralGroupRemovalLock_UnavailableForStructuralExits) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
