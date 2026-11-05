@@ -1836,6 +1836,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Don't undo: already completed or not necessary"/>
   <int value="8" label="Migrate forced"/>
   <int value="9" label="Don't migrate, auth error"/>
+  <int value="10"
+      label="Don't migrate, UndoChromeOsUseConsentLevelSignin enabled"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationDecision) -->

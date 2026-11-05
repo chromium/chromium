@@ -36,6 +36,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/signin/public/base/signin_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace browser_sync {
 namespace {
 
@@ -852,6 +856,105 @@ TEST_P(SyncToSigninMigrationTest, UndoFeaturePreventsMigration) {
       "Sync.SyncToSigninMigrationDecision",
       /*SyncToSigninMigrationDecision::kUndoNotNecessary*/ 7, 1);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(SyncToSigninMigrationTest,
+       UndoChromeOsUseConsentLevelSigninPreventsMigration) {
+  base::test::ScopedFeatureList undo_feature(
+      switches::kUndoChromeOsUseConsentLevelSignin);
+
+  // Everything is active.
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  // Take a copy of all current pref values, to verify that the migration
+  // doesn't modify any of them.
+  const base::DictValue all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  base::HistogramTester histograms;
+
+  // Trigger the migration.
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // Even though the user would be eligible,
+  // `kUndoChromeOsUseConsentLevelSignin` should prevent the migration from
+  // happening to avoid an infinite migration/revert loop with Ash.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision",
+      /*SyncToSigninMigrationDecision::kDontMigrateChromeOsUndoSigninEnabled*/
+      10, 1);
+}
+
+TEST_P(SyncToSigninMigrationTest,
+       UndoChromeOsUseConsentLevelSigninUndoesPreviousMigration) {
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+  RecordStateToPrefs();
+
+  // First, migrate the user to the signed-in non-syncing state.
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+  ASSERT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  ASSERT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
+            gaia_id.ToString());
+
+  // Enable `kUndoChromeOsUseConsentLevelSignin` on a subsequent startup.
+  base::test::ScopedFeatureList undo_feature(
+      switches::kUndoChromeOsUseConsentLevelSignin);
+
+  // Session 1: The previous migration should be cleanly undone.
+  {
+    base::HistogramTester histograms;
+    MaybeMigrateSyncingUserToSignedInWrapper(
+        IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kUndoMigration*/ 6, 1);
+    EXPECT_TRUE(
+        pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
+              gaia_id.ToString());
+    EXPECT_EQ(
+        pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
+        email);
+    EXPECT_TRUE(
+        pref_service_
+            .GetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn)
+            .empty());
+    EXPECT_FALSE(pref_service_.GetUserPrefValue(
+        prefs::kGoogleServicesSyncingUserMigrationType));
+  }
+
+  // Session 2+: Now that the migration was undone, subsequent startups should
+  // skip re-migrating the user.
+  {
+    const base::DictValue all_prefs =
+        pref_service_.user_prefs_store()->GetValues();
+    base::HistogramTester histograms;
+    MaybeMigrateSyncingUserToSignedInWrapper(
+        IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+    EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kDontMigrateChromeOsUndoSigninEnabled*/
+        10, 1);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     ,

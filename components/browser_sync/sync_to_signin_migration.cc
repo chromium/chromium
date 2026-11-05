@@ -36,6 +36,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/signin/public/base/signin_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace browser_sync {
 
 #if !BUILDFLAG(IS_IOS)
@@ -55,7 +59,8 @@ enum class SyncToSigninMigrationDecision {
   kUndoNotNecessary = 7,
   kMigrateForced = 8,
   kDontMigrateAuthError = 9,
-  kMaxValue = kDontMigrateAuthError
+  kDontMigrateChromeOsUndoSigninEnabled = 10,
+  kMaxValue = kDontMigrateChromeOsUndoSigninEnabled
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDecisionOverall)
 
@@ -169,6 +174,20 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
       return SyncToSigninMigrationDecision::kUndoMigration;
     }
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, `kUndoChromeOsUseConsentLevelSignin` reverts all signed-in
+  // users back to `ConsentLevel::kSync` during session startup. If this profile
+  // was previously migrated by Sync-to-Signin migration, undo the migration
+  // cleanly here (before KeyedServices are created) rather than letting Ash
+  // flip the consent level mid-startup.
+  if (!pref_service
+           ->GetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn)
+           .empty() &&
+      base::FeatureList::IsEnabled(
+          switches::kUndoChromeOsUseConsentLevelSignin)) {
+    return SyncToSigninMigrationDecision::kUndoMigration;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (pref_service->GetString(prefs::kGoogleServicesAccountId).empty()) {
     // Signed-out user, nothing to migrate.
@@ -237,6 +256,15 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
   if (!base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
     return SyncToSigninMigrationDecision::kDontMigrateFlagDisabled;
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, `kUndoChromeOsUseConsentLevelSignin` reverts signed-in users
+  // back to `ConsentLevel::kSync` during session startup. Skip the migration
+  // when it's enabled to prevent an infinite migration/revert loop with Ash.
+  if (base::FeatureList::IsEnabled(
+          switches::kUndoChromeOsUseConsentLevelSignin)) {
+    return SyncToSigninMigrationDecision::kDontMigrateChromeOsUndoSigninEnabled;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return forced ? SyncToSigninMigrationDecision::kMigrateForced
                 : SyncToSigninMigrationDecision::kMigrate;
@@ -494,6 +522,7 @@ void RecordMigrationType(PrefService* pref_service,
       break;
     case SyncToSigninMigrationDecision::kUndoMigration:
     case SyncToSigninMigrationDecision::kUndoNotNecessary:
+    case SyncToSigninMigrationDecision::kDontMigrateChromeOsUndoSigninEnabled:
       // No need to record the metric in this case.
       return;
   }
@@ -550,6 +579,7 @@ void MaybeMigrateSyncingUserToSignedInInternal(
     case SyncToSigninMigrationDecision::kDontMigrateSyncStatusInitializing:
     case SyncToSigninMigrationDecision::kDontMigrateAuthError:
     case SyncToSigninMigrationDecision::kUndoNotNecessary:
+    case SyncToSigninMigrationDecision::kDontMigrateChromeOsUndoSigninEnabled:
       // No migration, and no point in recording per-type metrics - we're done.
       return;
     case SyncToSigninMigrationDecision::kDontMigrateFlagDisabled:
