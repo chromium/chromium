@@ -132,6 +132,7 @@ source_set("context_hub_page_handler") {
     ]
     deps += [
       "//base:i18n",
+      "//chrome/browser/context_hub:memory_banks_shortcut",
       "//chrome/browser/glic",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:browser_commands",
@@ -139,6 +140,7 @@ source_set("context_hub_page_handler") {
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//components/prefs",
       "//components/saved_tab_groups/public",
       "//components/tab_groups",
       "//components/tabs:public",
@@ -214,14 +216,18 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [ "context_hub_tab_provider_desktop_unittest.cc" ]
     deps += [
+      "//chrome/browser/context_hub:memory_banks_shortcut",
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/tabs:test_support",
       "//components/tabs:test_support",
+      "//ui/base",
       "//ui/base:test_support",
       "//ui/base/clipboard:clipboard_test_support",
+      "//ui/events:event_constants",
+      "//ui/events:events_base",
     ]
   }
 }

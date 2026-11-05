@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -83,6 +84,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/context_hub/memory_banks_shortcut.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"  // nogncheck
 #include "chrome/browser/context_hub/record_replay/skill_recording_service_factory.h"  // nogncheck
 #include "chrome/browser/glic/glic_pref_names.h"                    // nogncheck
@@ -101,7 +103,11 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/tabs/public/mock_tab_interface.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"       // nogncheck
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/base/clipboard/test/test_clipboard.h"      // nogncheck
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #endif
 
 namespace context_hub {
@@ -4160,6 +4166,119 @@ TEST_F(ContextHubPageHandlerTest, OpenWebUrl_Success) {
   base::test::TestFuture<void> future;
   handler_->OpenWebUrl(GURL("https://example.com"), future.GetCallback());
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetBrowseMemoryBanksShortcut_EmptyByDefault) {
+  base::test::TestFuture<const std::string&> future;
+  handler_->GetBrowseMemoryBanksShortcut(future.GetCallback());
+  EXPECT_EQ("", future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       GetSuggestedBrowseMemoryBanksShortcut_ReturnsValidUnsetSuggestion) {
+  base::test::TestFuture<const std::string&, const std::string&> future;
+  handler_->GetSuggestedBrowseMemoryBanksShortcut(future.GetCallback());
+
+  const ui::Accelerator suggested =
+      context_hub::GetSuggestedBrowseMemoryBanksShortcut();
+  EXPECT_EQ(ui::Command::AcceleratorToString(suggested), future.Get<0>());
+  EXPECT_EQ(base::UTF16ToUTF8(suggested.GetShortcutText()), future.Get<1>());
+  EXPECT_FALSE(future.Get<0>().empty());
+
+  // Suggesting a shortcut never sets it.
+  EXPECT_EQ("", profile_.GetPrefs()->GetString(
+                    context_hub::prefs::kContextHubBrowseMemoryBanksShortcut));
+
+  // The suggestion can be applied as is.
+  base::test::TestFuture<browser::context_hub::mojom::MemoryBanksShortcutStatus>
+      set_future;
+  handler_->SetBrowseMemoryBanksShortcut(future.Get<0>(),
+                                         set_future.GetCallback());
+  EXPECT_EQ(browser::context_hub::mojom::MemoryBanksShortcutStatus::kValid,
+            set_future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest, SetBrowseMemoryBanksShortcut_Success) {
+  // Ctrl+Shift+K (Command+Shift+K on macOS), which no built-in shortcut uses.
+  const ui::Accelerator accelerator(
+      ui::VKEY_K, ui::EF_PLATFORM_ACCELERATOR | ui::EF_SHIFT_DOWN);
+  const std::string expected_display_text =
+      base::UTF16ToUTF8(accelerator.GetShortcutText());
+
+  base::test::TestFuture<browser::context_hub::mojom::MemoryBanksShortcutStatus>
+      set_future;
+  handler_->SetBrowseMemoryBanksShortcut(
+      ui::Command::AcceleratorToString(accelerator), set_future.GetCallback());
+  EXPECT_EQ(browser::context_hub::mojom::MemoryBanksShortcutStatus::kValid,
+            set_future.Get());
+  EXPECT_EQ(ui::Command::AcceleratorToString(accelerator),
+            profile_.GetPrefs()->GetString(
+                context_hub::prefs::kContextHubBrowseMemoryBanksShortcut));
+
+  base::test::TestFuture<const std::string&> get_future;
+  handler_->GetBrowseMemoryBanksShortcut(get_future.GetCallback());
+  EXPECT_EQ(expected_display_text, get_future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       SetBrowseMemoryBanksShortcut_EmptyClearsShortcut) {
+  profile_.GetPrefs()->SetString(
+      context_hub::prefs::kContextHubBrowseMemoryBanksShortcut,
+      ui::Command::AcceleratorToString(ui::Accelerator(
+          ui::VKEY_K, ui::EF_PLATFORM_ACCELERATOR | ui::EF_SHIFT_DOWN)));
+
+  base::test::TestFuture<browser::context_hub::mojom::MemoryBanksShortcutStatus>
+      future;
+  handler_->SetBrowseMemoryBanksShortcut("", future.GetCallback());
+  EXPECT_EQ(browser::context_hub::mojom::MemoryBanksShortcutStatus::kValid,
+            future.Get());
+  EXPECT_EQ("", profile_.GetPrefs()->GetString(
+                    context_hub::prefs::kContextHubBrowseMemoryBanksShortcut));
+}
+
+TEST_F(ContextHubPageHandlerTest, SetBrowseMemoryBanksShortcut_RejectsInvalid) {
+  base::test::TestFuture<browser::context_hub::mojom::MemoryBanksShortcutStatus>
+      future;
+  handler_->SetBrowseMemoryBanksShortcut("K", future.GetCallback());
+  EXPECT_EQ(browser::context_hub::mojom::MemoryBanksShortcutStatus::kInvalid,
+            future.Get());
+  EXPECT_EQ("", profile_.GetPrefs()->GetString(
+                    context_hub::prefs::kContextHubBrowseMemoryBanksShortcut));
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       SetBrowseMemoryBanksShortcut_RejectsConflict) {
+  base::test::TestFuture<browser::context_hub::mojom::MemoryBanksShortcutStatus>
+      future;
+  // Ctrl+Shift+M (Command+Shift+M on macOS) opens the profile menu.
+  handler_->SetBrowseMemoryBanksShortcut(
+      ui::Command::AcceleratorToString(ui::Accelerator(
+          ui::VKEY_M, ui::EF_PLATFORM_ACCELERATOR | ui::EF_SHIFT_DOWN)),
+      future.GetCallback());
+  EXPECT_EQ(browser::context_hub::mojom::MemoryBanksShortcutStatus::
+                kConflictsWithBrowserShortcut,
+            future.Get());
+  EXPECT_EQ("", profile_.GetPrefs()->GetString(
+                    context_hub::prefs::kContextHubBrowseMemoryBanksShortcut));
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       SetBrowseMemoryBanksShortcut_RejectsDisallowedModifiers) {
+#if BUILDFLAG(IS_MAC)
+  // Option without Command or Control is used to type special characters.
+  constexpr char kShortcut[] = "Alt+K";
+#else
+  // Ctrl+Alt is the same as AltGr on international keyboard layouts.
+  constexpr char kShortcut[] = "Ctrl+Alt+K";
+#endif
+  base::test::TestFuture<browser::context_hub::mojom::MemoryBanksShortcutStatus>
+      future;
+  handler_->SetBrowseMemoryBanksShortcut(kShortcut, future.GetCallback());
+  EXPECT_EQ(browser::context_hub::mojom::MemoryBanksShortcutStatus::
+                kDisallowedModifiers,
+            future.Get());
+  EXPECT_EQ("", profile_.GetPrefs()->GetString(
+                    context_hub::prefs::kContextHubBrowseMemoryBanksShortcut));
 }
 
 TEST_F(ContextHubPageHandlerTest, OpenWebUrl_InvalidUrlReportsBadMessage) {

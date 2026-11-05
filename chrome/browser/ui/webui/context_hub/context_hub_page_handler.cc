@@ -78,6 +78,7 @@
 #include "base/path_service.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/context_hub/memory_banks_shortcut.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service_factory.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"  // nogncheck
@@ -93,9 +94,12 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub_tab_provider_desktop.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"  // nogncheck
 #include "content/public/browser/page_navigator.h"
 #include "net/base/url_util.h"  // nogncheck
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #endif
 #include "components/sessions/content/session_tab_helper.h"  // nogncheck
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -333,6 +337,16 @@ BrowserWindowInterface* GetBrowserWindowInterface(
   }
 
   return nullptr;
+}
+
+// Returns the localized UI label for `accelerator` (for example, "⇧⌘K" on
+// macOS or "Ctrl+Shift+K" on Windows/Linux), or an empty string if empty.
+// Unlike `ui::Command::AcceleratorToString()`, this is localized for display
+// and cannot be parsed back.
+std::string ToDisplayText(const ui::Accelerator& accelerator) {
+  return accelerator.IsEmpty()
+             ? std::string()
+             : base::UTF16ToUTF8(accelerator.GetShortcutText());
 }
 
 }  // namespace
@@ -1777,6 +1791,42 @@ void ContextHubPageHandler::OpenContextHubPage(
     ShowSingletonTab(browser, GURL(chrome::kChromeUIContextHubURL));
   }
   std::move(callback).Run();
+#endif
+}
+
+void ContextHubPageHandler::GetBrowseMemoryBanksShortcut(
+    GetBrowseMemoryBanksShortcutCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  std::move(callback).Run(
+      ToDisplayText(context_hub::GetBrowseMemoryBanksShortcutFromPrefs(
+          *profile_->GetPrefs())));
+#endif
+}
+
+void ContextHubPageHandler::GetSuggestedBrowseMemoryBanksShortcut(
+    GetSuggestedBrowseMemoryBanksShortcutCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  const ui::Accelerator accelerator =
+      context_hub::GetSuggestedBrowseMemoryBanksShortcut();
+  std::move(callback).Run(accelerator.IsEmpty()
+                              ? std::string()
+                              : ui::Command::AcceleratorToString(accelerator),
+                          ToDisplayText(accelerator));
+#endif
+}
+
+void ContextHubPageHandler::SetBrowseMemoryBanksShortcut(
+    const std::string& shortcut,
+    SetBrowseMemoryBanksShortcutCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  std::move(callback).Run(context_hub::SetBrowseMemoryBanksShortcutInPrefs(
+      *profile_->GetPrefs(), shortcut));
 #endif
 }
 

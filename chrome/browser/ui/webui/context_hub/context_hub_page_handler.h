@@ -203,6 +203,13 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
       std::vector<browser::context_hub::mojom::MemoryBankFileAttachmentPtr>
           files,
       CopyAttachmentsToClipboardCallback callback) override;
+  void GetBrowseMemoryBanksShortcut(
+      GetBrowseMemoryBanksShortcutCallback callback) override;
+  void GetSuggestedBrowseMemoryBanksShortcut(
+      GetSuggestedBrowseMemoryBanksShortcutCallback callback) override;
+  void SetBrowseMemoryBanksShortcut(
+      const std::string& shortcut,
+      SetBrowseMemoryBanksShortcutCallback callback) override;
   void StartSkillRecording() override;
   void StopSkillRecording(StopSkillRecordingCallback callback) override;
 

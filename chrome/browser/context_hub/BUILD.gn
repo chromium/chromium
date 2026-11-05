@@ -32,6 +32,9 @@ if (!is_android) {
       "memory_banks_shortcut.h",
     ]
 
+    public_deps =
+        [ "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared" ]
+
     deps = [
       ":prefs",
       "//chrome/browser/ui:accelerator_utils_headers",

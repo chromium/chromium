@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -20,6 +21,8 @@
 
 namespace context_hub {
 namespace {
+
+using browser::context_hub::mojom::MemoryBanksShortcutStatus;
 
 // Returns a Ctrl+Shift+<letter> shortcut (Command+Shift+<letter> on macOS)
 // that Chrome doesn't use, so the tests don't depend on a specific key staying

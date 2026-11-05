@@ -532,6 +532,21 @@ struct MemoryBankFileAttachment {
   string content;
 };
 
+// Result of validating a user-configured keyboard shortcut that opens the
+// Memory Banks search palette.
+enum MemoryBanksShortcutStatus {
+  // The shortcut can be used.
+  kValid,
+  // The shortcut could not be parsed, does not use a supported key (A-Z, 0-9),
+  // or does not include Ctrl, Alt or Command.
+  kInvalid,
+  // The shortcut uses a modifier combination reserved by the operating system
+  // (for example, Ctrl+Alt on Windows and Linux).
+  kDisallowedModifiers,
+  // The shortcut is already used by Chrome.
+  kConflictsWithBrowserShortcut,
+};
+
 // Represents a single recorded action during a skill recording session.
 struct SkillRecordingAction {
   string description;
@@ -797,6 +812,29 @@ interface PageHandler {
   [RuntimeFeature=kMemoryBanksSearchPalette]
   CopyAttachmentsToClipboard(array<MemoryBankFileAttachment> files)
       => (CopyAttachmentsToClipboardStatus status);
+
+  // Returns the user-configured keyboard shortcut that opens the Memory Banks
+  // search palette, formatted for display (for example, "Ctrl+Shift+K").
+  // Returns an empty string if no shortcut is set.
+  [RuntimeFeature=kMemoryBanksSearchPalette]
+  GetBrowseMemoryBanksShortcut() => (string display_text);
+
+  // Returns a platform shortcut to suggest when no shortcut is set yet, so the
+  // user can apply it with one click. It is never applied automatically.
+  // `shortcut` uses the `ui::Command` accelerator string format, and
+  // `display_text` is localized for display. Both are empty if no shortcut can
+  // be suggested.
+  [RuntimeFeature=kMemoryBanksSearchPalette]
+  GetSuggestedBrowseMemoryBanksShortcut()
+      => (string shortcut, string display_text);
+
+  // Sets the user-configured keyboard shortcut that opens the Memory Banks
+  // search palette. `shortcut` uses the `ui::Command` accelerator string format
+  // (for example, "Ctrl+Shift+K" or "Command+Shift+K"). An empty `shortcut`
+  // removes the shortcut.
+  [RuntimeFeature=kMemoryBanksSearchPalette]
+  SetBrowseMemoryBanksShortcut(string shortcut)
+      => (MemoryBanksShortcutStatus status);
 
   // Starts a skill recording session.
   [RuntimeFeature=kRecordReplay]

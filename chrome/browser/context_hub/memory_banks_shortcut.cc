@@ -17,6 +17,8 @@
 
 namespace context_hub {
 
+using browser::context_hub::mojom::MemoryBanksShortcutStatus;
+
 namespace {
 
 bool IsSupportedKey(ui::KeyboardCode key) {
