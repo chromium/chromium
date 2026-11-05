@@ -39,15 +39,12 @@ struct SendValidationSerializer<::golden::OptionalPrimitivesDataView, MaybeConst
       mojo::internal::MessageFragment<
           typename decltype(fragment->uints)::BaseType>
           uints_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& uints_validate_params =
-          mojo::internal::GetArrayValidator<0, true, nullptr>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<std::optional<uint32_t>>, send_validation>(
         in_uints,
         uints_fragment,
-        &uints_validate_params);
-
-      fragment->uints.Set(uints_fragment);
+        &mojo::internal::GetArrayValidator<0, true, nullptr>());
+      fragment.SetPointer(24, uints_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -60,15 +57,12 @@ struct SendValidationSerializer<::golden::OptionalPrimitivesDataView, MaybeConst
       mojo::internal::MessageFragment<
           typename decltype(fragment->boolarray)::BaseType>
           boolarray_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& boolarray_validate_params =
-          mojo::internal::GetArrayValidator<0, true, nullptr>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<std::optional<bool>>, send_validation>(
         in_boolarray,
         boolarray_fragment,
-        &boolarray_validate_params);
-
-      fragment->boolarray.Set(boolarray_fragment);
+        &mojo::internal::GetArrayValidator<0, true, nullptr>());
+      fragment.SetPointer(32, boolarray_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -81,15 +75,12 @@ struct SendValidationSerializer<::golden::OptionalPrimitivesDataView, MaybeConst
       mojo::internal::MessageFragment<
           typename decltype(fragment->bitmap)::BaseType>
           bitmap_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& bitmap_validate_params =
-          mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, nullptr>(), *&mojo::internal::GetArrayValidator<0, true, nullptr>()>();
       
       mojo::internal::Serialize<mojo::MapDataView<bool, std::optional<bool>>, send_validation>(
         in_bitmap,
         bitmap_fragment,
-        &bitmap_validate_params);
-
-      fragment->bitmap.Set(bitmap_fragment);
+        &mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, nullptr>(), *&mojo::internal::GetArrayValidator<0, true, nullptr>()>());
+      fragment.SetPointer(40, bitmap_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(

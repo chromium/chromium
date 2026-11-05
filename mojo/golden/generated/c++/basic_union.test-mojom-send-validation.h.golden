@@ -44,8 +44,7 @@ struct SendValidationSerializer<::golden::StructInUnionDataView, MaybeConstUserT
       mojo::internal::Serialize<mojo::StringDataView, send_validation>(
         in_value,
         value_fragment);
-
-      fragment->value.Set(value_fragment);
+      fragment.SetPointer(16, value_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -74,9 +73,10 @@ if (!inlined)
 
     // TODO(azani): Handle unknown and objects.
     // Set the not-null flag.
+auto tag = Traits::GetTag(input);
 fragment->size = kUnionDataSize;
-fragment->tag = Traits::GetTag(input);
-switch (fragment->tag) {
+fragment->tag = tag;
+switch (tag) {
   case ::golden::BasicUnionDataView::Tag::kNumericValue: {
     decltype(Traits::numeric_value(input))
     in_numeric_value = Traits::numeric_value(input);
@@ -117,7 +117,7 @@ MOJO_INTERNAL_CHECK_SERIALIZATION(
   !(value_fragment.is_null()),
   mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
   "null struct_value in BasicUnion union");
-    fragment->data.f_struct_value.Set(value_fragment);
+    fragment.SetPointer(8, value_fragment);
     break;
   }
 }

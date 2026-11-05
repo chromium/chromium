@@ -38,15 +38,12 @@ struct SendValidationSerializer<::golden::TypemappedDataView, MaybeConstUserType
       mojo::internal::MessageFragment<
           typename decltype(fragment->optional_container)::BaseType>
           optional_container_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& optional_container_validate_params =
-          mojo::internal::GetArrayValidator<0, true, nullptr>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<std::optional<bool>>, send_validation>(
         in_optional_container,
         optional_container_fragment,
-        &optional_container_validate_params);
-
-      fragment->optional_container.Set(optional_container_fragment);
+        &mojo::internal::GetArrayValidator<0, true, nullptr>());
+      fragment.SetPointer(16, optional_container_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(

@@ -53,8 +53,6 @@ class ArrayIterator<Traits, MaybeConstUserType, true> {
     return value;
   }
 
-  const MaybeConstUserType& input() const { return input_; }
-
  private:
   // RAW_PTR_EXCLUSION: Binary size increase.
   RAW_PTR_EXCLUSION MaybeConstUserType& input_;
@@ -74,8 +72,6 @@ class ArrayIterator<Traits, MaybeConstUserType, false> {
     DCHECK_LT(iter_, Traits::GetSize(input_));
     return Traits::GetAt(input_, iter_++);
   }
-
-  const MaybeConstUserType& input() const { return input_; }
 
  private:
   // RAW_PTR_EXCLUSION: Binary size increase.
@@ -125,18 +121,8 @@ struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
     }
 
     Data* output = fragment.data();
-    // std::optional<> is considered a POD type by MojomTypeCategory, but it is
-    // not safe to memcpy.
-    if constexpr (requires { Traits::GetData(input->input()); } &&
-                  !base::is_instantiation<DataElement, std::optional>) {
-      auto data = Traits::GetData(input->input());
-      // SAFETY: The GetData and output storage types need to be spanified.
-      UNSAFE_TODO(
-          { memcpy(output->storage(), data, size * sizeof(DataElement)); });
-    } else {
-      for (size_t i = 0; i < size; ++i) {
-        output->at(i) = input->GetNext();
-      }
+    for (size_t i = 0; i < size; ++i) {
+      output->at(i) = input->GetNext();
     }
   }
 
@@ -411,7 +397,7 @@ struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
       decltype(auto) next = input->GetNext();
       SerializeCaller<Element>::Run(next, data_fragment,
                                     validate_params->element_validate_params);
-      fragment->at(i).Set(data_fragment);
+      fragment.SetElementPointer(i, data_fragment);
 
       MOJO_INTERNAL_CHECK_SERIALIZATION(
           SendValidation::kDefault,
@@ -483,7 +469,7 @@ struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<DataElement> inlined_union_element(fragment.message());
-      inlined_union_element.Claim(UNSAFE_TODO(fragment->storage() + i));
+      fragment.ClaimElement(i, inlined_union_element);
       decltype(auto) next = input->GetNext();
       Serialize<Element>(next, inlined_union_element, true);
 
@@ -513,6 +499,25 @@ struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   }
 };
 
+// Returns true when `MaybeConstUserType` exposes contiguous raw storage
+// (`ArrayTraits::GetData`) whose C++ element layout matches the Mojom wire
+// array layout (`Array_Data<T>`), allowing serialization via a single `memcpy`:
+// - `Traits::GetData(input)` exists (contiguous container, e.g. `vector` or
+//   `span`, excluding `vector<bool>`).
+// - `Element` belongs to `MojomTypeCategory::kPOD` (fixed-width arithmetic
+//   primitives, excluding `bool`, enums, handles, pointers, and unions).
+// - The wire element is not `std::optional<T>` (`std::optional<Primitive>` is
+//   categorized under `kPOD`, but its wire array layout prepends a packed
+//   nullability bitfield rather than storing `std::optional<T>` objects).
+template <typename Element, typename MaybeConstUserType>
+consteval bool IsMemcpyablePodArray() {
+  using UserType = std::remove_const_t<MaybeConstUserType>;
+  using Traits = ArrayTraits<UserType>;
+  return requires(MaybeConstUserType& input) { Traits::GetData(input); } &&
+         BelongsTo<Element, MojomTypeCategory::kPOD>::value &&
+         !base::is_instantiation<Element, std::optional>;
+}
+
 template <typename Element, typename MaybeConstUserType>
 struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
@@ -540,9 +545,15 @@ struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
             "fixed-size array has wrong number of elements", size,
             validate_params->expected_num_elements));
 
-    fragment.AllocateArrayData(size);
-    ArrayIterator<Traits, MaybeConstUserType> iterator(input);
-    Impl::SerializeElements(&iterator, fragment, validate_params);
+    if constexpr (IsMemcpyablePodArray<Element, MaybeConstUserType>()) {
+      DCHECK(!validate_params->element_validate_params)
+          << "Primitive type should not have array validate params";
+      fragment.AllocateAndCopyArrayData(Traits::GetData(input), size);
+    } else {
+      fragment.AllocateArrayData(size);
+      ArrayIterator<Traits, MaybeConstUserType> iterator(input);
+      Impl::SerializeElements(&iterator, fragment, validate_params);
+    }
   }
 
   static bool Deserialize(Data* input, UserType* output, Message* message) {

@@ -10,9 +10,9 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = UnionTraits<{{data_view}}, UserType>;
 
-  static void Serialize(MaybeConstUserType& input,
-                        MessageFragment<{{data_type}}>& fragment,
-                        bool inlined) {
+  NOINLINE static void Serialize(MaybeConstUserType& input,
+                                 MessageFragment<{{data_type}}>& fragment,
+                                 bool inlined) {
     {{union_macros.serialize(union, "default")}}
   }
 

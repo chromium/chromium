@@ -11,7 +11,7 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = StructTraits<{{data_view}}, UserType>;
 
-  static void Serialize(
+  NOINLINE static void Serialize(
       MaybeConstUserType& input,
       mojo::internal::MessageFragment<{{data_type}}>& fragment) {
     if (CallIsNullIfExists<Traits>(input))

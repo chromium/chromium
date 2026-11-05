@@ -239,8 +239,7 @@ void IFace_Method_ProxyToResponder::Run(
   mojo::internal::Serialize<mojo::StringDataView>(
     in_result,
     result_fragment);
-
-  params->result.Set(result_fragment);
+  params.SetPointer(8, result_fragment);
 
   
   MOJO_INTERNAL_CHECK_SERIALIZATION(

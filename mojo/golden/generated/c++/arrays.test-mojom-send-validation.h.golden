@@ -46,15 +46,12 @@ struct SendValidationSerializer<::golden::StructWithArraysDataView, MaybeConstUs
       mojo::internal::MessageFragment<
           typename decltype(fragment->structs)::BaseType>
           structs_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& structs_validate_params =
-          mojo::internal::GetArrayValidator<0, false, nullptr>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<::golden::ArrayElementDataView>, send_validation>(
         in_structs,
         structs_fragment,
-        &structs_validate_params);
-
-      fragment->structs.Set(structs_fragment);
+        &mojo::internal::GetArrayValidator<0, false, nullptr>());
+      fragment.SetPointer(8, structs_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -67,29 +64,23 @@ struct SendValidationSerializer<::golden::StructWithArraysDataView, MaybeConstUs
       mojo::internal::MessageFragment<
           typename decltype(fragment->nullable_structs)::BaseType>
           nullable_structs_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& nullable_structs_validate_params =
-          mojo::internal::GetArrayValidator<0, false, nullptr>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<::golden::ArrayElementDataView>, send_validation>(
         in_nullable_structs,
         nullable_structs_fragment,
-        &nullable_structs_validate_params);
-
-      fragment->nullable_structs.Set(nullable_structs_fragment);
+        &mojo::internal::GetArrayValidator<0, false, nullptr>());
+      fragment.SetPointer(16, nullable_structs_fragment);
 
       decltype(Traits::nullable_elements(input)) in_nullable_elements = Traits::nullable_elements(input);
       mojo::internal::MessageFragment<
           typename decltype(fragment->nullable_elements)::BaseType>
           nullable_elements_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& nullable_elements_validate_params =
-          mojo::internal::GetArrayValidator<0, true, nullptr>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<::golden::ArrayElementDataView>, send_validation>(
         in_nullable_elements,
         nullable_elements_fragment,
-        &nullable_elements_validate_params);
-
-      fragment->nullable_elements.Set(nullable_elements_fragment);
+        &mojo::internal::GetArrayValidator<0, true, nullptr>());
+      fragment.SetPointer(24, nullable_elements_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -102,15 +93,12 @@ struct SendValidationSerializer<::golden::StructWithArraysDataView, MaybeConstUs
       mojo::internal::MessageFragment<
           typename decltype(fragment->fixed_size_structs)::BaseType>
           fixed_size_structs_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& fixed_size_structs_validate_params =
-          mojo::internal::GetArrayValidator<2, false, nullptr>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<::golden::ArrayElementDataView>, send_validation>(
         in_fixed_size_structs,
         fixed_size_structs_fragment,
-        &fixed_size_structs_validate_params);
-
-      fragment->fixed_size_structs.Set(fixed_size_structs_fragment);
+        &mojo::internal::GetArrayValidator<2, false, nullptr>());
+      fragment.SetPointer(32, fixed_size_structs_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -123,15 +111,12 @@ struct SendValidationSerializer<::golden::StructWithArraysDataView, MaybeConstUs
       mojo::internal::MessageFragment<
           typename decltype(fragment->nested_structs)::BaseType>
           nested_structs_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& nested_structs_validate_params =
-          mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<mojo::ArrayDataView<::golden::ArrayElementDataView>>, send_validation>(
         in_nested_structs,
         nested_structs_fragment,
-        &nested_structs_validate_params);
-
-      fragment->nested_structs.Set(nested_structs_fragment);
+        &mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>());
+      fragment.SetPointer(40, nested_structs_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -144,29 +129,23 @@ struct SendValidationSerializer<::golden::StructWithArraysDataView, MaybeConstUs
       mojo::internal::MessageFragment<
           typename decltype(fragment->nullable_nested_structs)::BaseType>
           nullable_nested_structs_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& nullable_nested_structs_validate_params =
-          mojo::internal::GetArrayValidator<0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<mojo::ArrayDataView<::golden::ArrayElementDataView>>, send_validation>(
         in_nullable_nested_structs,
         nullable_nested_structs_fragment,
-        &nullable_nested_structs_validate_params);
-
-      fragment->nullable_nested_structs.Set(nullable_nested_structs_fragment);
+        &mojo::internal::GetArrayValidator<0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>());
+      fragment.SetPointer(48, nullable_nested_structs_fragment);
 
       decltype(Traits::struct_map(input)) in_struct_map = Traits::struct_map(input);
       mojo::internal::MessageFragment<
           typename decltype(fragment->struct_map)::BaseType>
           struct_map_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& struct_map_validate_params =
-          mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>(), *&mojo::internal::GetArrayValidator<0, false, nullptr>()>();
       
       mojo::internal::Serialize<mojo::MapDataView<mojo::StringDataView, ::golden::ArrayElementDataView>, send_validation>(
         in_struct_map,
         struct_map_fragment,
-        &struct_map_validate_params);
-
-      fragment->struct_map.Set(struct_map_fragment);
+        &mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>(), *&mojo::internal::GetArrayValidator<0, false, nullptr>()>());
+      fragment.SetPointer(56, struct_map_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -179,29 +158,23 @@ struct SendValidationSerializer<::golden::StructWithArraysDataView, MaybeConstUs
       mojo::internal::MessageFragment<
           typename decltype(fragment->nullable_struct_map)::BaseType>
           nullable_struct_map_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& nullable_struct_map_validate_params =
-          mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>(), *&mojo::internal::GetArrayValidator<0, false, nullptr>()>();
       
       mojo::internal::Serialize<mojo::MapDataView<mojo::StringDataView, ::golden::ArrayElementDataView>, send_validation>(
         in_nullable_struct_map,
         nullable_struct_map_fragment,
-        &nullable_struct_map_validate_params);
-
-      fragment->nullable_struct_map.Set(nullable_struct_map_fragment);
+        &mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>(), *&mojo::internal::GetArrayValidator<0, false, nullptr>()>());
+      fragment.SetPointer(64, nullable_struct_map_fragment);
 
       decltype(Traits::strings(input)) in_strings = Traits::strings(input);
       mojo::internal::MessageFragment<
           typename decltype(fragment->strings)::BaseType>
           strings_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& strings_validate_params =
-          mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<mojo::StringDataView>, send_validation>(
         in_strings,
         strings_fragment,
-        &strings_validate_params);
-
-      fragment->strings.Set(strings_fragment);
+        &mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>());
+      fragment.SetPointer(72, strings_fragment);
 
       
       MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -214,15 +187,12 @@ struct SendValidationSerializer<::golden::StructWithArraysDataView, MaybeConstUs
       mojo::internal::MessageFragment<
           typename decltype(fragment->nullable_strings)::BaseType>
           nullable_strings_fragment(fragment.message());
-      constexpr const mojo::internal::ContainerValidateParams& nullable_strings_validate_params =
-          mojo::internal::GetArrayValidator<0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
       
       mojo::internal::Serialize<mojo::ArrayDataView<mojo::StringDataView>, send_validation>(
         in_nullable_strings,
         nullable_strings_fragment,
-        &nullable_strings_validate_params);
-
-      fragment->nullable_strings.Set(nullable_strings_fragment);
+        &mojo::internal::GetArrayValidator<0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>());
+      fragment.SetPointer(80, nullable_strings_fragment);
   }
 };
 

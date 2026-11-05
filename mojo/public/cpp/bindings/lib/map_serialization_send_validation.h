@@ -51,22 +51,26 @@ struct SendValidationSerializer<MapDataView<Key, Value>,
     }
 
     fragment.Allocate();
-    MessageFragment<typename MojomTypeTraits<ArrayDataView<Key>>::Data>
-        keys_fragment(fragment.message());
-    keys_fragment.AllocateArrayData(Traits::GetSize(input));
-    MapKeyReader<MaybeConstUserType> key_reader(input);
-    KeyArraySerializer::SerializeElements(&key_reader, keys_fragment,
-                                          validate_params->key_validate_params);
-    fragment->keys.Set(keys_fragment.data());
-
-    MessageFragment<typename MojomTypeTraits<ArrayDataView<Value>>::Data>
-        values_fragment(fragment.message());
-    values_fragment.AllocateArrayData(Traits::GetSize(input));
-    MapValueReader<MaybeConstUserType> value_reader(input);
-    ValueArraySerializer::SerializeElements(
-        &value_reader, values_fragment,
-        validate_params->element_validate_params);
-    fragment->values.Set(values_fragment.data());
+    const size_t size = Traits::GetSize(input);
+    {
+      MessageFragment<typename MojomTypeTraits<ArrayDataView<Key>>::Data>
+          keys_fragment(fragment.message());
+      keys_fragment.AllocateArrayData(size);
+      MapKeyReader<MaybeConstUserType> key_reader(input);
+      KeyArraySerializer::SerializeElements(
+          &key_reader, keys_fragment, validate_params->key_validate_params);
+      fragment.SetPointer(offsetof(Data, keys), keys_fragment);
+    }
+    {
+      MessageFragment<typename MojomTypeTraits<ArrayDataView<Value>>::Data>
+          values_fragment(fragment.message());
+      values_fragment.AllocateArrayData(size);
+      MapValueReader<MaybeConstUserType> value_reader(input);
+      ValueArraySerializer::SerializeElements(
+          &value_reader, values_fragment,
+          validate_params->element_validate_params);
+      fragment.SetPointer(offsetof(Data, values), values_fragment);
+    }
   }
 };
 

@@ -74,28 +74,24 @@
   mojo::internal::MessageFragment<
       typename decltype({{fragment}}->{{name}})::BaseType>
       {{name}}_fragment({{fragment}}.message());
-  constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
-      {{kind|get_container_validate_params_ctor_args|indent(6)}};
 {%-         set serialization_args =
-              [input_field,
-              name + "_fragment",
-              "&" + name + "_validate_params"]
+                [input_field,
+                name + "_fragment",
+                "&" + (kind|get_container_validate_params_ctor_args)]
 %}
   {{send_validation_macros.get_serialize_call(
       send_validation_compiler_setting,
       serializer_type,
       serialization_args)|indent(2)}}
-
-  {{fragment}}->{{name}}.Set({{name}}_fragment);
+  {{fragment}}.SetPointer({{8 + pf.offset}}, {{name}}_fragment);
 {%-       elif kind|is_union_kind %}
   mojo::internal::MessageFragment<decltype({{fragment}}->{{name}})>
       {{name}}_fragment({{fragment}}.message());
-  {{name}}_fragment.Claim(&{{fragment}}->{{name}});
-
+  {{name}}_fragment.ClaimOffset({{fragment}}, {{8 + pf.offset}});
 {%-         set serialization_args =
-              [input_field,
-              name + "_fragment",
-              "true"]
+                [input_field,
+                name + "_fragment",
+                "true"]
 %}
   {{send_validation_macros.get_serialize_call(
       send_validation_compiler_setting,
@@ -105,17 +101,15 @@
   mojo::internal::MessageFragment<
       typename decltype({{fragment}}->{{name}})::BaseType> {{name}}_fragment(
           {{fragment}}.message());
-
 {%-         set serialization_args =
-              [input_field,
-              name + "_fragment"]
+                [input_field,
+                name + "_fragment"]
 %}
   {{send_validation_macros.get_serialize_call(
       send_validation_compiler_setting,
       serializer_type,
       serialization_args)|indent(2)}}
-
-  {{fragment}}->{{name}}.Set({{name}}_fragment);
+  {{fragment}}.SetPointer({{8 + pf.offset}}, {{name}}_fragment);
 {%-       endif %}
 {%-       if not kind|is_nullable_kind%}
 

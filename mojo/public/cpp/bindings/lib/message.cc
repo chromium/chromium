@@ -523,7 +523,7 @@ void Message::Reset() {
   heap_profiler_tag_ = nullptr;
 }
 
-const uint8_t* Message::payload() const {
+NOINLINE const uint8_t* Message::payload() const {
   if (version() < 2) {
     return UNSAFE_TODO(data() + header())->num_bytes;
   }

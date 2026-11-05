@@ -201,8 +201,7 @@ void IFaceWithTypemapProxy::Echo(
   mojo::internal::Serialize<::golden::TypemappedDataView>(
     in_param,
     param_fragment);
-
-  params->param.Set(param_fragment);
+  params.SetPointer(8, param_fragment);
 
   
   MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -305,8 +304,7 @@ void IFaceWithTypemap_Echo_ProxyToResponder::Run(
   mojo::internal::Serialize<::golden::TypemappedDataView>(
     in_out,
     out_fragment);
-
-  params->out.Set(out_fragment);
+  params.SetPointer(8, out_fragment);
 
   
   MOJO_INTERNAL_CHECK_SERIALIZATION(

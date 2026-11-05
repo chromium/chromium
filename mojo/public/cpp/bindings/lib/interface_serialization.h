@@ -49,12 +49,8 @@ struct Serializer<AssociatedInterfacePtrInfoDataView<Base>,
       return false;
     }
     auto handle = DeserializeAssociatedEndpointHandle(input->handle, *message);
-    if (!handle.is_valid()) {
-      *output = PendingAssociatedRemote<T>();
-    } else {
-      output->set_handle(std::move(handle));
-      output->set_version(input->version);
-    }
+    output->set_version(handle.is_valid() ? input->version : 0);
+    output->set_handle(std::move(handle));
     return true;
   }
 };
@@ -80,12 +76,7 @@ struct Serializer<AssociatedInterfaceRequestDataView<Base>,
     if (!GetRuntimeFeature_ExpectEnabled<T>()) {
       return false;
     }
-    auto handle = DeserializeAssociatedEndpointHandle(*input, *message);
-    if (!handle.is_valid()) {
-      *output = PendingAssociatedReceiver<T>();
-    } else {
-      *output = PendingAssociatedReceiver<T>(std::move(handle));
-    }
+    output->set_handle(DeserializeAssociatedEndpointHandle(*input, *message));
     return true;
   }
 };
@@ -126,7 +117,8 @@ struct Serializer<InterfacePtrDataView<Base>, PendingRemote<T>> {
     }
     // |PassPipe()| invalidates all state, so capture |version()| first.
     uint32_t version = input.version();
-    SerializeInterfaceInfo(input.PassPipe(), version, *message, *output);
+    SerializeRawInterfaceInfo(input.PassPipe().release(), version, *message,
+                              *output);
   }
 
   static bool Deserialize(Interface_Data* input,
@@ -135,9 +127,7 @@ struct Serializer<InterfacePtrDataView<Base>, PendingRemote<T>> {
     if (!GetRuntimeFeature_ExpectEnabled<T>()) {
       return false;
     }
-    *output = PendingRemote<T>(
-        DeserializeHandleAs<MessagePipeHandle>(input->handle, *message),
-        input->version);
+    DeserializeHandleAsRemote(*input, *message, *output->internal_state());
     return true;
   }
 };
@@ -152,7 +142,8 @@ struct Serializer<InterfaceRequestDataView<Base>, PendingReceiver<T>> {
     if (!GetRuntimeFeature_ExpectEnabled<T>()) {
       input.reset();
     }
-    SerializeHandle(ScopedHandle::From(input.PassPipe()), *message, *output);
+    SerializeRawHandle(Handle(input.PassPipe().release().value()), *message,
+                       *output);
   }
 
   static bool Deserialize(Handle_Data* input,

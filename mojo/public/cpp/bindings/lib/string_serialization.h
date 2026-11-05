@@ -26,17 +26,14 @@ struct Serializer<StringDataView, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = StringTraits<UserType>;
 
-  static void Serialize(MaybeConstUserType& input,
-                        MessageFragment<String_Data>& fragment) {
+  NOINLINE static void Serialize(MaybeConstUserType& input,
+                                 MessageFragment<String_Data>& fragment) {
     if (CallIsNullIfExists<Traits>(input)) {
       return;
     }
 
     auto r = Traits::GetUTF8(input);
-    fragment.AllocateArrayData(r.size());
-    if (r.size() > 0) {
-      UNSAFE_TODO(memcpy(fragment->storage(), r.data(), r.size()));
-    }
+    fragment.AllocateAndCopyArrayData(r.data(), r.size());
   }
 
   static bool Deserialize(String_Data* input,

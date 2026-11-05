@@ -23,9 +23,21 @@ namespace mojo {
 namespace internal {
 
 struct PendingReceiverState;
+struct PendingRemoteState;
+
+// Takes ownership of `handle` and transfers it into `message`.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SerializeRawHandle(Handle handle, Message& message, Handle_Data& data);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 void SerializeHandle(ScopedHandle handle, Message& message, Handle_Data& data);
+
+// Takes ownership of `handle` and transfers it into `message`.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SerializeRawInterfaceInfo(MessagePipeHandle handle,
+                               uint32_t version,
+                               Message& message,
+                               Interface_Data& data);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 void SerializeInterfaceInfo(ScopedMessagePipeHandle handle,
@@ -44,6 +56,10 @@ void SerializeAssociatedInterfaceInfo(ScopedInterfaceEndpointHandle handle,
                                       Message& message,
                                       AssociatedInterface_Data& data);
 
+// Releases ownership of the handle from `message` and returns it to the caller.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+Handle DeserializeRawHandle(const Handle_Data& data, Message& message);
+
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 ScopedHandle DeserializeHandle(const Handle_Data& data, Message& message);
 
@@ -53,6 +69,11 @@ void DeserializeHandleAsReceiver(const Handle_Data& data,
                                  PendingReceiverState& receiver_state);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void DeserializeHandleAsRemote(const Interface_Data& data,
+                               Message& message,
+                               PendingRemoteState& remote_state);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 ScopedInterfaceEndpointHandle DeserializeAssociatedEndpointHandle(
     const AssociatedEndpointHandle_Data& data,
     Message& message);
@@ -60,7 +81,7 @@ ScopedInterfaceEndpointHandle DeserializeAssociatedEndpointHandle(
 template <typename T>
 ScopedHandleBase<T> DeserializeHandleAs(const Handle_Data& data,
                                         Message& message) {
-  return ScopedHandleBase<T>::From(DeserializeHandle(data, message));
+  return ScopedHandleBase<T>(T(DeserializeRawHandle(data, message).value()));
 }
 
 template <typename T>
@@ -68,13 +89,13 @@ struct Serializer<ScopedHandleBase<T>, ScopedHandleBase<T>> {
   static void Serialize(ScopedHandleBase<T>& input,
                         Handle_Data* output,
                         Message* message) {
-    SerializeHandle(ScopedHandle::From(std::move(input)), *message, *output);
+    SerializeRawHandle(Handle(input.release().value()), *message, *output);
   }
 
   static bool Deserialize(Handle_Data* input,
                           ScopedHandleBase<T>* output,
                           Message* message) {
-    *output = DeserializeHandleAs<T>(*input, *message);
+    output->reset(T(DeserializeRawHandle(*input, *message).value()));
     return true;
   }
 };
@@ -87,7 +108,7 @@ struct Serializer<PlatformHandle, PlatformHandle> {
     [[maybe_unused]] const bool input_was_valid = input.is_valid();
     ScopedHandle handle = WrapPlatformHandle(std::move(input));
     DCHECK_EQ(handle.is_valid(), input_was_valid);
-    SerializeHandle(std::move(handle), *message, *output);
+    SerializeRawHandle(handle.release(), *message, *output);
   }
 
   static bool Deserialize(Handle_Data* input,

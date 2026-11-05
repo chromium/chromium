@@ -237,7 +237,7 @@ struct SendValidationArraySerializer<MojomType,
       decltype(auto) next = input->GetNext();
       SerializeCaller<Element>::Run(next, data_fragment,
                                     validate_params->element_validate_params);
-      fragment->at(i).Set(data_fragment);
+      fragment.SetElementPointer(i, data_fragment);
 
       MOJO_INTERNAL_CHECK_SERIALIZATION(
           send_validation,
@@ -299,7 +299,7 @@ struct SendValidationArraySerializer<MojomType,
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<DataElement> inlined_union_element(fragment.message());
-      inlined_union_element.Claim(&fragment->at(i));
+      fragment.ClaimElement(i, inlined_union_element);
       decltype(auto) next = input->GetNext();
       Serialize<Element, send_validation>(next, inlined_union_element, true);
 
@@ -346,9 +346,15 @@ struct SendValidationSerializer<ArrayDataView<Element>,
             "fixed-size array has wrong number of elements", size,
             validate_params->expected_num_elements));
 
-    fragment.AllocateArrayData(size);
-    ArrayIterator<Traits, MaybeConstUserType> iterator(input);
-    Impl::SerializeElements(&iterator, fragment, validate_params);
+    if constexpr (IsMemcpyablePodArray<Element, MaybeConstUserType>()) {
+      DCHECK(!validate_params->element_validate_params)
+          << "Primitive type should not have array validate params";
+      fragment.AllocateAndCopyArrayData(Traits::GetData(input), size);
+    } else {
+      fragment.AllocateArrayData(size);
+      ArrayIterator<Traits, MaybeConstUserType> iterator(input);
+      Impl::SerializeElements(&iterator, fragment, validate_params);
+    }
   }
 };
 

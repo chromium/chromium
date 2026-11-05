@@ -616,7 +616,7 @@ void ResultInterface_Method_ProxyToResponder::Run(
   params.Allocate();
   mojo::internal::MessageFragment<decltype(params->result)>
       result_fragment(params.message());
-  result_fragment.Claim(&params->result);
+  result_fragment.ClaimOffset(params, 8);
   
   mojo::internal::Serialize<::golden::ResultInterface_Method_ResponseParam_ResultDataView>(
     in_result,
@@ -728,7 +728,7 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
   params.Allocate();
   mojo::internal::MessageFragment<decltype(params->result)>
       result_fragment(params.message());
-  result_fragment.Claim(&params->result);
+  result_fragment.ClaimOffset(params, 8);
   
   mojo::internal::Serialize<::golden::ResultInterface_SyncMethod_ResponseParam_ResultDataView>(
     in_result,
@@ -933,9 +933,10 @@ bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView
   using UnionType = ::golden::ResultInterface_Method_ResponseParam_Result;
   using Tag = UnionType::Tag;
 
+  ::golden::ResultInterface_Method_ResponseParam_ResultPtr result;
   switch (input.tag()) {
     case Tag::kSuccess: {
-      *output = UnionType::NewSuccess(input.success());
+      result = UnionType::NewSuccess(input.success());
       break;
     }
     case Tag::kFailure: {
@@ -943,7 +944,7 @@ bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView
       if (!input.ReadFailure(&result_failure))
         return false;
 
-      *output = UnionType::NewFailure(
+      result = UnionType::NewFailure(
           std::move(result_failure));
       break;
     }
@@ -951,6 +952,7 @@ bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView
 
       return false;
   }
+  *output = std::move(result);
   return true;
 }
 
@@ -961,9 +963,10 @@ bool UnionTraits<::golden::ResultInterface_SyncMethod_ResponseParam_Result::Data
   using UnionType = ::golden::ResultInterface_SyncMethod_ResponseParam_Result;
   using Tag = UnionType::Tag;
 
+  ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr result;
   switch (input.tag()) {
     case Tag::kSuccess: {
-      *output = UnionType::NewSuccess(input.success());
+      result = UnionType::NewSuccess(input.success());
       break;
     }
     case Tag::kFailure: {
@@ -971,7 +974,7 @@ bool UnionTraits<::golden::ResultInterface_SyncMethod_ResponseParam_Result::Data
       if (!input.ReadFailure(&result_failure))
         return false;
 
-      *output = UnionType::NewFailure(
+      result = UnionType::NewFailure(
           std::move(result_failure));
       break;
     }
@@ -979,6 +982,7 @@ bool UnionTraits<::golden::ResultInterface_SyncMethod_ResponseParam_Result::Data
 
       return false;
   }
+  *output = std::move(result);
   return true;
 }
 

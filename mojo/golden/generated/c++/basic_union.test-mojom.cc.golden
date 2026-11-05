@@ -265,9 +265,10 @@ bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
   using UnionType = ::golden::BasicUnion;
   using Tag = UnionType::Tag;
 
+  ::golden::BasicUnionPtr result;
   switch (input.tag()) {
     case Tag::kNumericValue: {
-      *output = UnionType::NewNumericValue(input.numeric_value());
+      result = UnionType::NewNumericValue(input.numeric_value());
       break;
     }
     case Tag::kEnumValue: {
@@ -275,7 +276,7 @@ bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
       if (!input.ReadEnumValue(&result_enum_value))
         return false;
 
-      *output = UnionType::NewEnumValue(result_enum_value);
+      result = UnionType::NewEnumValue(result_enum_value);
       break;
     }
     case Tag::kExtensibleEnumValue: {
@@ -283,7 +284,7 @@ bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
       if (!input.ReadExtensibleEnumValue(&result_extensible_enum_value))
         return false;
 
-      *output = UnionType::NewExtensibleEnumValue(result_extensible_enum_value);
+      result = UnionType::NewExtensibleEnumValue(result_extensible_enum_value);
       break;
     }
     case Tag::kStructValue: {
@@ -291,7 +292,7 @@ bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
       if (!input.ReadStructValue(&result_struct_value))
         return false;
 
-      *output = UnionType::NewStructValue(
+      result = UnionType::NewStructValue(
           std::move(result_struct_value));
       break;
     }
@@ -299,6 +300,7 @@ bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
 
       return false;
   }
+  *output = std::move(result);
   return true;
 }
 

@@ -45,7 +45,7 @@ struct Serializer<::golden::ResultTestErrorDataView, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = StructTraits<::golden::ResultTestErrorDataView, UserType>;
 
-  static void Serialize(
+  NOINLINE static void Serialize(
       MaybeConstUserType& input,
       mojo::internal::MessageFragment<::golden::internal::ResultTestError_Data>& fragment) {
     if (CallIsNullIfExists<Traits>(input))
@@ -74,9 +74,9 @@ struct Serializer<::golden::ResultInterface_Method_ResponseParam_ResultDataView,
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = UnionTraits<::golden::ResultInterface_Method_ResponseParam_ResultDataView, UserType>;
 
-  static void Serialize(MaybeConstUserType& input,
-                        MessageFragment<::golden::internal::ResultInterface_Method_ResponseParam_Result_Data>& fragment,
-                        bool inlined) {
+  NOINLINE static void Serialize(MaybeConstUserType& input,
+                                 MessageFragment<::golden::internal::ResultInterface_Method_ResponseParam_Result_Data>& fragment,
+                                 bool inlined) {
     
     if (CallIsNullIfExists<Traits>(input)) {
        if (inlined)
@@ -89,9 +89,10 @@ if (!inlined)
 
     // TODO(azani): Handle unknown and objects.
     // Set the not-null flag.
+auto tag = Traits::GetTag(input);
 fragment->size = kUnionDataSize;
-fragment->tag = Traits::GetTag(input);
-switch (fragment->tag) {
+fragment->tag = tag;
+switch (tag) {
   case ::golden::ResultInterface_Method_ResponseParam_ResultDataView::Tag::kSuccess: {
     decltype(Traits::success(input))
     in_success = Traits::success(input);
@@ -114,7 +115,7 @@ MOJO_INTERNAL_CHECK_SERIALIZATION(
   !(value_fragment.is_null()),
   mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
   "null failure in ResultInterface_Method_ResponseParam_Result union");
-    fragment->data.f_failure.Set(value_fragment);
+    fragment.SetPointer(8, value_fragment);
     break;
   }
 }
@@ -141,9 +142,9 @@ struct Serializer<::golden::ResultInterface_SyncMethod_ResponseParam_ResultDataV
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = UnionTraits<::golden::ResultInterface_SyncMethod_ResponseParam_ResultDataView, UserType>;
 
-  static void Serialize(MaybeConstUserType& input,
-                        MessageFragment<::golden::internal::ResultInterface_SyncMethod_ResponseParam_Result_Data>& fragment,
-                        bool inlined) {
+  NOINLINE static void Serialize(MaybeConstUserType& input,
+                                 MessageFragment<::golden::internal::ResultInterface_SyncMethod_ResponseParam_Result_Data>& fragment,
+                                 bool inlined) {
     
     if (CallIsNullIfExists<Traits>(input)) {
        if (inlined)
@@ -156,9 +157,10 @@ if (!inlined)
 
     // TODO(azani): Handle unknown and objects.
     // Set the not-null flag.
+auto tag = Traits::GetTag(input);
 fragment->size = kUnionDataSize;
-fragment->tag = Traits::GetTag(input);
-switch (fragment->tag) {
+fragment->tag = tag;
+switch (tag) {
   case ::golden::ResultInterface_SyncMethod_ResponseParam_ResultDataView::Tag::kSuccess: {
     decltype(Traits::success(input))
     in_success = Traits::success(input);
@@ -181,7 +183,7 @@ MOJO_INTERNAL_CHECK_SERIALIZATION(
   !(value_fragment.is_null()),
   mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
   "null failure in ResultInterface_SyncMethod_ResponseParam_Result union");
-    fragment->data.f_failure.Set(value_fragment);
+    fragment.SetPointer(8, value_fragment);
     break;
   }
 }

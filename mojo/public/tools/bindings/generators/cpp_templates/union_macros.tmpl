@@ -16,7 +16,6 @@
       arguments. #}
 {%- macro serialize(union, send_validation_compiler_setting) -%}
 {%- set data_view = union|get_qualified_name_for_kind ~ "DataView" %}
-{%- set data_type = union|get_qualified_name_for_kind(internal=True) %}
     if (CallIsNullIfExists<Traits>(input)) {
        if (inlined)
         fragment->set_null();
@@ -28,9 +27,10 @@ if (!inlined)
 
     // TODO(azani): Handle unknown and objects.
     // Set the not-null flag.
+auto tag = Traits::GetTag(input);
 fragment->size = kUnionDataSize;
-fragment->tag = Traits::GetTag(input);
-switch (fragment->tag) {
+fragment->tag = tag;
+switch (tag) {
 {%- for field in union.fields %}
 {%-   set name = field.name %}
 {%-   set kind = field.kind %}
@@ -53,12 +53,10 @@ switch (fragment->tag) {
       serializer_type,
       serialization_args)}}
 {%-     elif kind|is_array_kind or kind|is_map_kind %}
-        constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
-            {{kind|get_container_validate_params_ctor_args|indent(6)}};
         {%- set serialization_args =
           ["in_" + name,
           "value_fragment",
-          "&" + name + "_validate_params"]
+          "&" + (kind|get_container_validate_params_ctor_args)]
         %}
         {{send_validation_macros.get_serialize_call(
             send_validation_compiler_setting,
@@ -81,7 +79,7 @@ switch (fragment->tag) {
       "mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER",
       "null %s in %s union"| format(name, union.name))}}
 {%-     endif %}
-    fragment->data.f_{{name}}.Set(value_fragment);
+    fragment.SetPointer(8, value_fragment);
 
 {%-   elif kind|is_any_handle_or_interface_kind %}
 {%-     set serialization_args =

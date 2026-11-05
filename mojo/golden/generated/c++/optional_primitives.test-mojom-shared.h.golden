@@ -44,7 +44,7 @@ struct Serializer<::golden::OptionalPrimitivesDataView, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = StructTraits<::golden::OptionalPrimitivesDataView, UserType>;
 
-  static void Serialize(
+  NOINLINE static void Serialize(
       MaybeConstUserType& input,
       mojo::internal::MessageFragment<::golden::internal::OptionalPrimitives_Data>& fragment) {
     if (CallIsNullIfExists<Traits>(input))
@@ -63,15 +63,12 @@ struct Serializer<::golden::OptionalPrimitivesDataView, MaybeConstUserType> {
     mojo::internal::MessageFragment<
         typename decltype(fragment->uints)::BaseType>
         uints_fragment(fragment.message());
-    constexpr const mojo::internal::ContainerValidateParams& uints_validate_params =
-        mojo::internal::GetArrayValidator<0, true, nullptr>();
     
     mojo::internal::Serialize<mojo::ArrayDataView<std::optional<uint32_t>>>(
       in_uints,
       uints_fragment,
-      &uints_validate_params);
-
-    fragment->uints.Set(uints_fragment);
+      &mojo::internal::GetArrayValidator<0, true, nullptr>());
+    fragment.SetPointer(24, uints_fragment);
 
     
     MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -84,15 +81,12 @@ struct Serializer<::golden::OptionalPrimitivesDataView, MaybeConstUserType> {
     mojo::internal::MessageFragment<
         typename decltype(fragment->boolarray)::BaseType>
         boolarray_fragment(fragment.message());
-    constexpr const mojo::internal::ContainerValidateParams& boolarray_validate_params =
-        mojo::internal::GetArrayValidator<0, true, nullptr>();
     
     mojo::internal::Serialize<mojo::ArrayDataView<std::optional<bool>>>(
       in_boolarray,
       boolarray_fragment,
-      &boolarray_validate_params);
-
-    fragment->boolarray.Set(boolarray_fragment);
+      &mojo::internal::GetArrayValidator<0, true, nullptr>());
+    fragment.SetPointer(32, boolarray_fragment);
 
     
     MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -105,15 +99,12 @@ struct Serializer<::golden::OptionalPrimitivesDataView, MaybeConstUserType> {
     mojo::internal::MessageFragment<
         typename decltype(fragment->bitmap)::BaseType>
         bitmap_fragment(fragment.message());
-    constexpr const mojo::internal::ContainerValidateParams& bitmap_validate_params =
-        mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, nullptr>(), *&mojo::internal::GetArrayValidator<0, true, nullptr>()>();
     
     mojo::internal::Serialize<mojo::MapDataView<bool, std::optional<bool>>>(
       in_bitmap,
       bitmap_fragment,
-      &bitmap_validate_params);
-
-    fragment->bitmap.Set(bitmap_fragment);
+      &mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, nullptr>(), *&mojo::internal::GetArrayValidator<0, true, nullptr>()>());
+    fragment.SetPointer(40, bitmap_fragment);
 
     
     MOJO_INTERNAL_CHECK_SERIALIZATION(

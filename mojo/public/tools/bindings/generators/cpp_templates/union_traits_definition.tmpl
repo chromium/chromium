@@ -7,6 +7,7 @@ bool UnionTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
   using UnionType = {{mojom_type}};
   using Tag = UnionType::Tag;
 
+  {{mojom_type}}Ptr result;
   switch (input.tag()) {
 {%- for field in union.fields %}
     case Tag::k{{field.name|under_to_camel}}: {
@@ -18,14 +19,14 @@ bool UnionTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
       if (!input.Read{{name|under_to_camel}}(&result_{{name}}))
         return false;
 
-      *output = UnionType::New{{field.name|under_to_camel}}(
+      result = UnionType::New{{field.name|under_to_camel}}(
           std::move(result_{{name}}));
 {%-   elif kind|is_any_handle_kind %}
-      *output = UnionType::New{{field.name|under_to_camel}}(
+      result = UnionType::New{{field.name|under_to_camel}}(
           input.Take{{name|under_to_camel}}());
 
 {%-   elif kind|is_any_interface_kind %}
-      *output = UnionType::New{{field.name|under_to_camel}}(
+      result = UnionType::New{{field.name|under_to_camel}}(
           input.Take{{name|under_to_camel}}<{{kind|cpp_wrapper_type(True)}}>());
 
 {%-   elif kind|is_enum_kind %}
@@ -33,20 +34,21 @@ bool UnionTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
       if (!input.Read{{name|under_to_camel}}(&result_{{name}}))
         return false;
 
-      *output = UnionType::New{{field.name|under_to_camel}}(result_{{name}});
+      result = UnionType::New{{field.name|under_to_camel}}(result_{{name}});
 {%-   else %}
-      *output = UnionType::New{{field.name|under_to_camel}}(input.{{name}}());
+      result = UnionType::New{{field.name|under_to_camel}}(input.{{name}}());
 {%-   endif %}
       break;
     }
 {%- endfor %}
     default:
 {%  if union.extensible %}
-      *output = UnionType::New{{union.default_field.name|under_to_camel}}({});
-      return true;
+      result = UnionType::New{{union.default_field.name|under_to_camel}}({});
+      break;
 {%- else %}
       return false;
 {%- endif %}
   }
+  *output = std::move(result);
   return true;
 }

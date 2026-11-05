@@ -4,15 +4,24 @@
 
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 
+#include <string.h>
+
 #include "base/compiler_specific.h"
 
 namespace mojo::internal {
 
-void EncodeFragmentPointer(Message& message, size_t index, uint64_t* offset) {
-  EncodePointer(index == kInvalidFragmentIndex
-                    ? nullptr
-                    : message.payload_buffer()->Get<void>(index),
-                offset);
+NOINLINE void MessageFragmentBase::SetPointer(
+    size_t offset_in_parent,
+    const MessageFragmentBase& child_fragment) {
+  DCHECK(!is_null());
+  const size_t slot_index = index_ + offset_in_parent;
+  uint64_t* offset = message_.payload_buffer()->Get<uint64_t>(slot_index);
+  if (child_fragment.is_null()) {
+    *offset = 0;
+  } else {
+    DCHECK_GT(child_fragment.index_, slot_index);
+    *offset = child_fragment.index_ - slot_index;
+  }
 }
 
 void* MessageFragmentBase::AllocateFragment(size_t num_bytes) {
@@ -59,6 +68,27 @@ NOINLINE void* FixedSizeArrayMessageFragment::AllocateArrayFragment(
   header->num_bytes = num_bytes;
   header->num_elements = static_cast<uint32_t>(num_elements);
   return ptr;
+}
+
+NOINLINE void FixedSizeArrayMessageFragment::AllocateAndCopyArrayFragment(
+    const void* data,
+    size_t num_elements,
+    uint32_t element_size) {
+  void* ptr = AllocateArrayFragment(num_elements, element_size);
+  if (num_elements > 0) {
+    UNSAFE_TODO(memcpy(static_cast<char*>(ptr) + sizeof(ArrayHeader), data,
+                       num_elements * element_size));
+  }
+}
+
+NOINLINE void FixedSizeArrayMessageFragment::SetArrayElementPointer(
+    size_t index,
+    const MessageFragmentBase& child_fragment) {
+  DCHECK(!is_null());
+  DCHECK_LT(index,
+            message_.payload_buffer()->Get<ArrayHeader>(index_)->num_elements);
+  SetPointer(sizeof(ArrayHeader) + index * sizeof(GenericPointer),
+             child_fragment);
 }
 
 }  // namespace mojo::internal

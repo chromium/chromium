@@ -48,9 +48,10 @@ if (!inlined)
 
     // TODO(azani): Handle unknown and objects.
     // Set the not-null flag.
+auto tag = Traits::GetTag(input);
 fragment->size = kUnionDataSize;
-fragment->tag = Traits::GetTag(input);
-switch (fragment->tag) {
+fragment->tag = tag;
+switch (tag) {
   case ::golden::ResultInterface_Method_ResponseParam_ResultDataView::Tag::kSuccess: {
     decltype(Traits::success(input))
     in_success = Traits::success(input);
@@ -73,7 +74,7 @@ MOJO_INTERNAL_CHECK_SERIALIZATION(
   !(value_fragment.is_null()),
   mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
   "null failure in ResultInterface_Method_ResponseParam_Result union");
-    fragment->data.f_failure.Set(value_fragment);
+    fragment.SetPointer(8, value_fragment);
     break;
   }
 }
@@ -98,9 +99,10 @@ if (!inlined)
 
     // TODO(azani): Handle unknown and objects.
     // Set the not-null flag.
+auto tag = Traits::GetTag(input);
 fragment->size = kUnionDataSize;
-fragment->tag = Traits::GetTag(input);
-switch (fragment->tag) {
+fragment->tag = tag;
+switch (tag) {
   case ::golden::ResultInterface_SyncMethod_ResponseParam_ResultDataView::Tag::kSuccess: {
     decltype(Traits::success(input))
     in_success = Traits::success(input);
@@ -123,7 +125,7 @@ MOJO_INTERNAL_CHECK_SERIALIZATION(
   !(value_fragment.is_null()),
   mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
   "null failure in ResultInterface_SyncMethod_ResponseParam_Result union");
-    fragment->data.f_failure.Set(value_fragment);
+    fragment.SetPointer(8, value_fragment);
     break;
   }
 }

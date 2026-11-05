@@ -53,11 +53,8 @@ class StructPtr {
     return *this;
   }
 
-  StructPtr(StructPtr&& other) { Take(&other); }
-  StructPtr& operator=(StructPtr&& other) {
-    Take(&other);
-    return *this;
-  }
+  StructPtr(StructPtr&& other) noexcept : ptr_(std::move(other.ptr_)) {}
+  StructPtr& operator=(StructPtr&& other) noexcept = default;
 
   template <typename... Args>
   StructPtr(std::in_place_t, Args&&... args)
@@ -123,10 +120,6 @@ class StructPtr {
 
  private:
   friend class internal::StructPtrWTFHelper<Struct>;
-  void Take(StructPtr* other) {
-    reset();
-    Swap(other);
-  }
 
   std::unique_ptr<Struct> ptr_;
 };
@@ -191,7 +184,9 @@ class InlinedStructPtr {
   }
 
   void reset() {
-    if (state_ != NIL) {
+    if constexpr (std::is_trivially_destructible_v<Struct>) {
+      state_ = NIL;
+    } else if (state_ != NIL) {
       state_ = NIL;
       storage_.value.~Struct();
     }

@@ -44,7 +44,7 @@ struct Serializer<::golden::BasicStructDataView, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = StructTraits<::golden::BasicStructDataView, UserType>;
 
-  static void Serialize(
+  NOINLINE static void Serialize(
       MaybeConstUserType& input,
       mojo::internal::MessageFragment<::golden::internal::BasicStruct_Data>& fragment) {
     if (CallIsNullIfExists<Traits>(input))

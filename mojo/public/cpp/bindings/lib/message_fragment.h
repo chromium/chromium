@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <concepts>
 #include <limits>
 #include <optional>
 #include <type_traits>
@@ -29,12 +30,6 @@ namespace internal {
 // is particularly relevant.
 constexpr size_t kInvalidFragmentIndex = std::numeric_limits<size_t>::max();
 
-// Encodes into `offset` a pointer to the data at `index` within the payload of
-// `message`, or a null pointer if `index` is kInvalidFragmentIndex. This is not
-// inlined in order to reduce the size of generated serialization code.
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-void EncodeFragmentPointer(Message& message, size_t index, uint64_t* offset);
-
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFragmentBase {
  public:
   // Constructs a null MessageFragment for `message`.
@@ -48,13 +43,18 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFragmentBase {
   // Indicates whether space has been claimed by this fragment.
   bool is_null() const { return index_ == kInvalidFragmentIndex; }
 
+  void SetPointer(size_t offset_in_parent,
+                  const MessageFragmentBase& child_fragment);
+
+  void ClaimOffset(const MessageFragmentBase& parent, size_t offset_in_parent) {
+    DCHECK(!parent.is_null());
+    index_ = parent.index_ + offset_in_parent;
+  }
+
  protected:
   void* AllocateFragment(size_t num_bytes);
   void AllocateUnversionedStructFragment(uint32_t num_bytes);
   void AllocateVersionedStructFragment(uint32_t num_bytes, uint32_t version);
-
-  template <typename U>
-  friend struct Pointer;
 
   // RAW_PTR_EXCLUSION: Binary size increase (~350K on Android).
   RAW_PTR_EXCLUSION Message& message_;
@@ -74,8 +74,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFragmentBase {
 // chunk of memory within the message. This is done by calling either
 // `Allocate()` -- which appends `sizeof(T)` bytes to the end of the Message
 // payload, initializes its header, and assumes control of those bytes -- or
-// `Claim()` which takes an existing pointer within the message payload and
-// assumes control of the first `sizeof(T)` bytes at that message offset.
+// `ClaimOffset()`, which takes an existing parent fragment and field offset
+// within the message payload and assumes control of the `sizeof(T)` bytes at
+// that message offset.
 //
 // Note that array types use a specialization of this class defined below,
 // and must instead call `AllocateArrayData()` to allocate and claim space
@@ -103,16 +104,6 @@ class MessageFragment : public MessageFragmentBase {
     } else {
       AllocateUnversionedStructFragment(sizeof(T));
     }
-  }
-
-  // Claims `sizeof(T)` bytes of already-allocated memory at `ptr`, which must
-  // fall entirely within an existing MessageFragment for the same Message.
-  void Claim(void* ptr) {
-    const char* start =
-        static_cast<const char*>(message_.payload_buffer()->data());
-    const char* slot = static_cast<const char*>(ptr);
-    DCHECK_GT(slot, start);
-    index_ = slot - start;
   }
 };
 
@@ -214,6 +205,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) FixedSizeArrayMessageFragment
 
  protected:
   void* AllocateArrayFragment(size_t num_elements, uint32_t element_size);
+  void AllocateAndCopyArrayFragment(const void* data,
+                                    size_t num_elements,
+                                    uint32_t element_size);
+  void SetArrayElementPointer(size_t index,
+                              const MessageFragmentBase& child_fragment);
 };
 
 // Base for array MessageFragments that pack values or nullability flags into
@@ -264,6 +260,26 @@ class MessageFragment<Array_Data<T>>
   void AllocateArrayData(size_t num_elements) {
     this->AllocateArrayFragment(num_elements, sizeof(T));
   }
+
+  void AllocateAndCopyArrayData(const T* data, size_t num_elements) {
+    this->AllocateAndCopyArrayFragment(data, num_elements, sizeof(T));
+  }
+
+  template <typename U>
+    requires std::same_as<T, Pointer<U>>
+  void SetElementPointer(size_t index,
+                         const MessageFragment<U>& child_fragment) {
+    this->SetArrayElementPointer(index, child_fragment);
+  }
+
+  void ClaimElement(size_t index, MessageFragment<T>& element_fragment) {
+    DCHECK(!this->is_null());
+    DCHECK_LT(index, this->message_.payload_buffer()
+                         ->template Get<ArrayHeader>(this->index_)
+                         ->num_elements);
+    element_fragment.ClaimOffset(*this,
+                                 sizeof(ArrayHeader) + index * sizeof(T));
+  }
 };
 
 // Specialization of MessageFragment<T> for bit-packed Array_Data types (`bool`
@@ -290,11 +306,6 @@ class MessageFragment<Array_Data<T>>
     this->AllocateArrayFragment(num_bytes, static_cast<uint32_t>(num_elements));
   }
 };
-
-template <typename T>
-void Pointer<T>::Set(MessageFragment<T>& fragment) {
-  EncodeFragmentPointer(fragment.message_, fragment.index_, &offset);
-}
 
 }  // namespace internal
 }  // namespace mojo
