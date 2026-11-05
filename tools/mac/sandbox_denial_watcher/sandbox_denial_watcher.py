@@ -254,11 +254,8 @@ _KNOWN_SUBPATH_DENIALS: dict[str, frozenset[RuleType]] = {
     ),
     "file-write*": frozenset(
         (
-            (
-                f"{_DARWIN_USER_DIR}/T/*_chrome_Unpacker_BeginUnzipping*/",
-                "utility.sb",
-            ),
-            (f"{_DARWIN_USER_DIR}/T/scoped_dir*/CRX_INSTALL/", "utility.sb"),
+            f"{_DARWIN_USER_DIR}/T/*_chrome_Unpacker_BeginUnzipping*/",
+            f"{_DARWIN_USER_DIR}/T/scoped_dir*/CRX_INSTALL/",
         )
     ),
     "file-write-times": frozenset(

@@ -203,17 +203,16 @@ class FilteringTest(WatcherTestCase):
     @patch.object(SandboxDenialWatcher, "_report_denial")
     def test_known_denials_target_and_subpath_matching(self, mock_report):
         self.mock_get_cmdline.side_effect = lambda pid: (
-            "Chrome --type=utility --utility-sub-type=unzip.mojom.Unzipper "
-            "--service-sandbox-type=service"
+            "Chrome --type=utility "
+            "--utility-sub-type=audio.mojom.AudioService "
+            "--service-sandbox-type=audio"
             if pid == 24235
             else "Chrome --type=renderer"
             if pid == 24236
             else None
         )
-        unpacker_path = (
-            "/private/var/folders/x7/24fct7055y710wkdytb4f8k000ml0d/T/"
-            "org.chromium.Chromium.chromecrx_chrome_Unpacker_BeginUnzipping"
-            ".12345/file.js"
+        audio_path = (
+            "/System/Library/Audio/Plug-Ins/HAL/BTAudioHALPlugin.driver/file"
         )
         self.feed(
             _denial_line(
@@ -226,7 +225,7 @@ class FilteringTest(WatcherTestCase):
                 "file-read-data "
                 "/Library/Managed Preferences/com.apple.foo.plist"
             ),
-            _denial_line(f"file-write-times {unpacker_path}", pid=24235),
+            _denial_line(f"file-read-data {audio_path}", pid=24235),
         )
         mock_report.assert_not_called()
 
@@ -240,7 +239,7 @@ class FilteringTest(WatcherTestCase):
             )
         )
         # Denials with a non-matching profile command line are also reported.
-        self.feed(_denial_line(f"file-write-times {unpacker_path}", pid=24236))
+        self.feed(_denial_line(f"file-read-data {audio_path}", pid=24236))
         self.assertEqual(mock_report.call_count, 3)
 
     @patch.object(SandboxDenialWatcher, "_report_denial")
@@ -721,15 +720,6 @@ class DenialFilterTest(WatcherTestCase):
                 _denial(
                     f"file-write-times {user_root}/T/other_dir/file.js",
                     command_line=utility_cmd,
-                )
-            )
-        )
-        # Denials from non-utility processes are not ignored.
-        self.assertFalse(
-            self.denial_filter.should_ignore(
-                _denial(
-                    f"file-write-mode {crx_dir}",
-                    command_line="Chrome --type=renderer",
                 )
             )
         )
