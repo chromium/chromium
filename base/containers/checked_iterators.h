@@ -97,8 +97,9 @@ class CheckedContiguousIterator {
   constexpr CheckedContiguousIterator& operator=(
       const CheckedContiguousIterator& other) = default;
 
-  friend constexpr bool operator==(const CheckedContiguousIterator& lhs,
-                                   const CheckedContiguousIterator& rhs) {
+  ALWAYS_INLINE friend constexpr bool operator==(
+      const CheckedContiguousIterator& lhs,
+      const CheckedContiguousIterator& rhs) {
     lhs.CheckComparable(rhs);
     return lhs.current_ == rhs.current_;
   }
