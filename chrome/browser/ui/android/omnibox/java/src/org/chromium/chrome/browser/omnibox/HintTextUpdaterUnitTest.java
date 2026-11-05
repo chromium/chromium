@@ -418,6 +418,29 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
+    public void testGetOmniboxHintText_ActiveModelChange_UpdatesHint() {
+        InputStateBuilder builder =
+                new InputStateBuilder()
+                        .withModelConfigs(
+                                createModelConfig(ModelMode.MODEL_MODE_GEMINI_REGULAR, "Fast Hint"),
+                                createModelConfig(ModelMode.MODEL_MODE_GEMINI_PRO, "Pro Hint"));
+        setInputState(builder.withActiveModel(ModelMode.MODEL_MODE_GEMINI_REGULAR).build());
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        // Restart the session so the updater observes the stubbed bridge.
+        mUpdater.beginInput(mAutocompleteInput);
+        clearInvocations(mUpdateHintTextCallback);
+
+        mInputStateSupplier.set(builder.withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO).build());
+        verify(mUpdateHintTextCallback).onResult(eq("Pro Hint"));
+
+        mUpdater.endInput();
+        clearInvocations(mUpdateHintTextCallback);
+        mInputStateSupplier.set(
+                builder.withActiveModel(ModelMode.MODEL_MODE_GEMINI_REGULAR).build());
+        verify(mUpdateHintTextCallback, never()).onResult(any());
+    }
+
+    @Test
     public void testGetOmniboxHintText_noSessionStateFallback() {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
 
