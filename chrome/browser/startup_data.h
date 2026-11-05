@@ -12,6 +12,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/files/file_path.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"  // nogncheck
 #endif
 
@@ -71,6 +72,22 @@ class StartupData {
 
   ProfileKey* GetProfileKey();
 
+  // Returns the profile directory that the ProfileKey and PrefService are
+  // built for. The full browser opens this profile first, so that its
+  // ProfileImpl can take over the pre-created objects. Unlike GetProfileKey(),
+  // this stays valid after the key has been taken over. Empty before
+  // InitProfileKey() is called.
+  const base::FilePath& GetProfilePath() const;
+
+  // Returns the base name of the profile directory that InitProfileKey()
+  // builds the ProfileKey and PrefService for: the last used profile in
+  // `local_state` with AndroidMultiprofileStartupData, and the initial profile
+  // otherwise.
+  static base::FilePath GetProfileBaseNameForStartup(
+      const PrefService& local_state);
+
+  void SetProfilePathForTesting(const base::FilePath& profile_path);
+
   // Passes ownership of the |key_| to the caller.
   std::unique_ptr<ProfileKey> TakeProfileKey();
 
@@ -109,6 +126,8 @@ class StartupData {
 #if BUILDFLAG(IS_ANDROID)
   void PreProfilePrefServiceInit();
   void CreateServicesInternal();
+
+  base::FilePath profile_path_;
 
   std::unique_ptr<ProfileKey> key_;
 

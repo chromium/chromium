@@ -240,7 +240,10 @@ class ProfileManager : public Profile::Delegate {
   bool IsValidProfile(const void* profile);
 
   // Returns the directory where the first created profile is stored,
-  // relative to the user data directory currently in use.
+  // relative to the user data directory currently in use. On Android with
+  // AndroidMultiprofileStartupData, this is the profile StartupData was built
+  // for (see StartupData::GetProfilePath()), which may not be Default. Java
+  // Profile#isInitialProfile() still means the Default profile.
   static base::FilePath GetInitialProfileDir();
 
   // Get the path of the last used profile, or if that's undefined, the default
