@@ -782,6 +782,57 @@ HeuristicTable BuildTable(RunIndicesByCell cells,
   return table;
 }
 
+// Removes tables that share a text run with an earlier table, keeping the
+// larger table when anchors are equal. Returns the kept tables sorted by
+// anchor. `text_run_count` is the number of text runs on the page.
+//
+// For example, the outer grid below holds the nested grid's runs in its
+// top-left cell. The outer grid's anchor is never later, and it is larger, so
+// this keeps the outer grid and removes the nested one:
+//   +---------+---------+
+//   | +--+--+ |         |
+//   | |  |  | |         |
+//   | +--+--+ |         |
+//   | |  |  | |         |
+//   | +--+--+ |         |
+//   +---------+---------+
+//   |         |         |
+//   +---------+---------+
+std::vector<HeuristicTable> RemoveOverlappingTables(
+    std::vector<HeuristicTable> tables,
+    size_t text_run_count) {
+  if (tables.size() < 2) {
+    return tables;
+  }
+
+  // Sort by anchor, then largest first, since a nested grid can share its outer
+  // grid's anchor.
+  std::ranges::sort(
+      tables, [](const HeuristicTable& a, const HeuristicTable& b) {
+        if (a.anchor_text_run_index != b.anchor_text_run_index) {
+          return a.anchor_text_run_index < b.anchor_text_run_index;
+        }
+        return a.bounds.size().GetArea() > b.bounds.size().GetArea();
+      });
+
+  std::vector<HeuristicTable> kept_tables;
+  kept_tables.reserve(tables.size());
+  std::vector<bool> run_in_kept_table(text_run_count);
+  for (HeuristicTable& table : tables) {
+    const std::vector<size_t> run_indices = GetTableTextRunIndices(table);
+    if (std::ranges::any_of(run_indices, [&run_in_kept_table](size_t i) {
+          return run_in_kept_table[i];
+        })) {
+      continue;
+    }
+    for (size_t i : run_indices) {
+      run_in_kept_table[i] = true;
+    }
+    kept_tables.push_back(std::move(table));
+  }
+  return kept_tables;
+}
+
 }  // namespace
 
 std::vector<RulingLine> ExtractRulingLines(
@@ -953,8 +1004,8 @@ std::vector<HeuristicTable> DetectGridTables(
     tables.push_back(
         BuildTable(std::move(cells), grid, populated.rows, populated.cols));
   }
-  std::ranges::sort(tables, {}, &HeuristicTable::anchor_text_run_index);
-  return tables;
+
+  return RemoveOverlappingTables(std::move(tables), text_runs.size());
 }
 
 std::vector<size_t> GetTableTextRunIndices(const HeuristicTable& table) {

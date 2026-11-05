@@ -4,6 +4,7 @@
 
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 #include <utility>
@@ -168,6 +169,35 @@ GridInput CreateGridWithRunsInCells(
         chrome_pdf::AccessibilityTextDirection::kNone) {
   return {CreateGridLines(xs, ys),
           CreateRunsInCells(xs, ys, std::move(cells), direction)};
+}
+
+// Boundaries of a 2-row, 3-column grid with 120 px cells, and of a 4-row,
+// 5-column grid nested in its top-left cell without touching its lines:
+//   +-------------+-------------+-------------+
+//   | +-+-+-+-+-+ |             |             |
+//   | +-+-+-+-+-+ |             |             |
+//   | +-+-+-+-+-+ |             |             |
+//   | +-+-+-+-+-+ |             |             |
+//   | +-+-+-+-+-+ |             |             |
+//   +-------------+-------------+-------------+
+//   |             |             |             |
+//   +-------------+-------------+-------------+
+constexpr float kOuterGridXs[] = {0, 120, 240, 360};
+constexpr float kOuterGridYs[] = {0, 120, 240};
+constexpr float kNestedGridXs[] = {10, 30, 50, 70, 90, 110};
+constexpr float kNestedGridYs[] = {10, 35, 60, 85, 110};
+
+// Returns the ruling lines of the outer and nested grids, ordered as returned
+// by `ExtractRulingLines()`: horizontal lines first, then vertical lines
+// sorted by x.
+std::vector<RulingLine> CreateNestedGridLines() {
+  std::vector<RulingLine> lines = CreateGridLines(kOuterGridXs, kOuterGridYs);
+  base::Extend(lines, CreateGridLines(kNestedGridXs, kNestedGridYs));
+  std::ranges::sort(lines, {}, [](const RulingLine& line) {
+    return std::pair(!line.is_horizontal,
+                     line.is_horizontal ? line.start.y() : line.start.x());
+  });
+  return lines;
 }
 
 }  // namespace
@@ -973,6 +1003,68 @@ TEST(PdfAccessibilityTableDetectorTest, TwoSeparateGridsSortedByAnchor) {
 
   EXPECT_EQ(tables[1].anchor_text_run_index, 4u);
   EXPECT_EQ(tables[1].bounds, gfx::RectF(0, 0, 60, 60));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, NestedGridWithSameAnchorKeepsOuter) {
+  // The nested grid's runs come first, so both grids have anchor 0.
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs =
+      CreateRunsInAllCells(kNestedGridXs, kNestedGridYs);
+  base::Extend(text_runs,
+               CreateRunsInCells(kOuterGridXs, kOuterGridYs,
+                                 {{0, 1}, {0, 2}, {1, 0}, {1, 1}, {1, 2}}));
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, CreateNestedGridLines());
+  ASSERT_EQ(tables.size(), 1u);
+  EXPECT_EQ(tables[0].bounds, gfx::RectF(0, 0, 360, 240));
+  EXPECT_EQ(tables[0].anchor_text_run_index, 0u);
+  ASSERT_EQ(tables[0].rows.size(), 2u);
+  ASSERT_EQ(tables[0].rows[0].cells.size(), 3u);
+
+  // The top-left cell holds the nested grid's 20 runs, in ascending order.
+  const std::vector<size_t>& indices =
+      tables[0].rows[0].cells[0].text_run_indices;
+  ASSERT_EQ(indices.size(), 20u);
+  EXPECT_EQ(indices.front(), 0u);
+  EXPECT_EQ(indices.back(), 19u);
+}
+
+TEST(PdfAccessibilityTableDetectorTest, NestedGridWithLaterAnchorKeepsOuter) {
+  // The outer grid's top-middle run comes first, so the outer grid has anchor 0
+  // and the nested grid has anchor 1.
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs =
+      CreateRunsInCells(kOuterGridXs, kOuterGridYs, {{0, 1}});
+  base::Extend(text_runs, CreateRunsInAllCells(kNestedGridXs, kNestedGridYs));
+  base::Extend(text_runs, CreateRunsInCells(kOuterGridXs, kOuterGridYs,
+                                            {{0, 2}, {1, 0}, {1, 1}, {1, 2}}));
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, CreateNestedGridLines());
+  ASSERT_EQ(tables.size(), 1u);
+  EXPECT_EQ(tables[0].bounds, gfx::RectF(0, 0, 360, 240));
+  EXPECT_EQ(tables[0].anchor_text_run_index, 0u);
+  ASSERT_EQ(tables[0].rows.size(), 2u);
+  ASSERT_EQ(tables[0].rows[0].cells.size(), 3u);
+
+  // The top-left cell holds the nested grid's 20 runs, in ascending order.
+  const std::vector<size_t>& indices =
+      tables[0].rows[0].cells[0].text_run_indices;
+  ASSERT_EQ(indices.size(), 20u);
+  EXPECT_EQ(indices.front(), 1u);
+  EXPECT_EQ(indices.back(), 20u);
+}
+
+TEST(PdfAccessibilityTableDetectorTest,
+     NestedGridInOtherwiseEmptyGridKeepsNested) {
+  // Only the outer grid's top-left cell has text, so the outer grid is pruned
+  // to one cell and skipped before overlaps are checked.
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(CreateRunsInAllCells(kNestedGridXs, kNestedGridYs),
+                       CreateNestedGridLines());
+  ASSERT_EQ(tables.size(), 1u);
+  EXPECT_EQ(tables[0].bounds, gfx::RectF(10, 10, 100, 100));
+  ASSERT_EQ(tables[0].rows.size(), 4u);
+  EXPECT_EQ(tables[0].rows[0].cells.size(), 5u);
 }
 
 TEST(PdfAccessibilityTableDetectorTest, GetTableTextRunIndicesEmpty) {

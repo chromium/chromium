@@ -126,8 +126,9 @@ std::vector<RulingGrid> DetectRulingGrids(
 
 // Detects tables drawn as connected grids of horizontal and vertical ruling
 // lines. Returns tables sorted by `anchor_text_run_index`, with each cell's
-// `text_run_indices` ascending. Tables may share text runs; callers must
-// resolve overlaps.
+// `text_run_indices` ascending. Tables share no text runs: when two would, such
+// as a grid nested in another grid's cell, keeps the one with the earlier
+// anchor, or the larger one if the anchors are equal.
 std::vector<HeuristicTable> DetectGridTables(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
     base::span<const RulingLine> ruling_lines);
