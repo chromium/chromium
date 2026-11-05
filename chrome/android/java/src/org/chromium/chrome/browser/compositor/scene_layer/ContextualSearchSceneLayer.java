@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.compositor.scene_layer;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.ColorInt;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -30,9 +35,11 @@ import org.chromium.ui.resources.ResourceManager;
 @JNINamespace("android")
 @NullMarked
 public class ContextualSearchSceneLayer extends SceneOverlayLayer {
-    // NOTE: If you use SceneLayer's native pointer here, the JNI generator will try to
-    // downcast using reinterpret_cast<>. We keep a separate pointer to avoid it.
-    private long mNativePtr;
+    @JniType("::android::ContextualSearchSceneLayer")
+    interface NativeContextualSearchSceneLayer extends JniTypeToken {}
+
+    // Non-owning typed alias; SceneLayer owns and frees the native object.
+    private @Nullable JniRawPtr<NativeContextualSearchSceneLayer> mNativePtr;
 
     /** If the scene layer has been initialized. */
     private boolean mIsInitialized;
@@ -72,7 +79,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         if (!mIsInitialized) {
             ContextualSearchSceneLayerJni.get()
-                    .createContextualSearchLayer(mNativePtr, resourceManager);
+                    .createContextualSearchLayer(assumeNonNull(mNativePtr), resourceManager);
             mIsInitialized = true;
         }
         mImageControl = imageControl;
@@ -165,7 +172,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         ContextualSearchSceneLayerJni.get()
                 .updateContextualSearchLayer(
-                        mNativePtr,
+                        assumeNonNull(mNativePtr),
                         panelShadowResourceId,
                         searchBarBackgroundColor,
                         searchContextViewId,
@@ -244,51 +251,46 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        ContextualSearchSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
+        ContextualSearchSceneLayerJni.get().setContentTree(assumeNonNull(mNativePtr), contentTree);
     }
 
     /** Hide the layer tree; for use if the panel is not being shown. */
     public void hideTree() {
         if (!mIsInitialized) return;
-        ContextualSearchSceneLayerJni.get().hideTree(mNativePtr);
+        ContextualSearchSceneLayerJni.get().hideTree(assumeNonNull(mNativePtr));
     }
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
+        if (mNativePtr == null) {
             mNativePtr = ContextualSearchSceneLayerJni.get().init(this);
         }
-        assert mNativePtr != 0;
+        assert mNativePtr != null;
     }
 
     /** Destroys this object and the corresponding native component. */
     @Override
     public void destroy() {
-        // Do NOT call super.destroy() to avoid double free of the native object.
-        // SceneLayer.destroy() also tries to destroy the native object using its own JNI binding,
-        // but since both Java objects point to the same C++ object, it causes a double free.
         mIsInitialized = false;
-        if (mNativePtr != 0) {
-            ContextualSearchSceneLayerJni.get().destroy(mNativePtr);
-            mNativePtr = 0;
-        }
+        if (mNativePtr == null) return;
+        mNativePtr.release();
+        mNativePtr = null;
+        super.destroy();
     }
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchSceneLayer self);
-
-        void destroy(long nativeContextualSearchSceneLayer);
+        JniRawPtr<NativeContextualSearchSceneLayer> init(ContextualSearchSceneLayer self);
 
         void createContextualSearchLayer(
-                long nativeContextualSearchSceneLayer, ResourceManager resourceManager);
+                JniPtr<NativeContextualSearchSceneLayer> self, ResourceManager resourceManager);
 
-        void setContentTree(long nativeContextualSearchSceneLayer, SceneLayer contentTree);
+        void setContentTree(JniPtr<NativeContextualSearchSceneLayer> self, SceneLayer contentTree);
 
-        void hideTree(long nativeContextualSearchSceneLayer);
+        void hideTree(JniPtr<NativeContextualSearchSceneLayer> self);
 
         void updateContextualSearchLayer(
-                long nativeContextualSearchSceneLayer,
+                JniPtr<NativeContextualSearchSceneLayer> self,
                 int searchBarBackgroundResourceId,
                 int searchBarBackgroundColor,
                 int searchContextResourceId,

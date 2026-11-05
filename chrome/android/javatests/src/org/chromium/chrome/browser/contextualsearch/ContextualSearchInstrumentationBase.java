@@ -440,6 +440,9 @@ public class ContextualSearchInstrumentationBase {
                     if (mContextualSearchManager != null) {
                         mContextualSearchManager.destroy();
                     }
+                    if (mPanelManager != null) {
+                        mPanelManager.destroy();
+                    }
                 });
         if (mActivityMonitor != null) {
             InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);

@@ -17,6 +17,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -26,6 +27,7 @@
 #include "chrome/android/chrome_jni_headers/ContextualSearchSceneLayer_jni.h"
 
 using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace android {
 
@@ -33,8 +35,6 @@ ContextualSearchSceneLayer::ContextualSearchSceneLayer(
     JNIEnv* env,
     const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
-      env_(env),
-      object_(jobj),
       color_overlay_(cc::slim::SolidColorLayer::Create()),
       content_container_(cc::slim::Layer::Create()) {
   // Responsible for moving the base page without modifying the layer itself.
@@ -239,7 +239,11 @@ void ContextualSearchSceneLayer::FetchThumbnail(Profile* profile) {
 void ContextualSearchSceneLayer::OnFetchComplete(const GURL& url,
                                                  const SkBitmap* bitmap) {
   bool success = bitmap && !bitmap->drawsNothing();
-  Java_ContextualSearchSceneLayer_onThumbnailFetched(env_, object_, success);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = weak_java_scene_layer_.get(env);
+  if (jobj) {
+    Java_ContextualSearchSceneLayer_onThumbnailFetched(env, jobj, success);
+  }
   if (success)
     contextual_search_layer_->SetThumbnail(bitmap);
 
@@ -270,17 +274,10 @@ void ContextualSearchSceneLayer::HideTree(JNIEnv* env) {
   content_container_->SetPosition(gfx::PointF(0.0f, 0.0f));
 }
 
-void ContextualSearchSceneLayer::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_ContextualSearchSceneLayer_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& jobj) {
+static jni_zero::JniRawPtr<ContextualSearchSceneLayer>
+JNI_ContextualSearchSceneLayer_Init(JNIEnv* env, const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
-  ContextualSearchSceneLayer* tree_provider =
-      new ContextualSearchSceneLayer(env, jobj);
-  return reinterpret_cast<intptr_t>(tree_provider);
+  return jni_zero::MakeRaw(new ContextualSearchSceneLayer(env, jobj));
 }
 
 }  // namespace android
