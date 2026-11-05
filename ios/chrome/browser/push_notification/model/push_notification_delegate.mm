@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -1148,8 +1147,7 @@ void ProcessIncomingNotification(
                               scene:(SceneState*)sceneState
                          completion:(base::OnceClosure)completion {
   CHECK(sceneState);
-  Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = sceneState.browserProviderInterface.mainBrowser;
   ProfileIOS* profile = browser->GetProfile();
 
   // Get the clientID for the client that is associated with this notification.

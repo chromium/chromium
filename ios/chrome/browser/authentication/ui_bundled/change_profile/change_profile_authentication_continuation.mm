@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -81,8 +80,7 @@ void ChangeProfileAuthenticationContinuation(URLContext* context,
   CHECK(!contexts || [contexts containsObject:context.context],
         base::NotFatalUntil::M157);
 
-  Browser* browser =
-      scene_state.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = scene_state.browserProviderInterface.mainBrowser;
   CHECK(browser);
 
   AuthenticationService* authentication_service =

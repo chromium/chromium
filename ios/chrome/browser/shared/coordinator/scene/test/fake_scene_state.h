@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "url/gurl.h"
 
+class Browser;
 @protocol BrowserProvider;
 class ProfileIOS;
 
@@ -20,8 +21,11 @@ class ProfileIOS;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Updates the current BrowserProvider. Must be either -mainBrowserProvider
-// or -incognitoBrowserProvider from -browserProviderInterface.
+// Updates the current Browser. Must be nullptr, -mainBrowser, or
+// -incognitoBrowser from -browserProviderInterface.
+- (void)setCurrentBrowser:(Browser*)browser;
+
+// Deprecated: Use `-setCurrentBrowser:` instead.
 - (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider;
 
 // Destroys and recreates the off-the-record Profile and Browser.

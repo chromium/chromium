@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -330,8 +329,7 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   mediator.levelUpHandler = HandlerForProtocol(dispatcher, LevelUpCommands);
   // Only the main browser may start PiP.
   Browser* mainBrowser =
-      browser->GetSceneState()
-          .browserProviderInterface.mainBrowserProvider.browser;
+      browser->GetSceneState().browserProviderInterface.mainBrowser;
   CHECK(mainBrowser);
   mediator.pictureInPictureHandler = HandlerForProtocol(
       mainBrowser->GetCommandDispatcher(), PictureInPictureCommands);

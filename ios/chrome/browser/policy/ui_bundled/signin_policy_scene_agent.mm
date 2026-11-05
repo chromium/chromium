@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
@@ -105,8 +104,7 @@
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   // Setup objects that need the browser UI objects before being set.
-  self.mainBrowser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  self.mainBrowser = self.sceneState.browserProviderInterface.mainBrowser;
   [self setupObservers];
 }
 

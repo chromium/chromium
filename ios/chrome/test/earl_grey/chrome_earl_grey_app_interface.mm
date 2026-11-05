@@ -72,7 +72,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -1326,8 +1325,7 @@ NSError* CanStartLoadingURL(SceneState* scene_state,
   }
   WebStateList* web_state_list =
       chrome_test_util::GetForegroundActiveScene()
-          .browserProviderInterface.currentBrowserProvider.browser
-          ->GetWebStateList();
+          .browserProviderInterface.currentBrowser->GetWebStateList();
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     if (web_state->IsLoading()) {
@@ -1338,7 +1336,7 @@ NSError* CanStartLoadingURL(SceneState* scene_state,
 
 + (void)openSettingsInWindowWithNumber:(int)windowNumber {
   SceneState* scene = [self sceneStateWithNumber:windowNumber];
-  Browser* browser = scene.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = scene.browserProviderInterface.mainBrowser;
   id<SceneCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   [handler showSettingsFromViewController:nil];
@@ -1346,7 +1344,7 @@ NSError* CanStartLoadingURL(SceneState* scene_state,
 
 + (void)showTabSwitcherInWindowWithNumber:(int)windowNumber {
   SceneState* scene = [self sceneStateWithNumber:windowNumber];
-  Browser* browser = scene.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = scene.browserProviderInterface.mainBrowser;
   id<SceneCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   [handler displayTabGridInMode:TabGridOpeningMode::kDefault];

@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -37,12 +36,10 @@
 
 namespace {
 
-// Returns the id<BrowserProvider> from `scene_state` for `is_off_the_record`.
-id<BrowserProvider> BrowserProviderForMode(SceneState* scene_state,
-                                           bool is_off_the_record) {
+// Returns the Browser* from `scene_state` for `is_off_the_record`.
+Browser* BrowserForMode(SceneState* scene_state, bool is_off_the_record) {
   id<BrowserProviderInterface> interface = scene_state.browserProviderInterface;
-  return is_off_the_record ? interface.incognitoBrowserProvider
-                           : interface.mainBrowserProvider;
+  return is_off_the_record ? interface.incognitoBrowser : interface.mainBrowser;
 }
 
 }  // anonymous namespace
@@ -75,12 +72,11 @@ class FirstRunProfileAgentTest : public PlatformTest {
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
     [scene_state_
-        setCurrentBrowserProvider:BrowserProviderForMode(scene_state_,
-                                                         is_off_the_record)];
+        setCurrentBrowser:BrowserForMode(scene_state_, is_off_the_record)];
   }
 
   Browser* browser() {
-    return scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    return scene_state_.browserProviderInterface.currentBrowser;
   }
 
  protected:
@@ -114,7 +110,7 @@ TEST_F(FirstRunProfileAgentTest, SyncedSetUpDoesNotTriggerInIncognito) {
   profile_ = std::move(builder).Build();
 
   InitializeActiveSceneState(/*is_off_the_record*/ true);
-  ASSERT_NE(scene_state_.browserProviderInterface.currentBrowserProvider, nil);
+  ASSERT_NE(scene_state_.browserProviderInterface.currentBrowser, nullptr);
 
   // Configure the app state for the post-first run flow.
   FakeStartupInformation* startup_information =

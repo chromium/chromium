@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -83,8 +82,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
             }));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
-    Browser* browser =
-        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.currentBrowser;
 
     ON_CALL(*GetMockSyncService(), GetTypesWithUnsyncedData)
         .WillByDefault(

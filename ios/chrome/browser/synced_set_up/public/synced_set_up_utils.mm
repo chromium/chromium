@@ -8,7 +8,6 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -36,10 +35,9 @@ SceneState* GetEligibleSceneForSyncedSetUp(ProfileState* profile_state) {
 
   id<BrowserProviderInterface> provider_interface =
       active_scene.browserProviderInterface;
-  id<BrowserProvider> presenting_interface =
-      provider_interface.currentBrowserProvider;
+  Browser* presenting_browser = provider_interface.currentBrowser;
 
-  if (presenting_interface != provider_interface.mainBrowserProvider) {
+  if (presenting_browser != provider_interface.mainBrowser) {
     return nil;
   }
 

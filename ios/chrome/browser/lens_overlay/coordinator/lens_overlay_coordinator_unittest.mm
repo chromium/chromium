@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -129,8 +128,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.window = scoped_window_.Get();
     scene_state_.profileState = profile_state_;
-    Browser* browser =
-        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.mainBrowser;
 
     id mockLayoutGuideSceneAgent = OCMClassMock([LayoutGuideSceneAgent class]);
     OCMStub(

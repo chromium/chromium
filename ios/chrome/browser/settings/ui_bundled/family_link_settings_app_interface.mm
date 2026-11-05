@@ -20,7 +20,6 @@
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"

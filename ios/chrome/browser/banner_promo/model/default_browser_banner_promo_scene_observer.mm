@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -94,8 +93,7 @@
     return;
   }
 
-  Browser* mainBrowser =
-      _sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* mainBrowser = _sceneState.browserProviderInterface.mainBrowser;
   if (!mainBrowser) {
     return;
   }

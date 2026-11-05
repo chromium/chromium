@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -26,10 +25,10 @@
 void ShowToastWhenOpenInUnexpectedMode(
     SceneState* scene_state,
     ApplicationModeForTabOpening target_mode) {
-  id<SnackbarCommands> handler = HandlerForProtocol(
-      scene_state.browserProviderInterface.currentBrowserProvider.browser
-          ->GetCommandDispatcher(),
-      SnackbarCommands);
+  id<SnackbarCommands> handler =
+      HandlerForProtocol(scene_state.browserProviderInterface.currentBrowser
+                             ->GetCommandDispatcher(),
+                         SnackbarCommands);
 
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUIManagementURL));
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;

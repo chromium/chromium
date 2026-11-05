@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -329,10 +328,10 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
       // The completion is required by the API, this is a rare case where there
       // is no action to do once being signed in.
   }];
-  id<SceneSignInCommands> sceneSignInHandler = HandlerForProtocol(
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetCommandDispatcher(),
-      SceneSignInCommands);
+  id<SceneSignInCommands> sceneSignInHandler =
+      HandlerForProtocol(self.sceneState.browserProviderInterface.mainBrowser
+                             ->GetCommandDispatcher(),
+                         SceneSignInCommands);
   [sceneSignInHandler showSignin:command
               baseViewController:[_sceneUIProvider activeViewController]];
 }
@@ -424,7 +423,7 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   _ageMismatchSignoutCoordinator = [[AgeMismatchSignoutCoordinator alloc]
       initWithBaseViewController:[_sceneUIProvider activeViewController]
                          browser:self.sceneState.browserProviderInterface
-                                     .mainBrowserProvider.browser
+                                     .mainBrowser
                         identity:identity
                             mode:AgeMismatchPromptMode::kStandard];
   _ageMismatchSignoutCoordinator.delegate = self;

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -51,8 +50,7 @@ enum class SkipScreenDecision {
 // Returns the SearchEngineChoiceCommands handler for a SceneState.
 id<SearchEngineChoiceCommands> GetSearchEngineChoiceHandler(
     SceneState* scene_state) {
-  if (Browser* browser =
-          scene_state.browserProviderInterface.currentBrowserProvider.browser) {
+  if (Browser* browser = scene_state.browserProviderInterface.currentBrowser) {
     return HandlerForProtocol(browser->GetCommandDispatcher(),
                               SearchEngineChoiceCommands);
   }
@@ -253,8 +251,7 @@ id<SearchEngineChoiceCommands> GetSearchEngineChoiceHandler(
 // enabled.
 - (void)maybeShowChoiceConfirmationSnackbarForSceneState:
     (SceneState*)sceneState {
-  Browser* browser =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser;
+  Browser* browser = sceneState.browserProviderInterface.currentBrowser;
   CHECK(browser);
   ProfileIOS* profile = browser->GetProfile();
   regional_capabilities::RegionalCapabilitiesService*

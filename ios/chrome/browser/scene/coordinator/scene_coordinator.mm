@@ -95,7 +95,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
@@ -429,9 +428,9 @@ inline LayoutStateScenePassKey PassKey() {
 #pragma mark - Public
 
 - (void)setBrowsersFromProvider:(id<BrowserProviderInterface>)provider {
-  _regularBrowser = provider.mainBrowserProvider.browser->AsWeakPtr();
+  _regularBrowser = provider.mainBrowser->AsWeakPtr();
   _inactiveBrowser = _regularBrowser->GetInactiveBrowser()->AsWeakPtr();
-  _incognitoBrowser = provider.incognitoBrowserProvider.browser;
+  _incognitoBrowser = provider.incognitoBrowser;
 }
 
 - (BOOL)isTabGridActive {
@@ -1848,8 +1847,7 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 - (Browser*)currentBrowser {
-  return self.sceneState.browserProviderInterface.currentBrowserProvider
-      .browser;
+  return self.sceneState.browserProviderInterface.currentBrowser;
 }
 
 

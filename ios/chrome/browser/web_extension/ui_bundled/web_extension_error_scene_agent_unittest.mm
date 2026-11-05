@@ -14,7 +14,6 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -58,8 +57,7 @@ class WebExtensionErrorSceneAgentTest : public PlatformTest {
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
 
-    Browser* browser =
-        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.currentBrowser;
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
 
     mock_snackbar_commands_ = OCMProtocolMock(@protocol(SnackbarCommands));
@@ -85,8 +83,7 @@ class WebExtensionErrorSceneAgentTest : public PlatformTest {
   }
 
   void ResetMockSnackbarCommands() {
-    Browser* browser =
-        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.currentBrowser;
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
     [dispatcher stopDispatchingForProtocol:@protocol(SnackbarCommands)];
     mock_snackbar_commands_ = OCMProtocolMock(@protocol(SnackbarCommands));

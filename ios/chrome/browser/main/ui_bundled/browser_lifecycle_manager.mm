@@ -140,6 +140,26 @@
 
 #pragma mark - BrowserProviderInterface
 
+- (Browser*)mainBrowser {
+  return _mainInterface.browser;
+}
+
+- (Browser*)incognitoBrowser {
+  if (!self.hasIncognitoBrowser) {
+    return nullptr;
+  }
+
+  return _incognitoInterface.browser;
+}
+
+- (Browser*)currentBrowser {
+  return _currentInterface.browser;
+}
+
+- (BOOL)hasIncognitoBrowser {
+  return _mainInterface && _incognitoInterface;
+}
+
 - (id<BrowserProvider>)mainBrowserProvider {
   return _mainInterface;
 }

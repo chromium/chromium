@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -163,8 +162,7 @@ bool IsValidShortcutItem(ShortcutItemType shortcut_item_type) {
 
   SceneState* sceneState = self.sceneState;
   CHECK(sceneState);
-  Browser* browser =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser;
+  Browser* browser = sceneState.browserProviderInterface.currentBrowser;
   CHECK(browser);
 
   PrefService* prefService = browser->GetProfile()->GetPrefs();

@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
@@ -117,8 +116,7 @@
 
   if (!self.sceneState.profileState.currentUIBlocker &&
       signin::ShouldPresentUserSigninUpgrade(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile(),
+          self.sceneState.browserProviderInterface.mainBrowser->GetProfile(),
           version_info::GetVersion())) {
     _promosManager->RegisterPromoForSingleDisplay(
         promos_manager::Promo::FullscreenSignin);

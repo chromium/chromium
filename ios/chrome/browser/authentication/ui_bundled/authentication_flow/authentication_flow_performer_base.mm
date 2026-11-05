@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -71,7 +70,7 @@ void AuthenticationFlowContinuationImpl(
   [performer
       didSwitchToProfileWithNewProfileBrowser:scene_state
                                                   .browserProviderInterface
-                                                  .mainBrowserProvider.browser
+                                                  .mainBrowser
                                    completion:std::move(closure)];
 }
 
@@ -107,8 +106,7 @@ void HandleSignoutForSnackbar(
   // request using a non-incognito browser.
   Browser* mainBrowser =
       browser->type() == Browser::Type::kIncognito
-          ? browser->GetSceneState()
-                .browserProviderInterface.mainBrowserProvider.browser
+          ? browser->GetSceneState().browserProviderInterface.mainBrowser
           : browser;
   signin::ProfileSignoutRequest(
       signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn)
@@ -160,8 +158,7 @@ void CompletePostSignInActionsContinuationImpl(
     signin_metrics::AccessPoint access_point,
     SceneState* scene_state,
     base::OnceClosure closure) {
-  Browser* browser =
-      scene_state.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = scene_state.browserProviderInterface.mainBrowser;
   CompletePostSignInActions(post_signin_actions, identity, browser,
                             access_point);
   std::move(closure).Run();

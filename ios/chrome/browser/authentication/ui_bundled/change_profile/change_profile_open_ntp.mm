@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -21,8 +20,7 @@ namespace {
 // Implementation of the continuation opening a New Tab page.
 void ChangeProfileOpensNTPContinuation(SceneState* scene_state,
                                        base::OnceClosure closure) {
-  Browser* browser =
-      scene_state.browserProviderInterface.currentBrowserProvider.browser;
+  Browser* browser = scene_state.browserProviderInterface.currentBrowser;
   CHECK(browser);
 
   web::WebState* web_state = browser->GetWebStateList()->GetActiveWebState();

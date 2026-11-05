@@ -462,8 +462,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
         agentFromScene:self.sceneState] logUserEnteredAppViaFirstPartyScheme];
   }
 
-  Browser* mainBrowser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* mainBrowser = self.sceneState.browserProviderInterface.mainBrowser;
   if (!mainBrowser) {
     return;
   }

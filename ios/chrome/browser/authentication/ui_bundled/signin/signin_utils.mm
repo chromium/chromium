@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -621,8 +620,7 @@ Browser* GetRegularBrowser(Browser* browser) {
     // scene state.
     return browser;
   }
-  return browser->GetSceneState()
-      .browserProviderInterface.mainBrowserProvider.browser;
+  return browser->GetSceneState().browserProviderInterface.mainBrowser;
 }
 
 }  // namespace signin

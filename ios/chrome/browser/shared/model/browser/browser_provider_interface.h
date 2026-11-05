@@ -7,20 +7,27 @@
 
 #import <Foundation/Foundation.h>
 
+class Browser;
 @protocol BrowserProvider;
 
 // A BrowserProviderInterface is an abstraction that exposes the available
-// BrowserProvider for the Chrome UI.
+// Browsers for the Chrome UI.
 @protocol BrowserProviderInterface
-// One provider must be designated as being the "current" provider. It is
+// One browser must be designated as being the "current" browser. It is
 // usually either the incognito or the main one.
+@property(nonatomic, readonly) Browser* currentBrowser;
+// The "main" (meaning non-incognito -- the nomenclature is legacy) browser.
+@property(nonatomic, readonly) Browser* mainBrowser;
+// The incognito Browser.
+@property(nonatomic, readonly) Browser* incognitoBrowser;
+// YES iff `incognitoBrowser` is already created.
+@property(nonatomic, assign, readonly) BOOL hasIncognitoBrowser;
+
+// Deprecated: Use `currentBrowser`, `mainBrowser`, `incognitoBrowser`, and
+// `hasIncognitoBrowser` instead.
 @property(nonatomic, weak, readonly) id<BrowserProvider> currentBrowserProvider;
-// The provider for the "main" (meaning non-incognito -- the nomenclature is
-// legacy) browser.
 @property(nonatomic, readonly) id<BrowserProvider> mainBrowserProvider;
-// The provider for the incognito Browser.
 @property(nonatomic, readonly) id<BrowserProvider> incognitoBrowserProvider;
-// YES iff `incognitoBrowserProvider` is already created.
 @property(nonatomic, assign, readonly) BOOL hasIncognitoBrowserProvider;
 
 @end

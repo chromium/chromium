@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -137,8 +136,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   }
 
   Browser* incognito_browser() {
-    return scene_state_.browserProviderInterface.incognitoBrowserProvider
-        .browser;
+    return scene_state_.browserProviderInterface.incognitoBrowser;
   }
 
   web::WebTaskEnvironment task_environment_;

@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -121,7 +120,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
   }
 
   Browser* browser() {
-    return scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    return scene_state_.browserProviderInterface.mainBrowser;
   }
 
   PolicyWatcherBrowserAgent* agent() {

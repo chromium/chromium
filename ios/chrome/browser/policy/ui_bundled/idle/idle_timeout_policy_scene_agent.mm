@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -459,7 +458,7 @@
 // the dialog so the user does not miss the dialog if they are watching a video.
 - (void)closeMediaPresentationsIfFullScreenMode {
   Browser* currentBrowser =
-      self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
+      self.sceneState.browserProviderInterface.currentBrowser;
   CHECK(currentBrowser);
   web::WebState* activeWebState =
       currentBrowser->GetWebStateList()->GetActiveWebState();

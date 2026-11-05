@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -132,7 +131,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 
   // Returns the Browser for the SceneState.
   Browser* GetBrowser() {
-    return scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    return scene_state_.browserProviderInterface.currentBrowser;
   }
 
   // Returns the regular WebStateList for the SceneState.
@@ -455,11 +454,11 @@ TEST_F(StartSurfaceSceneAgentTest,
   test::SetStartSurfaceSessionObjectForSceneStateForTesting(
       scene_state_, time_last_background);
 
-  // Forcing the current BrowserProvider to be incognito.
+  // Forcing the current Browser to be incognito.
   auto interface = scene_state_.browserProviderInterface;
-  [scene_state_ setCurrentBrowserProvider:interface.incognitoBrowserProvider];
+  [scene_state_ setCurrentBrowser:interface.incognitoBrowser];
   CommandDispatcher* dispatcherIncognito =
-      interface.currentBrowserProvider.browser->GetCommandDispatcher();
+      interface.currentBrowser->GetCommandDispatcher();
 
   [dispatcherIncognito startDispatchingToTarget:application_handler_
                                     forProtocol:@protocol(SceneCommands)];

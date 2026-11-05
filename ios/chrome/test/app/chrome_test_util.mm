@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
@@ -124,13 +123,11 @@ Browser* GetMainBrowser() {
   if (gMainBrowserOverride) {
     return gMainBrowserOverride;
   }
-  return GetForegroundActiveScene()
-      .browserProviderInterface.mainBrowserProvider.browser;
+  return GetForegroundActiveScene().browserProviderInterface.mainBrowser;
 }
 
 Browser* GetCurrentBrowser() {
-  return GetForegroundActiveScene()
-      .browserProviderInterface.currentBrowserProvider.browser;
+  return GetForegroundActiveScene().browserProviderInterface.currentBrowser;
 }
 
 UIViewController* GetActiveViewController() {

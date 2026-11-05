@@ -54,6 +54,21 @@
   CHECK(_shutdown) << "-shutdown must be called before -dealloc";
 }
 
+- (void)setCurrentBrowser:(Browser*)browser {
+  if (!browser) {
+    _browserProviderInterface.currentBrowserProvider = nil;
+    return;
+  }
+  if (browser == _browserProviderInterface.mainBrowser) {
+    _browserProviderInterface.currentBrowserProvider =
+        _browserProviderInterface.mainBrowserProvider;
+    return;
+  }
+  CHECK_EQ(browser, _browserProviderInterface.incognitoBrowser);
+  _browserProviderInterface.currentBrowserProvider =
+      _browserProviderInterface.incognitoBrowserProvider;
+}
+
 - (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider {
   CHECK(browserProvider == nil ||
         browserProvider == _browserProviderInterface.mainBrowserProvider ||

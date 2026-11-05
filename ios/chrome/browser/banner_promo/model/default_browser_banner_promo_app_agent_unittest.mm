@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -95,8 +94,7 @@ class DefaultBrowserBannerPromoAppAgentTest : public PlatformTest {
 
   // Returns the WebStateList for the given SceneState.
   WebStateList* GetWebStateList(SceneState* scene_state) {
-    return scene_state.browserProviderInterface.mainBrowserProvider.browser
-        ->GetWebStateList();
+    return scene_state.browserProviderInterface.mainBrowser->GetWebStateList();
   }
 
   // Returns the SceneState's active web state.

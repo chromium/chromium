@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -587,8 +586,7 @@ BOOL _credentialExtensionWasUsed = NO;
       continue;
     }
 
-    Browser* const mainbrowser =
-        scene.browserProviderInterface.mainBrowserProvider.browser;
+    Browser* const mainbrowser = scene.browserProviderInterface.mainBrowser;
     const WebStateList* webStateList = mainbrowser->GetWebStateList();
     const WebStateList* inactiveWebStateList =
         mainbrowser->GetInactiveBrowser()->GetWebStateList();
@@ -703,8 +701,7 @@ BOOL _credentialExtensionWasUsed = NO;
     // Proceed if the active scene is initialized.
     if (activeScene.browserProviderInterface) {
       web::WebState* currentWebState =
-          activeScene.browserProviderInterface.currentBrowserProvider.browser
-              ->GetWebStateList()
+          activeScene.browserProviderInterface.currentBrowser->GetWebStateList()
               ->GetActiveWebState();
       if (currentWebState &&
           currentWebState->GetLastCommittedURL() == kChromeUINewTabURL) {

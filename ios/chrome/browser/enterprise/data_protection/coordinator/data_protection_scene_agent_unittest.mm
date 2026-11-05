@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -43,13 +42,11 @@ namespace {
 const char kProtectedURL[] = "https://protected.com";
 const char kChromeNewTabURL[] = "chrome://newtab";
 
-// Returns the id<BrowserProvider> from `scene_state` corresponding to
+// Returns the Browser* from `scene_state` corresponding to
 // `is_off_the_record`.
-id<BrowserProvider> BrowserProviderForMode(SceneState* scene_state,
-                                           bool is_off_the_record) {
+Browser* BrowserForMode(SceneState* scene_state, bool is_off_the_record) {
   id<BrowserProviderInterface> interface = scene_state.browserProviderInterface;
-  return is_off_the_record ? interface.incognitoBrowserProvider
-                           : interface.mainBrowserProvider;
+  return is_off_the_record ? interface.incognitoBrowser : interface.mainBrowser;
 }
 
 }  // anonymous namespace
@@ -168,7 +165,7 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
       web_state->SetVisibleURL(url);
     }
     DataProtectionTabHelper::CreateForWebState(web_state_ptr);
-    Browser* browser = BrowserProviderForMode(scene_state_, incognito).browser;
+    Browser* browser = BrowserForMode(scene_state_, incognito);
     CHECK_NE(browser, nullptr);
     CHECK_EQ(browser->GetProfile(), profile);
     browser->GetWebStateList()->InsertWebState(
@@ -723,9 +720,8 @@ TEST_F(DataProtectionSceneAgentTransitionTest, SingleTab_SwitchBrowser) {
   ExpectApplyScreenshotProtection(NO);
 
   scene_state_.incognitoState.incognitoContentVisible = YES;
-  [scene_state_
-      setCurrentBrowserProvider:BrowserProviderForMode(
-                                    scene_state_, /*is_off_the_record=*/true)];
+  [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
+                                                 /*is_off_the_record=*/true)];
 
   EXPECT_OCMOCK_VERIFY(mock_agent_);
 }
@@ -743,9 +739,8 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
 
   // Switch to Incognito Tab Grid.
   scene_state_.incognitoState.incognitoContentVisible = YES;
-  [scene_state_
-      setCurrentBrowserProvider:BrowserProviderForMode(
-                                    scene_state_, /*is_off_the_record=*/true)];
+  [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
+                                                 /*is_off_the_record=*/true)];
 
   // Destroy the incognito browser.
   [scene_state_ destroyAndRecreateOffTheRecordProfile];
@@ -754,9 +749,8 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   // to update its observers, which could lead to a UAF if the destroyed
   // browser wasn't properly unobserved.
   scene_state_.incognitoState.incognitoContentVisible = NO;
-  [scene_state_
-      setCurrentBrowserProvider:BrowserProviderForMode(
-                                    scene_state_, /*is_off_the_record=*/false)];
+  [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
+                                                 /*is_off_the_record=*/false)];
 
   // Expect no protection. No crash means success.
   ExpectNoCallsToApplyScreenshotProtection();
@@ -874,7 +868,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest, WatermarkRemovedWhenTabClosed) {
   ASSERT_NE(GetWatermarkView(), nil);
 
   // Close the tab from the browser while in the tab grid.
-  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  Browser* browser = BrowserForMode(scene_state_, false);
   browser->GetWebStateList()->CloseWebStateAt(
       0, WebStateList::ClosingReason::kUserAction);
 
@@ -917,7 +911,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   auto web_state = std::make_unique<web::FakeWebState>();
   SetWatermarkPref(web_state->GetUniqueIdentifier(), "Inserted Watermark");
 
-  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  Browser* browser = BrowserForMode(scene_state_, false);
   browser->GetWebStateList()->InsertWebState(
       std::move(web_state), WebStateList::InsertionParams::AtIndex(0));
 
@@ -942,7 +936,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   scene_state_.tabGridState.tabGridVisible = YES;
   ASSERT_NE(GetWatermarkView(), nil);
 
-  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  Browser* browser = BrowserForMode(scene_state_, false);
   CloseAllWebStates(*browser->GetWebStateList(),
                     WebStateList::ClosingReason::kUserAction);
 
@@ -1031,7 +1025,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   scene_state_.tabGridState.tabGridVisible = NO;
   scene_state_.incognitoState.incognitoContentVisible = NO;
 
-  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  Browser* browser = BrowserForMode(scene_state_, false);
   WebStateList* web_state_list = browser->GetWebStateList();
   {
     auto batch = web_state_list->StartBatchOperation();
@@ -1063,7 +1057,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   scene_state_.tabGridState.tabGridVisible = NO;
   scene_state_.incognitoState.incognitoContentVisible = NO;
 
-  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  Browser* browser = BrowserForMode(scene_state_, false);
   WebStateList* web_state_list = browser->GetWebStateList();
   {
     auto batch = web_state_list->StartBatchOperation();
@@ -1090,7 +1084,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   scene_state_.tabGridState.tabGridVisible = NO;
   scene_state_.incognitoState.incognitoContentVisible = NO;
 
-  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  Browser* browser = BrowserForMode(scene_state_, false);
   WebStateList* web_state_list = browser->GetWebStateList();
   {
     auto batch = web_state_list->StartBatchOperation();

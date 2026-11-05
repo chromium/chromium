@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -35,7 +34,7 @@
 - (void)screenshotService:(UIScreenshotService*)screenshotService
     generatePDFRepresentationWithCompletion:
         (void (^)(NSData*, NSInteger, CGRect))completionHandler {
-  Browser* browser = _browserProviderInterface.currentBrowserProvider.browser;
+  Browser* browser = _browserProviderInterface.currentBrowser;
 
   if (!browser) {
     completionHandler(nil, 0, CGRectZero);

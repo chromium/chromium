@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 namespace browser_list_utils {
@@ -42,7 +41,7 @@ Browser* GetVisibleBrowser(BrowserList* browser_list) {
     SceneState* scene_state = browser->GetSceneState();
     if (scene_state.activationLevel == SceneActivationLevelForegroundActive) {
       Browser* current_browser =
-          scene_state.browserProviderInterface.currentBrowserProvider.browser;
+          scene_state.browserProviderInterface.currentBrowser;
       if (!current_browser) {
         continue;
       }

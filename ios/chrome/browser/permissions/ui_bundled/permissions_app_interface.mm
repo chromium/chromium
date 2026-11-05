@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -17,8 +16,7 @@
 + (NSDictionary<NSNumber*, NSNumber*>*)statesForAllPermissions {
   SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
   web::WebState* activeWebState =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser
-          ->GetWebStateList()
+      sceneState.browserProviderInterface.currentBrowser->GetWebStateList()
           ->GetActiveWebState();
   if (activeWebState != nil) {
     return activeWebState->GetStatesForAllPermissions();

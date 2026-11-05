@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -294,12 +293,9 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   id<BrowserProviderInterface> browserProviderInterface =
       self.sceneState.browserProviderInterface;
 
-  id<BrowserProvider> browserProvider =
-      self.sceneState.incognitoState.incognitoContentVisible
-          ? browserProviderInterface.incognitoBrowserProvider
-          : browserProviderInterface.mainBrowserProvider;
-
-  return browserProvider.browser;
+  return self.sceneState.incognitoState.incognitoContentVisible
+             ? browserProviderInterface.incognitoBrowser
+             : browserProviderInterface.mainBrowser;
 }
 
 // Whether the scene can be protected.

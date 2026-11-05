@@ -9,12 +9,8 @@
 
 class Browser;
 
-// A BrowserProvider is an abstraction that exposes an interface to the Chrome
-// user interface (and related model objects) to the application layer. Each
-// BrowserProvider is roughly equivalent to a window on a desktop browser --
-// a collection of tabs (a tab model) associated with a user profile (the
-// profile) with the UI of the currently visible tab (the view controller)
-// and some other attributes as well.
+// Deprecated: Use `BrowserProviderInterface` properties (`currentBrowser`,
+// `mainBrowser`, `incognitoBrowser`) directly instead.
 @protocol BrowserProvider
 
 // The active browser. This can never be nullptr once the UI initialization has

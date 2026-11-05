@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -285,6 +284,5 @@ bool AccountConsistencyBrowserAgent::IsActiveWebState(
   if (!scene_state) {
     return false;
   }
-  return browser_ ==
-         scene_state.browserProviderInterface.currentBrowserProvider.browser;
+  return browser_ == scene_state.browserProviderInterface.currentBrowser;
 }

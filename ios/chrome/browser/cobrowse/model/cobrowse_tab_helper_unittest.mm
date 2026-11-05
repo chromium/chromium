@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -160,13 +159,12 @@ class CobrowseTabHelperTest : public PlatformTest {
 
   // Returns the regular browser.
   Browser* browser() {
-    return scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    return scene_state_.browserProviderInterface.mainBrowser;
   }
 
   // Returns the incognito browser.
   Browser* incognito_browser() {
-    return scene_state_.browserProviderInterface.incognitoBrowserProvider
-        .browser;
+    return scene_state_.browserProviderInterface.incognitoBrowser;
   }
 
   web::WebTaskEnvironment task_environment_;

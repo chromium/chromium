@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -80,8 +79,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForProfile(personal_profile_.get()));
 
-    Browser* browser =
-        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.currentBrowser;
     [browser->GetCommandDispatcher()
         startDispatchingToTarget:snackbar_handler_
                      forProtocol:@protocol(SnackbarCommands)];
@@ -115,8 +113,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   SignoutActionSheetCoordinator* CreateCoordinator(
       BOOL show_undo_button,
       signin_metrics::ProfileSignout source) {
-    Browser* browser =
-        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.currentBrowser;
     signout_coordinator_ = [[SignoutActionSheetCoordinator alloc]
         initWithBaseViewController:view_controller_
                            browser:browser

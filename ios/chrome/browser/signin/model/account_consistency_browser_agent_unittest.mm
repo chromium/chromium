@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -58,8 +57,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
     scene_state_ =
         [[FakeSceneState alloc] initWithProfile:personal_profile_.get()];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    browser_ =
-        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    browser_ = scene_state_.browserProviderInterface.mainBrowser;
 
     mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
@@ -363,8 +361,8 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithOtherWebState) {
 // incognito is the current active browser does not invoke any command.
 TEST_F(AccountConsistencyBrowserAgentTest,
        OnShowConsistencyPromoWhenIncognitoIsActive) {
-  [scene_state_ setCurrentBrowserProvider:scene_state_.browserProviderInterface
-                                              .incognitoBrowserProvider];
+  [scene_state_
+      setCurrentBrowser:scene_state_.browserProviderInterface.incognitoBrowser];
   agent_->OnShowConsistencyPromo(
       url_, browser_->GetWebStateList()->GetActiveWebState());
 }
@@ -373,8 +371,8 @@ TEST_F(AccountConsistencyBrowserAgentTest,
 // is the current active browser does not invoke any command.
 TEST_F(AccountConsistencyBrowserAgentTest,
        OnManageAccountsWhenIncognitoIsActive) {
-  [scene_state_ setCurrentBrowserProvider:scene_state_.browserProviderInterface
-                                              .incognitoBrowserProvider];
+  [scene_state_
+      setCurrentBrowser:scene_state_.browserProviderInterface.incognitoBrowser];
   agent_->OnManageAccounts(url_,
                            browser_->GetWebStateList()->GetActiveWebState());
   // As the scene is changed, this OnAddAccount is dropped, and the mocks are
@@ -384,8 +382,8 @@ TEST_F(AccountConsistencyBrowserAgentTest,
 // Tests that calling `OnAddAccount()` on a regular browser when incognito
 // is the current active browser does not invoke any command.
 TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWhenIncognitoIsActive) {
-  [scene_state_ setCurrentBrowserProvider:scene_state_.browserProviderInterface
-                                              .incognitoBrowserProvider];
+  [scene_state_
+      setCurrentBrowser:scene_state_.browserProviderInterface.incognitoBrowser];
   agent_->OnAddAccount(url_, "test",
                        browser_->GetWebStateList()->GetActiveWebState());
   // As the scene is changed, this OnAddAccount is dropped, and the mocks are
@@ -395,8 +393,8 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWhenIncognitoIsActive) {
 // Tests that calling `OnGoIncognito()` on a regular browser when incognito
 // is the current active browser does not invoke any command.
 TEST_F(AccountConsistencyBrowserAgentTest, OnGoIncognitoWhenIncognitoIsActive) {
-  [scene_state_ setCurrentBrowserProvider:scene_state_.browserProviderInterface
-                                              .incognitoBrowserProvider];
+  [scene_state_
+      setCurrentBrowser:scene_state_.browserProviderInterface.incognitoBrowser];
   agent_->OnGoIncognito(url_, browser_->GetWebStateList()->GetActiveWebState());
   // As the scene is changed, this OnAddAccount is dropped, and the mocks are
   // not asked to present anything, as opposed to OnGoIncognitoWithURL.

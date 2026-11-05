@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -112,8 +111,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   if (level != SceneActivationLevelForegroundActive &&
       self.previousActivationLevel == SceneActivationLevelForegroundActive) {
     SetStartSurfaceSessionObjectForSceneState(sceneState);
-    Browser* browser =
-        sceneState.browserProviderInterface.mainBrowserProvider.browser;
+    Browser* browser = sceneState.browserProviderInterface.mainBrowser;
     if (browser) {
       web::WebState* activeWebState =
           browser->GetWebStateList()->GetActiveWebState();
@@ -151,8 +149,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 
   CHECK(self.sceneState.browserProviderInterface);
-  Browser* browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = self.sceneState.browserProviderInterface.mainBrowser;
 
   ProfileIOS* profile = browser->GetProfile();
 
@@ -215,12 +212,12 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   id<BrowserProviderInterface> providerInterface =
       self.sceneState.browserProviderInterface;
 
-  [self removeExcessNTPsInBrowser:providerInterface.mainBrowserProvider];
-  [self removeExcessNTPsInBrowser:providerInterface.incognitoBrowserProvider];
+  [self removeExcessNTPsInBrowser:providerInterface.mainBrowser];
+  [self removeExcessNTPsInBrowser:providerInterface.incognitoBrowser];
 }
 
 // Removes empty NTP tabs (i.e. NTPs with no further navigation) in the
-// WebStateList attached to the Browser accessible via `browserProvider`
+// WebStateList attached to `browser`.
 //
 // NTPs with navigation are all preserved. If there are none, an empty NTP is
 // preserved.
@@ -228,8 +225,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 // Also sets pref kIOSLastKnownNTPWebStateIndex with the post-removal index of
 // an NTP tab. The pref will be used to find an existing active NTP page in
 // -showStartSurfaceIfNecessary.
-- (void)removeExcessNTPsInBrowser:(id<BrowserProvider>)browserProvider {
-  Browser* browser = browserProvider.browser;
+- (void)removeExcessNTPsInBrowser:(Browser*)browser {
   if (!browser) {
     return;
   }
@@ -292,7 +288,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   if (indicesToRemove.empty()) {
     // If knownNTPWebStateIndex was set, save it to
     // kIOSLastKnownNTPWebStateIndex.
-    if (browserProvider.browser->type() != Browser::Type::kIncognito &&
+    if (browser->type() != Browser::Type::kIncognito &&
         knownNTPWebStateIndex >= 0) {
       browser->GetProfile()->GetPrefs()->SetInteger(
           prefs::kIOSLastKnownNTPWebStateIndex, knownNTPWebStateIndex);
@@ -332,7 +328,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 
   // Set kIOSLastKnownNTPWebStateIndex if knownNTPWebStateIndex was set.
-  if (browserProvider.browser->type() != Browser::Type::kIncognito &&
+  if (browser->type() != Browser::Type::kIncognito &&
       knownNTPWebStateIndex >= 0) {
     browser->GetProfile()->GetPrefs()->SetInteger(
         prefs::kIOSLastKnownNTPWebStateIndex, knownNTPWebStateIndex);
@@ -390,12 +386,10 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
-  Browser* browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  Browser* browser = self.sceneState.browserProviderInterface.mainBrowser;
 
   // Do not show if the regular browser is not the current one.
-  if (browser !=
-      self.sceneState.browserProviderInterface.currentBrowserProvider.browser) {
+  if (browser != self.sceneState.browserProviderInterface.currentBrowser) {
     return;
   }
 

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -92,9 +91,8 @@
         std::make_unique<ScopedForcePortraitOrientation>(appState);
 
     if (IsBestOfAppFREEnabled()) {
-      id<BrowserProvider> presentingInterface =
-          _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-      Browser* browser = presentingInterface.browser;
+      Browser* browser =
+          _presentingSceneState.browserProviderInterface.currentBrowser;
       feature_engagement::Tracker* engagementTracker =
           feature_engagement::TrackerFactory::GetForProfile(
               browser->GetProfile()->GetOriginalProfile());
@@ -145,18 +143,16 @@
 
 // Command dispatcher for the presenting scene state.
 - (CommandDispatcher*)commandDispatcher {
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
+  Browser* browser =
+      _presentingSceneState.browserProviderInterface.currentBrowser;
   return browser ? browser->GetCommandDispatcher() : nil;
 }
 
 // Returns the original (i.e., not off-the-record) profile associated with the
 // current browser. May return nullptr.
 - (ProfileIOS*)originalProfile {
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
+  Browser* browser =
+      _presentingSceneState.browserProviderInterface.currentBrowser;
   if (!browser || !browser->GetProfile()) {
     return nullptr;
   }

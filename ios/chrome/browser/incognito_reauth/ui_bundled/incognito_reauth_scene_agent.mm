@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -307,8 +306,8 @@
     _switchedToIncognitoGrid = YES;
     // TODO(crbug.com/417621249): Add callback that allows specifying animation
     // type.
-    Browser* browser = self.sceneState.browserProviderInterface
-                           .incognitoBrowserProvider.browser;
+    Browser* browser =
+        self.sceneState.browserProviderInterface.incognitoBrowser;
     id<SceneCommands> sceneHandler =
         HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
     [sceneHandler displayTabGridInMode:TabGridOpeningMode::kIncognito];
@@ -327,8 +326,8 @@
       self.sceneState.incognitoState.incognitoContentVisible &&
       self.sceneState.controller.tabGridVisible;
   if (isIncognitoTabGridVisible && _switchedToIncognitoGrid) {
-    Browser* browser = self.sceneState.browserProviderInterface
-                           .incognitoBrowserProvider.browser;
+    Browser* browser =
+        self.sceneState.browserProviderInterface.incognitoBrowser;
     id<TabGridCommands> tabGridHandler =
         HandlerForProtocol(browser->GetCommandDispatcher(), TabGridCommands);
     [tabGridHandler exitTabGrid];
@@ -415,8 +414,7 @@
     return;
   }
 
-  Browser* browser =
-      self.sceneState.browserProviderInterface.incognitoBrowserProvider.browser;
+  Browser* browser = self.sceneState.browserProviderInterface.incognitoBrowser;
   if (browser) {
     if (browser->GetWebStateList() &&
         browser->GetWebStateList()->GetActiveWebState()) {
@@ -481,10 +479,9 @@
 // backgrounded or foregrounded.
 - (void)updateWindowHasIncognitoContent:(SceneState*)sceneState {
   BOOL hasIncognitoContent = YES;
-  if (sceneState.browserProviderInterface.hasIncognitoBrowserProvider) {
+  if (sceneState.browserProviderInterface.hasIncognitoBrowser) {
     hasIncognitoContent =
-        sceneState.browserProviderInterface.incognitoBrowserProvider.browser
-            ->GetWebStateList()
+        sceneState.browserProviderInterface.incognitoBrowser->GetWebStateList()
             ->count() > 0;
     // If there is no tabs, act as if the user authenticated since last
     // foreground to avoid issue with multiwindows.

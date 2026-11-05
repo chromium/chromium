@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -111,8 +110,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     scene_state_.profileState = profile_state_;
 
     // Set up the idle timeout scene agent.
-    Browser* browser =
-        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.mainBrowser;
     id<SceneUIProvider> fake_provider =
         OCMStrictProtocolMock(@protocol(SceneUIProvider));
 

@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -89,8 +88,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
 
   // Initializes a new `PromosManagerCoordinator` for testing.
   void CreatePromosManagerCoordinator() {
-    Browser* browser =
-        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.mainBrowser;
     mock_pip_handler_ = OCMProtocolMock(@protocol(PictureInPictureCommands));
     [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_pip_handler_

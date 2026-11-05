@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -253,8 +252,8 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   }
   // TODO(crbug.com/325613461) Remove this Browser dependency, ideally by
   // refactoring into a dedicated agent.
-  Browser* browser = _mainController.browserProviderInterfaceDoNotUse
-                         .mainBrowserProvider.browser;
+  Browser* browser =
+      _mainController.browserProviderInterfaceDoNotUse.mainBrowser;
   if (!browser) {
     // TODO(crbug.com/40240359): We should store the completionHandler and wait
     // for mainBrowserProvider creation.
@@ -380,8 +379,8 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 - (void)handleAPNSDeviceRegistration:(NSData*)deviceToken {
   // TODO(crbug.com/341906612) Remove use of
   // browserProviderInterfaceDoNotUse.
-  Browser* browser = self.mainController.browserProviderInterfaceDoNotUse
-                         .mainBrowserProvider.browser;
+  Browser* browser =
+      self.mainController.browserProviderInterfaceDoNotUse.mainBrowser;
   if (browser) {
     [self.pushNotificationDelegate
         applicationDidRegisterWithAPNS:deviceToken

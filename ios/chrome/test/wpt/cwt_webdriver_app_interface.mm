@@ -17,7 +17,6 @@
 #import "base/values.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -42,8 +41,7 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 
 WebStateList* GetCurrentWebStateList() {
   return chrome_test_util::GetForegroundActiveScene()
-      .browserProviderInterface.currentBrowserProvider.browser
-      ->GetWebStateList();
+      .browserProviderInterface.currentBrowser->GetWebStateList();
 }
 
 web::WebState* GetWebStateWithId(NSString* tab_id) {

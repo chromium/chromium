@@ -7,7 +7,6 @@
 #import "base/functional/callback_helpers.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -17,8 +16,7 @@ namespace {
 // Implementation of the continuation opening the Settings UI.
 void ChangeProfileSettingsContinuation(SceneState* scene_state,
                                        base::OnceClosure closure) {
-  Browser* browser =
-      scene_state.browserProviderInterface.currentBrowserProvider.browser;
+  Browser* browser = scene_state.browserProviderInterface.currentBrowser;
   CHECK(browser);
 
   id<SceneCommands> sceneHandler =

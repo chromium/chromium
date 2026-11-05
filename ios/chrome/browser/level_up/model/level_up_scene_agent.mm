@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -180,8 +179,7 @@
 
 // Returns the current active browser for the associated scene.
 - (Browser*)currentBrowser {
-  return self.sceneState.browserProviderInterface.currentBrowserProvider
-      .browser;
+  return self.sceneState.browserProviderInterface.currentBrowser;
 }
 
 // Called when the user taps the action button in the completion snackbar.

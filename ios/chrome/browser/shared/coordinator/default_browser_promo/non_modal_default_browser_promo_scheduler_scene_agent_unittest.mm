@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -132,7 +131,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   }
 
   Browser* browser() {
-    return scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    return scene_state_.browserProviderInterface.mainBrowser;
   }
 
   web::FakeWebState* test_web_state() {

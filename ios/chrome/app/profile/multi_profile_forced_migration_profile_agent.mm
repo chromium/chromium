@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -73,10 +72,8 @@
 // Checks if multi-profile force migration screen should be presented to the
 // user or not, and presents it if so.
 - (void)maybeShowMultiProfileForceMigrationScreen {
-  id<BrowserProvider> presentingInterface =
-      self.profileState.foregroundActiveScene.browserProviderInterface
-          .currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
+  Browser* browser = self.profileState.foregroundActiveScene
+                         .browserProviderInterface.currentBrowser;
   // Sign-in related work should be done on regular browser.
   CHECK_EQ(browser->type(), Browser::Type::kRegular);
 
@@ -111,9 +108,8 @@
 - (BOOL)isIncognitoBrowserProvider {
   id<BrowserProviderInterface> providerInterface =
       self.profileState.foregroundActiveScene.browserProviderInterface;
-  id<BrowserProvider> presentingInterface =
-      providerInterface.currentBrowserProvider;
-  if (presentingInterface == providerInterface.incognitoBrowserProvider) {
+  Browser* presentingBrowser = providerInterface.currentBrowser;
+  if (presentingBrowser == providerInterface.incognitoBrowser) {
     return YES;
   }
   return NO;

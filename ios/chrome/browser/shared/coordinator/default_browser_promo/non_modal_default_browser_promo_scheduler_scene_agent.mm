@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -449,8 +448,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
-  self.browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  self.browser = self.sceneState.browserProviderInterface.mainBrowser;
   CHECK(self.browser);
 }
 

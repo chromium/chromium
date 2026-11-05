@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -149,8 +148,7 @@ using ServiceStatus = ::sync_preferences::CrossDevicePrefTracker::ServiceStatus;
   }
 
   CommandDispatcher* dispatcher =
-      activeScene.browserProviderInterface.mainBrowserProvider.browser
-          ->GetCommandDispatcher();
+      activeScene.browserProviderInterface.mainBrowser->GetCommandDispatcher();
 
   id<SyncedSetUpCommands> handler =
       HandlerForProtocol(dispatcher, SyncedSetUpCommands);

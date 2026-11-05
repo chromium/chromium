@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -157,7 +156,7 @@ TEST_F(TaskRequestForShortcutItemTest,
   // A snackbar should be shown to the user to explain that the requested
   // mode was switched to incognito because of a policy.
   id snackbar_commands_mock = OCMProtocolMock(@protocol(SnackbarCommands));
-  [fake_scene_state_.browserProviderInterface.mainBrowserProvider.browser
+  [fake_scene_state_.browserProviderInterface.mainBrowser
           ->GetCommandDispatcher()
       startDispatchingToTarget:snackbar_commands_mock
                    forProtocol:@protocol(SnackbarCommands)];
@@ -204,7 +203,7 @@ TEST_F(TaskRequestForShortcutItemTest,
   // A snackbar should be shown to the user to explain that the requested
   // mode was switched to normal because of a policy.
   id snackbar_commands_mock = OCMProtocolMock(@protocol(SnackbarCommands));
-  [fake_scene_state_.browserProviderInterface.mainBrowserProvider.browser
+  [fake_scene_state_.browserProviderInterface.mainBrowser
           ->GetCommandDispatcher()
       startDispatchingToTarget:snackbar_commands_mock
                    forProtocol:@protocol(SnackbarCommands)];

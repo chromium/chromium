@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -133,8 +132,7 @@ class MainToolbarCoordinatorTest : public PlatformTest {
     [scene_state_ addAgent:layout_guide_scene_agent];
 
     // Setup all necessary handlers.
-    Browser* browser =
-        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    Browser* browser = scene_state_.browserProviderInterface.currentBrowser;
 
     id mock_find_in_page_handler =
         OCMProtocolMock(@protocol(FindInPageCommands));
@@ -286,7 +284,7 @@ class MainToolbarCoordinatorTest : public PlatformTest {
   }
 
   Browser* browser() {
-    return scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    return scene_state_.browserProviderInterface.currentBrowser;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -331,8 +329,8 @@ TEST_F(MainToolbarCoordinatorTest,
   coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:targetBrowser];
   [coordinator_ start];
 
-  // Simulate early startup where currentBrowserProvider.browser is nil.
-  [scene_state_ setCurrentBrowserProvider:nil];
+  // Simulate early startup where currentBrowser is nullptr.
+  [scene_state_ setCurrentBrowser:nullptr];
 
   [coordinator_ transitionOmniboxToToolbarType:ToolbarType::kSecondary];
   EXPECT_EQ(targetBrowser->GetBrowserLayoutState().toolbarPosition,

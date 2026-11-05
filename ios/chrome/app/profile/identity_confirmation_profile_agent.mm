@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -55,9 +54,8 @@
   }
   id<BrowserProviderInterface> providerInterface =
       self.profileState.foregroundActiveScene.browserProviderInterface;
-  id<BrowserProvider> presentingInterface =
-      providerInterface.currentBrowserProvider;
-  if (presentingInterface != providerInterface.mainBrowserProvider) {
+  Browser* presentingBrowser = providerInterface.currentBrowser;
+  if (presentingBrowser != providerInterface.mainBrowser) {
     return;
   }
 
@@ -72,8 +70,7 @@
     case SceneActivationLevelForegroundActive:
       if (!_foregroundActiveEventAlreadyHandled) {
         [self
-            maybeShowIdentityConfirmationSnackbarWithBrowser:presentingInterface
-                                                                 .browser];
+            maybeShowIdentityConfirmationSnackbarWithBrowser:presentingBrowser];
         _foregroundActiveEventAlreadyHandled = YES;
       }
       break;
@@ -92,17 +89,15 @@
 
   id<BrowserProviderInterface> providerInterface =
       profileState.foregroundActiveScene.browserProviderInterface;
-  id<BrowserProvider> presentingInterface =
-      providerInterface.currentBrowserProvider;
-  if (presentingInterface != providerInterface.mainBrowserProvider) {
+  Browser* presentingBrowser = providerInterface.currentBrowser;
+  if (presentingBrowser != providerInterface.mainBrowser) {
     return;
   }
 
   if (!_foregroundActiveEventAlreadyHandled) {
     // In case of having a foregroundActiveScene before reaching an
     // ProfileInitStage::kFinal, this will be the fallback to show the snackbar.
-    [self maybeShowIdentityConfirmationSnackbarWithBrowser:presentingInterface
-                                                               .browser];
+    [self maybeShowIdentityConfirmationSnackbarWithBrowser:presentingBrowser];
     _foregroundActiveEventAlreadyHandled = YES;
   }
 }

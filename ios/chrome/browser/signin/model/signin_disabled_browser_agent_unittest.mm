@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -138,7 +137,7 @@ class SigninDisabledBrowserAgentTest : public PlatformTest {
   }
 
   Browser* browser() {
-    return scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    return scene_state_.browserProviderInterface.mainBrowser;
   }
 
   AuthenticationService* authentication_service() {
@@ -191,7 +190,7 @@ TEST_F(SigninDisabledBrowserAgentTest,
   managed_scene_state.profileState = profile_state_;
 
   SigninDisabledBrowserAgent::CreateForBrowser(
-      managed_scene_state.browserProviderInterface.mainBrowserProvider.browser);
+      managed_scene_state.browserProviderInterface.mainBrowser);
 
   FakeChangeProfileHandler* change_profile_handler =
       [[FakeChangeProfileHandler alloc] init];

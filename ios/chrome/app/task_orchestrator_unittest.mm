@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -399,12 +398,9 @@ class TaskOrchestratorProfileSwitchTest : public TaskOrchestratorTest {
     scene_state_.profileState = profile_state_;
 
     browser_ = std::make_unique<TestBrowser>(profile_, scene_state_);
-    id mock_browser_provider = OCMProtocolMock(@protocol(BrowserProvider));
-    OCMStub([mock_browser_provider browser]).andReturn(browser_.get());
     id mock_provider_interface =
         OCMProtocolMock(@protocol(BrowserProviderInterface));
-    OCMStub([mock_provider_interface mainBrowserProvider])
-        .andReturn(mock_browser_provider);
+    OCMStub([mock_provider_interface mainBrowser]).andReturn(browser_.get());
     partial_scene_state_ = OCMPartialMock(scene_state_);
     OCMStub([partial_scene_state_ browserProviderInterface])
         .andReturn(mock_provider_interface);
@@ -592,13 +588,10 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
   SceneState* scene_state = CreateFakeSceneState(@"scene_switch");
   scene_state.profileState = profile_state;
 
-  id mock_browser_provider = OCMProtocolMock(@protocol(BrowserProvider));
   TestBrowser browser(profile, scene_state);
-  OCMStub([mock_browser_provider browser]).andReturn(&browser);
   id mock_provider_interface =
       OCMProtocolMock(@protocol(BrowserProviderInterface));
-  OCMStub([mock_provider_interface mainBrowserProvider])
-      .andReturn(mock_browser_provider);
+  OCMStub([mock_provider_interface mainBrowser]).andReturn(&browser);
   id partial_scene_state = OCMPartialMock(scene_state);
   OCMStub([partial_scene_state browserProviderInterface])
       .andReturn(mock_provider_interface);
