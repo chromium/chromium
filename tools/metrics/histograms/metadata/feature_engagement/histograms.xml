@@ -367,6 +367,10 @@ chromium-metrics-reviews@google.com.
       summary="educate users that they can close all Incognito windows by
                tapping the Incognito indicator"/>
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
+  <variant name="IPH_IndigoContextMenuSnooze"
+      summary="snooze promo educating users who are not shown Try it on via
+               contextual cues on an eligible product page that Try it on is
+               available in the right-click context menu"/>
   <variant name="IPH_IndigoContextMenuToast"
       summary="toast educating users after a transformation that Try it on is
                available in the right-click context menu"/>

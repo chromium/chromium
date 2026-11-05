@@ -303,6 +303,12 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Shows the page action anchored message and notifies IndigoService.
   void ShowAnchoredMessage(page_actions::PageActionPriorityCategory priority);
 
+  // Helpers for showing and aborting the context menu discovery snooze IPH on
+  // eligible pages when Indigo is not cued via Contextual Cueing.
+  bool ShouldOfferContextMenuSnoozeIph() const;
+  void MaybeShowContextMenuSnoozeIph();
+  void AbortContextMenuSnoozeIph();
+
   // `page_action_controller_` is owned by the same `TabFeatures` that owns
   // `this`. Since `page_action_controller_` is initialized before `this` and
   // destroyed after, it is safe to hold as a `raw_ref`.
@@ -394,6 +400,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // When the current page first became eligible for Indigo.
   std::optional<base::TimeTicks> page_eligible_time_;
+
+  // True if `MaybeShowFeaturePromo(kIPHIndigoContextMenuSnoozeFeature)` has
+  // already been called on the current page load.
+  bool context_menu_snooze_iph_attempted_on_current_page_ = false;
 
   // Weak pointer factory used for the invocation flow. This is invalidated on
   // navigation to ensure that if a user starts an action (like onboarding) and

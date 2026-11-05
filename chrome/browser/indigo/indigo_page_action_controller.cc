@@ -209,6 +209,15 @@ void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
     return;
   }
 
+  // Engaging with Try on You from any entry point means the user no longer
+  // needs the snooze promo that introduces it.
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab().GetBrowserWindowInterface())) {
+    user_ed->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHIndigoContextMenuSnoozeFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+
   switch (entry_point) {
     case EntryPoint::kErrorToast:
       indigo_service_->GetCombinedEligibility(base::BindOnce(
@@ -581,6 +590,10 @@ void IndigoPageActionController::DidFinishNavigation(
 
   invoke_weak_ptr_factory_.InvalidateWeakPtrs();
 
+  if (tab().IsVisible()) {
+    AbortContextMenuSnoozeIph();
+  }
+
   last_evaluated_url_ = navigation_handle->GetURL();
   optimization_guide_decision_ =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -609,6 +622,7 @@ void IndigoPageActionController::DidFinishNavigation(
       web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
     hidden_since_page_appeared_ = true;
   }
+  context_menu_snooze_iph_attempted_on_current_page_ = false;
   UpdateEntryPointsState();
 
   if (optimization_guide_) {
@@ -622,6 +636,7 @@ void IndigoPageActionController::DidFinishNavigation(
 
 void IndigoPageActionController::TabWillBecomeHidden(tabs::TabInterface* tab) {
   CHECK_EQ(tab, &this->tab(), base::NotFatalUntil::M161);
+  AbortContextMenuSnoozeIph();
   if (toolbar_) {
     toolbar_->TabWillBecomeHidden();
   }
@@ -629,6 +644,7 @@ void IndigoPageActionController::TabWillBecomeHidden(tabs::TabInterface* tab) {
 
 void IndigoPageActionController::TabDidBecomeVisible(tabs::TabInterface* tab) {
   CHECK_EQ(tab, &this->tab(), base::NotFatalUntil::M161);
+  MaybeShowContextMenuSnoozeIph();
   if (!toolbar_) {
     return;
   }
@@ -757,6 +773,9 @@ IndigoPageActionController::EvaluateTriggerState() const {
 }
 
 void IndigoPageActionController::ResetTriggeringState() {
+  if (tab().IsVisible()) {
+    AbortContextMenuSnoozeIph();
+  }
   optimization_guide_decision_ =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   metadata_classifier_.Reset();
@@ -765,6 +784,7 @@ void IndigoPageActionController::ResetTriggeringState() {
   last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
   trigger_source_recorded_on_current_page_ = false;
+  context_menu_snooze_iph_attempted_on_current_page_ = false;
   UpdateEntryPointsState();
 }
 
@@ -801,8 +821,12 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     if (!delegate_to_contextual_cues) {
       RecordTriggerSource();
     }
+    MaybeShowContextMenuSnoozeIph();
   } else if (!eval.is_pending) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/false);
+    if (tab().IsVisible()) {
+      AbortContextMenuSnoozeIph();
+    }
   }
 
   if (delegate_to_contextual_cues) {
@@ -997,6 +1021,44 @@ void IndigoPageActionController::ShowAnchoredMessage(
 
   page_action_controller_->ShowAnchoredMessage(kActionIndigo,
                                                {.priority = priority});
+}
+
+bool IndigoPageActionController::ShouldOfferContextMenuSnoozeIph() const {
+  // Users who can receive Indigo cues from Contextual Cueing (which requires
+  // multi-source cueing to consider Indigo's cue target at all) may already
+  // see a proactive anchored message, so they are not offered this promo.
+  const bool cued_via_contextual_cues =
+      base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2) &&
+      base::FeatureList::IsEnabled(
+          contextual_cueing::kContextualCueingV2MultiSource) &&
+      base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2);
+  return base::FeatureList::IsEnabled(features::kIndigoContextMenu) &&
+         !cued_via_contextual_cues;
+}
+
+void IndigoPageActionController::MaybeShowContextMenuSnoozeIph() {
+  if (context_menu_snooze_iph_attempted_on_current_page_ ||
+      !ShouldOfferContextMenuSnoozeIph() || !tab().IsVisible() ||
+      !IsPageEligible()) {
+    return;
+  }
+  context_menu_snooze_iph_attempted_on_current_page_ = true;
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab().GetBrowserWindowInterface())) {
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHIndigoContextMenuSnoozeFeature);
+  }
+}
+
+void IndigoPageActionController::AbortContextMenuSnoozeIph() {
+  if (!context_menu_snooze_iph_attempted_on_current_page_) {
+    return;
+  }
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab().GetBrowserWindowInterface())) {
+    user_ed->AbortFeaturePromo(
+        feature_engagement::kIPHIndigoContextMenuSnoozeFeature);
+  }
 }
 
 void IndigoPageActionController::DestroyToolbar() {

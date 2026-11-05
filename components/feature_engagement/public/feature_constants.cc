@@ -151,6 +151,10 @@ BASE_FEATURE(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
 BASE_FEATURE(kIPHGlicTryItFeature,
              "IPH_GlicTryIt",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(b:575858329): Enable by default once the triggering details are final.
+BASE_FEATURE(kIPHIndigoContextMenuSnoozeFeature,
+             "IPH_IndigoContextMenuSnooze",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHIndigoContextMenuToastFeature,
              "IPH_IndigoContextMenuToast",
              base::FEATURE_ENABLED_BY_DEFAULT);

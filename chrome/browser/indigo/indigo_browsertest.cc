@@ -1109,5 +1109,30 @@ IN_PROC_BROWSER_TEST_F(IndigoContextMenuToastPromoBrowserTest,
                        false));
 }
 
+class IndigoContextMenuSnoozePromoBrowserTest
+    : public IndigoBrowserTestMixin<InteractiveFeaturePromoTest> {
+ public:
+  IndigoContextMenuSnoozePromoBrowserTest()
+      : IndigoBrowserTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHIndigoContextMenuSnoozeFeature})) {}
+
+ protected:
+  bool IsContextualCuesMode() const override { return false; }
+
+ private:
+  base::test::ScopedFeatureList context_menu_feature_list_{
+      features::kIndigoContextMenu};
+};
+
+IN_PROC_BROWSER_TEST_F(IndigoContextMenuSnoozePromoBrowserTest,
+                       ContextMenuSnoozePromoShownOnEligiblePage) {
+  const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, main_tab_url),
+      WaitForWebContentsReady(kWebContentsId, main_tab_url),
+      WaitForPromo(feature_engagement::kIPHIndigoContextMenuSnoozeFeature));
+}
+
 }  // namespace
 }  // namespace indigo

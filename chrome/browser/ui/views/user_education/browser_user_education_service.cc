@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1076,6 +1077,24 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(153, "vpasupathy@chromium.org",
                        "Triggered when Save Video Frame IPH timer fires.")));
+
+  // kIPHIndigoContextMenuSnoozeFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHIndigoContextMenuSnoozeFeature,
+          kBrowserDialogAnchorElementId,
+          IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_BODY,
+          IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleTitleText(IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_TITLE)
+          .SetBubbleIcon(
+              &indigo::IndigoPageActionController::GetEntryPointVectorIcon())
+          .SetBubbleArrow(HelpBubbleArrow::kNone)
+          .SetMetadata(
+              159, "jbroman@chromium.org",
+              "Triggered on eligible Product Detail Pages when Try on You is "
+              "not cued via contextual cues to educate users about the "
+              "right-click context menu entry point.")));
 
   // kIPHIndigoContextMenuToastFeature:
   registry.RegisterFeature(std::move(

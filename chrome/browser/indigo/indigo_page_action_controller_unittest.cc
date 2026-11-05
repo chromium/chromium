@@ -202,6 +202,11 @@ class IndigoPageActionControllerTestBase : public testing::Test {
     if (IsContextualCuesMode()) {
       enabled_features.emplace_back(contextual_cueing::kContextualCueingV2,
                                     base::FieldTrialParams());
+      // Contextual Cueing only considers Indigo's cue target when multi-source
+      // cueing is enabled.
+      enabled_features.emplace_back(
+          contextual_cueing::kContextualCueingV2MultiSource,
+          base::FieldTrialParams());
       enabled_features.emplace_back(features::kIndigoContextualCueingV2,
                                     base::FieldTrialParams());
     } else {
@@ -316,6 +321,16 @@ class IndigoPageActionControllerTestBase : public testing::Test {
     ON_CALL(*tab_interface_, IsVisible()).WillByDefault(testing::Return(true));
     ON_CALL(testing::Const(*tab_interface_), IsVisible())
         .WillByDefault(testing::Return(true));
+    ON_CALL(*tab_interface_, RegisterWillBecomeHidden(_))
+        .WillByDefault(
+            [this](tabs::TabInterface::WillBecomeHiddenCallback callback) {
+              return tab_will_become_hidden_callbacks_.Add(std::move(callback));
+            });
+    ON_CALL(*tab_interface_, RegisterDidBecomeVisible(_))
+        .WillByDefault(
+            [this](tabs::TabInterface::DidBecomeVisibleCallback callback) {
+              return tab_did_become_visible_callbacks_.Add(std::move(callback));
+            });
 
     ON_CALL(testing::Const(mock_browser_window_interface_),
             GetUnownedUserDataHost())
@@ -552,6 +567,18 @@ class IndigoPageActionControllerTestBase : public testing::Test {
     }
   }
 
+  void SetTabVisible(bool visible) {
+    ON_CALL(*tab_interface_, IsVisible())
+        .WillByDefault(testing::Return(visible));
+    ON_CALL(testing::Const(*tab_interface_), IsVisible())
+        .WillByDefault(testing::Return(visible));
+    if (visible) {
+      tab_did_become_visible_callbacks_.Notify(tab_interface_.get());
+    } else {
+      tab_will_become_hidden_callbacks_.Notify(tab_interface_.get());
+    }
+  }
+
   // Must be declared before `task_environment_` so background tasks are
   // stopped before scoped state is torn down.
   base::test::ScopedFeatureList feature_list_;
@@ -587,6 +614,10 @@ class IndigoPageActionControllerTestBase : public testing::Test {
       fake_glic_side_panel_coordinator_;
   // Only created when the entry points are delegated to Contextual Cueing.
   std::unique_ptr<IndigoCueTarget> cue_target_;
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
+      tab_will_become_hidden_callbacks_;
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
+      tab_did_become_visible_callbacks_;
 };
 
 // Runs each test both in legacy mode and in contextual cues mode. In contextual
@@ -2740,7 +2771,10 @@ TEST_P(IndigoPageActionControllerTest,
 
   // Regenerating from the toolbar (or retrying that regeneration) does not
   // re-trigger the promo.
-  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuToastFeature)))
+      .Times(0);
   controller_->OnRegenerate(nullptr);
   controller_->ShowToolbar();
   controller_->OnClose(nullptr);
@@ -2766,7 +2800,10 @@ TEST_P(IndigoPageActionControllerTest,
         tab_interface_->GetContents(), url0);
     ClickAnchoredMessage();
 
-    EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+    EXPECT_CALL(mock_user_education,
+                MaybeShowFeaturePromo(IsFeaturePromo(
+                    feature_engagement::kIPHIndigoContextMenuToastFeature)))
+        .Times(0);
     controller_->ShowToolbar();
     testing::Mock::VerifyAndClearExpectations(&mock_user_education);
   }
@@ -2778,7 +2815,10 @@ TEST_P(IndigoPageActionControllerTest,
   ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       tab_interface_->GetContents(), url1);
-  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuToastFeature)))
+      .Times(0);
   controller_->InvokeAction(EntryPoint::kContextMenu);
   controller_->ShowToolbar();
 
@@ -2796,7 +2836,10 @@ TEST_P(IndigoPageActionControllerTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       tab_interface_->GetContents(), url2);
   ClickAnchoredMessage();
-  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuToastFeature)))
+      .Times(0);
   controller_->ShowToolbar();
   testing::Mock::VerifyAndClearExpectations(&mock_user_education);
 
@@ -2812,8 +2855,133 @@ TEST_P(IndigoPageActionControllerTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       tab_interface_->GetContents(), url3);
 
-  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuToastFeature)))
+      .Times(0);
   controller_->ShowToolbar();
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       ContextMenuSnoozePromoCohortGatingAndMutualExclusion) {
+  base::test::ScopedFeatureList local_feature_list{
+      features::kIndigoContextMenu};
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  testing::NiceMock<MockBrowserUserEducationInterface> mock_user_education(
+      &mock_browser_window_interface_);
+
+  // Shown once per eligible page load unless Indigo is cued via Contextual
+  // Cueing, which requires `kContextualCueingV2`,
+  // `kContextualCueingV2MultiSource` and `kIndigoContextualCueingV2` (all
+  // enabled by `IsContextualCuesMode()`, and all disabled otherwise).
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+      .Times(IsContextualCuesMode() ? 0 : 1);
+  GURL url("https://example.com/pdp");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url);
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  // Using Try on You from any entry point notifies User Education that the
+  // snooze promo's feature was used, closing it and suppressing future
+  // impressions.
+  EXPECT_CALL(
+      mock_user_education,
+      NotifyFeaturePromoFeatureUsed(
+          testing::Ref(feature_engagement::kIPHIndigoContextMenuSnoozeFeature),
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .Times(2);
+  ClickAnchoredMessage();
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  // With Contextual Cueing otherwise enabled for Indigo, the promo is still
+  // shown when `kContextualCueingV2MultiSource` is disabled, since Contextual
+  // Cueing then never considers Indigo's cue target.
+  if (IsContextualCuesMode()) {
+    base::test::ScopedFeatureList no_multi_source_list;
+    no_multi_source_list.InitAndDisableFeature(
+        contextual_cueing::kContextualCueingV2MultiSource);
+    EXPECT_CALL(mock_user_education,
+                MaybeShowFeaturePromo(IsFeaturePromo(
+                    feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+        .Times(1);
+    GURL url2("https://example.com/pdp2");
+    ExpectOptimizationGuideDecision(url2, OptimizationGuideDecision::kTrue);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        tab_interface_->GetContents(), url2);
+    testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+  }
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       ContextMenuSnoozePromoTabVisibilityAndAbortLifecycle) {
+  if (IsContextualCuesMode()) {
+    GTEST_SKIP() << "The snooze promo is not offered when Indigo is cued via "
+                    "Contextual Cueing.";
+  }
+
+  base::test::ScopedFeatureList local_feature_list{
+      features::kIndigoContextMenu};
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  testing::NiceMock<MockBrowserUserEducationInterface> mock_user_education(
+      &mock_browser_window_interface_);
+
+  // Background tab defers showing the snooze promo until the tab becomes
+  // visible.
+  SetTabVisible(false);
+
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+      .Times(0);
+  GURL url1("https://example.com/pdp1");
+  ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url1);
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+      .Times(1);
+  SetTabVisible(true);
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  // Hiding the tab aborts any active snooze promo, and re-showing the same
+  // page load does not re-trigger it.
+  EXPECT_CALL(mock_user_education,
+              AbortFeaturePromo(testing::Ref(
+                  feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+      .Times(1);
+  SetTabVisible(false);
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+      .Times(0);
+  SetTabVisible(true);
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  // Navigating away from an eligible page to an ineligible page aborts the
+  // snooze promo.
+  EXPECT_CALL(mock_user_education,
+              AbortFeaturePromo(testing::Ref(
+                  feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+      .Times(1);
+  GURL url2("https://example.com/ineligible");
+  ExpectOptimizationGuideDecision(url2, OptimizationGuideDecision::kFalse);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url2);
 }
 }  // namespace
 }  // namespace indigo

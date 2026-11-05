@@ -559,6 +559,9 @@ should be able to be added at any place in this file.
   <variant name="_IncognitoIndicatorCloseAllWindows"
       summary="For the Incognito indicator close all windows IPH."/>
   <variant name="_IncognitoWindow" summary="For IncognitoWindow feature."/>
+  <variant name="_IndigoContextMenuSnooze"
+      summary="For Indigo context menu discovery snooze promo on eligible
+               product pages."/>
   <variant name="_IndigoContextMenuToast"
       summary="For Indigo context menu discovery toast after transformation."/>
   <variant name="_InstanceSwitcher" summary="For Instance switcher feature."/>

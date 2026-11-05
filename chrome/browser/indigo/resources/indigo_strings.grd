@@ -118,6 +118,15 @@
       <message name="IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_SCREENREADER" desc="Screen reader announcement for the in-product help toast bubble with body text IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_BODY, shown after an image transformation completes to educate the user that they can right-click to trigger Indigo. Should match IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_BODY except formatted for spoken announcement (without quotation marks), with 'Indigo' matching IDS_INDIGO_CONTEXT_MENU_TEXT." translateable="false">
         Next time you want to try something on, right-click and select Indigo.
       </message>
+      <message name="IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_TITLE" desc="Title of an in-product help snooze bubble shown on an eligible product page when contextual cues are disabled, encouraging the user to try on clothes." translateable="false">
+        See how it looks on you
+      </message>
+      <message name="IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_BODY" desc="Body text of an in-product help snooze bubble shown on an eligible product page when contextual cues are disabled, educating the user that they can right-click to trigger Indigo. The string in quotation marks should match the translation for IDS_INDIGO_CONTEXT_MENU_TEXT." translateable="false">
+        Right-click and select "Indigo" to get started
+      </message>
+      <message name="IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_SCREENREADER" desc="Screen reader announcement for the in-product help snooze bubble with body text IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_BODY, shown on an eligible product page when contextual cues are disabled to educate the user that they can right-click to trigger Indigo. Should match IDS_INDIGO_CONTEXT_MENU_SNOOZE_IPH_BODY except formatted for spoken announcement (without quotation marks) and stating that the user should right-click on the page, with 'Indigo' matching IDS_INDIGO_CONTEXT_MENU_TEXT." translateable="false">
+        Right-click on the page and select Indigo to get started.
+      </message>
 
       <!-- Overlay UI -->
       <message name="IDS_INDIGO_TITLE" desc="Title for the Indigo page." translateable="false">
