@@ -44,7 +44,7 @@
   min-width: 0;
   padding-block: 0;
   padding-inline-end: 4px;
-  padding-inline-start: 8px;
+  padding-inline-start: 12px;
 }
 
 #expandButton[disabled] {
