@@ -268,13 +268,18 @@ void ChangePasswordTool::OnChangePasswordFormFilled(
                                    base::JoinString(unfilled_parts, " and "))));
     return;
   }
-  // TODO(crbug.com/581259748): preserve parent message on follow up actions
   if (confirm_button_.has_value()) {
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
         actor_surface_handle_, *confirm_button_, mojom::ClickType::kLeft,
         mojom::ClickCount::kSingle));
-    absl::StrAppendFormat(&message, " Triggered click on confirm button %s.",
-                          actor::DebugString(*confirm_button_));
+    if (const auto* dom_node = std::get_if<DomNode>(&*confirm_button_)) {
+      absl::StrAppendFormat(&message,
+                            " Triggered click on confirm button with id %d.",
+                            dom_node->node_id);
+    } else {
+      absl::StrAppendFormat(&message, " Triggered click on confirm button %s.",
+                            actor::DebugString(*confirm_button_));
+    }
   }
 
   PostResponseTask(std::move(callback),

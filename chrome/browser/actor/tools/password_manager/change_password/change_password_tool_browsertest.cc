@@ -319,6 +319,12 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].result->message,
+            absl::StrFormat(
+                "Filled new generated password into field with id %d. "
+                "Triggered click on confirm button with id %d.",
+                new_password_node->node_id, confirm_button_node->node_id));
 
   EXPECT_EQ("dummy_new_password",
             EvalJs(main_frame(), "document.getElementById('input2').value"));
@@ -354,6 +360,15 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(
+      result.Get()[0].result->message,
+      absl::StrFormat(
+          "Filled old password into field with id %d and new generated "
+          "password into field with id %d and confirmation password into field "
+          "with id %d. Triggered click on confirm button with id %d.",
+          current_password_node->node_id, new_password_node->node_id,
+          confirm_password_node->node_id, confirm_button_node->node_id));
 
   EXPECT_EQ("dummy_current_password",
             EvalJs(main_frame(), "document.getElementById('input').value"));
@@ -389,6 +404,12 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].result->message,
+            absl::StrFormat(
+                "Filled new generated password into field with id %d. "
+                "Triggered click on confirm button %s.",
+                new_password_node->node_id, confirm_button_point.ToString()));
 
   EXPECT_EQ("dummy_new_password",
             EvalJs(main_frame(), "document.getElementById('input2').value"));
