@@ -1649,9 +1649,18 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   // Record the time immediately before the cached response is parsed.
   read_headers_since_ = TimeTicks::Now();
 
-  if (result != cache_buf_->size() ||
-      !HttpCache::ParseResponseInfo(cache_buf_->span(), &response_,
-                                    &truncated_)) {
+  bool cache_ok = (result == cache_buf_->size());
+
+  if (cache_ok) {
+    // Make sure we clear `response_` in case it has left over data;
+    // ParseResponseInfo expects a fresh object.
+    // See crbug.com/578664961
+    response_ = HttpResponseInfo();
+    cache_ok = HttpCache::ParseResponseInfo(cache_buf_->span(), &response_,
+                                            &truncated_);
+  }
+
+  if (!cache_ok) {
     return OnCacheReadError(result, true);
   }
 
