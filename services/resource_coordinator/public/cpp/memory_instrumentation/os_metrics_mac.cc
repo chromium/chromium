@@ -10,6 +10,8 @@
 #include <sys/param.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -219,6 +221,10 @@ void AddRegionByteStats(VMRegion* dest, const VMRegion& source) {
       source.byte_stats_proportional_resident;
 }
 
+mojom::VmRegionPtr NewVmRegion(const VMRegion& r) {
+  return VMRegion::New(r);
+}
+
 }  // namespace
 
 // static
@@ -269,6 +275,7 @@ std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
   if (!GetAllRegions(&all_regions))
     return maps;
 
+  maps.reserve(all_regions.size());
   // Merge information from dyld regions and all regions.
   for (const VMRegion& region : all_regions) {
     bool skip = false;
@@ -302,9 +309,7 @@ std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
     maps.push_back(VMRegion::New(region));
   }
 
-  for (VMRegion& region : dyld_regions) {
-    maps.push_back(VMRegion::New(region));
-  }
+  base::Extend(maps, dyld_regions, &NewVmRegion);
 
   return maps;
 }
@@ -312,17 +317,11 @@ std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
 #if !BUILDFLAG(IS_IOS)
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessModules(
     base::ProcessHandle handle) {
-  std::vector<mojom::VmRegionPtr> maps;
-
   std::vector<VMRegion> dyld_regions;
   if (!GetDyldRegions(&dyld_regions))
-    return maps;
+    return {};
 
-  for (VMRegion& region : dyld_regions) {
-    maps.push_back(VMRegion::New(region));
-  }
-
-  return maps;
+  return base::ToVector(dyld_regions, &NewVmRegion);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
