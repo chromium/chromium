@@ -1046,7 +1046,9 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
 
 void NativeDesktopMediaList::UpdateNativeThumbnailsFinished() {
 #if defined(USE_AURA)
-  CHECK(pending_native_thumbnail_capture_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/578776477): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(pending_native_thumbnail_capture_);
   pending_native_thumbnail_capture_ = false;
   // If native thumbnail captures finished after aura thumbnail captures,
   // execute |done_callback| to let the caller know the update process is
