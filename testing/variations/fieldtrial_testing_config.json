@@ -15393,6 +15393,30 @@
             ]
         }
     ],
+    "QUIC": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Arm_5CID_CancelPreExistingProbingNov2026",
+                    "params": {
+                        "client_connection_options": "5CID",
+                        "set_quic_flags": "FLAGS_quiche_reloadable_flag_quic_active_connection_id_limit=true"
+                    },
+                    "enable_features": [
+                        "QuicAlwaysCancelPreExistingProbingOnMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuicSocketSendBufferSize": [
         {
             "platforms": [
