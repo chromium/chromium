@@ -13,13 +13,18 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -55,13 +60,26 @@ constexpr char kScanningStickySettingsPref[] =
 class ChromeScanningAppDelegateTest : public testing::Test {
  public:
   ChromeScanningAppDelegateTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
   ~ChromeScanningAppDelegateTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("profile1@gmail.com");
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                TestingBrowserProcess::GetGlobal()));
+
+    // The MyFiles path is read off the logged-in User.
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("profile1@gmail.com", GaiaId("12345"));
+    const user_manager::User* const user =
+        user_session_test_environment_->AddRegularUser(account_id);
+    ASSERT_TRUE(user);
+    user_session_test_environment_->LogIn(account_id);
+    profile_ = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+    ASSERT_TRUE(profile_);
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -83,7 +101,13 @@ class ChromeScanningAppDelegateTest : public testing::Test {
         removable_media_path_);
   }
 
-  void TearDown() override { web_contents_.reset(); }
+  void TearDown() override {
+    chrome_scanning_app_delegate_.reset();
+    web_ui_.reset();
+    web_contents_.reset();
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+  }
 
   void DidFilesAppOpen(bool expected_value, bool files_app_opened) {
     EXPECT_EQ(expected_value, files_app_opened);
@@ -91,7 +115,7 @@ class ChromeScanningAppDelegateTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ChromeScanningAppDelegate> chrome_scanning_app_delegate_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   base::ScopedTempDir temp_dir_;
@@ -102,7 +126,8 @@ class ChromeScanningAppDelegateTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_;
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -39,9 +42,11 @@ std::unique_ptr<KeyedService> ScanServiceFactory::BuildInstanceFor(
   bool drive_available = integration_service &&
                          integration_service->is_enabled() &&
                          integration_service->IsMounted();
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(context));
   return std::make_unique<ScanService>(
       LorgnetteScannerManagerFactory::GetForBrowserContext(context),
-      file_manager::util::GetMyFilesFolderForProfile(profile),
+      file_manager::util::GetMyFilesFolder(user),
       drive_available ? integration_service->GetMountPointPath()
                       : base::FilePath(),
       context);

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -28,9 +29,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -50,9 +53,11 @@ ChromeScanningAppDelegate::ChromeScanningAppDelegate(content::WebUI* web_ui)
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  const user_manager::User& user =
+      CHECK_DEREF(BrowserContextHelper::Get()->GetUserByBrowserContext(
+          web_ui->GetWebContents()->GetBrowserContext()));
   const base::FilePath my_files_path =
-      file_manager::util::GetMyFilesFolderForProfile(
-          Profile::FromWebUI(web_ui));
+      file_manager::util::GetMyFilesFolder(user);
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::GetForProfile(
