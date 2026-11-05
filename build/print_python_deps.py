@@ -120,6 +120,18 @@ def _FindPythonInDirectory(directory, allow_test):
                 yield os.path.join(root, filename)
 
 
+def _FindVpythonSpec(module_path):
+    """Finds a custom vpython spec between |module_path| and _SRC_ROOT."""
+    cur_dir = os.path.dirname(os.path.abspath(module_path))
+    while cur_dir.startswith(_SRC_ROOT) and cur_dir != _SRC_ROOT:
+        for name in ('vpython.toml', '.vpython3'):
+            candidate = os.path.join(cur_dir, name)
+            if os.path.exists(candidate):
+                return candidate
+        cur_dir = os.path.dirname(cur_dir)
+    return None
+
+
 def _ImportModuleByPath(module_path):
     """Imports a module by its source file."""
     # Replace the path entry for print_python_deps.py with the one for the given
@@ -193,15 +205,15 @@ def main():
     if not modules:
         parser.error('Input directory does not contain any python files!')
 
+    custom_spec = _FindVpythonSpec(modules[0])
     is_vpython = 'vpython' in sys.executable
-    if not is_vpython:
+    if not is_vpython or (custom_spec and not options.did_relaunch):
         # Prevent infinite relaunch if something goes awry.
         assert not options.did_relaunch
-        # Re-launch using vpython will cause us to pick up modules specified in
-        # //.vpython, but does not cause it to pick up modules defined inline via
-        # [VPYTHON:BEGIN] ... [VPYTHON:END] comments.
-        # TODO(agrieve): Add support for this if the need ever arises.
-        os.execvp('vpython3', ['vpython3'] + sys.argv + ['--did-relaunch'])
+        cmd = ['vpython3']
+        if custom_spec:
+            cmd.extend(['-vpython-spec', custom_spec])
+        os.execvp('vpython3', cmd + sys.argv + ['--did-relaunch'])
 
     # Work-around for protobuf library not being loadable via importlib.
     # This is needed due to compile_resources.py and protoc_java.py.
@@ -232,6 +244,9 @@ def main():
             os.path.abspath(p)
             for p in _FindPythonInDirectory(path, allow_test=False)
         )
+
+    if custom_spec:
+        paths_set.add(custom_spec)
 
     paths = [os.path.relpath(p, options.root) for p in paths_set]
 
