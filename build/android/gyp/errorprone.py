@@ -102,6 +102,13 @@ TESTONLY_ERRORPRONE_WARNINGS = [
     'MisformattedTestData',
     'MissingTestCall',
     'RobolectricShadowDirectlyOn',
+    # Checks for Streams (banned in non-test code by NoStreams).
+    'CollectorShouldNotUseState',
+    'ModifySourceCollectionInStream',
+    'MultipleParallelOrSequentialCalls',
+    'StreamResourceLeak',
+    'StreamToIterable',
+    'StreamToString',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -266,7 +273,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Checks for libraries that Chromium does not use (AutoValue, Dagger,
     # Flogger, Guice, GWT, javax.inject, Joda-Time, RxJava, SWIG,
     # TestParameterInjector, full-runtime protobuf), or for JDK APIs that
-    # Chromium does not use or that are not available on Android.
+    # Chromium does not use (Optional) or that are not available on Android.
     'AndroidInjectionBeforeSuper',
     'AssistedInjectAndInjectOnSameConstructor',
     'AutoValueBoxedValues',
@@ -314,6 +321,13 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'MixedDescriptors',
     'MoreThanOneInjectableConstructor',
     'NewFileSystem',
+    'NullOptional',
+    'NullableOptional',
+    'OptionalEquality',
+    'OptionalMapToOptional',
+    'OptionalMapUnusedValue',
+    'OptionalNotPresent',
+    'OptionalOfRedundantMethod',
     'OutlineNone',
     'OverlappingQualifierAndScopeAnnotation',
     'OverridesGuiceInjectableMethod',

@@ -59,7 +59,6 @@ import java.util.Optional;
  */
 @NullMarked
 public class FuseboxSessionState implements UserData {
-    @SuppressWarnings("NullableOptional")
     public static @Nullable Optional<FuseboxSessionState> sInstanceForTesting;
 
     private final FuseboxAttachmentChangeListener mFuseboxAttachmentChangeListener =

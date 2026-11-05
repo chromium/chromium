@@ -15,7 +15,6 @@ import java.util.Optional;
 /** Static public methods for WebContents. */
 @NullMarked
 public class WebContentsStatics {
-    @SuppressWarnings("NullableOptional")
     private static @Nullable Optional<WebContents> sWebContentsForTesting;
 
     /**

@@ -516,7 +516,6 @@ class AudioManagerAndroid {
 
     // Used for reflection of hidden method getOutputLatency.  Will be `null` before reflection, and
     // a (possibly empty) Optional after.
-    @SuppressWarnings("NullableOptional")
     private static @Nullable Optional<Method> sGetOutputLatency;
 
     // Reflect |methodName(int)|, and return it.

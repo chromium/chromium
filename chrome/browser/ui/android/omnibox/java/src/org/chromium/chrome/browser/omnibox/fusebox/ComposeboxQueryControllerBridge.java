@@ -47,7 +47,6 @@ public class ComposeboxQueryControllerBridge {
     public interface NativeComposeboxQueryControllerBridge extends JniTypeToken {}
 
     /** Instance to be used for testing - null value permitted to signify no controller. */
-    @SuppressWarnings("NullableOptional")
     private static @Nullable Optional<ComposeboxQueryControllerBridge> sInstanceForTesting;
 
     /** Observer for context upload status changes. */

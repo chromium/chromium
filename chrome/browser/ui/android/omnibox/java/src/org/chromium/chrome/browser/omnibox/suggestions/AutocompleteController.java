@@ -56,7 +56,6 @@ import java.util.Optional;
 @NullMarked
 public class AutocompleteController {
     /** Instance to be used for testing - null value permitted to signify no controller. */
-    @SuppressWarnings("NullableOptional")
     private static @Nullable Optional<AutocompleteController> sInstanceForTesting;
 
     // Maximum number of voice suggestions to show.
