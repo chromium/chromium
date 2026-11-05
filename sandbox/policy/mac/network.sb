@@ -24,16 +24,23 @@
               (param (string-append network-service-storage-path-n (number->string i)))))
           (loop (+ i 1)))))))
 
-; If a user-data-dir is provided explicitly, scope our file access to known
-; subdirectories (https://crbug.com/567101748)
-(if (param-defined? user-data-dir)
-  (allow file*
-    (regex
-      (string-append "^"
-        (regex-quote (param user-data-dir))
-        #"(/[^/]+)?/(Network|Safe Browsing Network|Shared Dictionary)(/.*)?$"))))
-(if (param-defined? user-cache-dir)
-  (allow file* (subpath (param user-cache-dir))))
+; Scopes file access to known subdirectories either directly at the root,
+; within a profile, or within an extension storage partition
+; (https://crbug.com/567101748).
+(define (allow-network-subpaths dir-param subpaths)
+  (if (param-defined? dir-param)
+    (let ((base (regex-quote (param dir-param))))
+      (allow file*
+        ; Root or profile: [<profile>/]<subpath>[/...]
+        (regex (string-append "^" base #"(/[^/]+)?/" subpaths #"(/.*)?$"))
+        ; Storage partition:
+        ; <profile>/Storage/ext/<domain>/<partition>/<subpath>[/...]
+        (regex (string-append
+          "^" base #"/[^/]+/Storage/ext/[^/]+/[^/]+/" subpaths #"(/.*)?$"))))))
+
+(allow-network-subpaths user-data-dir
+  #"(Network|Safe Browsing Network|Shared Dictionary)")
+(allow-network-subpaths user-cache-dir #"Cache")
 
 ; Disallow creating symbolic links.
 (unless (param-true? allow-network-symlink-creation)

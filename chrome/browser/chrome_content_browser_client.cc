@@ -5984,18 +5984,21 @@ void ChromeContentBrowserClient::InitOnUIThread() {
     network_contexts_parent_directory_.push_back(*cache_dir);
   }
 
-  // If the cache location has been overridden by a switch or policy to a
-  // directory outside `user_data_dir` and `cache_dir`, include that as well.
+  // If the cache location has been overridden by a switch or policy, record it
+  // in `network_contexts_cache_directory_`. Also include it in
+  // `network_contexts_parent_directory_` if it is outside `user_data_dir` and
+  // `cache_dir`.
   const base::FilePath pref_cache_dir =
       chrome_browser_net::GetDiskCacheDir(g_browser_process->local_state());
   if (!pref_cache_dir.empty()) {
+    network_contexts_cache_directory_ = pref_cache_dir;
+
     const bool is_inside_existing_dirs =
         pref_cache_dir == network_contexts_data_directory_ ||
         network_contexts_data_directory_.IsParent(pref_cache_dir) ||
         (cache_dir.has_value() &&
          (pref_cache_dir == *cache_dir || cache_dir->IsParent(pref_cache_dir)));
     if (!is_inside_existing_dirs) {
-      network_contexts_cache_directory_ = pref_cache_dir;
       network_contexts_parent_directory_.push_back(pref_cache_dir);
     }
   }

@@ -3636,6 +3636,23 @@ class ChromeContentBrowserClientDiskCacheDirTest
     return client.GetNetworkContextsParentDirectory();
   }
 
+  // Configures `prefs::kDiskCacheDir` as a managed preference (or removes it
+  // when `pref_cache_dir` is empty), initializes a `ChromeContentBrowserClient`
+  // on the UI thread, and returns its `GetNetworkContextsCacheDirectory()`.
+  std::optional<base::FilePath> GetNetworkContextsCacheDirForManagedPref(
+      const base::FilePath& pref_cache_dir) {
+    testing_local_state()->ClearPref(prefs::kDiskCacheDir);
+    if (pref_cache_dir.empty()) {
+      testing_local_state()->RemoveManagedPref(prefs::kDiskCacheDir);
+    } else {
+      testing_local_state()->SetManagedPref(
+          prefs::kDiskCacheDir, base::FilePathToValue(pref_cache_dir));
+    }
+    ChromeContentBrowserClient client;
+    client.InitOnUIThread();
+    return client.GetNetworkContextsCacheDirectory();
+  }
+
   base::ScopedTempDir dedicated_temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> home_override_;
   base::FilePath home_dir_;
@@ -3751,4 +3768,16 @@ TEST_F(ChromeContentBrowserClientDiskCacheDirTest,
   ChromeContentBrowserClient client;
   EXPECT_EQ(client.GetGeneratedCodeCacheSettings(&profile_).path(),
             default_code_cache_path_);
+}
+
+TEST_F(ChromeContentBrowserClientDiskCacheDirTest,
+       GetNetworkContextsCacheDirectoryAcceptsSubdirectory) {
+  EXPECT_EQ(GetNetworkContextsCacheDirForManagedPref(base::FilePath()),
+            cache_dir_);
+  const base::FilePath sub_cache = cache_dir_.AppendASCII("SubCache");
+  EXPECT_EQ(GetNetworkContextsCacheDirForManagedPref(sub_cache), sub_cache);
+  const base::FilePath user_data_sub_cache =
+      user_data_dir_.AppendASCII("SubCache");
+  EXPECT_EQ(GetNetworkContextsCacheDirForManagedPref(user_data_sub_cache),
+            user_data_sub_cache);
 }
