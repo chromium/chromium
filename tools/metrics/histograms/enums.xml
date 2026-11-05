@@ -26460,6 +26460,8 @@ Called by update_net_error_codes.py.-->
   <int value="415" label="DNG"/>
   <int value="416" label="JSON"/>
   <int value="417" label="MD"/>
+  <int value="418" label="DRAWIO"/>
+  <int value="419" label="JSONL"/>
 </enum>
 
 <enum name="ScanFailureProgress">
