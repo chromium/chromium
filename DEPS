@@ -382,7 +382,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': 'de510ed9a95926eac1d0b632c3126fa74ddfbdad',
+  'crossbench_revision': '933c5a0a299f3c22b240055cead7ecd7903ce0d5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
