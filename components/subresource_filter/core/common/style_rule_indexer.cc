@@ -25,6 +25,7 @@ BuildNameToRules(
     flatbuffers::FlatBufferBuilder& builder,
     const std::map<std::string, std::vector<uint16_t>>& rules_map) {
   std::vector<flatbuffers::Offset<flat::NameToSelectors>> offsets;
+  offsets.reserve(rules_map.size());
 
   for (const auto& [name, indices] : rules_map) {
     auto name_offset = builder.CreateSharedString(name);
