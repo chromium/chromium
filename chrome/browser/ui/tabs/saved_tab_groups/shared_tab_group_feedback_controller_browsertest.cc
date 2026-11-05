@@ -4,15 +4,14 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/test/browser_test.h"
-#include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/view.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace tab_groups {
 
@@ -35,17 +34,16 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupFeedbackControllerBrowserTest,
       tab_groups::SharedTabGroupFeedbackController::From(browser());
   ASSERT_NE(controller, nullptr);
 
-  // Call UpdateFeedbackButtonVisibility(true) to show the button.
-  controller->UpdateFeedbackButtonVisibility(true);
+  controller->UpdateFeedbackButtonVisibility(/*should_show_button=*/true);
 
   // Verify the resulting pinned toolbar action button has element identifier
   // kSharedTabGroupFeedbackElementId as IPH will later anchor to it.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  views::View* feedback_button =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kSharedTabGroupFeedbackElementId, browser_view->GetElementContext());
-
-  EXPECT_NE(feedback_button, nullptr);
+  auto* browser_elements = BrowserElements::From(browser());
+  ASSERT_NE(browser_elements, nullptr);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser_elements->GetElement(kSharedTabGroupFeedbackElementId) !=
+           nullptr;
+  }));
 }
 
 }  // namespace tab_groups
