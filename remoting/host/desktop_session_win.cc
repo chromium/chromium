@@ -217,6 +217,8 @@ class RdpSession : public DesktopSessionWin {
   // Used to match |rdp_desktop_session_| with the session it is attached to.
   std::string terminal_id_;
 
+  bool rdp_connected_ = false;
+
   base::WeakPtrFactory<RdpSession> weak_factory_{this};
 };
 
@@ -336,6 +338,7 @@ bool RdpSession::Initialize(const mojom::DesktopSessionOptions& options) {
 void RdpSession::OnRdpConnected() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
+  rdp_connected_ = true;
   StopMonitoring();
   StartMonitoring(terminal_id_);
 }
@@ -343,6 +346,11 @@ void RdpSession::OnRdpConnected() {
 void RdpSession::OnRdpClosed() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
+  if (!rdp_connected_) {
+    TerminateSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                     "Failed to establish an RDP connection.", FROM_HERE);
+    return;
+  }
   TerminateSession();
 }
 
@@ -547,7 +555,9 @@ void DesktopSessionWin::OnSessionAttachTimeout() {
 
   LOG(ERROR) << "Session attach notification didn't arrived within "
              << kSessionAttachTimeoutSeconds << " seconds.";
-  TerminateSession();
+  TerminateSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                   "Session attach notification didn't arrive in time.",
+                   FROM_HERE);
 }
 
 void DesktopSessionWin::StartMonitoring(const std::string& terminal_id) {
