@@ -70,7 +70,6 @@ class PLATFORM_EXPORT DateComponents {
   int Minute() const { return minute_; }
   int Hour() const { return hour_; }
   int MonthDay() const { return month_day_; }
-  int WeekDay() const;
   int Month() const { return month_; }
   int FullYear() const { return year_; }
   int Week() const { return week_; }

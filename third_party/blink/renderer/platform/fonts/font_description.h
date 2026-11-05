@@ -104,7 +104,6 @@ class PLATFORM_EXPORT FontDescription {
     kTitlingCaps
   };
   static String ToString(FontVariantCaps);
-  static String ToStringForIdl(FontVariantCaps);
 
   enum FontSynthesisWeight {
     kAutoFontSynthesisWeight,

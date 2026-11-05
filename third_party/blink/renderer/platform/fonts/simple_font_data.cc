@@ -173,7 +173,6 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   } else {
     line_gap = metrics.fLeading;
   }
-  font_metrics_.SetLineGap(line_gap);
   font_metrics_.SetLineSpacing(lroundf(ascent) + lroundf(descent) +
                                lroundf(line_gap));
 

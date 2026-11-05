@@ -141,14 +141,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
 
   const String& GetString() const { return string_; }
 
-  void ResetStringAndReleaseIterator(String string,
-                                     const LayoutLocale* locale) {
-    string_ = std::move(string);
-    start_offset_ = 0;
-    SetLocale(locale);
-    ReleaseIterator();
-  }
-
   // Set the start offset. Text before this offset is disregarded. Properly
   // setting the start offset improves the performance significantly, because
   // ICU break iterator computes all the text from the beginning.

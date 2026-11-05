@@ -19,11 +19,6 @@ inline bool IsCanvasRotationInVerticalUpright(CanvasRotationInVertical r) {
          static_cast<char>(CanvasRotationInVertical::kRotateCanvasUpright);
 }
 
-inline bool IsCanvasRotationOblque(CanvasRotationInVertical r) {
-  return static_cast<char>(r) &
-         static_cast<char>(CanvasRotationInVertical::kOblique);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_CANVAS_ROTATION_IN_VERTICAL_H_

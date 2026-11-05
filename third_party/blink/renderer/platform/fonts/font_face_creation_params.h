@@ -123,14 +123,6 @@ class FontFaceCreationParams {
   FontFaceCreationType creation_type_ = FontFaceCreationType::kFamily;
   AtomicString family_;
 
-  void SetFilename(std::string& filename) {
-#if defined(ADDRESS_SANITIZER)
-    *filename_ = filename;
-#else
-    filename_ = filename;
-#endif
-  }
-
   bool FilenameEqual(const FontFaceCreationParams& other) const {
 #if defined(ADDRESS_SANITIZER)
     if (!filename_.has_value() || !other.filename_.has_value()) {

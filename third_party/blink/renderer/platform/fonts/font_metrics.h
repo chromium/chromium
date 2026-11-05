@@ -89,9 +89,6 @@ class PLATFORM_EXPORT FontMetrics {
   }
   void SetCapHeight(float cap_height) { cap_height_ = cap_height; }
 
-  int LineGap() const { return static_cast<int>(lroundf(line_gap_)); }
-  void SetLineGap(float line_gap) { line_gap_ = line_gap; }
-
   int LineSpacing() const { return static_cast<int>(lroundf(line_spacing_)); }
   void SetLineSpacing(float line_spacing) { line_spacing_ = line_spacing; }
 
@@ -176,9 +173,6 @@ class PLATFORM_EXPORT FontMetrics {
   }
 
   bool HasZeroWidth() const { return has_zero_width_; }
-  void SetHasZeroWidth(bool has_zero_width) {
-    has_zero_width_ = has_zero_width;
-  }
 
   std::optional<float> UnderlineThickness() const {
     return underline_thickness_;
@@ -238,7 +232,6 @@ class PLATFORM_EXPORT FontMetrics {
     float_descent_ = 0;
     int_ascent_ = 0;
     int_descent_ = 0;
-    line_gap_ = 0;
     line_spacing_ = 0;
     x_height_ = 0;
     has_x_height_ = false;
@@ -257,7 +250,6 @@ class PLATFORM_EXPORT FontMetrics {
   float cap_height_ = 0;
   float float_ascent_ = 0;
   float float_descent_ = 0;
-  float line_gap_ = 0;
   float line_spacing_ = 0;
   float x_height_ = 0;
   float zero_width_ = 0;

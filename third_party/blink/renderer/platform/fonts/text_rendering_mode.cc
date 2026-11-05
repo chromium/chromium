@@ -22,18 +22,4 @@ String ToString(TextRenderingMode mode) {
   return "Unknown";
 }
 
-String ToStringForIdl(TextRenderingMode mode) {
-  switch (mode) {
-    case TextRenderingMode::kAutoTextRendering:
-      return "auto";
-    case TextRenderingMode::kOptimizeSpeed:
-      return "optimizeSpeed";
-    case TextRenderingMode::kOptimizeLegibility:
-      return "optimizeLegibility";
-    case TextRenderingMode::kGeometricPrecision:
-      return "geometricPrecision";
-  }
-  return "Unknown";
-}
-
 }  // namespace blink

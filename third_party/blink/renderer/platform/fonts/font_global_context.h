@@ -39,7 +39,6 @@ class PLATFORM_EXPORT FontGlobalContext
   void Dispose();
 
   static FontGlobalContext& Get();
-  static FontGlobalContext* TryGet();
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(font_cache_);

@@ -23,9 +23,6 @@ class PLATFORM_EXPORT FontFormatCheck {
   virtual bool IsVariableFont() const;
   virtual bool IsCbdtCblcColorFont() const;
   virtual bool IsEbdtEblcMonochromeFont() const;
-  virtual bool IsColrCpalColorFont() const {
-    return IsColrCpalColorFontV0() || IsColrCpalColorFontV1();
-  }
   virtual bool IsColrCpalColorFontV0() const;
   virtual bool IsColrCpalColorFontV1() const;
   bool IsVariableColrV0Font() const;

@@ -54,23 +54,8 @@ inline bool IsVerticalAnyUpright(FontOrientation orientation) {
 inline bool IsVerticalNonCjkUpright(FontOrientation orientation) {
   return orientation == FontOrientation::kVerticalUpright;
 }
-inline bool IsVerticalUpright(FontOrientation orientation, UChar32 character) {
-  return orientation == FontOrientation::kVerticalUpright ||
-         (orientation == FontOrientation::kVerticalMixed &&
-          unicode::IsUprightInMixedVertical(character));
-}
 inline bool IsVerticalBaseline(FontOrientation orientation) {
   return orientation != FontOrientation::kHorizontal;
-}
-
-inline FontOrientation AdjustOrientationForCharacterInMixedVertical(
-    FontOrientation orientation,
-    UChar32 character) {
-  if (orientation != FontOrientation::kVerticalMixed)
-    return orientation;
-  return unicode::IsUprightInMixedVertical(character)
-             ? FontOrientation::kVerticalUpright
-             : FontOrientation::kVerticalRotated;
 }
 
 PLATFORM_EXPORT String ToString(FontOrientation);

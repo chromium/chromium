@@ -28,10 +28,6 @@ FontGlobalContext& FontGlobalContext::Get() {
   return **thread_specific_pool;
 }
 
-FontGlobalContext* FontGlobalContext::TryGet() {
-  return GetThreadSpecificFontGlobalContextPool()->Get();
-}
-
 namespace {
 
 constexpr base::MemoryConsumerTraits kFontGlobalContextTraits(

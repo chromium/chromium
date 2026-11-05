@@ -135,14 +135,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   LayoutUnit VerticalPosition(FontVerticalPositionType, FontBaseline) const;
 
   float MaxCharWidth() const { return max_char_width_; }
-  void SetMaxCharWidth(float max_char_width) {
-    max_char_width_ = max_char_width;
-  }
-
   float AvgCharWidth() const { return avg_char_width_; }
-  void SetAvgCharWidth(float avg_char_width) {
-    avg_char_width_ = avg_char_width;
-  }
 
   const HanKerning::FontData& HanKerningData(const LayoutLocale& locale,
                                              bool is_horizontal) const;
@@ -154,12 +147,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   float WidthForGlyph(Glyph) const;
 
   float SpaceWidth() const { return space_width_; }
-  void SetSpaceWidth(float space_width) { space_width_ = space_width; }
-
   Glyph SpaceGlyph() const { return space_glyph_; }
-  void SetSpaceGlyph(Glyph space_glyph) { space_glyph_ = space_glyph; }
-  Glyph ZeroGlyph() const { return zero_glyph_; }
-  void SetZeroGlyph(Glyph zero_glyph) { zero_glyph_ = zero_glyph; }
 
   const SimpleFontData* FontDataForCharacter(UChar32) const override;
 

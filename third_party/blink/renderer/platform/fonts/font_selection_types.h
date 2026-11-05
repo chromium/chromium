@@ -209,10 +209,6 @@ inline constexpr FontSelectionValue kExtraLightWeightValue =
 
 inline constexpr FontSelectionValue kThinWeightValue = FontSelectionValue(100);
 
-static constexpr inline bool IsFontWeightBold(FontSelectionValue font_weight) {
-  return font_weight >= kBoldThreshold;
-}
-
 inline constexpr FontSelectionValue kUpperWeightSearchThreshold =
     FontSelectionValue(500);
 
@@ -265,8 +261,6 @@ struct FontSelectionRange {
   }
 
   bool IsValid() const { return minimum <= maximum; }
-
-  bool IsRange() const { return maximum > minimum; }
 
   bool IsRangeSetFromAuto() const { return type == kSetFromAuto; }
 
@@ -369,10 +363,6 @@ struct FontSelectionCapabilities {
   bool IsValid() const {
     return width.IsValid() && slope.IsValid() && weight.IsValid() &&
            !is_deleted_value_;
-  }
-
-  bool HasRange() const {
-    return width.IsRange() || slope.IsRange() || weight.IsRange();
   }
 
   bool operator==(const FontSelectionCapabilities& other) const {
