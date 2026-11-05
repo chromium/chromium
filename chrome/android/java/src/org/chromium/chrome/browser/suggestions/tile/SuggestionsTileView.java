@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.browser_ui.widget.tile.TileView;
@@ -55,11 +54,6 @@ public class SuggestionsTileView extends TileView {
                 titleLines);
         mData = tile.getData();
         setIconViewLayoutParams(tile);
-
-        if (mIconBackgroundView != null) {
-            mIconBackgroundView.setVisibility(
-                    NewTabPageUtils.isBesideMvtModuleEnabled() ? GONE : VISIBLE);
-        }
     }
 
     /** Retrieves data associated with this view. */
