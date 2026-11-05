@@ -32,7 +32,6 @@ source_set("system_flags") {
     "system_flags.mm",
   ]
   deps = [
-    "//base",
     "//build:branding_buildflags",
     "//components/autofill/core/common",
     "//components/password_manager/core/common:features",
@@ -43,4 +42,5 @@ source_set("system_flags") {
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/public/features",
   ]
+  public_deps = [ "//base" ]
 }

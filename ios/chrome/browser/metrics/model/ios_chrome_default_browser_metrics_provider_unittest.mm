@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/strcat.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -233,6 +234,62 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
     histogram_tester_.ExpectBucketCount(
         base::StrCat({histogram, ".SegmentationPlatform.NotAndroidSwitcher"}),
         false, 1);
+  }
+}
+
+// Tests that when the forced device switcher flag is set to `AndroidPhone`,
+// both `.SegmentationPlatform.AndroidSwitcher` and
+// `.SwitcherInfo.AndroidSwitcher` variants are recorded even if the provider
+// fails (`std::nullopt`).
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       RecordsAndroidSwitcherVariantsWhenForcedDeviceSwitcherFlagSet) {
+  base::test::ScopedFeatureList feature_list(
+      first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
+  ios::provider::test::SetSwitcherInfoResult(std::nullopt);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "force-device-switcher-experience",
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel);
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SegmentationPlatform.AndroidSwitcher"}),
+        false, 1);
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), false, 1);
+  }
+}
+
+// Tests that when the forced device switcher flag is set to a non-Android
+// segment, both `.SegmentationPlatform.NotAndroidSwitcher` and
+// `.SwitcherInfo.NotAndroidSwitcher` variants are recorded even if the
+// provider returns `kSwitcher`.
+TEST_F(
+    IOSChromeDefaultBrowserMetricsProviderTest,
+    RecordsNotAndroidSwitcherVariantsWhenForcedNonAndroidDeviceSwitcherFlagSet) {
+  base::test::ScopedFeatureList feature_list(
+      first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "force-device-switcher-experience",
+      segmentation_platform::DeviceSwitcherModel::kDesktopLabel);
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SegmentationPlatform.NotAndroidSwitcher"}),
+        false, 1);
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), false,
+        1);
   }
 }
 
@@ -685,10 +742,10 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 }
 
 // Tests that when the segmentation signal variation of
-// `kAndroidSwitcherDefaultBrowserPromoInFRE` is enabled, no `.SwitcherInfo.*`
-// variants are recorded.
+// `kAndroidSwitcherDefaultBrowserPromoInFRE` is enabled, `.SwitcherInfo.*`
+// variants are also recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
-       DoesNotRecordSwitcherInfoVariantWhenSegmentationSignalVariationEnabled) {
+       RecordsSwitcherInfoVariantWhenSegmentationSignalVariationEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       first_run::kAndroidSwitcherDefaultBrowserPromoInFRE,
@@ -705,8 +762,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   provider.OnDidCreateMetricsLog();
   task_environment_.FastForwardBy(base::Seconds(1));
   for (const char* histogram : kDefaultBrowserHistograms) {
-    histogram_tester_.ExpectTotalCount(
-        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), false, 1);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(

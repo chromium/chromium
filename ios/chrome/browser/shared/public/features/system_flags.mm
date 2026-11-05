@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string_view>
+
 #import "base/command_line.h"
 #import "base/feature_list.h"
 #import "base/metrics/field_trial.h"
@@ -39,6 +41,13 @@ NSString* const kFirstRunRecency = @"FirstRunRecency";
 NSString* const kIgnoreDeviceLocaleConditions = @"IgnoreDeviceLocaleConditions";
 NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
     @"ForceExperienceForDeviceSwitcher";
+// Matches `segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel`
+// without depending on
+// `//components/segmentation_platform/embedder/default_model` from
+// `:system_flags`, which is linked into EarlGrey 2 test runner modules where
+// transitive `//ios/web` dependencies are disallowed.
+constexpr std::string_view kForcedDeviceSwitcherAndroidPhoneSegment =
+    "AndroidPhone";
 NSString* const kForceExperienceForShopperExperimentalSettings =
     @"ForceExperienceForShopper";
 NSString* const kSafetyCheckUpdateChromeStateOverride =
@@ -289,6 +298,14 @@ std::string GetSegmentForForcedDeviceSwitcherExperience() {
     }
   }
   return segment;
+}
+
+std::optional<bool> IsForcedDeviceSwitcherAndroidPhone() {
+  std::string forced_segment = GetSegmentForForcedDeviceSwitcherExperience();
+  if (forced_segment.empty()) {
+    return std::nullopt;
+  }
+  return forced_segment == kForcedDeviceSwitcherAndroidPhoneSegment;
 }
 
 std::string GetSegmentForForcedShopperExperience() {

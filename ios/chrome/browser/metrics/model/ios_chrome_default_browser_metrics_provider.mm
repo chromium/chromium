@@ -13,6 +13,7 @@
 #import "base/barrier_callback.h"
 #import "base/check.h"
 #import "base/containers/span.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -137,11 +138,24 @@ SignalStatus ResolveSegmentationSignalStatus(
                                   : SignalStatus::kServiceError;
 }
 
+// Returns the forced `SignalStatus` if a device switcher experience segment is
+// forced via Experimental Settings or command-line flags, or `std::nullopt`
+// otherwise.
+std::optional<SignalStatus> GetForcedDeviceSwitcherSignalStatus() {
+  std::optional<bool> is_android_switcher =
+      experimental_flags::IsForcedDeviceSwitcherAndroidPhone();
+  if (!is_android_switcher.has_value()) {
+    return std::nullopt;
+  }
+  return *is_android_switcher ? SignalStatus::kAndroidSwitcher
+                              : SignalStatus::kNotAndroidSwitcher;
+}
+
 // Returns the device switcher signal status across loaded profiles.
 SignalStatus GetDeviceSwitcherSignalStatus() {
-  if (experimental_flags::GetSegmentForForcedDeviceSwitcherExperience() ==
-      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel) {
-    return SignalStatus::kAndroidSwitcher;
+  if (std::optional<SignalStatus> forced_status =
+          GetForcedDeviceSwitcherSignalStatus()) {
+    return *forced_status;
   }
 
   std::vector<std::optional<segmentation_platform::ClassificationResult>>
@@ -223,6 +237,12 @@ void OnSwitcherInfoResults(
 // completion.
 void RecordSwitcherInfoSignalHistograms(
     const DefaultBrowserHistogramSamples& samples) {
+  if (std::optional<SignalStatus> forced_status =
+          GetForcedDeviceSwitcherSignalStatus()) {
+    RecordSignalHistograms(kSwitcherInfoSignalName, *forced_status, samples);
+    return;
+  }
+
   std::vector<id<SystemIdentity>> identities;
   ApplicationContext* application_context = GetApplicationContext();
   if (application_context && application_context->GetProfileManager()) {
@@ -274,9 +294,8 @@ void ProvideUmaHistograms() {
 
   RecordSignalHistograms(kSegmentationPlatformSignalName,
                          GetDeviceSwitcherSignalStatus(), samples);
-  if (first_run::GetAndroidSwitcherDefaultBrowserPromoInFREVariationType() ==
-      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
-          kSwitcherInfoSignal) {
+  if (base::FeatureList::IsEnabled(
+          first_run::kAndroidSwitcherDefaultBrowserPromoInFRE)) {
     RecordSwitcherInfoSignalHistograms(samples);
   }
 

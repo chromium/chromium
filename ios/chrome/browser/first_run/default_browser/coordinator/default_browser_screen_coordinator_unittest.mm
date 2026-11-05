@@ -729,4 +729,58 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
       first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
 }
 
+// Tests that when the switcher info signal variation is enabled and the forced
+// device switcher flag is set to `AndroidPhone`, the Android Switcher promo is
+// presented and `kAndroidSwitcher` with success latency is recorded even if the
+// provider returns `std::nullopt`.
+TEST_F(
+    DefaultBrowserScreenCoordinatorTest,
+    PresentsAndroidSwitcherPromoWhenForcedDeviceSwitcherFlagSetInSwitcherInfo) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(std::nullopt);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "force-device-switcher-experience",
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel);
+  AddIdentityOnDevice();
+
+  [coordinator_ start];
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserAndroidSwitcherScreenViewController
+                          class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher,
+      /*is_success=*/true);
+}
+
+// Tests that when the switcher info signal variation is enabled and the forced
+// device switcher flag is set to a non-Android segment, the standard promo is
+// presented and `kNotAndroidSwitcher` with success latency is recorded.
+TEST_F(
+    DefaultBrowserScreenCoordinatorTest,
+    PresentsStandardPromoWhenForcedNonAndroidDeviceSwitcherFlagSetInSwitcherInfo) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "force-device-switcher-experience",
+      segmentation_platform::DeviceSwitcherModel::kDesktopLabel);
+  AddIdentityOnDevice();
+
+  [coordinator_ start];
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kNotAndroidSwitcher,
+      /*is_success=*/true);
+}
+
 }  // namespace
