@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -954,6 +955,16 @@ std::vector<HeuristicTable> DetectGridTables(
   }
   std::ranges::sort(tables, {}, &HeuristicTable::anchor_text_run_index);
   return tables;
+}
+
+std::vector<size_t> GetTableTextRunIndices(const HeuristicTable& table) {
+  std::vector<size_t> indices;
+  for (const HeuristicTableRow& row : table.rows) {
+    for (const HeuristicTableCell& cell : row.cells) {
+      base::Extend(indices, cell.text_run_indices);
+    }
+  }
+  return indices;
 }
 
 }  // namespace pdf

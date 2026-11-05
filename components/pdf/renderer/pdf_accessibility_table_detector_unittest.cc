@@ -975,4 +975,24 @@ TEST(PdfAccessibilityTableDetectorTest, TwoSeparateGridsSortedByAnchor) {
   EXPECT_EQ(tables[1].bounds, gfx::RectF(0, 0, 60, 60));
 }
 
+TEST(PdfAccessibilityTableDetectorTest, GetTableTextRunIndicesEmpty) {
+  EXPECT_THAT(GetTableTextRunIndices(HeuristicTable()), testing::IsEmpty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, GetTableTextRunIndicesRowByRow) {
+  // Indices go row by row, left to right, and skip empty cells.
+  //
+  // With 2 rows and 3 columns, going column by column would give a different
+  // order: 4, 1, 2, 5, 0, 3.
+  HeuristicTable table;
+  table.rows = {
+      {.cells = {{.text_run_indices = {4}}, {}, {.text_run_indices = {0}}}},
+      {.cells = {{.text_run_indices = {1, 2}},
+                 {.text_run_indices = {5}},
+                 {.text_run_indices = {3}}}},
+  };
+  EXPECT_THAT(GetTableTextRunIndices(table),
+              testing::ElementsAre(4u, 0u, 1u, 2u, 5u, 3u));
+}
+
 }  // namespace pdf

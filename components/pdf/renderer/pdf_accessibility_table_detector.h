@@ -132,6 +132,10 @@ std::vector<HeuristicTable> DetectGridTables(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
     base::span<const RulingLine> ruling_lines);
 
+// Returns the text run indices in all of `table`'s cells, row by row and left
+// to right within each row.
+std::vector<size_t> GetTableTextRunIndices(const HeuristicTable& table);
+
 }  // namespace pdf
 
 #endif  // COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_TABLE_DETECTOR_H_
