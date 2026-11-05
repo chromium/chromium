@@ -117,6 +117,11 @@ class FakeTabInterface : public tabs::MockTabInterface {
     return deactivation_callbacks_.Add(cb);
   }
 
+  base::CallbackListSubscription RegisterWillDiscardContents(
+      WillDiscardContentsCallback cb) override {
+    return will_discard_contents_callbacks_.Add(cb);
+  }
+
   content::WebContents* GetContents() const override { return web_contents_; }
 
   void Activate() {
@@ -127,6 +132,17 @@ class FakeTabInterface : public tabs::MockTabInterface {
   void Deactivate() {
     is_activated_ = false;
     deactivation_callbacks_.Notify(this);
+  }
+
+  void DiscardContents() {
+    content::WebContents* const new_contents =
+        web_contents_factory_->CreateWebContents(
+            web_contents_->GetBrowserContext());
+    will_discard_contents_callbacks_.Notify(this, web_contents_, new_contents);
+    web_contents_->RemoveUserData(
+        tabs::TabLookupFromWebContents::UserDataKey());
+    web_contents_ = new_contents;
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_, this);
   }
 
   bool IsActivated() const override { return is_activated_; }
@@ -141,6 +157,9 @@ class FakeTabInterface : public tabs::MockTabInterface {
   bool is_activated_ = false;
   base::RepeatingCallbackList<void(TabInterface*)> activation_callbacks_;
   base::RepeatingCallbackList<void(TabInterface*)> deactivation_callbacks_;
+  base::RepeatingCallbackList<
+      void(TabInterface*, content::WebContents*, content::WebContents*)>
+      will_discard_contents_callbacks_;
 };
 
 class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
@@ -151,15 +170,20 @@ class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
     bubble_manager_ = std::make_unique<BubbleManagerImpl>(tab_interface_.get());
     tab_interface_->Activate();
 
-    controller_ = std::make_unique<GmailOtpOptInBubbleController>(
-        *tab_interface_, tab_interface_->GetContents());
+    controller_ =
+        std::make_unique<GmailOtpOptInBubbleController>(tab_interface_.get());
     controller_->SetBubbleViewFactoryForTesting(base::BindRepeating(
-        [](AutofillBubbleBase* bubble, content::WebContents*,
-           GmailOtpOptInBubbleController*) { return bubble; },
-        &mock_bubble_));
+        [](AutofillBubbleBase* bubble,
+           raw_ptr<content::WebContents>* last_shown_web_contents,
+           content::WebContents* web_contents, GmailOtpOptInBubbleController*) {
+          *last_shown_web_contents = web_contents;
+          return bubble;
+        },
+        &mock_bubble_, &last_shown_web_contents_));
   }
 
   void TearDown() override {
+    last_shown_web_contents_ = nullptr;
     controller_.reset();
     bubble_manager_.reset();
     tab_interface_.reset();
@@ -177,6 +201,7 @@ class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
   std::unique_ptr<FakeTabInterface> tab_interface_;
   std::unique_ptr<BubbleManagerImpl> bubble_manager_;
   NiceMock<MockAutofillBubble> mock_bubble_;
+  raw_ptr<content::WebContents> last_shown_web_contents_ = nullptr;
   std::unique_ptr<GmailOtpOptInBubbleController> controller_;
 };
 
@@ -441,6 +466,17 @@ TEST_F(GmailOtpOptInBubbleControllerTest, Reshow_ReshowsOnTabActivation) {
 
   tab_interface()->Activate();
   EXPECT_TRUE(controller()->IsShowingBubble());
+}
+
+TEST_F(GmailOtpOptInBubbleControllerTest,
+       WillDiscardContents_UpdatesObservedWebContents) {
+  content::WebContents* const old_contents = tab_interface()->GetContents();
+  tab_interface()->DiscardContents();
+  content::WebContents* const new_contents = tab_interface()->GetContents();
+  ASSERT_NE(new_contents, old_contents);
+
+  controller()->SetUpAndShowBubble(u"user@gmail.com", base::DoNothing());
+  EXPECT_EQ(last_shown_web_contents_, new_contents);
 }
 
 }  // namespace

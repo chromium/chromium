@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 
+#include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
@@ -22,6 +24,15 @@ namespace autofill {
 AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
+
+AutofillBubbleControllerBase::AutofillBubbleControllerBase(
+    tabs::TabInterface* tab_interface)
+    : content::WebContentsObserver(CHECK_DEREF(tab_interface).GetContents()),
+      tab_interface_(tab_interface),
+      will_discard_contents_subscription_(
+          tab_interface_->RegisterWillDiscardContents(base::BindRepeating(
+              &AutofillBubbleControllerBase::WillDiscardContents,
+              base::Unretained(this)))) {}
 
 AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
   if (IsShowingBubble()) {
@@ -75,8 +86,7 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
     return;
   }
 
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  tabs::TabInterface* const tab_interface = GetTabInterface();
   if (!tab_interface) {
     return;
   }
@@ -132,11 +142,11 @@ bool AutofillBubbleControllerBase::IsMouseHovered() const {
   return IsShowingBubble() && bubble_view_->IsMouseHovered();
 }
 
-bool AutofillBubbleControllerBase::IsBubbleManagerEnabled() const {
+bool AutofillBubbleControllerBase::IsBubbleManagerEnabled() {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  return BubbleManager::GetForWebContents(web_contents()) != nullptr;
+  return BubbleManager::GetForTab(GetTabInterface()) != nullptr;
 #endif
 }
 
@@ -144,14 +154,15 @@ bool AutofillBubbleControllerBase::MaySetUpBubble() {
 #if BUILDFLAG(IS_ANDROID)
   return true;
 #else  // BUILDFLAG(IS_ANDROID)
-  auto* manager = BubbleManager::GetForWebContents(web_contents());
+  BubbleManager* const manager = BubbleManager::GetForTab(GetTabInterface());
   return !manager || !manager->HasConflictingPendingBubble(GetBubbleType());
 #endif
 }
 
 void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+  if (BubbleManager* const manager =
+          BubbleManager::GetForTab(GetTabInterface())) {
     manager->RequestShowController(*this, force_show);
     return;
   }
@@ -174,7 +185,8 @@ void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (was_showing) {
-    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+    if (BubbleManager* const manager =
+            BubbleManager::GetForTab(GetTabInterface())) {
       manager->OnBubbleHiddenByController(*this,
                                           allow_bubble_manager_to_show_next_);
     }
@@ -182,13 +194,19 @@ void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+tabs::TabInterface* AutofillBubbleControllerBase::GetTabInterface() {
+  if (tab_interface_) {
+    return tab_interface_.get();
+  }
+  return tabs::TabInterface::MaybeGetFromContents(web_contents());
+}
+
 AutofillBubbleHandler*
 AutofillBubbleControllerBase::GetAutofillBubbleHandler() {
 #if !BUILDFLAG(IS_ANDROID)
   // We may be in a non-tab WebContents such as a side panel or extension popup;
   // in those cases we cannot access the AutofillBubbleHandler.
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  tabs::TabInterface* const tab = GetTabInterface();
   if (!tab) {
     return nullptr;
   }
@@ -205,6 +223,20 @@ AutofillBubbleControllerBase::GetAutofillBubbleHandler() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   return nullptr;
+}
+
+void AutofillBubbleControllerBase::WillDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  // `WillDiscardContents` fires before `tab->GetContents()` is updated, so
+  // even controllers recreated in `TabFeatures::WillDiscardContents()`
+  // initially observe `old_contents` and rely on this to switch to
+  // `new_contents`.
+  // TODO(crbug.com/582209796): Evict active/queued bubbles in `BubbleManager`
+  // and reset per-bubble state before removing controller recreation in
+  // `TabFeatures::WillDiscardContents()`.
+  Observe(new_contents);
 }
 
 }  // namespace autofill

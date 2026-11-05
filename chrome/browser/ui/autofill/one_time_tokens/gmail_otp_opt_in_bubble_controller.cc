@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -66,11 +67,10 @@ AutofillBubbleBase* CreateGmailOtpOptInBubbleView(
 DEFINE_USER_DATA(GmailOtpOptInBubbleController);
 
 GmailOtpOptInBubbleController::GmailOtpOptInBubbleController(
-    tabs::TabInterface& tab,
-    content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
-      tab_(tab),
-      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this),
+    tabs::TabInterface* tab)
+    : AutofillBubbleControllerBase(tab),
+      scoped_unowned_user_data_(CHECK_DEREF(tab).GetUnownedUserDataHost(),
+                                *this),
       bubble_view_factory_(
           base::BindRepeating(&CreateGmailOtpOptInBubbleView)) {}
 

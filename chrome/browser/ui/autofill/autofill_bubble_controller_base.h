@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 
+#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
@@ -16,6 +17,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace autofill {
 
 class AutofillBubbleBase;
@@ -26,6 +31,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
                                      public content::WebContentsObserver {
  public:
   explicit AutofillBubbleControllerBase(content::WebContents* web_contents);
+  explicit AutofillBubbleControllerBase(tabs::TabInterface* tab_interface);
   ~AutofillBubbleControllerBase() override;
 
   // Calls the bubble manager to show the bubble on desktop. On Android, just
@@ -80,7 +86,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
     return DoNotShowNextQueuedBubbleGuard(this, {});
   }
 
-  bool IsBubbleManagerEnabled() const;
+  bool IsBubbleManagerEnabled();
 
   // Subclasses should override this method to supply their page action's
   // `ActionId`.
@@ -112,6 +118,8 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
 
+  tabs::TabInterface* GetTabInterface();
+
   AutofillBubbleHandler* GetAutofillBubbleHandler();
 
   // True if anytime, the bubble was shown to the user in the lifecycle of the
@@ -124,6 +132,15 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   bool bubble_hide_initiated_by_bubble_manager_ = false;
 
  private:
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+
+  // Non-null when constructed with `tabs::TabInterface*`.
+  const raw_ptr<tabs::TabInterface> tab_interface_ = nullptr;
+
+  base::CallbackListSubscription will_discard_contents_subscription_;
+
   // This indicates to the `BubbleManager` whether it should show the next
   // bubble.
   bool allow_bubble_manager_to_show_next_ = true;
