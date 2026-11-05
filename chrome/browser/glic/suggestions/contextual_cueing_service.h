@@ -50,6 +50,7 @@ class ContextualCueingService
       page_content_annotations::PageContentExtractionService::Observer {
  public:
   ContextualCueingService(
+      bool zero_state_suggestions_enabled,
       page_content_annotations::PageContentExtractionService*
           page_content_extraction_service,
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
@@ -169,6 +170,12 @@ class ContextualCueingService
   // Holds the latest pinned tabs zero state suggestions request.
   std::unique_ptr<ZeroStateSuggestionsRequest>
       pinned_tabs_zero_state_suggestions_request_;
+
+  // Whether zero state suggestions are enabled for the profile this service is
+  // keyed on. Computed once: it depends only on feature flags, the global
+  // criteria and the profile's latched Glic provider, none of which change
+  // during a session.
+  const bool zero_state_suggestions_enabled_;
 
   raw_ptr<page_content_annotations::PageContentExtractionService>
       page_content_extraction_service_ = nullptr;

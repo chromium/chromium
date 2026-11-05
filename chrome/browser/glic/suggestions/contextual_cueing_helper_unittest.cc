@@ -8,11 +8,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/suggestions/mock_contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -153,6 +156,28 @@ TEST_F(ContextualCueingHelperTest, TabHelperStartsUp) {
   std::unique_ptr<ContextualCueingHelper> contextual_cueing_helper =
       CreateContextualCueingHelper();
   EXPECT_NE(nullptr, contextual_cueing_helper);
+}
+
+// Like `ContextualCueingHelperTest`, but the profile is latched to Gemini
+// Enterprise.
+class ContextualCueingHelperGeminiEnterpriseTest
+    : public ContextualCueingHelperTest {
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+// Gemini Enterprise supports neither contextual cueing nor zero state
+// suggestions, so no helper is created.
+TEST_F(ContextualCueingHelperGeminiEnterpriseTest, TabHelperNotCreated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kContextualCueing, kGlicZeroStateSuggestions},
+                                {});
+  ASSERT_EQ(GetGlicProviderSpec(profile()).GetSettingsSectionId(),
+            kGeminiEnterpriseSettingsSectionId);
+  EXPECT_FALSE(IsContextualCueingEnabled(profile()));
+  EXPECT_FALSE(IsZeroStateSuggestionsEnabled(profile()));
+  EXPECT_EQ(nullptr, CreateContextualCueingHelper());
 }
 
 TEST_F(ContextualCueingHelperTest, Committed404Page) {

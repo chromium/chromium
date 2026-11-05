@@ -870,7 +870,9 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
   state->hotkey = GetHotkeyString();
 #endif
 
-  state->enable_zero_state_suggestions = IsZeroStateSuggestionsEnabled();
+  // LINT.IfChange(GlicZeroStateSuggestionsEnabled)
+  state->enable_zero_state_suggestions = IsZeroStateSuggestionsEnabled(profile);
+  // LINT.ThenChange(//chrome/browser/glic/host/glic_web_client_handler.cc:GlicZeroStateSuggestionsEnabled)
   state->enable_cached_get_user_profile_info = base::FeatureList::IsEnabled(
       features::kGlicEnableCachedGetUserProfileInfo);
   state->enable_act_in_focused_tab =

@@ -135,6 +135,16 @@ TEST(GlicProviderSpecImplTest, GeminiDoesNotSupportPdfSummarize) {
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+TEST(GlicProviderSpecImplTest,
+     OnlyGeminiSupportsContextualCueingAndZeroStateSuggestions) {
+  for (GlicFeature feature :
+       {GlicFeature::kContextualCueing, GlicFeature::kZeroStateSuggestions}) {
+    EXPECT_TRUE(GeminiSupportsFeature(feature));
+    EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                     ->SupportsFeature(feature));
+  }
+}
+
 TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
   std::vector<base::test::FeatureRef> enabled_features = {
       features::kGlicLiveMode,

@@ -176,6 +176,10 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
 #else
         return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      // The contextual cueing helpers apply the flags.
+      case GlicFeature::kContextualCueing:
+      case GlicFeature::kZeroStateSuggestions:
+        return true;
     }
     NOTREACHED();
   }
@@ -238,6 +242,8 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kSelectionInlineCue:
       case GlicFeature::kCaptureRegion:
       case GlicFeature::kFirstRunShowcase:
+      case GlicFeature::kContextualCueing:
+      case GlicFeature::kZeroStateSuggestions:
         return false;
     }
     NOTREACHED();

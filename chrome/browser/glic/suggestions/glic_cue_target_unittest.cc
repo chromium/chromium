@@ -15,8 +15,11 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -171,6 +174,30 @@ TEST_F(GlicCueTargetTest, IsEligible_HistorySync) {
   sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
   EXPECT_TRUE(target_->IsEligible());
+}
+
+// Like `GlicCueTargetTest`, but the profile is latched to Gemini Enterprise.
+class GlicCueTargetGeminiEnterpriseTest : public GlicCueTargetTest {
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+// Gemini Enterprise doesn't support contextual cueing.
+TEST_F(GlicCueTargetGeminiEnterpriseTest, IsEligible_Ineligible) {
+  ASSERT_EQ(GetGlicProviderSpec(profile()).GetSettingsSectionId(),
+            kGeminiEnterpriseSettingsSectionId);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_CALL(*mock_glic_keyed_service_, IsPanelShowingForBrowser(testing::_))
+      .WillRepeatedly(testing::Return(false));
+
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+
+  EXPECT_FALSE(target_->IsEligible());
 }
 
 TEST_F(GlicCueTargetTest, IsEligible_NoBrowserWindow) {

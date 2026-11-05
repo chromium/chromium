@@ -138,6 +138,7 @@ void PopulateSupportedToolsForRequest(
 }  // namespace
 
 ContextualCueingService::ContextualCueingService(
+    bool zero_state_suggestions_enabled,
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
@@ -146,13 +147,14 @@ ContextualCueingService::ContextualCueingService(
     TemplateURLService* template_url_service)
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
       recent_visited_origins_(kVisitedDomainsLimit.Get()),
+      zero_state_suggestions_enabled_(zero_state_suggestions_enabled),
       page_content_extraction_service_(page_content_extraction_service),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
       loading_predictor_(loading_predictor),
       pref_service_(pref_service),
       template_url_service_(template_url_service),
       mes_url_(optimization_guide::GetModelExecutionServiceBaseURL()) {
-  if (optimization_guide_keyed_service_ && IsZeroStateSuggestionsEnabled()) {
+  if (optimization_guide_keyed_service_ && zero_state_suggestions_enabled_) {
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
         {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});
   }
@@ -337,7 +339,7 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsZeroStateSuggestionsEnabled()) {
+  if (!zero_state_suggestions_enabled_) {
     return;
   }
 
@@ -404,7 +406,7 @@ void ContextualCueingService::
         GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsZeroStateSuggestionsEnabled()) {
+  if (!zero_state_suggestions_enabled_) {
     std::move(callback).Run({});
     return;
   }
@@ -461,7 +463,7 @@ bool ContextualCueingService::
         const content::WebContents* focused_tab,
         GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsZeroStateSuggestionsEnabled()) {
+  if (!zero_state_suggestions_enabled_) {
     std::move(callback).Run({});
     return false;
   }

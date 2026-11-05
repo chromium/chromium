@@ -113,6 +113,13 @@ class ContextualCueingHelper : public content::WebContentsObserver {
 
   bool has_first_contentful_paint_ = false;
 
+  // Whether contextual cueing and zero state suggestions are enabled for this
+  // tab's profile. Computed once: they depend only on feature flags, the global
+  // criteria and the profile's latched Glic provider, none of which change
+  // during a session.
+  const bool contextual_cueing_enabled_;
+  const bool zero_state_suggestions_enabled_;
+
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;

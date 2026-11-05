@@ -49,6 +49,7 @@
 #include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -745,6 +746,32 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
 
 TEST_F(GlicEnablingProfileEligibilityTest, Eligible) {
   EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+}
+
+// Consumer Gemini supports contextual cueing and zero state suggestions, so
+// they follow their flags.
+TEST_F(GlicEnablingProfileEligibilityTest,
+       ContextualCueingAndZeroStateSuggestionsFollowFlags) {
+  EXPECT_TRUE(GetGlicProviderSpec(profile()).SupportsFeature(
+      GlicFeature::kContextualCueing));
+  EXPECT_TRUE(GetGlicProviderSpec(profile()).SupportsFeature(
+      GlicFeature::kZeroStateSuggestions));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{kContextualCueing, kGlicZeroStateSuggestions},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(IsContextualCueingEnabled(profile()));
+    EXPECT_TRUE(IsZeroStateSuggestionsEnabled(profile()));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kContextualCueing, kGlicZeroStateSuggestions});
+    EXPECT_FALSE(IsContextualCueingEnabled(profile()));
+    EXPECT_FALSE(IsZeroStateSuggestionsEnabled(profile()));
+  }
 }
 
 TEST_F(GlicEnablingProfileEligibilityTest, WasPreviouslyNotAllowedTest) {
@@ -4240,6 +4267,31 @@ TEST_F(GlicEnablingGeicPolicyTest, ConsumerOnlyEntryPointsDisabledForGeic) {
   EXPECT_FALSE(GlicEnabling::IsInlineCueEnabledForProfile(profile()));
   EXPECT_FALSE(GetGlicProviderSpec(profile()).SupportsFeature(
       GlicFeature::kCaptureRegion));
+}
+
+// Contextual cueing and zero state suggestions stay off for a Gemini Enterprise
+// profile and its incognito profile, even with their features enabled. This
+// also keeps GlicInstanceImpl from warming zero state suggestions, which would
+// send page content to the consumer model.
+TEST_F(GlicEnablingGeicPolicyTest,
+       ContextualCueingAndZeroStateSuggestionsDisabledForGeic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualCueing, kGlicZeroStateSuggestions},
+      /*disabled_features=*/{});
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  EXPECT_FALSE(GetGlicProviderSpec(profile()).SupportsFeature(
+      GlicFeature::kContextualCueing));
+  EXPECT_FALSE(GetGlicProviderSpec(profile()).SupportsFeature(
+      GlicFeature::kZeroStateSuggestions));
+  EXPECT_FALSE(IsContextualCueingEnabled(profile()));
+  EXPECT_FALSE(IsZeroStateSuggestionsEnabled(profile()));
+
+  Profile* incognito =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_FALSE(IsContextualCueingEnabled(incognito));
+  EXPECT_FALSE(IsZeroStateSuggestionsEnabled(incognito));
 }
 
 TEST_F(GlicEnablingGeicPolicyTest, Provider_LatchedAtCreation) {

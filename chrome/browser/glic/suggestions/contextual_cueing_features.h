@@ -8,6 +8,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace glic {
 
 BASE_DECLARE_FEATURE(kContextualCueing);
@@ -16,21 +20,23 @@ BASE_DECLARE_FEATURE(kGlicZeroStateSuggestionsPreconnectWithoutCredentials);
 BASE_DECLARE_FEATURE(kEnableAutoOpenGlicSidePanel);
 BASE_DECLARE_FEATURE(kGlicBrowsingHistoryZeroStateSuggestions);
 
-// Whether contextual cueing is enabled.
+// Whether contextual cueing is enabled for `context`.
 //
 // It is expected for downstream to use this function rather than calling
 // `base::FeatureList::IsEnabled` directly. Note that this function explicitly
 // ignores country/locale if the feature is overridden by Finch or command-line
-// override.
-bool IsContextualCueingEnabled();
+// override. Returns false if the Glic provider of `context` doesn't support
+// contextual cueing (see `GlicProviderSpec::SupportsFeature()`).
+bool IsContextualCueingEnabled(content::BrowserContext* context);
 
-// Whether zero state suggestions are enabled.
+// Whether zero state suggestions are enabled for `context`.
 //
 // It is expected for downstream to use this function rather than calling
 // `base::FeatureList::IsEnabled` directly. Note that this function explicitly
 // ignores country/locale if the feature is overridden by Finch or command-line
-// override.
-bool IsZeroStateSuggestionsEnabled();
+// override. Returns false if the Glic provider of `context` doesn't support
+// zero state suggestions (see `GlicProviderSpec::SupportsFeature()`).
+bool IsZeroStateSuggestionsEnabled(content::BrowserContext* context);
 
 // The amount of time to wait when a nudge is dismissed following the
 // exponential back off rule. The amount of the time to back off each time can

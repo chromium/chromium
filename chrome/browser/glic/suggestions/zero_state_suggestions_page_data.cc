@@ -78,7 +78,6 @@ namespace glic {
 
 ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
     : content::PageUserData<ZeroStateSuggestionsPageData>(page) {
-  CHECK(IsZeroStateSuggestionsEnabled());
   CHECK(kExtractInnerTextForZeroStateSuggestions.Get() ||
         kExtractAnnotatedPageContentForZeroStateSuggestions.Get());
 
@@ -86,6 +85,7 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
       content::WebContents::FromRenderFrameHost(&(page.GetMainDocument()));
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  CHECK(IsZeroStateSuggestionsEnabled(profile));
   optimization_guide_keyed_service_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   page_content_extraction_service_ = page_content_annotations::

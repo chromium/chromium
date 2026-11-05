@@ -73,6 +73,7 @@ class ContextualCueingServiceTest : public testing::Test {
 
   void InitializeContextualCueingService() {
     service_ = std::make_unique<ContextualCueingService>(
+        /*zero_state_suggestions_enabled=*/false,
         &page_content_extraction_service_,
         mock_optimization_guide_keyed_service_.get(),
         /*loading_predictor=*/nullptr,
@@ -435,6 +436,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
 
   void InitializeContextualCueingService() {
     service_ = std::make_unique<ContextualCueingService>(
+        /*zero_state_suggestions_enabled=*/true,
         /*page_content_extraction_service=*/nullptr,
         mock_optimization_guide_keyed_service_, loading_predictor_.get(),
         pref_service_.get(),
@@ -537,6 +539,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   // Initialize the service manually, passing nullptr for the optimization
   // guide service.
   auto local_service = std::make_unique<ContextualCueingService>(
+      /*zero_state_suggestions_enabled=*/true,
       /*page_content_extraction_service=*/nullptr,
       /*optimization_guide_keyed_service=*/nullptr, loading_predictor(),
       pref_service(),

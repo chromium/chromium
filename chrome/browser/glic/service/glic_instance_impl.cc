@@ -1419,7 +1419,7 @@ void GlicInstanceImpl::MaybeWarmZeroStateSuggestions(
     mojom::InvocationSource invocation_source) {
   if (conversation_id() ||
       !GlicEnabling::IsEnabledAndConsentForProfile(profile_) ||
-      !IsZeroStateSuggestionsEnabled()) {
+      !IsZeroStateSuggestionsEnabled(profile_)) {
     return;
   }
 

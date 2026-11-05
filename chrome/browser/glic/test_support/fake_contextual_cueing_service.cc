@@ -10,6 +10,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 
@@ -24,10 +27,23 @@ std::vector<std::string> GetSuggestionsForUrl(const GURL& url, int count) {
   }
   return suggestions;
 }
+
+// Returns the profile of `web_contents`, or null if `web_contents` is null.
+// `WebContents::GetBrowserContext()` is non-const, so go through the primary
+// main frame's SiteInstance to support const WebContents.
+Profile* ProfileFor(const content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return Profile::FromBrowserContext(web_contents->GetPrimaryMainFrame()
+                                         ->GetSiteInstance()
+                                         ->GetBrowserContext());
+}
 }  // namespace
 
 FakeContextualCueingService::FakeContextualCueingService()
     : ContextualCueingService(
+          IsZeroStateSuggestionsEnabled(/*context=*/nullptr),
           /*page_content_extraction_service=*/nullptr,
           /*optimization_guide_keyed_service=*/nullptr,
           /*loading_predictor=*/nullptr,
@@ -42,7 +58,7 @@ void FakeContextualCueingService::
         bool is_fre,
         std::optional<std::vector<std::string>> supported_tools,
         GlicSuggestionsCallback callback) {
-  if (!IsZeroStateSuggestionsEnabled()) {
+  if (!IsZeroStateSuggestionsEnabled(ProfileFor(web_contents))) {
     std::move(callback).Run({});
     return;
   }
@@ -68,7 +84,12 @@ bool FakeContextualCueingService::
         std::optional<std::vector<std::string>> supported_tools,
         const content::WebContents* focused_tab,
         GlicSuggestionsCallback callback) {
-  if (!IsZeroStateSuggestionsEnabled()) {
+  const content::WebContents* profile_source =
+      focused_tab
+          ? focused_tab
+          : (pinned_web_contents.empty() ? nullptr
+                                         : pinned_web_contents[0].get());
+  if (!IsZeroStateSuggestionsEnabled(ProfileFor(profile_source))) {
     std::move(callback).Run({});
     return false;
   }

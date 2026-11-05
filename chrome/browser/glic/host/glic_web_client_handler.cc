@@ -1740,13 +1740,15 @@ class GlicWebClientHandler
       std::optional<bool> is_fre,
       GetZeroStateSuggestionsForFocusedTabCallback callback) override {
     LogApiRequest(GlicHostApiRequestId::kGetZeroStateSuggestionsForFocusedTab);
-    if (!IsZeroStateSuggestionsEnabled()) {
+    // LINT.IfChange(GlicZeroStateSuggestionsEnabled)
+    if (!IsZeroStateSuggestionsEnabled(profile_)) {
       receiver_.ReportBadMessage(
           "Client should not call "
           "GetZeroStateSuggestionsForFocusedTab "
           "without the GlicZeroStateSuggestions feature enabled.");
       return;
     }
+    // LINT.ThenChange(//chrome/browser/glic/host/guest_util.cc:GlicZeroStateSuggestionsEnabled)
 
     // TODO(crbug.com/424472586): Pass supported tools to service from web
     // client.

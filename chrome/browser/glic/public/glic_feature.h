@@ -33,8 +33,12 @@ enum class GlicFeature {
   kCaptureRegion,
   // The Gemini step of the first run feature showcase.
   kFirstRunShowcase,
+  // Contextual cueing: page-based suggestions to open Glic.
+  kContextualCueing,
+  // Zero-state suggestions shown in the Glic panel.
+  kZeroStateSuggestions,
 
-  kMaxValue = kFirstRunShowcase,
+  kMaxValue = kZeroStateSuggestions,
 };
 
 }  // namespace glic

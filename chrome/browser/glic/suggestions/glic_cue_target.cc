@@ -17,9 +17,11 @@
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -207,6 +209,8 @@ bool GlicCueTarget::IsEligible() const {
     }
   }
   return GlicEnabling::IsEnabledForProfile(tab_->GetProfile()) &&
+         GetGlicProviderSpec(tab_->GetProfile())
+             .SupportsFeature(GlicFeature::kContextualCueing) &&
          tab_->GetProfile()->GetPrefs()->GetBoolean(
              prefs::kGlicPinnedToTabstrip) &&
          !glic_keyed_service_->IsPanelShowingForBrowser(*window);
