@@ -4,8 +4,11 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -18,14 +21,23 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/strings/stringprintf.h"
@@ -90,6 +102,48 @@ class DocumentPipLifecycleBrowserTest
     scoped_feature_list_.InitWithFeatureStates(
         {{blink::features::kDocumentPictureInPictureAPI, true},
          {features::kDocumentPipStandaloneWindow, GetParam()}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class DocumentPipTuckingBrowserTest : public DocumentPipLifecycleBrowserTest {
+ public:
+  DocumentPipTuckingBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {media::kFileDialogsTuckPictureInPicture},
+        {media::kFileDialogsBlockPictureInPicture});
+  }
+
+  void SetUpOnMainThread() override {
+    DocumentPipLifecycleBrowserTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_OZONE)
+    if (!ui::OzonePlatform::GetInstance()
+             ->GetPlatformProperties()
+             .supports_global_screen_coordinates) {
+      GTEST_SKIP() << "Window tucking requires global screen coordinates.";
+    }
+#endif
+  }
+
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    DocumentPipLifecycleBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  bool WaitForWindowToBeTucked(views::Widget* widget) {
+    return base::test::RunUntil([widget] {
+      const gfx::Rect bounds = widget->GetWindowBoundsInScreen();
+      for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
+        if (gfx::IntersectRects(bounds, display.work_area()).width() >
+            bounds.width() / 2) {
+          return false;
+        }
+      }
+      return true;
+    });
   }
 
  private:
@@ -292,6 +346,74 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Standalone" : "BrowserBacked";
                          });
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DocumentPipTuckingBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(DocumentPipTuckingBrowserTest,
+                       FilePickerTucksAndRestoresWindow) {
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
+  ASSERT_EQ(GetParam(), GetDocumentPipHost() != nullptr);
+  auto* child =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_TRUE(child);
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(child->GetTopLevelNativeWindow());
+  ASSERT_TRUE(widget);
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  const gfx::Rect original_bounds = widget->GetWindowBoundsInScreen();
+
+  auto* factory = ui::FakeSelectFileDialog::RegisterFactory();
+  base::test::TestFuture<void> dialog_opened;
+  factory->SetOpenCallback(dialog_opened.GetRepeatingCallback());
+  ASSERT_TRUE(content::ExecJs(OpenerWebContents(), R"(
+    window.pickerResult = window.showOpenFilePicker().then(
+        () => 'selected', error => error.name);
+    true;
+  )"));
+  ASSERT_TRUE(dialog_opened.Wait());
+
+  EXPECT_TRUE(WaitForWindowToBeTucked(widget));
+  ASSERT_TRUE(factory->GetLastDialog());
+  factory->GetLastDialog()->CallFileSelectionCanceled();
+  EXPECT_EQ("AbortError", EvalJs(OpenerWebContents(), "window.pickerResult"));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return widget->GetWindowBoundsInScreen() == original_bounds; }));
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentPipTuckingBrowserTest,
+                       OpensAndClosesWhileForceTucked) {
+  auto tuck = std::make_unique<ScopedTuckPictureInPicture>();
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
+  ASSERT_EQ(GetParam(), GetDocumentPipHost() != nullptr);
+  auto* child =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_TRUE(child);
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(child->GetTopLevelNativeWindow());
+  ASSERT_TRUE(widget);
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  EXPECT_TRUE(WaitForWindowToBeTucked(widget));
+
+  content::WebContentsDestroyedWatcher child_destroyed(child);
+  views::test::WidgetDestroyedWaiter widget_destroyed(widget);
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  browser()->GetTabStripModel()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  child_destroyed.Wait();
+  widget_destroyed.Wait();
+
+  tuck.reset();
+  EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
+                   ->IsPictureInPictureForceTucked());
+}
 
 IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest, ExitClosesWindow) {
   const bool is_standalone = GetParam();

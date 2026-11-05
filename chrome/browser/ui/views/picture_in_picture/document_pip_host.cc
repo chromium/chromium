@@ -373,6 +373,8 @@ void DocumentPipHost::CreateAndShowPipWindow(
 #endif
 
   restore_focus_on_activation_ = true;
+  PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowShown(
+      this);
 #if !BUILDFLAG(IS_WIN)
   // Resizable Windows PiP widgets cannot be translucent.
   fade_animator_ = std::make_unique<PictureInPictureWidgetFadeAnimator>();
@@ -897,6 +899,8 @@ void DocumentPipHost::PrepareForWidgetDestruction() {
     return;
   }
 
+  PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowHidden(
+      this);
   widget_observation_.Reset();
   contents_view_observation_.Reset();
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -1186,6 +1190,13 @@ void DocumentPipHost::OnWidgetBoundsChanged(views::Widget* widget,
     exclusive_access_context_->RepositionBubble();
   }
   NotifyPositionRequiresUpdate();
+}
+
+void DocumentPipHost::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                bool visible) {
+  if (visible) {
+    EnforceTucking();
+  }
 }
 
 void DocumentPipHost::OnWidgetDestroying(views::Widget* widget) {
