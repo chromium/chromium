@@ -74,6 +74,7 @@
 #include "content/test/test_web_contents.h"
 #include "ipc/constants.mojom.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -4705,6 +4706,40 @@ TEST_P(RenderFrameHostManagerTestWithBackForwardCache,
   DeleteContents();
   EXPECT_EQ(kUrl2, back_nav_observer.last_navigation_url());
   EXPECT_FALSE(back_nav_observer.last_navigation_succeeded());
+}
+
+// Tests that when error page isolation is disabled (as on Android WebView) and
+// BackForwardCache is enabled, a renderer-initiated navigation blocked with
+// `net::ERR_BLOCKED_BY_CLIENT` (e.g. by Safe Browsing) picks the current
+// SiteInstance for its error page instead of attempting a proactive
+// BrowsingInstance swap, which used to fail
+// `CHECK_NE(new_instance, current_instance)` in
+// GetSiteInstanceForNavigation(). See b/580955648.
+TEST_P(RenderFrameHostManagerTestWithBackForwardCache,
+       BlockedNavigationErrorPageInCurrentProcessDoesNotSwapBrowsingInstance) {
+  class NoErrorPageIsolationContentBrowserClient
+      : public TestContentBrowserClient {
+   public:
+    bool ShouldIsolateErrorPage(bool in_main_frame) override { return false; }
+  } no_error_isolation_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&no_error_isolation_client);
+
+  contents()->SetDelegate(this);
+  contents()->NavigateAndCommit(GURL("http://a.com/"));
+  scoped_refptr<SiteInstanceImpl> initial_instance =
+      main_test_rfh()->GetSiteInstance();
+
+  auto navigation = NavigationSimulator::CreateRendererInitiated(
+      GURL("http://a.com/blocked"), main_test_rfh());
+  navigation->Fail(net::ERR_BLOCKED_BY_CLIENT);
+  EXPECT_EQ(ErrorPageProcess::kCurrentProcess,
+            NavigationRequest::From(navigation->GetNavigationHandle())
+                ->ComputeErrorPageProcess());
+  EXPECT_EQ(initial_instance,
+            navigation->GetFinalRenderFrameHost()->GetSiteInstance());
+
+  SetBrowserClientForTesting(regular_client);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
