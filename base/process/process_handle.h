@@ -120,6 +120,13 @@ BASE_EXPORT ProcessId GetParentProcessId(ProcessHandle process);
 BASE_EXPORT FilePath GetProcessExecutablePath(ProcessHandle process);
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// Same as above, but reads from `proc_dir` instead of "/proc", which can be
+// used with a fake procfs directory in tests.
+BASE_EXPORT FilePath GetProcessExecutablePath(ProcessHandle process,
+                                              const FilePath& proc_dir);
+#endif
+
 }  // namespace base
 
 #endif  // BASE_PROCESS_PROCESS_HANDLE_H_

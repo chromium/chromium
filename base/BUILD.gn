@@ -4505,6 +4505,9 @@ test("base_unittests") {
     ]
     if (!is_apple) {
       sources += [
+        "process/internal_linux_unittest.cc",
+        "process/process_handle_linux_unittest.cc",
+        "process/process_iterator_linux_unittest.cc",
         "profiler/stack_base_address_posix_unittest.cc",
         "profiler/stack_copier_signal_unittest.cc",
         "profiler/thread_delegate_posix_unittest.cc",

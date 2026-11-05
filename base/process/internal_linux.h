@@ -17,6 +17,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/dir_reader_posix.h"
@@ -39,13 +40,18 @@ extern const char kProcDir[];
 // "stat"
 extern const char kStatFile[];
 
-// Returns a FilePath to "/proc/pid".
+// Returns a FilePath to "/proc/pid", or "<proc_dir>/pid" for testing with a
+// substitute procfs directory.
 BASE_EXPORT base::FilePath GetProcPidDir(pid_t pid);
+BASE_EXPORT base::FilePath GetProcPidDir(pid_t pid, const FilePath& proc_dir);
 
-// Reads a file from /proc into a string. This is allowed on any thread as
-// reading from /proc does not hit the disk. Returns true if the file can be
-// read and is non-empty.
+// Reads a file from /proc (or `proc_dir` for testing) into a string. This is
+// allowed on any thread as reading from /proc does not hit the disk. Returns
+// true if the file can be read and is non-empty.
 bool ReadProcFile(const FilePath& file, std::string* buffer);
+bool ReadProcFile(const FilePath& file,
+                  const FilePath& proc_dir,
+                  std::string* buffer);
 
 // Take a /proc directory entry named |d_name|, and if it is the directory for
 // a process, convert it to a pid_t.
@@ -73,9 +79,12 @@ bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
                                        std::string_view field,
                                        uint64_t* result);
 
-// Reads /proc/<pid>/stat into |buffer|. Returns true if the file can be read
-// and is non-empty.
-bool ReadProcStats(pid_t pid, std::string* buffer);
+// Reads /proc/<pid>/stat (or <proc_dir>/<pid>/stat for testing) into `buffer`.
+// Returns true if the file can be read and is non-empty.
+BASE_EXPORT bool ReadProcStats(pid_t pid, std::string* buffer);
+BASE_EXPORT bool ReadProcStats(pid_t pid,
+                               const FilePath& proc_dir,
+                               std::string* buffer);
 
 // Takes `stats_data` and populates `proc_stats` with the values split by
 // spaces, as views into `stats_data`, taking into account the 2nd field may

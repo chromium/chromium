@@ -13,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -37,7 +38,14 @@ const char kProcDir[] = "/proc";
 const char kStatFile[] = "stat";
 
 FilePath GetProcPidDir(pid_t pid) {
-  return FilePath(kProcDir).Append(NumberToString(pid));
+  return GetProcPidDir(pid, FilePath(kProcDir));
+}
+
+FilePath GetProcPidDir(pid_t pid, const FilePath& proc_dir) {
+  if (proc_dir.value() != kProcDir) {
+    CHECK_IS_TEST();
+  }
+  return proc_dir.Append(NumberToString(pid));
 }
 
 pid_t ProcDirSlotToPid(std::string_view d_name) {
@@ -55,9 +63,19 @@ pid_t ProcDirSlotToPid(std::string_view d_name) {
 }
 
 bool ReadProcFile(const FilePath& file, std::string* buffer) {
-  DCHECK(FilePath(kProcDir).IsParent(file));
+  return ReadProcFile(file, FilePath(kProcDir), buffer);
+}
+
+bool ReadProcFile(const FilePath& file,
+                  const FilePath& proc_dir,
+                  std::string* buffer) {
+  if (proc_dir.value() != kProcDir) {
+    CHECK_IS_TEST();
+  }
+  DCHECK(proc_dir.IsParent(file));
   buffer->clear();
-  // Synchronously reading files in /proc is safe.
+  // Synchronously reading files in /proc is safe, and non-/proc paths are only
+  // used in tests.
   ScopedAllowBlocking scoped_allow_blocking;
 
   if (!ReadFileToString(file, buffer)) {
@@ -138,8 +156,12 @@ bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
 }
 
 bool ReadProcStats(pid_t pid, std::string* buffer) {
-  FilePath stat_file = internal::GetProcPidDir(pid).Append(kStatFile);
-  return ReadProcFile(stat_file, buffer);
+  return ReadProcStats(pid, FilePath(kProcDir), buffer);
+}
+
+bool ReadProcStats(pid_t pid, const FilePath& proc_dir, std::string* buffer) {
+  FilePath stat_file = internal::GetProcPidDir(pid, proc_dir).Append(kStatFile);
+  return ReadProcFile(stat_file, proc_dir, buffer);
 }
 
 bool ParseProcStats(std::string_view stats_data,

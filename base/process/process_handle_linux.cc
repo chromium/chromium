@@ -4,6 +4,8 @@
 
 #include "base/process/process_handle.h"
 
+#include "base/check_is_test.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
@@ -31,7 +33,15 @@ ProcessId GetParentProcessId(ProcessHandle process) {
 }
 
 FilePath GetProcessExecutablePath(ProcessHandle process) {
-  FilePath stat_file = internal::GetProcPidDir(process).Append("exe");
+  return GetProcessExecutablePath(process, FilePath(internal::kProcDir));
+}
+
+FilePath GetProcessExecutablePath(ProcessHandle process,
+                                  const FilePath& proc_dir) {
+  if (proc_dir.value() != internal::kProcDir) {
+    CHECK_IS_TEST();
+  }
+  FilePath stat_file = internal::GetProcPidDir(process, proc_dir).Append("exe");
   FilePath exe_name;
   if (!ReadSymbolicLink(stat_file, &exe_name)) {
     // No such process.  Happens frequently in e.g. TerminateAllChromeProcesses

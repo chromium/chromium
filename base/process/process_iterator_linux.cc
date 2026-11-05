@@ -8,12 +8,14 @@
 
 #include <string_view>
 
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -24,16 +26,20 @@ class ScopedAllowBlockingForProc : public ScopedAllowBlocking {};
 
 namespace {
 
-// Reads /proc/<pid>/cmdline and populates |proc_cmd_line_args| with the command
-// line arguments. Returns true if successful.
+// Reads <proc_dir>/<pid>/cmdline and populates |proc_cmd_line_args| with the
+// command line arguments. Returns true if successful.
 // Note: /proc/<pid>/cmdline contains command line arguments separated by single
 // null characters. We tokenize it into a vector of strings using '\0' as a
 // delimiter.
-bool GetProcCmdline(pid_t pid, std::vector<std::string>* proc_cmd_line_args) {
-  // Synchronously reading files in /proc is safe.
+bool GetProcCmdline(pid_t pid,
+                    const FilePath& proc_dir,
+                    std::vector<std::string>* proc_cmd_line_args) {
+  // Synchronously reading files in /proc is safe, and non-/proc paths are only
+  // used in tests.
   ScopedAllowBlockingForProc allow_blocking;
 
-  FilePath cmd_line_file = internal::GetProcPidDir(pid).Append("cmdline");
+  FilePath cmd_line_file =
+      internal::GetProcPidDir(pid, proc_dir).Append("cmdline");
   std::string cmd_line;
   if (!ReadFileToString(cmd_line_file, &cmd_line)) {
     return false;
@@ -48,11 +54,20 @@ bool GetProcCmdline(pid_t pid, std::vector<std::string>* proc_cmd_line_args) {
 }  // namespace
 
 ProcessIterator::ProcessIterator(const ProcessFilter* filter)
-    : procfs_dir_(opendir(internal::kProcDir)), filter_(filter) {
+    : ProcessIterator(filter, FilePath(internal::kProcDir)) {}
+
+ProcessIterator::ProcessIterator(const ProcessFilter* filter,
+                                 const FilePath& proc_dir)
+    : procfs_dir_(opendir(proc_dir.value().c_str())),
+      procfs_dir_path_(proc_dir),
+      filter_(filter) {
+  if (proc_dir.value() != internal::kProcDir) {
+    CHECK_IS_TEST();
+  }
   if (!procfs_dir_) {
     // On Android, SELinux may prevent reading /proc. See
     // https://crbug.com/581517 for details.
-    PLOG(ERROR) << "opendir " << internal::kProcDir;
+    PLOG(ERROR) << "opendir " << proc_dir;
   }
 }
 
@@ -84,7 +99,7 @@ bool ProcessIterator::CheckForNextProcess() {
       continue;
     }
 
-    if (!internal::ReadProcStats(pid, &stats_data)) {
+    if (!internal::ReadProcStats(pid, procfs_dir_path_, &stats_data)) {
       continue;
     }
     if (!internal::ParseProcStats(stats_data, &proc_stats)) {
@@ -106,7 +121,7 @@ bool ProcessIterator::CheckForNextProcess() {
     }
 
     // Read the command-line args. Do this last to avoid useless string copies.
-    if (GetProcCmdline(pid, &cmd_line_args)) {
+    if (GetProcCmdline(pid, procfs_dir_path_, &cmd_line_args)) {
       break;
     }
   }
@@ -117,7 +132,8 @@ bool ProcessIterator::CheckForNextProcess() {
   entry_.gid_ = checked_cast<ProcessId>(
       GetProcStatsFieldAsInt64(proc_stats, internal::VM_PGRP));
   entry_.cmd_line_args_.assign(cmd_line_args.begin(), cmd_line_args.end());
-  entry_.exe_file_ = GetProcessExecutablePath(pid).BaseName().value();
+  entry_.exe_file_ =
+      GetProcessExecutablePath(pid, procfs_dir_path_).BaseName().value();
   return true;
 }
 
