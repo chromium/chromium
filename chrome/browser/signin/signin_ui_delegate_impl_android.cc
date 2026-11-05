@@ -26,13 +26,15 @@ namespace signin_ui_util {
 namespace {
 
 content::WebContents* GetActiveWebContents(Profile* profile) {
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() == profile &&
-        tab_model->GetActiveWebContents()) {
-      return tab_model->GetActiveWebContents();
+  content::WebContents* active_web_contents = nullptr;
+  TabModelList::ForEach(profile, [&](TabModel* tab_model) {
+    if (content::WebContents* contents = tab_model->GetActiveWebContents()) {
+      active_web_contents = contents;
+      return false;
     }
-  }
-  return nullptr;
+    return true;
+  });
+  return active_web_contents;
 }
 
 }  // namespace
