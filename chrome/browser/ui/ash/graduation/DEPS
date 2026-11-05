@@ -2,7 +2,6 @@ include_rules = [
   "+chrome/browser/ash/base/locale_util.h",
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",

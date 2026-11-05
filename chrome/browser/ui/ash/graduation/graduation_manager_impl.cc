@@ -22,17 +22,18 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -94,7 +95,13 @@ void GraduationManagerImpl::OnUserSessionStarted(bool is_primary) {
   profile_ = ProfileManager::GetActiveUserProfile();
   CHECK(profile_);
   pref_change_registrar_.Reset();
-  if (!profile_->GetProfilePolicyConnector()->IsManaged()) {
+  // Graduation is only offered to managed users. The user's policy status is
+  // known once its Profile has been added, which happened before the session
+  // started. If it isn't, treat the user as unmanaged, matching
+  // ProfileUserManagerController's default.
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  if (!user.is_managed().value_or(false)) {
     return;
   }
 
