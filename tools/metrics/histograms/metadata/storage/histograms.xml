@@ -605,6 +605,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SQLite.ConnectionDestructionGracePeriodWasUseful"
+    enum="Boolean" expires_after="2027-05-04">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records whether the destruction grace period for a DatabaseConnection
+    successfully enabled reuse of that DatabaseConnection at a later point in
+    time.
+
+    This is logged at the end of the grace period, unless the DatabaseConnection
+    was forcefully destroyed before that time elapsed.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.SQLite.ConnectionReopenedAfterDestruction"
+    units="ms" expires_after="2027-05-04">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The gap between when a DatabaseConnection self destructed (at the end of its
+    grace period), to the next time a new DatabaseConnection is created for the
+    same database. Nothing is logged if such a database is never reopened, or is
+    reopened after the entire backing store was recreated.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.SQLite.FreelistPercentageAtClose" units="%"
     expires_after="2027-09-18">
   <owner>leimy@chromium.org</owner>

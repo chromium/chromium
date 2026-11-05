@@ -243,6 +243,13 @@ BackingStoreImpl::CreateOrOpenDatabase(const std::u16string& name) {
   if (auto it = open_connections_.find(name); it != open_connections_.end()) {
     return it->second->CreateDatabaseWrapper();
   }
+  if (auto it = self_destructed_connections_.find(name);
+      it != self_destructed_connections_.end()) {
+    base::UmaHistogramMediumTimes(
+        "IndexedDB.SQLite.ConnectionReopenedAfterDestruction",
+        base::TimeTicks::Now() - it->second);
+    self_destructed_connections_.erase(it);
+  }
   base::FilePath db_path =
       in_memory() ? base::FilePath()
                   : directory_.Append(DatabaseNameToFileName(name));
@@ -282,6 +289,11 @@ void BackingStoreImpl::FlushForTesting() {
     cleanup_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
+}
+
+void BackingStoreImpl::DestructionGracePeriodElapsed(
+    const std::u16string& name) {
+  self_destructed_connections_[name] = base::TimeTicks::Now();
 }
 
 void BackingStoreImpl::DestroyConnection(const std::u16string& name,
