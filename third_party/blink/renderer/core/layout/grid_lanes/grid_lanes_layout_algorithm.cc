@@ -1144,10 +1144,8 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         // A lane this item spans has content that resumes in a later
         // fragmentainer, so this item has to wait for it. Everything after this
         // item in the lanes it spans has to wait, too.
-        //
-        // TODO(almaher): Persist a break-before for the deferred item so the
-        // next fragment resumes at it instead of rediscovering earlier items
-        // in its start lane.
+        container_builder_.AddBreakBeforeChild(item.node, std::nullopt,
+                                               /*is_forced_break=*/false);
         MarkBreakInsideInSpannedLanes(lane_span,
                                       has_inflow_child_break_inside_lane);
         continue;
@@ -1189,7 +1187,11 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         // TODO(almaher): Once gap suppression is implemented, test that case
         // with spanners to ensure expansion works across fragmentainer
         // boundaries as appropriate in such cases.
-        LayoutUnit spanner_offset_adjustment;
+        LayoutUnit spanner_offset_adjustment =
+            item_break_token && item_break_token->IsBreakBefore()
+                ? (BorderScrollbarPadding().block_start - offset.block_offset)
+                      .ClampNegativeToZero()
+                : LayoutUnit();
         for (wtf_size_t lane_idx = lane_span.StartLine();
              lane_idx < lane_span.EndLine(); ++lane_idx) {
           spanner_offset_adjustment =
@@ -1230,6 +1232,14 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     const EarlyBreak* item_early_break = early_break_;
     if (is_columns && additional_early_breaks_) {
       item_early_break = (*additional_early_breaks_)[grid_lane_idx];
+      // A breakpoint before or inside a spanner may have been discovered
+      // while processing a different lane.
+      for (const EarlyBreak* breakpoint : *additional_early_breaks_) {
+        if (breakpoint && breakpoint->GetBlockNode() == item.node) {
+          item_early_break = breakpoint;
+          break;
+        }
+      }
     }
 
     auto BreakBeforeItem = [&]() {
@@ -1324,13 +1334,31 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
     if (is_columns) {
-      ColumnBreakInfo& break_info = column_break_info[grid_lane_idx];
+      // Before a spanner we may break in any of its lanes. After it, all lanes
+      // share the breakpoint found before or inside the spanner.
+      ColumnBreakInfo break_info = column_break_info[grid_lane_idx];
+      for (wtf_size_t lane = lane_span.StartLine(); lane < lane_span.EndLine();
+           ++lane) {
+        const auto& lane_info = column_break_info[lane];
+        if (lane_info.early_break &&
+            (!break_info.early_break ||
+             lane_info.early_break->GetBreakAppeal() >
+                 break_info.early_break->GetBreakAppeal())) {
+          break_info.early_break = lane_info.early_break;
+        }
+        break_info.break_after = JoinFragmentainerBreakValues(
+            break_info.break_after, lane_info.break_after);
+      }
       container_builder_.SetPreviousBreakAfter(break_info.break_after);
       if (!item_early_break) {
         bool has_container_separation =
             !IsBreakInside(item_break_token) &&
             offset.block_offset > BorderScrollbarPadding().block_start;
-        has_container_separation |= has_processed_item_in_lane[grid_lane_idx];
+        for (wtf_size_t lane_idx = lane_span.StartLine();
+             !has_container_separation && lane_idx < lane_span.EndLine();
+             ++lane_idx) {
+          has_container_separation = has_processed_item_in_lane[lane_idx];
+        }
         const BreakStatus status = ::blink::BreakBeforeChildIfNeeded(
             item.node, *layout_result,
             FragmentainerOffsetForChildren() + offset.block_offset,
@@ -1340,7 +1368,10 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         if (status == BreakStatus::kNeedsEarlierBreak) {
           CHECK(break_info.early_break);
           needs_earlier_break = true;
-          column_early_breaks_[grid_lane_idx] = break_info.early_break;
+          for (wtf_size_t lane = lane_span.StartLine();
+               lane < lane_span.EndLine(); ++lane) {
+            column_early_breaks_[lane] = break_info.early_break;
+          }
           MarkBreakInsideInSpannedLanes(lane_span,
                                         has_inflow_child_break_inside_lane);
           continue;
@@ -1349,6 +1380,10 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
           BreakBeforeItem();
           continue;
         }
+      }
+      for (wtf_size_t lane = lane_span.StartLine(); lane < lane_span.EndLine();
+           ++lane) {
+        column_break_info[lane].early_break = break_info.early_break;
       }
     }
 
@@ -1428,8 +1463,11 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     previous_grid_lane_idx = grid_lane_idx;
 
     if (is_columns) {
-      column_break_info[grid_lane_idx].break_after =
-          container_builder_.PreviousBreakAfter();
+      for (wtf_size_t lane = lane_span.StartLine(); lane < lane_span.EndLine();
+           ++lane) {
+        column_break_info[lane].break_after =
+            container_builder_.PreviousBreakAfter();
+      }
     }
 
     // TODO(almaher): Baseline accumulation logic should happen here.
