@@ -952,13 +952,28 @@ source_set("signin_internals_ui") {
   public_deps = [
     "//base",
     "//chrome/common",
+    "//components/signin/public/base:signin_buildflags",
+    "//content/public/browser",
   ]
 
   deps = [
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//components/signin/public/base",
     "//ui/webui",
   ]
+
+  if (enable_bound_session_credentials) {
+    public_deps += [
+      "//mojo/public/cpp/bindings",
+      "//net",
+      "//services/network/public/mojom",
+    ]
+    deps += [
+      "//google_apis",
+      "//third_party/abseil-cpp:absl",
+    ]
+  }
 }
 
 source_set("net_export_ui") {
@@ -1145,6 +1160,15 @@ source_set("unit_tests") {
       "//components/policy/core/browser",
       "//components/user_manager",
       "//components/user_manager:test_support",
+    ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [ "signin_internals_ui_unittest.cc" ]
+    deps += [
+      ":signin_internals_ui",
+      "//chrome/browser/signin:test_support",
+      "//components/signin/public/base:signin_switches",
     ]
   }
 }

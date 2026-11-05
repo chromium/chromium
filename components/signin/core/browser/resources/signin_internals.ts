@@ -53,6 +53,7 @@ interface AccountReconcilorEvent {
 
 interface BoundSessionInfo {
   sessionID: string;
+  type?: string;
   domain?: string;
   path?: string;
   expirationTime?: string;
@@ -293,6 +294,7 @@ function getBoundSessionInfoHtml(infos?: BoundSessionInfo[]) {
         <table class="signin-details">
           <tr class="header">
             <td>Session ID</td>
+            <td>Type</td>
             <td>Domain</td>
             <td>Path</td>
             <td>Expiration time</td>
@@ -303,6 +305,7 @@ function getBoundSessionInfoHtml(infos?: BoundSessionInfo[]) {
           ${infos.map(item => html`
             <tr>
               <td>${item.sessionID}</td>
+              <td>${item.type}</td>
               <td>${item.domain}</td>
               <td>${item.path}</td>
               <td style="${item.expirationTime &&

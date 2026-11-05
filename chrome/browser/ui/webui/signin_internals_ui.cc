@@ -29,10 +29,23 @@
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include <variant>
+
+#include "base/containers/flat_set.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_util.h"
+#include "net/device_bound_sessions/session_display.h"
+#include "net/device_bound_sessions/session_event.h"
+#include "net/device_bound_sessions/session_key.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 namespace {
@@ -46,6 +59,10 @@ void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+bool IsGoogleSite(const net::SchemefulSite& site) {
+  return site.IsSameSiteWith(GaiaUrls::GetInstance()->gaia_origin());
+}
+
 std::string GetBoundSessionExpirationString(base::Time expiration_time) {
   return (expiration_time > base::Time::Now() ? "Expires at " : "Expired at ") +
          base::TimeFormatAsIso8601(expiration_time);
@@ -54,26 +71,20 @@ std::string GetBoundSessionExpirationString(base::Time expiration_time) {
 void AppendBoundSessionInfo(
     base::DictValue& signin_status,
     BoundSessionCookieRefreshService* bound_session_service,
-    bool is_feature_enabled) {
+    const std::map<net::device_bound_sessions::SessionKey::Id,
+                   net::device_bound_sessions::SessionDisplay>&
+        standard_bound_sessions,
+    bool is_prototype_feature_enabled) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
   static constexpr std::string_view kSessionIdKey = "sessionID";
   base::ListValue bound_sessions_list;
-  if (!bound_session_service) {
-    bound_sessions_list.Append(base::DictValue().Set(
-        kSessionIdKey, "Bound session service is disabled."));
-  } else if (std::vector<BoundSessionDebugInfo> bound_session_info =
-                 bound_session_service->GetBoundSessionDebugInfo();
-             bound_session_info.empty()) {
-    bound_sessions_list.Append(base::DictValue().Set(
-        kSessionIdKey, is_feature_enabled
-                           ? "No active bound sessions."
-                           : "Bound session feature is disabled."));
-  } else {
-    for (const auto& info : bound_session_info) {
+  if (bound_session_service) {
+    for (const auto& info : bound_session_service->GetBoundSessionDebugInfo()) {
       bound_sessions_list.Append(
           base::DictValue()
               .Set(kSessionIdKey, info.session_id)
+              .Set("type", "Prototype")
               .Set("domain", info.domain)
               .Set("path", info.path)
               .Set("expirationTime",
@@ -81,6 +92,42 @@ void AppendBoundSessionInfo(
               .Set("throttlingPaused", info.throttling_paused)
               .Set("boundCookieNames", info.bound_cookie_names)
               .Set("refreshUrl", info.refresh_url.spec()));
+    }
+  }
+
+  for (const auto& [id, session] : standard_bound_sessions) {
+    std::vector<std::string> cookie_names;
+    base::flat_set<std::string> domains;
+    base::flat_set<std::string> paths;
+    for (const auto& craving : session.cookie_cravings) {
+      cookie_names.push_back(craving.name);
+      std::string domain = net::cookie_util::CookieDomainAsHost(craving.domain);
+      if (!domain.empty()) {
+        domains.insert(std::move(domain));
+      }
+      if (!craving.path.empty()) {
+        paths.insert(craving.path);
+      }
+    }
+    bound_sessions_list.Append(
+        base::DictValue()
+            .Set(kSessionIdKey, id.value())
+            .Set("type", "Standard")
+            .Set("domain", base::JoinString(domains, ", "))
+            .Set("path", base::JoinString(paths, ", "))
+            .Set("boundCookieNames", base::JoinString(cookie_names, ", "))
+            .Set("refreshUrl", session.refresh_url.spec()));
+  }
+
+  if (bound_sessions_list.empty()) {
+    if (!bound_session_service) {
+      bound_sessions_list.Append(base::DictValue().Set(
+          kSessionIdKey, "Bound session service is disabled."));
+    } else {
+      bound_sessions_list.Append(base::DictValue().Set(
+          kSessionIdKey, is_prototype_feature_enabled
+                             ? "No active bound sessions."
+                             : "Bound session feature is disabled."));
     }
   }
   signin_status.Set("boundSessionInfo", std::move(bound_sessions_list));
@@ -114,11 +161,27 @@ void SignInInternalsHandler::OnJavascriptAllowed() {
     if (about_signin_internals) {
       about_signin_internals_observeration_.Observe(about_signin_internals);
     }
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    if (network::mojom::DeviceBoundSessionManager* session_manager =
+            profile->GetDefaultStoragePartition()
+                ->GetDeviceBoundSessionManager()) {
+      session_manager->AddEventObserver(
+          device_bound_session_observer_receiver_.BindNewPipeAndPassRemote());
+      device_bound_session_observer_receiver_.set_disconnect_handler(
+          base::BindOnce(
+              &SignInInternalsHandler::OnDeviceBoundSessionObserverDisconnected,
+              base::Unretained(this)));
+    }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   }
 }
 
 void SignInInternalsHandler::OnJavascriptDisallowed() {
   about_signin_internals_observeration_.Reset();
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  device_bound_session_observer_receiver_.reset();
+  standard_bound_sessions_.clear();
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
 
 void SignInInternalsHandler::RegisterMessages() {
@@ -206,6 +269,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue& args) {
   AppendBoundSessionInfo(
       signin_status,
       BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
+      standard_bound_sessions_,
       switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   ResolveJavascriptCallback(base::Value(callback_id), std::move(signin_status));
@@ -225,17 +289,19 @@ void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue& args) {
 }
 
 void SignInInternalsHandler::OnSigninStateChanged(const base::DictValue& info) {
-  base::DictValue signin_status = info.Clone();
+  NotifySigninStateChanged(info.Clone());
+}
+
+void SignInInternalsHandler::NotifySigninStateChanged(
+    base::DictValue signin_status) {
   AddAccountCapabilitiesOverridesInfo(signin_status);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile) {
+  if (Profile* profile = Profile::FromWebUI(web_ui())) {
     AppendBoundSessionInfo(
         signin_status,
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
+        standard_bound_sessions_,
         switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
-    FireWebUIListener("signin-info-changed", signin_status);
-    return;
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -246,6 +312,79 @@ void SignInInternalsHandler::OnCookieAccountsFetched(
     const base::DictValue& info) {
   FireWebUIListener("update-cookie-accounts", info);
 }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+void SignInInternalsHandler::AddDeviceBoundSessionDisplays(
+    const std::vector<net::device_bound_sessions::SessionDisplay>&
+        session_displays) {
+  bool updated = false;
+  for (const auto& session : session_displays) {
+    if (IsGoogleSite(session.key.site)) {
+      standard_bound_sessions_.insert_or_assign(session.key.id, session);
+      updated = true;
+    }
+  }
+  if (updated) {
+    NotifySigninStateChanged();
+  }
+}
+
+void SignInInternalsHandler::OnDeviceBoundSessionEventReceived(
+    const net::device_bound_sessions::SessionEvent& event) {
+  if (!event.succeeded || !IsGoogleSite(event.site) ||
+      !event.session_id.has_value()) {
+    return;
+  }
+  net::device_bound_sessions::SessionKey::Id session_id(*event.session_id);
+  std::visit(
+      absl::Overload{
+          [this, &session_id](
+              const net::device_bound_sessions::CreationEventDetails& details) {
+            if (details.new_session_display.has_value()) {
+              standard_bound_sessions_.insert_or_assign(
+                  session_id, *details.new_session_display);
+              NotifySigninStateChanged();
+            }
+          },
+          [this, &session_id](
+              const net::device_bound_sessions::RefreshEventDetails& details) {
+            if (details.new_session_display.has_value()) {
+              standard_bound_sessions_.insert_or_assign(
+                  session_id, *details.new_session_display);
+              NotifySigninStateChanged();
+            }
+          },
+          [this, &session_id](
+              const net::device_bound_sessions::TerminationEventDetails&) {
+            if (standard_bound_sessions_.erase(session_id) > 0) {
+              NotifySigninStateChanged();
+            }
+          },
+          [](const net::device_bound_sessions::ChallengeEventDetails&) {},
+      },
+      event.event_type_details);
+}
+
+void SignInInternalsHandler::NotifySigninStateChanged() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (!profile) {
+    return;
+  }
+  AboutSigninInternals* about_signin_internals =
+      AboutSigninInternalsFactory::GetForProfile(profile);
+  NotifySigninStateChanged(about_signin_internals
+                               ? about_signin_internals->GetSigninStatus()
+                               : base::DictValue());
+}
+
+void SignInInternalsHandler::OnDeviceBoundSessionObserverDisconnected() {
+  device_bound_session_observer_receiver_.reset();
+  if (!standard_bound_sessions_.empty()) {
+    standard_bound_sessions_.clear();
+    NotifySigninStateChanged();
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 void SignInInternalsHandler::AddAccountCapabilitiesOverridesInfo(
     base::DictValue& signin_status) {
