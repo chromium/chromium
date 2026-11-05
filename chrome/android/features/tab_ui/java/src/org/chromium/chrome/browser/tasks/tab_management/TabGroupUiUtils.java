@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
@@ -43,6 +44,8 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +54,28 @@ import java.util.Objects;
 /** Helper methods for Tab Group UI components and string resources. */
 @NullMarked
 public class TabGroupUiUtils {
+    /** Result of attempting to open a saved tab group via {@link #openTabGroup}. */
+    @IntDef({
+        OpenTabGroupResult.NONE,
+        OpenTabGroupResult.CURRENT_WINDOW,
+        OpenTabGroupResult.ANOTHER_WINDOW
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface OpenTabGroupResult {
+        /**
+         * The group could not be opened, or could not be brought to the foreground in another
+         * window.
+         */
+        int NONE = 0;
+
+        /** The group was restored or opened in the current window's {@link TabModel}. */
+        int CURRENT_WINDOW = 1;
+
+        /**
+         * The group was already open in another window and that window was brought to the front.
+         */
+        int ANOTHER_WINDOW = 2;
+    }
 
     /** Returns whether cross-window tab group operations are enabled. */
     public static boolean isCrossWindowTabGroupOperationsEnabled() {
@@ -486,15 +511,16 @@ public class TabGroupUiUtils {
      * @param syncService The {@link TabGroupSyncService}.
      * @param uiActionHandler The {@link TabGroupUiActionHandler}.
      * @param syncId The sync ID of the tab group to open.
+     * @return The {@link OpenTabGroupResult} indicating how/where the group was opened.
      */
-    public static void openTabGroup(
+    public static @OpenTabGroupResult int openTabGroup(
             @Nullable Context context,
             TabModel tabModel,
             @Nullable TabGroupSyncService syncService,
             @Nullable TabGroupUiActionHandler uiActionHandler,
             String syncId) {
         if (syncService == null || uiActionHandler == null) {
-            return;
+            return OpenTabGroupResult.NONE;
         }
         SavedTabGroup savedGroup = syncService.getGroup(syncId);
         if (savedGroup != null && savedGroup.localId != null) {
@@ -502,9 +528,9 @@ public class TabGroupUiUtils {
             commitClosingTabsForGroup(tabModel, groupId);
             TabModel targetModel = getTabModelForGroup(tabModel, groupId);
             if (targetModel != tabModel && targetModel.containsTabGroup(groupId)) {
-                if (openTabGroupInOtherWindow(context, groupId, syncId)) {
-                    return;
-                }
+                return openTabGroupInOtherWindow(context, groupId, syncId)
+                        ? OpenTabGroupResult.ANOTHER_WINDOW
+                        : OpenTabGroupResult.NONE;
             }
             if (!targetModel.containsTabGroup(groupId)) {
                 savedGroup = syncService.getGroup(syncId);
@@ -515,6 +541,7 @@ public class TabGroupUiUtils {
             }
         }
         uiActionHandler.openTabGroup(syncId);
+        return OpenTabGroupResult.CURRENT_WINDOW;
     }
 
     /**

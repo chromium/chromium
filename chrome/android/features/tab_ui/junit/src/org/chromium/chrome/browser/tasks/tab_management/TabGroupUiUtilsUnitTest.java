@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils.OpenTabGroupResult;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -1455,8 +1456,10 @@ public class TabGroupUiUtilsUnitTest {
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
         when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
 
-        TabGroupUiUtils.openTabGroup(
-                mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+        assertEquals(
+                OpenTabGroupResult.ANOTHER_WINDOW,
+                TabGroupUiUtils.openTabGroup(
+                        mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId));
 
         Intent intent =
                 Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
@@ -1487,8 +1490,10 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean()))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
 
-        TabGroupUiUtils.openTabGroup(
-                mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+        assertEquals(
+                OpenTabGroupResult.CURRENT_WINDOW,
+                TabGroupUiUtils.openTabGroup(
+                        mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId));
 
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
@@ -1497,7 +1502,7 @@ public class TabGroupUiUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
-    public void testOpenTabGroup_otherWindow_nullContext_fallsBackToOpen() {
+    public void testOpenTabGroup_otherWindow_nullContext_returnsNone() {
         MultiWindowTestUtils.enableMultiInstance();
         Token groupId = Token.createRandom();
         String syncId = "sync-null-context";
@@ -1516,10 +1521,16 @@ public class TabGroupUiUtilsUnitTest {
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
         when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
 
-        TabGroupUiUtils.openTabGroup(
-                /* context= */ null, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+        assertEquals(
+                OpenTabGroupResult.NONE,
+                TabGroupUiUtils.openTabGroup(
+                        /* context= */ null,
+                        mTabModel,
+                        mTabGroupSyncService,
+                        mUiActionHandler,
+                        syncId));
 
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler, never()).openTabGroup(any());
         verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(any(), anyInt());
         assertNull(
                 Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
@@ -1539,8 +1550,10 @@ public class TabGroupUiUtilsUnitTest {
 
         when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
 
-        TabGroupUiUtils.openTabGroup(
-                mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+        assertEquals(
+                OpenTabGroupResult.CURRENT_WINDOW,
+                TabGroupUiUtils.openTabGroup(
+                        mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId));
 
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
