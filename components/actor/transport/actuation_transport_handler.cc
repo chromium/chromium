@@ -21,6 +21,21 @@
 #include "components/browser_actuator/public/transport/transport_session.h"
 
 namespace actor {
+namespace {
+
+// Returns true when `action_status_code` indicates that the underlying
+// `ActorTask` has already been stopped and removed from `ActorKeyedService`.
+bool IsTaskStoppedResultCode(int32_t action_status_code) {
+  switch (static_cast<mojom::ActionResultCode>(action_status_code)) {
+    case mojom::ActionResultCode::kTaskWentAway:
+    case mojom::ActionResultCode::kUserNavigatedAway:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
 
 ActuationTransportHandler::ActuationTransportHandler(
     browser_actuator::transport::TransportSession* session,
@@ -237,6 +252,10 @@ void ActuationTransportHandler::OnActComplete(
     const std::string& request_id,
     const std::string& task_id_str,
     proto::PerformActionsResponse response) {
+  if (response.status() != proto::PerformActionsResponse::STATUS_OK &&
+      IsTaskStoppedResultCode(response.action_status_code())) {
+    active_tasks_.erase(task_id_str);
+  }
   proto::BrowserToServerPayload upstream;
   upstream.set_task_id(task_id_str);
   upstream.set_request_id(request_id);

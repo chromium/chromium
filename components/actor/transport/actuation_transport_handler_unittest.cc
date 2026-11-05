@@ -710,6 +710,97 @@ TEST_F(ActuationTransportHandlerTest, ActForwardsOwnedTaskAndSendsResponse) {
   EXPECT_EQ(upstream.perform_actions().action_status_code(), 0);
 }
 
+TEST_F(ActuationTransportHandlerTest,
+       ActErasesActiveTaskWhenTaskStoppedDuringAct) {
+  StartSessionTask(7, "7");
+  StartSessionTask(8, "8");
+
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("7");
+  downstream.set_request_id("req_act_task_went_away");
+  downstream.mutable_perform_actions()->add_actions()->mutable_wait();
+  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  proto::PerformActionsResponse task_went_away_response;
+  task_went_away_response.set_status(
+      proto::PerformActionsResponse::STATUS_TAB_DISCONNECTED);
+  task_went_away_response.set_action_status_code(
+      static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+  delegate_->TakeActCallback().Run(std::move(task_went_away_response));
+
+  // Subsequent `StopTask` for task 7 should see it already removed from
+  // `active_tasks_` and not invoke `delegate_->StopTask(TaskId(7))`.
+  proto::ServerToBrowserPayload stop_msg;
+  stop_msg.set_task_id("7");
+  stop_msg.set_request_id("req_stop_after_task_went_away");
+  stop_msg.mutable_stop_task();
+  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                      stop_msg.SerializeAsString());
+  EXPECT_TRUE(delegate_->stopped_task_ids().empty());
+
+  downstream.set_task_id("8");
+  downstream.set_request_id("req_act_user_navigated_away");
+  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  proto::PerformActionsResponse user_navigated_away_response;
+  user_navigated_away_response.set_status(
+      proto::PerformActionsResponse::STATUS_ACTION_FAILED);
+  user_navigated_away_response.set_action_status_code(
+      static_cast<int32_t>(mojom::ActionResultCode::kUserNavigatedAway));
+  delegate_->TakeActCallback().Run(std::move(user_navigated_away_response));
+
+  stop_msg.set_task_id("8");
+  stop_msg.set_request_id("req_stop_after_user_navigated_away");
+  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                      stop_msg.SerializeAsString());
+  EXPECT_TRUE(delegate_->stopped_task_ids().empty());
+}
+
+TEST_F(ActuationTransportHandlerTest,
+       ActRetainsActiveTaskOnNonTerminalActionFailure) {
+  StartSessionTask(7, "7");
+
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("7");
+  downstream.set_request_id("req_act_recoverable_fail");
+  downstream.mutable_perform_actions()->add_actions()->mutable_wait();
+  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  proto::PerformActionsResponse action_failed_response;
+  action_failed_response.set_status(
+      proto::PerformActionsResponse::STATUS_ACTION_FAILED);
+  action_failed_response.set_action_status_code(
+      static_cast<int32_t>(mojom::ActionResultCode::kElementDisabled));
+  delegate_->TakeActCallback().Run(std::move(action_failed_response));
+
+  // A recoverable failure (or `kTabWentAway` on a single action) keeps task 7
+  // in `active_tasks_`, allowing subsequent `PerformActions` and `StopTask`
+  // requests to reach `delegate_`.
+  downstream.set_request_id("req_act_tab_went_away");
+  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+  ASSERT_TRUE(delegate_->last_act_task_id().has_value());
+  EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(7));
+
+  proto::PerformActionsResponse tab_went_away_response;
+  tab_went_away_response.set_status(
+      proto::PerformActionsResponse::STATUS_TAB_DISCONNECTED);
+  tab_went_away_response.set_action_status_code(
+      static_cast<int32_t>(mojom::ActionResultCode::kTabWentAway));
+  delegate_->TakeActCallback().Run(std::move(tab_went_away_response));
+
+  proto::ServerToBrowserPayload stop_msg;
+  stop_msg.set_task_id("7");
+  stop_msg.set_request_id("req_stop_after_recoverable_fail");
+  stop_msg.mutable_stop_task();
+  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+                      stop_msg.SerializeAsString());
+  EXPECT_EQ(delegate_->stopped_task_ids(), std::vector<TaskId>{TaskId(7)});
+}
+
 TEST_F(ActuationTransportHandlerTest, ActRejectsUnownedTask) {
   proto::ServerToBrowserPayload downstream;
   downstream.set_task_id("server-task-unowned");

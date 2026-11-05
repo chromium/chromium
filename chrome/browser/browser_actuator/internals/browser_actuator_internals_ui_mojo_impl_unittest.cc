@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui.h"
 #include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
@@ -261,34 +262,41 @@ TEST_F(BrowserActuatorInternalsUIMojoImplTest,
 
 TEST(BrowserActuatorInternalsUIConfigTest, IsWebUIEnabled) {
   base::test::ScopedFeatureList feature_list;
+  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+  Profile* otr_profile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   BrowserActuatorInternalsUIConfig config;
 
-  // Both features enabled -> WebUI is enabled.
+  // Both features enabled -> WebUI is enabled for a regular profile, but
+  // disabled when `browser_context` is null or off-the-record.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kBrowserActuator, kBrowserActuatorInternals},
       /*disabled_features=*/{});
-  EXPECT_TRUE(config.IsWebUIEnabled(/*browser_context=*/nullptr));
+  EXPECT_TRUE(config.IsWebUIEnabled(profile.get()));
+  EXPECT_FALSE(config.IsWebUIEnabled(/*browser_context=*/nullptr));
+  EXPECT_FALSE(config.IsWebUIEnabled(otr_profile));
 
-  // Only kBrowserActuator enabled -> WebUI is disabled.
+  // Only `kBrowserActuator` enabled -> WebUI is disabled.
   feature_list.Reset();
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kBrowserActuator},
       /*disabled_features=*/{kBrowserActuatorInternals});
-  EXPECT_FALSE(config.IsWebUIEnabled(/*browser_context=*/nullptr));
+  EXPECT_FALSE(config.IsWebUIEnabled(profile.get()));
 
-  // Only kBrowserActuatorInternals enabled -> WebUI is disabled.
+  // Only `kBrowserActuatorInternals` enabled -> WebUI is disabled.
   feature_list.Reset();
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kBrowserActuatorInternals},
       /*disabled_features=*/{kBrowserActuator});
-  EXPECT_FALSE(config.IsWebUIEnabled(/*browser_context=*/nullptr));
+  EXPECT_FALSE(config.IsWebUIEnabled(profile.get()));
 
   // Both disabled -> WebUI is disabled.
   feature_list.Reset();
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{kBrowserActuator, kBrowserActuatorInternals});
-  EXPECT_FALSE(config.IsWebUIEnabled(/*browser_context=*/nullptr));
+  EXPECT_FALSE(config.IsWebUIEnabled(profile.get()));
 }
 
 }  // namespace browser_actuator
