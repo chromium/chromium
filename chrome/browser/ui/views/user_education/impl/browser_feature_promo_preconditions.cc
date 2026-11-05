@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -35,6 +36,7 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_subregion_anchor.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
@@ -135,13 +137,25 @@ ToolbarNotCollapsedPrecondition::~ToolbarNotCollapsedPrecondition() = default;
 user_education::FeaturePromoResult
 ToolbarNotCollapsedPrecondition::CheckPrecondition(
     user_education::UnownedTypedDataCollection&) const {
-  if (const auto* const controller =
-          browser_view_->toolbar()->toolbar_controller()) {
-    if (controller->InOverflowMode()) {
-      return user_education::FeaturePromoResult::kWindowTooSmall;
-    }
+  return BrowserElements::From(browser_view_->browser())
+                 ->GetElement(kToolbarOverflowButtonElementId)
+             ? user_education::FeaturePromoResult::kWindowTooSmall
+             : user_education::FeaturePromoResult::Success();
+}
+
+// static
+bool ToolbarNotCollapsedPrecondition::IsOverflowedForTesting(
+    const ToolbarController* controller,
+    const views::View* container_view) {
+  if (controller) {
+    return controller->IsElementOverflowedForTesting(
+        kToolbarForwardButtonElementId);
   }
-  return user_education::FeaturePromoResult::Success();
+  // With the WebUI toolbar managing all controls (no ToolbarController), the
+  // WebUI toolbar view uses kScaleToMinimum; once the toolbar's minimum width
+  // exceeds its actual width, the WebUI toolbar has been squeezed past its
+  // minimum and shows its overflow button asynchronously.
+  return container_view->GetMinimumSize().width() > container_view->width();
 }
 
 BrowserNotClosingPrecondition::BrowserNotClosingPrecondition(

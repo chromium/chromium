@@ -886,6 +886,9 @@ void MaybeRegisterChromeFeaturePromos(
                 }
               }))
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopCenter)
+          // The WebUI extensions container forces the IPH anchor to be visible
+          // even when the toolbar is in overflow mode.
+          .AddPreconditionExemption(kToolbarNotCollapsedPrecondition)
           .SetInAnyContext(true)
           .SetMetadata(
               155, "evasu@google.com",

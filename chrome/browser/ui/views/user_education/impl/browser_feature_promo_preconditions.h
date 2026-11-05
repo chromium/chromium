@@ -24,6 +24,7 @@
 
 class BrowserView;
 class BrowserWindowInterface;
+class ToolbarController;
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
@@ -93,6 +94,13 @@ class ToolbarNotCollapsedPrecondition
  public:
   explicit ToolbarNotCollapsedPrecondition(BrowserView& browser_view);
   ~ToolbarNotCollapsedPrecondition() override;
+
+  // Returns whether the toolbar has overflowed in tests, checking
+  // `kToolbarForwardButtonElementId` via `controller` when present or whether
+  // `container_view`'s minimum width exceeds its current width when the WebUI
+  // toolbar manages overflow without a `ToolbarController`.
+  static bool IsOverflowedForTesting(const ToolbarController* controller,
+                                     const views::View* container_view);
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(

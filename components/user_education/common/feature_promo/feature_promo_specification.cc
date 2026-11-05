@@ -146,6 +146,10 @@ bool IsAllowedPreconditionExemption(const base::Feature& promo_feature) {
   // Add the text names of allowlisted promos here:
   static constexpr auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>({
+          // The WebUI extensions container forces the IPH anchor to be visible
+          // even when the toolbar is in overflow mode (exempt from
+          // `kToolbarNotCollapsedPrecondition`).
+          "IPH_ExtensionsPinnedByDefault",
           // Anchored inside the omnibox popup, so it can only show while the
           // omnibox is open (exempt from `kOmniboxNotOpenPrecondition`).
           "IPH_OmniboxAskGLensIcon",

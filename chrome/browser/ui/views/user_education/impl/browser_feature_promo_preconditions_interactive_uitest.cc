@@ -324,6 +324,7 @@ class ToolbarNotCollapsedPreconditionUiTest
 IN_PROC_BROWSER_TEST_F(ToolbarNotCollapsedPreconditionUiTest,
                        ToolbarExpandedAndCollapsed) {
   RunTestSequence(
+      WaitForShow(kToolbarForwardButtonElementId),
       CheckView(
           kBrowserViewElementId,
           [this](BrowserView* browser_view) {
@@ -338,14 +339,13 @@ IN_PROC_BROWSER_TEST_F(ToolbarNotCollapsedPreconditionUiTest,
           [](BrowserView* browser_view) {
             const ToolbarController* const controller =
                 browser_view->toolbar()->toolbar_controller();
-            CHECK(controller);
             auto* const container_view =
                 views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
                     ToolbarView::kToolbarElementId,
                     browser_view->GetElementContext());
             constexpr gfx::Size kButtonSize{16, 16};
-            while (!controller->IsElementOverflowedForTesting(
-                kToolbarForwardButtonElementId)) {
+            while (!ToolbarNotCollapsedPrecondition::IsOverflowedForTesting(
+                controller, container_view)) {
               auto* const button = container_view->AddChildView(
                   std::make_unique<ToolbarButton>());
               button->SetPreferredSize(kButtonSize);
