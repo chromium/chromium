@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
@@ -70,10 +71,12 @@ void GeminiPanelTool::Validate(ToolCallback callback) {
     return;
   }
 
+  Profile& profile = tool_delegate().GetProfile();
   glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          &tool_delegate().GetProfile());
-  if (!glic_service) {
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(&profile);
+  // `GlicKeyedService` exists for all eligible profiles even when Glic is not
+  // enabled for the profile.
+  if (!glic_service || !glic::GlicEnabling::IsEnabledForProfile(&profile)) {
     PostResponseTask(
         std::move(callback),
         MakeResult(mojom::ActionResultCode::kGeminiPanelServiceUnavailable,
