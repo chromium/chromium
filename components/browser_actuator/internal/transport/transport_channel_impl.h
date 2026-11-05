@@ -127,6 +127,12 @@ class TransportChannelImpl : public TransportChannel,
       const ActuatorDownstreamMessage& message,
       DownstreamDeliveryStatus status = DownstreamDeliveryStatus::kSuccess);
 
+  // Forwards the completion HTTP response code for an upstream message to every
+  // TransportMessageObserver.
+  void NotifyUpstreamResponse(std::string_view session_id,
+                              int64_t client_sequence_number,
+                              int response_code);
+
   // Serializes a WatchSessionsRequest describing every session with a known
   // resume position, plus a fresh idempotency id. Handed to the resume
   // delegate as its body provider, so it runs once per connection attempt.

@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
+#include "components/browser_actuator/internal/transport/transport_message_observer.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/transport_service.h"
@@ -163,12 +164,21 @@ TEST_F(BrowserActuatorInternalsUIMojoImplTest,
   EXPECT_EQ(sessions[0].events[0].payload_types[0], "Control");
   EXPECT_FALSE(sessions[0].events[0].message_truncated);
   EXPECT_FALSE(sessions[0].events[0].message.empty());
+  EXPECT_EQ(sessions[0].events[0].http_response_code, 0);
+  EXPECT_EQ(sessions[0].events[0].downstream_status,
+            transport::DownstreamDeliveryStatus::kSuccess);
+
   EXPECT_FALSE(sessions[0].events[1].timestamp.is_null());
   EXPECT_FALSE(sessions[0].events[1].is_downstream);
   ASSERT_EQ(sessions[0].events[1].payload_types.size(), 1u);
   EXPECT_EQ(sessions[0].events[1].payload_types[0], "Control");
   EXPECT_FALSE(sessions[0].events[1].message_truncated);
   EXPECT_FALSE(sessions[0].events[1].message.empty());
+  // TestingProfile has no primary account, so UpstreamMessageClient fails
+  // synchronously on OAuth token retrieval with http_response_code = -1.
+  EXPECT_EQ(sessions[0].events[1].http_response_code, -1);
+  EXPECT_EQ(sessions[0].events[1].downstream_status,
+            transport::DownstreamDeliveryStatus::kUnknown);
 }
 
 TEST_F(BrowserActuatorInternalsUIMojoImplTest,

@@ -12,6 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/browser_actuator/internal/transport/control_transport_handler.h"
@@ -245,12 +247,24 @@ void TransportChannelImpl::SendUpstreamMessage(
       *responding_to_sequence_number >= 0) {
     validated_responding_to_seq = *responding_to_sequence_number;
   }
+  // SendUpstreamMessage can invoke its callback synchronously on immediate
+  // OAuth failure before returning `upstream`, so SyncSendState buffers the
+  // status code to guarantee `http_response_code = 0` is notified first.
+  struct SyncSendState {
+    bool in_sync_call = true;
+    std::optional<int> response_code;
+  };
+  auto sync_state = base::MakeRefCounted<base::RefCountedData<SyncSendState>>();
+
   ActuatorUpstreamMessage upstream =
       upstream_message_client_->SendUpstreamMessage(
           session_id, client_sequence_number, validated_responding_to_seq,
           payload_type, message,
           base::BindOnce(
-              [](std::string session_id, bool success, int response_code) {
+              [](base::WeakPtr<TransportChannelImpl> self,
+                 scoped_refptr<base::RefCountedData<SyncSendState>> sync_state,
+                 std::string session_id, int64_t client_sequence_number,
+                 bool success, int response_code) {
                 if (!success) {
                   VLOG(1) << "Failed to send upstream message for session "
                           << session_id << " (response code: " << response_code
@@ -258,12 +272,26 @@ void TransportChannelImpl::SendUpstreamMessage(
                   // TODO(crbug.com/532661039): Consider adding retry buffering
                   // or closing the channel.
                 }
+                if (sync_state->data.in_sync_call) {
+                  sync_state->data.response_code = response_code;
+                  return;
+                }
+                if (self) {
+                  self->NotifyUpstreamResponse(
+                      session_id, client_sequence_number, response_code);
+                }
               },
-              std::string(session_id)));
+              weak_ptr_factory_.GetWeakPtr(), sync_state,
+              std::string(session_id), client_sequence_number));
 
+  sync_state->data.in_sync_call = false;
   observers_.Notify(&TransportMessageObserver::OnUpstreamMessage,
                     std::string_view(upstream.session_id()), upstream,
                     /*http_response_code=*/0);
+  if (sync_state->data.response_code.has_value()) {
+    NotifyUpstreamResponse(upstream.session_id(), client_sequence_number,
+                           *sync_state->data.response_code);
+  }
 }
 
 void TransportChannelImpl::NotifyDownstreamMessage(
@@ -273,6 +301,21 @@ void TransportChannelImpl::NotifyDownstreamMessage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.Notify(&TransportMessageObserver::OnDownstreamMessage, session_id,
                     message, status);
+}
+
+void TransportChannelImpl::NotifyUpstreamResponse(
+    std::string_view session_id,
+    int64_t client_sequence_number,
+    int response_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (observers_.empty()) {
+    return;
+  }
+  ActuatorUpstreamMessage response_msg;
+  response_msg.set_session_id(std::string(session_id));
+  response_msg.set_client_sequence_number(client_sequence_number);
+  observers_.Notify(&TransportMessageObserver::OnUpstreamMessage, session_id,
+                    response_msg, response_code);
 }
 
 std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {

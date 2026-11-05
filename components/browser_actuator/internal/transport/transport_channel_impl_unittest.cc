@@ -40,6 +40,7 @@
 #include "components/browser_actuator/test_support/transport/mock_transport_handler_factory.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
