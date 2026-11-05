@@ -142,9 +142,15 @@ import org.chromium.url.GURL;
         }
     }
 
-    // Normalizes the user input and accepts only valid HTTP and HTTPS URLs.
+    // Normalizes the user input and accepts only valid HTTP and HTTPS URLs. A
+    // host containing an escaped character (e.g. "%20" for a space) is never
+    // resolvable, but GURL still reports it as valid while
+    // DisallowSpaceCharacterInURLHostParsing is disabled.
     private static @Nullable GURL getValidatedUrl(String input) {
         GURL fixedUrl = UrlFormatter.fixupUrl(input.trim());
-        return fixedUrl.isValid() && UrlUtilities.isHttpOrHttps(fixedUrl) ? fixedUrl : null;
+        if (!fixedUrl.isValid() || !UrlUtilities.isHttpOrHttps(fixedUrl)) {
+            return null;
+        }
+        return fixedUrl.getHost().contains("%") ? null : fixedUrl;
     }
 }

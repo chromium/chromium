@@ -444,6 +444,9 @@ public class OnStartupSettingsFragmentTest {
                                     .get(ModalDialogProperties.CUSTOM_VIEW)
                                     .findViewById(R.id.url_edit_text);
                     assertEquals(URL_ESPN, urlEditText.getText().toString());
+                    // A URL with whitespace inside the host disables Save in edit mode.
+                    urlEditText.setText("http://exam      ple.com");
+                    assertTrue(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
                     urlEditText.setText(URL_DOCS);
                     assertFalse(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
                     urlEditText.onEditorAction(EditorInfo.IME_ACTION_DONE);
@@ -490,12 +493,23 @@ public class OnStartupSettingsFragmentTest {
                                     .findViewById(R.id.url_edit_text);
 
                     for (String invalidInput :
-                            List.of("", "   ", "chrome://flags", "about:blank")) {
+                            List.of(
+                                    "",
+                                    "   ",
+                                    "chrome://flags",
+                                    "about:blank",
+                                    "http://exam      ple.com",
+                                    "exam ple.com",
+                                    "https://exa mple.com/path")) {
                         urlEditText.setText(invalidInput);
                         assertTrue(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
                         urlEditText.onEditorAction(EditorInfo.IME_ACTION_DONE);
                         assertNotNull(modalDialogManager.getCurrentDialogForTest());
                     }
+
+                    // Whitespace in the path stays valid because it is percent-escaped.
+                    urlEditText.setText("http://example.com/a b");
+                    assertFalse(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
 
                     urlEditText.setText(URL_WIKIPEDIA);
                     assertFalse(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
