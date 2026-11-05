@@ -1287,7 +1287,6 @@ void TranslateBubbleView::UpdateAdvancedView() {
     advanced_reset_button_target_->SetEnabled(DidLanguageSelectionChange(
         TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE));
   }
-  DeprecatedLayoutImmediately();
 }
 
 void TranslateBubbleView::UpdateLanguageNames(
