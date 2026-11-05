@@ -3176,6 +3176,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // NOTE: Only one promo can be shown in one run to avoid nagging users too much.
 
         if (mToolbarManager != null && mToolbarManager.maybeShowBottomBarPromo(profile)) {
+            UserEducationUtils.recordOptionalPromoType(OptionalPromoType.BOTTOM_BAR_PROMO);
             return true;
         }
         if (FullscreenSigninPromoLauncher.launchPromoIfNeeded(
