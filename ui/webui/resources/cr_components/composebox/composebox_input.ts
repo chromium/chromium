@@ -101,6 +101,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       cancelButtonTitle: {type: String},
       hideCancel: {type: Boolean},
       inlineActionButtons: {type: Boolean, reflect: true},
+      skipEmptyHeightLock: {type: Boolean},
       isBackspacing_: {type: Boolean},
     };
   }
@@ -118,6 +119,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor cancelButtonTitle: string = '';
   accessor hideCancel: boolean = false;
   accessor inlineActionButtons: boolean = false;
+  accessor skipEmptyHeightLock: boolean = false;
   accessor isBackspacing_: boolean = false;
 
   private resizeObserver_: ResizeObserver|null = null;
@@ -197,6 +199,11 @@ export class ComposeboxInputElement extends I18nMixinLit
         changedProperties.has('disableCaretColorAnimation')) {
       if (!this.input) {
         this.resetHeight();
+      } else if (this.skipEmptyHeightLock && this.lockedMinHeight_ === 0) {
+        const inputWrapper =
+            this.shadowRoot.querySelector<HTMLElement>('#inputWrapper')!;
+        this.lockedMinHeight_ = inputWrapper.clientHeight;
+        inputWrapper.style.minHeight = `${this.lockedMinHeight_}px`;
       }
       if (changedProperties.has('disableCaretColorAnimation') &&
           !this.disableCaretColorAnimation &&
@@ -503,7 +510,8 @@ export class ComposeboxInputElement extends I18nMixinLit
 
       // Handle height changes.
       const currentHeight = inputWrapper.clientHeight;
-      if (currentHeight > this.lockedMinHeight_) {
+      if ((this.input || !this.skipEmptyHeightLock) &&
+          currentHeight > this.lockedMinHeight_) {
         const generation = this.heightLockGeneration_;
         requestAnimationFrame(() => {
           if (generation !== this.heightLockGeneration_) {
