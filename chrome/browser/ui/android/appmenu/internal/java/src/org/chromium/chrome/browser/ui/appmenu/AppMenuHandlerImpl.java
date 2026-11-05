@@ -882,6 +882,12 @@ class AppMenuHandlerImpl
 
     @Override
     public void onSubmenuLoaded(List<ListItem> items) {
+        // Submenu items are instantiated lazily via SUBMENU_PROVIDER when a submenu is opened
+        // (not present in mAdapter during AppMenu#show). Clear their hints before they are
+        // measured or displayed if the root menu hid shortcuts.
+        if (mAppMenu != null && mAppMenu.shouldHideShortcutHints()) {
+            AppMenu.clearShortcutHints(items);
+        }
         updateModelForHighlightAndClick(
                 items, mHighlightMenuId, this, /* startIndex= */ 0, /* withAssertions= */ false);
     }

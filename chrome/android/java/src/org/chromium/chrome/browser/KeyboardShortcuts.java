@@ -43,6 +43,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.util.KeyEventUtils;
 
 import java.lang.annotation.Retention;
@@ -1379,7 +1380,8 @@ public class KeyboardShortcuts {
      * @return The formatted shortcut text, or {@code null}.
      */
     public static @Nullable String getShortcutText(@IdRes int menuItemId) {
-        if (!ChromeFeatureList.sAndroidKeyboardShortcutHints.isEnabled()) {
+        if (!ChromeFeatureList.sAndroidKeyboardShortcutHints.isEnabled()
+                || !DeviceInput.supportsAlphabeticKeyboard()) {
             return null;
         }
 

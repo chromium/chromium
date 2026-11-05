@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.device.gamepad.GamepadList;
+import org.chromium.ui.base.DeviceInput;
 
 /** Unit tests for {@link KeyboardShortcuts} redirection. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,12 +56,14 @@ public class KeyboardShortcutsUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
+    @Mock private KeyboardShortcuts.Natives mKeyboardShortcutsJniMock;
 
     @Before
     public void setUp() {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         IncognitoUtilsJni.setInstanceForTesting(mIncognitoUtilsJniMock);
+        KeyboardShortcutsJni.setInstanceForTesting(mKeyboardShortcutsJniMock);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
     }
 
@@ -248,6 +252,19 @@ public class KeyboardShortcutsUnitTest {
         // Verify.
         assertTrue(handled);
         verify(mController).onMenuOrKeyboardAction(eq(R.id.quick_delete_menu_id), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
+    public void testGetShortcutText_RequiresAlphabeticKeyboard() {
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.NEW_TAB))
+                .thenReturn("Ctrl+T");
+
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
+        assertNull(KeyboardShortcuts.getShortcutText(R.id.new_tab_menu_id));
+
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        assertEquals("Ctrl+T", KeyboardShortcuts.getShortcutText(R.id.new_tab_menu_id));
     }
 
     private static KeyEvent createKeyEvent(int keyCode, int metaState) {

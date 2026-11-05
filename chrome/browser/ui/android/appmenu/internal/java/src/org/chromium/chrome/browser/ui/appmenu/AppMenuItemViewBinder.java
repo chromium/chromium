@@ -82,9 +82,9 @@ class AppMenuItemViewBinder {
             TextView shortcutView = view.findViewById(R.id.menu_item_shortcut);
             if (shortcutView != null) {
                 CharSequence shortcutText = model.get(AppMenuItemProperties.SHORTCUT_TEXT);
-                shortcutView.setText(shortcutText);
-                shortcutView.setVisibility(
-                        TextUtils.isEmpty(shortcutText) ? View.GONE : View.VISIBLE);
+                boolean hasShortcut = !TextUtils.isEmpty(shortcutText);
+                shortcutView.setVisibility(hasShortcut ? View.VISIBLE : View.GONE);
+                if (hasShortcut) shortcutView.setText(shortcutText);
             }
         } else if (key == AppMenuItemProperties.ENABLED) {
             boolean enabled = model.get(AppMenuItemProperties.ENABLED);

@@ -12,11 +12,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import android.view.ContextThemeWrapper;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -34,6 +38,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -47,9 +53,12 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /** Tests for {@link AppMenuItemViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -93,6 +102,10 @@ public class AppMenuItemViewBinderTest {
     static final String TITLE_8 = "Menu Item Eight";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private AppMenuHandlerImpl mAppMenuHandler;
+
+    @Mock private HierarchicalMenuController<AppMenu.AppMenuPopup> mHierarchicalMenuController;
 
     private Activity mActivity;
     private MVCListAdapter.ModelList mMenuList;
@@ -1009,5 +1022,63 @@ public class AppMenuItemViewBinderTest {
         AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
         button.onInitializeAccessibilityNodeInfo(info);
         assertFalse("Accessibility should not show selected", info.isSelected());
+    }
+
+    @Test
+    public void testAppMenuShow_NarrowWindowHidesShortcutHints() {
+        PropertyModel model = createStandardMenuItem(MENU_ID1, "A".repeat(200));
+        model.set(AppMenuItemProperties.SHORTCUT_TEXT, "Ctrl+T");
+
+        AppMenu appMenu =
+                new AppMenu(mAppMenuHandler, mActivity.getResources(), mHierarchicalMenuController);
+        AppMenu.InitialSizingHelper sizingHelper = Mockito.mock(AppMenu.InitialSizingHelper.class);
+        Mockito.when(sizingHelper.canBeLastVisibleInitialView(Mockito.anyInt())).thenReturn(true);
+        Context themedContext = new ContextThemeWrapper(mActivity, R.style.AppMenuThemeOverlay);
+        View anchorView = mActivity.findViewById(android.R.id.content);
+
+        appMenu.updateMenu(sizingHelper, mModelListAdapter);
+        appMenu.show(
+                themedContext,
+                anchorView,
+                /* isByPermanentButton= */ false,
+                Surface.ROTATION_0,
+                new Rect(0, 0, 1000, 1000),
+                /* footer= */ null,
+                /* header= */ null,
+                /* highlightedItemId= */ null,
+                /* isMenuIconAtStart= */ false,
+                /* controlsPosition= */ 0,
+                /* addTopPaddingBeforeFirstRow= */ false,
+                /* isFromBottomBar= */ false,
+                /* reservedTopSpace= */ 0,
+                /* flyoutHandler= */ null);
+        assertFalse(appMenu.shouldHideShortcutHints());
+        assertEquals("Ctrl+T", model.get(AppMenuItemProperties.SHORTCUT_TEXT));
+
+        int minWidth = mActivity.getResources().getDimensionPixelSize(R.dimen.menu_width_min);
+        appMenu.updateMenu(sizingHelper, mModelListAdapter);
+        appMenu.show(
+                themedContext,
+                anchorView,
+                /* isByPermanentButton= */ false,
+                Surface.ROTATION_0,
+                new Rect(0, 0, minWidth, 1000),
+                /* footer= */ null,
+                /* header= */ null,
+                /* highlightedItemId= */ null,
+                /* isMenuIconAtStart= */ false,
+                /* controlsPosition= */ 0,
+                /* addTopPaddingBeforeFirstRow= */ false,
+                /* isFromBottomBar= */ false,
+                /* reservedTopSpace= */ 0,
+                /* flyoutHandler= */ null);
+        assertTrue(appMenu.shouldHideShortcutHints());
+        assertNull(model.get(AppMenuItemProperties.SHORTCUT_TEXT));
+
+        PropertyModel submenuModel = createStandardMenuItem(MENU_ID2, TITLE_2);
+        submenuModel.set(AppMenuItemProperties.SHORTCUT_TEXT, "Ctrl+H");
+        AppMenu.clearShortcutHints(
+                List.of(new MVCListAdapter.ListItem(AppMenuItemType.STANDARD, submenuModel)));
+        assertNull(submenuModel.get(AppMenuItemProperties.SHORTCUT_TEXT));
     }
 }

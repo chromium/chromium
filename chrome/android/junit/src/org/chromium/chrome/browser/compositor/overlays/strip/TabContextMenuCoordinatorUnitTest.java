@@ -157,6 +157,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -4197,6 +4198,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
     public void testShortcutText_populatedWhenEnabled() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         KeyboardShortcutsJni.setInstanceForTesting(mKeyboardShortcutsJniMock);
         when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(anyInt())).thenReturn("");
         when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.CLOSE_TAB))

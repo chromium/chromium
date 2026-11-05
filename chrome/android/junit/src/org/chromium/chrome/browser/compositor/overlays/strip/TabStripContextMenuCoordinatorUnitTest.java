@@ -707,6 +707,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         ChromeFeatureList.TASK_MANAGER_CLANK
     })
     public void showMenu_verifyShortcutTextPopulatedWhenEnabled() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         KeyboardShortcutsJni.setInstanceForTesting(mKeyboardShortcutsJniMock);
         when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(anyInt())).thenReturn("");
