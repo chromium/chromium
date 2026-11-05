@@ -424,6 +424,57 @@
             ]
         }
     ],
+    "AmbientAutofillNonSPII": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ambient_autofill_supported_entity_types": "Vehicle,Flight Reservation,Order,Shipment"
+                    },
+                    "enable_features": [
+                        "AutofillAiShowPersonalContextFillingYourInfoDialog",
+                        "AutofillAmbientAutofill",
+                        "AutofillAmbientAutofillFilterEntitiesWithoutSource",
+                        "AutofillAmbientAutofillSourceAttribution",
+                        "AutofillAmbientAutofillSuppression",
+                        "PersonalContextHandleEncryptedPayloads",
+                        "PersonalContextLogNonEligibilityUma",
+                        "SyncAutofillEntitySuppression"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ambient_autofill_supported_entity_types": "Vehicle,Flight Reservation,Order,Shipment"
+                    },
+                    "enable_features": [
+                        "AutofillAmbientAutofill",
+                        "AutofillAmbientAutofillFilterEntitiesWithoutSource",
+                        "AutofillAmbientAutofillSourceAttribution",
+                        "AutofillAmbientAutofillSuppression",
+                        "PersonalContextHandleEncryptedPayloads",
+                        "PersonalContextLogNonEligibilityUma",
+                        "SyncAutofillEntitySuppression"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAdaptiveAffinityMode": [
         {
             "platforms": [
@@ -1520,40 +1571,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AsyncThreadPoolInit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AtMemoryDogfood": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "state": "2"
-                    },
-                    "enable_features": [
-                        "AtMemoryMqlsLogging",
-                        "AutofillAtMemory",
-                        "AutofillAtMemoryDoubleCtrl",
-                        "AutofillAtMemoryPreviouslyFilled",
-                        "AutofillAtMemorySearchStatefulness",
-                        "AutofillAtMemorySupportContenteditableOnAndroid",
-                        "AutofillAtMemorySupportTextAreaOnAndroid",
-                        "AutofillAtMemoryTriggerShortcut",
-                        "AutofillEnableKeyboardAccessoryOnSearchFields",
-                        "AutofillSupportContentEditableIos",
-                        "IPH_AutofillAtMemory",
-                        "PersonalContextForceEnablementState"
                     ]
                 }
             ]

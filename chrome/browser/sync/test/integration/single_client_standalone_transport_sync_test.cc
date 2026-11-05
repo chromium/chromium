@@ -202,6 +202,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
     expected_types.Put(syncer::SKILL);
   }
 
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillEntitySuppression)) {
+    expected_types.Put(syncer::AUTOFILL_ENTITY_SUPPRESSION);
+  }
+
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
 }
