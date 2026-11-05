@@ -266,6 +266,23 @@ class ScopedLatencyHistogram {
   bool emit_histogrmams_ = true;
 };
 
+bool AreControlsEquivalent(const cc::BrowserControlsMetadata& a,
+                           const cc::BrowserControlsMetadata& b) {
+  return cc::MathUtil::IsFloatNearlyTheSame(a.top_controls_height,
+                                            b.top_controls_height) &&
+         cc::MathUtil::IsFloatNearlyTheSame(a.top_controls_shown_ratio,
+                                            b.top_controls_shown_ratio) &&
+         cc::MathUtil::IsFloatNearlyTheSame(a.top_controls_min_height_offset,
+                                            b.top_controls_min_height_offset) &&
+         cc::MathUtil::IsFloatNearlyTheSame(a.bottom_controls_height,
+                                            b.bottom_controls_height) &&
+         cc::MathUtil::IsFloatNearlyTheSame(a.bottom_controls_shown_ratio,
+                                            b.bottom_controls_shown_ratio) &&
+         cc::MathUtil::IsFloatNearlyTheSame(
+             a.bottom_controls_min_height_offset,
+             b.bottom_controls_min_height_offset);
+}
+
 }  // namespace
 
 // static
@@ -685,14 +702,6 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
       using_browser_compositor_(using_browser_compositor),
       synchronous_compositor_client_(nullptr),
       observing_root_window_(false),
-      prev_top_shown_pix_(0.f),
-      prev_top_controls_pix_(0.f),
-      prev_top_controls_translate_(0.f),
-      prev_top_controls_min_height_offset_pix_(0.f),
-      prev_bottom_shown_pix_(0.f),
-      prev_bottom_controls_pix_(0.f),
-      prev_bottom_controls_translate_(0.f),
-      prev_bottom_controls_min_height_offset_pix_(0.f),
       page_scale_(1.f),
       min_page_scale_(1.f),
       max_page_scale_(1.f),
@@ -969,25 +978,22 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
 
   // Note that the height of browser control is not affected by page scale
   // factor. Thus, |top_content_offset| in CSS pixels is also in DIPs.
-  float top_content_offset =
-      metadata.browser_controls_metadata.top_controls_height *
-      metadata.browser_controls_metadata.top_controls_shown_ratio;
-  float top_shown_pix = top_content_offset;
+  const ClampedBrowserControls controls =
+      ClampBrowserControls(metadata.browser_controls_metadata);
+  const float top_content_offset = controls.top_content_offset;
 
   if (ime_adapter_android_) {
     ime_adapter_android_->UpdateFrameInfo(metadata.selection.start, dip_scale,
-                                          top_shown_pix);
+                                          top_content_offset);
   }
 
   if (!gesture_listener_manager_)
     return;
 
   input::ScopedInputDispatchPin pin(this);
-  UpdateTouchSelectionController(
-      metadata.selection, metadata.page_scale_factor,
-      metadata.browser_controls_metadata.top_controls_height,
-      metadata.browser_controls_metadata.top_controls_shown_ratio,
-      scrollable_viewport_size_dip);
+  UpdateTouchSelectionController(metadata.selection, metadata.page_scale_factor,
+                                 top_content_offset,
+                                 scrollable_viewport_size_dip);
 
   // Abort if the view was destroyed during UpdateTouchSelectionController
   // (e.g. via synchronous JNI callout to Java).
@@ -998,16 +1004,8 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   // ViewAndroid::content_offset() must be in dip.
   float top_content_offset_dip = top_content_offset / dip_scale;
   view_.UpdateFrameInfo({scrollable_viewport_size_dip, top_content_offset_dip});
-  // TODO(b/555766816): UpdateControls() should take in
-  // `browser_controls_metadata`.
-  bool controls_changed = UpdateControls(
-      view_.GetDipScale(),
-      metadata.browser_controls_metadata.top_controls_height,
-      metadata.browser_controls_metadata.top_controls_shown_ratio,
-      metadata.browser_controls_metadata.top_controls_min_height_offset,
-      metadata.browser_controls_metadata.bottom_controls_height,
-      metadata.browser_controls_metadata.bottom_controls_shown_ratio,
-      metadata.browser_controls_metadata.bottom_controls_min_height_offset);
+  bool controls_changed =
+      UpdateControls(metadata.browser_controls_metadata, controls);
 
   // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   SetContentBackgroundColor(is_transparent
@@ -1023,12 +1021,12 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
         metadata.root_overflow_y_hidden);
   }
 
-  // All offsets and sizes except |top_shown_pix| are in dip.
+  // All offsets and sizes except |top_content_offset| are in dip.
   gesture_listener_manager_->UpdateScrollInfo(
       root_scroll_offset_dip, metadata.page_scale_factor,
       metadata.min_page_scale_factor, metadata.max_page_scale_factor,
       root_layer_size_dip, scrollable_viewport_size_dip, top_content_offset_dip,
-      top_shown_pix, controls_changed);
+      top_content_offset, controls_changed);
   // This needs to be called after GestureListenerManager::UpdateScrollInfo, as
   // it depends on frame info being updated during the UpdateScrollInfo call.
   auto* wcax = GetWebContentsAccessibilityBase();
@@ -2384,8 +2382,7 @@ RenderWidgetHostViewAndroid::GetWebContentsAccessibilityBase() const {
 void RenderWidgetHostViewAndroid::UpdateTouchSelectionController(
     const viz::Selection<gfx::SelectionBound>& selection,
     float page_scale_factor,
-    float top_controls_height,
-    float top_controls_shown_ratio,
+    float top_content_offset,
     const gfx::SizeF& scrollable_viewport_size_dip) {
   if (destroy_pending() || !touch_selection_controller_) {
     return;
@@ -2403,66 +2400,71 @@ void RenderWidgetHostViewAndroid::UpdateTouchSelectionController(
   // Set parameters for adaptive handle orientation.
   gfx::SizeF viewport_size(scrollable_viewport_size_dip);
   viewport_size.Scale(page_scale_factor);
-  gfx::RectF viewport_rect(0.0f, top_controls_height * top_controls_shown_ratio,
-                           viewport_size.width(), viewport_size.height());
+  gfx::RectF viewport_rect(0.0f, top_content_offset, viewport_size.width(),
+                           viewport_size.height());
   touch_selection_controller_->OnViewportChanged(viewport_rect);
 }
 
+RenderWidgetHostViewAndroid::ClampedBrowserControls
+RenderWidgetHostViewAndroid::ClampBrowserControls(
+    const cc::BrowserControlsMetadata& metadata) const {
+  // Bound by the heights the browser is laying out right now. The renderer
+  // may still be reporting a previous height (it learns of changes
+  // asynchronously via VisualProperties), but it can never legitimately
+  // need to position anything outside the controls the browser is drawing.
+  RenderViewHostDelegateView* delegate_view =
+      host()->delegate() ? host()->delegate()->GetDelegateView() : nullptr;
+  const float browser_top_height =
+      delegate_view ? delegate_view->GetTopControlsHeight() : 0;
+  const float browser_bottom_height =
+      delegate_view ? delegate_view->GetBottomControlsHeight() : 0;
+  CHECK_GE(browser_top_height, 0.f);
+  CHECK_GE(browser_bottom_height, 0.f);
+
+  // The renderer reports a height and a shown ratio, from which both the
+  // controls' translation (shown - height) and the content offset (shown) are
+  // derived. Clamp the translation and derive the content offset from it so
+  // the two always agree. Clamping `height * ratio` directly would let a
+  // renderer claim height 0 at ratio 1: translation 0 (controls fully shown)
+  // with content offset 0 (page drawn underneath them).
+  const float top_translate = std::clamp(
+      metadata.top_controls_height * (metadata.top_controls_shown_ratio - 1.f),
+      -browser_top_height, 0.f);
+  const float bottom_translate =
+      std::clamp(metadata.bottom_controls_height *
+                     (1.f - metadata.bottom_controls_shown_ratio),
+                 0.f, browser_bottom_height);
+
+  ClampedBrowserControls clamped;
+  clamped.top_translate = top_translate;
+  clamped.top_content_offset = browser_top_height + top_translate;
+  clamped.top_min_height_offset = std::clamp(
+      metadata.top_controls_min_height_offset, 0.f, browser_top_height);
+  clamped.bottom_translate = bottom_translate;
+  clamped.bottom_min_height_offset = std::clamp(
+      metadata.bottom_controls_min_height_offset, 0.f, browser_bottom_height);
+  return clamped;
+}
+
 bool RenderWidgetHostViewAndroid::UpdateControls(
-    float dip_scale,
-    float top_controls_height,
-    float top_controls_shown_ratio,
-    float top_controls_min_height_offset,
-    float bottom_controls_height,
-    float bottom_controls_shown_ratio,
-    float bottom_controls_min_height_offset) {
-  float top_controls_pix = top_controls_height;
-  // |top_content_offset| is in physical pixels if --use-zoom-for-dsf is
-  // enabled. Otherwise, it is in DIPs.
-  // Note that the height of browser control is not affected by page scale
-  // factor. Thus, |top_content_offset| in CSS pixels is also in DIPs.
-  float top_content_offset = top_controls_height * top_controls_shown_ratio;
-  float top_shown_pix = top_content_offset;
-  float top_translate = top_shown_pix - top_controls_pix;
-  bool top_changed =
-      !cc::MathUtil::IsFloatNearlyTheSame(top_shown_pix, prev_top_shown_pix_);
-
-  float top_min_height_offset_pix = top_controls_min_height_offset;
-  top_changed |= !cc::MathUtil::IsFloatNearlyTheSame(
-      top_min_height_offset_pix, prev_top_controls_min_height_offset_pix_);
-
-  top_changed |= !cc::MathUtil::IsFloatNearlyTheSame(top_controls_pix,
-                                                     prev_top_controls_pix_);
-
-  prev_top_shown_pix_ = top_shown_pix;
-  prev_top_controls_pix_ = top_controls_pix;
-  prev_top_controls_translate_ = top_translate;
-  prev_top_controls_min_height_offset_pix_ = top_min_height_offset_pix;
-
-  float bottom_controls_pix = bottom_controls_height;
-  float bottom_shown_pix = bottom_controls_pix * bottom_controls_shown_ratio;
-  bool bottom_changed = !cc::MathUtil::IsFloatNearlyTheSame(
-      bottom_shown_pix, prev_bottom_shown_pix_);
-  bottom_changed |= !cc::MathUtil::IsFloatNearlyTheSame(
-      bottom_controls_pix, prev_bottom_controls_pix_);
-  float bottom_translate = bottom_controls_pix - bottom_shown_pix;
-
-  float bottom_min_height_offset_pix = bottom_controls_min_height_offset;
-  bottom_changed |= !cc::MathUtil::IsFloatNearlyTheSame(
-      bottom_min_height_offset_pix,
-      prev_bottom_controls_min_height_offset_pix_);
-
-  if (top_changed || bottom_changed || !controls_initialized_) {
-    view_.OnControlsChanged(top_translate, top_shown_pix,
-                            top_min_height_offset_pix, bottom_translate,
-                            bottom_min_height_offset_pix);
+    const cc::BrowserControlsMetadata& renderer_metadata,
+    const ClampedBrowserControls& clamped) {
+  // Notify when the renderer reports new browser controls state; `clamped` is
+  // the browser-bounded reading of that report. Comparing `clamped` instead
+  // would notify for a stale frame right after the embedder changes its control
+  // heights (the bound moved, the renderer did not), which embedders animating
+  // height changes may mistake for the renderer having finished the animation.
+  const bool changed =
+      !last_renderer_controls_.has_value() ||
+      !AreControlsEquivalent(*last_renderer_controls_, renderer_metadata);
+  last_renderer_controls_ = renderer_metadata;
+  if (changed) {
+    view_.OnControlsChanged(clamped.top_translate, clamped.top_content_offset,
+                            clamped.top_min_height_offset,
+                            clamped.bottom_translate,
+                            clamped.bottom_min_height_offset);
   }
-  prev_bottom_shown_pix_ = bottom_shown_pix;
-  prev_bottom_controls_translate_ = bottom_translate;
-  prev_bottom_controls_min_height_offset_pix_ = bottom_min_height_offset_pix;
-  prev_bottom_controls_pix_ = bottom_controls_pix;
-  controls_initialized_ = true;
-  return top_changed || bottom_changed;
+  return changed;
 }
 
 void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
@@ -2571,10 +2573,10 @@ void RenderWidgetHostViewAndroid::HideInternal() {
   // If a RWHVA gets hidden and swapped out then gets swapped back in and shown,
   // the last known controls offsets may be the same as the latest values we get
   // from the renderer. In this case, we would skip pushing the offset to
-  // `ViewAndroid` assuming there was no change. To prevent this, we should
-  // reset `controls_initialized_` to make sure the offsets are pushed once the
-  // RWHVA is shown again.
-  controls_initialized_ = false;
+  // `ViewAndroid` assuming there was no change. To prevent this, forget the
+  // last report to make sure the offsets are pushed once the RWHVA is shown
+  // again.
+  last_renderer_controls_.reset();
 
   // Only preserve the frontbuffer if the activity was stopped while the
   // window is still visible. This avoids visual artifacts when transitioning

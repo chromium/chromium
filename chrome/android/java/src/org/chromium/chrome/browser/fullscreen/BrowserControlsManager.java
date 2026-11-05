@@ -928,9 +928,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             int topContentOffset,
             int topControlsMinHeightOffset,
             int bottomControlsMinHeightOffset) {
-        // This min/max logic is here to handle changes in the browser controls height. For example,
-        // if we change either height to 0, the offsets of the controls should also be 0. This works
-        // assuming we get an event from the renderer after the browser control heights change.
+        // Live renderer offsets are already bounded by the browser's control heights in
+        // RenderWidgetHostViewAndroid. This path is also reached with a tab's last-known offsets
+        // (e.g. when switching back to it), which may predate a change to the control heights,
+        // so bound them again here: a height of 0 must yield offsets of 0.
         int rendererTopControlOffset = Math.max(topControlsOffset, -getTopControlsHeight());
         int rendererBottomControlOffset = Math.min(bottomControlsOffset, getBottomControlsHeight());
 

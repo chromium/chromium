@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/renderer_host/mojo_render_input_router_delegate_impl.h"
+#include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
@@ -111,6 +112,32 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
   return info.param ? "FullscreenKillswitch" : "Default";
 }
 
+// The fixture's RenderWidgetHostDelegate. Its RenderViewHostDelegateView
+// reports configurable browser controls heights, as the embedder's would.
+class TestRenderWidgetHostDelegate : public MockRenderWidgetHostDelegate {
+ public:
+  void SetControlsHeights(int top, int bottom) {
+    delegate_view_.top = top;
+    delegate_view_.bottom = bottom;
+  }
+
+  // MockRenderWidgetHostDelegate:
+  RenderViewHostDelegateView* GetDelegateView() override {
+    return &delegate_view_;
+  }
+
+ private:
+  struct DelegateView : public RenderViewHostDelegateView {
+    int GetTopControlsHeight() const override { return top; }
+    int GetBottomControlsHeight() const override { return bottom; }
+
+    int top = 0;
+    int bottom = 0;
+  };
+
+  DelegateView delegate_view_;
+};
+
 }  // namespace
 
 class MockInputTransferHandler : public InputTransferHandlerAndroid {
@@ -181,12 +208,15 @@ class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
   viz::LocalSurfaceId GetLocalSurfaceIdAndConfirmNewerThan(
       viz::LocalSurfaceId other);
 
-  MockRenderWidgetHostDelegate* delegate() { return delegate_.get(); }
+  TestRenderWidgetHostDelegate* delegate() { return delegate_.get(); }
 
   // Directly map to `RenderWidgetHostViewAndroid` methods.
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
       const std::optional<viz::LocalSurfaceId>& child_local_surface_id);
+  bool UpdateControls(const cc::BrowserControlsMetadata& metadata);
+  RenderWidgetHostViewAndroid::ClampedBrowserControls ClampBrowserControls(
+      const cc::BrowserControlsMetadata& metadata);
   void WasEvicted();
   ui::ViewAndroid* GetNativeView();
   void OnRenderFrameMetadataChangedAfterActivation(
@@ -210,7 +240,7 @@ class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
  private:
   std::unique_ptr<MockRenderProcessHost> process_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
-  std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
+  std::unique_ptr<TestRenderWidgetHostDelegate> delegate_;
 
   // TestRenderViewHost
   scoped_refptr<RenderViewHostImpl> render_view_host_;
@@ -249,6 +279,18 @@ bool RenderWidgetHostViewAndroidTest::SynchronizeVisualProperties(
       deadline_policy, child_local_surface_id);
 }
 
+bool RenderWidgetHostViewAndroidTest::UpdateControls(
+    const cc::BrowserControlsMetadata& metadata) {
+  return render_widget_host_view_android_->UpdateControls(
+      metadata, ClampBrowserControls(metadata));
+}
+
+RenderWidgetHostViewAndroid::ClampedBrowserControls
+RenderWidgetHostViewAndroidTest::ClampBrowserControls(
+    const cc::BrowserControlsMetadata& metadata) {
+  return render_widget_host_view_android_->ClampBrowserControls(metadata);
+}
+
 void RenderWidgetHostViewAndroidTest::WasEvicted() {
   render_widget_host_view_android_->WasEvicted();
 }
@@ -285,7 +327,7 @@ RenderWidgetHostViewAndroidTest::CreateRenderWidgetHostViewAndroid(
 void RenderWidgetHostViewAndroidTest::SetUp() {
   RenderViewHostImplTestHarness::SetUp();
 
-  delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
+  delegate_ = std::make_unique<TestRenderWidgetHostDelegate>();
   process_ = std::make_unique<MockRenderProcessHost>(browser_context());
   site_instance_group_ = base::WrapRefCounted(
       SiteInstanceGroup::CreateForTesting(browser_context(), process_.get()));
@@ -731,82 +773,90 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
 }
 
 TEST_F(RenderWidgetHostViewAndroidTest, UpdateControls) {
-  float dip_scale = 1.0f;
-  float top_height = 90.f;
-  float top_ratio = 1.f;
-  float top_min_height = 0.f;
-  float bottom_height = 50.f;
-  float bottom_ratio = 1.f;
-  float bottom_min_height = 0.f;
-
-  // Get the test view instance from the fixture.
-  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  cc::BrowserControlsMetadata controls;
+  controls.top_controls_height = 90.f;
+  controls.top_controls_shown_ratio = 1.f;
+  controls.top_controls_min_height_offset = 0.f;
+  controls.bottom_controls_height = 50.f;
+  controls.bottom_controls_shown_ratio = 1.f;
+  controls.bottom_controls_min_height_offset = 0.f;
 
   // 1. First call should return true as controls are uninitialized.
-  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, top_height, top_ratio,
-                                    top_min_height, bottom_height, bottom_ratio,
-                                    bottom_min_height));
+  EXPECT_TRUE(UpdateControls(controls));
+  EXPECT_FALSE(UpdateControls(controls));
 
-  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, top_height, top_ratio,
-                                     top_min_height, bottom_height,
-                                     bottom_ratio, bottom_min_height));
+  // 2. Change top_controls_height.
+  controls.top_controls_height = 100.f;
+  EXPECT_TRUE(UpdateControls(controls));
+  EXPECT_FALSE(UpdateControls(controls));
 
-  // 3. Change top_controls_height.
-  float new_top_height = 100.f;
-  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, top_ratio,
-                                    top_min_height, bottom_height, bottom_ratio,
-                                    bottom_min_height));
-  // Call again with same values, should return false.
-  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, top_ratio,
-                                     top_min_height, bottom_height,
-                                     bottom_ratio, bottom_min_height));
+  // 3. Change top_controls_shown_ratio.
+  controls.top_controls_shown_ratio = 0.5f;
+  EXPECT_TRUE(UpdateControls(controls));
+  EXPECT_FALSE(UpdateControls(controls));
 
-  // 4. Change top_controls_shown_ratio.
-  float new_top_ratio = 0.5f;
-  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                    top_min_height, bottom_height, bottom_ratio,
-                                    bottom_min_height));
-  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                     top_min_height, bottom_height,
-                                     bottom_ratio, bottom_min_height));
+  // 4. Change top_controls_min_height_offset.
+  controls.top_controls_min_height_offset = 10.f;
+  EXPECT_TRUE(UpdateControls(controls));
+  EXPECT_FALSE(UpdateControls(controls));
 
-  // 5. Change top_controls_min_height_offset.
-  float new_top_min_height = 10.f;
-  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                    new_top_min_height, bottom_height,
-                                    bottom_ratio, bottom_min_height));
-  // Call again with same values, should return false.
-  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                     new_top_min_height, bottom_height,
-                                     bottom_ratio, bottom_min_height));
+  // 5. Change bottom_controls_shown_ratio.
+  controls.bottom_controls_shown_ratio = 0.0f;
+  EXPECT_TRUE(UpdateControls(controls));
+  EXPECT_FALSE(UpdateControls(controls));
 
-  // 6. Change bottom_controls_shown_ratio.
-  float new_bottom_ratio = 0.0f;
-  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                    new_top_min_height, bottom_height,
-                                    new_bottom_ratio, bottom_min_height));
+  // 6. Change bottom_controls_height while at 0% shown ratio.
+  controls.bottom_controls_height = 60.f;
+  EXPECT_TRUE(UpdateControls(controls));
+  EXPECT_FALSE(UpdateControls(controls));
 
-  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                     new_top_min_height, bottom_height,
-                                     new_bottom_ratio, bottom_min_height));
+  // 7. Change bottom_controls_min_height_offset.
+  controls.bottom_controls_min_height_offset = 10.f;
+  EXPECT_TRUE(UpdateControls(controls));
+  EXPECT_FALSE(UpdateControls(controls));
+}
 
-  // 7. Change bottom_controls_height while at 0% shown ratio.
-  float new_bottom_height = 60.f;
-  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                    new_top_min_height, new_bottom_height,
-                                    new_bottom_ratio, bottom_min_height));
-  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                     new_top_min_height, new_bottom_height,
-                                     new_bottom_ratio, bottom_min_height));
+// The renderer is untrusted; its reported browser controls offsets must be
+// clamped to the heights the browser owns (crbug.com/579587136).
+TEST_F(RenderWidgetHostViewAndroidTest, ClampBrowserControls) {
+  delegate()->SetControlsHeights(/*top=*/150, /*bottom=*/80);
 
-  // 8. Change bottom_controls_min_height_offset.
-  float new_bottom_min_height = 10.f;
-  EXPECT_TRUE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                    new_top_min_height, new_bottom_height,
-                                    new_bottom_ratio, new_bottom_min_height));
-  EXPECT_FALSE(rwhva->UpdateControls(dip_scale, new_top_height, new_top_ratio,
-                                     new_top_min_height, new_bottom_height,
-                                     new_bottom_ratio, new_bottom_min_height));
+  // Honest values pass through unchanged.
+  cc::BrowserControlsMetadata metadata;
+  metadata.top_controls_height = 150.f;
+  metadata.top_controls_shown_ratio = 0.5f;
+  metadata.top_controls_min_height_offset = 20.f;
+  metadata.bottom_controls_height = 80.f;
+  metadata.bottom_controls_shown_ratio = 0.25f;
+  metadata.bottom_controls_min_height_offset = 10.f;
+  auto clamped = ClampBrowserControls(metadata);
+  EXPECT_FLOAT_EQ(-75.f, clamped.top_translate);
+  EXPECT_FLOAT_EQ(75.f, clamped.top_content_offset);
+  EXPECT_FLOAT_EQ(20.f, clamped.top_min_height_offset);
+  EXPECT_FLOAT_EQ(60.f, clamped.bottom_translate);
+  EXPECT_FLOAT_EQ(10.f, clamped.bottom_min_height_offset);
+
+  // A zero height with the controls fully shown must not report a zero content
+  // offset: the controls are still drawn at full height.
+  metadata.top_controls_height = 0.f;
+  metadata.top_controls_shown_ratio = 1.f;
+  clamped = ClampBrowserControls(metadata);
+  EXPECT_FLOAT_EQ(0.f, clamped.top_translate);
+  EXPECT_FLOAT_EQ(150.f, clamped.top_content_offset);
+
+  // Oversized values are bounded by the browser's heights.
+  metadata.top_controls_height = 4294967296.f;
+  metadata.top_controls_shown_ratio = 0.f;
+  metadata.top_controls_min_height_offset = 500.f;
+  metadata.bottom_controls_height = 4294967296.f;
+  metadata.bottom_controls_shown_ratio = 0.f;
+  metadata.bottom_controls_min_height_offset = 500.f;
+  clamped = ClampBrowserControls(metadata);
+  EXPECT_FLOAT_EQ(-150.f, clamped.top_translate);
+  EXPECT_FLOAT_EQ(0.f, clamped.top_content_offset);
+  EXPECT_FLOAT_EQ(150.f, clamped.top_min_height_offset);
+  EXPECT_FLOAT_EQ(80.f, clamped.bottom_translate);
+  EXPECT_FLOAT_EQ(80.f, clamped.bottom_min_height_offset);
 }
 
 // Test for scaling.
