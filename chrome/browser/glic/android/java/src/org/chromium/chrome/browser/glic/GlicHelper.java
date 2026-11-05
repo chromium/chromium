@@ -76,10 +76,10 @@ public class GlicHelper {
             return;
         }
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null || !(activity instanceof SnackbarManageable)) {
+        if (activity == null || !(activity instanceof SnackbarManageable snackbarManageable)) {
             return;
         }
-        SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
+        SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
         if (snackbarManager == null) {
             return;
         }
@@ -192,8 +192,8 @@ public class GlicHelper {
      * @param activity The Android activity.
      */
     public static void showNotAvailableInIncognitoSnackbar(Activity activity) {
-        if (activity instanceof SnackbarManageable) {
-            SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
+        if (activity instanceof SnackbarManageable snackbarManageable) {
+            SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
             if (snackbarManager != null) {
                 snackbarManager.showSnackbar(
                         Snackbar.make(
@@ -211,8 +211,8 @@ public class GlicHelper {
      * @param activity The Android activity.
      */
     public static void showUnavailableSnackbar(Activity activity) {
-        if (activity instanceof SnackbarManageable) {
-            SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
+        if (activity instanceof SnackbarManageable snackbarManageable) {
+            SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
             if (snackbarManager != null) {
                 snackbarManager.showSnackbar(
                         Snackbar.make(
@@ -232,8 +232,8 @@ public class GlicHelper {
      * @param profile The current {@link Profile}.
      */
     public static void showUnpinnedSnackbar(Activity activity, Profile profile) {
-        if (activity instanceof SnackbarManageable) {
-            SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
+        if (activity instanceof SnackbarManageable snackbarManageable) {
+            SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
             if (snackbarManager != null) {
                 showUnpinnedSnackbar(snackbarManager, activity, profile);
             }

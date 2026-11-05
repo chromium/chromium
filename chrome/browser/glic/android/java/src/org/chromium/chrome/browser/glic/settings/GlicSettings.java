@@ -156,9 +156,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private void scrollAndHighlightPreference(String key) {
         RecyclerView listView = getListView();
         if (listView == null) return;
-        RecyclerView.Adapter adapter = listView.getAdapter();
-        if (!(adapter instanceof PreferencePositionCallback)) return;
-        PreferencePositionCallback callback = (PreferencePositionCallback) adapter;
+        if (!(listView.getAdapter() instanceof PreferencePositionCallback callback)) return;
         int position = callback.getPreferenceAdapterPosition(key);
         if (position == RecyclerView.NO_POSITION) return;
         scrollToPreference(key);
@@ -177,9 +175,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         params.setNumPulses(1);
         // Copy rounded corners from ContainmentItemDecoration if present.
         for (int i = 0; i < listView.getItemDecorationCount(); i++) {
-            RecyclerView.ItemDecoration decoration = listView.getItemDecorationAt(i);
-            if (decoration instanceof ContainmentItemDecoration) {
-                ContainmentItemDecoration containmentDec = (ContainmentItemDecoration) decoration;
+            if (listView.getItemDecorationAt(i)
+                    instanceof ContainmentItemDecoration containmentDec) {
                 ContainerStyle style = containmentDec.getContainerStyle(position);
                 if (style != null) {
                     params.setTopCornerRadius((int) style.getTopRadius());
@@ -468,8 +465,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 Preference pref = findPreference(key);
                 if (pref != null) {
                     pref.setEnabled(false);
-                    if (pref instanceof TwoStatePreference) {
-                        ((TwoStatePreference) pref).setChecked(false);
+                    if (pref instanceof TwoStatePreference twoStatePref) {
+                        twoStatePref.setChecked(false);
                     }
                 }
             }
