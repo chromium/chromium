@@ -1598,10 +1598,6 @@ void TestUpdatePrioritySequenceNotScheduled(ThreadPoolImplTest* test,
   for (auto& task_runner_and_events : task_runners_and_events) {
     task_runner_and_events->task_ran.Wait();
   }
-
-  while (!task_runners_and_events.empty()) {
-    task_runners_and_events.pop_back();
-  }
 }
 
 // Update the priority of a sequence when it is scheduled, i.e. not currently
@@ -1649,10 +1645,6 @@ void TestUpdatePrioritySequenceScheduled(ThreadPoolImplTest* test,
   for (auto& task_runner_and_events : task_runners_and_events) {
     task_runner_and_events->blocked.Signal();
     task_runner_and_events->task_ran.Wait();
-  }
-
-  while (!task_runners_and_events.empty()) {
-    task_runners_and_events.pop_back();
   }
 }
 
