@@ -548,13 +548,6 @@ template("rust_api_from_cpp") {
     configs = default_compiler_configs
     args += [ "--" ] + libclang_args_for_cpp
 
-    # TODO(crbug.com/40226863): Remove after rolling Crubit to a version that
-    # supports the `type_visibility` attribute that libc++ uses on
-    # `namespace std` (without this, Crubit can't generate bindings for any
-    # items in `namespace std` - e.g. for `std::optional`).  See the WIP PR at
-    # https://github.com/google/crubit/pull/2361
-    args += [ "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
-
     # Clang args that write the `depfile`.  `-MT` sets the target inside the
     # depfile to the first output of the action (as expected by Ninja and
     # Siso).
