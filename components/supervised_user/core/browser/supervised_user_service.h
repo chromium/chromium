@@ -31,10 +31,6 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace version_info {
-enum class Channel;
-}  // namespace version_info
-
 namespace supervised_user {
 
 // Represents custodian data - who is responsible for managing the supervised
@@ -78,14 +74,6 @@ class SupervisedUserService : public KeyedService {
   class PlatformDelegate {
    public:
     virtual ~PlatformDelegate() = default;
-
-    // Returns the country code stored for this client.
-    // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example:
-    // us, br, in.
-    virtual std::string GetCountryCode() const = 0;
-
-    // Returns the channel for the installation.
-    virtual version_info::Channel GetChannel() const = 0;
 
     // Decides if incognito tabs should be closed. Tested when the supervision
     // features are enabled.

@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 
 #include <memory>
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/no_destructor.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
@@ -21,14 +23,9 @@
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
-#else
-#include "chrome/browser/supervised_user/desktop/supervised_user_service_platform_delegate.h"
-#endif
 
 namespace supervised_user {
 
@@ -40,6 +37,21 @@ class FilterDelegateImpl : public FamilyLinkUrlFilter::Delegate {
     return IsSupportedChromeExtensionURL(url);
   }
 };
+
+// Returns the country code reported by the variations service, or an empty
+// string if it is unavailable.
+std::string GetSupervisedUserCountryCode() {
+  std::string country;
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  if (variations_service) {
+    country = variations_service->GetStoredPermanentCountry();
+    if (country.empty()) {
+      country = variations_service->GetLatestCountry();
+    }
+  }
+  return country;
+}
 
 }  // namespace
 
@@ -81,7 +93,8 @@ SupervisedUserUrlFilteringServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  SupervisedUserServicePlatformDelegate platform_delegate(*profile);
+  const std::string country_code = GetSupervisedUserCountryCode();
+  const version_info::Channel channel = chrome::GetChannel();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
@@ -97,13 +110,11 @@ SupervisedUserUrlFilteringServiceFactory::BuildServiceInstanceForBrowserContext(
           std::make_unique<FilterDelegateImpl>(),
           std::make_unique<SupervisedUserUrlCheckerClient>(
               identity_manager, url_loader_factory, *profile->GetPrefs(),
-              platform_delegate.GetCountryCode(),
-              platform_delegate.GetChannel())),
+              country_code, channel)),
       std::make_unique<DeviceParentalControlsUrlFilter>(
           g_browser_process->device_parental_controls(),
           std::make_unique<SupervisedUserUrlCheckerClient>(
-              url_loader_factory, platform_delegate.GetCountryCode(),
-              platform_delegate.GetChannel())));
+              url_loader_factory, country_code, channel)));
 }
 
 }  // namespace supervised_user

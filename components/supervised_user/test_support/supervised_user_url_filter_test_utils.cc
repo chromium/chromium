@@ -6,11 +6,9 @@
 
 #include <cstddef>
 #include <deque>
-#include <string>
 #include <utility>
 
 #include "base/test/bind.h"
-#include "base/version_info/channel.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,16 +17,6 @@ namespace supervised_user {
 
 bool FakeURLFilterDelegate::SupportsWebstoreURL(const GURL& url) const {
   return false;
-}
-
-std::string FakePlatformDelegate::GetCountryCode() const {
-  // Country code information is not used in tests.
-  return std::string();
-}
-
-version_info::Channel FakePlatformDelegate::GetChannel() const {
-  // Channel information is not used in tests.
-  return version_info::Channel::UNKNOWN;
 }
 
 // The fake should be used in supervised user context, true is a reasonable

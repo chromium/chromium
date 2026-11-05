@@ -21,8 +21,6 @@ class ChromeSupervisedUserServicePlatformDelegateBase
   ~ChromeSupervisedUserServicePlatformDelegateBase() override;
 
   // supervised_user::SupervisedUserService::PlatformDelegate::
-  std::string GetCountryCode() const override;
-  version_info::Channel GetChannel() const override;
   bool ShouldCloseIncognitoTabs() const override;
 
   // ProfileObserver::

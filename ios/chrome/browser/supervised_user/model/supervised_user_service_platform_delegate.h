@@ -20,8 +20,6 @@ class SupervisedUserServicePlatformDelegate
                                         BrowserList& browser_list);
 
   // supervised_user::SupervisedUserService::PlatformDelegate
-  std::string GetCountryCode() const override;
-  version_info::Channel GetChannel() const override;
   bool ShouldCloseIncognitoTabs() const override;
   // Closes all incognito tabs of all windows when supervised users sign in.
   void CloseIncognitoTabs() override;

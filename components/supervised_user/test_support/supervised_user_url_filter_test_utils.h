@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <deque>
 #include <queue>
-#include <string>
 
 #include "base/memory/raw_ref.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
@@ -17,10 +16,6 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace version_info {
-enum class Channel;
-}
 
 namespace supervised_user {
 
@@ -31,8 +26,6 @@ class FakeURLFilterDelegate : public FamilyLinkUrlFilter::Delegate {
 
 class FakePlatformDelegate : public SupervisedUserService::PlatformDelegate {
  public:
-  std::string GetCountryCode() const override;
-  version_info::Channel GetChannel() const override;
   bool ShouldCloseIncognitoTabs() const override;
   void CloseIncognitoTabs() override;
 };

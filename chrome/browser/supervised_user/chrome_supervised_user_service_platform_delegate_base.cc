@@ -14,13 +14,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/common/channel_info.h"
 #include "components/enterprise/isolated_mode/prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/variations/service/variations_service.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace {
@@ -111,25 +109,6 @@ ChromeSupervisedUserServicePlatformDelegateBase::
 
 ChromeSupervisedUserServicePlatformDelegateBase::
     ~ChromeSupervisedUserServicePlatformDelegateBase() = default;
-
-std::string ChromeSupervisedUserServicePlatformDelegateBase::GetCountryCode()
-    const {
-  std::string country;
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  if (variations_service) {
-    country = variations_service->GetStoredPermanentCountry();
-    if (country.empty()) {
-      country = variations_service->GetLatestCountry();
-    }
-  }
-  return country;
-}
-
-version_info::Channel
-ChromeSupervisedUserServicePlatformDelegateBase::GetChannel() const {
-  return chrome::GetChannel();
-}
 
 void ChromeSupervisedUserServicePlatformDelegateBase::
     OnOffTheRecordProfileCreated(Profile* off_the_record) {
