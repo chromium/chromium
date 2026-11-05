@@ -328,8 +328,8 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
       CreateViewAndInstallController(
           std::make_unique<PaymentHandlerWebFlowViewController>(
               request_->spec(), request_->state(),
-              weak_ptr_factory_.GetWeakPtr(), request_->web_contents(),
-              GetProfile(), url, std::move(callback)),
+              weak_ptr_factory_.GetWeakPtr(), GetProfile(), url,
+              std::move(callback)),
           &controller_map_),
       // Do not animate: the slide animation is for switching between payment
       // sheets, but the user never sees the payment sheet right before the

@@ -7,12 +7,10 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "components/payments/core/features.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
@@ -24,28 +22,18 @@
 
 namespace payments {
 
-// TODO(crbug.com/558687749): Convert host_view_ to raw_ref<views::View> and use
-// CHECK_DEREF when kPaymentHandlerModalDialogHost is removed.
 PaymentHandlerModalDialogManagerDelegate::
-    PaymentHandlerModalDialogManagerDelegate(
-        views::View* host_view,
-        content::WebContents* tab_web_contents)
-    : host_view_(host_view), tab_web_contents_(tab_web_contents->GetWeakPtr()) {
-  if (base::FeatureList::IsEnabled(features::kPaymentHandlerModalDialogHost)) {
-    CHECK(host_view_);
-    host_view_observation_.Observe(host_view_);
-    if (host_view_->GetWidget()) {
-      widget_observation_.Observe(host_view_->GetWidget());
-    }
+    PaymentHandlerModalDialogManagerDelegate(views::View* host_view)
+    : host_view_(CHECK_DEREF(host_view)) {
+  host_view_observation_.Observe(&host_view_.get());
+  if (host_view_->GetWidget()) {
+    widget_observation_.Observe(host_view_->GetWidget());
   }
 }
 
 PaymentHandlerModalDialogManagerDelegate::
     ~PaymentHandlerModalDialogManagerDelegate() {
-  if (base::FeatureList::IsEnabled(features::kPaymentHandlerModalDialogHost)) {
-    observer_list_.Notify(
-        &web_modal::ModalDialogHostObserver::OnHostDestroying);
-  }
+  observer_list_.Notify(&web_modal::ModalDialogHostObserver::OnHostDestroying);
 }
 
 void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
@@ -61,29 +49,10 @@ void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
 web_modal::WebContentsModalDialogHost*
 PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost(
     content::WebContents* web_contents) {
-  if (base::FeatureList::IsEnabled(features::kPaymentHandlerModalDialogHost)) {
-    // Acts as the WebContentsModalDialogHost to display modal dialogs triggered
-    // by the payment handler's web view (e.g. WebAuthn and Secure Payment
-    // Confirmation dialogs) parented directly to the payment dialog widget.
-    return this;
-  }
-
-  if (!tab_web_contents_) {
-    return nullptr;
-  }
-
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(tab_web_contents_.get());
-  if (!tab) {
-    return nullptr;
-  }
-
-  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-
-  // Borrow the browser's WebContentModalDialogHost to display modal dialogs
-  // triggered by the payment handler's web view (e.g. WebAuthn and Secure
-  // Payment Confirmation dialogs).
-  return browser->GetWebContentsModalDialogHostForTab(tab);
+  // Acts as the WebContentsModalDialogHost to display modal dialogs triggered
+  // by the payment handler's web view (e.g. WebAuthn and Secure Payment
+  // Confirmation dialogs) parented directly to the payment dialog widget.
+  return this;
 }
 
 bool PaymentHandlerModalDialogManagerDelegate::IsWebContentsVisible(
@@ -119,7 +88,7 @@ gfx::Point PaymentHandlerModalDialogManagerDelegate::GetDialogPosition(
   const int x = (host_size.width() - size.width()) / 2;
   const int y = std::max(0, (host_size.height() - size.height()) / 2);
   gfx::Point position(x, y);
-  views::View::ConvertPointToWidget(host_view_, &position);
+  views::View::ConvertPointToWidget(&host_view_.get(), &position);
   return position;
 }
 
@@ -142,35 +111,23 @@ gfx::Size PaymentHandlerModalDialogManagerDelegate::GetMaximumDialogSize() {
 
 void PaymentHandlerModalDialogManagerDelegate::OnViewAddedToWidget(
     views::View* observed_view) {
-  if (observed_view == host_view_ && host_view_->GetWidget()) {
-    widget_observation_.Reset();
-    widget_observation_.Observe(host_view_->GetWidget());
-    NotifyPositionRequiresUpdate();
-  }
+  CHECK_EQ(observed_view, &host_view_.get());
+  widget_observation_.Reset();
+  widget_observation_.Observe(host_view_->GetWidget());
+  NotifyPositionRequiresUpdate();
 }
 
 void PaymentHandlerModalDialogManagerDelegate::OnViewRemovedFromWidget(
     views::View* observed_view) {
-  if (observed_view == host_view_) {
-    widget_observation_.Reset();
-    NotifyPositionRequiresUpdate();
-  }
+  CHECK_EQ(observed_view, &host_view_.get());
+  widget_observation_.Reset();
+  NotifyPositionRequiresUpdate();
 }
 
 void PaymentHandlerModalDialogManagerDelegate::OnViewBoundsChanged(
     views::View* observed_view) {
-  if (observed_view == host_view_) {
-    NotifyPositionRequiresUpdate();
-  }
-}
-
-void PaymentHandlerModalDialogManagerDelegate::OnViewIsDeleting(
-    views::View* observed_view) {
-  if (observed_view == host_view_) {
-    widget_observation_.Reset();
-    host_view_observation_.Reset();
-    host_view_ = nullptr;
-  }
+  CHECK_EQ(observed_view, &host_view_.get());
+  NotifyPositionRequiresUpdate();
 }
 
 void PaymentHandlerModalDialogManagerDelegate::OnWidgetBoundsChanged(

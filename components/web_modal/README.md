@@ -94,7 +94,7 @@ Any object acting as a `WebContentsModalDialogHost` must guarantee five core beh
 
 #### Canonical Reference
 * [`BrowserView::GetWebContentsModalDialogHost()`](../../chrome/browser/ui/views/frame/browser_view.h): Entrypoint on standard browser Views windows. This delegates directly to [`BrowserViewLayout::GetWebContentsModalDialogHost()`](../../chrome/browser/ui/views/frame/layout/browser_view_layout.h), which returns its internal [`BrowserModalDialogHostViews`](../../chrome/browser/ui/views/frame/browser_modal_dialog_host_views.h) instance (`dialog_host_`).
-* [`PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost()`](../../chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.cc): Demonstrates how a custom secondary container delegates to its parent window's modal host.
+* [`PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost()`](../../chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.cc): Implements `WebContentsModalDialogHost` directly to parent and position child modal dialogs over the Payment Request dialog widget.
 * [`WebUIBubbleDialogView::GetWebContentsModalDialogHost()`](../../chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h): Implements `WebContentsModalDialogHost` to position and clip web-modal dialogs within Top Chrome WebUI bubbles.
 
 ---

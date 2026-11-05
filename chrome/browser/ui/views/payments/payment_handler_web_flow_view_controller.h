@@ -106,13 +106,6 @@ class PaymentHandlerWebFlowViewController
   };
   // This ctor forwards its first 3 args to PaymentRequestSheetController's
   // ctor.
-  // |payment_request_web_contents| is the page that initiated the
-  // PaymentRequest. It is used in two ways:
-  // - Its web developer console is used to print error messages.
-  // - When kPaymentHandlerModalDialogHost is disabled, its
-  //   WebContentsModalDialogHost is lent to the payment handler for the
-  //   display of modal dialogs initiated from the payment handler's web
-  //   content.
   // |profile| is the browser context used to create the new payment handler
   // WebContents object that will navigate to |target|.
   // |first_navigation_complete_callback| is invoked once the payment handler
@@ -121,7 +114,6 @@ class PaymentHandlerWebFlowViewController
       base::WeakPtr<PaymentRequestSpec> spec,
       base::WeakPtr<PaymentRequestState> state,
       base::WeakPtr<PaymentRequestDialogView> dialog,
-      content::WebContents* payment_request_web_contents,
       Profile* profile,
       GURL target,
       PaymentHandlerOpenWindowCallback first_navigation_complete_callback);
