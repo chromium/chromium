@@ -20877,6 +20877,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "YieldToLooperPeriod": "100ms"
+                    },
                     "enable_features": [
                         "YieldToLooperPeriodically"
                     ]
