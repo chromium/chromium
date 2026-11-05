@@ -19,6 +19,21 @@ import models
 _PATH = 'feature_list.cc'
 
 
+def _parse_source(text):
+    """Calls cpp_parser.parse_source() with the views that it expects."""
+    _, structure = cpp_lexer.blank_preprocessor_lines(*cpp_lexer.lex(text))
+    return cpp_parser.parse_source(_PATH, text, structure)
+
+
+def _parse_feature_definitions(text):
+    """Calls cpp_parser.parse_feature_definitions() with the views that it
+    expects.
+    """
+    return cpp_parser.parse_feature_definitions(
+        _PATH, *cpp_lexer.blank_preprocessor_lines(*cpp_lexer.lex(text))
+    )
+
+
 class CppLexerTest(unittest.TestCase):
     def _blanked(self, text):
         """Returns the expected lexer output, where '~' marks a blanked char."""
@@ -202,11 +217,14 @@ class CppLexerTest(unittest.TestCase):
 
 class ParseSourceTest(unittest.TestCase):
     def _entries(self, source):
-        return [(entry.line, entry.written) for entry in source.entries]
+        return [
+            (entry.line, entry.written)
+            for entry in source.feature_array.entries
+        ]
 
     def _assert_error(self, expected_messages, text):
         with self.assertRaises(models.GeneratorError) as cm:
-            cpp_parser.parse_source(_PATH, text)
+            _parse_source(text)
         self.assertEqual(expected_messages, cm.exception.messages)
 
     def testParseSource(self):
@@ -244,12 +262,6 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
         self.assertEqual(
             models.ParsedSource(
                 path=_PATH,
-                entries=(
-                    models.FeatureEntry(_PATH, 17, '', 'kLocal'),
-                    models.FeatureEntry(_PATH, 18, 'features::', 'kQualified'),
-                    models.FeatureEntry(_PATH, 19, '::', 'kAbsolute'),
-                ),
-                array_namespace=('chrome', 'android'),
                 includes=('chrome/flags/feature_list.h', 'base/feature_list.h'),
                 directives=(
                     models.DefinitionDirective(
@@ -260,8 +272,19 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
                     ),
                 ),
                 feature_map_names=('ChromeFeatureMap',),
+                feature_array=models.Array(
+                    param_type=None,
+                    namespace=('chrome', 'android'),
+                    entries=(
+                        models.ArrayEntry(_PATH, 17, '', 'kLocal'),
+                        models.ArrayEntry(
+                            _PATH, 18, 'features::', 'kQualified'
+                        ),
+                        models.ArrayEntry(_PATH, 19, '::', 'kAbsolute'),
+                    ),
+                ),
             ),
-            cpp_parser.parse_source(_PATH, text),
+            _parse_source(text),
         )
 
     def testArrayDeclarations(self):
@@ -273,8 +296,8 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
             'kFeaturesExposedToJava = {',
         ):
             with self.subTest(declaration=declaration):
-                source = cpp_parser.parse_source(
-                    _PATH, declaration + '\n    &kFoo,\n    &kBar,\n};\n'
+                source = _parse_source(
+                    declaration + '\n    &kFoo,\n    &kBar,\n};\n'
                 )
                 self.assertEqual(
                     [(2, 'kFoo'), (3, 'kBar')], self._entries(source)
@@ -287,9 +310,7 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
 const char kText[] = "kFeaturesExposedToJava[] = {&kInString}";
 const base::Feature* const kFeaturesExposedToJava[] = {&kReal};
 """
-        self.assertEqual(
-            [(4, 'kReal')], self._entries(cpp_parser.parse_source(_PATH, text))
-        )
+        self.assertEqual([(4, 'kReal')], self._entries(_parse_source(text)))
 
     def testEntryFormatting(self):
         text = """\
@@ -311,14 +332,14 @@ const base::Feature* const kFeaturesExposedToJava[] = {
                 (7, 'kAfterBlockComment'),
                 (8, 'kLast'),
             ],
-            self._entries(cpp_parser.parse_source(_PATH, text)),
+            self._entries(_parse_source(text)),
         )
 
     def testEmptyArray(self):
         text = """\
 const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
 """
-        self.assertEqual((), cpp_parser.parse_source(_PATH, text).entries)
+        self.assertEqual((), _parse_source(text).feature_array.entries)
 
     def testIncludes(self):
         text = """\
@@ -332,8 +353,7 @@ const char kText[] = "#include \\"in_string.h\\"";
 const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 """
         self.assertEqual(
-            ('a/b.h', 'c.h', 'd.inc'),
-            cpp_parser.parse_source(_PATH, text).includes,
+            ('a/b.h', 'c.h', 'd.inc'), _parse_source(text).includes
         )
 
     def testArrayNamespace(self):
@@ -351,8 +371,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
             ('namespace a {\n#define CLOSE_NAMESPACE }\n', ('a',)),
         ):
             with self.subTest(prefix=prefix):
-                source = cpp_parser.parse_source(_PATH, prefix + array)
-                self.assertEqual(expected, source.array_namespace)
+                source = _parse_source(prefix + array)
+                self.assertEqual(expected, source.feature_array.namespace)
 
     def testFeatureMapNames(self):
         text = """\
@@ -370,7 +390,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 """
         self.assertEqual(
             ('FirstFeatureMap', 'SecondFeatureMap'),
-            cpp_parser.parse_source(_PATH, text).feature_map_names,
+            _parse_source(text).feature_map_names,
         )
 
     def testErrorNoArray(self):
@@ -432,7 +452,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
             return (
                 f'{_PATH}:{line}: error: Unsupported entry "{entry}" in '
                 'kFeaturesExposedToJava. Expected the form '
-                '"&namespace::kFeatureName".'
+                '"&namespace::kSomeName".'
             )
 
         self._assert_error(
@@ -579,7 +599,7 @@ BASE_FEATURE(kGlobal, base::FEATURE_DISABLED_BY_DEFAULT);
                 ),
                 self._definition(18, (), 'kGlobal', 'BASE_FEATURE', 'Global'),
             ],
-            cpp_parser.parse_definitions(_PATH, text),
+            _parse_feature_definitions(text),
         )
 
     def testOtherFeatureMacros(self):
@@ -609,7 +629,7 @@ DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillAi);
                     'SyncAutofillAi',
                 ),
             ],
-            cpp_parser.parse_definitions(_PATH, text),
+            _parse_feature_definitions(text),
         )
 
     def testIgnoredMacroCalls(self):
@@ -625,7 +645,7 @@ EXPECT_SINGLE_FEATURE(features::kFeature);
 const char kText[] = "BASE_FEATURE(kInString, FEATURE_DISABLED_BY_DEFAULT)";
 bool enabled = base::FeatureList::IsEnabled(kFeature);
 """
-        self.assertEqual([], cpp_parser.parse_definitions(_PATH, text))
+        self.assertEqual([], _parse_feature_definitions(text))
 
     def testPreprocessorLinesBetweenArguments(self):
         text = """\
@@ -646,7 +666,7 @@ BASE_FEATURE(kPlatformDependent,
                     'PlatformDependent',
                 ),
             ],
-            cpp_parser.parse_definitions(_PATH, text),
+            _parse_feature_definitions(text),
         )
 
     def testSpecialCharactersInFeatureName(self):
@@ -656,10 +676,7 @@ BASE_FEATURE(kParen, "Paren)Name", base::FEATURE_DISABLED_BY_DEFAULT);
 """
         self.assertEqual(
             [('kComma', 'Comma,Name'), ('kParen', 'Paren)Name')],
-            [
-                (d.identifier, d.name)
-                for d in cpp_parser.parse_definitions(_PATH, text)
-            ],
+            [(d.identifier, d.name) for d in _parse_feature_definitions(text)],
         )
 
     def testInvalidFeatureNames(self):
@@ -670,7 +687,7 @@ BASE_FEATURE(kConcatenated, "Foo" "Bar", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTooManyArgs, "Name", base::FEATURE_DISABLED_BY_DEFAULT, 1);
 DEFINE_CUSTOM_FEATURE(kCustomMacro, "CustomName");
 """
-        definitions = cpp_parser.parse_definitions(_PATH, text)
+        definitions = _parse_feature_definitions(text)
         self.assertEqual(
             [None, None, None, None], [d.name for d in definitions]
         )
@@ -699,7 +716,7 @@ BASE_FEATURE(kValid, base::FEATURE_DISABLED_BY_DEFAULT);
             [
                 self._definition(3, (), 'kValid', 'BASE_FEATURE', 'Valid'),
             ],
-            cpp_parser.parse_definitions(_PATH, text),
+            _parse_feature_definitions(text),
         )
 
 

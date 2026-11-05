@@ -1,13 +1,17 @@
 # Java Flag Generator
 
-Generates a Java class with typed accessors for the features that a C++
-feature list exposes to Java through `kFeaturesExposedToJava`.
+Generates a Java class with typed accessors for the features and params that a
+C++ feature list exposes to Java through `kFeaturesExposedToJava` and
+`k<Type>ParamsExposedToJava`.
 
-For each `&namespace::kFoo` in the array, the generated class contains:
+## Features
+
+For each `&namespace::kFooFeature` in `kFeaturesExposedToJava`, the generated
+class contains:
 
 ```java
-/** {@code ns::kFoo} */
-public static final class Foo {
+/** {@code namespace::kFooFeature} */
+public static final class FooFeature {
     public static final String NAME = "FooFeatureName";
 
     public static boolean isEnabled() {
@@ -17,8 +21,34 @@ public static final class Foo {
 ```
 
 `NAME` is the feature name string from the feature's definition
-(`BASE_FEATURE(kFoo, "FooFeatureName", ...)`), not a name derived from the
-identifier.
+(`BASE_FEATURE(kFooFeature, "FooFeatureName", ...)`), not a name derived from
+the identifier.
+
+## Params
+
+Params are exposed to Java by listing them in one array per param type:
+`kBooleanParamsExposedToJava`, `kIntParamsExposedToJava`,
+`kDoubleParamsExposedToJava` and `kStringParamsExposedToJava`. These arrays are
+optional. For each `&namespace::kFooParam` in them, the generated class
+contains:
+
+```java
+/** {@code namespace::kFooParam} */
+public static final class FooParam {
+    public static final String NAME = "foo_param";
+
+    public static int getValue() {
+        return getParamValueAsInt(FooFeature.NAME, NAME);
+    }
+}
+```
+
+`NAME` is the param name string from the param's definition
+(`BASE_FEATURE_PARAM(int, kFooParam, &kFooFeature, "foo_param", 0)`).
+`FooFeature.NAME` is the feature name of the param's feature (`kFooFeature`),
+which is usually referenced through the feature's nested class. The type
+returned by `getValue()` (`boolean`, `int`, `double` or `String`) depends on the
+array listing the param.
 
 ## Usage
 
@@ -41,7 +71,8 @@ others should depend on that library.
 
 ### Variables
 
-* `sources`: C++ files that define `kFeaturesExposedToJava`.
+* `sources`: C++ files that define `kFeaturesExposedToJava`, and optionally
+  `k<Type>ParamsExposedToJava`.
 * `class_name`: Fully-qualified name of the generated class.
 * `feature_map_class_name` (optional): `FeatureMap` subclass used by all
   sources. By default, each source's map is derived from its
@@ -50,22 +81,22 @@ others should depend on that library.
 * `deps` (optional): Must include the targets that generate any generated
   `FEATURE_DEFINITION_FILE`s.
 
-With a single `FeatureMap`, the generated helper is `isFeatureEnabled()`. With
-several (multiple sources backed by different maps), there is one helper per
-map, named `isFeatureEnabledIn<FeatureMapName>()`.
+## Finding feature and param definitions
 
-## Finding feature definitions
-
-For each feature in kFeaturesExposedToJava, the generator looks for feature
-definitions in:
+For each feature in `kFeaturesExposedToJava` and each param in the
+`k<Type>ParamsExposedToJava` arrays, the generator looks for definitions in:
 
 1. The source itself.
 2. For each quoted `#include "path/foo.h"`, the file `path/foo.cc`. The path is
    tried relative to the source root, then relative to the including file.
 3. Files listed in `FEATURE_DEFINITION_FILE` directives.
 
-If a feature's definition can't be found, the build fails. Fix it by adding a
-directive to the source naming the file that defines the feature:
+The feature of each param (`&kFooFeature` in
+`BASE_FEATURE_PARAM(int, kFooParam, &kFooFeature, 0)`) is looked up in the same
+files, relative to the namespace of the param's definition.
+
+If a definition can't be found, the build fails. Fix it by adding a directive
+to the source naming the file that defines the feature or param:
 
 ```c++
 // FEATURE_DEFINITION_FILE: //third_party/blink/common/features.cc
@@ -76,16 +107,22 @@ Directive paths are looked up in the source tree first, then in
 `deps`.
 
 Directives that are not needed (the file is already found automatically, or no
-feature uses it) are errors, so the list stays accurate.
+feature or param uses it) are errors, so the list stays accurate.
 
 ### What counts as a definition
 
-Any ALL_CAPS macro call whose name contains `FEATURE` (but not `DECLARE` or
-`PARAM`) and whose first argument is a `kCamelCase` identifier, e.g.
-`BASE_FEATURE(...)` or `BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(...)`.
+For features: any ALL_CAPS macro call whose name contains `FEATURE` (but not
+`DECLARE` or `PARAM`) and whose first argument is a `kCamelCase` identifier,
+e.g. `BASE_FEATURE(...)` or `BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(...)`.
 For `BASE_FEATURE` and `BASE_RUNTIME_MUTABLE_FEATURE`, the feature name is the
 second argument when it is a string literal; otherwise the feature name is
-derived from the identifier (`kFoo` -> `"Foo"`).
+derived from the identifier (`kFooFeature` -> `"FooFeature"`).
+
+For params: any `BASE_FEATURE_PARAM(T, kFooParam, &kFooFeature, ...)` call.
+With 5 arguments, the param name is the fourth argument, which must be a string
+literal. With 4 arguments, the param name is derived from the identifier
+(`kFooParam` -> `"FooParam"`). Declarations (`BASE_DECLARE_FEATURE_PARAM`) are
+not definitions.
 
 ## Changing the generator
 

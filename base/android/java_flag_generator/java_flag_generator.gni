@@ -5,13 +5,15 @@
 import("//build/config/python.gni")
 
 # Generates a Java class with a nested class per feature in the
-# kFeaturesExposedToJava arrays of the given C++ files. See README.md.
+# kFeaturesExposedToJava arrays, and per param in the k<Type>ParamsExposedToJava
+# arrays of the given C++ files. See README.md.
 #
 # The output is $target_gen_dir/$target_name.srcjar. List the target in the
 # srcjar_deps of exactly one android_library().
 #
 # Variables:
-#   sources: C++ files that define kFeaturesExposedToJava.
+#   sources: C++ files that define kFeaturesExposedToJava, and optionally
+#     k<Type>ParamsExposedToJava.
 #   class_name: Fully-qualified name of the generated Java class, e.g.
 #     "org.chromium.chrome.browser.flags.ChromeFeatures".
 #   feature_map_class_name: (Optional) Fully-qualified FeatureMap subclass used

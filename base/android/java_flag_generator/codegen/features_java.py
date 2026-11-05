@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Renders the generated <Prefix>Features.java source."""
 
+from typing import Dict
+
 import models
 import naming
 
@@ -26,31 +28,68 @@ def _imports(features_class: models.FeaturesClass) -> str:
     return ''.join(f'import {i};\n' for i in sorted(imports))
 
 
+def _class_javadoc(features_class: models.FeaturesClass) -> str:
+    if not features_class.params:
+        return (
+            '/** Typed accessors for the features in '
+            'kFeaturesExposedToJava. */\n'
+        )
+    return (
+        '/**\n'
+        ' * Typed accessors for the features in kFeaturesExposedToJava '
+        'and the params in\n'
+        ' * k*ParamsExposedToJava.\n'
+        ' */\n'
+    )
+
+
 def _helper_methods(features_class: models.FeaturesClass) -> str:
     feature_maps = list(features_class.feature_maps)
+    # Only the helpers that are used are generated.
+    maps_with_features = {f.feature_map for f in features_class.features}
+    maps_with_params = {
+        (p.feature_map, p.param_type) for p in features_class.params
+    }
     parts = []
     for feature_map in feature_maps:
-        method = naming.helper_method_name(feature_map, feature_maps)
-        parts.append(f"""\
+        if feature_map in maps_with_features:
+            method = naming.feature_helper_method_name(
+                feature_map, feature_maps
+            )
+            parts.append(f"""\
     // Package-private (not private) to avoid D8 nest-access synthetic accessor.
     static boolean {method}(String featureName) {{
         return {feature_map.name}.getInstance().isEnabledInNative(featureName);
     }}
 """)
+        for param_type in models.PARAM_TYPES:
+            if (feature_map, param_type) not in maps_with_params:
+                continue
+            method = naming.param_helper_method_name(
+                param_type, feature_map, feature_maps
+            )
+            map_name = feature_map.name
+            java_type = param_type.java_type
+            getter = f'getParamValueAs{param_type.name}'
+            parts.append(f"""\
+    // Package-private (not private) to avoid D8 nest-access synthetic accessor.
+    static {java_type} {method}(String featureName, String paramName) {{
+        return {map_name}.getInstance().{getter}(featureName, paramName);
+    }}
+""")
     return '\n'.join(parts)
 
 
-def _nested_class(
+def _feature_nested_class(
     feature: models.ResolvedFeature, features_class: models.FeaturesClass
 ) -> str:
     feature_maps = list(features_class.feature_maps)
-    method = naming.helper_method_name(feature.feature_map, feature_maps)
-    qualified = '::'.join(
-        feature.definition.namespace + (feature.definition.identifier,)
+    method = naming.feature_helper_method_name(
+        feature.feature_map, feature_maps
     )
     suffix = f' ({feature.feature_map.name})' if len(feature_maps) > 1 else ''
     return f"""\
-    /** {{@code {qualified}}}{suffix} */
+    /** {{@code {feature.definition.qualified_name}}}{suffix} */
     public static final class {feature.java_class_name} {{
         public static final String NAME = "{feature.feature_name}";
 
@@ -61,18 +100,55 @@ def _nested_class(
 """
 
 
+def _param_nested_class(
+    param: models.ResolvedParam,
+    features_class: models.FeaturesClass,
+    feature_classes: Dict[str, str],
+) -> str:
+    feature_maps = list(features_class.feature_maps)
+    method = naming.param_helper_method_name(
+        param.param_type, param.feature_map, feature_maps
+    )
+    suffix = f' ({param.feature_map.name})' if len(feature_maps) > 1 else ''
+    feature_class = feature_classes.get(param.feature_name)
+    if feature_class is not None:
+        feature_name = f'{feature_class}.NAME'
+    else:
+        feature_name = f'"{param.feature_name}"'
+    return f"""\
+    /** {{@code {param.definition.qualified_name}}}{suffix} */
+    public static final class {param.java_class_name} {{
+        public static final String NAME = "{param.param_name}";
+
+        public static {param.param_type.java_type} getValue() {{
+            return {method}({feature_name}, NAME);
+        }}
+    }}
+"""
+
+
 def generate(features_class: models.FeaturesClass, script_name: str) -> str:
     java_class = features_class.java_class
+    # Nested classes of the features, by feature name. Params refer to the NAME
+    # of their feature's nested class when there is one.
+    feature_classes = {
+        f.feature_name: f.java_class_name for f in features_class.features
+    }
     body = [_helper_methods(features_class)]
     body.extend(
-        _nested_class(f, features_class) for f in features_class.features
+        _feature_nested_class(f, features_class)
+        for f in features_class.features
+    )
+    body.extend(
+        _param_nested_class(p, features_class, feature_classes)
+        for p in features_class.params
     )
     body_text = '\n'.join(body)
     return (
         f'{_header(features_class, script_name)}\n'
         f'package {java_class.package};\n\n'
         f'{_imports(features_class)}\n'
-        f'/** Typed accessors for the features in kFeaturesExposedToJava. */\n'
+        f'{_class_javadoc(features_class)}'
         f'@NullMarked\n'
         f'public final class {java_class.name} {{\n'
         f'{body_text}'

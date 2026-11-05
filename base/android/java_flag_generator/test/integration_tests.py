@@ -329,8 +329,9 @@ Searched these files:
     $root_gen_dir/third_party/generated/generated_features.cc
 To fix, add a comment of the form
     // FEATURE_DEFINITION_FILE: //path/to/file.cc
-to //chrome/flags/test_feature_list.cc, where file.cc contains the feature's \
-BASE_FEATURE() definition.
+to //chrome/flags/test_feature_list.cc,
+where file.cc contains the feature's BASE_FEATURE() or the param's
+BASE_FEATURE_PARAM() definition.
 If file.cc is a generated file, also add the GN target that generates it to
 the `deps` of the java_flag_generator() target.
 """,
