@@ -13,6 +13,7 @@ See //build/android/docs/build_config.md for more information.
 """
 
 import argparse
+import gc
 import itertools
 import os
 import sys
@@ -684,6 +685,9 @@ def _CreateLintConfig(params, javac_config, manifest_config):
 
 
 def main():
+    # Short-lived process that creates many objects but little cyclic garbage,
+    # so GC passes are wasted work.
+    gc.disable()
     parser = argparse.ArgumentParser(
         description='Writes a .build_config.json file.'
     )
