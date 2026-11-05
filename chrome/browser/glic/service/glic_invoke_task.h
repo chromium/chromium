@@ -224,10 +224,13 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
   base::OnceClosure done_callback_;
 };
 
-// What WaitForClientReadyTask does when the client stops on the sign-in panel
-// (`Host::client_load_state()` is `kError` with `client_load_error_reason()`
-// `kSignIn`). Unlike other load failures the client has not given up: it
-// reloads and becomes ready once the user signs in.
+// What WaitForClientReadyTask does when the client stops on a visible sign-in
+// panel (`Host::instance().IsShowing()`, `Host::client_load_state()` is
+// `kError` with `client_load_error_reason()` `kSignIn`). Unlike other load
+// failures, a visible sign-in panel has not given up: the client reloads and
+// becomes ready once the user signs in. When the panel is hidden, no sign-in
+// UI is visible to the user, so `kSignIn` fails immediately with
+// `GlicInvokeError::kClientLoadError`.
 enum class SignInBehavior {
   // The task completes. An invocation with nothing to send the client is done
   // once the panel shows what it should, and the sign-in panel is that.

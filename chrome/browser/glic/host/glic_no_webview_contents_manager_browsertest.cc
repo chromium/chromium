@@ -1424,6 +1424,25 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
     return std::ranges::contains(observer.reasons(),
                                  ClientLoadErrorReason::kGuestProcessGone);
   }));
+  EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
+  EXPECT_EQ(instance->host().client_load_error_reason(),
+            ClientLoadErrorReason::kGuestProcessGone);
+
+  // Navigating to an in-page guest error (/sorry/) enters `kGuestError`, keeps
+  // the host in `ClientLoadState::kError` with `kUnknown` as the active cause,
+  // and does not emit an additional `ClientLoadErrorOccurred` event.
+  const int error_count_before_guest_error = observer.error_count();
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(content::NavigateToURL(
+      manager->guest_contents(),
+      embedded_https_test_server().GetURL("/sorry/index")));
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kGuestError);
+  EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
+  EXPECT_EQ(instance->host().client_load_error_reason(),
+            ClientLoadErrorReason::kUnknown);
+  EXPECT_EQ(observer.error_count(), error_count_before_guest_error);
 }
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                        RecordsNavigationCommitAndLoadCompleteMetricsOnce) {
