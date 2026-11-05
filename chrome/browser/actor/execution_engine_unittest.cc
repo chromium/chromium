@@ -530,6 +530,227 @@ TEST_F(ExecutionEngineTest, MAYBE_CancelOngoingAction) {
 
 // TODO(crbug.com/480230075): Crashing on Android.
 #if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_FollowupActionPreservesParentMessageWhenEmpty \
+  DISABLED_FollowupActionPreservesParentMessageWhenEmpty
+#else
+#define MAYBE_FollowupActionPreservesParentMessageWhenEmpty \
+  FollowupActionPreservesParentMessageWhenEmpty
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_FollowupActionPreservesParentMessageWhenEmpty) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
+      base::BindLambdaForTesting([this](ToolCallback callback) {
+        task_->GetExecutionEngine().EnqueueFollowupAction(
+            std::make_unique<FakeToolRequest>(
+                base::BindOnce([](ToolCallback followup_callback) {
+                  std::move(followup_callback)
+                      .Run(MakeOkResult(/*requires_page_stabilization=*/false));
+                }),
+                base::DoNothing()));
+        std::move(callback).Run(MakeOkResultWithMessage(
+            /*requires_page_stabilization=*/false, "Parent message."));
+      }),
+      base::DoNothing());
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].result->message, "Parent message.");
+}
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_FollowupActionSetsMessageWhenParentEmpty \
+  DISABLED_FollowupActionSetsMessageWhenParentEmpty
+#else
+#define MAYBE_FollowupActionSetsMessageWhenParentEmpty \
+  FollowupActionSetsMessageWhenParentEmpty
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_FollowupActionSetsMessageWhenParentEmpty) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
+      base::BindLambdaForTesting([this](ToolCallback callback) {
+        task_->GetExecutionEngine().EnqueueFollowupAction(
+            std::make_unique<FakeToolRequest>(
+                base::BindOnce([](ToolCallback followup_callback) {
+                  std::move(followup_callback)
+                      .Run(MakeOkResultWithMessage(
+                          /*requires_page_stabilization=*/false,
+                          "Followup message."));
+                }),
+                base::DoNothing()));
+        std::move(callback).Run(
+            MakeOkResult(/*requires_page_stabilization=*/false));
+      }),
+      base::DoNothing());
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].result->message, "Followup message.");
+}
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_FollowupActionOverwritesParentMessageWhenNonEmpty \
+  DISABLED_FollowupActionOverwritesParentMessageWhenNonEmpty
+#else
+#define MAYBE_FollowupActionOverwritesParentMessageWhenNonEmpty \
+  FollowupActionOverwritesParentMessageWhenNonEmpty
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_FollowupActionOverwritesParentMessageWhenNonEmpty) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
+      base::BindLambdaForTesting([this](ToolCallback callback) {
+        task_->GetExecutionEngine().EnqueueFollowupAction(
+            std::make_unique<FakeToolRequest>(
+                base::BindOnce([](ToolCallback followup_callback) {
+                  std::move(followup_callback)
+                      .Run(MakeOkResultWithMessage(
+                          /*requires_page_stabilization=*/false,
+                          "Followup message."));
+                }),
+                base::DoNothing()));
+        std::move(callback).Run(MakeOkResultWithMessage(
+            /*requires_page_stabilization=*/false, "Parent message."));
+      }),
+      base::DoNothing());
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].result->message, "Followup message.");
+}
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_FollowupActionFailureUsesFollowupErrorMessage \
+  DISABLED_FollowupActionFailureUsesFollowupErrorMessage
+#else
+#define MAYBE_FollowupActionFailureUsesFollowupErrorMessage \
+  FollowupActionFailureUsesFollowupErrorMessage
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_FollowupActionFailureUsesFollowupErrorMessage) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
+      base::BindLambdaForTesting([this](ToolCallback callback) {
+        task_->GetExecutionEngine().EnqueueFollowupAction(
+            std::make_unique<FakeToolRequest>(
+                base::BindOnce([](ToolCallback followup_callback) {
+                  std::move(followup_callback)
+                      .Run(MakeResult(mojom::ActionResultCode::kElementDisabled,
+                                      /*requires_page_stabilization=*/false,
+                                      "Followup failed."));
+                }),
+                base::DoNothing()));
+        std::move(callback).Run(MakeOkResultWithMessage(
+            /*requires_page_stabilization=*/false, "Parent message."));
+      }),
+      base::DoNothing());
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].result->message, "Followup failed.");
+}
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_FollowupActionFailureClearsParentMessageWhenErrorMessageEmpty \
+  DISABLED_FollowupActionFailureClearsParentMessageWhenErrorMessageEmpty
+#else
+#define MAYBE_FollowupActionFailureClearsParentMessageWhenErrorMessageEmpty \
+  FollowupActionFailureClearsParentMessageWhenErrorMessageEmpty
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_FollowupActionFailureClearsParentMessageWhenErrorMessageEmpty) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
+      base::BindLambdaForTesting([this](ToolCallback callback) {
+        task_->GetExecutionEngine().EnqueueFollowupAction(
+            std::make_unique<FakeToolRequest>(
+                base::BindOnce([](ToolCallback followup_callback) {
+                  std::move(followup_callback)
+                      .Run(MakeResult(
+                          mojom::ActionResultCode::kElementDisabled));
+                }),
+                base::DoNothing()));
+        std::move(callback).Run(MakeOkResultWithMessage(
+            /*requires_page_stabilization=*/false, "Parent message."));
+      }),
+      base::DoNothing());
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].result->message, "");
+}
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_FollowupActionPreservesParentMetadata \
+  DISABLED_FollowupActionPreservesParentMetadata
+#else
+#define MAYBE_FollowupActionPreservesParentMetadata \
+  FollowupActionPreservesParentMetadata
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_FollowupActionPreservesParentMetadata) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
+      base::BindLambdaForTesting([this](ToolCallback callback) {
+        task_->GetExecutionEngine().EnqueueFollowupAction(
+            std::make_unique<FakeToolRequest>(
+                base::BindOnce([](ToolCallback followup_callback) {
+                  std::move(followup_callback)
+                      .Run(MakeOkResult(/*requires_page_stabilization=*/false));
+                }),
+                base::DoNothing()));
+        mojom::ActionResultPtr parent_result =
+            MakeOkResult(/*requires_page_stabilization=*/true);
+        parent_result->attempt_login_status =
+            mojom::AttemptLoginStatus::kPasswordManager;
+        parent_result->screenshot_policy = mojom::ScreenshotPolicy::kRequired;
+        parent_result->page_content_policy =
+            mojom::PageContentExtractionPolicy::kRequired;
+        std::move(callback).Run(std::move(parent_result));
+      }),
+      base::DoNothing());
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  const mojom::ActionResult& final_result = *result.Get()[0].result;
+  EXPECT_TRUE(final_result.requires_page_stabilization);
+  EXPECT_EQ(final_result.attempt_login_status,
+            mojom::AttemptLoginStatus::kPasswordManager);
+  EXPECT_EQ(final_result.screenshot_policy, mojom::ScreenshotPolicy::kRequired);
+  EXPECT_EQ(final_result.page_content_policy,
+            mojom::PageContentExtractionPolicy::kRequired);
+}
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #define MAYBE_ActorTaskCompletedHistogram DISABLED_ActorTaskCompletedHistogram
 #else
 #define MAYBE_ActorTaskCompletedHistogram ActorTaskCompletedHistogram

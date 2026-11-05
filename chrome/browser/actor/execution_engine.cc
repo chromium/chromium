@@ -558,6 +558,34 @@ void PostTaskForActCallback(
                                 std::move(observation_strategy)));
 }
 
+// Merges a follow-up or subsequent stage `ActionResult` into the existing
+// result for the top-level action, preserving parent message and metadata not
+// set by the follow-up.
+void MergeActionResult(mojom::ActionResult& target,
+                       mojom::ActionResultPtr followup) {
+  target.code = followup->code;
+  target.requires_page_stabilization = target.requires_page_stabilization ||
+                                       followup->requires_page_stabilization;
+  // TODO(crbug.com/581884304): if both parent and follow-up have messages,
+  // avoid overwriting.
+  if (!IsOk(*followup) || !followup->message.empty()) {
+    target.message = std::move(followup->message);
+  }
+  if (followup->script_tool_response) {
+    target.script_tool_response = std::move(followup->script_tool_response);
+  }
+  if (followup->execution_end_time) {
+    target.execution_end_time = followup->execution_end_time;
+  }
+  target.screenshot_policy =
+      std::max(target.screenshot_policy, followup->screenshot_policy);
+  target.page_content_policy =
+      std::max(target.page_content_policy, followup->page_content_policy);
+  if (followup->attempt_login_status.has_value()) {
+    target.attempt_login_status = followup->attempt_login_status;
+  }
+}
+
 // When operating on an opaque site, we choose to use the precursor's origin
 // when judging whether a user confirmation should be triggered or not. We are
 // effectively using `url::Origin::Create(rfh.GetLastCommittedUrl())` in lieu of
@@ -1752,10 +1780,10 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
         static_cast<PageContentExtractionPolicy>(result->page_content_policy));
   }
 
-  if (GetInProgressAction().IsFollowup()) {
+  if (current_action.IsFollowup()) {
     CHECK(!action_results_.empty());
     ActionResultWithLatencyInfo& action_result = action_results_.back();
-    action_result.result = std::move(result);
+    MergeActionResult(*action_result.result, std::move(result));
     action_result.end_time = end_time;
   } else {
     action_results_.emplace_back(action_start_time_, end_time,
@@ -1805,12 +1833,12 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
                (!IsOk(*result) ||
                 action_sequence_[*action_index]->IsFollowup())) {
       // If we already have a result for this action, and the new result is an
-      // error, overwrite it. This can happen if a tool invocation succeeds
+      // error, merge it. This can happen if a tool invocation succeeds
       // but a subsequent UI post-invoke stage fails, or for follow up tools
       // that fail.
       ActionResultWithLatencyInfo& action_result =
           action_results_[result_index];
-      action_result.result = result->Clone();
+      MergeActionResult(*action_result.result, result->Clone());
       action_result.end_time = base::TimeTicks::Now();
     }
   } else if (!IsOk(*result)) {
