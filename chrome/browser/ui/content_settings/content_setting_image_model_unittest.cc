@@ -814,6 +814,8 @@ TEST_F(ContentSettingImageModelTest,
   EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
             IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
   EXPECT_TRUE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(
+      content_setting_image_model->ShouldAutoOpenBubble(web_contents()));
   EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
   // The quiet notification promo is not shown for system level blocks.
@@ -822,9 +824,12 @@ TEST_F(ContentSettingImageModelTest,
                    "ContentSettings.Notifications.SystemPermissionIconShown"));
 
   // Subsequent updates while the icon stays visible should not record the
-  // action again.
+  // action or auto-open the bubble again.
+  content_setting_image_model->SetBubbleWasAutoOpened(web_contents());
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_FALSE(
+      content_setting_image_model->ShouldAutoOpenBubble(web_contents()));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ContentSettings.Notifications.SystemPermissionIconShown"));
 
@@ -838,7 +843,7 @@ TEST_F(ContentSettingImageModelTest,
                    "ContentSettings.NotificationsDialog.Closed"));
 
   // Once the icon is hidden and shown again, the action should be recorded
-  // again.
+  // again and the bubble should auto-open again.
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
       app_id, AppShimRegistry::NotificationPermissionStatus::kGranted);
   content_setting_image_model->Update(web_contents());
@@ -847,6 +852,8 @@ TEST_F(ContentSettingImageModelTest,
       app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(
+      content_setting_image_model->ShouldAutoOpenBubble(web_contents()));
   EXPECT_EQ(2, user_action_tester.GetActionCount(
                    "ContentSettings.Notifications.SystemPermissionIconShown"));
 

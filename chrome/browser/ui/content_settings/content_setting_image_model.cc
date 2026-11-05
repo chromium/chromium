@@ -737,10 +737,10 @@ void ContentSettingImageModel::Update(content::WebContents* contents) {
       ContentSettingImageModelStates::Get(contents)->SetAccessibilityNotified(
           image_type(), false);
     }
-    if (should_auto_open_bubble_) {
-      ContentSettingImageModelStates::Get(contents)->SetBubbleWasAutoOpened(
-          image_type(), false);
-    }
+    // Note: subclasses reset `should_auto_open_bubble_` at the start of
+    // UpdateAndGetVisibility(), so it can't be used to guard this reset.
+    ContentSettingImageModelStates::Get(contents)->SetBubbleWasAutoOpened(
+        image_type(), false);
     ContentSettingImageModelStates::Get(contents)->SetIconShownRecorded(
         image_type(), false);
     ContentSettingImageModelStates::Get(contents)->SetPromoWasShown(
