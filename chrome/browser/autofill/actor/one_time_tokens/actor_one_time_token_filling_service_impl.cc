@@ -634,15 +634,16 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
     return kTabNotAvailable;
   }
 
-  content::WebContents* web_contents = tab->GetContents();
+  content::WebContents* const web_contents = tab->GetContents();
   const security_state::SecurityLevel security_level =
-      chrome_security_state::GetSecurityLevel(web_contents);
-  content::NavigationEntry* entry =
-      web_contents->GetController().GetVisibleEntry();
+      chrome_security_state::GetCommittedSecurityLevel(web_contents);
+  content::NavigationEntry* const entry =
+      web_contents->GetController().GetLastCommittedEntry();
 
   // Verify that the page in `web_contents` is loaded over cryptographic HTTPS
   // and has a valid certificate without mixed content.
-  if (!entry || !entry->GetURL().SchemeIsCryptographic() ||
+  if (!entry || entry->GetPageType() != content::PAGE_TYPE_NORMAL ||
+      !entry->GetURL().SchemeIsCryptographic() ||
       !security_state::IsSslCertificateValid(security_level)) {
     return kInsecurePage;
   }

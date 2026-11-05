@@ -974,6 +974,59 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
             FormFillingContextValidationResult::kSecure);
 }
 
+// Tests that a committed HTTP page with a pending HTTPS navigation is treated
+// as an insecure context.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_InsecureContextDuringPendingHttpsNavigation) {
+  NavigateAndCommit(GURL("http://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("http://example.com"));
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  ASSERT_FALSE(form.fields().empty());
+  const FieldGlobalId field_id = form.fields()[0].global_id();
+
+  std::unique_ptr<content::NavigationSimulator> pending_nav =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://secure.example.com"), tab().GetContents());
+  pending_nav->Start();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextValidationResult::kInsecurePage);
+}
+
+// Tests that a committed HTTPS page with a valid certificate remains a secure
+// context during a pending HTTP navigation.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_SecureContextDuringPendingHttpNavigation) {
+  NavigateAndCommit(GURL("https://example.com"));
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+
+  content::NavigationEntry* const entry =
+      tab().GetContents()->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  content::SSLStatus& ssl = entry->GetSSL();
+  ssl.initialized = true;
+  ssl.certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl.cert_status = net::OK;
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                     &ssl.connection_status);
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  ASSERT_FALSE(form.fields().empty());
+  const FieldGlobalId field_id = form.fields()[0].global_id();
+
+  std::unique_ptr<content::NavigationSimulator> pending_nav =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://insecure.example.com"), tab().GetContents());
+  pending_nav->Start();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextValidationResult::kSecure);
+}
+
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        ValidateFormFillingContext_InsecureFormAction) {
   NavigateAndCommit(GURL("https://example.com"));
