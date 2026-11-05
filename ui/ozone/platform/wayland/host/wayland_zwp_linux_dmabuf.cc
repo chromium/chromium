@@ -105,7 +105,7 @@ WaylandZwpLinuxDmabuf::Tranche::Tranche() = default;
 
 WaylandZwpLinuxDmabuf::Tranche::~Tranche() = default;
 
-void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
+void WaylandZwpLinuxDmabuf::CreateBuffer(const std::vector<base::ScopedFD>& fds,
                                          const gfx::Size& size,
                                          const std::vector<uint32_t>& strides,
                                          const std::vector<uint32_t>& offsets,
@@ -120,7 +120,7 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
       zwp_linux_dmabuf_v1_create_params(zwp_linux_dmabuf_.get()));
 
   for (size_t i = 0; i < planes_count; i++) {
-    zwp_linux_buffer_params_v1_add(params.get(), fd.get(), i /* plane id */,
+    zwp_linux_buffer_params_v1_add(params.get(), fds[i].get(), i /* plane id */,
                                    offsets[i], strides[i], modifiers[i] >> 32,
                                    modifiers[i] & UINT32_MAX);
   }

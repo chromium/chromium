@@ -16,7 +16,7 @@ WaylandBufferFactory::WaylandBufferFactory() = default;
 WaylandBufferFactory::~WaylandBufferFactory() = default;
 
 void WaylandBufferFactory::CreateDmabufBuffer(
-    const base::ScopedFD& fd,
+    const std::vector<base::ScopedFD>& fds,
     const gfx::Size& size,
     const std::vector<uint32_t>& strides,
     const std::vector<uint32_t>& offsets,
@@ -26,11 +26,11 @@ void WaylandBufferFactory::CreateDmabufBuffer(
     wl::OnRequestBufferCallback callback) const {
   CHECK(SupportsDmabuf(), base::NotFatalUntil::M163);
   if (wayland_zwp_dmabuf_) {
-    wayland_zwp_dmabuf_->CreateBuffer(fd, size, strides, offsets, modifiers,
+    wayland_zwp_dmabuf_->CreateBuffer(fds, size, strides, offsets, modifiers,
                                       format, planes_count,
                                       std::move(callback));
   } else if (wayland_drm_) {
-    wayland_drm_->CreateBuffer(fd, size, strides, offsets, modifiers, format,
+    wayland_drm_->CreateBuffer(fds, size, strides, offsets, modifiers, format,
                                planes_count, std::move(callback));
   } else {
     // This method must never be called if neither zwp_linux_dmabuf or wl_drm

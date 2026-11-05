@@ -78,7 +78,7 @@ bool WaylandDrm::SupportsDrmPrime() const {
   return authenticated_ && !!wl_drm_;
 }
 
-void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
+void WaylandDrm::CreateBuffer(const std::vector<base::ScopedFD>& fds,
                               const gfx::Size& size,
                               const std::vector<uint32_t>& strides,
                               const std::vector<uint32_t>& offsets,
@@ -97,8 +97,8 @@ void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
   }
 
   wl::Object<wl_buffer> buffer(wl_drm_create_prime_buffer(
-      wl_drm_.get(), fd.get(), size.width(), size.height(), format, offset[0],
-      stride[0], offset[1], stride[1], offset[2], stride[2]));
+      wl_drm_.get(), fds[0].get(), size.width(), size.height(), format,
+      offset[0], stride[0], offset[1], stride[1], offset[2], stride[2]));
   connection_->Flush();
 
   std::move(callback).Run(std::move(buffer));

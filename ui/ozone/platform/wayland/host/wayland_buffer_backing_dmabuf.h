@@ -18,7 +18,7 @@ class WaylandBufferBackingDmabuf : public WaylandBufferBacking {
   WaylandBufferBackingDmabuf& operator=(const WaylandBufferBackingDmabuf&) =
       delete;
   WaylandBufferBackingDmabuf(const WaylandConnection* connection,
-                             base::ScopedFD fd,
+                             std::vector<base::ScopedFD> fds,
                              const gfx::Size& size,
                              std::vector<uint32_t> strides,
                              std::vector<uint32_t> offsets,
@@ -33,7 +33,8 @@ class WaylandBufferBackingDmabuf : public WaylandBufferBacking {
   void RequestBufferHandle(
       base::OnceCallback<void(wl::Object<wl_buffer>)> callback) override;
 
-  base::ScopedFD fd_;
+  // One fd per plane. Planes may live in separate dmabuf objects.
+  std::vector<base::ScopedFD> fds_;
   const std::vector<uint32_t> strides_;
   const std::vector<uint32_t> offsets_;
   const std::vector<uint64_t> modifiers_;

@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -45,6 +46,7 @@
 #include "ui/ozone/platform/wayland/test/mock_drm_syncobj_ioctl_wrapper.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
+#include "ui/ozone/platform/wayland/test/test_buffer.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -226,19 +228,23 @@ class WaylandBufferManagerTest : public WaylandTest {
   void CreateDmabufBasedBufferAndSetTerminateExpectation(
       bool fail,
       uint32_t buffer_id,
-      base::ScopedFD fd = base::ScopedFD(),
+      std::optional<std::vector<base::ScopedFD>> fds = std::nullopt,
       const gfx::Size& size = kDefaultSize,
       const std::vector<uint32_t>& strides = {1},
       const std::vector<uint32_t>& offsets = {2},
       const std::vector<uint64_t>& modifiers = {3},
       uint32_t format = DRM_FORMAT_ABGR8888,
       uint32_t planes_count = 1) {
-    if (!fd.is_valid())
-      fd = MakeFD();
+    if (!fds) {
+      fds.emplace();
+      for (uint32_t i = 0; i < std::max(planes_count, 1u); ++i) {
+        fds->push_back(MakeFD());
+      }
+    }
 
     SetTerminateCallbackExpectationAndDestroyChannel(&callback_, fail);
     buffer_manager_gpu_->CreateDmabufBasedBuffer(
-        std::move(fd), kDefaultSize, strides, offsets, modifiers, format,
+        std::move(*fds), kDefaultSize, strides, offsets, modifiers, format,
         planes_count, gfx::ColorSpace(), gfx::HDRMetadata(), buffer_id);
 
     base::RunLoop().RunUntilIdle();
@@ -550,7 +556,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
   });
 
   CreateDmabufBasedBufferAndSetTerminateExpectation(
-      false /*fail*/, kDmabufBufferId, base::ScopedFD(), kDefaultSize, {1}, {2},
+      false /*fail*/, kDmabufBufferId, std::nullopt, kDefaultSize, {1}, {2},
       {kFormatModiferLinear}, kFourccFormatRGBA8888, 1);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -562,6 +568,49 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
   });
 
   // Clean up.
+  DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
+}
+
+// Verifies that every plane of a multi-planar buffer is sent with its own fd,
+// as the planes may live in separate dmabuf objects.
+TEST_P(WaylandBufferManagerTest, MultiPlanarBufferUsesPerPlaneFds) {
+  constexpr uint32_t kDmabufBufferId = 1;
+  static constexpr uint32_t kPlaneCount = 2;
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
+  });
+
+  std::vector<base::ScopedFD> fds;
+  std::vector<std::pair<dev_t, ino_t>> fd_stats;
+  for (uint32_t i = 0; i < kPlaneCount; ++i) {
+    fds.push_back(MakeFD());
+    struct stat st;
+    ASSERT_EQ(fstat(fds.back().get(), &st), 0);
+    fd_stats.emplace_back(st.st_dev, st.st_ino);
+  }
+  ASSERT_NE(fd_stats[0], fd_stats[1]);
+
+  CreateDmabufBasedBufferAndSetTerminateExpectation(
+      false /*fail*/, kDmabufBufferId, std::move(fds), kDefaultSize, {64, 64},
+      {0, 0}, {DRM_FORMAT_MOD_LINEAR, DRM_FORMAT_MOD_LINEAR}, DRM_FORMAT_NV12,
+      kPlaneCount);
+
+  PostToServerAndWait([&fd_stats](wl::TestWaylandServerThread* server) {
+    auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
+    ASSERT_EQ(params_vector.size(), 1u);
+    ASSERT_TRUE(params_vector[0]->buffer_resource());
+    auto* buffer =
+        wl::GetUserDataAs<wl::TestBuffer>(params_vector[0]->buffer_resource());
+    ASSERT_EQ(buffer->fds().size(), kPlaneCount);
+    for (uint32_t i = 0; i < kPlaneCount; ++i) {
+      struct stat st;
+      ASSERT_EQ(fstat(buffer->fds()[i].get(), &st), 0);
+      EXPECT_EQ(std::make_pair(st.st_dev, st.st_ino), fd_stats[i])
+          << "Plane " << i << " was sent with the wrong fd";
+    }
+  });
+
   DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
 }
 
@@ -592,14 +641,20 @@ TEST_P(WaylandBufferManagerTest, ValidateDataFromGpu) {
       {true, kDefaultSize, 1, {1}, {2}, {6}},
       // Everything is correct but the buffer ID is zero.
       {true, kDefaultSize, 1, {1}, {2}, {6}, DRM_FORMAT_ABGR8888},
+      // Two planes but only one fd.
+      {true, kDefaultSize, 2, {1, 1}, {0, 0}, {0, 0}, DRM_FORMAT_NV12, 1},
   };
 
   for (const auto& bad : kBadInputs) {
     EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(0);
-    base::ScopedFD dummy;
+    // Without a file, no fds are sent: mojo does not allow sending invalid
+    // handles.
+    std::vector<base::ScopedFD> fds;
+    if (bad.has_file) {
+      fds.push_back(MakeFD());
+    }
     CreateDmabufBasedBufferAndSetTerminateExpectation(
-        true /*fail*/, bad.buffer_id,
-        bad.has_file ? MakeFD() : std::move(dummy), bad.size, bad.strides,
+        true /*fail*/, bad.buffer_id, std::move(fds), bad.size, bad.strides,
         bad.offsets, bad.modifiers, bad.format, bad.planes_count);
   }
 }
@@ -733,7 +788,9 @@ TEST_P(WaylandBufferManagerTest, ReentrantDmabufBufferCreation) {
   std::vector<wl::Object<wl_buffer>> created_buffers;
   bool reentered = false;
   auto create_buffer = [&](wl::OnRequestBufferCallback callback) {
-    buffer_factory->CreateDmabufBuffer(MakeFD(), kDefaultSize, {1}, {2}, {3},
+    std::vector<base::ScopedFD> fds;
+    fds.push_back(MakeFD());
+    buffer_factory->CreateDmabufBuffer(fds, kDefaultSize, {1}, {2}, {3},
                                        DRM_FORMAT_ABGR8888, 1,
                                        std::move(callback));
   };

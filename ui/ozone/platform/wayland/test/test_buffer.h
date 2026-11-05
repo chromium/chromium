@@ -27,6 +27,8 @@ class TestBuffer : public ServerObject {
 
   ~TestBuffer() override;
 
+  const std::vector<base::ScopedFD>& fds() const { return fds_; }
+
  private:
   std::vector<base::ScopedFD> fds_;
 };

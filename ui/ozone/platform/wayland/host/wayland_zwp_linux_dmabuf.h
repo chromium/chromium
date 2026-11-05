@@ -46,11 +46,11 @@ class WaylandZwpLinuxDmabuf
 
   ~WaylandZwpLinuxDmabuf();
 
-  // Requests to create a wl_buffer backed by the dmabuf prime |fd| descriptor.
-  // The result is sent back via the |callback|. If buffer creation failed,
-  // nullptr is sent back via the callback. Otherwise, a pointer to the
-  // |wl_buffer| is sent.
-  void CreateBuffer(const base::ScopedFD& fd,
+  // Requests to create a wl_buffer backed by the dmabuf prime |fds|
+  // descriptors, one per plane. The result is sent back via the |callback|. If
+  // buffer creation failed, nullptr is sent back via the callback. Otherwise, a
+  // pointer to the |wl_buffer| is sent.
+  void CreateBuffer(const std::vector<base::ScopedFD>& fds,
                     const gfx::Size& size,
                     const std::vector<uint32_t>& strides,
                     const std::vector<uint32_t>& offsets,

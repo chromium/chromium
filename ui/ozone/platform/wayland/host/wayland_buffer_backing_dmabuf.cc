@@ -11,7 +11,7 @@ namespace ui {
 
 WaylandBufferBackingDmabuf::WaylandBufferBackingDmabuf(
     const WaylandConnection* connection,
-    base::ScopedFD fd,
+    std::vector<base::ScopedFD> fds,
     const gfx::Size& size,
     std::vector<uint32_t> strides,
     std::vector<uint32_t> offsets,
@@ -23,7 +23,7 @@ WaylandBufferBackingDmabuf::WaylandBufferBackingDmabuf(
                            buffer_id,
                            size,
                            BufferBackingType::kDmabuf),
-      fd_(std::move(fd)),
+      fds_(std::move(fds)),
       strides_(std::move(strides)),
       offsets_(std::move(offsets)),
       modifiers_(std::move(modifiers)),
@@ -35,13 +35,13 @@ WaylandBufferBackingDmabuf::~WaylandBufferBackingDmabuf() = default;
 void WaylandBufferBackingDmabuf::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   CHECK(!callback.is_null(), base::NotFatalUntil::M163);
-  CHECK(fd_.is_valid(), base::NotFatalUntil::M163);
+  CHECK(!fds_.empty(), base::NotFatalUntil::M163);
   connection()->buffer_factory()->CreateDmabufBuffer(
-      fd_, size(), strides_, offsets_, modifiers_, format_, planes_count_,
+      fds_, size(), strides_, offsets_, modifiers_, format_, planes_count_,
       std::move(callback));
 
   if (UseExplicitSyncRelease())
-    auto close = std::move(fd_);
+    auto close = std::move(fds_);
 }
 
 }  // namespace ui

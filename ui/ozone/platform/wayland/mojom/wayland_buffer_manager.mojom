@@ -28,8 +28,9 @@ interface WaylandBufferManagerHost {
   // rendering or for the software rendering.
   //
   // If the hardware accelerated rendering path is taken, this method can be
-  // used to ask Wayland to create a wl_buffer based on the |dmabuf_fd|
-  // descriptor. The |size| is the size of the buffer, the |strides|,
+  // used to ask Wayland to create a wl_buffer based on the |dmabuf_fds|
+  // descriptors, one per plane (planes may live in separate dmabuf objects).
+  // The |size| is the size of the buffer, the |strides|,
   // |offsets| and |modifiers| are the descriptions of the drm buffer object.
   // The |format| describes the buffer format (check viz::SharedImageFormat) in
   // fourcc form. The |planes_count| says how many planes the buffer, backed
@@ -40,7 +41,7 @@ interface WaylandBufferManagerHost {
   // very first CommitOverlays request comes from viz to browser process.
   // If the buffer has been committed at least once, it is not possible to
   // reassign it to another AcceleratedWidget.
-  CreateDmabufBasedBuffer(handle<platform> dmabuf_fd,
+  CreateDmabufBasedBuffer(array<handle<platform>> dmabuf_fds,
                           gfx.mojom.Size size,
                           array<uint32> strides,
                           array<uint32> offsets,

@@ -191,7 +191,7 @@ WaylandSurfaceGpu* WaylandBufferManagerGpu::GetSurface(
 }
 
 void WaylandBufferManagerGpu::CreateDmabufBasedBuffer(
-    base::ScopedFD dmabuf_fd,
+    std::vector<base::ScopedFD> dmabuf_fds,
     gfx::Size size,
     const std::vector<uint32_t>& strides,
     const std::vector<uint32_t>& offsets,
@@ -207,7 +207,7 @@ void WaylandBufferManagerGpu::CreateDmabufBasedBuffer(
     gpu_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WaylandBufferManagerGpu::CreateDmabufBasedBuffer,
-                       base::Unretained(this), std::move(dmabuf_fd),
+                       base::Unretained(this), std::move(dmabuf_fds),
                        std::move(size), std::move(strides), std::move(offsets),
                        std::move(modifiers), current_format, planes_count,
                        color_space, hdr_metadata, buffer_id));
@@ -216,7 +216,7 @@ void WaylandBufferManagerGpu::CreateDmabufBasedBuffer(
 
   base::OnceClosure task =
       base::BindOnce(&WaylandBufferManagerGpu::CreateDmabufBasedBufferTask,
-                     base::Unretained(this), std::move(dmabuf_fd), size,
+                     base::Unretained(this), std::move(dmabuf_fds), size,
                      strides, offsets, modifiers, current_format, planes_count,
                      color_space, hdr_metadata, buffer_id);
   RunOrQueueTask(std::move(task));
@@ -523,7 +523,7 @@ void WaylandBufferManagerGpu::ProcessPendingTasks() {
 }
 
 void WaylandBufferManagerGpu::CreateDmabufBasedBufferTask(
-    base::ScopedFD dmabuf_fd,
+    std::vector<base::ScopedFD> dmabuf_fds,
     gfx::Size size,
     const std::vector<uint32_t>& strides,
     const std::vector<uint32_t>& offsets,
@@ -536,10 +536,14 @@ void WaylandBufferManagerGpu::CreateDmabufBasedBufferTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   CHECK(remote_host_, base::NotFatalUntil::M163);
 
+  std::vector<mojo::PlatformHandle> handles;
+  handles.reserve(dmabuf_fds.size());
+  for (auto& fd : dmabuf_fds) {
+    handles.emplace_back(std::move(fd));
+  }
   remote_host_->CreateDmabufBasedBuffer(
-      mojo::PlatformHandle(std::move(dmabuf_fd)), size, strides, offsets,
-      modifiers, current_format, planes_count, color_space, hdr_metadata,
-      buffer_id);
+      std::move(handles), size, strides, offsets, modifiers, current_format,
+      planes_count, color_space, hdr_metadata, buffer_id);
 }
 
 void WaylandBufferManagerGpu::CreateShmBasedBufferTask(base::ScopedFD shm_fd,

@@ -137,9 +137,13 @@ class WaylandSurfaceExplicitSyncTest : public WaylandTestSimple {
                                const std::vector<uint64_t>& modifiers = {3},
                                uint32_t format = DRM_FORMAT_ABGR8888,
                                uint32_t planes_count = 1) {
+    std::vector<base::ScopedFD> fds;
+    for (uint32_t i = 0; i < planes_count; ++i) {
+      fds.push_back(GetFdFactory()->CreateFd());
+    }
     buffer_manager_gpu_->CreateDmabufBasedBuffer(
-        GetFdFactory()->CreateFd(), kDefaultSize, strides, offsets, modifiers,
-        format, planes_count, gfx::ColorSpace(), gfx::HDRMetadata(), buffer_id);
+        std::move(fds), kDefaultSize, strides, offsets, modifiers, format,
+        planes_count, gfx::ColorSpace(), gfx::HDRMetadata(), buffer_id);
 
     base::RunLoop().RunUntilIdle();
 

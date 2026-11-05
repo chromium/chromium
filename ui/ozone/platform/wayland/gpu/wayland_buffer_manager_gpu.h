@@ -99,7 +99,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.
   //
   // Asks Wayland to create generic dmabuf-based wl_buffer.
-  void CreateDmabufBasedBuffer(base::ScopedFD dmabuf_fd,
+  void CreateDmabufBasedBuffer(std::vector<base::ScopedFD> dmabuf_fds,
                                gfx::Size size,
                                const std::vector<uint32_t>& strides,
                                const std::vector<uint32_t>& offsets,
@@ -230,7 +230,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void ProcessPendingTasks();
 
   // Internal methods that do calls to the |remote_host|.
-  void CreateDmabufBasedBufferTask(base::ScopedFD dmabuf_fd,
+  void CreateDmabufBasedBufferTask(std::vector<base::ScopedFD> dmabuf_fds,
                                    gfx::Size size,
                                    const std::vector<uint32_t>& strides,
                                    const std::vector<uint32_t>& offsets,

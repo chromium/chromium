@@ -9,6 +9,7 @@
 #include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include <memory>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
@@ -184,10 +186,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   auto* manager_host = connection->buffer_manager_host();
   env.SetTerminateGpuCallback(manager_host);
+  std::vector<mojo::PlatformHandle> fds;
+  for (uint32_t i = 0; i < kPlaneCount; ++i) {
+    fds.emplace_back(base::ScopedFD(HANDLE_EINTR(dup(fd.get()))));
+  }
   manager_host->CreateDmabufBasedBuffer(
-      mojo::PlatformHandle(std::move(fd)), buffer_size, strides, offsets,
-      modifiers, kFormat, kPlaneCount, gfx::ColorSpace(), gfx::HDRMetadata(),
-      kBufferId);
+      std::move(fds), buffer_size, strides, offsets, modifiers, kFormat,
+      kPlaneCount, gfx::ColorSpace(), gfx::HDRMetadata(), kBufferId);
 
   // Wait until the buffers are created.
   test_api.SyncDisplay();

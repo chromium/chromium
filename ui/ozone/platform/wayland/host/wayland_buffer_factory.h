@@ -29,14 +29,14 @@ class WaylandBufferFactory {
   WaylandBufferFactory& operator=(const WaylandBufferFactory&) = delete;
   ~WaylandBufferFactory();
 
-  // Requests to create a wl_buffer backed by the dmabuf prime |fd| descriptor.
-  // The result is sent back via the |callback|. If buffer creation failed,
-  // nullptr is sent back via the callback. Otherwise, a pointer to the
-  // |wl_buffer| is sent. Depending on the result of |CanCreateDmabufImmed|,
-  // a buffer can be created immediately which means the callback will be fired
-  // immediately and the client will not have to wait until the buffer is
-  // created.
-  void CreateDmabufBuffer(const base::ScopedFD& fd,
+  // Requests to create a wl_buffer backed by the dmabuf prime |fds|
+  // descriptors, one per plane. The result is sent back via the |callback|. If
+  // buffer creation failed, nullptr is sent back via the callback. Otherwise, a
+  // pointer to the |wl_buffer| is sent. Depending on the result of
+  // |CanCreateDmabufImmed|, a buffer can be created immediately which means the
+  // callback will be fired immediately and the client will not have to wait
+  // until the buffer is created.
+  void CreateDmabufBuffer(const std::vector<base::ScopedFD>& fds,
                           const gfx::Size& size,
                           const std::vector<uint32_t>& strides,
                           const std::vector<uint32_t>& offsets,

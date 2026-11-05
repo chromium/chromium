@@ -249,24 +249,29 @@ void GbmPixmapWayland::CreateDmabufBasedWlBuffer(
   std::vector<uint32_t> offsets;
   std::vector<uint64_t> modifiers;
 
+  // Each plane may be backed by a separate dmabuf object (e.g. buffers
+  // allocated with disjoint planes), so pass the fd of every plane.
+  std::vector<base::ScopedFD> fds;
+
   size_t plane_count = gbm_bo_->GetNumPlanes();
   for (size_t i = 0; i < plane_count; ++i) {
     strides.push_back(GetDmaBufPitch(i));
     offsets.push_back(GetDmaBufOffset(i));
     modifiers.push_back(modifier);
-  }
 
-  base::ScopedFD fd(HANDLE_EINTR(dup(GetDmaBufFd(0))));
-  if (!fd.is_valid()) {
-    PLOG(FATAL) << "dup";
+    base::ScopedFD fd(HANDLE_EINTR(dup(GetDmaBufFd(i))));
+    if (!fd.is_valid()) {
+      PLOG(FATAL) << "dup";
+    }
+    fds.push_back(std::move(fd));
   }
 
   // The wl_buffer must be destroyed once this pixmap is destroyed.
   created_wl_buffer_ = true;
 
-  // Asks Wayland to create a wl_buffer based on the |file| fd.
+  // Asks Wayland to create a wl_buffer based on the per-plane |fds|.
   buffer_manager_->CreateDmabufBasedBuffer(
-      std::move(fd), visible_area_size_, strides, offsets, modifiers,
+      std::move(fds), visible_area_size_, strides, offsets, modifiers,
       gbm_bo_->GetFormat(), plane_count, overlay_plane_data.color_space,
       overlay_plane_data.hdr_metadata, buffer_id_);
 }
