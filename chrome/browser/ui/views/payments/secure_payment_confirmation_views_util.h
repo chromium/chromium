@@ -35,11 +35,6 @@ std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
 std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
     const ui::ImageModel& image);
 
-// Formats the merchant label by combining the name and origin for display.
-std::u16string FormatMerchantLabel(
-    const std::optional<std::u16string>& merchant_name,
-    const std::optional<std::u16string>& merchant_origin);
-
 
 }  // namespace payments
 
