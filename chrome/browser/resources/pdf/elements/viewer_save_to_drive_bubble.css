@@ -4,20 +4,17 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=./pdf_shared.css.js
- * #include=pdf-shared cr-icons-lit
+ * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
 dialog {
-  background: var(--color-theme-color-picker-hue-slider-dialog-background,
-      var(--cr-fallback-color-surface));
+  background: var(--cr-fallback-color-surface);
   border: 0;
   border-radius: 12px;
   box-shadow: var(--cr-elevation-3);
   box-sizing: border-box;
-  color: var(--color-theme-color-picker-hue-slider-dialog-foreground,
-      var(--cr-fallback-color-on-surface));
+  color: var(--cr-fallback-color-on-surface);
   overflow: hidden;
   margin: 0;
   padding: 20px;
