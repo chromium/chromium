@@ -59,6 +59,7 @@ bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
     case mojom::FormControlType::kInputNumber:
     case mojom::FormControlType::kInputPassword:
     case mojom::FormControlType::kSelectOne:
+    case mojom::FormControlType::kSyntheticSelectOne:
     case mojom::FormControlType::kInputDate:
       return false;
   }

@@ -416,6 +416,8 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "url";
     case FormControlType::kSelectOne:
       return "select-one";
+    case FormControlType::kSyntheticSelectOne:
+      return "synthetic-select-one";
     case FormControlType::kTextArea:
       return "textarea";
   }

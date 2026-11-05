@@ -23,6 +23,7 @@ bool IsSensitiveFieldType(autofill::FormControlType type) {
     case autofill::FormControlType::kInputText:
     case autofill::FormControlType::kInputUrl:
     case autofill::FormControlType::kSelectOne:
+    case autofill::FormControlType::kSyntheticSelectOne:
     case autofill::FormControlType::kTextArea:
       return false;
   }

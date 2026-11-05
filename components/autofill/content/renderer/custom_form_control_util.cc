@@ -64,8 +64,7 @@ FormFieldData CustomFormControlToFormField(const CustomFormControl& control) {
   field.set_renderer_id(form_util::GetFieldRendererId(element));
   field.set_host_form_id(form_util::GetFormRendererId(
       form_util::GetOutermostAncestorFormElement(element)));
-  // TODO(crbug.com/581337039): Introduce a dedicated kSyntheticSelectOne type.
-  field.set_form_control_type(FormControlType::kSelectOne);
+  field.set_form_control_type(FormControlType::kSyntheticSelectOne);
 
   if (control.current_option) {
     field.set_value(control.current_option->value.substr(0, kMaxStringLength));

@@ -74,6 +74,10 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
       return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE;
     case FormControlType::kTextArea:
       return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
+    // TODO(crbug.com/581337039): Exclude synthetic selects from
+    // `ToFormDataProto()`'s conversion logic.
+    case FormControlType::kSyntheticSelectOne:
+      NOTREACHED();
   }
   NOTREACHED();
 }

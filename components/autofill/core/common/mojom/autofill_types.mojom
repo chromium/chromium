@@ -12,7 +12,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 // The form control types supported by Autofill: a subset of
-// blink::mojom::FormControlType plus kContentEditable.
+// blink::mojom::FormControlType plus kContentEditable and kSyntheticSelectOne.
 // Do not modify the integer values because they are used UKM metrics.
 enum FormControlType {
   kContentEditable = 0,
@@ -32,6 +32,9 @@ enum FormControlType {
   kTextArea = 14,
   kInputDate = 15,
   // deprecated: kInputHiddenEmailVerification = 16,
+  // A form control behaving like select-one, but is not implemented using
+  // <select> (often implemented through divs and click handlers).
+  kSyntheticSelectOne = 17,
 };
 
 // The list of all HTML autocomplete field mode hints supported by Chrome.

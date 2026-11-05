@@ -476,6 +476,7 @@ class AtMemoryHandlerTest_SingleField
       case FormControlType::kInputTelephone:
       case FormControlType::kInputUrl:
       case FormControlType::kSelectOne:
+      case FormControlType::kSyntheticSelectOne:
         NOTREACHED();
     }
     WaitForFormsSeen();

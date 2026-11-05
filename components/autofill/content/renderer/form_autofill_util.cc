@@ -274,6 +274,7 @@ bool IsTextInput(const WebFormControlElement& element) {
     case FormControlType::kInputMonth:
     case FormControlType::kInputDate:
     case FormControlType::kSelectOne:
+    case FormControlType::kSyntheticSelectOne:
     case FormControlType::kTextArea:
       return false;
     case FormControlType::kInputEmail:
@@ -1302,6 +1303,7 @@ void FillFormField(const FormFieldData::FillData& data,
   }
   switch (*type) {
     case FormControlType::kContentEditable:
+    case FormControlType::kSyntheticSelectOne:
       NOTREACHED();
     case FormControlType::kInputDate:
     case FormControlType::kInputEmail:
@@ -1372,6 +1374,7 @@ void PreviewFormField(const FormFieldData::FillData& data,
   }
   switch (*type) {
     case FormControlType::kContentEditable:
+    case FormControlType::kSyntheticSelectOne:
       NOTREACHED();
     case FormControlType::kInputDate:
     case FormControlType::kInputEmail:
