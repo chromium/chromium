@@ -52,7 +52,7 @@ public class TabObscuringHandler {
 
     private final TokenHolder mAllTabsAndToolbarTokenHolder;
 
-    private final ObserverList<Observer> mVisibilityObservers = new ObserverList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     /** Default constructor */
     public TabObscuringHandler() {
@@ -110,23 +110,25 @@ public class TabObscuringHandler {
 
     /**
      * Add {@link Observer} object.
-     * @param observer Observer object monitoring tab visibility.
+     *
+     * @param observer Observer object monitoring tab obscuring state.
      */
     public void addObserver(Observer observer) {
-        mVisibilityObservers.addObserver(observer);
+        mObservers.addObserver(observer);
     }
 
     /**
      * Remove {@link Observer} object.
-     * @param observer Observer object monitoring tab visibility.
+     *
+     * @param observer Observer object monitoring tab obscuring state.
      */
     public void removeObserver(Observer observer) {
-        mVisibilityObservers.removeObserver(observer);
+        mObservers.removeObserver(observer);
     }
 
-    /** Notify all the observers of the visibility update. */
+    /** Notify all the observers of the obscuring state update. */
     private void notifyUpdate() {
-        for (Observer observer : mVisibilityObservers) {
+        for (Observer observer : mObservers) {
             observer.updateObscured(isTabContentObscured(), isToolbarObscured());
         }
     }

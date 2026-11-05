@@ -2639,9 +2639,9 @@ class TabImpl implements Tab, TabInternal {
 
             updateWebContentsDelegate();
 
-            // TODO(crbug.com/40942165): Find a better way of indicating this is a background tab
+            // TODO(crbug.com/40942165): Find a better way of indicating this tab is detached
             // (or move the logic elsewhere).
-            boolean isBackgroundTab = isDetachedFromActivity();
+            boolean isDetached = isDetachedFromActivity();
 
             assert mNativeTabAndroid != 0;
             assumeNonNull(mWebContentsDelegate);
@@ -2649,7 +2649,7 @@ class TabImpl implements Tab, TabInternal {
                     .initWebContents(
                             mNativeTabAndroid,
                             isOffTheRecord(),
-                            isBackgroundTab,
+                            isDetached,
                             webContents,
                             mWebContentsDelegate,
                             createTabContextMenuPopulatorFactory());
