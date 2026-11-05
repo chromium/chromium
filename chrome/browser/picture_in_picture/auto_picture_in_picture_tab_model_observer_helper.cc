@@ -6,6 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "content/public/browser/web_contents.h"
@@ -51,19 +52,28 @@ void AutoPictureInPictureTabModelObserverHelper::StartObserving() {
   if (is_observing_) {
     return;
   }
-  is_observing_ = true;
-
-  // Start observing the list of TabModels.
-  TabModelList::AddObserver(this);
-
-  // Observe all existing TabModels to catch when the tab is added to any of
-  // them. This is necessary because the tab might be moved between different
-  // TabModels (e.g., when moving a tab to a new window), and we need to ensure
-  // we are always observing the model that currently contains the tab to
-  // receive updates like DidSelectTab.
-  for (TabModel* model : TabModelList::models()) {
-    model->AddObserver(this);
+  Profile* profile = Profile::FromBrowserContext(
+      GetObservedWebContents()->GetBrowserContext());
+  if (!profile || profile->ShutdownStarted()) {
+    return;
   }
+  is_observing_ = true;
+  profile_observation_.Observe(profile);
+
+  // Start observing the list of TabModels for this profile.
+  TabModelList::AddObserver(this, profile);
+
+  // Observe all existing TabModels for this profile to catch when the tab is
+  // added to any of them. This is necessary because the tab might be moved
+  // between different TabModels (e.g., when moving a tab to a new window), and
+  // we need to ensure we are always observing the model that currently contains
+  // the tab to receive updates like `DidSelectTab()`.
+  TabModelList::ForEach(profile, [&](TabModel* model) {
+    if (!tab_model_observations_.IsObservingSource(model)) {
+      tab_model_observations_.AddObservation(model);
+    }
+    return true;
+  });
 
   // Find the correct model to observe and set the initial activation state.
   ReevaluateObservedModelAndState();
@@ -75,14 +85,16 @@ void AutoPictureInPictureTabModelObserverHelper::StopObserving() {
   }
   is_observing_ = false;
 
-  // Remove the global TabModelList observer.
-  TabModelList::RemoveObserver(this);
-
-  // Stop observing all TabModels.
-  for (TabModel* model : TabModelList::models()) {
-    model->RemoveObserver(this);
-  }
+  Profile* profile = profile_observation_.GetSource();
+  profile_observation_.Reset();
+  TabModelList::RemoveObserver(this, profile);
+  tab_model_observations_.RemoveAllObservations();
   observed_tab_model_ = nullptr;
+}
+
+void AutoPictureInPictureTabModelObserverHelper::OnProfileWillBeDestroyed(
+    Profile* profile) {
+  StopObserving();
 }
 
 // The following callbacks are for events that might change the active tab
@@ -103,8 +115,18 @@ bool AutoPictureInPictureTabModelObserverHelper::IsTabActivated() {
     return is_tab_activated_;
   }
 
-  // Otherwise, calculate it now.
-  ReevaluateObservedModelAndState();
+  // Otherwise, calculate it now without caching an unobserved model.
+  TabModel* current_model =
+      TabModelList::GetTabModelForWebContents(GetObservedWebContents());
+  // GetTabModelForWebContents() scans every profile. Java never puts a tab in
+  // another profile's TabModel, so this only guards against a future bug.
+  const bool in_profile_model =
+      current_model && current_model->GetProfile() ==
+                           Profile::FromBrowserContext(
+                               GetObservedWebContents()->GetBrowserContext());
+  is_tab_activated_ =
+      in_profile_model &&
+      current_model->GetActiveWebContents() == GetObservedWebContents();
   return is_tab_activated_;
 }
 
@@ -146,12 +168,16 @@ void AutoPictureInPictureTabModelObserverHelper::WillCloseTab(TabAndroid* tab) {
 
 void AutoPictureInPictureTabModelObserverHelper::OnTabModelAdded(
     TabModel* model) {
-  model->AddObserver(this);
+  if (!tab_model_observations_.IsObservingSource(model)) {
+    tab_model_observations_.AddObservation(model);
+  }
 }
 
 void AutoPictureInPictureTabModelObserverHelper::OnTabModelRemoved(
     TabModel* model) {
-  model->RemoveObserver(this);
+  if (tab_model_observations_.IsObservingSource(model)) {
+    tab_model_observations_.RemoveObservation(model);
+  }
   ReevaluateObservedModelAndState();
 }
 
@@ -160,10 +186,14 @@ void AutoPictureInPictureTabModelObserverHelper::
   // Find the TabModel that currently contains our observed WebContents.
   TabModel* current_model =
       TabModelList::GetTabModelForWebContents(GetObservedWebContents());
+  if (current_model &&
+      !tab_model_observations_.IsObservingSource(current_model)) {
+    current_model = nullptr;
+  }
 
   // If the TabModel has changed (e.g., tab moved between windows), update
   // our reference. We don't need to add/remove observers here because we
-  // observe all models.
+  // already observe all models in the observed profile.
   if (current_model != observed_tab_model_) {
     observed_tab_model_ = current_model;
   }
