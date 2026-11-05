@@ -224,8 +224,15 @@ TEST_F(DiffTest, TestAliasesChangeGroup) {
 // These tests currently fail because _ doesn't rewrite.
 
 TEST_F(DiffTest, TestStarSymbolNormalization) {
+  // Matches in pass 2 (numbers stripped).
   SetName(&size_info1_->raw_symbols[0], "* symbol gap 1 (end of section)");
   SetName(&size_info2_->raw_symbols[0], "* symbol gap 2 (end of section)");
+  // Suffix present on only one side: matches in pass 3 (star normalization).
+  SetName(&size_info1_->raw_symbols[1], "* symbol gap 1");
+  SetName(&size_info2_->raw_symbols[1], "* symbol gap 2 (end of section)");
+  // Different parenthesized suffixes: matches in pass 3.
+  SetName(&size_info1_->raw_symbols[2], "* symbol gap 1 (foo)");
+  SetName(&size_info2_->raw_symbols[2], "* symbol gap 2 (bar)");
 
   DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
                             &removed_sources_, &added_sources_);

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace {
 struct SymbolMatchIndex {
@@ -132,23 +131,54 @@ class DiffHelper {
   DiffHelper() = default;
 
   std::string_view StripNumbers(std::string_view in) {
-    static const RE2* number_regex = new RE2("\\d+");
-    if (RE2::PartialMatch(in, *number_regex)) {
-      tmp_strings_.emplace_back(in);
-      RE2::GlobalReplace(&tmp_strings_.back(), *number_regex, "");
-      return tmp_strings_.back();
+    size_t first_digit = in.find_first_of("0123456789");
+    if (first_digit == std::string_view::npos) {
+      return in;
     }
-    return in;
+    std::string& out = tmp_strings_.emplace_back();
+    out.reserve(in.size() - 1);
+    out.append(in.data(), first_digit);
+    for (size_t i = first_digit + 1; i < in.size(); ++i) {
+      char c = in[i];
+      if (c < '0' || c > '9') {
+        out.push_back(c);
+      }
+    }
+    return out;
   }
 
   std::string_view NormalizeStarSymbols(std::string_view in) {
-    // Used only for "*" symbols to strip suffixes "abc123" or "abc123 (any)".
-    static const RE2* normalize_star_symbols =
-        new RE2("\\s+\\d+(?: \\(.*\\))?$");
-    if (RE2::PartialMatch(in, *normalize_star_symbols)) {
-      tmp_strings_.emplace_back(in);
-      RE2::Replace(&tmp_strings_.back(), *normalize_star_symbols, "s");
-      return tmp_strings_.back();
+    // Used only for "*" symbols. Replaces a trailing "<whitespace><digits>",
+    // optionally followed by " (<anything>)", with "s". E.g.:
+    // "* symbol gap 3 (end of section)" -> "* symbol gaps".
+    auto is_space = [](char c) {
+      return c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\r';
+    };
+    auto is_digit = [](char c) { return c >= '0' && c <= '9'; };
+    const size_t n = in.size();
+    for (size_t i = 0; i < n; ++i) {
+      if (!is_space(in[i]) || (i > 0 && is_space(in[i - 1]))) {
+        continue;
+      }
+      size_t p = i + 1;
+      while (p < n && is_space(in[p])) {
+        ++p;
+      }
+      if (p >= n || !is_digit(in[p])) {
+        continue;
+      }
+      size_t q = p + 1;
+      while (q < n && is_digit(in[q])) {
+        ++q;
+      }
+      if (q == n ||
+          (q + 2 < n && in[q] == ' ' && in[q + 1] == '(' && in.back() == ')')) {
+        std::string& out = tmp_strings_.emplace_back();
+        out.reserve(i + 1);
+        out.append(in.data(), i);
+        out.push_back('s');
+        return out;
+      }
     }
     return in;
   }
