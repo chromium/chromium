@@ -3701,10 +3701,74 @@ TEST_F(ClientSideDetectionHostIOSTest,
   EXPECT_TRUE(classification_image(host.get()).IsEmpty());
 }
 
-// Tests that MaybeStartImageEmbedding skips image embedding when the
-// classification snapshot image is empty.
+// Tests that MaybeStartImageEmbedding requests a new snapshot when the
+// classification snapshot image is empty (e.g. classification was skipped for
+// a non-page-load trigger), and that a failed snapshot is reported as kFailed
+// while the ping still proceeds.
 TEST_F(ClientSideDetectionHostIOSTest,
-       MaybeStartImageEmbeddingSkipsWhenClassificationImageIsEmpty) {
+       MaybeStartImageEmbeddingRecapturesWhenClassificationImageIsEmpty) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  // Flipping the pref refreshes (here: clears) the service's scorer.
+  mock_service_.SetScorerForTesting(std::make_unique<safe_browsing::Scorer>());
+
+  EXPECT_CALL(mock_service_, HasImageEmbeddingModel())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_service_, IsModelMetadataImageEmbeddingVersionMatching())
+      .WillRepeatedly(testing::Return(true));
+
+  // Create SnapshotTabHelper but don't set a delegate or view, so the snapshot
+  // fails.
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  set_last_request_type(host.get(),
+                        safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+  // classification_image_ is empty by default.
+
+  auto mock_embedder = std::make_unique<MockPhishingImageEmbedder>();
+  EXPECT_CALL(*mock_embedder,
+              BeginImageEmbedding(testing::_, testing::_, testing::_))
+      .Times(0);
+  set_image_embedder(host.get(), std::move(mock_embedder));
+
+  auto verdict = std::make_unique<safe_browsing::ClientPhishingRequest>();
+  verdict->set_url(kExampleUrl);
+  verdict->set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .Times(1);
+
+  MaybeStartImageEmbedding(
+      host.get(), std::move(verdict),
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false,
+      safe_browsing::PhishingDetectorResult::CLASSIFICATION_SKIPPED);
+  // The snapshot failure is reported asynchronously.
+  task_environment_.RunUntilIdle();
+
+  ExpectClientSideDetectionEvent(
+      ClientSideDetectionEvent::kImageEmbeddingBegin,
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+  ExpectClientSideDetectionEvent(
+      ClientSideDetectionEvent::kImageEmbeddingComplete,
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult",
+      safe_browsing::ClientSideDetectionHostBase::ImageEmbeddingResult::kFailed,
+      1);
+  EXPECT_TRUE(classification_image(host.get()).IsEmpty());
+}
+
+// Tests that MaybeStartImageEmbedding does not request a snapshot when the
+// classification snapshot image is empty but no Scorer is available to run the
+// embedder; the ping still proceeds.
+TEST_F(ClientSideDetectionHostIOSTest,
+       MaybeStartImageEmbeddingWithoutScorerSkipsSnapshot) {
+  mock_service_.SetScorerForTesting(/*scorer=*/nullptr);
   safe_browsing::SetSafeBrowsingState(
       profile_->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -3738,8 +3802,14 @@ TEST_F(ClientSideDetectionHostIOSTest,
       host.get(), std::move(verdict),
       /*did_match_high_confidence_allowlist=*/false,
       /*is_invalid_ip=*/false,
-      safe_browsing::PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+      safe_browsing::PhishingDetectorResult::CLASSIFICATION_SKIPPED);
+  task_environment_.RunUntilIdle();
 
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult",
+      safe_browsing::ClientSideDetectionHostBase::ImageEmbeddingResult::
+          kImageEmbedderNotReady,
+      1);
   EXPECT_TRUE(classification_image(host.get()).IsEmpty());
 }
 

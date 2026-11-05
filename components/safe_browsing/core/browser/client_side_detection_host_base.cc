@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/client_side_detection_host_base.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -453,31 +454,93 @@ void ClientSideDetectionHostBase::StartBrowserSideImageEmbedding(
                                   verdict->visual_features().has_image());
   }
 
-  if (should_run_image_embedding && !classification_image_.IsEmpty()) {
-    bool can_extract_visual_features =
-        result == PhishingDetectorResult::CLASSIFICATION_SKIPPED ||
-        can_extract_visual_features_result ==
-            visual_utils::CanExtractVisualFeaturesResult::
-                kCanExtractVisualFeatures;
-    LogClientSideDetectionEvent(ClientSideDetectionEvent::kImageEmbeddingBegin,
-                                verdict->client_side_detection_type());
-    set_image_embedding_start_time(tick_clock()->NowTicks());
-    image_embedder_->BeginImageEmbedding(
-        classification_image_, can_extract_visual_features,
-        base::BindOnce(&ClientSideDetectionHostBase::OnImageEmbeddingDone,
-                       base_weak_factory_.GetWeakPtr(), std::move(verdict),
-                       did_match_high_confidence_allowlist, is_invalid_ip));
-    // Release the capture to minimize memory usage now that the embedder has
-    // received the frame.
+  if (!should_run_image_embedding) {
+    // Browser-side image embedding is not required or enabled. Release the
+    // capture to minimize memory usage.
     classification_image_ = gfx::Image();
+    MaybeStartIntelligentScanForScamDetection(
+        std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip);
     return;
   }
 
-  // Image embedding has been skipped. Release the capture to minimize memory
-  // usage.
-  classification_image_ = gfx::Image();
-  MaybeStartIntelligentScanForScamDetection(
-      std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip);
+  bool can_extract_visual_features =
+      result == PhishingDetectorResult::CLASSIFICATION_SKIPPED ||
+      can_extract_visual_features_result ==
+          visual_utils::CanExtractVisualFeaturesResult::
+              kCanExtractVisualFeatures;
+  LogClientSideDetectionEvent(ClientSideDetectionEvent::kImageEmbeddingBegin,
+                              verdict->client_side_detection_type());
+  set_image_embedding_start_time(tick_clock()->NowTicks());
+
+  if (!classification_image_.IsEmpty()) {
+    // Hand the retained capture to the embedder and release it to minimize
+    // memory usage.
+    gfx::Image image = std::exchange(classification_image_, gfx::Image());
+    BeginBrowserSideImageEmbedding(
+        std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip,
+        can_extract_visual_features, image);
+    return;
+  }
+
+  // No capture was retained, e.g. because classification was skipped for a
+  // non-page-load trigger. Capture the page now, as the renderer-side embedder
+  // does on demand, unless no `Scorer` is available to run the embedder anyway.
+  // Note that platforms may run the callback synchronously (e.g. when there
+  // is nothing to capture), in which case the rest of the ping flow nests
+  // inside this call, just like the early-return path above.
+  if (!csd_service_ || !csd_service_->GetScorer()) {
+    PhishingImageEmbeddingDone(
+        std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip,
+        ImageEmbeddingResult::kImageEmbedderNotReady,
+        /*image_feature_embedding=*/std::nullopt,
+        /*visual_features=*/std::nullopt);
+    return;
+  }
+  CaptureScreenshot(
+      base::BindOnce(&ClientSideDetectionHostBase::OnImageEmbeddingCaptureDone,
+                     base_weak_factory_.GetWeakPtr(), std::move(verdict),
+                     did_match_high_confidence_allowlist, is_invalid_ip,
+                     can_extract_visual_features));
+}
+
+void ClientSideDetectionHostBase::OnImageEmbeddingCaptureDone(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
+    bool can_extract_visual_features,
+    const gfx::Image& image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (image.IsEmpty()) {
+    PhishingImageEmbeddingDone(std::move(verdict),
+                               did_match_high_confidence_allowlist,
+                               is_invalid_ip, ImageEmbeddingResult::kFailed,
+                               /*image_feature_embedding=*/std::nullopt,
+                               /*visual_features=*/std::nullopt);
+    return;
+  }
+
+  // `StartBrowserSideImageEmbedding()` verified a `Scorer` was present, and
+  // any scorer change since then calls `OnScorerChanged()` ->
+  // `CancelPendingRequests()`, invalidating `base_weak_factory_`.
+  CHECK(csd_service_ && csd_service_->GetScorer());
+  BeginBrowserSideImageEmbedding(
+      std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip,
+      can_extract_visual_features, image);
+}
+
+void ClientSideDetectionHostBase::BeginBrowserSideImageEmbedding(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
+    bool can_extract_visual_features,
+    const gfx::Image& image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  image_embedder_->set_scorer(csd_service_->GetScorer());
+  image_embedder_->BeginImageEmbedding(
+      image, can_extract_visual_features,
+      base::BindOnce(&ClientSideDetectionHostBase::OnImageEmbeddingDone,
+                     base_weak_factory_.GetWeakPtr(), std::move(verdict),
+                     did_match_high_confidence_allowlist, is_invalid_ip));
 }
 
 void ClientSideDetectionHostBase::OnImageEmbeddingDone(

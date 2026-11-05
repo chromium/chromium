@@ -565,8 +565,9 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
 
   using ScreenshotCallback = base::OnceCallback<void(const gfx::Image&)>;
 
-  // Captures the current page for visual classification and runs `callback`
-  // with the result, or with an empty image if the capture failed.
+  // Captures the current page for visual classification or image embedding,
+  // and runs `callback` with the result, or with an empty image if the capture
+  // failed.
   virtual void CaptureScreenshot(ScreenshotCallback callback) = 0;
 
   // Decides whether visual features (the blurred page image) may be attached
@@ -601,9 +602,12 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       const gfx::Image& image);
 
   // Browser-side implementation of `MaybeStartImageEmbedding()`: applies the
-  // visual-features gate, runs the image embedder on the retained
-  // classification image when needed, and otherwise continues to
-  // `MaybeStartIntelligentScanForScamDetection()`.
+  // visual-features gate, runs the image embedder when needed, and otherwise
+  // continues to `MaybeStartIntelligentScanForScamDetection()`. The embedder
+  // runs on the retained classification image; when none is retained (e.g.
+  // classification was skipped for a non-page-load trigger), the page is
+  // captured again via `CaptureScreenshot()` first, as the renderer-side
+  // embedder does on demand.
   void StartBrowserSideImageEmbedding(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
@@ -658,6 +662,25 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // `Scorer` is destroyed on a background thread, so in-flight requests are
   // cancelled and the cached raw pointers dropped (crbug.com/561910278).
   void OnScorerChanged();
+
+  // Receives the capture requested by `StartBrowserSideImageEmbedding()` when
+  // no classification image was retained. An empty `image` is reported as
+  // `ImageEmbeddingResult::kFailed`; the ping proceeds either way.
+  void OnImageEmbeddingCaptureDone(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      bool can_extract_visual_features,
+      const gfx::Image& image);
+
+  // Sets the current `Scorer` from `csd_service_` on `image_embedder_` and runs
+  // it on `image`, reporting to `OnImageEmbeddingDone()`.
+  void BeginBrowserSideImageEmbedding(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      bool can_extract_visual_features,
+      const gfx::Image& image);
 
   void TriggerSecondForceRequest();
 
