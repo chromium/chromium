@@ -2198,6 +2198,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self updateAccessibilityElements];
 }
 
+- (void)willShowInactiveTabs {
+  [self updateAccessibilityElements];
+}
+
+- (void)willHideInactiveTabs {
+  [self updateAccessibilityElements];
+}
+
 #pragma mark - Accessibility
 
 // Updates the accessibility elements on the root view to enforce a logical
@@ -2211,7 +2219,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  if (self.tabGridState.visibleTabGroup != nullptr) {
+  if (self.tabGridState.visibleTabGroup != nullptr ||
+      self.tabGridState.inactiveTabsVisible) {
     self.view.accessibilityElements = nil;
     return;
   }

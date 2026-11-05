@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -298,6 +299,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   [self.mediator disconnect];
   self.mediator = nil;
+  self.showing = NO;
   self.viewController.layoutState = nil;
   self.viewController = nil;
 }
@@ -565,6 +567,12 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 }
 
 #pragma mark - Private
+
+// Sets whether the inactive tabs view controller is currently shown.
+- (void)setShowing:(BOOL)showing {
+  _showing = showing;
+  self.browser->GetSceneState().tabGridState.inactiveTabsVisible = showing;
+}
 
 // Called when inactive tabs should be dismissed.
 - (void)didFinish {

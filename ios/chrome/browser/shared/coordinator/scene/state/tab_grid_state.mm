@@ -72,6 +72,18 @@
   }
 }
 
+- (void)setInactiveTabsVisible:(BOOL)inactiveTabsVisible {
+  if (_inactiveTabsVisible == inactiveTabsVisible) {
+    return;
+  }
+  _inactiveTabsVisible = inactiveTabsVisible;
+  if (inactiveTabsVisible) {
+    [_observers willShowInactiveTabs];
+  } else {
+    [_observers willHideInactiveTabs];
+  }
+}
+
 - (void)addObserver:(id<TabGridStateObserving>)observer {
   [_observers addObserver:observer];
 }

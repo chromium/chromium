@@ -40,6 +40,14 @@
   _observer->WillHideTabGroup();
 }
 
+- (void)willShowInactiveTabs {
+  _observer->WillShowInactiveTabs();
+}
+
+- (void)willHideInactiveTabs {
+  _observer->WillHideInactiveTabs();
+}
+
 - (void)tabGridStateModeDidChange:(TabGridState*)tabGridState {
   _observer->TabGridStateModeDidChange(tabGridState);
 }

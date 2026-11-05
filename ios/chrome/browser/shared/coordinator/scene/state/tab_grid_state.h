@@ -32,6 +32,12 @@ class TabGroup;
 // Called right before a group is hidden.
 - (void)willHideTabGroup;
 
+// Called right before the inactive tabs are shown.
+- (void)willShowInactiveTabs;
+
+// Called right before the inactive tabs are hidden.
+- (void)willHideInactiveTabs;
+
 // Called when the tab grid mode changes.
 - (void)tabGridStateModeDidChange:(TabGridState*)tabGridState;
 
@@ -58,6 +64,9 @@ class TabGroup;
 // The tab group currently shown in the tab grid. `nullptr` if no tab group is
 // visible.
 @property(nonatomic, assign) const TabGroup* visibleTabGroup;
+
+// Whether the inactive tabs are currently visible.
+@property(nonatomic, assign) BOOL inactiveTabsVisible;
 
 // Adds observer.
 - (void)addObserver:(id<TabGridStateObserving>)observer;

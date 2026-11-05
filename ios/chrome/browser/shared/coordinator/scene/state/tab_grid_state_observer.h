@@ -37,6 +37,12 @@ class TabGridStateObserver : public base::CheckedObserver {
   // Called right before a group is hidden.
   virtual void WillHideTabGroup() {}
 
+  // Called right before the inactive tabs are shown.
+  virtual void WillShowInactiveTabs() {}
+
+  // Called right before the inactive tabs are hidden.
+  virtual void WillHideInactiveTabs() {}
+
   // Called when the tab grid mode changes.
   virtual void TabGridStateModeDidChange(TabGridState* tab_grid_state) {}
 };

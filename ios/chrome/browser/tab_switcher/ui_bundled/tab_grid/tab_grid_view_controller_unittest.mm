@@ -338,4 +338,18 @@ TEST_F(TabGridViewControllerTest, InsetsAccountForAppBarInLandscape) {
   EXPECT_GE(insets.left, AppBarHeightLandscape());
 }
 
+// Tests that `accessibilityElements` is reset to nil when inactive tabs are
+// visible so VoiceOver can navigate the inactive tabs view.
+TEST_F(TabGridViewControllerTest, AccessibilityElementsWithInactiveTabs) {
+  std::ignore = view_controller_.view;
+  [view_controller_ contentWillAppearAnimated:NO];
+  EXPECT_NE(view_controller_.view.accessibilityElements, nil);
+
+  tab_grid_state_.inactiveTabsVisible = YES;
+  EXPECT_EQ(view_controller_.view.accessibilityElements, nil);
+
+  tab_grid_state_.inactiveTabsVisible = NO;
+  EXPECT_NE(view_controller_.view.accessibilityElements, nil);
+}
+
 }  // namespace
