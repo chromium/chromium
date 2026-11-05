@@ -703,6 +703,9 @@ chromium-metrics-reviews@google.com.
     <variant name="WaitForFederatedLogin"/>
     <variant name="WaitForLoadCompletion"/>
     <variant name="WaitForPageStability"/>
+    <variant name="WaitForScriptTools"
+        summary="WaitForScriptTools (only recorded when the page's tools
+                 weren't ready when the state was entered)"/>
     <variant name="WaitForVisualStateUpdate"/>
   </token>
 </histogram>

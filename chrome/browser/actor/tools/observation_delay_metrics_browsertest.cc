@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/observation_delay_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -13,11 +14,14 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/task_id.h"
+#include "components/page_content_annotations/content/browser/script_tools_ready_waiter.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 namespace actor {
@@ -340,6 +344,137 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsFederatedLoginDelayTest,
 
   histogram_tester.ExpectTotalCount(
       kActorObservationDelayStateDurationWaitForFederatedLoginMetricName, 1);
+}
+
+class ObservationDelayMetricsScriptToolsTest
+    : public ObservationDelayMetricsTest {
+ public:
+  ObservationDelayMetricsScriptToolsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebMCP, blink::features::kWebMCPWaitForToolsUntil},
+        {});
+  }
+  ~ObservationDelayMetricsScriptToolsTest() override = default;
+
+  // Makes the page signal that it's still registering script tools until
+  // `window.resolveToolsReady()` is called, and returns once the browser has
+  // processed the signal.
+  [[nodiscard]] bool SignalPendingScriptTools() {
+    if (!page_content_annotations::ScriptToolsReadyWaiter::AreScriptToolsReady(
+            *web_contents(), /*include_ad_frames=*/true)) {
+      return false;
+    }
+    if (!content::ExecJs(web_contents(), R"(
+        window.toolsReady = new Promise(resolve => {
+          window.resolveToolsReady = resolve;
+        });
+        document.modelContext.waitForToolsUntil(window.toolsReady);
+    )")) {
+      return false;
+    }
+    return base::test::RunUntil([&]() {
+      return !page_content_annotations::ScriptToolsReadyWaiter::
+          AreScriptToolsReady(*web_contents(), /*include_ad_frames=*/true);
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A page whose tools are ready once it has loaded doesn't delay the
+// observation, so no time is attributed to waiting for them.
+IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsScriptToolsTest,
+                       NoScriptToolsDelayWhenReadyBeforeLoadCompletes) {
+  base::HistogramTester histogram_tester;
+
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      page_content_annotations::ScriptToolsReadyWaiter::AreScriptToolsReady(
+          *web_contents(), /*include_ad_frames=*/true));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(active_surface(), result.GetCallback());
+
+  ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForScriptToolsMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
+  histogram_tester.ExpectUniqueSample(
+      kActorObservationDelayDidTimeoutMetricName,
+      /*sample=*/false, 1);
+}
+
+// Observation is delayed if tools aren't ready at load time.
+IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsScriptToolsTest,
+                       ScriptToolsDelay) {
+  base::HistogramTester histogram_tester;
+
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(SignalPendingScriptTools());
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(active_surface(), result.GetCallback());
+
+  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForScriptTools));
+  EXPECT_FALSE(result.IsReady());
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), "window.resolveToolsReady()"));
+
+  ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForScriptToolsMetricName, 1);
+  histogram_tester.ExpectUniqueSample(
+      kActorObservationDelayDidTimeoutMetricName,
+      /*sample=*/false, 1);
+}
+
+class ObservationDelayMetricsScriptToolsTimeoutTest
+    : public ObservationDelayMetricsScriptToolsTest {
+ public:
+  ObservationDelayMetricsScriptToolsTimeoutTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kActorObservationDelay, {{kActorObservationDelayTimeout.name, "3s"}});
+  }
+  ~ObservationDelayMetricsScriptToolsTimeoutTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The wait for the page's script tools is bounded by the overall observation
+// timeout.
+IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsScriptToolsTimeoutTest,
+                       ScriptToolsDelayTimesOut) {
+  base::HistogramTester histogram_tester;
+
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(SignalPendingScriptTools());
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(active_surface(), result.GetCallback());
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForScriptTools));
+
+  // The page never settles its promise.
+  ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  histogram_tester.ExpectUniqueSample(
+      kActorObservationDelayDidTimeoutMetricName,
+      /*sample=*/true, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForScriptToolsMetricName, 0);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ObservationDelayMetricsNavigateTest);

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -13,6 +17,8 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/browser/actor/tools/script_tool_host.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -25,6 +31,8 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/navigation_controller.h"
@@ -34,6 +42,7 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 
@@ -1166,6 +1175,111 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                "window.cancelledTools.includes('reentrant_inner')")
         .ExtractBool();
   }));
+}
+
+class ActorToolsTestScriptToolRegistration : public ActorToolsTestScriptTool {
+ public:
+  ActorToolsTestScriptToolRegistration() {
+    features_.InitAndEnableFeature(blink::features::kWebMCPWaitForToolsUntil);
+  }
+
+  // Returns the names of the script tools in an observation of the active tab,
+  // as the actor's client would take it once an action completes.
+  std::vector<std::string> GetObservedToolNames() {
+    TestFuture<ActorKeyedService::TabObservationResult> observation;
+    actor_keyed_service().RequestTabObservation(
+        *active_tab(), task_id_, /*screenshot_collection_options=*/std::nullopt,
+        observation.GetCallback());
+
+    std::vector<std::string> names;
+    const ActorKeyedService::TabObservationResult& result = observation.Get();
+    EXPECT_TRUE(result.has_value());
+    if (!result.has_value()) {
+      return names;
+    }
+    const auto& page_content = (*result)->annotated_page_content_result;
+    EXPECT_TRUE(page_content.has_value());
+    if (!page_content.has_value()) {
+      return names;
+    }
+    for (const auto& tool :
+         page_content->proto.main_frame_data().script_tools()) {
+      names.push_back(tool.name());
+    }
+    return names;
+  }
+
+ protected:
+  using State = ObservationDelayController::State;
+
+  // Registers `initial_tool` while it's parsed, says its tools aren't ready,
+  // and registers `deferred_tool` once `finishAsyncWork()` is called in it.
+  static constexpr char kDeferredRegistrationPath[] =
+      "/actor/script_tool_deferred_registration.html";
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// The page registers `deferred_tool` after it has loaded. The wait for the page
+// to settle before an observation lasts until it's registered, so the
+// observation includes it.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolRegistration,
+                       ObservationWaitsForScriptToolsToBeReady) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", kDeferredRegistrationPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  TestObservationDelayController controller(
+      *main_frame(), task_id_, actor_keyed_service().GetJournal(),
+      ObservationDelayController::PageStabilityConfig());
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(*ActorSurfaceHandle::From(active_tab()->GetHandle()).Get(),
+                  result.GetCallback());
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForScriptTools));
+
+  content::ExecuteScriptAsync(web_contents(), "finishAsyncWork()");
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+
+  EXPECT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  EXPECT_THAT(GetObservedToolNames(),
+              testing::UnorderedElementsAre("initial_tool", "deferred_tool"));
+}
+
+class ActorToolsTestScriptToolRegistrationTimeout
+    : public ActorToolsTestScriptToolRegistration {
+ public:
+  ActorToolsTestScriptToolRegistrationTimeout() {
+    features_.InitWithFeaturesAndParameters(
+        {{kActorObservationDelay,
+          {{kActorObservationDelayTimeout.name, "3s"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// The page never registers `deferred_tool`. The wait for it is bounded by the
+// observation delay's timeout, after which the observation has only the tools
+// that were registered.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolRegistrationTimeout,
+                       ObservationProceedsWhenScriptToolsTimeOut) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", kDeferredRegistrationPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  TestObservationDelayController controller(
+      *main_frame(), task_id_, actor_keyed_service().GetJournal(),
+      ObservationDelayController::PageStabilityConfig());
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(*ActorSurfaceHandle::From(active_tab()->GetHandle()).Get(),
+                  result.GetCallback());
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForScriptTools));
+
+  EXPECT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  EXPECT_THAT(GetObservedToolNames(),
+              testing::UnorderedElementsAre("initial_tool"));
 }
 
 }  // namespace actor

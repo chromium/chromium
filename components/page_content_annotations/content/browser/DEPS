@@ -7,6 +7,7 @@ include_rules = [
 specific_include_rules = {
   "page_settled_monitor_browsertest.cc": [
     "+content/shell/browser",
+    "+net/test/embedded_test_server",
   ],
   "script_tools_ready_waiter_browsertest.cc": [
     "+content/shell/browser",

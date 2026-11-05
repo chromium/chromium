@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
+#include "components/page_content_annotations/content/browser/script_tools_ready_waiter.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,9 +35,11 @@ namespace page_content_annotations {
 // 1. It has reached "stability" (network and main thread idle, plus optional
 //    paint stability).
 // 2. Loading has finished (if it was loading).
-// 3. A visual state update has occurred (ensuring the renderer has had a
+// 3. The page's script tools are ready, i.e. no document is still
+//    updating them (see `ScriptToolsReadyWaiter`).
+// 4. A visual state update has occurred (ensuring the renderer has had a
 //    chance to produce a frame).
-// 4. (Optional) An LCP (Largest Contentful Paint) has been detected or a
+// 5. (Optional) An LCP (Largest Contentful Paint) has been detected or a
 //    timeout has passed.
 //
 // The monitor provides hooks for a delegate to perform additional waits at each
@@ -51,6 +54,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
     kWaitForPageStability,
     kPageStabilityMonitorDisconnected,
     kWaitForLoadCompletion,
+    kWaitForScriptTools,
     kWaitForPdfLoadCompletion,
     kWaitForVisualStateUpdate,
     kMaybeDelayForLcp,
@@ -65,6 +69,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
   enum class Milestone {
     kPageStability,
     kLoadCompletion,
+    kScriptToolsReady,
     kPdfLoadCompletion,
     kVisualStateUpdate,
     kLcpSettled,
@@ -75,6 +80,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
     kPageStabilized,
     kMojoDisconnected,
     kLoadCompleted,
+    kScriptToolsReady,
     kPdfLoadCompleted,
     kVisualStateUpdated,
     kVisualStateUpdateSkipped,
@@ -159,6 +165,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
 
   void OnPageStable();
   void OnMojoDisconnected();
+  void OnScriptToolsReady(ScriptToolsReadyWaiter::Result result);
 #if BUILDFLAG(ENABLE_PDF)
   void OnPdfDocumentLoadComplete();
 #endif
@@ -180,6 +187,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
   base::CallbackListSubscription pdf_helper_subscription_;
 #endif
   mojo::Remote<mojom::PageStabilityMonitor> page_stability_monitor_remote_;
+  std::unique_ptr<ScriptToolsReadyWaiter> script_tools_ready_waiter_;
   base::WeakPtrFactory<PageSettledMonitor> weak_ptr_factory_{this};
 };
 

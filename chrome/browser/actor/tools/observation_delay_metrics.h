@@ -19,6 +19,8 @@ extern const char
 extern const char
     kActorObservationDelayStateDurationWaitForLoadCompletionMetricName[];
 extern const char
+    kActorObservationDelayStateDurationWaitForScriptToolsMetricName[];
+extern const char
     kActorObservationDelayStateDurationWaitForPdfLoadCompletionMetricName[];
 extern const char
     kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName[];
@@ -43,6 +45,8 @@ class ObservationDelayMetrics {
   void OnFederatedLoginRequestComplete();
 
   void OnLoadCompleted();
+
+  void OnScriptToolsReady();
 
   void OnPdfLoadCompleted();
 
@@ -73,6 +77,9 @@ class ObservationDelayMetrics {
 
   // The duration waiting for page loading.
   StateDuration wait_for_load_completion_;
+
+  // The duration waiting for the page to finish registering script tools.
+  StateDuration wait_for_script_tools_;
 
   // The duration waiting for PDF document loading.
   StateDuration wait_for_pdf_load_completion_;

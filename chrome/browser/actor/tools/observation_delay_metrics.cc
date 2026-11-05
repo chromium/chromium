@@ -23,6 +23,9 @@ const char
     kActorObservationDelayStateDurationWaitForLoadCompletionMetricName[] =
         "Actor.ObservationDelay.StateDuration.WaitForLoadCompletion";
 
+const char kActorObservationDelayStateDurationWaitForScriptToolsMetricName[] =
+    "Actor.ObservationDelay.StateDuration.WaitForScriptTools";
+
 const char
     kActorObservationDelayStateDurationWaitForPdfLoadCompletionMetricName[] =
         "Actor.ObservationDelay.StateDuration.WaitForPdfLoadCompletion";
@@ -72,6 +75,9 @@ void ObservationDelayMetrics::WillMoveToState(
       break;
     case ObservationDelayController::State::kWaitForLoadCompletion:
       wait_for_load_completion_.start_time = now;
+      break;
+    case ObservationDelayController::State::kWaitForScriptTools:
+      wait_for_script_tools_.start_time = now;
       break;
     case ObservationDelayController::State::kWaitForPdfLoadCompletion:
       wait_for_pdf_load_completion_.start_time = now;
@@ -124,6 +130,12 @@ void ObservationDelayMetrics::WillMoveToState(
               wait_for_load_completion_.end_time -
                   wait_for_load_completion_.start_time);
         }
+        if (wait_for_script_tools_.IsValid()) {
+          base::UmaHistogramTimes(
+              kActorObservationDelayStateDurationWaitForScriptToolsMetricName,
+              wait_for_script_tools_.end_time -
+                  wait_for_script_tools_.start_time);
+        }
         if (wait_for_pdf_load_completion_.IsValid()) {
           base::UmaHistogramTimes(
               kActorObservationDelayStateDurationWaitForPdfLoadCompletionMetricName,
@@ -164,6 +176,11 @@ void ObservationDelayMetrics::OnFederatedLoginRequestComplete() {
 void ObservationDelayMetrics::OnLoadCompleted() {
   wait_for_load_completion_.end_time = base::TimeTicks::Now();
   CHECK(wait_for_load_completion_.IsValid());
+}
+
+void ObservationDelayMetrics::OnScriptToolsReady() {
+  wait_for_script_tools_.end_time = base::TimeTicks::Now();
+  CHECK(wait_for_script_tools_.IsValid());
 }
 
 void ObservationDelayMetrics::OnPdfLoadCompleted() {

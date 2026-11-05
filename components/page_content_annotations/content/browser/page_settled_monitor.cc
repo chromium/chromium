@@ -257,6 +257,23 @@ void PageSettledMonitor::MoveToState(State new_state) {
       NotifyMilestone(Milestone::kLoadCompletion);
       break;
     }
+    case State::kWaitForScriptTools: {
+      const bool include_ad_frames = !delegate_->ShouldExcludeAdSubframes();
+      if (!ScriptToolsReadyWaiter::AreScriptToolsReady(*web_contents(),
+                                                       include_ad_frames)) {
+        // Milestone will be notified from OnScriptToolsReady in this case. The
+        // overall timeout bounds the wait.
+        script_tools_ready_waiter_ = std::make_unique<ScriptToolsReadyWaiter>(
+            web_contents(),
+            base::BindOnce(&PageSettledMonitor::OnScriptToolsReady,
+                           weak_ptr_factory_.GetWeakPtr()),
+            include_ad_frames);
+        break;
+      }
+
+      NotifyMilestone(Milestone::kScriptToolsReady);
+      break;
+    }
     case State::kWaitForPdfLoadCompletion: {
       base::UmaHistogramBoolean(
           "OptimizationGuide.PageContentExtraction.PageSettledMonitor."
@@ -376,6 +393,17 @@ void PageSettledMonitor::DidStopLoading() {
   NotifyMilestone(Milestone::kLoadCompletion);
 }
 
+void PageSettledMonitor::OnScriptToolsReady(
+    ScriptToolsReadyWaiter::Result result) {
+  script_tools_ready_waiter_.reset();
+  if (state_ != State::kWaitForScriptTools) {
+    return;
+  }
+
+  delegate_->OnEvent(Event::kScriptToolsReady);
+  NotifyMilestone(Milestone::kScriptToolsReady);
+}
+
 void PageSettledMonitor::OnLcpSettled() {
   NotifyMilestone(Milestone::kLcpSettled);
 }
@@ -402,6 +430,9 @@ void PageSettledMonitor::Resume(Milestone milestone) {
       PostMoveToStateClosure(State::kWaitForLoadCompletion).Run();
       break;
     case Milestone::kLoadCompletion:
+      PostMoveToStateClosure(State::kWaitForScriptTools).Run();
+      break;
+    case Milestone::kScriptToolsReady:
       if (ShouldWaitForPdfLoad()) {
         PostMoveToStateClosure(State::kWaitForPdfLoadCompletion).Run();
       } else {
@@ -441,6 +472,10 @@ void PageSettledMonitor::DCheckStateTransition(State old_state,
           {State::kWaitForLoadCompletion,
               {State::kDidTimeout,
                State::kDone,
+               State::kWaitForScriptTools}},
+          {State::kWaitForScriptTools,
+              {State::kDidTimeout,
+               State::kDone,
                State::kWaitForPdfLoadCompletion,
                State::kWaitForVisualStateUpdate}},
           {State::kWaitForPdfLoadCompletion,
@@ -476,6 +511,8 @@ std::string_view PageSettledMonitor::StateToString(State state) {
       return "PageStabilityMonitorDisconnected";
     case State::kWaitForLoadCompletion:
       return "WaitForLoadCompletion";
+    case State::kWaitForScriptTools:
+      return "WaitForScriptTools";
     case State::kWaitForPdfLoadCompletion:
       return "WaitForPdfLoadCompletion";
     case State::kWaitForVisualStateUpdate:

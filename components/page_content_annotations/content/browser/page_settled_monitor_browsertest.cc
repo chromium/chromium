@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
@@ -19,8 +21,10 @@
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace page_content_annotations {
 
@@ -125,6 +129,12 @@ IN_PROC_BROWSER_TEST_F(PageSettledMonitorBrowserTest, BasicFlow) {
         *delegate,
         OnMilestoneReached(PageSettledMonitor::Milestone::kLoadCompletion, _));
 
+    EXPECT_CALL(*delegate, WillMoveToState(
+                               PageSettledMonitor::State::kWaitForScriptTools));
+    EXPECT_CALL(*delegate,
+                OnMilestoneReached(
+                    PageSettledMonitor::Milestone::kScriptToolsReady, _));
+
     EXPECT_CALL(
         *delegate,
         WillMoveToState(PageSettledMonitor::State::kWaitForVisualStateUpdate));
@@ -190,6 +200,58 @@ IN_PROC_BROWSER_TEST_F(PageSettledMonitorBrowserTest, Timeout) {
   base::test::TestFuture<void> settled_future;
   monitor.Wait(web_contents(), settled_future.GetCallback());
 
+  EXPECT_TRUE(settled_future.Wait());
+}
+
+class PageSettledMonitorScriptToolsBrowserTest
+    : public PageSettledMonitorBrowserTest {
+ public:
+  PageSettledMonitorScriptToolsBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebMCP, blink::features::kWebMCPWaitForToolsUntil},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageSettledMonitorScriptToolsBrowserTest,
+                       WaitsForScriptTools) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+      const registered = Promise.withResolvers();
+      window.finishRegisteringTools = registered.resolve;
+      document.modelContext.waitForToolsUntil(registered.promise);
+  )"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !ScriptToolsReadyWaiter::AreScriptToolsReady(
+        *web_contents(), /*include_ad_frames=*/true);
+  }));
+
+  auto delegate_ptr =
+      std::make_unique<NiceMock<MockPageSettledMonitorDelegate>>();
+  auto* delegate = delegate_ptr.get();
+  ON_CALL(*delegate, OnMilestoneReached)
+      .WillByDefault(WithArg<1>([](base::OnceClosure resume_callback) {
+        std::move(resume_callback).Run();
+      }));
+  base::test::TestFuture<void> waiting_for_script_tools;
+  ON_CALL(*delegate,
+          WillMoveToState(PageSettledMonitor::State::kWaitForScriptTools))
+      .WillByDefault([&](PageSettledMonitor::State) {
+        waiting_for_script_tools.SetValue();
+      });
+
+  PageSettledMonitor monitor(main_rfh(), std::move(delegate_ptr));
+  base::test::TestFuture<void> settled_future;
+  monitor.Wait(web_contents(), settled_future.GetCallback());
+
+  ASSERT_TRUE(waiting_for_script_tools.Wait());
+  EXPECT_FALSE(settled_future.IsReady());
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), "finishRegisteringTools()"));
   EXPECT_TRUE(settled_future.Wait());
 }
 

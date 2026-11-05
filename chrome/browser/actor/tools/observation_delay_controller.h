@@ -92,6 +92,7 @@ class ObservationDelayController : public content::WebContentsObserver {
     kPageStabilityMonitorDisconnected,
     kWaitForFederatedLogin,
     kWaitForLoadCompletion,
+    kWaitForScriptTools,
     kWaitForPdfLoadCompletion,
     kWaitForVisualStateUpdate,
     kMaybeDelayForLcp,
