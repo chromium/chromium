@@ -13,10 +13,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.when;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.content.Context;
+import android.view.ViewGroup;
 
 import org.junit.After;
 import org.junit.Before;
@@ -68,15 +71,19 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninC
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
@@ -101,8 +108,12 @@ public class FullscreenSigninMediatorTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
+            spy(new FakeAccountManagerFacade());
+
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(mFakeAccountManagerFacade);
 
     @Mock private Delegate mDelegateMock;
     @Mock private ModalDialogManager mModalDialogManagerMock;
@@ -127,7 +138,7 @@ public class FullscreenSigninMediatorTest {
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
     private final boolean mIsIdentityManagerSourceOfAccounts;
 
-    private FullscreenSigninMediator mMediator;
+    private FullscreenSigninCoordinator.Mediator mMediator;
     private PropertyModel mModel;
 
     // Config used by createMediator(). Tests can change these before calling it.
@@ -140,6 +151,10 @@ public class FullscreenSigninMediatorTest {
 
     @Before
     public void setUp() {
+        // The account picker tests inflate real account rows, which need a theme and read
+        // SMART_EMAIL_LINE_BREAKING.
+        RuntimeEnvironment.getApplication().setTheme(R.style.Theme_BrowserUI_DayNight);
+        FeatureOverrides.enable(SigninFeatures.SMART_EMAIL_LINE_BREAKING);
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
@@ -328,7 +343,8 @@ public class FullscreenSigninMediatorTest {
                                         .build())
                         .build();
         mAccountManagerTestRule.updateAccount(unsupervisedAccount);
-        mMediator.onChildAccountStatusReady(/* isChild= */ false, /* childInfo= */ null);
+        captureChildAccountStatusListener()
+                .onStatusReady(/* isChild= */ false, /* childAccount= */ null);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertSelectedAccountIsDisplayed(unsupervisedAccount);
@@ -355,11 +371,11 @@ public class FullscreenSigninMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         createMediator();
         initializeNative();
-        FullscreenSigninMediator mediator = mMediator;
+        ChildAccountStatusListener listener = captureChildAccountStatusListener();
 
         destroyMediator();
         lenient().when(mDelegateMock.getProfileSupplier()).thenReturn(null);
-        mediator.onChildAccountStatusReady(/* isChild= */ false, /* childInfo= */ null);
+        listener.onStatusReady(/* isChild= */ false, /* childAccount= */ null);
 
         assertTrue(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
     }
@@ -561,7 +577,7 @@ public class FullscreenSigninMediatorTest {
         createMediator();
         initializeNative();
 
-        mModel.get(FullscreenSigninProperties.ON_SELECTED_ACCOUNT_CLICKED).onClick(null);
+        openAccountPicker();
 
         verify(mSigninMetricsUtilsJniMock)
                 .logSigninFunnelEvent(
@@ -580,8 +596,9 @@ public class FullscreenSigninMediatorTest {
         createMediator();
         initializeNative();
 
-        mMediator.onAccountSelected(TestAccounts.ACCOUNT1);
+        selectAccountInPicker(0);
 
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
         verify(mSigninMetricsUtilsJniMock)
                 .logSigninFunnelEvent(
                         SigninAccessPoint.START_PAGE, SigninFunnelEvent.DEFAULT_ACCOUNT_SELECTED);
@@ -595,8 +612,9 @@ public class FullscreenSigninMediatorTest {
         createMediator();
         initializeNative();
 
-        mMediator.onAccountSelected(TestAccounts.ACCOUNT2);
+        selectAccountInPicker(1);
 
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT2);
         verify(mSigninMetricsUtilsJniMock)
                 .logSigninFunnelEvent(
                         SigninAccessPoint.START_PAGE,
@@ -626,7 +644,7 @@ public class FullscreenSigninMediatorTest {
         createMediator();
         initializeNative();
 
-        mMediator.onAccountPickerDismissed();
+        dismissAccountPicker(openAccountPicker());
 
         verify(mSigninMetricsUtilsJniMock)
                 .logSigninFunnelEvent(
@@ -640,9 +658,9 @@ public class FullscreenSigninMediatorTest {
         createMediator();
         initializeNative();
 
-        FullscreenSigninMediator mediator = mMediator;
+        PropertyModel dialogModel = openAccountPicker();
         destroyMediator();
-        mediator.onAccountPickerDismissed();
+        dismissAccountPicker(dialogModel);
 
         verify(mSigninMetricsUtilsJniMock, never())
                 .logSigninFunnelEvent(anyInt(), eq(SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED));
@@ -667,7 +685,7 @@ public class FullscreenSigninMediatorTest {
         createMediator();
         initializeNative();
 
-        FullscreenSigninMediator mediator = mMediator;
+        FullscreenSigninCoordinator.Mediator mediator = mMediator;
         destroyMediator();
         mediator.onAccountAdded(TestAccounts.ACCOUNT1.getEmail());
 
@@ -680,7 +698,7 @@ public class FullscreenSigninMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         enableForcedSigninPolicy();
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
-        FullscreenSigninMediator.disableAnimationsForTesting();
+        FullscreenSigninCoordinator.disableAnimationsForTesting();
 
         createMediator();
         initializeNative();
@@ -804,6 +822,40 @@ public class FullscreenSigninMediatorTest {
                 /* surveyType= */ null,
                 mSelectedAccountEmail,
                 SigninFlow.DEFAULT_SIGNIN);
+    }
+
+    private PropertyModel openAccountPicker() {
+        mModel.get(FullscreenSigninProperties.ON_SELECTED_ACCOUNT_CLICKED).onClick(null);
+        ArgumentCaptor<PropertyModel> dialogModelCaptor =
+                ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManagerMock, atLeastOnce())
+                .showDialog(dialogModelCaptor.capture(), anyInt());
+        return dialogModelCaptor.getValue();
+    }
+
+    private void selectAccountInPicker(int accountIndex) {
+        PropertyModel dialogModel = openAccountPicker();
+        ViewGroup accountPickerView =
+                (ViewGroup) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        // RecyclerView only creates rows once it has been laid out, and the dialog isn't attached
+        // to a window in this test, so lay it out manually.
+        accountPickerView.measure(0, 0);
+        accountPickerView.layout(0, 0, 100, 1000);
+        accountPickerView.getChildAt(accountIndex).performClick();
+    }
+
+    private void dismissAccountPicker(PropertyModel dialogModel) {
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+    }
+
+    private ChildAccountStatusListener captureChildAccountStatusListener() {
+        ArgumentCaptor<ChildAccountStatusListener> listenerCaptor =
+                ArgumentCaptor.forClass(ChildAccountStatusListener.class);
+        verify(mFakeAccountManagerFacade, atLeastOnce())
+                .checkIsSubjectToParentalControls(any(), listenerCaptor.capture());
+        return listenerCaptor.getValue();
     }
 
     private void destroyMediator() {

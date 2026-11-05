@@ -14,8 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -317,7 +315,7 @@ class FullscreenSigninMediator
      * @param hasPolicies Whether any enterprise policies have been found on the device. 'true' here
      *     also means that native has been initialized.
      */
-    void onInitialLoadCompleted(boolean hasPolicies) {
+    private void onInitialLoadCompleted(boolean hasPolicies) {
         if (mDestroyed) return;
 
         Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:%s", hasPolicies);
@@ -618,8 +616,7 @@ class FullscreenSigninMediator
     }
 
     /** Called when the account picker dialog is dismissed without selecting an account. */
-    @VisibleForTesting
-    void onAccountPickerDismissed() {
+    private void onAccountPickerDismissed() {
         if (mDestroyed) return;
         SigninMetricsUtils.logSigninFunnelEvent(
                 mAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED);
@@ -1045,8 +1042,7 @@ class FullscreenSigninMediator
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 
-    @VisibleForTesting
-    void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         if (mContinueButtonProfileDataCache == null) return;
         // Both caches are initialized together so they're either both null or none of them are.
         assert mSigninAnimationProfileDataCache != null;
