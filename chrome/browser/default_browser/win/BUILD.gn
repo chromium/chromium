@@ -13,13 +13,33 @@ source_set("win") {
   deps = [ "//ui/gfx" ]
 }
 
+# Not part of ":win": the window finder has users that should not pull in
+# //chrome/browser/win, which this target depends on.
+source_set("settings_row_locator") {
+  public = [ "settings_row_locator_win.h" ]
+  sources = [ "settings_row_locator_win.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/win",
+  ]
+  deps = [ "//ui/gfx/geometry" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "settings_window_finder_win_unittest.cc" ]
+
+  sources = [
+    "settings_row_locator_win_unittest.cc",
+    "settings_window_finder_win_unittest.cc",
+  ]
+
   deps = [
+    ":settings_row_locator",
     ":win",
     "//base",
     "//base/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 }

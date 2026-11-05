@@ -594,6 +594,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java:SnackbarIdentifier) -->
 
+<!-- LINT.IfChange(UiaElementLocationOutcome) -->
+
+<enum name="UiaElementLocationOutcome">
+  <summary>
+    Outcome of one request to locate an element in another app's window via UI
+    Automation in a utility process (SettingsRowLocatorWin::Outcome).
+  </summary>
+  <int value="0" label="Located; measurement usable"/>
+  <int value="1" label="No element found"/>
+  <int value="2"
+      label="Measurement unusable (element outside the window, or a derived
+             value out of range)"/>
+  <int value="3" label="Timed out (target process not answering)"/>
+  <int value="4" label="Service process disconnected mid-request"/>
+  <int value="5" label="Superseded by a newer request before it answered"/>
+  <int value="6" label="Target window was already gone; nothing was asked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/win/settings_row_locator_win.h:UiaElementLocationOutcome) -->
+
 <enum name="WebUIPreloadReason">
   <int value="0" label="BrowserWarmup"/>
   <int value="1" label="WebUIDestroyed"/>

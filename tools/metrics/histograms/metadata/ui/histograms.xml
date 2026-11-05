@@ -508,6 +508,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DefaultBrowser.VisualGuide.RowMeasurementOutcome"
+    enum="UiaElementLocationOutcome" expires_after="2027-08-06">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Outcome of one attempt by the visual guided setter to locate the &quot;Set
+    default&quot; button in the Windows Settings app, via UI Automation in a
+    utility process. Recorded on Windows once per attempt. The arrow is only
+    shown after a &quot;Located&quot; outcome; after a few failures in a row,
+    the flow stops measuring.
+  </summary>
+</histogram>
+
+<histogram name="DefaultBrowser.VisualGuide.RowMeasurementTime" units="ms"
+    expires_after="2027-08-06">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Time taken by one attempt by the visual guided setter to locate the
+    &quot;Set default&quot; button in the Windows Settings app, including up to
+    10 seconds of waiting for Settings to show the page. Recorded on Windows for
+    each attempt, including ones that time out or find nothing, except attempts
+    a newer one cut short and attempts refused because the window was gone.
+  </summary>
+</histogram>
+
 <histogram
     name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.DefaultSetAfterSetterFailure"
     enum="BooleanSuccess" expires_after="2027-04-27">
