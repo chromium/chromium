@@ -274,6 +274,10 @@ using segmentation_platform::TipIdentifier;
   // Ephemeral card whose visibility logging was deferred because the NTP was
   // bypassed when the card was initially shown.
   std::optional<ContentSuggestionsModuleType> _deferredEphemeralCard;
+
+  // YES when a tap or inline interaction has already been recorded for the
+  // current Tips card impression.
+  BOOL _hasRecordedTipInteraction;
 }
 
 - (void)start {
@@ -573,6 +577,7 @@ using segmentation_platform::TipIdentifier;
 
 - (void)stop {
   _deferredEphemeralCard = std::nullopt;
+  _hasRecordedTipInteraction = NO;
   _segmentationService = nullptr;
   [_shortcutsMediator disconnect];
   _shortcutsMediator = nil;
@@ -654,6 +659,7 @@ using segmentation_platform::TipIdentifier;
 
 - (void)refresh {
   _deferredEphemeralCard = std::nullopt;
+  _hasRecordedTipInteraction = NO;
   [_magicStackCollectionView reset];
   // Refresh in case there are new MVT to show.
   if (!IsNTPRedesignEnabled()) {
@@ -774,17 +780,7 @@ using segmentation_platform::TipIdentifier;
   // Log the Tips (Magic Stack) Module tap immediately before starting the
   // removal animation so click metrics are not dropped if the animation is
   // interrupted.
-  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram, tip);
-  [self.NTPActionsDelegate tipsOpened];
-
-  std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
-  if (name.has_value()) {
-    segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetHomeCardRegistryForProfile(self.profile);
-    CHECK(registry);
-    registry->NotifyCardInteracted(std::string(name.value()).c_str());
-  }
+  [self recordTipInteractionIfNeeded:tip];
 
   __weak __typeof(self) weakSelf = self;
 
@@ -920,20 +916,12 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didSelectNTPThemePhotoPicker {
-  [self didSelectNTPThemeOption];
+  [self recordTipInteractionIfNeeded:TipIdentifier::kNTPTheme];
   [self.delegate openNTPBackgroundPhotoPicker];
 }
 
 - (void)didSelectNTPThemeOption {
-  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram,
-                                TipIdentifier::kNTPTheme);
-  [self.NTPActionsDelegate tipsOpened];
-  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
-      segmentation_platform::SegmentationPlatformServiceFactory::
-          GetHomeCardRegistryForProfile(self.profile);
-  CHECK(registry);
-  registry->NotifyCardInteracted(
-      segmentation_platform::kNTPThemeEphemeralModule);
+  [self recordTipInteractionIfNeeded:TipIdentifier::kNTPTheme];
 }
 
 - (void)didSaveNTPThemeBackgroundPhoto {
@@ -941,15 +929,7 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didToggleTipsNotificationsSwitch:(BOOL)enabled {
-  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram,
-                                TipIdentifier::kTipsNotifications);
-  [self.NTPActionsDelegate tipsOpened];
-  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
-      segmentation_platform::SegmentationPlatformServiceFactory::
-          GetHomeCardRegistryForProfile(self.profile);
-  CHECK(registry);
-  registry->NotifyCardInteracted(
-      segmentation_platform::kTipsNotificationsEphemeralModule);
+  [self recordTipInteractionIfNeeded:TipIdentifier::kTipsNotifications];
   if (enabled) {
     [self enableNotifications:ContentSuggestionsModuleType::kTips
                viaContextMenu:NO];
@@ -1046,9 +1026,8 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
-      [_magicStackRankingModel
-          logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                             kTipsNTPThemeActionable];
+      [_tipsMediator logEngagementIfNeededForType:ContentSuggestionsModuleType::
+                                                      kTipsNTPThemeActionable];
       [self didSelectTip:segmentation_platform::TipIdentifier::kNTPTheme];
       break;
     default:
@@ -1624,6 +1603,26 @@ using segmentation_platform::TipIdentifier;
 - (void)disableTipsModules {
   PrefService* prefs = self.profile->GetPrefs();
   prefs->SetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled, false);
+}
+
+// Records the common Tips card interaction metrics and notifies the card
+// registry at most once per card impression.
+- (void)recordTipInteractionIfNeeded:(segmentation_platform::TipIdentifier)tip {
+  if (_hasRecordedTipInteraction) {
+    return;
+  }
+  _hasRecordedTipInteraction = YES;
+  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram, tip);
+  [self.NTPActionsDelegate tipsOpened];
+
+  std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
+  if (name.has_value()) {
+    segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetHomeCardRegistryForProfile(self.profile);
+    CHECK(registry);
+    registry->NotifyCardInteracted(std::string(name.value()).c_str());
+  }
 }
 
 @end

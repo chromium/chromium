@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -90,8 +91,10 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 class ContentSuggestionsCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        segmentation_platform::features::kMagicStackNTPThemeTipIos);
+    scoped_feature_list_.InitWithFeatures(
+        {segmentation_platform::features::kMagicStackNTPThemeTipIos,
+         segmentation_platform::features::kMagicStackTipsNotificationTipIos},
+        {});
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -139,6 +142,9 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:OCMProtocolMock(@protocol(HelpCommands))
                      forProtocol:@protocol(HelpCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMProtocolMock(@protocol(SettingsCommands))
+                     forProtocol:@protocol(SettingsCommands)];
 
     coordinator_ = [[ContentSuggestionsCoordinator alloc]
         initWithBaseViewController:nil
@@ -259,9 +265,9 @@ TEST_F(ContentSuggestionsCoordinatorTest,
             profile_->GetPrefs()->GetInteger(kPriceTrackingPromoCounterPref));
 }
 
-// Tests that calling `-didSelectNTPThemePhotoPicker` and
-// `-didSelectNTPThemeOption` logs `kTipsMagicStackModuleTappedTypeHistogram`,
-// calls `-tipsOpened`, and marks the NTP Theme ephemeral module as interacted.
+// Tests that actionable NTP Theme interactions log
+// `kTipsMagicStackModuleTappedTypeHistogram` and `-tipsOpened` at most once per
+// impression.
 TEST_F(ContentSuggestionsCoordinatorTest,
        TestNTPThemeActionableTipInteractionsLogMetrics) {
   base::HistogramTester histogram_tester;
@@ -278,6 +284,18 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       "ephemeral_pref_interacted.ntp_theme_ephemeral_module_interacted"));
 
+  // Subsequent interactions on the same impression should not re-log
+  // `kTipsMagicStackModuleTappedTypeHistogram` or call `-tipsOpened`.
+  [coordinator_ didSelectNTPThemeOption];
+  OCMExpect([mockDelegate presentCustomizationButtonBubble]);
+  [coordinator_ didSaveNTPThemeBackgroundPhoto];
+  histogram_tester.ExpectUniqueSample(
+      kTipsMagicStackModuleTappedTypeHistogram,
+      segmentation_platform::TipIdentifier::kNTPTheme, 1);
+
+  // Refreshing starts a new impression, allowing the next interaction to log
+  // `kTipsMagicStackModuleTappedTypeHistogram` again.
+  [coordinator_ refresh];
   OCMExpect([coordinator_.NTPActionsDelegate tipsOpened]);
   [coordinator_ didSelectNTPThemeOption];
   histogram_tester.ExpectUniqueSample(
@@ -302,6 +320,29 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       kTipsMagicStackModuleTappedTypeHistogram,
       segmentation_platform::TipIdentifier::kNTPTheme, 1);
+  EXPECT_OCMOCK_VERIFY((id)coordinator_.NTPActionsDelegate);
+}
+
+// Tests that toggling the inline Tips Notifications switch logs
+// `kTipsMagicStackModuleTappedTypeHistogram` at most once per impression.
+TEST_F(ContentSuggestionsCoordinatorTest,
+       TestTipsNotificationsSwitchLogsMetrics) {
+  base::HistogramTester histogram_tester;
+  OCMExpect([coordinator_.NTPActionsDelegate tipsOpened]);
+  [coordinator_ didToggleTipsNotificationsSwitch:NO];
+  histogram_tester.ExpectUniqueSample(
+      kTipsMagicStackModuleTappedTypeHistogram,
+      segmentation_platform::TipIdentifier::kTipsNotifications, 1);
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
+      "ephemeral_pref_interacted."
+      "tips_notifications_ephemeral_module_interacted"));
+
+  // Toggling again on the same impression should not re-log
+  // `kTipsMagicStackModuleTappedTypeHistogram` or call `-tipsOpened`.
+  [coordinator_ didToggleTipsNotificationsSwitch:NO];
+  histogram_tester.ExpectUniqueSample(
+      kTipsMagicStackModuleTappedTypeHistogram,
+      segmentation_platform::TipIdentifier::kTipsNotifications, 1);
   EXPECT_OCMOCK_VERIFY((id)coordinator_.NTPActionsDelegate);
 }
 

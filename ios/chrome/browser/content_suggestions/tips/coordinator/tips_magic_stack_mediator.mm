@@ -102,6 +102,10 @@ using segmentation_platform::TipIdentifier;
   // YES when the user has selected an inline NTP theme swatch on the current
   // tab that has not yet been committed to storage.
   BOOL _hasUncommittedInlineTheme;
+
+  // YES when Magic Stack engagement has already been logged for the current
+  // card impression.
+  BOOL _hasLoggedEngagement;
 }
 
 - (instancetype)initWithIdentifier:(TipIdentifier)identifier
@@ -165,6 +169,7 @@ using segmentation_platform::TipIdentifier;
   _prefObserverBridge.reset();
   _profilePrefService = nil;
   _localStatePrefService = nullptr;
+  _hasLoggedEngagement = NO;
 
   if (_hasUncommittedInlineTheme && _backgroundCustomizationService) {
     _hasUncommittedInlineTheme = NO;
@@ -192,6 +197,7 @@ using segmentation_platform::TipIdentifier;
   // reconfigured with an informational tip.
   _actionableConfig = nil;
   _hasUncommittedInlineTheme = NO;
+  _hasLoggedEngagement = NO;
 
   if (identifier == TipIdentifier::kNTPTheme &&
       segmentation_platform::features::
@@ -238,6 +244,14 @@ using segmentation_platform::TipIdentifier;
   return _actionableConfig ? _actionableConfig : _config;
 }
 
+- (void)logEngagementIfNeededForType:(ContentSuggestionsModuleType)type {
+  if (_hasLoggedEngagement) {
+    return;
+  }
+  _hasLoggedEngagement = YES;
+  [self.delegate logMagicStackEngagementForType:type];
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
@@ -271,14 +285,14 @@ using segmentation_platform::TipIdentifier;
 - (void)didSelectTip:(TipIdentifier)tip {
   // Log engagement before forwarding the selection, as handling the tip
   // selection removes the module from the Magic Stack.
-  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
+  [self logEngagementIfNeededForType:self.activeConfig.type];
   [self.presentationAudience didSelectTip:tip];
 }
 
 - (void)didSelectNTPThemePhotoPicker {
   // Log engagement before forwarding the selection to the presentation
   // audience.
-  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
+  [self logEngagementIfNeededForType:self.activeConfig.type];
   [self.presentationAudience didSelectNTPThemePhotoPicker];
 }
 
@@ -307,7 +321,7 @@ using segmentation_platform::TipIdentifier;
         background.attribution_line_2(),
         GURL(background.attribution_action_url()), background.collection_id());
   }
-  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
+  [self logEngagementIfNeededForType:self.activeConfig.type];
   [self.presentationAudience didSelectNTPThemeOption];
 }
 
@@ -315,7 +329,7 @@ using segmentation_platform::TipIdentifier;
   // Record the new UI state without reconfiguring so the active `UISwitch`
   // completes its native animation uninterrupted.
   _config.switchOn = enabled;
-  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
+  [self logEngagementIfNeededForType:self.activeConfig.type];
   [self.presentationAudience didToggleTipsNotificationsSwitch:enabled];
 }
 

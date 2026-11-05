@@ -12,6 +12,7 @@
 #import "base/ios/block_types.h"
 
 @protocol ContentSuggestionsViewControllerAudience;
+enum class ContentSuggestionsModuleType;
 class PrefService;
 @protocol TipsMagicStackMediatorDelegate;
 @class TipsModuleConfig;
@@ -82,6 +83,10 @@ enum class TipIdentifier;
 // Updates the inline switch state for the Tips Notifications module if the
 // state changed.
 - (void)setTipsNotificationsSwitchEnabled:(BOOL)enabled;
+
+// Logs Magic Stack engagement for `type` if engagement has not already been
+// logged for the current card impression.
+- (void)logEngagementIfNeededForType:(ContentSuggestionsModuleType)type;
 
 @end
 
