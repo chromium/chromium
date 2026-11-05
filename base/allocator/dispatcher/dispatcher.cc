@@ -80,7 +80,8 @@ struct Dispatcher::Impl {
     }
 #endif
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
     {
       auto* const allocation_hook = dispatch_data.GetAllocationObserverHook();
       auto* const free_hook = dispatch_data.GetFreeObserverHook();
@@ -100,7 +101,8 @@ struct Dispatcher::Impl {
     }
 #endif
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
     partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
 #endif
   }
