@@ -94,10 +94,10 @@ class DataProtectionTabHelper
     return committed_navigation_.watermark_text;
   }
 
-  // Sets the watermark text for the tab for testing.
-  void SetWatermarkTextForTesting(const std::string& watermark_text) {
-    committed_navigation_.watermark_text = watermark_text;
-  }
+  // Applies `watermark_text` to the committed page for testing, as if it came
+  // from an enterprise policy verdict: the watermark is shown, updated or
+  // removed (if empty) and observers are notified.
+  void SetWatermarkTextForTesting(const std::string& watermark_text);
 
   // web::WebStateObserver:
   void WasShown(web::WebState* web_state) override;

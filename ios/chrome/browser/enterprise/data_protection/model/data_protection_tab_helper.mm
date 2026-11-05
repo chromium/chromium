@@ -366,6 +366,12 @@ void DataProtectionTabHelper::SetCommittedProtectionState(
   }
 }
 
+void DataProtectionTabHelper::SetWatermarkTextForTesting(
+    const std::string& watermark_text) {
+  SetCommittedProtectionState(committed_navigation_.protection_state,
+                              watermark_text);
+}
+
 void DataProtectionTabHelper::DidStopLoading(web::WebState* web_state) {
   for (auto& observer : observers_) {
     observer.OnWatermarkViewNeedsUpdate(web_state);
