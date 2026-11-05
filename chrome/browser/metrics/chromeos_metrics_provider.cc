@@ -35,7 +35,6 @@
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
@@ -162,10 +161,27 @@ void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
 }
 
 void ChromeOSMetricsProvider::ProvideSuggestedContentMetrics() {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  // No user on the login screen.
+  if (!active_session) {
+    return;
+  }
+  // Return early if the user's Profile is not yet created or is already
+  // being destroyed.
+  // TODO(crbug.com/574750695): Handle shutdown properly instead of checking
+  // GetProfilePrefs().
+  const PrefService* prefs =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                      active_session->account_id()))
+          .GetProfilePrefs();
+  if (!prefs) {
+    return;
+  }
   UMA_HISTOGRAM_BOOLEAN(
       "Apps.AppList.SuggestedContent.Enabled",
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          ash::prefs::kSuggestedContentEnabled));
+      prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));
 }
 
 void ChromeOSMetricsProvider::ProvideMetrics(
