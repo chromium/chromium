@@ -924,7 +924,6 @@ BASE_DECLARE_FEATURE(kIOSPhishGuardPasteShortcutDetection);
 // Returns true if kIOSPhishGuardPasteShortcutDetection is enabled.
 bool IsIOSPhishGuardPasteShortcutDetectionEnabled();
 
-
 // Enables Google One deep link support on startup.
 BASE_DECLARE_FEATURE(kSupportGoogleOneDeepLink);
 
@@ -948,7 +947,6 @@ extern const base::FeatureParam<base::TimeDelta>
 // Delay when the scheduled Discover feed refresh time has already passed.
 extern const base::FeatureParam<base::TimeDelta>
     kDiscoverFeedBackgroundRefreshMinBuffer;
-
 
 // Enables the DefaultBottomOmniboxOnIOS feature.
 BASE_DECLARE_FEATURE(kDefaultBottomOmniboxOnIOS);
@@ -1064,5 +1062,9 @@ BASE_DECLARE_FEATURE(kAppBarDisableLongPress);
 
 // Returns true if the AppBarDisableLongPress feature is enabled.
 bool IsAppBarDisableLongPressEnabled();
+
+// Enables startup cleanup of corrupted multi-profile account mappings caused by
+// crbug.com/577577623.
+BASE_DECLARE_FEATURE(kCleanupCorruptedAccountProfileMappings);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

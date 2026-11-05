@@ -754,6 +754,33 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h:AccountMenuAccessPoint) -->
 
+<!-- LINT.IfChange(IOSAccountProfileMappingCleanupAction) -->
+
+<enum name="IOSAccountProfileMappingCleanupAction">
+  <int value="0"
+      label="Cohort A1/A2: Deleted first Managed profile (uninitialized)"/>
+  <int value="1"
+      label="Cohort A3: Abandoned first Managed profile (initialized, older)"/>
+  <int value="2"
+      label="Cohort A3: Abandoned second Managed profile (initialized, older)"/>
+  <int value="3"
+      label="Cohort B1/B2: Deleted second Managed profile (uninitialized)"/>
+  <int value="4"
+      label="Cohort C1: Detached from uninitialized Personal profile"/>
+  <int value="5"
+      label="Cohort C2: Detached from initialized Personal profile (not
+             primary)"/>
+  <int value="6"
+      label="Cohort C3: Detached from initialized Personal profile (was
+             primary)"/>
+  <int value="7"
+      label="Both uninitialized: Deleted second Managed profile (unexpected)"/>
+  <int value="8" label="Attached to 3 or more profiles: Skipped (unexpected)"/>
+  <int value="9" label="Multiple corrupted accounts: Skipped (unexpected)"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/signin/model/account_profile_mapper.h:IOSAccountProfileMappingCleanupAction) -->
+
 <!-- LINT.IfChange(IOSAccountProfileMappingStartupState) -->
 
 <enum name="IOSAccountProfileMappingStartupState">

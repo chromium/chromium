@@ -4,17 +4,23 @@
 
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
+#import <optional>
+
 #import "base/functional/callback_helpers.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "base/uuid.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -24,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -234,7 +241,7 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
 
   bool CanCreateProfileWithName(std::string_view name) const override {
-    return !HasProfileWithName(name) && !IsProfileMarkedForDeletion(name);
+    return profile_attributes_storage_.CanCreateProfileWithName(name);
   }
 
   std::string ReserveNewProfileName() override {
@@ -1821,6 +1828,461 @@ TEST_F(AccountProfileMapperTest, StartupStateHistogram_UnexpectedBuckets) {
         IOSAccountProfileMappingStartupState::kMultipleCorruptedManagedAccounts,
         1);
   }
+}
+
+class AccountProfileMapperCleanupTest : public AccountProfileMapperTest {
+ protected:
+  static constexpr char kDefaultProfile[] = "Default";
+  static constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  static constexpr char kCleanupActionHistogram[] =
+      "Signin.IOSAccountProfileMappingCleanupAction";
+  static constexpr base::Time kOlderActiveTime =
+      base::Time::FromSecondsSinceUnixEpoch(100);
+  static constexpr base::Time kNewerActiveTime =
+      base::Time::FromSecondsSinceUnixEpoch(200);
+
+  // Creates `name` (if not already present) and configures its on-disk
+  // attributes while no `AccountProfileMapper` is running.
+  void ConfigureProfile(std::string_view name,
+                        ProfileAttributesIOS::GaiaIdSet attached_gaia_ids,
+                        bool initialized = false,
+                        base::Time last_active_time = base::Time(),
+                        FakeSystemIdentity* primary_identity = nil) {
+    account_profile_mapper_.reset();
+    if (!profile_manager_->HasProfileWithName(name)) {
+      profile_manager_->CreateProfileAsync(name, {}, {});
+    }
+    profile_attributes_storage()->UpdateAttributesForProfileWithName(
+        name, base::BindOnce(
+                  [](ProfileAttributesIOS::GaiaIdSet gaia_ids, bool initialized,
+                     base::Time last_active_time,
+                     FakeSystemIdentity* primary_identity,
+                     ProfileAttributesIOS& attr) {
+                    attr.SetAttachedGaiaIds(gaia_ids);
+                    if (initialized) {
+                      attr.SetFullyInitialized();
+                    }
+                    if (!last_active_time.is_null()) {
+                      attr.SetLastActiveTime(last_active_time);
+                    }
+                    if (primary_identity) {
+                      attr.SetAuthenticationInfo(
+                          primary_identity.gaiaId,
+                          base::SysNSStringToUTF8(primary_identity.userEmail));
+                    }
+                  },
+                  std::move(attached_gaia_ids), initialized, last_active_time,
+                  primary_identity));
+  }
+
+  // Recreates `account_profile_mapper_` (simulating browser startup) and
+  // verifies the startup-state and cleanup-action histograms.
+  void RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState expected_startup_state,
+      std::optional<IOSAccountProfileMappingCleanupAction>
+          expected_cleanup_action,
+      const base::Location& location = FROM_HERE) {
+    SCOPED_TRACE(location.ToString());
+    account_profile_mapper_.reset();
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(kStartupStateHistogram,
+                                        expected_startup_state, 1);
+    if (expected_cleanup_action.has_value()) {
+      histogram_tester.ExpectUniqueSample(kCleanupActionHistogram,
+                                          *expected_cleanup_action, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(kCleanupActionHistogram, 0);
+    }
+  }
+
+  // Simulates a subsequent browser startup and verifies the mapping is healthy.
+  void VerifyHealthyNextStartup(const base::Location& location = FROM_HERE) {
+    RecreateMapperAndExpectHistograms(IOSAccountProfileMappingStartupState::
+                                          kEachManagedAccountInSingleProfile,
+                                      std::nullopt, location);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kCleanupCorruptedAccountProfileMappings};
+};
+
+// Tests that when `kCleanupCorruptedAccountProfileMappings` is disabled,
+// corrupted mappings are left untouched and no cleanup histogram is emitted.
+TEST_F(AccountProfileMapperCleanupTest, FeatureDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(
+      kCleanupCorruptedAccountProfileMappings);
+
+  constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
+  system_identity_manager_->AddIdentity(google_identity);
+  ConfigureProfile(kManagedProfile, {google_identity.gaiaId},
+                   /*initialized=*/false);
+  ConfigureProfile(kDefaultProfile, {google_identity.gaiaId},
+                   /*initialized=*/true);
+
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortA1_ShadowedByUninitManaged_PersonalUninit,
+      /*expected_cleanup_action=*/std::nullopt);
+
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile));
+  EXPECT_FALSE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kDefaultProfile));
+  EXPECT_EQ(
+      account_profile_mapper_->FindProfileNameForGaiaID(google_identity.gaiaId),
+      kManagedProfile);
+}
+
+// Tests that `MaybeCleanUpCorruptedProfileMappings` deletes the uninitialized
+// shadowing Managed profile (`UUID_M < "Default"`) in Cohort A1/A2, remapping
+// scenes and `kLastUsedProfile` to `"Default"`, and restores `"Default"` as the
+// sole profile for the managed account.
+TEST_F(AccountProfileMapperCleanupTest, CohortA1AndA2) {
+  constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
+
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+  ConfigureProfile(kManagedProfile, {google_identity.gaiaId},
+                   /*initialized=*/false);
+  ConfigureProfile(kDefaultProfile, {google_identity.gaiaId},
+                   /*initialized=*/true);
+  ConfigureProfile(kPersonalProfileName, {gmail_identity1.gaiaId},
+                   /*initialized=*/false);
+  profile_attributes_storage()->SetProfileNameForSceneID("scene1",
+                                                         kManagedProfile);
+  GetApplicationContext()->GetLocalState()->SetString(prefs::kLastUsedProfile,
+                                                      kManagedProfile);
+
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortA1_ShadowedByUninitManaged_PersonalUninit,
+      IOSAccountProfileMappingCleanupAction::kDeletedFirstManagedProfileUninit);
+
+  EXPECT_FALSE(profile_manager_->HasProfileWithName(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_EQ(profile_attributes_storage()->GetProfileNameForSceneID("scene1"),
+            kDefaultProfile);
+  EXPECT_EQ(GetApplicationContext()->GetLocalState()->GetString(
+                prefs::kLastUsedProfile),
+            kDefaultProfile);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kDefaultProfile));
+  EXPECT_EQ(
+      account_profile_mapper_->FindProfileNameForGaiaID(google_identity.gaiaId),
+      kDefaultProfile);
+  EXPECT_NSEQ(@[ google_identity ], GetIdentitiesForProfile(kDefaultProfile));
+  EXPECT_NSEQ(@[ gmail_identity1 ],
+              GetIdentitiesForProfile(kPersonalProfileName));
+
+  VerifyHealthyNextStartup();
+}
+
+// Tests that `MaybeCleanUpCorruptedProfileMappings` deletes the second
+// Managed profile (`"Default"`) in Cohort A3 when the first Managed profile
+// (`UUID_M`) has a more recent `LastActiveTime`, remapping scenes and
+// `kLastUsedProfile` to `UUID_M`.
+TEST_F(AccountProfileMapperCleanupTest, CohortA3_KeepsFirstWhenMoreRecent) {
+  constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
+
+  system_identity_manager_->AddIdentity(google_identity);
+  ConfigureProfile(kManagedProfile, {google_identity.gaiaId},
+                   /*initialized=*/true, kNewerActiveTime);
+  ConfigureProfile(kDefaultProfile, {google_identity.gaiaId},
+                   /*initialized=*/true, kOlderActiveTime);
+  profile_attributes_storage()->SetProfileNameForSceneID("scene1",
+                                                         kDefaultProfile);
+  profile_attributes_storage()->SetProfileNameForSceneID("scene2",
+                                                         kPersonalProfileName);
+  GetApplicationContext()->GetLocalState()->SetString(prefs::kLastUsedProfile,
+                                                      kDefaultProfile);
+
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortA3a_TwoInitManaged_FirstMoreRecent,
+      IOSAccountProfileMappingCleanupAction::
+          kAbandonedSecondManagedProfileInitOlder);
+
+  EXPECT_FALSE(profile_manager_->HasProfileWithName(kDefaultProfile));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kDefaultProfile));
+  EXPECT_EQ(profile_attributes_storage()->GetProfileNameForSceneID("scene1"),
+            kManagedProfile);
+  EXPECT_EQ(profile_attributes_storage()->GetProfileNameForSceneID("scene2"),
+            kPersonalProfileName);
+  EXPECT_EQ(GetApplicationContext()->GetLocalState()->GetString(
+                prefs::kLastUsedProfile),
+            kManagedProfile);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile));
+  EXPECT_EQ(
+      account_profile_mapper_->FindProfileNameForGaiaID(google_identity.gaiaId),
+      kManagedProfile);
+
+  VerifyHealthyNextStartup();
+}
+
+// Tests that `MaybeCleanUpCorruptedProfileMappings` deletes the first
+// Managed profile (`UUID_M`) in Cohort A3 when the second Managed profile
+// (`"Default"`) has a more recent `LastActiveTime`.
+TEST_F(AccountProfileMapperCleanupTest, CohortA3_KeepsSecondWhenMoreRecent) {
+  constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
+
+  system_identity_manager_->AddIdentity(google_identity);
+  ConfigureProfile(kManagedProfile, {google_identity.gaiaId},
+                   /*initialized=*/true, kOlderActiveTime);
+  ConfigureProfile(kDefaultProfile, {google_identity.gaiaId},
+                   /*initialized=*/true, kNewerActiveTime);
+
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortA3c_TwoInitManaged_SecondMoreRecent,
+      IOSAccountProfileMappingCleanupAction::
+          kAbandonedFirstManagedProfileInitOlder);
+
+  EXPECT_FALSE(profile_manager_->HasProfileWithName(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kDefaultProfile));
+  EXPECT_EQ(
+      account_profile_mapper_->FindProfileNameForGaiaID(google_identity.gaiaId),
+      kDefaultProfile);
+
+  VerifyHealthyNextStartup();
+}
+
+// Tests that `MaybeCleanUpCorruptedProfileMappings` deletes the uninitialized
+// second Managed profile (`"Default" < UUID_M`) in Cohort B.
+TEST_F(AccountProfileMapperCleanupTest, CohortB) {
+  constexpr char kManagedProfile[] = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+
+  system_identity_manager_->AddIdentity(google_identity);
+  ConfigureProfile(kDefaultProfile, {google_identity.gaiaId},
+                   /*initialized=*/true);
+  ConfigureProfile(kManagedProfile, {google_identity.gaiaId},
+                   /*initialized=*/false);
+
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortB1_ExtraUninitManaged_OrigMoreRecent,
+      IOSAccountProfileMappingCleanupAction::
+          kDeletedSecondManagedProfileUninit);
+
+  EXPECT_FALSE(profile_manager_->HasProfileWithName(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kDefaultProfile));
+  EXPECT_EQ(
+      account_profile_mapper_->FindProfileNameForGaiaID(google_identity.gaiaId),
+      kDefaultProfile);
+
+  VerifyHealthyNextStartup();
+}
+
+// Tests that `MaybeCleanUpCorruptedProfileMappings` detaches the managed
+// account from the Personal profile in Cohorts C1, C2, and C3, while leaving
+// `AuthenticationInfo` intact in C3 until the Personal profile loads.
+TEST_F(AccountProfileMapperCleanupTest, CohortC) {
+  constexpr char kPersonalProfile[] = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+  ConfigureProfile(kDefaultProfile, {google_identity.gaiaId},
+                   /*initialized=*/true);
+  ConfigureProfile(kPersonalProfile,
+                   {gmail_identity1.gaiaId, google_identity.gaiaId},
+                   /*initialized=*/false);
+  profile_attributes_storage()->SetPersonalProfileName(kPersonalProfile);
+
+  // 1. Cohort C1: Personal profile is uninitialized.
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortC1_PersonalAndManaged_PersonalUninit,
+      IOSAccountProfileMappingCleanupAction::
+          kDetachedFromUninitPersonalProfile);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kDefaultProfile));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kPersonalProfile));
+  EXPECT_NSEQ(@[ gmail_identity1 ], GetIdentitiesForProfile(kPersonalProfile));
+  EXPECT_NSEQ(@[ google_identity ], GetIdentitiesForProfile(kDefaultProfile));
+
+  // 2. Cohort C2: Personal profile is initialized, `google_identity` is NOT
+  // primary in Personal.
+  ConfigureProfile(kPersonalProfile,
+                   {gmail_identity1.gaiaId, google_identity.gaiaId},
+                   /*initialized=*/true, base::Time(), gmail_identity1);
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortC2_PersonalAndManaged_NotPrimaryInPersonal,
+      IOSAccountProfileMappingCleanupAction::
+          kDetachedFromInitPersonalProfileNotPrimary);
+  EXPECT_EQ(profile_attributes_storage()
+                ->GetAttributesForProfileWithName(kPersonalProfile)
+                .GetGaiaId(),
+            gmail_identity1.gaiaId);
+  EXPECT_NSEQ(@[ gmail_identity1 ], GetIdentitiesForProfile(kPersonalProfile));
+  EXPECT_NSEQ(@[ google_identity ], GetIdentitiesForProfile(kDefaultProfile));
+
+  // 3. Cohort C3: Personal profile is initialized, `google_identity` IS
+  // primary in Personal. `AuthenticationInfo` remains intact until the Personal
+  // profile loads so `PushNotificationAccountContextManager` refcounts stay
+  // consistent.
+  ConfigureProfile(kPersonalProfile,
+                   {gmail_identity1.gaiaId, google_identity.gaiaId},
+                   /*initialized=*/true, base::Time(), google_identity);
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortC3_PersonalAndManaged_PrimaryInPersonal,
+      IOSAccountProfileMappingCleanupAction::
+          kDetachedFromInitPersonalProfilePrimary);
+  EXPECT_EQ(profile_attributes_storage()
+                ->GetAttributesForProfileWithName(kPersonalProfile)
+                .GetGaiaId(),
+            google_identity.gaiaId);
+  EXPECT_NSEQ(@[ gmail_identity1 ], GetIdentitiesForProfile(kPersonalProfile));
+  EXPECT_NSEQ(@[ google_identity ], GetIdentitiesForProfile(kDefaultProfile));
+  EXPECT_EQ(
+      account_profile_mapper_->FindProfileNameForGaiaID(google_identity.gaiaId),
+      kDefaultProfile);
+
+  VerifyHealthyNextStartup();
+}
+
+// Tests that `MaybeCleanUpCorruptedProfileMappings` skips identities that were
+// removed from the device, consumer identities, and identities whose hosted
+// domain is not yet cached (cleaning up the latter on a subsequent startup once
+// the hosted domain is cached).
+TEST_F(AccountProfileMapperCleanupTest,
+       SkipsRemovedConsumerAndUncachedIdentities) {
+  constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
+
+  // 1. Removed identity (`google_identity` not on device): skipped by cleanup,
+  // and both profiles are marked for deletion by
+  // `UpdateIdentityProfileMappings()`.
+  ConfigureProfile(kManagedProfile, {google_identity.gaiaId},
+                   /*initialized=*/false);
+  ConfigureProfile(kDefaultProfile, {google_identity.gaiaId},
+                   /*initialized=*/true);
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortA1_ShadowedByUninitManaged_PersonalUninit,
+      /*expected_cleanup_action=*/std::nullopt);
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kDefaultProfile));
+
+  // 2. Consumer identity (`gmail_identity1`) attached to both Personal and
+  // Managed: skipped by cleanup so it is not detached from Personal;
+  // `UpdateIdentityProfileMappings()` detaches it from the Managed profile.
+  constexpr char kManagedProfile2[] = "22222222-2222-2222-2222-222222222222";
+  account_profile_mapper_.reset();
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  ConfigureProfile(kManagedProfile2, {gmail_identity1.gaiaId},
+                   /*initialized=*/true);
+  ConfigureProfile(kPersonalProfileName, {gmail_identity1.gaiaId},
+                   /*initialized=*/true, base::Time(), gmail_identity1);
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortC3_PersonalAndManaged_PrimaryInPersonal,
+      /*expected_cleanup_action=*/std::nullopt);
+  EXPECT_NSEQ(@[ gmail_identity1 ],
+              GetIdentitiesForProfile(kPersonalProfileName));
+  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kManagedProfile2));
+
+  // 3. Managed identity with uncached hosted domain (`nil` at startup): cleanup
+  // is deferred on the first startup until the async hosted-domain fetch
+  // populates the cache, and then runs on the next startup.
+  constexpr char kManagedProfile3[] = "33333333-3333-3333-3333-333333333333";
+  account_profile_mapper_.reset();
+  system_identity_manager_->OverrideGetHostedDomainImplementation(
+      base::BindRepeating(
+          [](id<SystemIdentity> identity,
+             SystemIdentityManager::HostedDomainCallback callback) {
+            std::move(callback).Run(@"google.com", nil);
+          }));
+  system_identity_manager_->AddIdentity(google_identity);
+  ASSERT_EQ(system_identity_manager_->GetCachedHostedDomainForIdentity(
+                google_identity),
+            nil);
+  ConfigureProfile(kManagedProfile3, {google_identity.gaiaId},
+                   /*initialized=*/false);
+  ConfigureProfile(kManagedProfile2, {google_identity.gaiaId},
+                   /*initialized=*/true);
+
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortB1_ExtraUninitManaged_OrigMoreRecent,
+      /*expected_cleanup_action=*/std::nullopt);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile2));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile3));
+
+  // Let the async hosted-domain fetch populate the cache, then simulate the
+  // next browser startup.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return system_identity_manager_->GetCachedHostedDomainForIdentity(
+               google_identity) != nil;
+  }));
+  system_identity_manager_->WaitForServiceCallbacksToComplete();
+  ASSERT_NSEQ(system_identity_manager_->GetCachedHostedDomainForIdentity(
+                  google_identity),
+              @"google.com");
+
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::
+          kCohortB1_ExtraUninitManaged_OrigMoreRecent,
+      IOSAccountProfileMappingCleanupAction::
+          kDeletedSecondManagedProfileUninit);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile2));
+  EXPECT_FALSE(profile_manager_->HasProfileWithName(kManagedProfile3));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile3));
+
+  VerifyHealthyNextStartup();
+}
+
+// Tests that `MaybeCleanUpCorruptedProfileMappings` handles unexpected buckets
+// (`kTwoUninitManagedProfiles`, `kThreeOrMoreProfiles`, and
+// `kMultipleCorruptedManagedAccounts`).
+TEST_F(AccountProfileMapperCleanupTest, UnexpectedBuckets) {
+  constexpr char kManagedProfile1[] = "11111111-1111-1111-1111-111111111111";
+  constexpr char kManagedProfile2[] = "22222222-2222-2222-2222-222222222222";
+  constexpr char kManagedProfile3[] = "33333333-3333-3333-3333-333333333333";
+  constexpr char kManagedProfile4[] = "44444444-4444-4444-4444-444444444444";
+  constexpr char kManagedProfile5[] = "55555555-5555-5555-5555-555555555555";
+
+  system_identity_manager_->AddIdentity(google_identity);
+
+  // 1. Both Managed profiles uninitialized: deletes `kManagedProfile2` and
+  // keeps `kManagedProfile1`.
+  ConfigureProfile(kManagedProfile1, {google_identity.gaiaId});
+  ConfigureProfile(kManagedProfile2, {google_identity.gaiaId});
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::kTwoUninitManagedProfiles,
+      IOSAccountProfileMappingCleanupAction::
+          kDeletedSecondManagedProfileBothUninit);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile1));
+  EXPECT_FALSE(profile_manager_->HasProfileWithName(kManagedProfile2));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile2));
+
+  // 2. Attached to 3 Managed profiles: skipped without mutation.
+  ConfigureProfile(kManagedProfile3, {google_identity.gaiaId});
+  ConfigureProfile(kManagedProfile4, {google_identity.gaiaId});
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::kThreeOrMoreProfiles,
+      IOSAccountProfileMappingCleanupAction::kSkippedThreeOrMoreProfiles);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile1));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile3));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile4));
+
+  // 3. Multiple corrupted accounts (`google_identity` and `chromium_identity`
+  // attached to 2 Managed profiles each): skipped without mutation.
+  system_identity_manager_->AddIdentity(chromium_identity);
+  ConfigureProfile(kManagedProfile4, {chromium_identity.gaiaId});
+  ConfigureProfile(kManagedProfile5, {chromium_identity.gaiaId});
+  RecreateMapperAndExpectHistograms(
+      IOSAccountProfileMappingStartupState::kMultipleCorruptedManagedAccounts,
+      IOSAccountProfileMappingCleanupAction::kSkippedMultipleCorruptedAccounts);
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile1));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile3));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile4));
+  EXPECT_TRUE(profile_manager_->HasProfileWithName(kManagedProfile5));
 }
 
 }  // namespace

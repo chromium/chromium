@@ -1182,7 +1182,6 @@ const base::FeatureParam<base::TimeDelta>
                                             "discover_refresh_min_buffer",
                                             base::Minutes(15)};
 
-
 BASE_FEATURE(kDefaultBottomOmniboxOnIOS, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultBottomOmniboxOnIOSEnabled() {
@@ -1301,3 +1300,6 @@ BASE_FEATURE(kAppBarDisableLongPress, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAppBarDisableLongPressEnabled() {
   return base::FeatureList::IsEnabled(kAppBarDisableLongPress);
 }
+
+BASE_FEATURE(kCleanupCorruptedAccountProfileMappings,
+             base::FEATURE_DISABLED_BY_DEFAULT);

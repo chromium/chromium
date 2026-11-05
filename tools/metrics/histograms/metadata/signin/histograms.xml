@@ -3010,6 +3010,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSAccountProfileMappingCleanupAction"
+    enum="IOSAccountProfileMappingCleanupAction" expires_after="2027-10-27">
+  <owner>jlebel@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the cleanup action performed (or skipped) at browser startup (during
+    AccountProfileMapper::Assigner initialization) when a managed Gaia ID on the
+    device (with a cached hosted domain) is attached to two or more profiles on
+    disk due to crbug.com/577577623. Emitted once at startup if at least one
+    corrupted managed Gaia ID mapping is found and
+    kCleanupCorruptedAccountProfileMappings is enabled. iOS only.
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.IOSAccountProfileMappingStartupState{DefaultProfilePresence}"
     enum="IOSAccountProfileMappingStartupState" expires_after="2027-10-27">
