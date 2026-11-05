@@ -705,4 +705,7 @@
       https://support.google.com/gemini/answer/13594961
     </message>
   </if>
+  <message name="IDS_SETTINGS_GEIC_ROW_SUBLABEL" desc="Sublabel of the Gemini Enterprise row button in Chrome settings leading to the Gemini Enterprise subpage.">
+    Ask Gemini anything as you browse, and get answers grounded in files and services across your organization, all with enterprise-level protections
+  </message>
 </grit-part>

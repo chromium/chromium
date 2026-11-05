@@ -12,7 +12,7 @@ export function getHtml(this: SettingsGeicPageElement) {
   <div>
     <cr-link-row id="geicLinkRow" start-icon="settings20:button-magic"
         label="$i18n{geicSectionTitle}" @click="${this.onGeicPageClick_}">
-      <div slot="sub-label">$i18n{glicRowSublabel}</div>
+      <div slot="sub-label">$i18n{geicRowSublabel}</div>
     </cr-link-row>
   </div>
 </settings-section>

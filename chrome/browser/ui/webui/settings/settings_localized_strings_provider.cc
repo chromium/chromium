@@ -839,6 +839,7 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 void AddGeicStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"geicSectionTitle", IDS_SETTINGS_GEIC_SECTION_TITLE},
+      {"geicRowSublabel", IDS_SETTINGS_GEIC_ROW_SUBLABEL},
       {"geicDevicePolicyToggle",
        IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE},
       {"geicDevicePolicyToggleSublabel",
