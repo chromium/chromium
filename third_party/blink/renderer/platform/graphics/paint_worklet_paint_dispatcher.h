@@ -80,9 +80,6 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
       HashMap<PaintWorkletId,
               std::pair<CrossThreadPersistent<PaintWorkletPainter>,
                         scoped_refptr<base::SingleThreadTaskRunner>>>;
-  const PaintWorkletPainterToTaskRunnerMap& PainterMapForTesting() const {
-    return painter_map_;
-  }
 
  protected:
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();

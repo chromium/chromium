@@ -72,11 +72,6 @@ VideoFrameSinkBundle& VideoFrameSinkBundle::GetOrCreateSharedInstance(
 }
 
 // static
-VideoFrameSinkBundle* VideoFrameSinkBundle::GetSharedInstanceForTesting() {
-  return GetThreadFrameSinkBundlePtr().get();
-}
-
-// static
 void VideoFrameSinkBundle::DestroySharedInstanceForTesting() {
   GetThreadFrameSinkBundlePtr().reset();
 }

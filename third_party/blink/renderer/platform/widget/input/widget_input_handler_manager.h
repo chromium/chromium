@@ -196,10 +196,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
 
-  base::SingleThreadTaskRunner* main_task_runner_for_testing() const {
-    return main_thread_task_runner_.get();
-  }
-
   // Immediately dispatches all queued events in both the main and compositor
   // queues such that the queues are emptied. Invokes the passed closure when
   // both main and compositor thread queues have been processed.

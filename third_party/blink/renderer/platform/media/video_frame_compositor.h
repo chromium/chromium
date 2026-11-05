@@ -170,11 +170,6 @@ class PLATFORM_EXPORT VideoFrameCompositor : public media::VideoRendererSink,
     background_rendering_enabled_ = enabled;
   }
 
-  void set_submitter_for_test(
-      std::unique_ptr<WebVideoFrameSubmitter> submitter) {
-    submitter_ = std::move(submitter);
-  }
-
  private:
   // TracingCategory name for |auto_open_close_|.
   static constexpr const char kTracingCategory[] = "media,rail";

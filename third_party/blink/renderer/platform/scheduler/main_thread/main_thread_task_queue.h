@@ -563,8 +563,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
  protected:
-  void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);
-
   MainThreadTaskQueue(const MainThreadTaskQueue&) = delete;
   MainThreadTaskQueue& operator=(const MainThreadTaskQueue&) = delete;
 

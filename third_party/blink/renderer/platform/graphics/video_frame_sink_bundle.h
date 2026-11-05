@@ -68,11 +68,6 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
   // always call this with the same `client_id`.
   static VideoFrameSinkBundle& GetOrCreateSharedInstance(uint32_t client_id);
 
-  // Acquires an instance that would be returned by GetOrCreateSharedInstance,
-  // but does not create a new instance if one does not exist. Instead this
-  // returns null in that case.
-  static VideoFrameSinkBundle* GetSharedInstanceForTesting();
-
   // Ensures that the calling thread's shared instances are torn down.
   static void DestroySharedInstanceForTesting();
 

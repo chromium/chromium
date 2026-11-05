@@ -1977,10 +1977,6 @@ MainThreadSchedulerImpl::GetSchedulerHelperForTesting() {
   return &helper_;
 }
 
-IdleTimeEstimator* MainThreadSchedulerImpl::GetIdleTimeEstimatorForTesting() {
-  return &main_thread_only().idle_time_estimator;
-}
-
 base::SequencedTaskRunner* MainThreadSchedulerImpl::GetVirtualTimeTaskRunner() {
   return virtual_time_control_task_queue_->GetTaskRunnerWithDefaultTaskType()
       .get();

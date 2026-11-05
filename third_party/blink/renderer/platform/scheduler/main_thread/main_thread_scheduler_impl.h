@@ -295,8 +295,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<MainThreadTaskQueue> NewThrottleableTaskQueueForTest(
       FrameSchedulerImpl* frame_scheduler);
 
-  scoped_refptr<base::sequence_manager::TaskQueue> NewTaskQueueForTest();
-
   void RemoveAgentGroupScheduler(AgentGroupSchedulerImpl*);
   void AddPageScheduler(PageSchedulerImpl*);
   void RemovePageScheduler(PageSchedulerImpl*);
@@ -333,7 +331,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Test helpers.
   MainThreadSchedulerHelper* GetSchedulerHelperForTesting();
-  IdleTimeEstimator* GetIdleTimeEstimatorForTesting();
   base::TimeTicks CurrentIdleTaskDeadlineForTesting() const;
   void EndIdlePeriodForTesting(base::TimeTicks time_remaining);
   bool PolicyNeedsUpdateForTesting();

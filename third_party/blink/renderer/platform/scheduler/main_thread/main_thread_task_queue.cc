@@ -238,11 +238,6 @@ FrameSchedulerImpl* MainThreadTaskQueue::GetFrameScheduler() const {
   return frame_scheduler_;
 }
 
-void MainThreadTaskQueue::SetFrameSchedulerForTest(
-    FrameSchedulerImpl* frame_scheduler) {
-  frame_scheduler_ = frame_scheduler;
-}
-
 void MainThreadTaskQueue::SetWebSchedulingPriority(
     WebSchedulingPriority priority) {
   if (web_scheduling_priority_ == priority) {
