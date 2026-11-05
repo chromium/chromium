@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/containers/flat_set.h"
 #import "base/not_fatal_until.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -95,12 +96,14 @@ bool IsSuppressedByPairRules(const base::DictValue* pairs_dict,
 
   if (pair_dict->FindBool(kPairSuppressedByReverseSwitchKey).value_or(false)) {
     // The user previously switched away from `target_gaia_id` to
-    // `primary_gaia_id`; never suggest switching back.
+    // `primary_gaia_id`; do not suggest switching back while both accounts
+    // remain on the device.
     return true;
   }
 
   // Maximum number of explicit dismissals for a specific `(primary, target)`
-  // pair before permanently suppressing that pair.
+  // pair before suppressing that pair (until one of the accounts is removed
+  // from the device).
   static constexpr int kMaxPairExplicitDismissals = 2;
   return pair_dict->FindInt(kPairExplicitDismissalCountKey).value_or(0) >=
          kMaxPairExplicitDismissals;
@@ -138,10 +141,35 @@ void SuppressAccountSwitchingReversePair(PrefService& profile_prefs,
 
   ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
   // User switched from `previous_primary_gaia_id` (Account B) to
-  // `new_primary_gaia_id` (Account A): permanently suppress reverse pair
-  // (A -> B).
+  // `new_primary_gaia_id` (Account A): suppress reverse pair (A -> B) until one
+  // of the accounts is removed from the device.
   EnsurePairDict(*update, new_primary_gaia_id, previous_primary_gaia_id)
       .Set(kPairSuppressedByReverseSwitchKey, true);
+}
+
+void DeleteAccountSwitchingPromoStateForRemovedAccounts(
+    PrefService& profile_prefs,
+    const base::flat_set<GaiaId>& active_gaia_ids) {
+  CheckIsPersonalProfilePrefs(profile_prefs);
+
+  ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
+  base::DictValue* pairs_dict = update->FindDict(kPairsDictKey);
+  if (!pairs_dict) {
+    // No pairs has been registered yet.
+    return;
+  }
+  for (auto [_, primary_value] : *pairs_dict) {
+    if (base::DictValue* primary_dict = primary_value.GetIfDict()) {
+      primary_dict->EraseIf([&active_gaia_ids](const auto& entry) {
+        return !active_gaia_ids.contains(GaiaId(entry.first));
+      });
+    }
+  }
+  pairs_dict->EraseIf([&active_gaia_ids](const auto& entry) {
+    const base::DictValue* primary_dict = entry.second.GetIfDict();
+    return !active_gaia_ids.contains(GaiaId(entry.first)) || !primary_dict ||
+           primary_dict->empty();
+  });
 }
 
 void RecordAccountSwitchingPromoExplicitlyDismissed(
