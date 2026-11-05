@@ -44,6 +44,10 @@ _RAW_KNOWN_EXPORTED_CHANGE_IDS = {
     'Ia10b1ff781651d883a2469e50057fa421380a2d9',
     # Forgot `No-Export: true` again.
     'I42dc955c5e54b233848e0b92b85cc1907da3ddcd',
+    # https://crrev.com/c/8160319 and its revert (which have conflicts with
+    # upstream).
+    'Ib6f1b2e4ecb3716dc799764eb93aff21c1872f06',
+    'Ia9b20affe9b74626e7032e03bdf7e3d7316ab17c',
 }
 
 
