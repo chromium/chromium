@@ -13,7 +13,7 @@ config("neon_2_sse_flags") {
   # than -Wno-deprecated-declarations, since this config is public and would
   # otherwise suppress deprecation warnings for all dependents on x64.
   defines = [ "NEON2SSE_DISABLE_PERFORMANCE_WARNING" ]
-  if (target_cpu == "x64" && is_clang) {
+  if (current_cpu == "x64" && is_clang) {
     cflags = [ "-Wno-gnu-inline-cpp-without-extern" ]
   }
 }
