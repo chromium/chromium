@@ -4817,32 +4817,16 @@ hooks = [
   },
 
   # Configure remote exec cfg files.
+  # TODO(crbug.com/443838348): Remove after Siso stops reading rewrapper cfgs
+  # on Windows and macOS.
   {
-    # Use luci_auth if on windows and using chrome-untrusted project
     'name': 'download_and_configure_reclient_cfgs',
     'pattern': '.',
-    'condition': 'download_remoteexec_cfg and host_os == "win"',
+    'condition': 'download_remoteexec_cfg',
     'action': ['python3',
                'src/buildtools/reclient_cfgs/configure_reclient_cfgs.py',
                '--rbe_instance',
                Var('rbe_instance'),
-               '--reproxy_cfg_template',
-               'reproxy.cfg.template',
-               '--rewrapper_cfg_project',
-               Var('rewrapper_cfg_project'),
-               '--use_luci_auth_credshelper',
-               '--quiet',
-               ],
-  },  {
-    'name': 'download_and_configure_reclient_cfgs',
-    'pattern': '.',
-    'condition': 'download_remoteexec_cfg and not host_os == "win"',
-    'action': ['python3',
-               'src/buildtools/reclient_cfgs/configure_reclient_cfgs.py',
-               '--rbe_instance',
-               Var('rbe_instance'),
-               '--reproxy_cfg_template',
-               'reproxy.cfg.template',
                '--rewrapper_cfg_project',
                Var('rewrapper_cfg_project'),
                '--quiet',
@@ -4856,8 +4840,6 @@ hooks = [
                'src/buildtools/reclient_cfgs/configure_reclient_cfgs.py',
                '--rbe_instance',
                Var('rbe_instance'),
-               '--reproxy_cfg_template',
-               'reproxy.cfg.template',
                '--rewrapper_cfg_project',
                Var('rewrapper_cfg_project'),
                '--skip_remoteexec_cfg_fetch',

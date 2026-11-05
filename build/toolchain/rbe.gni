@@ -76,9 +76,6 @@ declare_args() {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
   }
-
-  # Note that reclient_cros_cc_wrapper is referenced by CrOS's chromite.
-  reclient_cros_cc_wrapper = ""
 }
 
 if (use_reclient_cfgs && current_toolchain == default_toolchain) {

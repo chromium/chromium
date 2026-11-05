@@ -107,7 +107,6 @@ try_.presubmit_builder(
             {
                 "name": "rbe-chromium-trusted",
                 "cfg_file": [
-                    "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg",
                     "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg",
                 ],
             },
