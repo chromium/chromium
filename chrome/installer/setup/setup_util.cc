@@ -138,6 +138,21 @@ base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path) {
   return (version_found ? max_version.release() : nullptr);
 }
 
+base::FilePath CopyInitialPreferencesToTempDir(
+    const base::FilePath& prefs_path,
+    const base::FilePath& temp_path) {
+  if (prefs_path.empty()) {
+    return prefs_path;
+  }
+  const base::FilePath prefs_copy = temp_path.Append(prefs_path.BaseName());
+  if (!base::CopyFile(prefs_path, prefs_copy)) {
+    PLOG(ERROR) << "Failed copying initial preferences " << prefs_path << " to "
+                << prefs_copy;
+    return prefs_path;
+  }
+  return prefs_copy;
+}
+
 bool DeleteFileFromTempProcess(const base::FilePath& path,
                                uint32_t delay_before_delete_ms) {
   static const wchar_t kRunDll32Path[] =

@@ -1345,6 +1345,9 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
     return TEMP_DIR_FAILED;
   }
 
+  const base::FilePath prefs_source_path = CopyInitialPreferencesToTempDir(
+      cmd_line.GetSwitchValuePath(switches::kInstallerData), temp_path.path());
+
   RETURN_IF_ERROR(
       UnpackChromeArchive(unpack_path, setup_exe, cmd_line, installer_state));
 
@@ -1378,9 +1381,6 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
     }
 
     if (proceed_with_installation) {
-      base::FilePath prefs_source_path(
-          cmd_line.GetSwitchValueNative(switches::kInstallerData));
-
       const base::Version current_version(
           installer_state.GetCurrentVersion(original_state));
       src_size_kb = base::saturated_cast<uint32_t>(

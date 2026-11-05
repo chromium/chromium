@@ -92,6 +92,46 @@ TEST(SetupUtilTest, GetMaxVersionFromArchiveDirTest) {
   ASSERT_EQ(version->GetString(), "9.9.9.9");
 }
 
+TEST(SetupUtilTest, CopyInitialPreferencesToTempDirOutlivesSource) {
+  base::ScopedTempDir source_dir;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(source_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath prefs_path =
+      source_dir.GetPath().AppendASCII("installerdata.tmp");
+  constexpr char kPrefs[] = R"({"distribution":{"msi":false}})";
+  ASSERT_TRUE(base::WriteFile(prefs_path, kPrefs));
+
+  const base::FilePath prefs_copy = installer::CopyInitialPreferencesToTempDir(
+      prefs_path, temp_dir.GetPath());
+  ASSERT_TRUE(base::DeleteFile(prefs_path));
+
+  EXPECT_EQ(prefs_copy, temp_dir.GetPath().Append(prefs_path.BaseName()));
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(prefs_copy, &contents));
+  EXPECT_EQ(contents, kPrefs);
+}
+
+TEST(SetupUtilTest, CopyInitialPreferencesToTempDirKeepsEmptyPath) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  EXPECT_EQ(installer::CopyInitialPreferencesToTempDir(base::FilePath(),
+                                                       temp_dir.GetPath()),
+            base::FilePath());
+}
+
+TEST(SetupUtilTest, CopyInitialPreferencesToTempDirKeepsPathOnFailure) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath missing_path =
+      temp_dir.GetPath().AppendASCII("missing").AppendASCII("installerdata");
+
+  EXPECT_EQ(installer::CopyInitialPreferencesToTempDir(missing_path,
+                                                       temp_dir.GetPath()),
+            missing_path);
+}
+
 TEST(SetupUtilTest, DeleteFileFromTempProcess) {
   base::ScopedTempDir test_dir;
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());

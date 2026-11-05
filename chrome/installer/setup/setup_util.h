@@ -51,6 +51,14 @@ enum UnPackConsumer {
 // Returns the maximum version found or nullptr if no version is found.
 base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path);
 
+// Copies the initial preferences file at `prefs_path` into `temp_path`, since
+// the process that passed it via --installerdata may delete it before setup is
+// done with it (e.g., when the updater stops waiting for a slow install).
+// Returns the path to the copy, or `prefs_path` if it is empty or the copy
+// fails.
+base::FilePath CopyInitialPreferencesToTempDir(const base::FilePath& prefs_path,
+                                               const base::FilePath& temp_path);
+
 // Spawns a new process that waits for a specified amount of time before
 // attempting to delete |path|.  This is useful for setup to delete the
 // currently running executable or a file that we cannot close right away but
