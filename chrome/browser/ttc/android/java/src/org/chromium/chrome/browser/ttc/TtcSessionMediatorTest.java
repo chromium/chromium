@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -30,9 +31,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -98,8 +101,13 @@ public class TtcSessionMediatorTest {
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
         when(mWindowAndroid.getContext())
                 .thenReturn(new WeakReference<>(ApplicationProvider.getApplicationContext()));
+        when(mWindowAndroid.getActivity())
+                .thenReturn(new WeakReference<>(Robolectric.buildActivity(Activity.class).get()));
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoProfile.getOriginalProfile()).thenReturn(mProfile);
     }
 
     /** Creates a mediator and, unless {@code profileAvailable} is false, supplies the profile. */
@@ -150,13 +158,8 @@ public class TtcSessionMediatorTest {
         }
     }
 
-    /**
-     * Switches the window whose profile is supplied by {@code profileSupplier} to incognito. The
-     * factory returns {@link #mService} for every profile, so the off-the-record profile having no
-     * service is modeled by the service not being enabled for it.
-     */
+    /** Switches the window whose profile is supplied by {@code profileSupplier} to incognito. */
     private void switchToIncognito(SettableMonotonicObservableSupplier<Profile> profileSupplier) {
-        when(mService.isEnabled()).thenReturn(false);
         profileSupplier.set(mIncognitoProfile);
     }
 
@@ -599,6 +602,32 @@ public class TtcSessionMediatorTest {
         switchToIncognito(otherProfileSupplier);
         verify(mService, never()).endSession();
         assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+
+        mediator.onStopWithNative();
+        verify(mService).endSession();
+    }
+
+    // An incognito window never hosts the session, but once it is up it mustn't be mistaken for a
+    // browser window that is still starting, which would keep the session alive while it shows.
+    @Test
+    public void testIncognitoWindowDoesNotKeepSessionAlive() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+        Activity incognitoActivity = Robolectric.buildActivity(Activity.class).create().get();
+        ApplicationStatus.onStateChangeForTesting(
+                incognitoActivity, org.chromium.base.ActivityState.RESUMED);
+        WindowAndroid incognitoWindowAndroid = mock(WindowAndroid.class);
+        when(incognitoWindowAndroid.getActivity())
+                .thenReturn(new WeakReference<>(incognitoActivity));
+        SettableMonotonicObservableSupplier<Profile> incognitoProfileSupplier =
+                ObservableSuppliers.createMonotonic();
+        incognitoProfileSupplier.set(mIncognitoProfile);
+        new TtcSessionMediator(
+                new PropertyModel(TtcSessionProperties.ALL_KEYS),
+                incognitoWindowAndroid,
+                incognitoProfileSupplier,
+                mOtherLifecycleDispatcher,
+                new TtcEntryPoint());
 
         mediator.onStopWithNative();
         verify(mService).endSession();

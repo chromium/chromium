@@ -21,6 +21,7 @@ android_library("java") {
   deps = [
     ":entry_point_java",
     ":java_resources",
+    "//base:activity_state_java",
     "//base:base_java",
     "//base:supplier_java",
     "//build/android:build_java",
@@ -83,6 +84,7 @@ robolectric_library("junit") {
     ":entry_point_java",
     ":java",
     ":java_resources",
+    "//base:activity_state_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:supplier_java",

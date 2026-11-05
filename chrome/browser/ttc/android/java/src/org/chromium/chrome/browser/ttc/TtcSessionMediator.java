@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ttc;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -266,23 +267,32 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     private void onProfileAvailable(Profile profile) {
         mProfile = profile;
         TtcKeyedService service = TtcSessionCoordinator.getServiceIfAvailable(profile);
-        if (service == mService) return;
-        // This window stops hosting the previous profile's session. That only ends the session if
-        // no other window is still showing it.
-        detachFromService();
-        mService = service;
-        if (mService == null) {
-            mModel.set(TtcSessionProperties.VISIBLE, false);
-            updateEntryPoint(false);
-            return;
+        if (service != mService) {
+            // This window stops hosting the previous profile's session. That only ends the session
+            // if no other window is still showing it.
+            detachFromService();
+            mService = service;
+            if (mService == null) {
+                mModel.set(TtcSessionProperties.VISIBLE, false);
+                updateEntryPoint(false);
+            } else {
+                mService.addObserver(this);
+                onServiceStateChanged(
+                        mService.isSessionActive()
+                                ? ServiceState.SESSION_ACTIVE
+                                : ServiceState.SESSION_INACTIVE);
+                // The window may have started before the profile was available.
+                if (isActivityVisible()) mService.getWindowTracker().addVisibleWindow(this);
+            }
         }
-        mService.addObserver(this);
-        onServiceStateChanged(
-                mService.isSessionActive()
-                        ? ServiceState.SESSION_ACTIVE
-                        : ServiceState.SESSION_INACTIVE);
-        // The window may have started before the profile was available.
-        if (isActivityVisible()) mService.getWindowTracker().addVisibleWindow(this);
+        // This window's native side is up, so the regular profile's session no longer needs to
+        // wait for it, whether it hosts that session (above) or is incognito and never will.
+        TtcKeyedService regularService =
+                TtcSessionCoordinator.getServiceIfAvailable(profile.getOriginalProfile());
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (regularService != null && activity != null) {
+            regularService.getWindowTracker().onWindowReady(activity);
+        }
     }
 
     /**

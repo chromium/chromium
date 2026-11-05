@@ -44,6 +44,9 @@ public class TtcSessionCoordinator {
      */
     public static @Nullable TtcKeyedService getServiceIfAvailable(@Nullable Profile profile) {
         if (profile == null || !ChromeFeatureList.isEnabled(ChromeFeatureList.TTC)) return null;
+        // The factory only builds the service for regular profiles; checked here too so that tests
+        // with a fake factory see the same.
+        if (profile.isOffTheRecord()) return null;
         TtcKeyedService service = TtcKeyedServiceFactory.getForProfile(profile);
         return service != null && service.isEnabled() ? service : null;
     }
