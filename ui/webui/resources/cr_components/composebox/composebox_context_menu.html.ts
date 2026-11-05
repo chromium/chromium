@@ -55,7 +55,6 @@ export function getHtml(this: ComposeboxElement) {
         .fileNum="${this.attachedContext.size}"
         .nonTabFileNum="${this.getNonTabFileNum()}"
         .sharedTabs="${this.getSharedTabs()}"
-        .isSidePanel="${this.isSidePanel}"
         ?show-context-menu-description="${this.showContextMenuDescription}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}">
     </cr-composebox-contextual-entrypoint-and-menu>
