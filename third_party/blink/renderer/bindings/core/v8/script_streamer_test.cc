@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1347,6 +1348,36 @@ class BackgroundResourceScriptStreamerTestBase : public testing::Test {
     EXPECT_EQ(nullptr, streamer);
   }
 
+  // Feeds a response with a valid code cache and expects the background
+  // processor to hand it back untouched for main-thread consumption.
+  void ExpectCodeCacheHandledOnMainThread() {
+    mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
+    const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                    code_cache_data.end());
+    RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+      network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+      // Set charset to make the code cache valid.
+      head->charset = "utf-8";
+      // Set a dummy code cache data.
+      std::optional<mojo_base::BigBuffer> cached_metadata =
+          std::move(code_cache_data);
+      EXPECT_FALSE(background_response_processor_->MaybeStartProcessingResponse(
+          head, consumer_handle_, cached_metadata,
+          background_resource_fetch_task_runner_,
+          &background_response_processor_client_));
+      EXPECT_TRUE(head);
+      EXPECT_TRUE(consumer_handle_);
+      ASSERT_TRUE(cached_metadata);
+      EXPECT_THAT(*cached_metadata,
+                  testing::ElementsAreArray(code_cache_data_copy));
+    }));
+    Finish();
+    RunUntilResourceLoaded();
+    // When there is a code cache, we should not stream the script.
+    CheckNotStreamingReason(
+        ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground);
+  }
+
   ScriptStreamer* TakeScriptStreamer(mojom::blink::ScriptType script_type =
                                          mojom::blink::ScriptType::kClassic) {
     ScriptStreamer* streamer;
@@ -1440,31 +1471,7 @@ TEST_P(BackgroundResourceScriptStreamerTest, UnsupportedModuleMimeType) {
 TEST_P(BackgroundResourceScriptStreamerTest, HasCodeCache) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
-  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
-                                                  code_cache_data.end());
-  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
-    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
-    // Set charset to make the code cache valid.
-    head->charset = "utf-8";
-    // Set a dummy code cache data.
-    std::optional<mojo_base::BigBuffer> cached_metadata =
-        std::move(code_cache_data);
-    EXPECT_FALSE(background_response_processor_->MaybeStartProcessingResponse(
-        head, consumer_handle_, cached_metadata,
-        background_resource_fetch_task_runner_,
-        &background_response_processor_client_));
-    EXPECT_TRUE(head);
-    EXPECT_TRUE(consumer_handle_);
-    ASSERT_TRUE(cached_metadata);
-    EXPECT_THAT(*cached_metadata,
-                testing::ElementsAreArray(code_cache_data_copy));
-  }));
-  Finish();
-  RunUntilResourceLoaded();
-  // When there is a code cache, we should not stream the script.
-  CheckNotStreamingReason(
-      ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground);
+  ExpectCodeCacheHandledOnMainThread();
 }
 
 class BackgroundResourceScriptStreamerCodeCacheDecodeStartTest
@@ -1522,6 +1529,19 @@ TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest, HasCodeCache) {
   // When there is a code cache, we should not stream the script.
   CheckNotStreamingReason(
       ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground);
+}
+
+TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       HasCodeCacheWithoutConcurrentCacheDeserialization) {
+  // E.g. implied by --predictable. Makes StartConsumingCodeCacheOnBackground()
+  // return nullptr, so the code cache must fall back to the main thread.
+  v8::V8::SetFlagsFromString("--no-concurrent-cache-deserialization");
+  base::ScopedClosureRunner reset_v8_flags(base::BindOnce([] {
+    v8::V8::SetFlagsFromString("--concurrent-cache-deserialization");
+  }));
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  ExpectCodeCacheHandledOnMainThread();
 }
 
 TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,

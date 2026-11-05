@@ -2070,10 +2070,10 @@ bool BackgroundJSStreamManager::TryStartStreaming() {
     return true;
   }
 
-  // TODO(40244488): Remove this when BackgroundCodeCacheDecoderStart feature
-  // is removed.
+  // Reachable when BackgroundCodeCacheDecoderStart is disabled, or when
+  // StartConsumingCodeCacheOnBackground returns nullptr (e.g., when
+  // concurrent_cache_deserialization is disabled by --predictable).
   if (has_code_cache) {
-    CHECK(!features::kBackgroundCodeCacheDecoderStart.Get());
     SuppressStreaming(NotStreamingReason::kHasCodeCacheBackground);
     V8CodeCache::RecordCacheGetStatistics(
         V8CodeCache::GetMetadataType::kCodeCache);
@@ -2620,10 +2620,13 @@ v8::ScriptType BackgroundResourceScriptStreamer::GetScriptType() const {
 void BackgroundResourceScriptStreamer::OnResult(
     std::unique_ptr<Result> result,
     NotStreamingReason suppressed_reason) {
-  CHECK_EQ(!!result, suppressed_reason == NotStreamingReason::kInvalid ||
-                         (features::kBackgroundCodeCacheDecoderStart.Get() &&
-                          suppressed_reason ==
-                              NotStreamingReason::kHasCodeCacheBackground));
+  if (result) {
+    CHECK(suppressed_reason == NotStreamingReason::kInvalid ||
+          (features::kBackgroundCodeCacheDecoderStart.Get() &&
+           suppressed_reason == NotStreamingReason::kHasCodeCacheBackground));
+  } else {
+    CHECK_NE(suppressed_reason, NotStreamingReason::kInvalid);
+  }
   result_ = std::move(result);
   suppressed_reason_ = suppressed_reason;
 }
