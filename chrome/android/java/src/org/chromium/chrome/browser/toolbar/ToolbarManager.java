@@ -1399,6 +1399,7 @@ public class ToolbarManager
                             scrollListener,
                             tabModelSelectorSupplier,
                             topInsetProvider,
+                            edgeToEdgeControllerSupplier,
                             mToolbarLayout,
                             mLocationBarEmbedderUiOverrides,
                             mActivity.findViewById(R.id.coordinator),

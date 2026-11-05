@@ -30,6 +30,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -39,22 +41,26 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.insets.InsetObserver;
 
 import java.lang.ref.WeakReference;
@@ -86,7 +92,10 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
     @Mock private DisplayAndroid mDisplay;
     @Mock private InsetObserver mInsetObserver;
     @Mock private TopInsetProvider mTopInsetProvider;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private Callback<OmniboxAlignment> mAlignmentChanged;
+    @Captor private ArgumentCaptor<TopInsetProvider.Observer> mTopInsetObserverCaptor;
+    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
     private FrameLayout mContentView;
     private FrameLayout mAnchorView;
@@ -101,6 +110,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SettableNonNullObservableSupplier<Integer> mFuseboxLayoutModeSupplier =
             ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
     private boolean mIsFullWidthExpansionAllowed = true;
 
     @Before
@@ -155,6 +166,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
                         mTopInsetProvider,
+                        mEdgeToEdgeControllerSupplier,
                         () -> mIsFullWidthExpansionAllowed);
     }
 
@@ -170,6 +182,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void testWindowAttachment() {
         // TopInsetProvider observer should be added during construction.
         verify(mTopInsetProvider).addObserver(any(TopInsetProvider.Observer.class));
@@ -298,6 +311,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
                         mTopInsetProvider,
+                        mEdgeToEdgeControllerSupplier,
                         () -> true);
         impl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = impl.getCurrentAlignment();
@@ -398,6 +412,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
                         mTopInsetProvider,
+                        mEdgeToEdgeControllerSupplier,
                         () -> true);
 
         impl.recalculateOmniboxAlignment();
@@ -620,6 +635,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
                         mTopInsetProvider,
+                        mEdgeToEdgeControllerSupplier,
                         () -> true);
 
         setBounds(mHorizontalAlignmentView, ALIGNMENT_LEFT, 60, ALIGNMENT_WIDTH, ALIGNMENT_HEIGHT);
@@ -713,32 +729,72 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
     }
 
     @Test
-    public void testOnToEdgeChange() {
+    public void testOnTopInsetChanged() {
         // With controls at top, paddingTop should remain 0.
         mControlsPosition = ControlsPosition.TOP;
-        mImpl.onToEdgeChange(
-                /* systemTopInset= */ 100, /* consumeTopInset= */ true, LayoutType.BROWSING);
+        mImpl.onTopInsetChanged(/* topPadding= */ 100);
         assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
 
-        // With controls at bottom and consumeTopInset=true, paddingTop should match systemTopInset.
+        // With controls at bottom, paddingTop should match topPadding.
         mControlsPosition = ControlsPosition.BOTTOM;
-        mImpl.onToEdgeChange(
+        mImpl.onTopInsetChanged(/* topPadding= */ 100);
+        assertEquals(100, mImpl.getCurrentAlignment().paddingTop);
+
+        // paddingTop should update when topPadding changes or resets to 0.
+        mImpl.onTopInsetChanged(/* topPadding= */ 50);
+        assertEquals(50, mImpl.getCurrentAlignment().paddingTop);
+
+        mImpl.onTopInsetChanged(/* topPadding= */ 0);
+        assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInsetAdjustment_EdgeToEdgeRefactorDisabled() {
+        verify(mTopInsetProvider).addObserver(mTopInsetObserverCaptor.capture());
+        TopInsetProvider.Observer observer = mTopInsetObserverCaptor.getValue();
+
+        mControlsPosition = ControlsPosition.BOTTOM;
+        observer.onToEdgeChange(
                 /* systemTopInset= */ 100, /* consumeTopInset= */ true, LayoutType.BROWSING);
         assertEquals(100, mImpl.getCurrentAlignment().paddingTop);
 
         // With consumeTopInset=false, paddingTop should reset to 0.
-        mImpl.onToEdgeChange(
+        observer.onToEdgeChange(
                 /* systemTopInset= */ 100, /* consumeTopInset= */ false, LayoutType.BROWSING);
         assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
+    }
 
-        // paddingTop should update from non-zero to zero when systemTopInset changes.
-        mImpl.onToEdgeChange(
-                /* systemTopInset= */ 50, /* consumeTopInset= */ true, LayoutType.BROWSING);
-        assertEquals(50, mImpl.getCurrentAlignment().paddingTop);
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInsetAdjustment_EdgeToEdgeRefactorEnabled() {
+        verify(mTopInsetProvider, never()).addObserver(any());
+        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        EdgeToEdgePadAdjuster padAdjuster = mPadAdjusterCaptor.getValue();
 
-        mImpl.onToEdgeChange(
-                /* systemTopInset= */ 0, /* consumeTopInset= */ true, LayoutType.BROWSING);
+        // With controls at top, paddingTop should remain 0.
+        padAdjuster.overrideTopInset(/* inset= */ 100);
         assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
+
+        // Switching controls to bottom applies the cached top inset; switching to top resets it.
+        mControlsPosition = ControlsPosition.BOTTOM;
+        mImpl.recalculateOmniboxAlignment();
+        assertEquals(100, mImpl.getCurrentAlignment().paddingTop);
+        mControlsPosition = ControlsPosition.TOP;
+        mImpl.recalculateOmniboxAlignment();
+        assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
+
+        // Resetting top inset to 0 while at bottom resets paddingTop to 0.
+        mControlsPosition = ControlsPosition.BOTTOM;
+        mImpl.recalculateOmniboxAlignment();
+        padAdjuster.overrideTopInset(/* inset= */ 0);
+        assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
+
+        mImpl.destroy();
+        verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
+        assertFalse(mEdgeToEdgeControllerSupplier.hasObservers());
     }
 
     @Test
@@ -772,6 +828,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void testDestroy_removesTopInsetObserver() {
         mImpl.destroy();
         verify(mTopInsetProvider).removeObserver(any(TopInsetProvider.Observer.class));

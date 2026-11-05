@@ -166,6 +166,7 @@ public class SearchUiCoordinator {
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
                         tabModelSelectorSupplier,
                         /* topInsetProvider= */ new NoOpTopInsetProvider(),
+                        /* edgeToEdgeControllerSupplier= */ ObservableSuppliers.alwaysNull(),
                         locationBarEmbedder,
                         mLocationBarUiOverrides,
                         contentView,

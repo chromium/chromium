@@ -360,6 +360,7 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//ui/base/mojom:mojom_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
 
@@ -802,6 +803,7 @@ robolectric_library("junit") {
     "//ui/android:ui_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//ui/base/mojom:mojom_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]

@@ -15,26 +15,30 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowInsets;
 
+import androidx.annotation.Px;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -63,7 +67,10 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final Supplier<Integer> mBottomWindowPaddingSupplier;
     private final Context mContext;
     private final TopInsetProvider mTopInsetProvider;
-    private final TopInsetProvider.Observer mTopInsetProviderObserver;
+    private TopInsetProvider.@Nullable Observer mTopInsetProviderObserver;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private @Nullable Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback;
     // Reusable int array to pass to positioning methods that operate on a two element int array.
     // Keeping it as a member lets us avoid allocating a temp array every time.
     private final int[] mPositionArray = new int[2];
@@ -108,6 +115,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * @param fuseboxStateSupplier Supplier of the current FuseboxState.
      * @param fuseboxLayoutModeSupplier Supplier of the current FuseboxLayoutMode.
      * @param topInsetProvider Provider for edge-to-edge top inset changes.
+     * @param edgeToEdgeControllerSupplier Supplier of the {@link EdgeToEdgeController}.
      * @param isFullWidthExpansionAllowedSupplier Supplier returning true if full-width expansion is
      *     permitted for narrow windows.
      */
@@ -126,6 +134,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             Supplier<@FuseboxState Integer> fuseboxStateSupplier,
             Supplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
             TopInsetProvider topInsetProvider,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             BooleanSupplier isFullWidthExpansionAllowedSupplier) {
         mResourceProvider = resourceProvider;
         mWindowAndroid = windowAndroid;
@@ -146,12 +155,36 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mFuseboxLayoutModeSupplier = fuseboxLayoutModeSupplier;
         mTopInsetProvider = topInsetProvider;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mIsFullWidthExpansionAllowedSupplier = isFullWidthExpansionAllowedSupplier;
         recalculateOmniboxAlignment();
 
-        // Set up observer to handle edge-to-edge changes.
-        mTopInsetProviderObserver = this::onToEdgeChange;
-        mTopInsetProvider.addObserver(mTopInsetProviderObserver);
+        // Set up observer or pad adjuster to handle edge-to-edge changes.
+        if (EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled()) {
+            EdgeToEdgePadAdjuster edgeToEdgePadAdjuster =
+                    new EdgeToEdgePadAdjuster() {
+                        @Override
+                        public void overrideBottomInset(@Px int inset) {}
+
+                        @Override
+                        public void overrideTopInset(@Px int inset) {
+                            onTopInsetChanged(inset);
+                        }
+
+                        @Override
+                        public void destroy() {}
+                    };
+            mEdgeToEdgePadAdjuster = edgeToEdgePadAdjuster;
+            mEdgeToEdgeControllerCallback =
+                    controller -> controller.registerAdjuster(edgeToEdgePadAdjuster);
+            mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                    mEdgeToEdgeControllerCallback);
+        } else {
+            mTopInsetProviderObserver =
+                    (systemTopInset, consumeTopInset, layoutType) ->
+                            onTopInsetChanged(consumeTopInset ? systemTopInset : 0);
+            mTopInsetProvider.addObserver(mTopInsetProviderObserver);
+        }
     }
 
     @Override
@@ -436,6 +469,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
         // TODO(pnoland@, https://crbug.com/40257117): avoid pushing changes that are identical to
         // the previous alignment value.
+        int paddingTop = controlsPosition == ControlsPosition.BOTTOM ? mTopPaddingForEdgeToEdge : 0;
         OmniboxAlignment omniboxAlignment =
                 new OmniboxAlignment(
                         left,
@@ -444,24 +478,23 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                         height,
                         paddingLeft,
                         paddingRight,
-                        mTopPaddingForEdgeToEdge,
+                        paddingTop,
                         paddingBottom);
         mOmniboxAlignmentSupplier.set(omniboxAlignment);
     }
 
-    void onToEdgeChange(int systemTopInset, boolean consumeTopInset, @LayoutType int layoutType) {
+    void onTopInsetChanged(@Px int topPadding) {
         // When the toolbar is at the bottom, the omnibox suggestions container displays above the
         // toolbar, starting from the top of the screen. In edge-to-edge mode, we need to add top
         // padding to prevent content from entering the status bar area.
-        @ControlsPosition int controlsPosition = mControlsPositionSupplier.get();
-        int topPadding =
-                (consumeTopInset && controlsPosition == ControlsPosition.BOTTOM)
-                        ? systemTopInset
+        mTopPaddingForEdgeToEdge = topPadding;
+        int effectiveTopPadding =
+                mControlsPositionSupplier.get() == ControlsPosition.BOTTOM
+                        ? mTopPaddingForEdgeToEdge
                         : 0;
-        if (mTopPaddingForEdgeToEdge == topPadding) {
+        if (getCurrentAlignment().paddingTop == effectiveTopPadding) {
             return;
         }
-        mTopPaddingForEdgeToEdge = topPadding;
         recalculateOmniboxAlignment();
     }
 
@@ -503,6 +536,20 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
     public void destroy() {
         mContext.unregisterComponentCallbacks(this);
-        mTopInsetProvider.removeObserver(mTopInsetProviderObserver);
+        if (mEdgeToEdgeControllerCallback != null) {
+            mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerCallback);
+            mEdgeToEdgeControllerCallback = null;
+        }
+        if (mEdgeToEdgePadAdjuster != null) {
+            if (mEdgeToEdgeControllerSupplier.get() != null) {
+                mEdgeToEdgeControllerSupplier.get().unregisterAdjuster(mEdgeToEdgePadAdjuster);
+            }
+            mEdgeToEdgePadAdjuster.destroy();
+            mEdgeToEdgePadAdjuster = null;
+        }
+        if (mTopInsetProviderObserver != null) {
+            mTopInsetProvider.removeObserver(mTopInsetProviderObserver);
+            mTopInsetProviderObserver = null;
+        }
     }
 }
