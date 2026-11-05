@@ -41,6 +41,11 @@
 #include "url/origin.h"
 
 using testing::_;
+using testing::An;
+using testing::ElementsAre;
+using testing::Field;
+using testing::NiceMock;
+using testing::Return;
 using testing::SaveArg;
 
 namespace {
@@ -298,15 +303,15 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     optimization_guide_decider_ =
         std::make_unique<optimization_guide::MockOptimizationGuideDecider>();
     EXPECT_CALL(*optimization_guide_decider_,
-                RegisterOptimizationTypes(testing::ElementsAre(
+                RegisterOptimizationTypes(ElementsAre(
                     optimization_guide::proto::FEDCM_CLICKTHROUGH_RATE)))
         .Times(1);
-    ON_CALL(*optimization_guide_decider_,
-            CanApplyOptimization(
-                _,
-                optimization_guide::proto::OptimizationType::
-                    FEDCM_CLICKTHROUGH_RATE,
-                testing::An<optimization_guide::OptimizationMetadata*>()))
+    ON_CALL(
+        *optimization_guide_decider_,
+        CanApplyOptimization(_,
+                             optimization_guide::proto::OptimizationType::
+                                 FEDCM_CLICKTHROUGH_RATE,
+                             An<optimization_guide::OptimizationMetadata*>()))
         .WillByDefault(
             [](const GURL& url,
                optimization_guide::proto::OptimizationType optimization_type,
@@ -345,7 +350,7 @@ TEST_F(IdentityDialogControllerTest, Accept) {
       std::make_unique<IdentityDialogController>(web_contents());
 
   base::MockCallback<base::OnceCallback<void(bool accepted)>> callback;
-  EXPECT_CALL(callback, Run(true)).WillOnce(testing::Return());
+  EXPECT_CALL(callback, Run(true)).WillOnce(Return());
   controller->RequestIdPRegistrationPermision(
       url::Origin::Create(GURL("https://idp.example")), callback.Get());
 
@@ -389,7 +394,7 @@ TEST_F(IdentityDialogControllerTest, Deny) {
       std::make_unique<IdentityDialogController>(web_contents());
 
   base::MockCallback<base::OnceCallback<void(bool accepted)>> callback;
-  EXPECT_CALL(callback, Run(false)).WillOnce(testing::Return());
+  EXPECT_CALL(callback, Run(false)).WillOnce(Return());
   controller->RequestIdPRegistrationPermision(
       url::Origin::Create(GURL("https://idp.example")), callback.Get());
 
@@ -413,7 +418,7 @@ TEST_F(IdentityDialogControllerTest, Dismiss) {
       std::make_unique<IdentityDialogController>(web_contents());
 
   base::MockCallback<base::OnceCallback<void(bool accepted)>> callback;
-  EXPECT_CALL(callback, Run(false)).WillOnce(testing::Return());
+  EXPECT_CALL(callback, Run(false)).WillOnce(Return());
   controller->RequestIdPRegistrationPermision(
       url::Origin::Create(GURL("https://idp.example")), callback.Get());
 
@@ -445,7 +450,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
 
   // Dismiss callback should run once.
   base::MockCallback<DismissCallback> dismiss_callback;
-  EXPECT_CALL(dismiss_callback, Run).WillOnce(testing::Return());
+  EXPECT_CALL(dismiss_callback, Run).WillOnce(Return());
 
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kActive,
                      dismiss_callback.Get());
@@ -567,7 +572,7 @@ TEST_F(IdentityDialogControllerTest,
             CreateMockOptimizationGuideDecider());
 
     auto mock_view = std::make_unique<MockAccountSelectionView>();
-    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
+    EXPECT_CALL(*mock_view, Show).WillOnce(Return(true));
     controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
     EXPECT_CALL(*segmentation_platform_service_,
@@ -594,7 +599,7 @@ TEST_F(IdentityDialogControllerTest,
             CreateMockOptimizationGuideDecider());
 
     auto mock_view = std::make_unique<MockAccountSelectionView>();
-    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
+    EXPECT_CALL(*mock_view, Show).WillOnce(Return(true));
     controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
     EXPECT_CALL(*segmentation_platform_service_,
@@ -621,7 +626,7 @@ TEST_F(IdentityDialogControllerTest,
             CreateMockOptimizationGuideDecider());
 
     auto mock_view = std::make_unique<MockAccountSelectionView>();
-    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
+    EXPECT_CALL(*mock_view, Show).WillOnce(Return(true));
     controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
     EXPECT_CALL(*segmentation_platform_service_,
@@ -651,7 +656,7 @@ TEST_F(IdentityDialogControllerTest,
           CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
           CreateMockOptimizationGuideDecider());
   auto mock_view = std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_view, Show).WillOnce(Return(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   EXPECT_CALL(*segmentation_platform_service_,
               CollectTrainingData(_, _, _, _, _))
@@ -898,8 +903,7 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
     content::webid::FederatedEmbedderLoginRequest::Set(
         web_contents(), idp_origin, account_id, callback.Get());
 
-    EXPECT_CALL(*mock_view_ptr, ShowFailureDialog)
-        .WillOnce(testing::Return(true));
+    EXPECT_CALL(*mock_view_ptr, ShowFailureDialog).WillOnce(Return(true));
     controller->ShowFailureDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne, u""), kIdpEtldPlusOne,
         blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive,
@@ -1013,7 +1017,7 @@ TEST_F(IdentityDialogControllerTestWithOptimizationDisabled, NoCrash) {
       std::make_unique<IdentityDialogController>(web_contents());
 
   base::MockCallback<base::OnceCallback<void(bool accepted)>> callback;
-  EXPECT_CALL(callback, Run(true)).WillOnce(testing::Return());
+  EXPECT_CALL(callback, Run(true)).WillOnce(Return());
   controller->RequestIdPRegistrationPermision(
       url::Origin::Create(GURL("https://idp.example")), callback.Get());
 
@@ -1109,8 +1113,7 @@ TEST_F(IdentityDialogControllerTest, ShowModalDialogNotGuardedByActorTask) {
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
   // 2. Should STILL show modal UI.
-  EXPECT_CALL(*mock_view_ptr, ShowModalDialog)
-      .WillOnce(testing::Return(nullptr));
+  EXPECT_CALL(*mock_view_ptr, ShowModalDialog).WillOnce(Return(nullptr));
 
   controller->ShowModalDialog(GURL("https://idp.example/login"),
                               blink::mojom::RpMode::kActive, base::DoNothing(),
@@ -1132,7 +1135,7 @@ TEST_F(IdentityDialogControllerTest, PassiveModeNotGuardedByActorTask) {
   IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
 
   // 2. ShowAccountsDialog should STILL show UI in passive mode.
-  EXPECT_CALL(*mock_view_ptr, Show).WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_view_ptr, Show).WillOnce(Return(true));
   base::MockCallback<AccountSelectionCallback> on_selected;
   EXPECT_CALL(on_selected, Run).Times(0);
 
@@ -1142,8 +1145,7 @@ TEST_F(IdentityDialogControllerTest, PassiveModeNotGuardedByActorTask) {
       base::DoNothing(), base::DoNothing(), base::DoNothing()));
 
   // 3. ShowVerifyingDialog should STILL show UI in passive mode.
-  EXPECT_CALL(*mock_view_ptr, ShowVerifyingDialog)
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_view_ptr, ShowVerifyingDialog).WillOnce(Return(true));
   EXPECT_TRUE(controller->ShowVerifyingDialog(
       content::RelyingPartyData(kTopFrameEtldPlusOne, u""), idp_data,
       accounts_[0], content::IdentityRequestAccount::SignInMode::kExplicit,
@@ -1195,14 +1197,14 @@ TEST_F(IdentityDialogControllerTest, ShowNativeAppUiSuccess) {
   base::MockCallback<IdentityDialogController::NativeAppResultCallback>
       native_result_callback;
 
-  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(Return(true));
   EXPECT_TRUE(controller->ShowNativeAppUi(content::NativeAppRequestOptions(),
                                           dismiss_callback.Get(),
                                           native_result_callback.Get()));
 
   EXPECT_CALL(
       native_result_callback,
-      Run(testing::Field(
+      Run(Field(
           &content::IdentityRequestDialogController::NativeAppResult::type,
           content::IdentityRequestDialogController::NativeAppResult::Type::
               kToken)))
@@ -1247,14 +1249,14 @@ TEST_F(IdentityDialogControllerTest, ShowNativeAppUiErrorResult) {
   base::MockCallback<IdentityDialogController::NativeAppResultCallback>
       native_result_callback;
 
-  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(Return(true));
   EXPECT_TRUE(controller->ShowNativeAppUi(content::NativeAppRequestOptions(),
                                           dismiss_callback.Get(),
                                           native_result_callback.Get()));
 
   EXPECT_CALL(
       native_result_callback,
-      Run(testing::Field(
+      Run(Field(
           &content::IdentityRequestDialogController::NativeAppResult::type,
           content::IdentityRequestDialogController::NativeAppResult::Type::
               kError)))
@@ -1276,7 +1278,7 @@ TEST_F(IdentityDialogControllerTest, ShowNativeAppUiDismissed) {
   base::MockCallback<IdentityDialogController::NativeAppResultCallback>
       native_result_callback;
 
-  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(Return(true));
   EXPECT_TRUE(controller->ShowNativeAppUi(content::NativeAppRequestOptions(),
                                           dismiss_callback.Get(),
                                           native_result_callback.Get()));
@@ -1298,9 +1300,8 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Accept) {
           profile(), base::BindRepeating(&BuildMockHatsService)));
 
   auto controller = std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view =
-      std::make_unique<testing::NiceMock<MockAccountSelectionView>>();
-  ON_CALL(*mock_view, Show).WillByDefault(testing::Return(true));
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -1326,9 +1327,8 @@ TEST_F(IdentityDialogControllerTest,
           profile(), base::BindRepeating(&BuildMockHatsService)));
 
   auto controller = std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view =
-      std::make_unique<testing::NiceMock<MockAccountSelectionView>>();
-  ON_CALL(*mock_view, Show).WillByDefault(testing::Return(true));
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -1349,9 +1349,8 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Dismiss) {
           profile(), base::BindRepeating(&BuildMockHatsService)));
 
   auto controller = std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view =
-      std::make_unique<testing::NiceMock<MockAccountSelectionView>>();
-  ON_CALL(*mock_view, Show).WillByDefault(testing::Return(true));
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -1374,9 +1373,8 @@ TEST_F(IdentityDialogControllerTest,
           profile(), base::BindRepeating(&BuildMockHatsService)));
 
   auto controller = std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view =
-      std::make_unique<testing::NiceMock<MockAccountSelectionView>>();
-  ON_CALL(*mock_view, Show).WillByDefault(testing::Return(true));
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -1395,9 +1393,8 @@ TEST_F(IdentityDialogControllerTest,
           profile(), base::BindRepeating(&BuildMockHatsService)));
 
   auto controller = std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view =
-      std::make_unique<testing::NiceMock<MockAccountSelectionView>>();
-  ON_CALL(*mock_view, ShowErrorDialog).WillByDefault(testing::Return(true));
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, ShowErrorDialog).WillByDefault(Return(true));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->ShowErrorDialog(
       content::RelyingPartyData(kTopFrameEtldPlusOne,
