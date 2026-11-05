@@ -18,11 +18,11 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
-#include "components/tabs/public/tab_interface.h"
 #include "url/origin.h"
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace autofill {
@@ -82,7 +82,8 @@ class ActorOneTimeTokenFillingService {
 
   // Records the start of a sign-in flow by observing navigations.
   // Called once before filling starts.
-  // `tab_handle`: The tab where the login filling attempt is happening.
+  // `web_contents`: The WebContents where the login filling attempt is
+  //     happening. May be null, in which case this is a no-op.
   // `origin`: The request origin of the credential being filled. This
   //     parameter is pass-through and stored directly in `ActorLoginContext`.
   // `should_use_strong_matching`: Whether strong matching (exact origin match
@@ -99,7 +100,7 @@ class ActorOneTimeTokenFillingService {
   //     does not take into account whether a frame's origin changes across
   //     navigations.
   virtual void OnPasswordFillingStarted(
-      tabs::TabHandle tab_handle,
+      content::WebContents* web_contents,
       const url::Origin& origin,
       bool should_use_strong_matching,
       base::span<const int> global_frame_ids) = 0;
@@ -118,13 +119,14 @@ class ActorOneTimeTokenFillingService {
   // context, or false if no active login context exists.
   virtual bool GetLoginContextShouldUseStrongMatching() const = 0;
 
-  // Asynchronously retrieves an OTP for the profile associated with the tab.
-  // `predicted_otp_type` is the OTP type the model predicted for the request.
+  // Asynchronously retrieves an OTP for the profile associated with
+  // `web_contents`. `predicted_otp_type` is the OTP type the model predicted
+  // for the request.
   //
   // The `callback` will be invoked with the retrieved OTP string, or an empty
   // string if retrieval fails or no OTP is available.
   virtual void RetrieveOtp(
-      tabs::TabHandle tab_handle,
+      content::WebContents* web_contents,
       const url::Origin& otp_frame_origin,
       const std::vector<FieldGlobalId>& trigger_field_ids,
       bool is_login_flow,
@@ -135,16 +137,16 @@ class ActorOneTimeTokenFillingService {
           callback) = 0;
 
   // Asynchronously fills the `otp` into the field(s) identified by
-  // `trigger_field_ids` for the given `tab`.
+  // `trigger_field_ids` in the given `web_contents`.
   //
   // The `callback` will be invoked with a boolean indicating whether the
   // filling operation was successful.
-  virtual void FillOtp(tabs::TabHandle tab_handle,
+  virtual void FillOtp(content::WebContents* web_contents,
                        const std::vector<FieldGlobalId>& trigger_field_ids,
                        const std::string& otp,
                        base::OnceCallback<void(bool)> callback) = 0;
 
-  // Validates whether the page in `tab_handle` and its subresources are
+  // Validates whether the page in `web_contents` and its subresources are
   // loaded over secure HTTPS, whether the `BrowserAutofillManager` cache
   // contains a `FormStructure` for `trigger_field_ids`, and whether the form
   // submits to a secure endpoint. Note that the last check is more of an early
@@ -153,7 +155,7 @@ class ActorOneTimeTokenFillingService {
   // other means (e.g `InsecureFormNavigationThrottle` and
   // `MixedContentChecker`). Returns `kSecure`, or the first check that failed.
   virtual FormFillingContextValidationResult ValidateFormFillingContext(
-      tabs::TabHandle tab_handle,
+      content::WebContents* web_contents,
       base::span<const FieldGlobalId> trigger_field_ids) const = 0;
 
   // Asynchronously fetches user data processing consent states from the

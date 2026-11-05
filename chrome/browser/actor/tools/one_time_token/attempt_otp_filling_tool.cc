@@ -41,7 +41,6 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -155,6 +154,12 @@ content::RenderFrameHost* GetOtpFrame(
   }
   return autofill::FindRenderFrameHostByToken(
       *web_contents, trigger_field_ids.front().frame_token);
+}
+
+content::WebContents* GetWebContentsForOtpFilling(
+    ActorSurfaceHandle actor_surface_handle) {
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  return actor_surface ? actor_surface->GetWebContents() : nullptr;
 }
 
 // Returns the `mojom::ActionResultPtr` for a given `FormFillingContextStatus`.
@@ -513,8 +518,9 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
   const autofill::FormFillingContextValidationResult context_result =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
-          .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
-                                      trigger_field_ids_);
+          .ValidateFormFillingContext(
+              GetWebContentsForOtpFilling(actor_surface_handle_),
+              trigger_field_ids_);
   RecordFormFillingContextValidationResult(AttemptOtpFillingStep::kTimeOfUse,
                                            context_result);
   const FormFillingContextStatus status =
@@ -577,7 +583,7 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
     pending_cancellation_event_ =
         AttemptOtpFillingToolEvent::kCancelledDuringFillOtp;
     tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-        actor_surface_handle_.GetTabHandle(), trigger_field_ids_,
+        GetWebContentsForOtpFilling(actor_surface_handle_), trigger_field_ids_,
         std::move(mock_otp),
         base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -669,8 +675,8 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
   pending_cancellation_event_ =
       AttemptOtpFillingToolEvent::kCancelledDuringOtpRetrieval;
   tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
-      actor_surface_handle_.GetTabHandle(), otp_frame->GetLastCommittedOrigin(),
-      trigger_field_ids_, is_actor_login,
+      GetWebContentsForOtpFilling(actor_surface_handle_),
+      otp_frame->GetLastCommittedOrigin(), trigger_field_ids_, is_actor_login,
       ToServicePredictedOtpType(predicted_otp_type_),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -754,8 +760,9 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
   const autofill::FormFillingContextValidationResult context_result =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
-          .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
-                                      trigger_field_ids_);
+          .ValidateFormFillingContext(
+              GetWebContentsForOtpFilling(actor_surface_handle_),
+              trigger_field_ids_);
   RecordFormFillingContextValidationResult(
       AttemptOtpFillingStep::kAfterOtpRetrieved, context_result);
   const FormFillingContextStatus status =
@@ -798,7 +805,7 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
   pending_cancellation_event_ =
       AttemptOtpFillingToolEvent::kCancelledDuringFillOtp;
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-      actor_surface_handle_.GetTabHandle(), trigger_field_ids_,
+      GetWebContentsForOtpFilling(actor_surface_handle_), trigger_field_ids_,
       std::move(retrieved_otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -941,8 +948,9 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
   const autofill::FormFillingContextValidationResult context_result =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
-          .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
-                                      trigger_field_ids_);
+          .ValidateFormFillingContext(
+              GetWebContentsForOtpFilling(actor_surface_handle_),
+              trigger_field_ids_);
   RecordFormFillingContextValidationResult(
       AttemptOtpFillingStep::kAfterConfirmation, context_result);
   const FormFillingContextStatus status =
@@ -966,7 +974,8 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
   pending_cancellation_event_ =
       AttemptOtpFillingToolEvent::kCancelledDuringFillOtp;
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-      actor_surface_handle_.GetTabHandle(), trigger_field_ids_, std::move(otp),
+      GetWebContentsForOtpFilling(actor_surface_handle_), trigger_field_ids_,
+      std::move(otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

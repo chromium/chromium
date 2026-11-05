@@ -53,7 +53,6 @@
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/security_state/core/security_state.h"
-#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -150,8 +149,6 @@ class ActorOneTimeTokenFillingServiceImplTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    ON_CALL(mock_tab, GetContents())
-        .WillByDefault(testing::Return(web_contents()));
     NavigateAndCommit(GURL("about:blank"));
 
     ON_CALL(driver(), ApplyFormAction)
@@ -232,7 +229,7 @@ class ActorOneTimeTokenFillingServiceImplTest
 
   void SetupSecureSslState() {
     content::NavigationEntry* entry =
-        tab().GetContents()->GetController().GetVisibleEntry();
+        web_contents()->GetController().GetVisibleEntry();
     ASSERT_TRUE(entry);
     content::SSLStatus& ssl = entry->GetSSL();
     ssl.initialized = true;
@@ -272,11 +269,8 @@ class ActorOneTimeTokenFillingServiceImplTest
     return main_rfh()->GetLastCommittedOrigin();
   }
 
-  tabs::TabInterface& tab() { return mock_tab; }
-
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  tabs::MockTabInterface mock_tab;
   TestAutofillClientInjector<TestActorChromeAutofillClient>
       autofill_client_injector_;
   TestAutofillDriverInjector<TestActorContentAutofillDriver>
@@ -300,7 +294,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future.GetCallback());
@@ -323,7 +317,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kEmail,
                         future.GetCallback());
@@ -362,7 +356,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future.GetCallback());
@@ -393,7 +387,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future.GetCallback());
@@ -424,7 +418,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
@@ -451,7 +445,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
@@ -477,7 +471,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Timeout) {
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kSms, future.GetCallback());
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
@@ -508,7 +502,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
@@ -528,7 +522,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        RetrieveOtp_ServiceDestroyedMidRetrieval_RecordsCancelled) {
   NavigateAndCommit(GURL("https://example.com"));
 
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kAuthenticatorApp, base::DoNothing());
   service_.reset();
@@ -547,10 +541,10 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        RetrieveOtp_Superseded_RecordsOnlyNewerRequestSlice) {
   NavigateAndCommit(GURL("https://example.com"));
 
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kSms, base::DoNothing());
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kEmail, base::DoNothing());
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
@@ -561,18 +555,18 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
 }
 
-// Tests that a newer call that fails early (null tab) is recorded in its own
-// slice and doesn't change the slice of the request that is pending.
+// Tests that a newer call that fails early (null WebContents) is recorded in
+// its own slice and doesn't change the slice of the request that is pending.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       RetrieveOtp_NullTabWhilePending_KeepsPendingRequestSlice) {
+       RetrieveOtp_NullWebContentsWhilePending_KeepsPendingRequestSlice) {
   NavigateAndCommit(GURL("https://example.com"));
 
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kSms, base::DoNothing());
-  // A null tab makes this call fail before it can supersede the pending
+  // A null WebContents makes this call fail before it can supersede the pending
   // request.
-  service().RetrieveOtp(tabs::TabHandle(), main_rfh_origin(),
+  service().RetrieveOtp(/*web_contents=*/nullptr, main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kEmail, base::DoNothing());
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
@@ -585,12 +579,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
 }
 
-// Tests that `RetrieveOtp` fails gracefully when the tab is null.
-TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
+// Tests that `RetrieveOtp` fails gracefully when the WebContents is null.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_WebContentsNull) {
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tabs::TabHandle(), main_rfh_origin(),
+  service().RetrieveOtp(/*web_contents=*/nullptr, main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future.GetCallback());
@@ -612,7 +606,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future.GetCallback());
@@ -635,11 +629,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Superseded) {
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future2;
 
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future1.GetCallback());
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future2.GetCallback());
@@ -681,7 +675,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future2;
 
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future1.GetCallback());
 
@@ -689,7 +683,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       one_time_tokens::OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
       "sender@example.com"));
 
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future2.GetCallback());
 
@@ -725,7 +719,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
   // Start the first retrieve call. This will post a task to check the matching
   // token.
-  service().RetrieveOtp(tab().GetHandle(),
+  service().RetrieveOtp(web_contents(),
                         url::Origin::Create(GURL("https://first.com")),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future1.GetCallback());
@@ -733,7 +727,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   // Before running the message loop, start the second retrieve call for a
   // different origin so it does not match the cached token.
   // This should cancel the ongoing check from the first call.
-  service().RetrieveOtp(tab().GetHandle(),
+  service().RetrieveOtp(web_contents(),
                         url::Origin::Create(GURL("https://second.com")),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future2.GetCallback());
@@ -749,11 +743,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   EXPECT_EQ(future2.Get().value(), kSecondOtp);
 }
 
-// Tests that `FillOtp` fails gracefully when the tab is null.
-TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_TabNull) {
+// Tests that `FillOtp` fails gracefully when the WebContents is null.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_WebContentsNull) {
   base::test::TestFuture<bool> future;
-  service().FillOtp(tabs::TabHandle(), {test::MakeFieldGlobalId()}, "123456",
-                    future.GetCallback());
+  service().FillOtp(/*web_contents=*/nullptr, {test::MakeFieldGlobalId()},
+                    "123456", future.GetCallback());
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
@@ -761,7 +755,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_TabNull) {
 }
 
 // Tests that `FillOtp` fails gracefully when the AutofillManager is not
-// available for the given tab.
+// available for the given WebContents.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_AutofillManagerNull) {
   // Create a separate profile and WebContents that doesn't have the
   // AutofillClient injected by the test base.
@@ -770,12 +764,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_AutofillManagerNull) {
       content::WebContentsTester::CreateTestWebContents(&other_profile,
                                                         nullptr);
 
-  tabs::MockTabInterface other_tab;
-  EXPECT_CALL(other_tab, GetContents())
-      .WillRepeatedly(testing::Return(other_web_contents.get()));
-
   base::test::TestFuture<bool> future;
-  service().FillOtp(other_tab.GetHandle(), {test::MakeFieldGlobalId()},
+  service().FillOtp(other_web_contents.get(), {test::MakeFieldGlobalId()},
                     "123456", future.GetCallback());
 
   EXPECT_FALSE(future.Get());
@@ -792,7 +782,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_Success) {
   const std::string kOtp = "123456";
 
   base::test::TestFuture<bool> future;
-  service().FillOtp(tab().GetHandle(), {field_id}, kOtp, future.GetCallback());
+  service().FillOtp(web_contents(), {field_id}, kOtp, future.GetCallback());
 
   // Wait for the asynchronous filling operation to complete and verify success.
   EXPECT_TRUE(future.Get());
@@ -823,8 +813,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       .WillOnce(Return(base::flat_set<FieldGlobalId>()));
 
   base::test::TestFuture<bool> future;
-  service().FillOtp(tab().GetHandle(), {field_id}, "123456",
-                    future.GetCallback());
+  service().FillOtp(web_contents(), {field_id}, "123456", future.GetCallback());
   service_.reset();
 
   EXPECT_FALSE(future.Get());
@@ -843,11 +832,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_ConcurrentCalls) {
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   base::test::TestFuture<bool> future1;
-  service().FillOtp(tab().GetHandle(), {field_id}, "123456",
+  service().FillOtp(web_contents(), {field_id}, "123456",
                     future1.GetCallback());
 
   base::test::TestFuture<bool> future2;
-  service().FillOtp(tab().GetHandle(), {field_id}, "654321",
+  service().FillOtp(web_contents(), {field_id}, "654321",
                     future2.GetCallback());
 
   EXPECT_FALSE(future2.Get());
@@ -866,7 +855,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_ConcurrentCalls) {
 // empty.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_EmptyTriggerFields) {
   base::test::TestFuture<bool> future;
-  service().FillOtp(tab().GetHandle(), /*trigger_field_ids=*/{}, "123456",
+  service().FillOtp(web_contents(), /*trigger_field_ids=*/{}, "123456",
                     future.GetCallback());
 
   EXPECT_FALSE(future.Get());
@@ -879,7 +868,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_EmptyTriggerFields) {
 // the autofill manager's cache.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_FieldNotInCache) {
   base::test::TestFuture<bool> future;
-  service().FillOtp(tab().GetHandle(), {test::MakeFieldGlobalId()}, "123456",
+  service().FillOtp(web_contents(), {test::MakeFieldGlobalId()}, "123456",
                     future.GetCallback());
 
   EXPECT_FALSE(future.Get());
@@ -895,8 +884,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_NoOtpFieldsInForm) {
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   base::test::TestFuture<bool> future;
-  service().FillOtp(tab().GetHandle(), {field_id}, "123456",
-                    future.GetCallback());
+  service().FillOtp(web_contents(), {field_id}, "123456", future.GetCallback());
 
   EXPECT_TRUE(future.Get());
   histogram_tester_.ExpectUniqueSample(
@@ -908,7 +896,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, OnPasswordFillingStarted) {
   url::Origin test_origin = url::Origin::Create(GURL("https://example.com"));
   std::vector<int> target_global_frame_ids = {123, 456};
 
-  service().OnPasswordFillingStarted(tab().GetHandle(), test_origin,
+  service().OnPasswordFillingStarted(web_contents(), test_origin,
                                      /*should_use_strong_matching=*/true,
                                      target_global_frame_ids);
 
@@ -919,9 +907,22 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, OnPasswordFillingStarted) {
   EXPECT_EQ(context->navigations_per_frame.size(), 3u);
 }
 
+// Tests that `OnPasswordFillingStarted` is a no-op when the WebContents is
+// null, e.g. because the actor surface went away before filling started.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       OnPasswordFillingStarted_WebContentsNull) {
+  service().OnPasswordFillingStarted(
+      /*web_contents=*/nullptr,
+      url::Origin::Create(GURL("https://example.com")),
+      /*should_use_strong_matching=*/true, /*global_frame_ids=*/{123});
+
+  EXPECT_FALSE(service().GetLoginContextOrigin().has_value());
+  EXPECT_FALSE(service().ConsumeLoginContext().has_value());
+}
+
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, ConsumeLoginContext) {
   url::Origin test_origin = url::Origin::Create(GURL("https://example.com"));
-  service().OnPasswordFillingStarted(tab().GetHandle(), test_origin,
+  service().OnPasswordFillingStarted(web_contents(), test_origin,
                                      /*should_use_strong_matching=*/true,
                                      /*global_frame_ids=*/{123});
 
@@ -931,7 +932,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, ConsumeLoginContext) {
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, AbortLoginTracking) {
   url::Origin test_origin = url::Origin::Create(GURL("https://example.com"));
-  service().OnPasswordFillingStarted(tab().GetHandle(), test_origin,
+  service().OnPasswordFillingStarted(web_contents(), test_origin,
                                      /*should_use_strong_matching=*/false,
                                      /*global_frame_ids=*/{});
   service().AbortLoginTracking();
@@ -943,7 +944,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kInsecurePage);
 }
 
@@ -954,7 +955,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       GURL("https://example.com"));
 
   content::NavigationEntry* entry =
-      tab().GetContents()->GetController().GetVisibleEntry();
+      web_contents()->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   content::SSLStatus& ssl = entry->GetSSL();
   ssl.initialized = true;
@@ -970,7 +971,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kSecure);
 }
 
@@ -988,10 +989,10 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
   std::unique_ptr<content::NavigationSimulator> pending_nav =
       content::NavigationSimulator::CreateBrowserInitiated(
-          GURL("https://secure.example.com"), tab().GetContents());
+          GURL("https://secure.example.com"), web_contents());
   pending_nav->Start();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kInsecurePage);
 }
 
@@ -1004,7 +1005,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       GURL("https://example.com"));
 
   content::NavigationEntry* const entry =
-      tab().GetContents()->GetController().GetLastCommittedEntry();
+      web_contents()->GetController().GetLastCommittedEntry();
   ASSERT_TRUE(entry);
   content::SSLStatus& ssl = entry->GetSSL();
   ssl.initialized = true;
@@ -1020,10 +1021,10 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
   std::unique_ptr<content::NavigationSimulator> pending_nav =
       content::NavigationSimulator::CreateBrowserInitiated(
-          GURL("http://insecure.example.com"), tab().GetContents());
+          GURL("http://insecure.example.com"), web_contents());
   pending_nav->Start();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kSecure);
 }
 
@@ -1034,7 +1035,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       GURL("https://example.com"));
 
   content::NavigationEntry* entry =
-      tab().GetContents()->GetController().GetVisibleEntry();
+      web_contents()->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   content::SSLStatus& ssl = entry->GetSSL();
   ssl.initialized = true;
@@ -1049,8 +1050,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
                .action = "http://example.com/submit.html"});
   FieldGlobalId insecure_field_id = insecure_form.fields()[0].global_id();
   const FormFillingContextValidationResult result =
-      service().ValidateFormFillingContext(tab().GetHandle(),
-                                           {insecure_field_id});
+      service().ValidateFormFillingContext(web_contents(), {insecure_field_id});
   EXPECT_EQ(result,
             FormFillingContextValidationResult::kMixedContentFormAction);
 }
@@ -1062,7 +1062,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       GURL("https://example.com"));
 
   content::NavigationEntry* entry =
-      tab().GetContents()->GetController().GetVisibleEntry();
+      web_contents()->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   content::SSLStatus& ssl = entry->GetSSL();
   ssl.initialized = true;
@@ -1078,7 +1078,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   // Simulating mixed content (`DISPLAYED_INSECURE_CONTENT`) in `content_status`
   // downgrades `SecurityLevel` and returns false.
   ssl.content_status |= content::SSLStatus::DISPLAYED_INSECURE_CONTENT;
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kInsecurePage);
 }
 
@@ -1091,7 +1091,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kInsecurePage);
 }
 
@@ -1102,7 +1102,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       GURL("https://example.com"));
 
   content::NavigationEntry* entry =
-      tab().GetContents()->GetController().GetVisibleEntry();
+      web_contents()->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   content::SSLStatus& ssl = entry->GetSSL();
   ssl.initialized = true;
@@ -1117,7 +1117,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kInsecurePage);
 }
 
@@ -1128,7 +1128,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       GURL("https://example.com"));
 
   content::NavigationEntry* entry =
-      tab().GetContents()->GetController().GetVisibleEntry();
+      web_contents()->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   content::SSLStatus& ssl = entry->GetSSL();
   ssl.initialized = true;
@@ -1147,7 +1147,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
                         /*removed_forms=*/{form.global_id()},
                         autofill::AutofillManagerTestApi::pass_key());
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kFormStructureNotFound);
 }
 
@@ -1175,7 +1175,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kSecure);
 }
 
@@ -1203,7 +1203,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   const FormFillingContextValidationResult result =
-      service().ValidateFormFillingContext(tab().GetHandle(), {field_id});
+      service().ValidateFormFillingContext(web_contents(), {field_id});
   EXPECT_EQ(result, FormFillingContextValidationResult::kInvalidFrameOrOrigin);
 }
 
@@ -1236,7 +1236,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {field_id}),
             FormFillingContextValidationResult::kSecure);
 }
 
@@ -1271,7 +1271,7 @@ TEST_F(
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   const FormFillingContextValidationResult result =
-      service().ValidateFormFillingContext(tab().GetHandle(), {field_id});
+      service().ValidateFormFillingContext(web_contents(), {field_id});
   EXPECT_EQ(result, FormFillingContextValidationResult::kInvalidFrameOrOrigin);
 }
 
@@ -1292,8 +1292,7 @@ TEST_F(
   FieldGlobalId trigger_field_id = form.fields()[0].global_id();
 
   const FormFillingContextValidationResult result =
-      service().ValidateFormFillingContext(tab().GetHandle(),
-                                           {trigger_field_id});
+      service().ValidateFormFillingContext(web_contents(), {trigger_field_id});
   EXPECT_EQ(result,
             FormFillingContextValidationResult::kOtpFieldsFromDifferentOrigins);
 }
@@ -1322,7 +1321,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   const FormFillingContextValidationResult result =
-      service().ValidateFormFillingContext(tab().GetHandle(), {field_id});
+      service().ValidateFormFillingContext(web_contents(), {field_id});
   EXPECT_EQ(result, FormFillingContextValidationResult::kInvalidFrameOrOrigin);
 }
 
@@ -1339,15 +1338,14 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       LocalFrameToken(base::UnguessableToken::Create()),
       form.fields()[0].renderer_id());
 
-  EXPECT_EQ(
-      service().ValidateFormFillingContext(
-          tab().GetHandle(), {valid_field_id, non_existent_frame_field_id}),
-      FormFillingContextValidationResult::kFrameNotFound);
+  EXPECT_EQ(service().ValidateFormFillingContext(
+                web_contents(), {valid_field_id, non_existent_frame_field_id}),
+            FormFillingContextValidationResult::kFrameNotFound);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       ValidateFormFillingContext_InvalidTabHandle) {
-  EXPECT_EQ(service().ValidateFormFillingContext(tabs::TabHandle::Null(),
+       ValidateFormFillingContext_NullWebContents) {
+  EXPECT_EQ(service().ValidateFormFillingContext(/*web_contents=*/nullptr,
                                                  {test::MakeFieldGlobalId()}),
             FormFillingContextValidationResult::kTabNotAvailable);
 }
@@ -1357,7 +1355,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        ValidateFormFillingContext_EmptyTriggerFieldIds) {
   SetupSecureMainFrame();
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {}),
+  EXPECT_EQ(service().ValidateFormFillingContext(web_contents(), {}),
             FormFillingContextValidationResult::kEmptyTriggerFieldIds);
 }
 
@@ -1371,7 +1369,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
       future;
-  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+  service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, PredictedOtpType::kUnknown,
                         future.GetCallback());

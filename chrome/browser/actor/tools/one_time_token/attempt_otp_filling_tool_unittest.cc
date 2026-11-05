@@ -73,12 +73,13 @@ class MockActorOneTimeTokenFillingService
 
   MOCK_METHOD(autofill::FormFillingContextValidationResult,
               ValidateFormFillingContext,
-              (tabs::TabHandle, base::span<const autofill::FieldGlobalId>),
+              (content::WebContents*,
+               base::span<const autofill::FieldGlobalId>),
               (const, override));
   MOCK_METHOD(
       void,
       OnPasswordFillingStarted,
-      (tabs::TabHandle, const url::Origin&, bool, base::span<const int>),
+      (content::WebContents*, const url::Origin&, bool, base::span<const int>),
       (override));
   MOCK_METHOD(void, AbortLoginTracking, (), (override));
   MOCK_METHOD(std::optional<autofill::ActorLoginContext>,
@@ -96,7 +97,7 @@ class MockActorOneTimeTokenFillingService
   MOCK_METHOD(
       void,
       RetrieveOtp,
-      (tabs::TabHandle,
+      (content::WebContents*,
        const url::Origin&,
        const std::vector<autofill::FieldGlobalId>&,
        bool,
@@ -107,7 +108,7 @@ class MockActorOneTimeTokenFillingService
       (override));
   MOCK_METHOD(void,
               FillOtp,
-              (tabs::TabHandle,
+              (content::WebContents*,
                const std::vector<autofill::FieldGlobalId>&,
                const std::string&,
                base::OnceCallback<void(bool)>),

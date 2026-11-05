@@ -58,7 +58,6 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_frame_util.h"
 #include "components/security_interstitials/core/insecure_form_util.h"
 #include "components/security_state/core/security_state.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -78,14 +77,14 @@ using ::one_time_tokens::OneTimeTokenRetrievalError;
 
 namespace {
 
-// Retrieves the `AutofillManager` of the `tab`'s primary main frame.
+// Retrieves the `AutofillManager` of `web_contents`'s primary main frame.
 [[nodiscard]] base::expected<std::reference_wrapper<BrowserAutofillManager>,
                              ActorFormFillingError>
-GetAutofillManager(const tabs::TabInterface& tab) {
+GetAutofillManager(content::WebContents& web_contents) {
   using enum ActorFormFillingError;
 
   Profile* const profile =
-      Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
   if (!profile) {
     return base::unexpected(kAutofillNotAvailable);
   }
@@ -99,7 +98,7 @@ GetAutofillManager(const tabs::TabInterface& tab) {
   }
 
   ContentAutofillClient* const client =
-      ContentAutofillClient::FromWebContents(tab.GetContents());
+      ContentAutofillClient::FromWebContents(&web_contents);
   if (!client) {
     return base::unexpected(kAutofillNotAvailable);
   }
@@ -239,17 +238,15 @@ ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() {
 }
 
 void ActorOneTimeTokenFillingServiceImpl::OnPasswordFillingStarted(
-    tabs::TabHandle tab_handle,
+    content::WebContents* web_contents,
     const url::Origin& origin,
     bool should_use_strong_matching,
     base::span<const int> global_frame_ids) {
-  tabs::TabInterface* tab = tab_handle.Get();
-  if (!tab || !tab->GetContents()) {
+  if (!web_contents) {
     return;
   }
-  content::WebContents* contents = tab->GetContents();
   content::FrameTreeNodeId sign_in_main_frame_id =
-      contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   std::vector<std::pair<content::FrameTreeNodeId, int>> initial_navigations =
       base::ToVector(global_frame_ids, [](int frame_id) {
         return std::pair(content::FrameTreeNodeId(frame_id), 0);
@@ -258,7 +255,7 @@ void ActorOneTimeTokenFillingServiceImpl::OnPasswordFillingStarted(
   active_login_context_ = {origin, should_use_strong_matching,
                            base::flat_map<content::FrameTreeNodeId, int>(
                                std::move(initial_navigations))};
-  Observe(contents);
+  Observe(web_contents);
 }
 
 void ActorOneTimeTokenFillingServiceImpl::DidFinishNavigation(
@@ -300,23 +297,19 @@ bool ActorOneTimeTokenFillingServiceImpl::
 }
 
 void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
-    const tabs::TabHandle tab_handle,
+    content::WebContents* web_contents,
     const url::Origin& otp_frame_origin,
     const std::vector<FieldGlobalId>& trigger_field_ids,
     bool is_login_flow,
     PredictedOtpType predicted_otp_type,
     base::OnceCallback<void(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
-  tabs::TabInterface* tab = tab_handle.Get();
-
-  if (!tab || !tab->GetContents()) {
+  if (!web_contents) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(kNullTab,
                                                             predicted_otp_type);
-    journal_->Log(GURL(), task_id_,
-                  "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
-                  ::actor::JournalDetailsBuilder()
-                      .AddError("Null tab or WebContents.")
-                      .Build());
+    journal_->Log(
+        GURL(), task_id_, "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
+        ::actor::JournalDetailsBuilder().AddError("Null WebContents.").Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -325,7 +318,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     return;
   }
 
-  const GURL url = tab->GetContents()->GetLastCommittedURL();
+  const GURL url = web_contents->GetLastCommittedURL();
 
   journal_->Log(url, task_id_,
                 "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
@@ -436,26 +429,22 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
 }
 
 void ActorOneTimeTokenFillingServiceImpl::FillOtp(
-    const tabs::TabHandle tab_handle,
+    content::WebContents* web_contents,
     const std::vector<FieldGlobalId>& trigger_field_ids,
     const std::string& otp,
     base::OnceCallback<void(bool)> callback) {
   using enum ActorOneTimeTokenFillingServiceFillOtp;
-  tabs::TabInterface* tab = tab_handle.Get();
-
-  if (!tab || !tab->GetContents()) {
+  if (!web_contents) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kNullTab);
-    journal_->Log(GURL(), task_id_,
-                  "ActorOneTimeTokenFillingServiceImpl::FillOtp",
-                  ::actor::JournalDetailsBuilder()
-                      .AddError("Null tab or WebContents.")
-                      .Build());
+    journal_->Log(
+        GURL(), task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+        ::actor::JournalDetailsBuilder().AddError("Null WebContents.").Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
-  const GURL url = tab->GetContents()->GetLastCommittedURL();
+  const GURL url = web_contents->GetLastCommittedURL();
 
   journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
                 ::actor::JournalDetailsBuilder()
@@ -489,11 +478,11 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
     return;
   }
 
-  // Get the BrowserAutofillManager associated with the tab's primary main
-  // frame.
+  // Get the BrowserAutofillManager associated with `web_contents`'s primary
+  // main frame.
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_manager = GetAutofillManager(*tab);
+      maybe_manager = GetAutofillManager(*web_contents);
   if (!maybe_manager.has_value()) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kNoAutofillManager);
     journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
@@ -623,18 +612,16 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
 
 FormFillingContextValidationResult
 ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
-    tabs::TabHandle tab_handle,
+    content::WebContents* web_contents,
     base::span<const FieldGlobalId> trigger_field_ids) const {
   using enum FormFillingContextValidationResult;
   if (trigger_field_ids.empty()) {
     return kEmptyTriggerFieldIds;
   }
-  tabs::TabInterface* tab = tab_handle.Get();
-  if (!tab || !tab->GetContents()) {
+  if (!web_contents) {
     return kTabNotAvailable;
   }
 
-  content::WebContents* const web_contents = tab->GetContents();
   const security_state::SecurityLevel security_level =
       chrome_security_state::GetCommittedSecurityLevel(web_contents);
   content::NavigationEntry* const entry =
@@ -650,7 +637,7 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
 
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_manager = GetAutofillManager(*tab);
+      maybe_manager = GetAutofillManager(*web_contents);
   if (!maybe_manager.has_value()) {
     return kNoAutofillManager;
   }

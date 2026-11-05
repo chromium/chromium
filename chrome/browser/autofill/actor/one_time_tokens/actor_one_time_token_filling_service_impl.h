@@ -24,7 +24,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Profile;
@@ -35,6 +34,7 @@ class AggregatedJournal;
 
 namespace content {
 class NavigationHandle;
+class WebContents;
 }  // namespace content
 
 class GURL;
@@ -62,7 +62,7 @@ class ActorOneTimeTokenFillingServiceImpl
 
   // ActorOneTimeTokenFillingService:
   void OnPasswordFillingStarted(
-      tabs::TabHandle tab_handle,
+      content::WebContents* web_contents,
       const url::Origin& origin,
       bool should_use_strong_matching,
       base::span<const int> global_frame_ids) override;
@@ -71,7 +71,7 @@ class ActorOneTimeTokenFillingServiceImpl
   std::optional<url::Origin> GetLoginContextOrigin() const override;
   bool GetLoginContextShouldUseStrongMatching() const override;
   void RetrieveOtp(
-      tabs::TabHandle tab_handle,
+      content::WebContents* web_contents,
       const url::Origin& otp_frame_origin,
       const std::vector<FieldGlobalId>& trigger_field_ids,
       bool is_login_flow,
@@ -81,12 +81,12 @@ class ActorOneTimeTokenFillingServiceImpl
                               one_time_tokens::OneTimeTokenRetrievalError>)>
           callback) override;
 
-  void FillOtp(tabs::TabHandle tab_handle,
+  void FillOtp(content::WebContents* web_contents,
                const std::vector<FieldGlobalId>& trigger_field_ids,
                const std::string& otp,
                base::OnceCallback<void(bool)> callback) override;
   FormFillingContextValidationResult ValidateFormFillingContext(
-      tabs::TabHandle tab_handle,
+      content::WebContents* web_contents,
       base::span<const FieldGlobalId> trigger_field_ids) const override;
   void FetchUserDataProcessingConsent(
       FetchUserDataProcessingConsentCallback callback) override;

@@ -727,12 +727,23 @@ actor_login::ActorLoginService& AttemptLoginTool::GetActorLoginService() {
 actor_login::FrameFillingStartedCallback
 AttemptLoginTool::GetFrameFillingStartedCallback(
     const actor_login::Credential& credential) {
-  // TODO(b/567721071): Pass `actor_surface_handle_` once
-  // ActorOneTimeTokenFillingService accepts surface handles.
+  // Resolve the surface when filling starts rather than now, since the
+  // WebContents backing it may change before the callback runs.
   return base::BindOnce(
-      &autofill::ActorOneTimeTokenFillingService::OnPasswordFillingStarted,
+      [](base::WeakPtr<autofill::ActorOneTimeTokenFillingService> service,
+         ActorSurfaceHandle actor_surface_handle, const url::Origin& origin,
+         bool should_use_strong_matching,
+         base::span<const int> global_frame_ids) {
+        if (!service) {
+          return;
+        }
+        ActorSurface* actor_surface = actor_surface_handle.Get();
+        service->OnPasswordFillingStarted(
+            actor_surface ? actor_surface->GetWebContents() : nullptr, origin,
+            should_use_strong_matching, global_frame_ids);
+      },
       tool_delegate().GetActorOneTimeTokenFillingService().GetWeakPtr(),
-      actor_surface_handle_.GetTabHandle(), credential.request_origin,
+      actor_surface_handle_, credential.request_origin,
       credential.has_persistent_permission);
 }
 

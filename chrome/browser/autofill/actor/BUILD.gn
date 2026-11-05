@@ -30,7 +30,6 @@ static_library("actor") {
     "//components/password_manager/core/browser/actor_login:frame_util",
     "//components/security_interstitials/core:insecure_form_util",
     "//components/security_state/content",
-    "//components/tabs:public",
     "//url",
   ]
 
@@ -66,7 +65,6 @@ source_set("unit_tests") {
     "//components/one_time_tokens/core/browser:test_support",
     "//components/one_time_tokens/core/common:features",
     "//components/security_state/content",
-    "//components/tabs:test_support",
     "//content/test:test_support",
     "//net",
     "//net:test_support",

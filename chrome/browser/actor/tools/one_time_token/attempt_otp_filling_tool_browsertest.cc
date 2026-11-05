@@ -266,8 +266,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(url),
                                 /*should_use_strong_matching=*/true, {});
   SetExpectedOtp("1234");
 
@@ -317,8 +316,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(url),
                                 /*should_use_strong_matching=*/true, {});
 
   ActResultFuture result;
@@ -350,8 +348,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(url),
                                 /*should_use_strong_matching=*/true, {});
   SetExpectedOtp(std::nullopt);
 
@@ -383,8 +380,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(url),
                                 /*should_use_strong_matching=*/true, {});
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -432,8 +428,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(url),
                                 /*should_use_strong_matching=*/true, {});
   SetExpectedOtp("1234");
 
@@ -647,8 +642,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(url),
                                 /*should_use_strong_matching=*/true, {});
 
   std::unique_ptr<ToolRequest> request =
@@ -684,8 +678,7 @@ IN_PROC_BROWSER_TEST_F(
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(login_url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(login_url),
                                 /*should_use_strong_matching=*/false, {});
 
   std::unique_ptr<ToolRequest> request =
@@ -734,8 +727,7 @@ IN_PROC_BROWSER_TEST_F(
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(login_url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(login_url),
                                 /*should_use_strong_matching=*/true, {});
 
   std::unique_ptr<ToolRequest> request =
@@ -771,8 +763,7 @@ IN_PROC_BROWSER_TEST_F(
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(login_url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(login_url),
                                 /*should_use_strong_matching=*/true, {});
 
   std::unique_ptr<ToolRequest> request =
@@ -809,8 +800,7 @@ IN_PROC_BROWSER_TEST_F(
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(login_url),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(login_url),
                                 /*should_use_strong_matching=*/false, {});
 
   std::unique_ptr<ToolRequest> request =
@@ -851,8 +841,7 @@ IN_PROC_BROWSER_TEST_F(
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(active_tab()->GetHandle(),
-                                url::Origin::Create(url1),
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(url1),
                                 /*should_use_strong_matching=*/true, {});
 
   // 3. First navigation (count becomes 1).
@@ -913,9 +902,9 @@ IN_PROC_BROWSER_TEST_F(
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(
-          active_tab()->GetHandle(), url::Origin::Create(main_url),
-          /*should_use_strong_matching=*/true, {iframe_id});
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(main_url),
+                                /*should_use_strong_matching=*/true,
+                                {iframe_id});
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
@@ -978,9 +967,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
-      .OnPasswordFillingStarted(
-          active_tab()->GetHandle(), url::Origin::Create(main_url),
-          /*should_use_strong_matching=*/false, {iframe_id});
+      .OnPasswordFillingStarted(web_contents(), url::Origin::Create(main_url),
+                                /*should_use_strong_matching=*/false,
+                                {iframe_id});
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
