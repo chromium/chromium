@@ -70,6 +70,7 @@ void HomeModulesCardRegistry::InitializeAfterAddingCards() {
   AddCardLabels({kPlaceholderEphemeralModuleLabel});
   for (std::unique_ptr<CardSelectionInfo>& card : all_cards_by_priority_) {
     std::map<SignalKey, size_t> card_signals;
+    STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
     const auto& card_inputs = card->GetInputs();
     for (const auto& key_and_input : card_inputs) {
       card_signals[key_and_input.first] = input_counter;

@@ -41,7 +41,8 @@ class SqlFeatureProcessorTest : public testing::Test {
   }
 
   Data CreateSqlFeature(const std::string& sql,
-                        const MetadataWriter::BindValues& custom_inputs) {
+                        STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
+                            const MetadataWriter::BindValues& custom_inputs) {
     proto::SegmentationModelMetadata metadata;
     MetadataWriter writer(&metadata);
     MetadataWriter::SqlFeature feature{.sql = sql.c_str()};

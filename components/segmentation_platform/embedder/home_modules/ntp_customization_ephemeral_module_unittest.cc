@@ -70,6 +70,7 @@ TEST_F(NTPCustomizationEphemeralModuleTest, OutputLabelsReturnsExpectedLabels) {
 TEST_F(NTPCustomizationEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
   auto ephemeral_module =
       std::make_unique<NTPCustomizationEphemeralModule>(&pref_service_);
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module->GetInputs();
   EXPECT_EQ(inputs.size(), 2u);
   // Verify that the inputs map contains the expected keys.

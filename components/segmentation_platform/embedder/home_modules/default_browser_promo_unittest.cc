@@ -55,6 +55,7 @@ class DefaultBrowserPromoTest : public testing::Test {
 // Verifies that the `GetInputs(…)` method returns the expected inputs.
 TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
   EXPECT_EQ(inputs.size(), 5u);
   // Verify that the inputs map contains the expected keys.

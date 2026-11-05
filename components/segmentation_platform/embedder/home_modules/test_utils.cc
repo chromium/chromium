@@ -25,6 +25,7 @@ AllCardSignals CreateAllCardSignals(CardSelectionInfo* card,
 
   size_t input_counter = 0;
 
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   const auto& card_inputs = card->GetInputs();
 
   for (const auto& key_and_input : card_inputs) {

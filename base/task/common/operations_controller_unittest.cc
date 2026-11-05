@@ -121,6 +121,7 @@ class TestThread : public SimpleThread {
     while (true) {
       PlatformThread::YieldCurrentThread();
       bool was_started = started_->load(std::memory_order_relaxed);
+      STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
       std::vector<OperationsController::OperationToken> tokens;
       for (int i = 0; i < 100; ++i) {
         tokens.push_back(controller_->TryBeginOperation());

@@ -174,6 +174,7 @@ std::vector<ContrastInfo> InspectorContrast::GetElementsWithContrastIssues(
   TRACE_EVENT0("devtools.contrast",
                "InspectorContrast::GetElementsWithContrastIssues");
   CollectNodesAndBuildRTreeIfNeeded();
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::vector<ContrastInfo> result;
   for (Node* node : elements_) {
     auto info = GetContrast(To<Element>(node));

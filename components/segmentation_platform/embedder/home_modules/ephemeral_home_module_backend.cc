@@ -99,6 +99,7 @@ EphemeralHomeModuleBackend::GetModelConfig() {
   const auto& all_cards =
       home_modules_card_registry_->get_all_cards_by_priority();
   for (const auto& card : all_cards) {
+    STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
     const auto& inputs = card->GetInputs();
     for (const auto& key_and_input : inputs) {
       const FeatureQuery& input = key_and_input.second;

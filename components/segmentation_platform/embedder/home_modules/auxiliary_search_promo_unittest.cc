@@ -33,6 +33,7 @@ class AuxiliarySearchPromoTest : public testing::Test {
 
 TEST_F(AuxiliarySearchPromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<AuxiliarySearchPromo>(&pref_service_);
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
   EXPECT_EQ(inputs.size(), 1u);
   EXPECT_NE(inputs.find(kAuxiliarySearchAvailable), inputs.end());

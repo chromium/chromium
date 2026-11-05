@@ -55,6 +55,7 @@ class DefaultBrowserPromoEphemeralModuleTest : public testing::Test {
 TEST_F(DefaultBrowserPromoEphemeralModuleTest,
        TestGetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<DefaultBrowserPromoEphemeralModule>();
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
   EXPECT_EQ(inputs.size(), 2u);
 

@@ -87,6 +87,7 @@ bool ShortcutRegistryCache::HasShortcut(const ShortcutId& shortcut_id) {
 
 std::vector<ShortcutView> ShortcutRegistryCache::GetAllShortcuts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::vector<ShortcutView> shortcuts;
   for (const auto& [shortcut_id, shortcut] : states_) {
     shortcuts.emplace_back(shortcut.get());

@@ -65,6 +65,7 @@ TEST_F(NTPThemeEphemeralModuleTest, OutputLabelsReturnsExpectedLabels) {
 TEST_F(NTPThemeEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
   auto ephemeral_module =
       std::make_unique<NTPThemeEphemeralModule>(&pref_service_);
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module->GetInputs();
   EXPECT_EQ(inputs.size(), 3u);
   // Verify that the inputs map contains the expected keys.

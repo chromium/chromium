@@ -45,6 +45,7 @@ void SendTabNotificationPromo::RegisterProfilePrefs(
 }
 
 std::map<SignalKey, FeatureQuery> SendTabNotificationPromo::GetInputs() {
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> map = {
       {kSendTabInfobarReceivedInLastSessionSignalKey,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{

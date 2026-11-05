@@ -305,8 +305,10 @@ class MetadataWriter {
   // Appends the list of SQL features in order.
   proto::SqlFeature* AddSqlFeature(const SqlFeature& feature);
 
-  proto::SqlFeature* AddSqlFeature(const SqlFeature& feature,
-                                   const BindValues& bind_values);
+  proto::SqlFeature* AddSqlFeature(
+      const SqlFeature& feature,
+      STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
+          const BindValues& bind_values);
 
   void AddBindValueToSql(proto::SqlFeature* sql_feature);
 

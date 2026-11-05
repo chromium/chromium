@@ -50,6 +50,7 @@ void QuickDeletePromo::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 std::map<SignalKey, FeatureQuery> QuickDeletePromo::GetInputs() {
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> map = {
       {kIsUserSignedIn,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{

@@ -45,6 +45,7 @@ void PriceTrackingNotificationPromo::RegisterProfilePrefs(
 }
 
 std::map<SignalKey, FeatureQuery> PriceTrackingNotificationPromo::GetInputs() {
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> map = {
       {kHasSubscriptionSignalKey,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{

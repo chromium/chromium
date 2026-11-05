@@ -41,6 +41,7 @@ class TestCardInfo : public CardSelectionInfo {
   }
 
   std::map<SignalKey, FeatureQuery> GetInputs() override {
+    STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
     std::map<SignalKey, FeatureQuery> result;
 
     DEFINE_UMA_FEATURE_COUNT(count, "Uma.Metric", 7);

@@ -44,6 +44,7 @@ void HistorySyncPromo::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 std::map<SignalKey, FeatureQuery> HistorySyncPromo::GetInputs() {
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> map = {
       {kIsEligibleToHistoryOptIn,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{

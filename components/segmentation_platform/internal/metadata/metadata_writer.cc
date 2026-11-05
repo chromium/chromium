@@ -136,7 +136,8 @@ proto::SqlFeature* MetadataWriter::AddSqlFeature(const SqlFeature& feature) {
 
 proto::SqlFeature* MetadataWriter::AddSqlFeature(
     const SqlFeature& feature,
-    const BindValues& bind_values) {
+    STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
+        const BindValues& bind_values) {
   auto* proto = AddSqlFeature(feature);
 
   unsigned index = 0;

@@ -49,6 +49,7 @@ void NtpThemePromo::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 std::map<SignalKey, FeatureQuery> NtpThemePromo::GetInputs() {
+  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
   std::map<SignalKey, FeatureQuery> map;
 
   // Define signal for number of times all educational tip card has shown to the
