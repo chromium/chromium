@@ -6,6 +6,39 @@ import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OrganizerListSectionItem} from './organizer_list_section_item.js';
 
+// LINT.IfChange(OrganizerPanelCloseAction)
+/**
+ * These values are persisted to logs and should not be renumbered or reused.
+ * See tools/metrics/histograms/metadata/tab/enums.xml.
+ */
+export enum OrganizerPanelCloseAction {
+  NO_ACTION = 0,
+  CLOSED_TAB = 1,
+  OPEN_RECENTLY_CLOSED = 2,
+  SWITCH_TO_TAB = 3,
+  OPEN_CROSS_DEVICE_TAB = 4,
+  CREATE_TAB_GROUP = 5,
+  OPEN_TAB_GROUP = 6,
+  OPEN_TAB_GROUP_MENU = 7,
+  OPEN_CROSS_DEVICE_PROMO = 8,
+  COUNT = OPEN_CROSS_DEVICE_PROMO + 1,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:OrganizerPanelCloseAction)
+
+let pendingCloseAction: OrganizerPanelCloseAction =
+    OrganizerPanelCloseAction.NO_ACTION;
+
+export function setCloseAction(action: OrganizerPanelCloseAction) {
+  pendingCloseAction = action;
+}
+
+export function recordCloseAction() {
+  chrome.histograms.recordEnumerationValue(
+      'Tabs.Organizer.CloseAction', pendingCloseAction,
+      OrganizerPanelCloseAction.COUNT);
+  pendingCloseAction = OrganizerPanelCloseAction.NO_ACTION;
+}
+
 // Interface implemented by the section element to receive update events.
 export interface OrganizerListSectionClient {
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>): void;
