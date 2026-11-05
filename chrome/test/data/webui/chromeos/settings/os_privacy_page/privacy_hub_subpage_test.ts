@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import type {CrLinkRowElement, CrToggleElement, OsSettingsPrivacyPageElement, PaperTooltipElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {CrLinkRowElement, CrToggleElement, OsSettingsPrivacyPageElement, PaperTooltipElement} from 'chrome://os-settings/os_settings.js';
 import {GeolocationAccessLevel, MetricsConsentBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -101,35 +101,6 @@ function parametrizedPrivacyHubSubpageTestsuite(
     document.body.appendChild(privacyHubSubpage);
     return flushTasks();
   }
-
-  test('Suggested content, pref disabled', () => {
-    // The default state of the pref is disabled.
-    const suggestedContent = privacyHubSubpage.shadowRoot!
-                                 .querySelector<SettingsToggleButtonElement>(
-                                     '#contentRecommendationsToggle');
-    assert(suggestedContent);
-    assertFalse(suggestedContent.checked);
-  });
-
-  test('Suggested content, pref enabled', () => {
-    privacyHubSubpage.prefs = {
-      'settings': {
-        'suggested_content_enabled': {
-          value: true,
-        },
-      },
-      ...PRIVACY_HUB_PREFS,
-    };
-
-    flush();
-
-    // The checkbox reflects the updated pref state.
-    const suggestedContent = privacyHubSubpage.shadowRoot!
-                                 .querySelector<SettingsToggleButtonElement>(
-                                     '#contentRecommendationsToggle');
-    assert(suggestedContent);
-    assertTrue(suggestedContent.checked);
-  });
 
   test('Deep link to Geolocation area on privacy hub', async () => {
     const params = new URLSearchParams();

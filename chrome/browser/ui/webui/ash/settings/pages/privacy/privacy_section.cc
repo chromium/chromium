@@ -414,10 +414,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableLoggingDesc", IDS_OS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESCRIPTION},
       {"enableContentProtectionAttestation",
        IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION},
-      {"enableSuggestedContent",
-       IDS_OS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE},
-      {"enableSuggestedContentDesc",
-       IDS_OS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESCRIPTION},
       {"peripheralDataAccessProtectionToggleTitle",
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE},
       {"peripheralDataAccessProtectionToggleDescription",
@@ -642,9 +638,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("smartPrivacyLearnMoreURL",
                          ash::external_urls::kSmartPrivacySettingsLearnMoreURL);
-
-  html_source->AddString("suggestedContentLearnMoreURL",
-                         ash::external_urls::kSuggestedContentLearnMoreURL);
 
   html_source->AddString(
       "syncAndGoogleServicesLearnMoreURL",

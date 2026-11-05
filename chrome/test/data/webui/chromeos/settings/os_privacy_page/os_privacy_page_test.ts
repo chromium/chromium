@@ -180,11 +180,6 @@ suite('<os-settings-privacy-page>', () => {
         },
       },
     },
-    'settings': {
-      'suggested_content_enabled': {
-        value: false,
-      },
-    },
     'cros': {
       'device': {
         'peripheral_data_access_enabled': {

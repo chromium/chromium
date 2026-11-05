@@ -1150,40 +1150,4 @@ suite('<search-and-assistant-settings-card>', () => {
               `${triggerSelector} should be focused.`);
         });
   });
-
-  test('Content recommendations toggle is visible', () => {
-    createSearchAndAssistantCard();
-    const contentRecommendationsToggle =
-        searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-            '#contentRecommendationsToggle');
-    assertTrue(isVisible(contentRecommendationsToggle));
-  });
-
-  test('Content recommendations toggle reflects pref value', () => {
-    createSearchAndAssistantCard();
-    const fakePrefs = {
-      settings: {
-        suggested_content_enabled: {
-          value: true,
-        },
-      },
-    };
-    searchAndAssistantSettingsCard.prefs = fakePrefs;
-    flush();
-
-    const contentRecommendationsToggle =
-        searchAndAssistantSettingsCard.shadowRoot!
-            .querySelector<SettingsToggleButtonElement>(
-                '#contentRecommendationsToggle');
-    assertTrue(!!contentRecommendationsToggle);
-
-    assertTrue(contentRecommendationsToggle.checked);
-    assertTrue(searchAndAssistantSettingsCard.get(
-        'prefs.settings.suggested_content_enabled.value'));
-
-    contentRecommendationsToggle.click();
-    assertFalse(contentRecommendationsToggle.checked);
-    assertFalse(searchAndAssistantSettingsCard.get(
-        'prefs.settings.suggested_content_enabled.value'));
-  });
 });
