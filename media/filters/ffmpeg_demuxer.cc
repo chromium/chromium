@@ -916,6 +916,7 @@ FFmpegDemuxer::FFmpegDemuxer(
 FFmpegDemuxer::~FFmpegDemuxer() {
   DCHECK(!init_cb_);
   DCHECK(!pending_seek_cb_);
+  DCHECK(!pending_track_change_cb_);
 
   // NOTE: This class is not destroyed on |task_runner|, so we must ensure that
   // there are no outstanding WeakPtrs by the time we reach here.
@@ -1002,12 +1003,17 @@ void FFmpegDemuxer::AbortPendingReads() {
       FROM_HERE,
       base::BindOnce(&UnmarkEndOfStreamAndClearError, glue_->format_context()));
   pending_read_ = false;
+  base::OnceClosure track_change_cb = std::move(pending_track_change_cb_);
 
   // TODO(dalecurtis): We probably should report PIPELINE_ERROR_ABORT here
   // instead to avoid any preroll work that may be started upon return, but
   // currently the PipelineImpl does not know how to handle this.
   if (pending_seek_cb_)
     RunPendingSeekCB(PIPELINE_OK);
+
+  if (track_change_cb) {
+    std::move(track_change_cb).Run();
+  }
 }
 
 void FFmpegDemuxer::Stop() {
@@ -1017,6 +1023,11 @@ void FFmpegDemuxer::Stop() {
     RunInitCB(PIPELINE_ERROR_ABORT);
   if (pending_seek_cb_)
     RunPendingSeekCB(PIPELINE_ERROR_ABORT);
+
+  // The pipeline tears down the renderer before stopping the demuxer. Posting
+  // this callback would trigger a bunch of thread hops before ultimately
+  // doing nothing.
+  pending_track_change_cb_.Reset();
 
   // The order of Stop() and Abort() is important here.  If Abort() is called
   // first, control may pass into FFmpeg where it can destruct buffers that are
@@ -1317,6 +1328,7 @@ FFmpegDemuxer::MetadataTrackMap FFmpegDemuxer::BuildMetadataTracks(
     MetadataTrackEntry& entry = result[metadata_stream->index];
     entry.track = std::make_unique<MetadataTrack>(
         MetadataTrack::IT35PrefixType::kSmpteSt2094App5);
+    entry.time_base = metadata_stream->time_base;
     for (const AVStream* stream : streams) {
       if (stream == metadata_stream ||
           stream->codecpar->codec_type != AVMEDIA_TYPE_VIDEO) {
@@ -1784,16 +1796,15 @@ void FFmpegDemuxer::OnSeekFrameDone(int result) {
   RunPendingSeekCB(PIPELINE_OK);
 }
 
-void FFmpegDemuxer::OnTrackChangeSeekComplete(
-    base::OnceClosure cb,
-    FFmpegDemuxerStream* stream_to_flush,
-    int seek_status) {
-  if (stream_to_flush) {
-    CHECK(stream_to_flush->IsEnabled());
-    stream_to_flush->FlushBuffers(true);
-  }
+void FFmpegDemuxer::OnTrackChangeSeekComplete(int seek_status) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(pending_track_change_cb_);
   // TODO(crbug.com/41393620): Report seek failures for track changes too.
-  std::move(cb).Run();
+  base::WeakPtr<FFmpegDemuxer> weak_this = weak_factory_.GetWeakPtr();
+  std::move(pending_track_change_cb_).Run();
+  if (weak_this) {
+    ReadFrameIfNeeded();
+  }
 }
 
 void FFmpegDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
@@ -1801,10 +1812,14 @@ void FFmpegDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
                                     base::TimeDelta curr_time,
                                     TrackChangeCB change_completed_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(!pending_track_change_cb_);
+  if (stopped_) {
+    std::move(change_completed_cb).Run(nullptr);
+    return;
+  }
 
   bool seek_after_changing_tracks = false;
   DemuxerStream* response = nullptr;
-  FFmpegDemuxerStream* stream_to_flush = nullptr;
 
   // Enable the stream associated with `track_id`
   if (track_id.has_value()) {
@@ -1813,8 +1828,8 @@ void FFmpegDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
       FFmpegDemuxerStream* stream = it->second;
       DCHECK_EQ(track_type, stream->type());
       if (!stream->IsEnabled()) {
-        stream_to_flush = stream;
         seek_after_changing_tracks = true;
+        stream->FlushBuffers(true);
       }
       response = stream;
       stream->SetEnabled(true, curr_time);
@@ -1828,15 +1843,14 @@ void FFmpegDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
     }
   }
 
-  base::OnceCallback<void(int)> seek_cb = base::BindOnce(
-      &FFmpegDemuxer::OnTrackChangeSeekComplete, weak_factory_.GetWeakPtr(),
-      base::BindOnce(std::move(change_completed_cb), response),
-      stream_to_flush);
-
   if (seek_after_changing_tracks) {
-    SeekInternal(curr_time, std::move(seek_cb));
+    pending_track_change_cb_ =
+        base::BindOnce(std::move(change_completed_cb), response);
+    SeekInternal(curr_time,
+                 base::BindOnce(&FFmpegDemuxer::OnTrackChangeSeekComplete,
+                                weak_factory_.GetWeakPtr()));
   } else {
-    std::move(seek_cb).Run(0);
+    std::move(change_completed_cb).Run(response);
   }
 }
 
@@ -1845,7 +1859,7 @@ void FFmpegDemuxer::ReadFrameIfNeeded() {
 
   // Make sure we have work to do before reading.
   if (stopped_ || !StreamsHaveAvailableCapacity() || pending_read_ ||
-      pending_seek_cb_) {
+      HasPendingSeek()) {
     return;
   }
 
@@ -1887,13 +1901,10 @@ bool FFmpegDemuxer::CacheMetadataPacket(const AVPacket& packet) {
   }
 
   // Create a DecoderBuffer for the packet.
-  const AVStream* packet_stream =
-      AVFormatContextToSpan(glue_->format_context())[packet.stream_index];
+  const AVRational& time_base = metadata_tracks_it->second.time_base;
   auto buffer = DecoderBuffer::CopyFrom(AVPacketData(packet));
-  buffer->set_timestamp(
-      ConvertStreamTimestamp(packet_stream->time_base, packet.pts));
-  buffer->set_duration(
-      ConvertStreamTimestamp(packet_stream->time_base, packet.duration));
+  buffer->set_timestamp(ConvertStreamTimestamp(time_base, packet.pts));
+  buffer->set_duration(ConvertStreamTimestamp(time_base, packet.duration));
 
   // Cache the metadata buffer.
   metadata_tracks_it->second.track->InsertMetadataBuffer(*buffer);
@@ -1922,8 +1933,9 @@ void FFmpegDemuxer::OnReadFrameDone(ScopedAVPacket packet, int result) {
   DCHECK(pending_read_);
   pending_read_ = false;
 
-  if (stopped_ || pending_seek_cb_)
+  if (stopped_ || HasPendingSeek()) {
     return;
+  }
 
   // Consider the stream as ended if:
   // - either underlying ffmpeg returned an error
@@ -2057,6 +2069,10 @@ void FFmpegDemuxer::RunPendingSeekCB(PipelineStatus status) {
   TRACE_EVENT_END("media", GetTracingTrack(this), "status",
                   PipelineStatusToString(status));
   std::move(pending_seek_cb_).Run(status);
+}
+
+bool FFmpegDemuxer::HasPendingSeek() const {
+  return !pending_seek_cb_.is_null() || !pending_track_change_cb_.is_null();
 }
 
 }  // namespace media

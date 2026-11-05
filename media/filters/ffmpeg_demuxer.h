@@ -275,10 +275,11 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // To allow tests access to privates.
   friend class FFmpegDemuxerTest;
 
-  // A timed metadata track, and the indices of the render streams that its
-  // metadata is to be attached to.
+  // A timed metadata track, its stream time base, and the indices of the
+  // render streams that its metadata is to be attached to.
   struct MetadataTrackEntry {
     std::unique_ptr<MetadataTrack> track;
+    AVRational time_base{0, 1};
     base::flat_set<int> render_stream_indices;
   };
   using MetadataTrackMap = base::flat_map<int, MetadataTrackEntry>;
@@ -343,15 +344,17 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // AVStream at `metadata_stream_index` that it has new metadata.
   void NotifyMetadataAvailable(int metadata_stream_index);
 
-  void OnTrackChangeSeekComplete(base::OnceClosure seek_completed_cb,
-                                 FFmpegDemuxerStream* needs_flush,
-                                 int result);
+  void OnTrackChangeSeekComplete(int result);
 
   // Executes |init_cb_| with |status| and closes out the async trace.
   void RunInitCB(PipelineStatus status);
 
   // Executes |pending_seek_cb_| with |status| and closes out the async trace.
   void RunPendingSeekCB(PipelineStatus status);
+
+  // Returns true if there is an outstanding seek operation (either an ordinary
+  // seek or a track-change seek).
+  bool HasPendingSeek() const;
 
   raw_ptr<DemuxerHost, AcrossTasksDanglingUntriaged> host_ = nullptr;
 
@@ -375,6 +378,11 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // Tracks if there's an outstanding av_seek_frame() operation. Used to discard
   // results of pre-seek av_read_frame() operations.
   PipelineStatusCallback pending_seek_cb_;
+
+  // Tracks if there's an outstanding av_seek_frame() operation initiated by
+  // OnTracksChanged(). Used to discard results of pre-seek av_read_frame()
+  // operations.
+  base::OnceClosure pending_track_change_cb_;
 
   // The timed metadata tracks and the render streams that reference them.
   //
