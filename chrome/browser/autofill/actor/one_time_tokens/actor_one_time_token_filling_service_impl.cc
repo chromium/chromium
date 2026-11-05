@@ -621,16 +621,17 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
-FormFillingContextStatus
+FormFillingContextValidationResult
 ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
     tabs::TabHandle tab_handle,
     base::span<const FieldGlobalId> trigger_field_ids) const {
+  using enum FormFillingContextValidationResult;
   if (trigger_field_ids.empty()) {
-    return FormFillingContextStatus::kFormNotFound;
+    return kEmptyTriggerFieldIds;
   }
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
-    return FormFillingContextStatus::kTabNotAvailable;
+    return kTabNotAvailable;
   }
 
   content::WebContents* web_contents = tab->GetContents();
@@ -643,14 +644,14 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
   // and has a valid certificate without mixed content.
   if (!entry || !entry->GetURL().SchemeIsCryptographic() ||
       !security_state::IsSslCertificateValid(security_level)) {
-    return FormFillingContextStatus::kInsecureContext;
+    return kInsecurePage;
   }
 
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
       maybe_manager = GetAutofillManager(*tab);
   if (!maybe_manager.has_value()) {
-    return FormFillingContextStatus::kFormNotFound;
+    return kNoAutofillManager;
   }
   BrowserAutofillManager& autofill_manager = maybe_manager.value();
 
@@ -659,19 +660,19 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
   const FormStructure* const form_structure =
       autofill_manager.FindCachedFormById(trigger_field_ids.front());
   if (!form_structure) {
-    return FormFillingContextStatus::kFormNotFound;
+    return kFormStructureNotFound;
   }
 
   const AutofillField* const trigger_field =
       form_structure->GetFieldById(trigger_field_ids.front());
   if (!trigger_field) {
-    return FormFillingContextStatus::kFormNotFound;
+    return kTriggerFieldNotFound;
   }
 
   // Ensure `form_structure` does not submit to an insecure mixed content
   // action.
   if (IsFormMixedContent(autofill_manager.client(), *form_structure)) {
-    return FormFillingContextStatus::kInsecureContext;
+    return kMixedContentFormAction;
   }
 
   // Ensure all OTP fields in a multi-field OTP form share the same origin.
@@ -679,13 +680,13 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
         return field->Type().GetTypes().contains(ONE_TIME_CODE) &&
                field->origin() != trigger_field->origin();
       })) {
-    return FormFillingContextStatus::kInsecureContext;
+    return kOtpFieldsFromDifferentOrigins;
   }
 
   // Validate frame and origin security for all trigger fields.
   content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   if (!main_rfh) {
-    return FormFillingContextStatus::kTabNotAvailable;
+    return kTabNotAvailable;
   }
   const url::Origin& main_frame_origin = main_rfh->GetLastCommittedOrigin();
 
@@ -693,14 +694,14 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
     content::RenderFrameHost* rfh = autofill::FindRenderFrameHostByToken(
         *web_contents, field_id.frame_token);
     if (!rfh) {
-      return FormFillingContextStatus::kFormNotFound;
+      return kFrameNotFound;
     }
     if (!IsValidFrameAndOriginToFill(rfh, main_frame_origin)) {
-      return FormFillingContextStatus::kInsecureContext;
+      return kInvalidFrameOrOrigin;
     }
   }
 
-  return FormFillingContextStatus::kSecure;
+  return kSecure;
 }
 
 void ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage(

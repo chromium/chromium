@@ -70,7 +70,7 @@ class MockActorOneTimeTokenFillingService
   MockActorOneTimeTokenFillingService() = default;
   ~MockActorOneTimeTokenFillingService() override = default;
 
-  MOCK_METHOD(autofill::FormFillingContextStatus,
+  MOCK_METHOD(autofill::FormFillingContextValidationResult,
               ValidateFormFillingContext,
               (tabs::TabHandle, base::span<const autofill::FieldGlobalId>),
               (const, override));
@@ -257,7 +257,8 @@ class AttemptOtpFillingToolTest : public testing::Test {
     actor_surface_ = std::make_unique<ActorSurfaceImpl>(
         ActorSurfaceHandle::CreateForTesting(), mock_tab_->GetHandle());
     EXPECT_CALL(delegate_->mock_otp_service(), ValidateFormFillingContext)
-        .WillRepeatedly(Return(autofill::FormFillingContextStatus::kSecure));
+        .WillRepeatedly(
+            Return(autofill::FormFillingContextValidationResult::kSecure));
     ON_CALL(delegate_->mock_otp_service(), GetLoginContextOrigin())
         .WillByDefault(
             Return(url::Origin::Create(GURL("https://example.com"))));
@@ -861,7 +862,8 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_HappyPath) {
 // context is insecure.
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_InsecureContext) {
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      .WillOnce(Return(autofill::FormFillingContextStatus::kInsecureContext));
+      .WillOnce(
+          Return(autofill::FormFillingContextValidationResult::kInsecurePage));
   auto* user_data = DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
       web_contents_->GetPrimaryMainFrame());
   std::string doc_token = user_data->serialized_token();
@@ -1382,7 +1384,8 @@ TEST_F(AttemptOtpFillingToolTest,
 
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FormNotFound) {
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      .WillOnce(Return(autofill::FormFillingContextStatus::kFormNotFound));
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::
+                           kFormStructureNotFound));
   auto* user_data = DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
       web_contents_->GetPrimaryMainFrame());
   std::string doc_token = user_data->serialized_token();
@@ -1406,7 +1409,8 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FormNotFound) {
 
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_TabNotAvailable) {
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      .WillOnce(Return(autofill::FormFillingContextStatus::kTabNotAvailable));
+      .WillOnce(Return(
+          autofill::FormFillingContextValidationResult::kTabNotAvailable));
   auto* user_data = DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
       web_contents_->GetPrimaryMainFrame());
   std::string doc_token = user_data->serialized_token();
@@ -1517,8 +1521,9 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
   // `ValidateFormFillingContext()`. `Invoke()` calls it a second time during
   // OTP filling. This test specifically tests the call in `Invoke()`.
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      .WillOnce(Return(autofill::FormFillingContextStatus::kSecure))
-      .WillOnce(Return(autofill::FormFillingContextStatus::kInsecureContext));
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
+      .WillOnce(
+          Return(autofill::FormFillingContextValidationResult::kInsecurePage));
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool = CreateTool({target});
   SetAutofillGmailOtpFillingEnabled(prefs(), true);
@@ -1540,9 +1545,10 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_FormNotFoundBeforeFilling) {
       .WillOnce(RunOnceCallback<5>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
       // `TimeOfUseValidation()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kSecure))
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
       // `OnOtpRetrieved()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kFormNotFound));
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::
+                           kFormStructureNotFound));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp).Times(0);
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool = CreateTool({target});
@@ -1569,11 +1575,12 @@ TEST_F(AttemptOtpFillingToolTest,
   // and this test fails that check.
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
       // `TimeOfUseValidation()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kSecure))
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
       // `OnOtpRetrieved()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kSecure))
+      .WillOnce(Return(autofill::FormFillingContextValidationResult::kSecure))
       // `OnGmailOtpConfirmationResponse()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kTabNotAvailable));
+      .WillOnce(Return(
+          autofill::FormFillingContextValidationResult::kTabNotAvailable));
   EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _))
       .WillOnce(RunOnceCallback<1>(
           webui::mojom::GmailOtpConfirmationResult::NewResponse(
@@ -1625,7 +1632,8 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
   // ValidateFormFillingContext is called twice: once in TimeOfUseValidation,
   // once before FillOtp
   EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      .WillRepeatedly(Return(autofill::FormFillingContextStatus::kSecure));
+      .WillRepeatedly(
+          Return(autofill::FormFillingContextValidationResult::kSecure));
 
   // The confirmation dialog is shown. User approves it.
   webui::mojom::GmailOtpConfirmationResponsePtr response =

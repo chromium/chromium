@@ -944,7 +944,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
+            FormFillingContextValidationResult::kInsecurePage);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
@@ -971,7 +971,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kSecure);
+            FormFillingContextValidationResult::kSecure);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
@@ -995,9 +995,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       SeeForm({.fields = {{.server_type = ONE_TIME_CODE}},
                .action = "http://example.com/submit.html"});
   FieldGlobalId insecure_field_id = insecure_form.fields()[0].global_id();
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(),
-                                                 {insecure_field_id}),
-            FormFillingContextStatus::kInsecureContext);
+  const FormFillingContextValidationResult result =
+      service().ValidateFormFillingContext(tab().GetHandle(),
+                                           {insecure_field_id});
+  EXPECT_EQ(result,
+            FormFillingContextValidationResult::kMixedContentFormAction);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
@@ -1024,7 +1026,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   // downgrades `SecurityLevel` and returns false.
   ssl.content_status |= content::SSLStatus::DISPLAYED_INSECURE_CONTENT;
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
+            FormFillingContextValidationResult::kInsecurePage);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
@@ -1037,7 +1039,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
+            FormFillingContextValidationResult::kInsecurePage);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
@@ -1063,7 +1065,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
+            FormFillingContextValidationResult::kInsecurePage);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
@@ -1093,7 +1095,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
                         autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kFormNotFound);
+            FormFillingContextValidationResult::kFormStructureNotFound);
 }
 
 // Tests that a direct child iframe with a same-site origin relative to the
@@ -1121,7 +1123,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kSecure);
+            FormFillingContextValidationResult::kSecure);
 }
 
 // Tests that a child iframe with a cross-origin (non-same-site) origin
@@ -1147,8 +1149,9 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
+  const FormFillingContextValidationResult result =
+      service().ValidateFormFillingContext(tab().GetHandle(), {field_id});
+  EXPECT_EQ(result, FormFillingContextValidationResult::kInvalidFrameOrOrigin);
 }
 
 // Tests that a nested iframe (depth >= 2) that is same-origin with the main
@@ -1181,7 +1184,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FieldGlobalId field_id = form.fields()[0].global_id();
 
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kSecure);
+            FormFillingContextValidationResult::kSecure);
 }
 
 // Tests that a nested iframe (depth >= 2) that has a cross-origin ancestor is
@@ -1214,8 +1217,9 @@ TEST_F(
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
+  const FormFillingContextValidationResult result =
+      service().ValidateFormFillingContext(tab().GetHandle(), {field_id});
+  EXPECT_EQ(result, FormFillingContextValidationResult::kInvalidFrameOrOrigin);
 }
 
 // Tests that a multi-field OTP form containing fields with differing origins
@@ -1234,9 +1238,11 @@ TEST_F(
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId trigger_field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(),
-                                                 {trigger_field_id}),
-            FormFillingContextStatus::kInsecureContext);
+  const FormFillingContextValidationResult result =
+      service().ValidateFormFillingContext(tab().GetHandle(),
+                                           {trigger_field_id});
+  EXPECT_EQ(result,
+            FormFillingContextValidationResult::kOtpFieldsFromDifferentOrigins);
 }
 
 // Tests that a sandboxed iframe with an opaque origin is rejected as an
@@ -1262,12 +1268,13 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
+  const FormFillingContextValidationResult result =
+      service().ValidateFormFillingContext(tab().GetHandle(), {field_id});
+  EXPECT_EQ(result, FormFillingContextValidationResult::kInvalidFrameOrOrigin);
 }
 
 // Tests that if a trigger field belongs to a frame that is not found,
-// `ValidateFormFillingContext` returns `kFormNotFound`.
+// `ValidateFormFillingContext` returns `kFrameNotFound`.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        ValidateFormFillingContext_FrameNotFound) {
   SetupSecureMainFrame();
@@ -1282,23 +1289,23 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   EXPECT_EQ(
       service().ValidateFormFillingContext(
           tab().GetHandle(), {valid_field_id, non_existent_frame_field_id}),
-      FormFillingContextStatus::kFormNotFound);
+      FormFillingContextValidationResult::kFrameNotFound);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        ValidateFormFillingContext_InvalidTabHandle) {
   EXPECT_EQ(service().ValidateFormFillingContext(tabs::TabHandle::Null(),
                                                  {test::MakeFieldGlobalId()}),
-            FormFillingContextStatus::kTabNotAvailable);
+            FormFillingContextValidationResult::kTabNotAvailable);
 }
 
 // Tests that validating form filling context with empty trigger field IDs
-// returns `kFormNotFound`.
+// returns `kEmptyTriggerFieldIds`.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        ValidateFormFillingContext_EmptyTriggerFieldIds) {
   SetupSecureMainFrame();
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {}),
-            FormFillingContextStatus::kFormNotFound);
+            FormFillingContextValidationResult::kEmptyTriggerFieldIds);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,

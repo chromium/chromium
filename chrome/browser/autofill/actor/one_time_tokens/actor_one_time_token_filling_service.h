@@ -27,17 +27,32 @@ class RenderFrameHost;
 
 namespace autofill {
 
-// Describes the status of the target form filling context during validation.
-enum class FormFillingContextStatus {
-  // The tab, form, and security state are valid and cryptographic HTTPS is
-  // verified.
-  kSecure,
-  // The page or form is insecure (e.g., mixed content or HTTP submission).
-  kInsecureContext,
-  // The form structure or Autofill manager could not be found.
-  kFormNotFound,
-  // The target tab is null or has no WebContents.
-  kTabNotAvailable,
+// Detailed result of a `ValidateFormFillingContext()` call: secure, or the
+// first check that failed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FormFillingContextValidationResult {
+  kSecure = 0,
+  kEmptyTriggerFieldIds = 1,
+  // The tab, its `WebContents` or its primary main frame is not available.
+  kTabNotAvailable = 2,
+  // The page is not loaded over HTTPS with a valid certificate and without
+  // mixed content.
+  kInsecurePage = 3,
+  // The tab has no `BrowserAutofillManager` (e.g. Autofill is not available).
+  kNoAutofillManager = 4,
+  kFormStructureNotFound = 5,
+  kTriggerFieldNotFound = 6,
+  // The form submits to an insecure (mixed content) action.
+  kMixedContentFormAction = 7,
+  // The form's OTP fields don't all share the trigger field's origin (e.g. part
+  // of a multi-field OTP form is in a cross-origin frame).
+  kOtpFieldsFromDifferentOrigins = 8,
+  // The frame of a trigger field was not found.
+  kFrameNotFound = 9,
+  // The frame or origin of a trigger field may not be filled.
+  kInvalidFrameOrOrigin = 10,
+  kMaxValue = kInvalidFrameOrOrigin,
 };
 
 // Interface for the Actor tooling to interact with One-Time Tokens (OTT) or
@@ -134,8 +149,8 @@ class ActorOneTimeTokenFillingService {
   // warning system, rather than a strong security guarantee, since it is not
   // impossible to bypass. The actual security restrictions are enforced via
   // other means (e.g `InsecureFormNavigationThrottle` and
-  // `MixedContentChecker`).
-  virtual FormFillingContextStatus ValidateFormFillingContext(
+  // `MixedContentChecker`). Returns `kSecure`, or the first check that failed.
+  virtual FormFillingContextValidationResult ValidateFormFillingContext(
       tabs::TabHandle tab_handle,
       base::span<const FieldGlobalId> trigger_field_ids) const = 0;
 

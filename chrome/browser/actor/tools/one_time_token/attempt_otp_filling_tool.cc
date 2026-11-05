@@ -50,6 +50,44 @@ namespace actor {
 
 namespace {
 
+// Describes the status of the target form filling context during validation.
+enum class FormFillingContextStatus {
+  // The tab, form, and security state are valid and cryptographic HTTPS is
+  // verified.
+  kSecure,
+  // The page or form is insecure (e.g., mixed content or HTTP submission).
+  kInsecureContext,
+  // The form structure or Autofill manager could not be found.
+  kFormNotFound,
+  // The target tab is null or has no `WebContents`.
+  kTabNotAvailable,
+};
+
+// Maps the detailed validation result from the service to the coarser status
+// used for the tool's action results and `ToolInvocation` metrics.
+FormFillingContextStatus ToFormFillingContextStatus(
+    autofill::FormFillingContextValidationResult result) {
+  using enum autofill::FormFillingContextValidationResult;
+  switch (result) {
+    case kSecure:
+      return FormFillingContextStatus::kSecure;
+    case kTabNotAvailable:
+      return FormFillingContextStatus::kTabNotAvailable;
+    case kInsecurePage:
+    case kMixedContentFormAction:
+    case kOtpFieldsFromDifferentOrigins:
+    case kInvalidFrameOrOrigin:
+      return FormFillingContextStatus::kInsecureContext;
+    case kEmptyTriggerFieldIds:
+    case kNoAutofillManager:
+    case kFormStructureNotFound:
+    case kTriggerFieldNotFound:
+    case kFrameNotFound:
+      return FormFillingContextStatus::kFormNotFound;
+  }
+  NOTREACHED();
+}
+
 constexpr base::TimeDelta kGmailOtpOptInCoolOffPeriod = base::Days(90);
 
 std::string GetMockOtpValue() {
@@ -121,15 +159,15 @@ content::RenderFrameHost* GetOtpFrame(
 
 // Returns the `mojom::ActionResultPtr` for a given `FormFillingContextStatus`.
 mojom::ActionResultPtr GetResultFromFormFillingStatus(
-    autofill::FormFillingContextStatus status) {
+    FormFillingContextStatus status) {
   switch (status) {
-    case autofill::FormFillingContextStatus::kSecure:
+    case FormFillingContextStatus::kSecure:
       return MakeOkResult();
-    case autofill::FormFillingContextStatus::kInsecureContext:
+    case FormFillingContextStatus::kInsecureContext:
       return MakeResult(mojom::ActionResultCode::kOtpInsecureContext);
-    case autofill::FormFillingContextStatus::kFormNotFound:
+    case FormFillingContextStatus::kFormNotFound:
       return MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound);
-    case autofill::FormFillingContextStatus::kTabNotAvailable:
+    case FormFillingContextStatus::kTabNotAvailable:
       return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 }
@@ -139,15 +177,15 @@ mojom::ActionResultPtr GetResultFromFormFillingStatus(
 // `GetBeforeFillingMetricsEvent()` covers the later checks right before
 // filling.
 AttemptOtpFillingToolEvent GetMetricsEventFromFormFillingStatus(
-    autofill::FormFillingContextStatus status) {
+    FormFillingContextStatus status) {
   switch (status) {
-    case autofill::FormFillingContextStatus::kSecure:
+    case FormFillingContextStatus::kSecure:
       NOTREACHED();
-    case autofill::FormFillingContextStatus::kInsecureContext:
+    case FormFillingContextStatus::kInsecureContext:
       return AttemptOtpFillingToolEvent::kFormFillingStatusInsecureContext;
-    case autofill::FormFillingContextStatus::kFormNotFound:
+    case FormFillingContextStatus::kFormNotFound:
       return AttemptOtpFillingToolEvent::kFormFillingStatusFormNotFound;
-    case autofill::FormFillingContextStatus::kTabNotAvailable:
+    case FormFillingContextStatus::kTabNotAvailable:
       return AttemptOtpFillingToolEvent::kFormFillingStatusTabNotAvailable;
   }
 }
@@ -159,16 +197,16 @@ AttemptOtpFillingToolEvent GetMetricsEventFromFormFillingStatus(
 // these failures are distinguishable from the time-of-use failures recorded
 // via `GetMetricsEventFromFormFillingStatus()`.
 AttemptOtpFillingToolEvent GetBeforeFillingMetricsEvent(
-    autofill::FormFillingContextStatus status) {
+    FormFillingContextStatus status) {
   switch (status) {
-    case autofill::FormFillingContextStatus::kSecure:
+    case FormFillingContextStatus::kSecure:
       // Guaranteed by the caller's IsOk() check.
       NOTREACHED();
-    case autofill::FormFillingContextStatus::kInsecureContext:
+    case FormFillingContextStatus::kInsecureContext:
       return AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling;
-    case autofill::FormFillingContextStatus::kFormNotFound:
+    case FormFillingContextStatus::kFormNotFound:
       return AttemptOtpFillingToolEvent::kFormNotFoundBeforeFilling;
-    case autofill::FormFillingContextStatus::kTabNotAvailable:
+    case FormFillingContextStatus::kTabNotAvailable:
       return AttemptOtpFillingToolEvent::kTabNotAvailableBeforeFilling;
   }
 }
@@ -472,11 +510,13 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     trigger_field_ids_.push_back(field_id);
   }
 
-  autofill::FormFillingContextStatus status =
+  const autofill::FormFillingContextValidationResult context_result =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
                                       trigger_field_ids_);
+  const FormFillingContextStatus status =
+      ToFormFillingContextStatus(context_result);
   LogJournalEvent("AttemptOtpFillingTool::Validate",
                   JournalDetailsBuilder()
                       .Add("form filling context status", status)
@@ -709,11 +749,13 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
 
   std::string retrieved_otp = result.value();
 
-  autofill::FormFillingContextStatus status =
+  const autofill::FormFillingContextValidationResult context_result =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
                                       trigger_field_ids_);
+  const FormFillingContextStatus status =
+      ToFormFillingContextStatus(context_result);
   mojom::ActionResultPtr validation_result =
       GetResultFromFormFillingStatus(status);
   if (!IsOk(*validation_result)) {
@@ -892,11 +934,13 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
   RecordGmailOtpConfirmationDialogInteraction(
       GmailOtpConfirmationDialogInteraction::kPermissionGranted);
 
-  autofill::FormFillingContextStatus status =
+  const autofill::FormFillingContextValidationResult context_result =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
                                       trigger_field_ids_);
+  const FormFillingContextStatus status =
+      ToFormFillingContextStatus(context_result);
   mojom::ActionResultPtr validation_result =
       GetResultFromFormFillingStatus(status);
   if (!IsOk(*validation_result)) {
