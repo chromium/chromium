@@ -166,11 +166,24 @@ message SelectAction {
 }
 
 // Navigate the page to a URL action.
-// Next ID: 3
+// Next ID: 4
 message NavigateAction {
+  // The target to navigate. A NavigateAction without a target is rejected as
+  // invalid.
+  oneof target {
+    // Navigates the existing tab with this id.
+    int32 tab_id = 2;
+
+    // Navigates a new surface.
+    NewSurface new_surface = 3;
+  }
+
   string url = 1 [features = { field_presence: EXPLICIT }];
 
-  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+  // Opens a new surface (e.g. a tab or a background WebContents), adds it to
+  // the task, and navigates it to `url`.
+  message NewSurface {
+  }
 }
 
 // Wait action waits the specified milliseconds.
