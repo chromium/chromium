@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Paints after inserting the container root again are reported from scratch.
+  assert_equals: entry after inserting the root again expected 1 but got 0
+[FAIL] Text painted after inserting the container root again is reported from scratch.
+  assert_equals: entry after inserting the root again expected 1 but got 0
+Harness: the test ran to completion.
+
