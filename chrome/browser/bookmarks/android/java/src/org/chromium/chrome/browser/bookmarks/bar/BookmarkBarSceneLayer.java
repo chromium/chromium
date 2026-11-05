@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import android.graphics.RectF;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -27,8 +31,10 @@ import org.chromium.ui.resources.ResourceManager;
 @JNINamespace("android")
 @NullMarked
 public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+    @JniType("::android::BookmarkBarSceneLayer")
+    interface NativeBookmarkBarSceneLayer extends JniTypeToken {}
 
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeBookmarkBarSceneLayer> mNativePtr;
     private final ResourceManager mResourceManager;
     private boolean mIsVisible;
 
@@ -50,7 +56,7 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
      * @param isVisible The new visibility of the scene layer.
      */
     public void setVisibility(boolean isVisible) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         if (mIsVisible == isVisible) return;
 
         mIsVisible = isVisible;
@@ -63,7 +69,7 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
 
     /** Push all information about the scene layer / snapshot to native-side code at once. */
     public void updateProperties(PropertyModel model) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         if (!mIsVisible) return;
 
         BookmarkBarSceneLayerJni.get()
@@ -86,22 +92,24 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
+        if (mNativePtr == null) {
             mNativePtr = BookmarkBarSceneLayerJni.get().init(this);
         }
     }
 
     @Override
     public void destroy() {
+        if (mNativePtr == null) return;
+        mNativePtr.release();
+        mNativePtr = null;
         super.destroy();
-        mNativePtr = 0;
     }
 
     // SceneOverlayLayer implementation:
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         BookmarkBarSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
@@ -124,12 +132,12 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
 
     @NativeMethods
     public interface Natives {
-        long init(BookmarkBarSceneLayer self);
+        JniRawPtr<NativeBookmarkBarSceneLayer> init(BookmarkBarSceneLayer self);
 
-        void setContentTree(long nativeBookmarkBarSceneLayer, SceneLayer contentTree);
+        void setContentTree(JniPtr<NativeBookmarkBarSceneLayer> self, SceneLayer contentTree);
 
         void updateBookmarkBarLayer(
-                long nativeBookmarkBarSceneLayer,
+                JniPtr<NativeBookmarkBarSceneLayer> self,
                 ResourceManager manager,
                 int viewResourceId,
                 int sceneLayerBackgroundColor,
@@ -142,8 +150,8 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
                 int hairlineBackgroundColor,
                 @Nullable OffsetTag offsetTag);
 
-        void hideBookmarkBar(long nativeBookmarkBarSceneLayer);
+        void hideBookmarkBar(JniPtr<NativeBookmarkBarSceneLayer> self);
 
-        void showBookmarkBar(long nativeBookmarkBarSceneLayer);
+        void showBookmarkBar(JniPtr<NativeBookmarkBarSceneLayer> self);
     }
 }

@@ -7,13 +7,15 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,24 +27,48 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.ui.resources.ResourceManager;
 
 /** Unit tests for {BookmarkBarSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BookmarkBarSceneLayerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SceneLayer.Natives mBaseSceneLayerJni;
     @Mock private BookmarkBarSceneLayerJni mSceneLayerJni;
     @Mock private ResourceManager mResourceManager;
 
     private static final long NATIVE_PTR = 123L;
+    private JniRawPtr<BookmarkBarSceneLayer.NativeBookmarkBarSceneLayer> mNativePtr;
     private BookmarkBarSceneLayer mSceneLayer;
 
     @Before
     public void setUp() {
+        SceneLayerJni.setInstanceForTesting(mBaseSceneLayerJni);
         BookmarkBarSceneLayerJni.setInstanceForTesting(mSceneLayerJni);
-        doReturn(NATIVE_PTR).when(mSceneLayerJni).init(any());
+        doAnswer(
+                        invocation -> {
+                            SceneLayer layer = invocation.getArgument(0);
+                            layer.setNativePtr(NATIVE_PTR);
+                            mNativePtr = JniRawPtr.createForTesting(NATIVE_PTR);
+                            return mNativePtr;
+                        })
+                .when(mSceneLayerJni)
+                .init(any());
+        doAnswer(
+                        invocation -> {
+                            mSceneLayer.setNativePtr(0L);
+                            return null;
+                        })
+                .when(mBaseSceneLayerJni)
+                .destroy(anyLong());
         mSceneLayer = new BookmarkBarSceneLayer(mResourceManager);
         mSceneLayer.initializeNative();
+    }
+
+    @After
+    public void tearDown() {
+        mSceneLayer.destroy();
     }
 
     @Test
@@ -51,19 +77,19 @@ public class BookmarkBarSceneLayerTest {
 
         mSceneLayer.setVisibility(true);
         assertTrue(mSceneLayer.isSceneOverlayTreeShowing());
-        verify(mSceneLayerJni, times(1)).showBookmarkBar(eq(NATIVE_PTR));
-        verify(mSceneLayerJni, never()).hideBookmarkBar(anyInt());
+        verify(mSceneLayerJni, times(1)).showBookmarkBar(eq(mNativePtr));
+        verify(mSceneLayerJni, never()).hideBookmarkBar(any());
         Mockito.reset(mSceneLayerJni);
 
         mSceneLayer.setVisibility(false);
         assertFalse(mSceneLayer.isSceneOverlayTreeShowing());
-        verify(mSceneLayerJni, never()).showBookmarkBar(anyInt());
-        verify(mSceneLayerJni, times(1)).hideBookmarkBar(eq(NATIVE_PTR));
+        verify(mSceneLayerJni, never()).showBookmarkBar(any());
+        verify(mSceneLayerJni, times(1)).hideBookmarkBar(eq(mNativePtr));
         Mockito.reset(mSceneLayerJni);
 
         mSceneLayer.setVisibility(false);
-        verify(mSceneLayerJni, never()).showBookmarkBar(anyInt());
-        verify(mSceneLayerJni, never()).hideBookmarkBar(anyInt());
+        verify(mSceneLayerJni, never()).showBookmarkBar(any());
+        verify(mSceneLayerJni, never()).hideBookmarkBar(any());
     }
 
     @Test
@@ -71,6 +97,6 @@ public class BookmarkBarSceneLayerTest {
         SceneLayer contentTree = Mockito.mock(SceneLayer.class);
         mSceneLayer.setContentTree(contentTree);
 
-        verify(mSceneLayerJni).setContentTree(eq(NATIVE_PTR), eq(contentTree));
+        verify(mSceneLayerJni).setContentTree(eq(mNativePtr), eq(contentTree));
     }
 }

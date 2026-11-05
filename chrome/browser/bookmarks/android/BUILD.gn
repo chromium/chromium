@@ -321,6 +321,7 @@ robolectric_library("junit") {
     "//components/browser_ui/device_lock/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java_test_support",
   ]
 }

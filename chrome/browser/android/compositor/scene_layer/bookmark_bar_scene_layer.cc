@@ -11,6 +11,7 @@
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -169,11 +170,10 @@ SkColor BookmarkBarSceneLayer::GetBackgroundColor() {
   return background_color_;
 }
 
-static int64_t JNI_BookmarkBarSceneLayer_Init(JNIEnv* env,
-                                              const JavaRef<jobject>& jobj) {
+static jni_zero::JniRawPtr<BookmarkBarSceneLayer>
+JNI_BookmarkBarSceneLayer_Init(JNIEnv* env, const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
-  BookmarkBarSceneLayer* scene_layer = new BookmarkBarSceneLayer(env, jobj);
-  return reinterpret_cast<intptr_t>(scene_layer);
+  return jni_zero::MakeRaw(new BookmarkBarSceneLayer(env, jobj));
 }
 
 }  // namespace android

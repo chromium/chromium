@@ -378,6 +378,7 @@ public class BookmarkBarCoordinator
         mActivityLifecycleDispatcher.unregister(this);
         if (mIsResourceRegistered) unregisterResource();
         mBookmarkBarSceneLayer.setVisibility(false);
+        mBookmarkBarSceneLayer.destroy();
     }
 
     private void registerResource() {
