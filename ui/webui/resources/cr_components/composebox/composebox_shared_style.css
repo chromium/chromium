@@ -162,18 +162,6 @@
   --voice-bottom-actions-bottom: 12px;
 }
 
-/* Make it relative so it pushes the voice animation
- * down if it is on top.
- */
-#voiceSearchCarousel.top {
-  /* Space between voice recording wave and the file carousel
-   * (above the recording wave) set by
-   * '--context-non-top-carousel-bottom-margin' in '#carousel'.
-   */
-  position: relative;
-  top: 0;
-}
-
 /* Position absolute: make sure error scrim shows over voice search
  * animation and voice search component since composebox is hidden
  * in voice search mode. 'Absolute' is needed for scrim because

@@ -60,6 +60,25 @@ function pressEnter(element: HTMLElement) {
   }));
 }
 
+function disableAnimationsRecursively(element: Element) {
+  const noAnimation = document.createElement('style');
+  noAnimation.textContent = `
+    :host, * {
+      transition: none !important;
+      animation: none !important;
+      transition-duration: 0s !important;
+      animation-duration: 0s !important;
+    }
+  `;
+
+  if (element.shadowRoot) {
+    element.shadowRoot.appendChild(noAnimation);
+
+    const children = element.shadowRoot.querySelectorAll('*');
+    children.forEach(child => disableAnimationsRecursively(child));
+  }
+}
+
 suite('ContextualTasksComposeboxTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
   let composebox: any;
@@ -1492,6 +1511,20 @@ suite('ContextualTasksComposeboxForkSmokeTest', () => {
     innerComposebox.dispatchEvent(new CustomEvent('composebox-focus-out'));
     await microtasksFinished();
     assertFalse(wrapper.isComposeboxFocusedForTesting);
+  });
+
+  test('applies contextual tasks padding to the input', () => {
+    const composeboxInput = parts.innerComposebox.getInputElement();
+    disableAnimationsRecursively(composeboxInput);
+    const textContainer =
+        composeboxInput.shadowRoot.querySelector('#textContainer');
+    const input = composeboxInput.shadowRoot.querySelector('#input');
+    assertTrue(!!textContainer);
+    assertTrue(!!input);
+    assertEquals(
+        '80px', window.getComputedStyle(textContainer).paddingInlineEnd);
+    assertEquals('12px', window.getComputedStyle(input).paddingBlock);
+    assertEquals('0px', window.getComputedStyle(input).paddingInline);
   });
 });
 

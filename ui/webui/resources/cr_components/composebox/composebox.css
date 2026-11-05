@@ -433,35 +433,11 @@ search-animated-glow {
   --text-input-max-height: 130px;
 }
 
-/* Only nextbox (cobrowsing) has 'top' class. General voice styling
- * should be in composebox shared styles. */
-#voiceCarouselContainer:has(#voiceSearchCarousel.top) {
-  --context-carousel-inline-start-spacing: 12px;
-  /* Spec has -8px bottom margin, but the item under has 6px top-padding
-   * so net distance between the two is -2px.
-   */
-  --context-top-carousel-bottom-margin: -2px;
-  /* This + parent's padding = 12px space above. */
-  --context-top-carousel-top-margin: 6px;
-
-  /* Render above the recording wave, which is order 1,
-   * if carousel should be on top.
-   */
-  order: 0;
-}
-
 #carousel.top {
   margin-bottom: var(--context-top-carousel-bottom-margin, 0);
   margin-top: var(--context-top-carousel-top-margin, 0);
   position: absolute;
   top: var(--context-carousel-top-position, 14px);
-  width: auto;
-}
-
-/* Contextual tasks specific formatting for voice carousel. */
-#voiceSearchCarousel.top {
-  margin-bottom: var(--context-top-carousel-bottom-margin, 0);
-  margin-top: var(--context-top-carousel-top-margin, 0);
   width: auto;
 }
 
