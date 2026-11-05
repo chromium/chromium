@@ -17,7 +17,6 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1076,7 +1075,7 @@ TEST(ProcessMetricsTestLinux, GetPageFaultCounts) {
     WritableSharedMemoryMapping mapping = region.Map();
     ASSERT_TRUE(mapping.IsValid());
 
-    UNSAFE_TODO(memset(mapping.memory(), 42, kMappedSize));
+    std::ranges::fill(mapping, 42);
   }
 
   PageFaultCounts counts_after;

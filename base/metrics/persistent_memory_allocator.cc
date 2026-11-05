@@ -1129,7 +1129,7 @@ WritableSharedPersistentMemoryAllocator::
         base::WritableSharedMemoryMapping memory,
         uint64_t id,
         std::string_view name)
-    : PersistentMemoryAllocator(Memory(memory.memory(), MEM_SHARED),
+    : PersistentMemoryAllocator(Memory(memory.data(), MEM_SHARED),
                                 memory.size(),
                                 0,
                                 id,
@@ -1143,7 +1143,7 @@ WritableSharedPersistentMemoryAllocator::
 // static
 bool WritableSharedPersistentMemoryAllocator::IsSharedMemoryAcceptable(
     const base::WritableSharedMemoryMapping& memory) {
-  return IsMemoryAcceptable(memory.memory(), memory.size(), 0, false);
+  return IsMemoryAcceptable(memory.data(), memory.size(), 0, false);
 }
 
 //----- ReadOnlySharedPersistentMemoryAllocator --------------------------------
@@ -1154,7 +1154,7 @@ ReadOnlySharedPersistentMemoryAllocator::
         uint64_t id,
         std::string_view name)
     : PersistentMemoryAllocator(
-          Memory(const_cast<void*>(memory.memory()), MEM_SHARED),
+          Memory(const_cast<uint8_t*>(memory.data()), MEM_SHARED),
           memory.size(),
           0,
           id,
@@ -1168,7 +1168,7 @@ ReadOnlySharedPersistentMemoryAllocator::
 // static
 bool ReadOnlySharedPersistentMemoryAllocator::IsSharedMemoryAcceptable(
     const base::ReadOnlySharedMemoryMapping& memory) {
-  return IsMemoryAcceptable(memory.memory(), memory.size(), 0, true);
+  return IsMemoryAcceptable(memory.data(), memory.size(), 0, true);
 }
 
 //----- FilePersistentMemoryAllocator ------------------------------------------

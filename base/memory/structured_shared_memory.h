@@ -247,7 +247,7 @@ StructuredSharedMemory<T>::CreateWithCustomMapper(SharedMemoryMapper* mapper) {
   }
   internal::AssertSafeToMap<T>(mapped_region.mapping);
   // Placement new to initialize the structured memory contents in place.
-  new (mapped_region.mapping.memory()) T;
+  new (static_cast<void*>(mapped_region.mapping.data())) T;
   return StructuredSharedMemory<T>(std::move(mapped_region));
 }
 
@@ -264,7 +264,8 @@ StructuredSharedMemory<T>::CreateWithCustomMapper(U&& initial_value,
   }
   internal::AssertSafeToMap<T>(mapped_region.mapping);
   // Placement new to initialize the structured memory contents in place.
-  new (mapped_region.mapping.memory()) T(std::forward<U>(initial_value));
+  new (static_cast<void*>(mapped_region.mapping.data()))
+      T(std::forward<U>(initial_value));
   return StructuredSharedMemory<T>(std::move(mapped_region));
 }
 
