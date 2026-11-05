@@ -174,7 +174,6 @@ class SaveCardBubbleControllerImpl
 
   // AutofillBubbleControllerBase::
   void OnVisibilityChanged(content::Visibility visibility) override;
-  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<actions::ActionId> GetActionIdForPageAction() override;

@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -844,11 +843,6 @@ void SaveCardBubbleControllerImpl::OnVisibilityChanged(
 bool SaveCardBubbleControllerImpl::ShouldReshowOnTabVisible() const {
   return was_url_opened_ ||
          current_bubble_type_ == PaymentsBubbleType::kUploadComplete;
-}
-
-std::optional<PageActionIconType>
-SaveCardBubbleControllerImpl::GetPageActionIconType() {
-  return PageActionIconType::kSaveCard;
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -116,7 +116,6 @@ class IbanBubbleControllerImpl
   // AutofillBubbleControllerBase:
   void DoShowBubble() override;
   using AutofillBubbleControllerBase::HideBubble;
-  std::optional<PageActionIconType> GetPageActionIconType() override;
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<actions::ActionId> GetActionIdForPageAction() override;
   std::optional<std::u16string> GetPageActionTooltipText() override;
