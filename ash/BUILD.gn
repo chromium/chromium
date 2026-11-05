@@ -3678,6 +3678,7 @@ test("ash_unittests") {
     "accessibility/disable_touchpad_event_rewriter_unittest.cc",
     "accessibility/drag_event_rewriter_unittest.cc",
     "accessibility/filter_keys_event_rewriter_unittest.cc",
+    "accessibility/hover_text_event_handler_unittest.cc",
     "accessibility/magnifier/docked_magnifier_controller_unittest.cc",
     "accessibility/magnifier/fullscreen_magnifier_controller_unittest.cc",
     "accessibility/magnifier/magnifier_test_utils.cc",

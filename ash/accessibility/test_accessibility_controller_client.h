@@ -18,7 +18,8 @@ namespace ash {
 // Implement AccessibilityControllerClient mojo interface to simulate chrome
 // behavior in tests. This breaks the ash/chrome dependency to allow testing ash
 // code in isolation.
-class TestAccessibilityControllerClient : public AccessibilityControllerClient {
+class TestAccessibilityControllerClient final
+    : public AccessibilityControllerClient {
  public:
   TestAccessibilityControllerClient();
 
