@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll areas: a full-viewport body overscroll area closes by scrolling</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #area {
+    position: absolute;
+    top: -100vh; /* Overscrolls above the top of the body. */
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    /* Nothing in the open area is hit-testable, and the open area pushes all
+       of the body content out of the viewport. Scrolls over the open area
+       must still reach the overscroll area, and not only the root scroller. */
+    pointer-events: none;
+  }
+  #sheet {
+    min-height: 2200px; /* Makes the document vertically scrollable. */
+    background: lightblue;
+  }
+</style>
+
+<!-- The overflow of body is visible, so body is not a scroll container. -->
+<body overscrollcontainer>
+  <div id="area" overscrollarea></div>
+  <button id="button" command="toggle-overscroll" commandfor="area"></button>
+  <div id="sheet"></div>
+</body>
+
+<script>
+// Resolves with the event that finishes the next overscroll of body.
+function overscrollFinished() {
+  return new Promise(resolve => {
+    document.body.addEventListener("overscrollend", resolve, { once: true });
+    document.body.addEventListener("overscrollcancel", resolve, { once: true });
+  });
+}
+
+// Resolves with the first event that finishes the next overscroll of body, or
+// the next scroll of the document.
+function overscrollOrDocumentScrollFinished() {
+  return Promise.race([
+    overscrollFinished(),
+    new Promise(resolve =>
+        document.addEventListener("scrollend", resolve, { once: true })),
+  ]);
+}
+
+function wheel(delta_x, delta_y) {
+  return new test_driver.Actions().scroll(100, 100, delta_x, delta_y).send();
+}
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (area.matches(":overscroll-open")) {
+      const finished = overscrollFinished();
+      button.click();
+      await finished;
+    }
+    window.scrollTo(0, 0);
+  });
+
+  assert_equals(window.scrollY, 0, "initial: document is at the top");
+  const initial_sheet_top = sheet.getBoundingClientRect().top;
+
+  // 1. Open the area. It fills the viewport, so it pushes all of the body
+  // content out of view.
+  let finished = overscrollFinished();
+  button.click();
+  let event = await finished;
+  assert_equals(event.type, "overscrollend", "open: event type");
+  assert_true(area.matches(":overscroll-open"), "open: area is open");
+  assert_equals(area.getBoundingClientRect().top, 0, "open: area position");
+  assert_greater_than_equal(sheet.getBoundingClientRect().top,
+                            window.innerHeight,
+                            "open: content is pushed out of the viewport");
+
+  // 2. Scrolling down over the open area closes it. The document must not
+  // scroll instead.
+  finished = overscrollOrDocumentScrollFinished();
+  await wheel(0, 4000);
+  event = await finished;
+  assert_equals(event.type, "overscrollend", "close: event type");
+  assert_false(area.matches(":overscroll-open"), "close: area is closed");
+  assert_equals(area.getBoundingClientRect().bottom, 0, "close: area position");
+  assert_equals(sheet.getBoundingClientRect().top, initial_sheet_top,
+                "close: content position restored");
+  assert_equals(window.scrollY, 0,
+                "close: document scroll position unchanged");
+}, "Scrolling over an open full-viewport body overscroll area closes it");
+</script>

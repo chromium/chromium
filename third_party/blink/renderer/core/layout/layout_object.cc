@@ -4630,6 +4630,15 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
         // direct children of the container
         // (::-internal-overscroll-area-parent).
         container->SetDescendantNeedsPaintPropertyUpdate();
+
+        // The ::-internal-overscroll-area-parent objects of the body element
+        // may reparent the LayoutView's scroll node instead, which then needs
+        // an update as well.
+        if (container_element == GetDocument().body()) {
+          if (LayoutView* view = View()) {
+            view->SetNeedsPaintPropertyUpdate();
+          }
+        }
         return;
       }
     }
@@ -4638,6 +4647,15 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
   needs_paint_property_update_ = true;
   if (Parent())
     Parent()->SetDescendantNeedsPaintPropertyUpdate();
+
+  if (IsLayoutView()) {
+    if (Element* body = GetDocument().body()) {
+      if (LayoutObject* body_object = body->GetLayoutObject();
+          body_object && body_object->IsOverscrollContainer()) {
+        body_object->SetNeedsPaintPropertyUpdate();
+      }
+    }
+  }
 }
 
 void LayoutObject::SetDescendantNeedsPaintPropertyUpdate() {

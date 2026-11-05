@@ -394,6 +394,7 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
   exclusions.insert(DebugField::is_css_inert_is_inherited_);
   exclusions.insert(DebugField::is_html_inert_);
   exclusions.insert(DebugField::is_html_inert_is_inherited_);
+  exclusions.insert(DebugField::can_escape_overscroll_inertness_);
 
   Vector<DebugDiff> diff = base_computed_style->DebugDiffFields(computed_style);
 

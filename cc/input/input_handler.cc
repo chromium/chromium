@@ -2349,11 +2349,25 @@ ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
                       ? &scroll_tree.MutableParent(*cur_node)
                       : nullptr) {
     if (GetViewport().ShouldScroll(*cur_node)) {
-      // Don't chain scrolls past a viewport node. Once we reach that, we
-      // should scroll using the appropriate viewport node which may not be
+      // Scroll using the appropriate viewport node, which may not be
       // |cur_node|.
-      scroll_node = GetNodeToScroll(cur_node);
-      break;
+      if (!scroll_node) {
+        scroll_node = GetNodeToScroll(cur_node);
+      }
+      // Don't chain past the viewport, with one exception. The overscroll
+      // area parents of the body element sit between the outer viewport node
+      // and its parent, the inner viewport node. If the outer viewport is the
+      // document (the default root scroller) and can't consume the delta, keep
+      // walking so that they can latch. If none can, the walk reaches the inner
+      // viewport and latches to the viewport after all.
+      const bool chain_to_overscroll_areas =
+          cur_node->scrolls_outer_viewport &&
+          !InnerViewportScrollNode()->prevent_viewport_scrolling_from_inner &&
+          scroll_node && !GetViewport().CanScroll(*scroll_node, *scroll_state);
+      if (!chain_to_overscroll_areas) {
+        break;
+      }
+      continue;
     }
 
     // A scroll container allows chaining ​if​ overscroll-behavior is set to

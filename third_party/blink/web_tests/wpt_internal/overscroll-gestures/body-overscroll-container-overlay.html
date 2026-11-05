@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<meta name="timeout" content="long">
 <title>Overscroll areas: gestures on an overlay body overscroll container</title>
 <link rel="author" href="mailto:vmpstr@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -21,6 +22,22 @@
     right: 100%; /* Overscrolls to the left of the body. */
     background: green;
   }
+  #bottom_menu {
+    width: 100%;
+    height: 200px;
+    top: 100%; /* Overscrolls below the bottom of the body. */
+    background: coral;
+  }
+  #top_menu {
+    width: 100%;
+    height: 200px;
+    bottom: 100%; /* Overscrolls above the top of the body. */
+    background: gold;
+  }
+  #bottom_menu:not([overscrollarea]),
+  #top_menu:not([overscrollarea]) {
+    display: none;
+  }
   #content {
     height: 2000px; /* Makes the document vertically scrollable. */
     background: lightblue;
@@ -31,6 +48,10 @@
 <body overscrollcontainer>
   <div id="menu" overscrollarea></div>
   <button id="button" command="toggle-overscroll" commandfor="menu"></button>
+  <div id="bottom_menu"></div>
+  <button id="bottom_button" command="toggle-overscroll" commandfor="bottom_menu"></button>
+  <div id="top_menu"></div>
+  <button id="top_button" command="toggle-overscroll" commandfor="top_menu"></button>
   <div id="content"></div>
 </body>
 
@@ -41,6 +62,25 @@ function overscrollFinished() {
     document.body.addEventListener("overscrollend", resolve, { once: true });
     document.body.addEventListener("overscrollcancel", resolve, { once: true });
   });
+}
+
+// Resolves with the next scrollend event of the document.
+function documentScrollend() {
+  return new Promise(resolve =>
+      document.addEventListener("scrollend", resolve, { once: true }));
+}
+
+// Scrolls the document to `y`, and resolves when that scroll finishes. Its
+// scrollend event must not resolve the promise of a later gesture early:
+// otherwise the next gesture can start while the document still rubber-bands
+// (e.g. on Mac), and miss body.
+async function scrollDocumentTo(y) {
+  if (window.scrollY == y) {
+    return;
+  }
+  const scrollend = documentScrollend();
+  window.scrollTo(0, y);
+  await scrollend;
 }
 
 async function closeMenu() {
@@ -97,14 +137,129 @@ promise_test(async t => {
 }, "Wheel scrolling on an overlay body opens its overscroll area");
 
 promise_test(async t => {
-  t.add_cleanup(() => window.scrollTo(0, 0));
+  t.add_cleanup(() => scrollDocumentTo(0));
 
-  const scrollend = new Promise(resolve =>
-      document.addEventListener("scrollend", resolve, { once: true }));
+  const scrollend = documentScrollend();
   await wheel(0, 300);
   await scrollend;
   assert_greater_than(window.scrollY, 0, "document is scrolled");
   assert_false(menu.matches(":overscroll-open"), "menu is closed");
 }, "Wheel scrolling on an overlay body without an overscroll area in that " +
    "direction scrolls the document");
+
+promise_test(async t => {
+  bottom_menu.setAttribute("overscrollarea", "");
+  t.add_cleanup(async () => {
+    if (bottom_menu.matches(":overscroll-open")) {
+      const finished = overscrollFinished();
+      bottom_button.click();
+      await finished;
+    }
+    bottom_menu.removeAttribute("overscrollarea");
+    await scrollDocumentTo(0);
+  });
+
+  // 1. Scrollable content scrolls first before the bottom overscroll area.
+  let scrollend = documentScrollend();
+  await wheel(0, 4000);
+  await scrollend;
+  const max_scroll_y = window.scrollY;
+  assert_greater_than(max_scroll_y, 0, "step 1: document scrolled to bottom");
+  assert_false(bottom_menu.matches(":overscroll-open"),
+               "step 1: bottom overscroll area stays closed while scrolling content");
+
+  // 2. Scrolling past the bottom overscrolls body to reveal bottom_menu and snaps open.
+  let finished = overscrollFinished();
+  await wheel(0, 4000);
+  let event = await finished;
+  assert_equals(event.type, "overscrollend", "step 2: open event type");
+  assert_true(event.overscrolling, "step 2: overscrolling is true");
+  assert_true(bottom_menu.matches(":overscroll-open"),
+              "step 2: bottom_menu is open");
+  assert_equals(bottom_menu.getBoundingClientRect().bottom, window.innerHeight,
+                "step 2: bottom_menu is snapped into view");
+  assert_equals(content.getBoundingClientRect().bottom, window.innerHeight,
+                "step 2: content is overlaid, not pushed, by bottom_menu");
+
+  // 3. Scrolling back snaps bottom_menu closed before scrolling the document.
+  finished = overscrollFinished();
+  await wheel(0, -4000);
+  event = await finished;
+  assert_equals(event.type, "overscrollend", "step 3: close event type");
+  assert_false(event.overscrolling, "step 3: overscrolling is false");
+  assert_false(bottom_menu.matches(":overscroll-open"),
+               "step 3: bottom_menu is closed");
+  assert_equals(bottom_menu.getBoundingClientRect().top, window.innerHeight,
+                "step 3: bottom_menu snapped back out of view");
+  assert_equals(window.scrollY, max_scroll_y,
+                "step 3: document scroll position unchanged while closing overscroll area");
+
+  // 4. Scrolling up again scrolls the document content back up.
+  scrollend = documentScrollend();
+  await wheel(0, -4000);
+  await scrollend;
+  assert_equals(window.scrollY, 0, "step 4: document scrolled back to top");
+  assert_false(bottom_menu.matches(":overscroll-open"),
+               "step 4: bottom_menu remains closed");
+}, "Root scroller scrolls content before overlay body bottom overscroll area, " +
+   "overscrolls and snaps open, snaps back closed, then scrolls content back up");
+
+promise_test(async t => {
+  top_menu.setAttribute("overscrollarea", "");
+  t.add_cleanup(async () => {
+    if (top_menu.matches(":overscroll-open")) {
+      const finished = overscrollFinished();
+      top_button.click();
+      await finished;
+    }
+    top_menu.removeAttribute("overscrollarea");
+    await scrollDocumentTo(0);
+  });
+
+  const initial_content_top = content.getBoundingClientRect().top;
+  await scrollDocumentTo(500);
+  assert_equals(window.scrollY, 500, "initial: document is scrolled down");
+
+  // 1. Scrolling up scrolls the document content to the top first.
+  let scrollend = documentScrollend();
+  await wheel(0, -4000);
+  await scrollend;
+  assert_equals(window.scrollY, 0, "step 1: document scrolled back to top");
+  assert_false(top_menu.matches(":overscroll-open"),
+               "step 1: top_menu stays closed while scrolling content");
+
+  // 2. Scrolling up at the top overscrolls body to reveal top_menu and snaps open.
+  let finished = overscrollFinished();
+  await wheel(0, -4000);
+  let event = await finished;
+  assert_equals(event.type, "overscrollend", "step 2: open event type");
+  assert_true(event.overscrolling, "step 2: overscrolling is true");
+  assert_true(top_menu.matches(":overscroll-open"), "step 2: top_menu is open");
+  assert_equals(top_menu.getBoundingClientRect().top, 0,
+                "step 2: top_menu is snapped into view");
+  assert_equals(content.getBoundingClientRect().top, initial_content_top,
+                "step 2: content is overlaid, not pushed, by top_menu");
+
+  // 3. Scrolling down snaps top_menu closed before scrolling the document.
+  finished = overscrollFinished();
+  await wheel(0, 4000);
+  event = await finished;
+  assert_equals(event.type, "overscrollend", "step 3: close event type");
+  assert_false(event.overscrolling, "step 3: overscrolling is false");
+  assert_false(top_menu.matches(":overscroll-open"),
+               "step 3: top_menu is closed");
+  assert_equals(top_menu.getBoundingClientRect().bottom, 0,
+                "step 3: top_menu snapped back out of view");
+  assert_equals(window.scrollY, 0,
+                "step 3: document scroll position unchanged while closing overscroll area");
+
+  // 4. Scrolling down again scrolls the document content.
+  scrollend = documentScrollend();
+  await wheel(0, 300);
+  await scrollend;
+  assert_greater_than(window.scrollY, 0, "step 4: document scrolled down");
+  assert_false(top_menu.matches(":overscroll-open"),
+               "step 4: top_menu remains closed");
+}, "Root scroller scrolls content before overlay body top overscroll area, " +
+   "overscrolls and snaps open, snaps back closed, then scrolls content");
 </script>

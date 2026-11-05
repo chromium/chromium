@@ -2942,6 +2942,135 @@ TEST_P(LayerTreeHostImplTest, OverscrollBehaviorChainPropagatesScroll) {
   EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(overflow));
 }
 
+// Tests for the scroll nodes of ::-internal-overscroll-area-parent elements
+// reparented above the outer viewport.
+class OverscrollAreaParentLayerTreeHostImplTest : public LayerTreeHostImplTest {
+ protected:
+  enum class AreaPosition { kAbove, kBelow };
+
+  // Adds the scroll node of a ::-internal-overscroll-area-parent reparented
+  // above the outer viewport scroll node. It has a 100x100 scroll container and
+  // 100x200 contents, with the overscroll area in one half of the contents. The
+  // overscroll area is closed, i.e. the other half of the contents is visible
+  // and hit-testing hits the outer viewport rather than the overscroll area.
+  LayerImpl* AddClosedOverscrollAreaParent(AreaPosition area_position) {
+    LayerImpl* area_parent = AddScrollableLayer(
+        OuterViewportScrollLayer(), gfx::Size(100, 100), gfx::Size(100, 200));
+    area_parent->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
+    const gfx::RectF top_half(0, 0, 100, 100);
+    const gfx::RectF bottom_half(0, 100, 100, 100);
+    const bool area_above = area_position == AreaPosition::kAbove;
+    const gfx::RectF& area_rect = area_above ? top_half : bottom_half;
+    const gfx::RectF& closed_rect = area_above ? bottom_half : top_half;
+
+    // As in blink::SnapCoordinator::AddOverscrollSnapAreas, the first snap
+    // area is the initial scroll position, where the overscroll area is
+    // closed.
+    SnapContainerData snap_data(
+        ScrollSnapType(false, SnapAxis::kPair, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 100, 100), /*max=*/gfx::PointF(0, 100));
+    const ScrollSnapAlign center(SnapAlignment::kCenter,
+                                 SnapAlignment::kCenter);
+    snap_data.AddSnapAreaData(
+        SnapAreaData(center, closed_rect, SnapStop::kAlways,
+                     /*has_focus_within=*/false, ElementId(10)));
+    snap_data.AddSnapAreaData(SnapAreaData(center, area_rect, SnapStop::kNormal,
+                                           /*has_focus_within=*/false,
+                                           ElementId(20)));
+
+    ScrollNode* scroll_node = GetScrollNode(area_parent);
+    scroll_node->snap_container_data.emplace(std::move(snap_data));
+    ScrollNode* outer_viewport_scroll =
+        GetScrollNode(OuterViewportScrollLayer());
+    scroll_node->parent_id = outer_viewport_scroll->parent_id;
+    outer_viewport_scroll->parent_id = scroll_node->id;
+    SetScrollOffset(area_parent, closed_rect.origin());
+    return area_parent;
+  }
+
+  // Scrolls by |delta| with a mouse wheel at (50, 50).
+  void WheelScroll(const gfx::Vector2dF& delta) {
+    const gfx::Point position(50, 50);
+    const ui::ScrollInputType type = ui::ScrollInputType::kWheel;
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread,
+              GetInputHandler()
+                  .ScrollBegin(BeginState(position, delta, type).get(), type)
+                  .thread);
+    GetInputHandler().ScrollUpdate(UpdateState(position, delta, type));
+    GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+  }
+};
+
+INSTANTIATE_COMMIT_TO_TREE_TEST_P(OverscrollAreaParentLayerTreeHostImplTest);
+
+// A closed overscroll area parent lets the viewport scroll first, and latches
+// when the viewport cannot scroll.
+TEST_P(OverscrollAreaParentLayerTreeHostImplTest, ClosedChainsAfterViewport) {
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(100, 400));
+  SetScrollOffset(OuterViewportScrollLayer(), gfx::PointF(0, 30));
+  LayerImpl* area_parent = AddClosedOverscrollAreaParent(AreaPosition::kAbove);
+  DrawFrame();
+
+  // The viewport can scroll up, so it scrolls first.
+  WheelScroll(gfx::Vector2dF(0, -50));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 100), CurrentScrollOffset(area_parent));
+
+  // At the top of the viewport, the overscroll area parent latches.
+  WheelScroll(gfx::Vector2dF(0, -50));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 50), CurrentScrollOffset(area_parent));
+}
+
+// An open overscroll area is hit-testable (via its area or backdrop) and closes
+// before the viewport scrolls.
+TEST_P(OverscrollAreaParentLayerTreeHostImplTest, OpenScrollsBeforeViewport) {
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(100, 400));
+  SetScrollOffset(OuterViewportScrollLayer(), gfx::PointF(0, 30));
+  LayerImpl* area_parent = AddClosedOverscrollAreaParent(AreaPosition::kAbove);
+  // Open the overscroll area fully, making it hit-testable in the viewport.
+  area_parent->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
+  SetScrollOffset(area_parent, gfx::PointF(0, 0));
+  DrawFrame();
+
+  // The viewport can scroll down, but the overscroll area parent scrolls
+  // toward its closed position first.
+  WheelScroll(gfx::Vector2dF(0, 50));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 30),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 50), CurrentScrollOffset(area_parent));
+}
+
+// When the viewport cannot scroll, the first closed overscroll area parent in
+// scroll chain order that can consume the delta latches.
+TEST_P(OverscrollAreaParentLayerTreeHostImplTest,
+       ClosedLatchInScrollChainOrder) {
+  // The viewport cannot scroll.
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(100, 100));
+  // The outer overscroll area parent can only scroll down.
+  LayerImpl* outer_area_parent =
+      AddClosedOverscrollAreaParent(AreaPosition::kBelow);
+  // The inner overscroll area parent can only scroll up.
+  LayerImpl* inner_area_parent =
+      AddClosedOverscrollAreaParent(AreaPosition::kAbove);
+  DrawFrame();
+
+  // The inner overscroll area parent comes first, and can scroll up.
+  WheelScroll(gfx::Vector2dF(0, -50));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(outer_area_parent));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 50), CurrentScrollOffset(inner_area_parent));
+
+  // Close the inner overscroll area again. It cannot scroll down, so the outer
+  // overscroll area parent latches.
+  SetScrollOffset(inner_area_parent, gfx::PointF(0, 100));
+  DrawFrame();
+  WheelScroll(gfx::Vector2dF(0, 50));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 50), CurrentScrollOffset(outer_area_parent));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 100), CurrentScrollOffset(inner_area_parent));
+}
+
 TEST_P(LayerTreeHostImplTest, ScrollWithUserUnscrollableLayers) {
   const gfx::Size kViewportSize(100, 100);
   const gfx::Size kContentSize(200, 200);

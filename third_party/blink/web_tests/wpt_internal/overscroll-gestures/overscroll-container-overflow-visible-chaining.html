@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll areas: scroll chaining from overscroll containers that are not scroll containers</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  .scroller {
+    position: absolute;
+    top: 0;
+    width: 300px;
+    height: 200px;
+    overflow: auto;
+  }
+  #scroller {
+    left: 0;
+  }
+  #contain_scroller {
+    left: 350px;
+    overscroll-behavior: contain;
+  }
+  .spacer {
+    height: 300px;
+  }
+  .card {
+    /* The overflow is visible, so the cards are not scroll containers. */
+    width: 300px;
+    height: 150px;
+    background: lightblue;
+  }
+  #page_card {
+    position: absolute;
+    left: 0;
+    top: 500px;
+  }
+  #fixed_card {
+    position: fixed;
+    left: 400px;
+    top: 300px;
+  }
+  .menu {
+    width: 100%;
+    height: 100px;
+    bottom: 100%; /* Overscrolls above the top of the card. */
+    background: gold;
+  }
+  #buttons {
+    position: absolute;
+    top: 2800px;
+  }
+  #page_spacer {
+    height: 3000px; /* Makes the document vertically scrollable. */
+  }
+</style>
+
+<div id="scroller" class="scroller">
+  <div class="spacer"></div>
+  <div id="scroller_card" class="card" overscrollcontainer>
+    <div id="scroller_menu" class="menu" overscrollarea></div>
+  </div>
+  <div class="spacer"></div>
+</div>
+<div id="contain_scroller" class="scroller">
+  <div id="contain_card" class="card" overscrollcontainer>
+    <div id="contain_menu" class="menu" overscrollarea></div>
+  </div>
+  <div class="spacer"></div>
+</div>
+<div id="page_card" class="card" overscrollcontainer>
+  <div id="page_menu" class="menu" overscrollarea></div>
+</div>
+<div id="fixed_card" class="card" overscrollcontainer>
+  <div id="fixed_menu" class="menu" overscrollarea></div>
+</div>
+<div id="buttons">
+  <button command="toggle-overscroll" commandfor="scroller_menu"></button>
+  <button command="toggle-overscroll" commandfor="contain_menu"></button>
+  <button command="toggle-overscroll" commandfor="page_menu"></button>
+  <button command="toggle-overscroll" commandfor="fixed_menu"></button>
+</div>
+<div id="page_spacer"></div>
+
+<script>
+// A point where nothing but the document is hit.
+const DOCUMENT_POINT = { x: 760, y: 560 };
+
+// Resolves with the first event that finishes a scroll: the overscroll of
+// `card`, or a scroll of one of `scrollers`.
+function scrollFinished(card, ...scrollers) {
+  return new Promise(resolve => {
+    card.addEventListener("overscrollend", resolve, { once: true });
+    card.addEventListener("overscrollcancel", resolve, { once: true });
+    for (const scroller of scrollers) {
+      scroller.addEventListener("scrollend", resolve, { once: true });
+    }
+  });
+}
+
+function wheel(x, y, delta_y) {
+  return new test_driver.Actions().scroll(x, y, 0, delta_y).send();
+}
+
+// Wheel scrolls up near the top of the visible part of `card`.
+function wheelUpOverCard(card) {
+  const rect = card.getBoundingClientRect();
+  return wheel(rect.left + rect.width / 2, Math.max(rect.top, 0) + 25, -200);
+}
+
+// Scrolls the document to `y`, and resolves when that scroll finishes.
+async function scrollDocumentTo(y) {
+  if (window.scrollY == y) {
+    return;
+  }
+  const scrollend = new Promise(resolve =>
+      document.addEventListener("scrollend", resolve, { once: true }));
+  window.scrollTo(0, y);
+  await scrollend;
+}
+
+async function closeMenu(card, menu) {
+  if (menu.matches(":overscroll-open")) {
+    const finished = scrollFinished(card);
+    document.querySelector(`[commandfor=${menu.id}]`).click();
+    await finished;
+  }
+}
+
+function assertOpened(event, card, menu) {
+  assert_equals(event.type, "overscrollend", "event type");
+  assert_equals(event.target, card, "event target");
+  assert_true(event.overscrolling, "overscrolling");
+  assert_true(menu.matches(":overscroll-open"), "menu is open");
+}
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await closeMenu(scroller_card, scroller_menu);
+    if (scroller.scrollTop != 0) {
+      const scrollend = new Promise(resolve =>
+          scroller.addEventListener("scrollend", resolve, { once: true }));
+      scroller.scrollTop = 0;
+      await scrollend;
+    }
+  });
+
+  // Scroll the scroller down, so that it can scroll back up.
+  let finished = scrollFinished(scroller_card, scroller);
+  await wheel(150, 50, 200);
+  assert_equals((await finished).target, scroller, "setup: scroller scrolled");
+  const scroll_top = scroller.scrollTop;
+  assert_greater_than(scroll_top, 0, "setup: scroller scroll position");
+
+  finished = scrollFinished(scroller_card, scroller);
+  await wheelUpOverCard(scroller_card);
+  assertOpened(await finished, scroller_card, scroller_menu);
+  assert_equals(scroller.scrollTop, scroll_top, "scroller did not scroll");
+}, "An overscroll container in a scroller opens its overscroll area before " +
+   "the scroller scrolls");
+
+promise_test(async t => {
+  t.add_cleanup(() => closeMenu(contain_card, contain_menu));
+  assert_equals(contain_scroller.scrollTop, 0, "scroller is at its top");
+
+  const finished = scrollFinished(contain_card, contain_scroller);
+  await wheelUpOverCard(contain_card);
+  assertOpened(await finished, contain_card, contain_menu);
+  assert_equals(contain_scroller.scrollTop, 0, "scroller did not scroll");
+}, "An overscroll container opens its overscroll area in a scroller that has " +
+   "overscroll-behavior: contain and is at its scroll limit");
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await closeMenu(page_card, page_menu);
+    await scrollDocumentTo(0);
+  });
+
+  // Scroll the document down, so that it can scroll back up.
+  let finished = scrollFinished(page_card, document);
+  await wheel(DOCUMENT_POINT.x, DOCUMENT_POINT.y, 200);
+  assert_equals((await finished).target, document, "setup: document scrolled");
+  const scroll_y = window.scrollY;
+  assert_greater_than(scroll_y, 0, "setup: document scroll position");
+
+  finished = scrollFinished(page_card, document);
+  await wheelUpOverCard(page_card);
+  assertOpened(await finished, page_card, page_menu);
+  assert_equals(window.scrollY, scroll_y, "document did not scroll");
+}, "An overscroll container on a scrollable page opens its overscroll area " +
+   "before the document scrolls");
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await closeMenu(fixed_card, fixed_menu);
+    await scrollDocumentTo(0);
+  });
+
+  // Scroll the document down, so that it can scroll back up.
+  let finished = scrollFinished(fixed_card, document);
+  await wheel(DOCUMENT_POINT.x, DOCUMENT_POINT.y, 200);
+  assert_equals((await finished).target, document, "setup: document scrolled");
+  const scroll_y = window.scrollY;
+  assert_greater_than(scroll_y, 0, "setup: document scroll position");
+
+  finished = scrollFinished(fixed_card, document);
+  await wheelUpOverCard(fixed_card);
+  assertOpened(await finished, fixed_card, fixed_menu);
+  assert_equals(window.scrollY, scroll_y, "document did not scroll");
+}, "A fixed-position overscroll container opens its overscroll area before " +
+   "the document scrolls");
+</script>

@@ -53,9 +53,21 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
    public:
     // Sets the given node to be the new overscroll parent node for this node.
-    // The ::-internal-overscroll-area-parent is always a direct child of the
-    // containing scrollable area. We apply three changes:
-    // 1. Attach its scroll node as a parent of the container's scroll node.
+    // The ::-internal-overscroll-area-parent is a child of the overscroll
+    // container. We apply three changes:
+    // 1. Attach its scroll node as a parent of |scroll_to_reparent|. Usually
+    //    |scroll_to_reparent| is the container's scroll node. However, when the
+    //    container is the document's body and is scrolled/moved by the root
+    //    scroller (i.e. not fixed-positioned and not its own scroll container),
+    //    |scroll_to_reparent| is the LayoutView's scroll node so that document
+    //    scrolls chain to the body's overscroll areas only after the document
+    //    itself cannot scroll:
+    //
+    //      Scroll (InnerViewport)
+    //        Scroll (::-internal-overscroll-area-parent) *
+    //          Scroll (LayoutView)
+    //            Scroll (<body>)
+    //
     // 2. Attach its paint transform node outside the container's scrolling
     //    content.
     // 3. If non-overlay, attach its scroll translation node as a parent of the
@@ -91,10 +103,11 @@ struct PaintPropertyTreeBuilderFragmentContext {
         const ScrollPaintPropertyNode& overscroll_parent,
         const TransformPaintPropertyNode& paint_offset_translation,
         const TransformPaintPropertyNodeOrAlias& overscroll_transform,
-        bool is_overlay) const {
+        bool is_overlay,
+        const ScrollPaintPropertyNode& scroll_to_reparent) const {
       // We should only be creating overscroll nodes for non-root
       // scroll container elements.
-      CHECK(!scroll->IsRoot());
+      CHECK(!scroll_to_reparent.IsRoot());
       const TransformPaintPropertyNode* scroll_translation =
           overscroll_transform.Unalias().ParentScrollTranslationNode();
       // The content transform for a non-overlay parent scroller is the
@@ -108,9 +121,9 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
       CHECK(!content_translation->IsRoot());
       const_cast<ScrollPaintPropertyNode&>(overscroll_parent)
-          .SetParent(*scroll->Parent());
-      const_cast<ScrollPaintPropertyNode*>(scroll)->SetParent(
-          overscroll_parent);
+          .SetParent(*scroll_to_reparent.Parent());
+      const_cast<ScrollPaintPropertyNode&>(scroll_to_reparent)
+          .SetParent(overscroll_parent);
       const_cast<TransformPaintPropertyNode&>(paint_offset_translation)
           .SetParent(*content_translation->Parent());
 

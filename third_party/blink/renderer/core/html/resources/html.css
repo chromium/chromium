@@ -2687,6 +2687,11 @@ select optgroup optgroup {
 
 [overscrollcontainer] > [overscrollarea]:overscroll-open::overscroll-backdrop {
   display: block;
+  /* ::overscroll-backdrop inherits pointer-events from [overscrollarea], not
+     from its layout parent ::-internal-overscroll-area-parent (which has
+     pointer-events: none). Override it so the open backdrop stays hit-testable
+     even if the author sets pointer-events: none on [overscrollarea]. */
+  pointer-events: auto;
 }
 
 @supports blink-feature(CustomizableCombobox) {

@@ -3649,14 +3649,36 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
               DynamicTo<PseudoElement>(object_.GetNode());
           pseudo_element &&
           pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
+        // The overscroll areas of a document's body element reparent the
+        // LayoutView's scroll node (the outer viewport) rather than the body's
+        // scroll node: while they are closed, they open only when the document
+        // cannot scroll. A scroll container or fixed-positioned body is an
+        // exception, because the root scroller does not scroll or move it.
+        Element* overscroll_container =
+            pseudo_element->UltimateOriginatingElement()
+                .GetOverscrollContainer();
+        CHECK(overscroll_container);
+        const LayoutBox* container_box = overscroll_container->GetLayoutBox();
+        const ScrollPaintPropertyNode* scroll_to_reparent =
+            context_.current.scroll;
+        if (overscroll_container ==
+                overscroll_container->GetDocument().body() &&
+            container_box && !container_box->IsScrollContainer() &&
+            !container_box->IsFixedPositioned()) {
+          if (const auto* view_properties =
+                  object_.View()->FirstFragment().PaintProperties();
+              view_properties && view_properties->Scroll()) {
+            scroll_to_reparent = view_properties->Scroll();
+          }
+        }
+        CHECK(scroll_to_reparent);
         context_.current.SetOverscrollParent(
             *properties_->Scroll(), *properties_->PaintOffsetTranslation(),
             *properties_->ScrollTranslation(),
-            pseudo_element->UltimateOriginatingElement()
-                    .GetOverscrollContainer()
-                    ->GetComputedStyle()
+            overscroll_container->GetComputedStyle()
                     ->EffectiveOverscrollContainerType() ==
-                EOverscrollContainerType::kOverlay);
+                EOverscrollContainerType::kOverlay,
+            *scroll_to_reparent);
       }
       object_.GetFrameView()->AddScrollableAreaWithScrollNode(
           *To<LayoutBox>(object_).GetScrollableArea());

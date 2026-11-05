@@ -11,6 +11,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -7754,6 +7755,204 @@ TEST_P(PaintPropertyTreeBuilderTest, OverscrollContainerOnInlineDoesNotCrash) {
   target->setAttribute(QualifiedName(AtomicString("overscrollcontainer")),
                        AtomicString(""));
   UpdateAllLifecyclePhasesForTest();
+}
+
+// Only the overscroll areas of a non-scroll-container, non-fixed body element
+// reparent the LayoutView's scroll node so they chain after the root scroller.
+// Other overscroll containers reparent their own scroll node.
+TEST_P(PaintPropertyTreeBuilderTest, OverscrollAreaParentChainsAfterViewport) {
+  ScopedCSSScrollSnapTypePairForTest scroll_snap_type_pair_enabled(true);
+  ScopedOverscrollAreasForTest overscroll_areas_enabled(true);
+  GetDocument().body()->SetAttributeWithoutValidation(
+      html_names::kOverscrollcontainerAttr, g_empty_atom);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .card { width: 100px; height: 100px; }
+      .menu { width: 100px; height: 100px; bottom: 100%; }
+    </style>
+    <div id="body_menu" class="menu" overscrollarea></div>
+    <div id="card" class="card" overscrollcontainer>
+      <div id="card_menu" class="menu" overscrollarea></div>
+    </div>
+    <div id="fixed_card" class="card" style="position: fixed; top: 200px"
+         overscrollcontainer>
+      <div id="fixed_menu" class="menu" overscrollarea></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="body_menu"></button>
+    <button command="toggle-overscroll" commandfor="card_menu"></button>
+    <button command="toggle-overscroll" commandfor="fixed_menu"></button>
+    <div style="height: 2000px"></div>
+  )HTML");
+
+  auto area_parent_scroll = [&](const char* area_id) {
+    const auto* area_parent =
+        GetDocument()
+            .getElementById(AtomicString(area_id))
+            ->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    EXPECT_TRUE(area_parent);
+    return area_parent->GetLayoutObject()
+        ->FirstFragment()
+        .PaintProperties()
+        ->Scroll();
+  };
+  const auto* body_scroll = GetDocument()
+                                .body()
+                                ->GetLayoutObject()
+                                ->FirstFragment()
+                                .PaintProperties()
+                                ->Scroll();
+  const auto* card_scroll = PaintPropertiesForElement("card")->Scroll();
+  const auto* fixed_scroll = PaintPropertiesForElement("fixed_card")->Scroll();
+
+  EXPECT_EQ(DocScroll()->Parent(), area_parent_scroll("body_menu"));
+  EXPECT_EQ(body_scroll->Parent(), DocScroll());
+
+  EXPECT_EQ(card_scroll->Parent(), area_parent_scroll("card_menu"));
+  EXPECT_EQ(area_parent_scroll("card_menu")->Parent(), body_scroll);
+
+  EXPECT_EQ(fixed_scroll->Parent(), area_parent_scroll("fixed_menu"));
+  EXPECT_EQ(area_parent_scroll("fixed_menu")->Parent(), body_scroll);
+
+  // Updating the body's overscroll area parents also updates the LayoutView,
+  // whose scroll node they reparent, and preserves the reparented scroll tree
+  // without cycles.
+  LayoutObject* body_object = GetDocument().body()->GetLayoutObject();
+  LayoutObject* body_area_parent =
+      GetDocument()
+          .getElementById(AtomicString("body_menu"))
+          ->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+          ->GetLayoutObject();
+  body_object->SetNeedsPaintPropertyUpdate();
+  EXPECT_TRUE(body_area_parent->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(DocScroll()->Parent(), area_parent_scroll("body_menu"));
+  EXPECT_EQ(body_scroll->Parent(), DocScroll());
+
+  // Updating the LayoutView, e.g. when the document scrolls, also updates the
+  // body's overscroll area parents and keeps the reparented scroll tree.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  EXPECT_TRUE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(body_object->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(body_area_parent->NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(DocScroll()->Parent(), area_parent_scroll("body_menu"));
+  EXPECT_EQ(body_scroll->Parent(), DocScroll());
+
+  GetDocument().GetLayoutView()->SetNeedsPaintPropertyUpdate();
+  EXPECT_TRUE(body_object->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(body_area_parent->NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(DocScroll()->Parent(), area_parent_scroll("body_menu"));
+  EXPECT_EQ(body_scroll->Parent(), DocScroll());
+}
+
+// The LayoutView removes the scroll nodes of removed overscroll area parents of
+// the body from its reparented scroll tree.
+TEST_P(PaintPropertyTreeBuilderTest, OverscrollAreaParentOfBodyRemoved) {
+  ScopedCSSScrollSnapTypePairForTest scroll_snap_type_pair_enabled(true);
+  ScopedOverscrollAreasForTest overscroll_areas_enabled(true);
+  GetDocument().body()->SetAttributeWithoutValidation(
+      html_names::kOverscrollcontainerAttr, g_empty_atom);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      /* The areas stay out of flow when they are no longer overscroll areas,
+         so that removing them doesn't change the size of the document. */
+      .menu { position: absolute; width: 100px; height: 100px; }
+    </style>
+    <div id="top" class="menu" style="bottom: 100%" overscrollarea></div>
+    <div id="left" class="menu" style="right: 100%" overscrollarea></div>
+    <div id="bottom" class="menu" style="top: 100%" overscrollarea></div>
+    <button id="top_button" command="toggle-overscroll" commandfor="top">
+    </button>
+    <button id="left_button" command="toggle-overscroll" commandfor="left">
+    </button>
+    <button id="bottom_button" command="toggle-overscroll" commandfor="bottom">
+    </button>
+    <div style="height: 2000px"></div>
+  )HTML");
+
+  auto area_parent_scroll =
+      [&](const char* area_id) -> const ScrollPaintPropertyNode* {
+    const auto* area_parent =
+        GetDocument()
+            .getElementById(AtomicString(area_id))
+            ->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    if (!area_parent) {
+      return nullptr;
+    }
+    return area_parent->GetLayoutObject()
+        ->FirstFragment()
+        .PaintProperties()
+        ->Scroll();
+  };
+
+  // The scroll nodes of the overscroll area parents are between the
+  // LayoutView's scroll node and its original parent, in tree order.
+  ASSERT_TRUE(area_parent_scroll("top"));
+  ASSERT_TRUE(area_parent_scroll("left"));
+  ASSERT_TRUE(area_parent_scroll("bottom"));
+  const auto* viewport_scroll = area_parent_scroll("top")->Parent();
+  EXPECT_EQ(area_parent_scroll("left")->Parent(), area_parent_scroll("top"));
+  EXPECT_EQ(area_parent_scroll("bottom")->Parent(), area_parent_scroll("left"));
+  EXPECT_EQ(DocScroll()->Parent(), area_parent_scroll("bottom"));
+
+  // Without an invoker, an element is not an overscroll area.
+  GetDocument().getElementById(AtomicString("left_button"))->remove();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(area_parent_scroll("left"));
+  EXPECT_EQ(area_parent_scroll("top")->Parent(), viewport_scroll);
+  EXPECT_EQ(area_parent_scroll("bottom")->Parent(), area_parent_scroll("top"));
+  EXPECT_EQ(DocScroll()->Parent(), area_parent_scroll("bottom"));
+
+  GetDocument().getElementById(AtomicString("bottom_button"))->remove();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(area_parent_scroll("bottom"));
+  EXPECT_EQ(area_parent_scroll("top")->Parent(), viewport_scroll);
+  EXPECT_EQ(DocScroll()->Parent(), area_parent_scroll("top"));
+
+  GetDocument().body()->removeAttribute(html_names::kOverscrollcontainerAttr);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(area_parent_scroll("top"));
+  EXPECT_EQ(DocScroll()->Parent(), viewport_scroll);
+}
+
+// The root scroller does not move a fixed-positioned body, so its overscroll
+// areas reparent the body's scroll node rather than the LayoutView's.
+TEST_P(PaintPropertyTreeBuilderTest,
+       OverscrollAreaParentOfFixedBodyChainsBeforeViewport) {
+  ScopedCSSScrollSnapTypePairForTest scroll_snap_type_pair_enabled(true);
+  ScopedOverscrollAreasForTest overscroll_areas_enabled(true);
+  GetDocument().body()->SetAttributeWithoutValidation(
+      html_names::kOverscrollcontainerAttr, g_empty_atom);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { position: fixed; inset: 0; margin: 0; }
+      .menu { width: 100px; height: 100px; bottom: 100%; }
+    </style>
+    <div id="body_menu" class="menu" overscrollarea></div>
+    <button command="toggle-overscroll" commandfor="body_menu"></button>
+  )HTML");
+
+  const auto* area_parent =
+      GetDocument()
+          .getElementById(AtomicString("body_menu"))
+          ->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(area_parent);
+  const auto* area_parent_scroll = area_parent->GetLayoutObject()
+                                       ->FirstFragment()
+                                       .PaintProperties()
+                                       ->Scroll();
+  const auto* body_scroll = GetDocument()
+                                .body()
+                                ->GetLayoutObject()
+                                ->FirstFragment()
+                                .PaintProperties()
+                                ->Scroll();
+  EXPECT_EQ(body_scroll->Parent(), area_parent_scroll);
+  EXPECT_EQ(area_parent_scroll->Parent(), DocScroll());
 }
 
 class SingleAxisPaintPropertyTest : public PaintPropertyTreeBuilderTest {
