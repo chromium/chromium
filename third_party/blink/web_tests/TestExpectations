@@ -8535,3 +8535,6 @@ crbug.com/581567966 [ Win11-arm64 ] fast/block/float/float-avoidance.html [ Fail
 
 # Forced-layout queries on SVG resource references in display-locked subtrees
 crbug.com/576326793 external/wpt/css/css-contain/content-visibility/content-visibility-svg-textpath.html [ Failure ]
+
+# Gardener 2026-11-05
+crbug.com/566874115 [ Linux ] virtual/fedcm-delegation/external/wpt/fedcm/fedcm-delegation/evt-basic.https.html [ Failure Pass ]
