@@ -496,8 +496,10 @@ class AdditionalWindowingControlsExecutionTest
  protected:
   void SetUp() override {
     mock_chrome_client_ = MakeGarbageCollected<MockChromeClient>();
-    page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600),
-                                                     mock_chrome_client_);
+    // Commit a navigation so the window has a tuple (non-opaque) origin;
+    // opaque-origin windows are never isolated contexts.
+    page_holder_ = DummyPageHolder::CreateAndCommitNavigation(
+        KURL("https://example.com"), gfx::Size(800, 600), mock_chrome_client_);
 
     if (GetParam().initial_state.has_value()) {
       if (auto* widget = page_holder_->GetFrame().GetWidgetForLocalRoot()) {

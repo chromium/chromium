@@ -211,7 +211,10 @@ bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
 }
 
 bool SharedWorkerGlobalScope::IsIsolatedContext() const {
-  return Agent::IsIsolatedContext();
+  // See `LocalDOMWindow::IsIsolatedContext()`. E.g., a data: URL shared worker
+  // created by an isolated context has an opaque origin, and is not one.
+  const SecurityOrigin* origin = GetSecurityOrigin();
+  return Agent::IsIsolatedContext() && origin && !origin->IsOpaque();
 }
 
 }  // namespace blink

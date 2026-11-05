@@ -826,6 +826,57 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
               Eq(content::WebExposedIsolationLevel::kNotIsolated));
 }
 
+// Without `kIsolateSandboxedIframes`, a sandboxed iframe stays in the IWA's
+// isolated process. It is a secure context with an opaque origin, so it must
+// not be an isolated context: an opaque origin can never be an IWA origin. See
+// https://wicg.github.io/isolated-web-apps/isolated-contexts.html#isolated-context.
+class IsolatedWebAppApiAccessInProcessSandboxBrowserTest
+    : public IsolatedWebAppApiAccessBrowserTest {
+ public:
+  IsolatedWebAppApiAccessInProcessSandboxBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kWebPrinting},
+        /*disabled_features=*/{blink::features::kIsolateSandboxedIframes});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessInProcessSandboxBrowserTest,
+                       NoApiAccessInSandboxedIframe) {
+  IsolatedWebAppUrlInfo url_info = InstallAppWithSocketPermission();
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // `TCPSocket` is gated on the DirectSockets runtime feature, and `printing`
+  // on [IsolatedContext]; check both mechanisms.
+  ASSERT_THAT(EvalJs(app_frame, "'TCPSocket' in window"), Eq(true));
+  ASSERT_THAT(EvalJs(app_frame, "'printing' in window"), Eq(true));
+
+  std::string start_url = url_info.origin().GetURL().spec();
+  ASSERT_TRUE(ExecJs(app_frame, content::JsReplace(R"(
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.src = $1;
+        f.sandbox = 'allow-scripts';  // for EvalJs
+        f.addEventListener('load', resolve);
+        document.body.appendChild(f);
+      });
+  )",
+                                                   start_url)));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 0);
+  ASSERT_THAT(iframe, Ne(nullptr));
+  // The point of this test: the iframe shares the IWA's isolated process.
+  ASSERT_THAT(iframe->GetProcess(), Eq(app_frame->GetProcess()));
+
+  EXPECT_THAT(EvalJs(iframe, "window.origin"), Eq("null"));
+  EXPECT_THAT(EvalJs(iframe, "window.isSecureContext"), Eq(true));
+  EXPECT_THAT(EvalJs(iframe, "'TCPSocket' in window"), Eq(false));
+  EXPECT_THAT(EvalJs(iframe, "'printing' in window"), Eq(false));
+  EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
+              Eq(content::WebExposedIsolationLevel::kNotIsolated));
+}
+
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
                        CspInheritedInSrcdocIframe) {
   IsolatedWebAppUrlInfo url_info = InstallAppWithSocketPermission();

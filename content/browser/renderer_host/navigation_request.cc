@@ -10263,7 +10263,11 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (IsIsolatedContext(GetRenderFrameHost()->GetProcess()) ||
+  // Documents with an opaque origin (e.g. sandboxed iframes that weren't moved
+  // to their own process) can share an isolated process, but are not isolated
+  // contexts. See `blink::LocalDOMWindow::IsIsolatedContext()`.
+  if ((IsIsolatedContext(GetRenderFrameHost()->GetProcess()) &&
+       origin_to_commit && !origin_to_commit->opaque()) ||
       (origin_to_commit &&
        GetContentClient()->browser()->GetDirectSocketsDelegate() &&
        GetContentClient()

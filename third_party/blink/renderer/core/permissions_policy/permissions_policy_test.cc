@@ -1551,7 +1551,10 @@ class FeaturePolicyVisibilityTest
 INSTANTIATE_TEST_SUITE_P(All, FeaturePolicyVisibilityTest, testing::Bool());
 
 TEST_P(FeaturePolicyVisibilityTest, VerifyIsolated) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>();
+  // Opaque-origin windows are never isolated contexts, so commit a navigation
+  // to a tuple origin.
+  auto dummy_page_holder =
+      DummyPageHolder::CreateAndCommitNavigation(KURL("https://example.test"));
   ExecutionContext* execution_context =
       dummy_page_holder->GetFrame().DomWindow();
 
@@ -1569,6 +1572,22 @@ TEST_P(FeaturePolicyVisibilityTest, VerifyIsolated) {
   EXPECT_EQ(GetDefaultFeatureNameMap(is_isolated_context)
                 .Contains(kDirectSocketsFeature),
             GetIsIsolated());
+  Agent::ResetIsIsolatedContextForTest();
+}
+
+// A window with an opaque origin is not an isolated context, even if its
+// process is isolated.
+TEST_P(FeaturePolicyVisibilityTest, OpaqueOriginIsNeverIsolated) {
+  // The initial empty document of a new frame has an opaque origin.
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>();
+  ExecutionContext* execution_context =
+      dummy_page_holder->GetFrame().DomWindow();
+  ASSERT_TRUE(execution_context->GetSecurityOrigin()->IsOpaque());
+
+  Agent::ResetIsIsolatedContextForTest();
+  Agent::SetIsIsolatedContext(GetIsIsolated());
+  EXPECT_FALSE(execution_context->IsIsolatedContext());
+  Agent::ResetIsIsolatedContextForTest();
 }
 
 TEST_F(PermissionsPolicyParserTest, ParseIsolatedAppPermissionsPolicy) {

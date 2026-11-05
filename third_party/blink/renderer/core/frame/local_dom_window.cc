@@ -2738,7 +2738,13 @@ bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
 }
 
 bool LocalDOMWindow::IsIsolatedContext() const {
-  return Agent::IsIsolatedContext();
+  // `Agent::IsIsolatedContext()` is process-wide. Windows with an opaque origin
+  // (e.g. sandboxed iframes that weren't moved to their own process) can share
+  // an isolated process, but are never isolated contexts, since an opaque
+  // origin can't be in the origin integrity verification map. See
+  // https://wicg.github.io/isolated-web-apps/isolated-contexts.html#isolated-context.
+  const SecurityOrigin* origin = GetSecurityOrigin();
+  return Agent::IsIsolatedContext() && origin && !origin->IsOpaque();
 }
 
 ukm::UkmRecorder* LocalDOMWindow::UkmRecorder() {
