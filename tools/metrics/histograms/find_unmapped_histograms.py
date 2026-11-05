@@ -222,23 +222,28 @@ HISTOGRAM_FUNCTION_SUFFIXES = frozenset(
 )
 
 
+def _git(command: list[str]) -> subprocess.CompletedProcess[str]:
+  """Runs a git subcommand, capturing its decoded stdout."""
+  # On Windows, use shell=True to get PATH interpretation.
+  return subprocess.run(
+    ['git', '--no-pager', *command],
+    shell=os.name == 'nt',
+    stdout=subprocess.PIPE,
+    encoding='utf-8',
+    errors='replace',
+    check=False,
+  )
+
+
 def _git_cmd_available(command: list[str]) -> bool:
   """Checks if the specific git command is present in the current env"""
-  cmd = ['git', '--no-pager']
-  cmd.extend(command)
-  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-  return proc.wait() == 0
+  return _git(command).returncode == 0
 
 
 def _run_git(command: list[str]) -> str:
   """Run a git subcommand, returning its output."""
-  # On Windows, use shell=True to get PATH interpretation.
-  command = ['git'] + command
-  logging.info(' '.join(command))
-  shell = os.name == 'nt'
-  proc = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE)
-  out = proc.communicate()[0].strip().decode('utf-8')
-  return out
+  logging.info(' '.join(['git', *command]))
+  return _git(command).stdout.strip()
 
 
 class DirectoryNotFoundException(Exception):
@@ -421,7 +426,7 @@ def _find_histograms(
   location_map = dict()
   unknown_symbols = set()
   for filename in filenames:
-    with open(filename, 'r') as f:
+    with open(filename, encoding='utf-8', errors='replace') as f:
       contents = _remove_comments(f.read())
 
     for match in regex.finditer(contents):
@@ -571,7 +576,7 @@ def _output_log(
 
 def main() -> None:
   # Find default paths.
-  default_root = path_util.GetInputFile('/')
+  default_root = str(path_util.CHROMIUM_SRC_PATH)
 
   # Parse command line options
   parser = optparse.OptionParser()
@@ -649,7 +654,7 @@ def main() -> None:
   else:
     _output_log(unmapped_histograms, location_map, options.verbose)
 
-  sys.exit(len(unmapped_histograms))
+  sys.exit(1 if unmapped_histograms else 0)
 
 
 if __name__ == '__main__':

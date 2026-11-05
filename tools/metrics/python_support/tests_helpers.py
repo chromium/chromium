@@ -137,9 +137,6 @@ _TESTABLE_SCRIPTS: List[TestableScript] = [
   TestableScript.CreatePythonScript(
     file_path=pathlib.Path('tools/metrics/ukm/validate_format.py')
   ),
-  # TODO(crbug.com/488362727): Fix the unmapped histograms.
-  # TestableScript.CreatePythonScript(file_path=pathlib.Path(
-  #      'tools/metrics/histograms/find_unmapped_histograms.py')),
 ]
 
 
