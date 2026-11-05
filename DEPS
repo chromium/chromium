@@ -3067,7 +3067,7 @@ deps = {
     Var('chromium_git') + '/external/search_engines_data.git' + '@' + '5dc9f1afd38a8ac2b26b1972eb4fc1bbd5754e8c',
 
   'src/third_party/search_engines_data/resources_internal': {
-    'url': Var('chrome_git') + '/external/search_engines_data_internal.git' + '@' + '7c90875a405251ca4b5407fff7759f08bc8069d1',
+    'url': Var('chrome_git') + '/external/search_engines_data_internal.git' + '@' + '348335df388bf9a9634bca40a487e5ac07fc949b',
     'condition': 'checkout_src_internal',
   },
 
