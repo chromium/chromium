@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- A button in a FloatingPillView, see FloatingPillView#addButton(). -->
+<org.chromium.ui.widget.ChromeImageButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/floating_pill_button_size"
+    android:layout_height="@dimen/floating_pill_button_size"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:scaleType="center"
+    app:tint="@color/default_icon_color_tint_list" />

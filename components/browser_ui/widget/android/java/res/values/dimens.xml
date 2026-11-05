@@ -291,6 +291,9 @@ found in the LICENSE file.
 
     <!-- Floating pill -->
     <dimen name="floating_pill_height">56dp</dimen>
+    <dimen name="floating_pill_corner_radius">100dp</dimen>
+    <dimen name="floating_pill_padding_horizontal">16dp</dimen>
+    <dimen name="floating_pill_button_size">48dp</dimen>
     <dimen name="floating_pill_margin_top">16dp</dimen>
     <dimen name="floating_pill_glow_padding">20dp</dimen>
     <dimen name="floating_pill_glow_soft_blur">8dp</dimen>

@@ -22,14 +22,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 
 /**
- * Holds floating pills: fully rounded controls that float over the page, e.g. on the bottom edge of
- * the toolbar. It paints a glow behind each visible pill and pads itself to leave room for the
- * glow, and touches outside the pills go through to the views below. The pills are laid out in a
- * row.
+ * Holds floating pills, such as {@link FloatingPillView}s: fully rounded controls that float over
+ * the page, e.g. on the bottom edge of the toolbar. It paints a glow behind each visible pill and
+ * pads itself to leave room for the glow, and touches outside the pills go through to the views
+ * below. The pills are laid out in a row.
  *
- * <p>The pills must be fully rounded and not animated: the glow follows their layout position, not
- * their translation, scale or alpha. The container sets its own padding, for the glow, as well as
- * its orientation and gravity.
+ * <p>The pills must be fully rounded, like {@link FloatingPillView}, and not animated: the glow
+ * follows their layout position, not their translation, scale or alpha. The container sets its own
+ * padding, for the glow, as well as its orientation and gravity.
  *
  * <p>Use {@link #getTopMargin} to place the container on the bottom edge of the top controls.
  */

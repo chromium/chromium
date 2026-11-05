@@ -209,4 +209,13 @@ found in the LICENSE file.
         <item name="android:textColor">@color/navigation_pane_text_color_list</item>
     </style>
 
+    <!-- The default look of a FloatingPillView. -->
+    <style name="FloatingPill">
+        <item name="android:background">@drawable/floating_pill_background</item>
+        <item name="android:minHeight">@dimen/floating_pill_height</item>
+        <item name="android:paddingStart">@dimen/floating_pill_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/floating_pill_padding_horizontal</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
 </resources>
