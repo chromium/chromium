@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
+#include "net/base/is_potentially_trustworthy.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -56,7 +57,6 @@ void ProtoStreamClient::Connect() {
     return;
   }
   consecutive_failed_attempts_ = 0;
-  status_received_ = false;
   StartRequest();
 }
 
@@ -96,6 +96,11 @@ void ProtoStreamClient::StartRequest() {
   CHECK(!loader_);
   CHECK(!connected_);
 
+  if (!endpoint_.is_valid() || !net::IsUrlPotentiallyTrustworthy(endpoint_)) {
+    TearDown();
+    return;
+  }
+
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = endpoint_;
   request->method = "GET";
@@ -104,6 +109,7 @@ void ProtoStreamClient::StartRequest() {
   request->headers.SetHeader("Accept", "application/x-protobuf");
   request->headers.SetHeader("Cache-Control", "no-cache");
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  request->redirect_mode = network::mojom::RedirectMode::kError;
 
   // The delegate may prepare the request asynchronously (e.g. minting an
   // OAuth token); the weak pointer cancels the attempt if the client is
@@ -125,6 +131,11 @@ void ProtoStreamClient::OnRequestPrepared(
     // like a failed connection: retry with backoff.
     ++consecutive_failed_attempts_;
     ScheduleReconnect();
+    return;
+  }
+  if (!request->url.is_valid() ||
+      !net::IsUrlPotentiallyTrustworthy(request->url)) {
+    TearDown();
     return;
   }
 
@@ -153,6 +164,10 @@ void ProtoStreamClient::OnResponseStarted(
     const network::mojom::URLResponseHead& response_head) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!final_url.is_valid() || !net::IsUrlPotentiallyTrustworthy(final_url)) {
+    TearDown();
+    return;
+  }
   const int response_code =
       response_head.headers ? response_head.headers->response_code() : 0;
   if (response_code != 200 ||
@@ -210,6 +225,13 @@ void ProtoStreamClient::OnDataReceived(std::string_view chunk,
   // Hand the untrusted bytes to the framer; C++ never interprets them.
   StreamFramer::FeedResult result = framer_->Feed(chunk);
 
+  if (result.failed) {
+    // The framer rejected the stream: it is malformed or hostile. Fail
+    // permanently before dispatching any messages from the corrupted chunk.
+    TearDown();
+    return;
+  }
+
   for (const std::string& message : result.messages) {
     {
       base::AutoReset<bool> calling(&calling_delegate_, true);
@@ -231,9 +253,9 @@ void ProtoStreamClient::OnDataReceived(std::string_view chunk,
   }
 
   if (result.status.has_value()) {
-    // The RPC completed; the server will close the connection. Deliver the
-    // status and make sure the close does not trigger a reconnect.
-    status_received_ = true;
+    // The RPC completed; deliver the terminal status and tear down the
+    // stream immediately so trailing bytes on a half-open connection are
+    // ignored and no automatic reconnect is scheduled.
     {
       base::AutoReset<bool> notifying(&notifying_observers_, true);
       for (Observer& observer : observers_) {
@@ -243,11 +265,6 @@ void ProtoStreamClient::OnDataReceived(std::string_view chunk,
     if (RunDeferredTeardown()) {
       return;
     }
-  }
-
-  if (result.failed) {
-    // The framer rejected the stream: it is malformed or hostile. Fail
-    // permanently rather than keep talking to a broken server.
     TearDown();
     return;
   }
@@ -259,12 +276,6 @@ void ProtoStreamClient::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   stall_timer_.Stop();
-
-  if (status_received_) {
-    // Clean RPC completion; not something to retry automatically.
-    TearDown();
-    return;
-  }
 
   const bool had_stream = connected_;
   if (!had_stream) {

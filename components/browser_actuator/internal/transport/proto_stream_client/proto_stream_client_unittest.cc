@@ -109,9 +109,10 @@ class ProtoStreamClientTest : public testing::Test {
 
   std::unique_ptr<ProtoStreamClient> MakeClient(
       std::unique_ptr<StreamConnectionDelegate> delegate =
-          std::make_unique<DefaultStreamConnectionDelegate>()) {
+          std::make_unique<DefaultStreamConnectionDelegate>(),
+      GURL endpoint = GURL(kEndpoint)) {
     return std::make_unique<ProtoStreamClient>(
-        test_url_loader_factory_.GetSafeWeakWrapper(), GURL(kEndpoint),
+        test_url_loader_factory_.GetSafeWeakWrapper(), std::move(endpoint),
         std::move(delegate),
         base::BindRepeating(&ProtoStreamClientTest::MakeFramer,
                             base::Unretained(this)),
@@ -173,6 +174,7 @@ TEST_F(ProtoStreamClientTest, ConnectReceivesMessages) {
   EXPECT_EQ(requests_[0].headers.GetHeader("Accept"), "application/x-protobuf");
   EXPECT_EQ(requests_[0].credentials_mode,
             network::mojom::CredentialsMode::kOmit);
+  EXPECT_EQ(requests_[0].redirect_mode, network::mojom::RedirectMode::kError);
 
   client->RemoveObserver(&observer);
 }
@@ -817,6 +819,119 @@ TEST_F(ProtoStreamClientTest, UploadsDelegateBodyAsPost) {
 
   EXPECT_EQ(requests_[0].method, "POST");
   EXPECT_EQ(network::GetUploadData(requests_[0]), "watch-request-bytes");
+}
+
+TEST_F(ProtoStreamClientTest, UntrustworthyEndpointFailsWithoutSendingRequest) {
+  RecordingObserver observer;
+  std::unique_ptr<ProtoStreamClient> insecure_client =
+      MakeClient(std::make_unique<DefaultStreamConnectionDelegate>(),
+                 GURL("http://example.com/v1/stream?alt=proto"));
+  insecure_client->AddObserver(&observer);
+  insecure_client->Connect();
+  task_environment_.FastForwardBy(base::Minutes(30));
+
+  EXPECT_TRUE(requests_.empty());
+  EXPECT_FALSE(insecure_client->IsConnected());
+  insecure_client->RemoveObserver(&observer);
+
+  // If `PrepareRequest()` rewrites the URL to an untrustworthy origin,
+  // `OnRequestPrepared()` aborts before dispatching the request over the wire.
+  const GURL cleartext_url("http://example.com/v1/stream?alt=proto");
+  auto rewriting_delegate =
+      std::make_unique<NiceMock<MockStreamConnectionDelegate>>();
+  ON_CALL(*rewriting_delegate, PrepareRequest)
+      .WillByDefault(
+          [cleartext_url](
+              std::unique_ptr<network::ResourceRequest> request,
+              StreamConnectionDelegate::PrepareRequestCallback callback) {
+            request->url = cleartext_url;
+            std::move(callback).Run(std::move(request));
+          });
+  std::unique_ptr<ProtoStreamClient> rewritten_client =
+      MakeClient(std::move(rewriting_delegate));
+  rewritten_client->AddObserver(&observer);
+  rewritten_client->Connect();
+  task_environment_.FastForwardBy(base::Minutes(30));
+
+  EXPECT_TRUE(requests_.empty());
+  EXPECT_EQ(framers_minted_, 0);
+  EXPECT_TRUE(observer.messages.empty());
+  EXPECT_FALSE(rewritten_client->IsConnected());
+  rewritten_client->RemoveObserver(&observer);
+
+  // Localhost cleartext HTTP remains potentially trustworthy for local E2E.
+  const GURL localhost_url("http://localhost:9876/v1/stream?alt=proto");
+  test_url_loader_factory_.AddResponse(
+      localhost_url, MakeResponseHead("application/x-protobuf"), "local body",
+      network::URLLoaderCompletionStatus(net::OK));
+  std::unique_ptr<ProtoStreamClient> localhost_client = MakeClient(
+      std::make_unique<DefaultStreamConnectionDelegate>(), localhost_url);
+  localhost_client->AddObserver(&observer);
+  localhost_client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return !observer.messages.empty(); }));
+  EXPECT_THAT(observer.messages, ElementsAre("local body"));
+  localhost_client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest,
+       MalformedChunkAbortsBeforeDeliveringPartialMessages) {
+  ServeStream("corrupted chunk");
+  feed_handler_ = base::BindRepeating([](const std::string& chunk) {
+    StreamFramer::FeedResult result;
+    result.messages = {"message before bad trailing tag"};
+    result.failed = true;
+    return result;
+  });
+
+  RecordingObserver observer;
+  std::unique_ptr<ProtoStreamClient> client = MakeClient();
+  client->AddObserver(&observer);
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return observer.state_changes.size() >= 2u; }));
+
+  EXPECT_TRUE(observer.messages.empty());
+  EXPECT_THAT(observer.state_changes, ElementsAre(true, false));
+  EXPECT_FALSE(client->IsConnected());
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, TerminalStatusTearsDownOpenStreamImmediately) {
+  feed_handler_ = base::BindRepeating([](const std::string& chunk) {
+    StreamFramer::FeedResult result;
+    result.messages = {"final message"};
+    result.status = "serialized rpc status";
+    return result;
+  });
+
+  RecordingObserver observer;
+  std::unique_ptr<ProtoStreamClient> client = MakeClient();
+  client->AddObserver(&observer);
+  client->Connect();
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer, consumer), MOJO_RESULT_OK);
+  pending->client->OnReceiveResponse(MakeResponseHead("application/x-protobuf"),
+                                     std::move(consumer), std::nullopt);
+  ASSERT_TRUE(WaitFor([&] { return client->IsConnected(); }));
+
+  std::string_view bytes = "status frame";
+  size_t written = 0;
+  ASSERT_EQ(producer->WriteData(base::as_byte_span(bytes),
+                                MOJO_WRITE_DATA_FLAG_NONE, written),
+            MOJO_RESULT_OK);
+  // Even though `producer` is still open and `OnComplete()` was never sent,
+  // receiving terminal status immediately tears down the stream.
+  ASSERT_TRUE(WaitFor([&] { return observer.state_changes.size() >= 2u; }));
+  EXPECT_FALSE(client->IsConnected());
+  EXPECT_THAT(observer.messages, ElementsAre("final message"));
+  EXPECT_THAT(observer.statuses, ElementsAre("serialized rpc status"));
+
+  client->RemoveObserver(&observer);
 }
 
 }  // namespace

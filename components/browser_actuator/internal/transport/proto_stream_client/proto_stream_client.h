@@ -165,10 +165,6 @@ class ProtoStreamClient : public MessageStreamClient,
   // True while waiting for the delegate's PrepareRequest callback.
   bool preparing_request_ = false;
 
-  // A terminal `status` field arrived: the RPC completed, so the stream's
-  // end must not trigger a reconnect.
-  bool status_received_ = false;
-
   // Number of consecutive connection attempts that failed before producing
   // a valid stream; drives exponential backoff.
   int consecutive_failed_attempts_ = 0;
