@@ -643,9 +643,14 @@ std::vector<GURL> GetURLsFromOpenInIncognitoIntent(INIntent* intent) {
 
 // Returns the list of URLs from an `OpenInChromeIntent`.
 std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
-  OpenInChromeIntent* typed_intent =
-      base::apple::ObjCCastStrict<OpenInChromeIntent>(intent);
-  return GURLVectorWithNSURLArray(typed_intent.url);
+  id intent_url = base::apple::ObjCCastStrict<OpenInChromeIntent>(intent).url;
+  // Old versions of the intent, which can still be passed to Chrome by
+  // shortcuts saved long ago (see crbug.com/1133825), declare `url` as a single
+  // `NSURL` rather than an array.
+  if ([intent_url isKindOfClass:[NSURL class]]) {
+    intent_url = @[ intent_url ];
+  }
+  return GURLVectorWithNSURLArray(base::apple::ObjCCast<NSArray>(intent_url));
 }
 
 // Open an URL coming from spotlight.

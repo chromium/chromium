@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -187,15 +188,15 @@ class TaskRequestForUserActivityTest : public PlatformTest {
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
   }
 
-  // Executes a `SearchInChromeIntent` with `search_phrase`.
-  void ExecuteSearchInChromeIntent(NSString* search_phrase) {
-    SearchInChromeIntent* intent = [[SearchInChromeIntent alloc] init];
-    intent.searchPhrase = search_phrase;
-    INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
-                                                              response:nil];
+  // Executes a user activity of `activity_type` carrying `intent`. The
+  // interaction is mocked because `-[INInteraction initWithIntent:response:]`
+  // copies the intent, which fails for legacy payloads.
+  void ExecuteIntent(NSString* activity_type, INIntent* intent) {
+    id interaction = OCMClassMock([INInteraction class]);
+    OCMStub([(INInteraction*)interaction intent]).andReturn(intent);
     id user_activity = OCMClassMock([NSUserActivity class]);
     OCMStub([(NSUserActivity*)user_activity activityType])
-        .andReturn(kSiriShortcutSearchInChrome);
+        .andReturn(activity_type);
     OCMStub([(NSUserActivity*)user_activity interaction])
         .andReturn(interaction);
 
@@ -204,6 +205,21 @@ class TaskRequestForUserActivityTest : public PlatformTest {
                                                      sceneState:scene_state_
                                                     isColdStart:NO];
     [request execute];
+  }
+
+  // Executes a `SearchInChromeIntent` with `search_phrase`.
+  void ExecuteSearchInChromeIntent(NSString* search_phrase) {
+    SearchInChromeIntent* intent = [[SearchInChromeIntent alloc] init];
+    intent.searchPhrase = search_phrase;
+    ExecuteIntent(kSiriShortcutSearchInChrome, intent);
+  }
+
+  // Executes an `OpenInChromeIntent` whose `url` holds a single `NSURL`, as
+  // provided by old versions of the intent.
+  void ExecuteLegacyOpenInChromeIntent(NSString* url_string) {
+    OpenInChromeIntent* intent = [[OpenInChromeIntent alloc] init];
+    [intent setValue:[NSURL URLWithString:url_string] forKey:@"url"];
+    ExecuteIntent(kSiriShortcutOpenInChrome, intent);
   }
 };
 
@@ -346,4 +362,37 @@ TEST_F(TaskRequestForUserActivityTest,
   EXPECT_EQ(test_tab_opener_.urlLoadParams.web_params.url,
             GURL(kChromeUINewTabURL));
   EXPECT_TRUE(test_tab_opener_.hasCompletion);
+}
+
+// Tests that an `OpenInChromeIntent` with a legacy single `NSURL` payload opens
+// that URL.
+TEST_F(TaskRequestForUserActivityTest, OpenInChromeWithLegacySingleURL) {
+  ExecuteLegacyOpenInChromeIntent(@"https://www.example.com/");
+
+  EXPECT_EQ(test_tab_opener_.targetMode, ApplicationModeForTabOpening::NORMAL);
+  EXPECT_EQ(test_tab_opener_.urlLoadParams.web_params.url,
+            GURL("https://www.example.com/"));
+}
+
+// Tests that an `OpenInChromeIntent` with a legacy single `NSURL` payload does
+// not open non-http(s) URLs, like array payloads.
+TEST_F(TaskRequestForUserActivityTest,
+       OpenInChromeWithLegacySingleNonHttpURLIsIgnored) {
+  ExecuteLegacyOpenInChromeIntent(@"chrome://version/");
+
+  EXPECT_FALSE(test_tab_opener_.urlLoadParams.web_params.url.is_valid());
+}
+
+// Tests that an `OpenInChromeIntent` with an array payload only opens
+// http(s) URLs.
+TEST_F(TaskRequestForUserActivityTest, OpenInChromeWithURLArrayDropsNonHttp) {
+  OpenInChromeIntent* intent = [[OpenInChromeIntent alloc] init];
+  intent.url = @[
+    [NSURL URLWithString:@"chrome://version/"],
+    [NSURL URLWithString:@"https://www.example.com/"],
+  ];
+  ExecuteIntent(kSiriShortcutOpenInChrome, intent);
+
+  EXPECT_EQ(test_tab_opener_.urlLoadParams.web_params.url,
+            GURL("https://www.example.com/"));
 }
