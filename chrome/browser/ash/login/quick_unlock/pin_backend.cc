@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
 #include "base/base64.h"
 #include "base/check_deref.h"
@@ -604,10 +603,6 @@ void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
 
 void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
                                        size_t pin_length) {
-  if (!features::IsPinAutosubmitBackfillFeatureEnabled()) {
-    return;
-  }
-
   CHECK(local_state_);
   user_manager::KnownUser known_user(local_state_.get());
   // Don't backfill if its not necessary & Prevent future backfill attempts.

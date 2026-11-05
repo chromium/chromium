@@ -1376,12 +1376,6 @@ BASE_FEATURE(kQuickDim, base::FEATURE_ENABLED_BY_DEFAULT);
 // command-line flag.
 BASE_FEATURE(kQuickUnlockFingerprint, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1104164) - Remove this once most
-// users have their preferences backfilled.
-// Controls whether the PIN auto submit backfill operation should be performed.
-BASE_FEATURE(kQuickUnlockPinAutosubmitBackfill,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables reordering of screens in the recovery flow.
 BASE_FEATURE(kRecoveryFlowReorder, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2526,10 +2520,6 @@ bool IsPhoneHubCallNotificationEnabled() {
 
 bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubShortQuickActionPodsTitles);
-}
-
-bool IsPinAutosubmitBackfillFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmitBackfill);
 }
 
 bool IsProjectorAppDebugMode() {

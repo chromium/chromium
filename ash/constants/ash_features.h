@@ -624,10 +624,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSmbproviderdOnDemand);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kQuickUnlockFingerprint);
-// TODO(crbug.com/1104164) - Remove this once most users have their preferences
-// backfilled.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kQuickUnlockPinAutosubmitBackfill);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kRecoveryFlowReorder);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kReleaseNotesNotificationAllChannels);
@@ -1042,7 +1038,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubCallNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMouseImposterCheckEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSplitKeyboardRefactorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPickerUpdateEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitBackfillFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherImageSearchEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAppDebugMode();
