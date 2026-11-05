@@ -10,6 +10,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/test/base/testing_profile.h"
@@ -136,6 +137,19 @@ TEST_F(LensSearchControllerTest,
       lens::LensOverlayInvocationSource::kContextualTasksComposebox);
   EXPECT_EQ(controller_->invocation_source(),
             lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+}
+
+TEST_F(LensSearchControllerTest, LensOverlayControllerFromTabInterface) {
+  EXPECT_EQ(LensOverlayController::From(nullptr), nullptr);
+  EXPECT_NE(controller_->lens_overlay_controller(), nullptr);
+  EXPECT_EQ(LensOverlayController::From(&mock_tab_interface_),
+            controller_->lens_overlay_controller());
+
+  ui::UnownedUserDataHost empty_user_data_host;
+  tabs::MockTabInterface tab_without_lens;
+  ON_CALL(tab_without_lens, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(empty_user_data_host));
+  EXPECT_EQ(LensOverlayController::From(&tab_without_lens), nullptr);
 }
 
 }  // namespace lens

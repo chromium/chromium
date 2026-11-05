@@ -89,7 +89,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -3424,11 +3423,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadPageForContextMenu());
 
   // State should start in off.
-  auto* controller = browser()
-                         ->GetTabStripModel()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
+  auto* controller = LensOverlayController::From(
+      browser()->GetTabStripModel()->GetActiveTab());
   ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
 
   OpenContextMenuAndSelectRegionSearchEntrypoint(ui::EF_MOUSE_BUTTON,
@@ -3447,11 +3443,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
   // State should start in off.
-  auto* controller = browser()
-                         ->GetTabStripModel()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
+  auto* controller = LensOverlayController::From(
+      browser()->GetTabStripModel()->GetActiveTab());
   ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
 
   OpenContextMenuAndSelectSelectAll(

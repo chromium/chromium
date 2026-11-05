@@ -103,6 +103,10 @@ class LensOverlayController : public OverlayBaseController,
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
 
+  // Gets the LensOverlayController associated with `tab`. May return nullptr
+  // if no LensOverlayController is associated with `tab`.
+  static LensOverlayController* From(tabs::TabInterface* tab);
+
   // A simple utility that gets the the LensOverlayController TabFeature set by
   // the embedding tab of a lens WebUI hosted in `webui_web_contents`.
   // May return nullptr if no LensOverlayController TabFeature is associated

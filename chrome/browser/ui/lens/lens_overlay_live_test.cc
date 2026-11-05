@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -180,11 +179,8 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   }
 
   content::WebContents* GetOverlayWebContents() {
-    auto* controller = browser()
-                           ->GetTabStripModel()
-                           ->GetActiveTab()
-                           ->GetTabFeatures()
-                           ->lens_overlay_controller();
+    auto* controller = LensOverlayController::From(
+        browser()->GetTabStripModel()->GetActiveTab());
     return controller->GetOverlayWebViewForTesting()->GetWebContents();
   }
 
@@ -232,11 +228,8 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
 
   // Verifies the side panel opened and loaded a search URL in its iframe.
   void VerifySidePanelLoaded() {
-    auto* controller = browser()
-                           ->GetTabStripModel()
-                           ->GetActiveTab()
-                           ->GetTabFeatures()
-                           ->lens_overlay_controller();
+    auto* controller = LensOverlayController::From(
+        browser()->GetTabStripModel()->GetActiveTab());
 
     // Expect the Lens Overlay results panel to open.
     ASSERT_TRUE(base::test::RunUntil(
@@ -289,11 +282,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // State should start in off.
-  auto* controller = browser()
-                         ->GetTabStripModel()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
+  auto* controller = LensOverlayController::From(
+      browser()->GetTabStripModel()->GetActiveTab());
   ASSERT_EQ(controller->state(), State::kOff);
 
   auto* search_controller =
@@ -337,11 +327,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // State should start in off.
-  auto* controller = browser()
-                         ->GetTabStripModel()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
+  auto* controller = LensOverlayController::From(
+      browser()->GetTabStripModel()->GetActiveTab());
   ASSERT_EQ(controller->state(), State::kOff);
 
   auto* search_controller =
@@ -377,11 +364,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // State should start in off.
-  auto* controller = browser()
-                         ->GetTabStripModel()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
+  auto* controller = LensOverlayController::From(
+      browser()->GetTabStripModel()->GetActiveTab());
   ASSERT_EQ(controller->state(), State::kOff);
 
   auto* search_controller =

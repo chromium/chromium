@@ -818,11 +818,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   LensOverlayController* GetLensOverlayController() {
-    return browser()
-        ->GetTabStripModel()
-        ->GetActiveTab()
-        ->GetTabFeatures()
-        ->lens_overlay_controller();
+    return LensOverlayController::From(
+        browser()->GetTabStripModel()->GetActiveTab());
   }
 
   content::WebContents* GetOverlayWebContents() {
@@ -6010,11 +6007,8 @@ class LensOverlayControllerBrowserPDFTest
   }
 
   LensOverlayController* GetLensOverlayController() {
-    return browser()
-        ->GetTabStripModel()
-        ->GetActiveTab()
-        ->GetTabFeatures()
-        ->lens_overlay_controller();
+    return LensOverlayController::From(
+        browser()->GetTabStripModel()->GetActiveTab());
   }
 
   void OpenLensOverlay(LensOverlayInvocationSource invocation_source) {

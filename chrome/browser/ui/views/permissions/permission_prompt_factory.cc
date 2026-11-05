@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
@@ -102,7 +101,7 @@ bool ShouldIgnorePermissionRequest(
   if (tabs::TabInterface* active_tab =
           browser ? browser->GetTabStripModel()->GetActiveTab() : nullptr) {
     LensOverlayController* lens_overlay_controller =
-        active_tab->GetTabFeatures()->lens_overlay_controller();
+        LensOverlayController::From(active_tab);
     // Don't show prompt while the Lens Overlay is showing, except for
     // secondary UI surfaces with their own location bar (such as the
     // Contextual Tasks side panel) that are not covered by the overlay.

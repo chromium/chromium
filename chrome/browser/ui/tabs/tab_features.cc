@@ -139,7 +139,6 @@
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -419,20 +418,6 @@ std::optional<int64_t> GetPageContentAnnotationsTabId(
 
 TabFeatures::TabFeatures() = default;
 TabFeatures::~TabFeatures() = default;
-
-LensOverlayController* TabFeatures::lens_overlay_controller() {
-  // LensSearchController won't exist on non-normal windows.
-  return lens_search_controller_
-             ? lens_search_controller_->lens_overlay_controller()
-             : nullptr;
-}
-
-const LensOverlayController* TabFeatures::lens_overlay_controller() const {
-  // LensSearchController won't exist on non-normal windows.
-  return lens_search_controller_
-             ? lens_search_controller_->lens_overlay_controller()
-             : nullptr;
-}
 
 void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   CHECK(!initialized_);

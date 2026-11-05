@@ -69,7 +69,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -176,13 +175,6 @@ std::vector<std::string> JSONArrayToVector(const std::string& json_array) {
   return result;
 }
 
-LensOverlayController* GetLensOverlayControllerFromTabInterface(
-    tabs::TabInterface* tab_interface) {
-  return tab_interface
-             ? tab_interface->GetTabFeatures()->lens_overlay_controller()
-             : nullptr;
-}
-
 bool IsVisualSelectionType(lens::LensOverlaySelectionType selection_type) {
   return selection_type == lens::REGION_SEARCH ||
          selection_type == lens::TAP_ON_EMPTY ||
@@ -209,18 +201,23 @@ LensOverlayController::~LensOverlayController() = default;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController,
                                       kOverlaySidePanelWebViewId);
 
+// static
+LensOverlayController* LensOverlayController::From(tabs::TabInterface* tab) {
+  LensSearchController* search_controller = LensSearchController::From(tab);
+  return search_controller ? search_controller->lens_overlay_controller()
+                           : nullptr;
+}
+
 // static.
 LensOverlayController* LensOverlayController::FromWebUIWebContents(
     content::WebContents* webui_web_contents) {
-  return GetLensOverlayControllerFromTabInterface(
-      webui::GetTabInterface(webui_web_contents));
+  return From(webui::GetTabInterface(webui_web_contents));
 }
 
 // static.
 LensOverlayController* LensOverlayController::FromTabWebContents(
     content::WebContents* tab_web_contents) {
-  return GetLensOverlayControllerFromTabInterface(
-      tabs::TabInterface::GetFromContents(tab_web_contents));
+  return From(tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
 void LensOverlayController::CloseUI() {
