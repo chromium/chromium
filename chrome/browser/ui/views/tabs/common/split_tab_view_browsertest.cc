@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 
 #include "base/check.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -18,11 +19,16 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/compositor/canvas_painter.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -251,6 +257,157 @@ IN_PROC_BROWSER_TEST_P(SplitTabViewTest,
   EXPECT_EQ(
       unpinned_container->GetEventHandlerForPoint(point_in_trailing_split_tab),
       trailing_split_tab);
+}
+
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest, HoverSynchronizesAcrossSplitTabs) {
+  AppendSplitTab();
+  RunScheduledLayouts();
+
+  auto* split_node = unpinned_collection_node()->GetChildNodeOfType(
+      TabCollectionNode::Type::SPLIT);
+  ASSERT_TRUE(split_node);
+  auto* split_view = views::AsViewClass<SplitTabView>(split_node->view());
+  ASSERT_TRUE(split_view);
+  ASSERT_EQ(split_view->children().size(), 2u);
+
+  auto* tab1 = views::AsViewClass<TabView>(split_view->children()[0]);
+  auto* tab2 = views::AsViewClass<TabView>(split_view->children()[1]);
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+
+  EXPECT_FALSE(tab1->IsHoverAnimationActive());
+  EXPECT_FALSE(tab2->IsHoverAnimationActive());
+
+  ui::MouseEvent enter_event(ui::EventType::kMouseEntered, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  split_view->OnMouseEntered(enter_event);
+  EXPECT_TRUE(tab1->IsHoverAnimationActive());
+  EXPECT_TRUE(tab2->IsHoverAnimationActive());
+
+  ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
+                            gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  split_view->OnMouseExited(exit_event);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !tab1->IsHoverAnimationActive() && !tab2->IsHoverAnimationActive();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest,
+                       RemoveTabFromSplitReparentsRemainingTab) {
+  AppendSplitTab();
+  RunScheduledLayouts();
+
+  auto* split_node = unpinned_collection_node()->GetChildNodeOfType(
+      TabCollectionNode::Type::SPLIT);
+  ASSERT_TRUE(split_node);
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_strip_model()->GetSplitForTab(1);
+  ASSERT_TRUE(split_id.has_value());
+
+  tab_strip_model()->RemoveSplit(split_id.value());
+  RunScheduledLayouts();
+
+  EXPECT_EQ(unpinned_collection_node()->GetChildNodeOfType(
+                TabCollectionNode::Type::SPLIT),
+            nullptr);
+  EXPECT_EQ(tab_strip_model()->count(), 3);
+}
+
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest, CreateSplitUKMLogged) {
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder =
+      std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+  // Create two tabs with the first two being split.
+  GURL a_url = GURL("https://a.com");
+  GURL b_url = GURL("https://b.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  AppendTab();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  tab_strip_model()->ActivateTabAt(0);
+  tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Ensure UKM is recorded.
+  auto entries = ukm_recorder->GetEntriesByName(
+      ukm::builders::SplitView_Created::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  ukm_recorder->ExpectEntrySourceHasUrl(entries[0], a_url);
+  ukm_recorder->ExpectEntrySourceHasUrl(entries[1], b_url);
+  EXPECT_EQ(
+      *ukm_recorder->GetEntryMetric(
+          entries[0], ukm::builders::SplitView_Created::kSplitEventIdName),
+      *ukm_recorder->GetEntryMetric(
+          entries[1], ukm::builders::SplitView_Created::kSplitEventIdName));
+}
+
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest, SwapTabIntoSplitUKMLogged) {
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder =
+      std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+  // Create three tabs with the first two being split.
+  GURL a_url = GURL("https://a.com");
+  GURL b_url = GURL("https://b.com");
+  GURL c_url = GURL("https://c.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  AppendTab();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  AppendTab();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), c_url));
+  tab_strip_model()->ActivateTabAt(0);
+  tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Swap the first tab with the last.
+  tab_strip_model()->UpdateTabInSplit(
+      tab_strip_model()->GetTabAtIndex(0)->GetHandle(),
+      tab_strip_model()->GetTabAtIndex(2)->GetHandle(),
+      TabStripModel::SplitUpdateType::kSwap);
+
+  // Ensure UKM is recorded.
+  auto entries = ukm_recorder->GetEntriesByName(
+      ukm::builders::SplitView_Updated::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  ukm_recorder->ExpectEntrySourceHasUrl(entries[0], c_url);
+  ukm_recorder->ExpectEntrySourceHasUrl(entries[1], b_url);
+  EXPECT_EQ(
+      *ukm_recorder->GetEntryMetric(
+          entries[0], ukm::builders::SplitView_Updated::kSplitEventIdName),
+      *ukm_recorder->GetEntryMetric(
+          entries[1], ukm::builders::SplitView_Updated::kSplitEventIdName));
+}
+
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest, NavigateSplitTabUKMLogged) {
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder =
+      std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+  // Create two tabs with the first two being split.
+  GURL a_url = GURL("https://a.com");
+  GURL b_url = GURL("https://b.com");
+  GURL c_url = GURL("https://c.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  AppendTab();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  tab_strip_model()->ActivateTabAt(0);
+  tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Navigate the first tab to a new URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), c_url));
+
+  // Ensure UKM is recorded.
+  auto entries = ukm_recorder->GetEntriesByName(
+      ukm::builders::SplitView_Updated::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  ukm_recorder->ExpectEntrySourceHasUrl(entries[0], c_url);
+  ukm_recorder->ExpectEntrySourceHasUrl(entries[1], b_url);
+  EXPECT_EQ(
+      *ukm_recorder->GetEntryMetric(
+          entries[0], ukm::builders::SplitView_Updated::kSplitEventIdName),
+      *ukm_recorder->GetEntryMetric(
+          entries[1], ukm::builders::SplitView_Updated::kSplitEventIdName));
 }
 
 INSTANTIATE_TEST_SUITE_P(
