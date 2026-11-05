@@ -19,6 +19,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -782,6 +784,119 @@ TEST_F(ClearSiteDataHandlerTest, ClearPrefetchAndPrerenderCacheSuccess) {
   EXPECT_EQ(message_buffer.front().level,
             blink::mojom::ConsoleMessageLevel::kInfo);
   testing::Mock::VerifyAndClearExpectations(&handler);
+}
+
+TEST_F(ClearSiteDataHandlerTest, ClearSiteDataDuringBrowserContextShutdown) {
+  const GURL kTestUrl("https://example.com");
+  const url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
+
+  // Verify normal asynchronous clearing on an active BrowserContext.
+  {
+    TestBrowserContext browser_context;
+    base::test::TestFuture<void> future;
+    ClearSiteData(browser_context.GetWeakPtr(),
+                  /*storage_partition_config=*/std::nullopt, kTestOrigin,
+                  {ClearSiteDataType::kCookies, ClearSiteDataType::kStorage,
+                   ClearSiteDataType::kCache, ClearSiteDataType::kClientHints},
+                  /*storage_buckets_to_remove=*/{},
+                  /*avoid_closing_connections=*/true,
+                  /*cookie_partition_key=*/std::nullopt,
+                  /*storage_key=*/std::nullopt,
+                  /*partitioned_state_allowed_only=*/false,
+                  future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+
+  // Verify clearing when BrowserContext shutdown has started while its WeakPtr
+  // is still valid (e.g., during off-the-record profile teardown).
+  {
+    TestBrowserContext browser_context;
+    browser_context.NotifyWillBeDestroyed();
+    ASSERT_TRUE(browser_context.ShutdownStarted());
+    ASSERT_TRUE(browser_context.GetWeakPtr());
+
+    base::test::TestFuture<void> cookies_and_storage_future;
+    ClearSiteData(browser_context.GetWeakPtr(),
+                  /*storage_partition_config=*/std::nullopt, kTestOrigin,
+                  {ClearSiteDataType::kCookies, ClearSiteDataType::kStorage,
+                   ClearSiteDataType::kCache, ClearSiteDataType::kClientHints},
+                  /*storage_buckets_to_remove=*/{},
+                  /*avoid_closing_connections=*/true,
+                  /*cookie_partition_key=*/std::nullopt,
+                  /*storage_key=*/std::nullopt,
+                  /*partitioned_state_allowed_only=*/false,
+                  cookies_and_storage_future.GetCallback());
+    EXPECT_TRUE(cookies_and_storage_future.Wait());
+
+    base::test::TestFuture<void> buckets_future;
+    ClearSiteData(browser_context.GetWeakPtr(),
+                  /*storage_partition_config=*/std::nullopt, kTestOrigin,
+                  {ClearSiteDataType::kCookies},
+                  /*storage_buckets_to_remove=*/{"drafts"},
+                  /*avoid_closing_connections=*/true,
+                  /*cookie_partition_key=*/std::nullopt,
+                  /*storage_key=*/std::nullopt,
+                  /*partitioned_state_allowed_only=*/false,
+                  buckets_future.GetCallback());
+    EXPECT_TRUE(buckets_future.Wait());
+
+    base::test::TestFuture<void> handler_future;
+    ClearSiteDataHandler::HandleHeader(
+        browser_context.GetWeakPtr(),
+        /*navigation_or_document=*/nullptr,
+        StoragePartitionConfig::CreateDefault(&browser_context), kTestUrl,
+        kClearCookiesHeader, net::LOAD_NORMAL,
+        /*cookie_partition_key=*/std::nullopt,
+        /*storage_key=*/std::nullopt,
+        /*partitioned_state_allowed_only=*/false, handler_future.GetCallback());
+    EXPECT_TRUE(handler_future.Wait());
+  }
+}
+
+TEST_F(ClearSiteDataHandlerTest,
+       ClearSiteDataSynchronousAndZeroTaskCompletion) {
+  TestBrowserContext browser_context;
+  ASSERT_FALSE(browser_context.ShutdownStarted());
+
+  const url::Origin kTestOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+
+  // In TestBrowserContext, GetPrefetchService() is null, so
+  // BrowsingDataRemoverImpl::RemoveImpl() completes synchronously inside
+  // SiteDataClearer::RunAndDestroySelfWhenDone(). Verify that synchronous
+  // completion followed by client hints clearing keeps SiteDataClearer alive
+  // until all tasks are queued and finished.
+  {
+    base::test::TestFuture<void> future;
+    ClearSiteData(
+        browser_context.GetWeakPtr(),
+        /*storage_partition_config=*/std::nullopt, kTestOrigin,
+        {ClearSiteDataType::kPrefetchCache, ClearSiteDataType::kClientHints},
+        /*storage_buckets_to_remove=*/{},
+        /*avoid_closing_connections=*/true,
+        /*cookie_partition_key=*/std::nullopt,
+        /*storage_key=*/std::nullopt,
+        /*partitioned_state_allowed_only=*/false, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+
+  // When only kClientHints is requested in a third-party context, zero tasks
+  // are queued in SiteDataClearer::RunAndDestroySelfWhenDone(). Verify that
+  // the callback still runs and SiteDataClearer cleans itself up.
+  {
+    base::test::TestFuture<void> future;
+    ClearSiteData(browser_context.GetWeakPtr(),
+                  /*storage_partition_config=*/std::nullopt, kTestOrigin,
+                  {ClearSiteDataType::kClientHints},
+                  /*storage_buckets_to_remove=*/{},
+                  /*avoid_closing_connections=*/true,
+                  /*cookie_partition_key=*/std::nullopt,
+                  blink::StorageKey::CreateWithNonce(
+                      kTestOrigin, base::UnguessableToken::Create()),
+                  /*partitioned_state_allowed_only=*/false,
+                  future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
 }
 
 void ParseHeader(const std::string& data) {
