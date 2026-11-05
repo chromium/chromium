@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -47,12 +48,18 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -63,6 +70,7 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -75,6 +83,8 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -628,6 +638,68 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
                                                   ->address_data_manager()
                                                   .GetProfiles()
                                                   .size()));
+}
+
+// Regression test ensuring that a stalled browser-initiated HTTPS navigation
+// does not cause Autofill to treat a committed HTTP page as a secure context
+// and offer saved payment cards.
+IN_PROC_BROWSER_TEST_F(
+    AutofillTest,
+    CreditCardSuggestionsSuppressedOnHttpWithPendingHttpsNavigation) {
+  AddTestCreditCard(browser()->GetProfile(), test::GetCreditCard());
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::test_server::ControllableHttpResponse hung_response(&https_server,
+                                                           "/hung");
+  ASSERT_TRUE(https_server.Start());
+
+  const GURL http_url =
+      embedded_test_server()->GetURL("/autofill/autofill_creditcard_form.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
+
+  const FormStructure* const form_structure = WaitForFormWithNFields(4);
+  ASSERT_NE(form_structure, nullptr);
+  const FormData form = form_structure->ToFormData();
+  ASSERT_EQ(form.fields()[1].name(), u"card_number");
+
+  auto external_delegate =
+      std::make_unique<TestAutofillExternalDelegate>(autofill_manager());
+  TestAutofillExternalDelegate* const raw_delegate = external_delegate.get();
+  test_api(*autofill_manager())
+      .SetExternalDelegate(std::move(external_delegate));
+
+  // Start a browser-initiated navigation to an HTTPS URL that stalls before
+  // committing, flipping GetVisibleEntry() to https:// while the active
+  // document remains http://.
+  const GURL https_url = https_server.GetURL("/hung");
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         https_url, WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
+  hung_response.WaitForRequest();
+
+  ASSERT_NE(web_contents()->GetController().GetVisibleEntry(), nullptr);
+  EXPECT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            https_url);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), http_url);
+  EXPECT_FALSE(autofill_manager()->client().IsContextSecure());
+
+  ContentAutofillDriver* const driver =
+      ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(driver, nullptr);
+  TestAutofillManagerSingleEventWaiter ask_waiter(
+      *autofill_manager(),
+      &AutofillManager::Observer::OnAfterAskForValuesToFill);
+  driver->renderer_events().AskForValuesToFill(
+      form, form.fields()[1].renderer_id(), gfx::Rect(0, 0, 100, 20),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*password_request=*/std::nullopt);
+  ASSERT_TRUE(std::move(ask_waiter).Wait());
+
+  EXPECT_THAT(raw_delegate->suggestions(),
+              SuggestionVectorIdsAre(
+                  SuggestionType::kInsecureContextPaymentDisabledMessage));
 }
 
 // Accessibility Tests

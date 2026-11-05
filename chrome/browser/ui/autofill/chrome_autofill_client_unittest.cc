@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -25,6 +26,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
@@ -74,20 +76,29 @@
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_state/core/security_state.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/page_type.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/base/net_errors.h"
+#include "net/cert/cert_status_flags.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -1562,6 +1573,104 @@ TEST_F(ChromeAutofillClientReauthAvailabilityTest,
   SetCanAuthenticate(true);
   auto wc1 = CreateWebContentsAndVerifyReauth(profile.get(), 1, true);
   auto wc2 = CreateWebContentsAndVerifyReauth(profile.get(), 0, true);
+}
+
+// Tests that a pending HTTPS navigation does not make an HTTP context secure.
+TEST_F(ChromeAutofillClientTest,
+       IsContextSecure_HttpWithPendingHttpsNavigation) {
+  const GURL http_url("http://example.test/form.html");
+  const GURL https_url("https://secure.example.test/");
+
+  NavigateAndCommit(http_url);
+  EXPECT_FALSE(client()->IsContextSecure());
+
+  std::unique_ptr<content::NavigationSimulator> pending_nav =
+      content::NavigationSimulator::CreateBrowserInitiated(https_url,
+                                                           web_contents());
+  pending_nav->Start();
+
+  ASSERT_NE(web_contents()->GetController().GetVisibleEntry(), nullptr);
+  EXPECT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            https_url);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), http_url);
+  EXPECT_FALSE(client()->IsContextSecure());
+}
+
+// Tests that a pending navigation does not mask a DANGEROUS HTTPS state.
+TEST_F(ChromeAutofillClientTest,
+       IsContextSecure_DangerousHttpsWithPendingNavigation) {
+  const GURL https_url("https://broken.example.test/form.html");
+
+  NavigateAndCommit(https_url);
+  content::NavigationEntry* const entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_NE(entry, nullptr);
+  entry->GetSSL().certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_NE(entry->GetSSL().certificate, nullptr);
+  entry->GetSSL().cert_status = net::CERT_STATUS_DATE_INVALID;
+  entry->GetSSL().content_status = content::SSLStatus::RAN_INSECURE_CONTENT;
+
+  EXPECT_FALSE(client()->IsContextSecure());
+  EXPECT_EQ(client()->GetSecurityLevelForUmaHistograms(),
+            security_state::DANGEROUS);
+
+  std::unique_ptr<content::NavigationSimulator> pending_nav =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://other.example.test/"), web_contents());
+  pending_nav->Start();
+
+  // While the visible entry is the uncommitted pending navigation (whose
+  // security level is NONE), Autofill must continue evaluating the committed
+  // document's DANGEROUS security state.
+  ASSERT_EQ(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::NONE);
+  EXPECT_FALSE(client()->IsContextSecure());
+  EXPECT_EQ(client()->GetSecurityLevelForUmaHistograms(),
+            security_state::DANGEROUS);
+}
+
+// Tests that an HTTPS error page is not considered a secure context.
+TEST_F(ChromeAutofillClientTest, IsContextSecure_HttpsErrorPage) {
+  content::NavigationSimulator::NavigateAndFailFromBrowser(
+      web_contents(), GURL("https://unreachable.example.test/"),
+      net::ERR_CONNECTION_TIMED_OUT);
+
+  content::NavigationEntry* const entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(entry->GetPageType(), content::PAGE_TYPE_ERROR);
+  EXPECT_TRUE(web_contents()->GetLastCommittedURL().SchemeIsCryptographic());
+  EXPECT_FALSE(client()->IsContextSecure());
+}
+
+// Tests that a pending HTTP navigation does not degrade a SECURE HTTPS state.
+TEST_F(ChromeAutofillClientTest,
+       IsContextSecure_ValidHttpsWithPendingHttpNavigation) {
+  const GURL https_url("https://secure.example.test/form.html");
+
+  NavigateAndCommit(https_url);
+  content::NavigationEntry* const entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_NE(entry, nullptr);
+  entry->GetSSL().certificate =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_NE(entry->GetSSL().certificate, nullptr);
+
+  EXPECT_TRUE(client()->IsContextSecure());
+  EXPECT_EQ(client()->GetSecurityLevelForUmaHistograms(),
+            security_state::SECURE);
+
+  std::unique_ptr<content::NavigationSimulator> pending_nav =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://insecure.example.test/"), web_contents());
+  pending_nav->Start();
+
+  ASSERT_EQ(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::NONE);
+  EXPECT_TRUE(client()->IsContextSecure());
+  EXPECT_EQ(client()->GetSecurityLevelForUmaHistograms(),
+            security_state::SECURE);
 }
 }  // namespace
 }  // namespace autofill

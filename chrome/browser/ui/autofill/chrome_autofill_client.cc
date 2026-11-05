@@ -193,9 +193,9 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/page_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -740,7 +740,7 @@ url::Origin ChromeAutofillClient::GetLastCommittedPrimaryMainFrameOrigin()
 
 security_state::SecurityLevel
 ChromeAutofillClient::GetSecurityLevelForUmaHistograms() {
-  return chrome_security_state::GetSecurityLevel(web_contents());
+  return chrome_security_state::GetCommittedSecurityLevel(web_contents());
 }
 
 const translate::LanguageState* ChromeAutofillClient::GetLanguageState() {
@@ -1171,16 +1171,17 @@ bool ChromeAutofillClient::UsesPlatformAutofill() const {
 }
 
 bool ChromeAutofillClient::IsContextSecure() const {
-  const auto security_level =
-      chrome_security_state::GetSecurityLevel(web_contents());
-  content::NavigationEntry* entry =
-      web_contents()->GetController().GetVisibleEntry();
+  const security_state::SecurityLevel security_level =
+      chrome_security_state::GetCommittedSecurityLevel(web_contents());
+  content::NavigationEntry* const entry =
+      web_contents()->GetController().GetLastCommittedEntry();
 
   // Only dangerous security states should prevent autofill.
   //
   // TODO(crbug.com/41307071): Once passive mixed content and legacy TLS are
   // less common, just use IsSslCertificateValid().
-  return entry && entry->GetURL().SchemeIsCryptographic() &&
+  return entry && entry->GetPageType() == content::PAGE_TYPE_NORMAL &&
+         entry->GetURL().SchemeIsCryptographic() &&
          security_level != security_state::DANGEROUS;
 }
 
