@@ -12,20 +12,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -55,27 +50,26 @@ using ash::mojom::SetWallpaperResultPtr;
 
 class WallpaperAshTest : public testing::Test {
  public:
-  WallpaperAshTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  WallpaperAshTest() = default;
   WallpaperAshTest(const WallpaperAshTest&) = delete;
   ~WallpaperAshTest() override = default;
 
   void SetUp() override {
-    // Log in user.
     ash::LoginState::Initialize();
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-
-    auto* user = fake_user_manager_->AddUser(user_manager::StubAccountId());
-    fake_user_manager_->LoginUser(user->GetAccountId());
-
-    testing_profile_ = testing_profile_manager_.CreateTestingProfile("profile");
-    ash::AnnotatedAccountId::Set(testing_profile_, user->GetAccountId());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(
+        user_manager::StubAccountId()));
+    user_session_test_environment_->LogIn(user_manager::StubAccountId());
 
     // Create Wallpaper Controller Client.
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
-        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+        CHECK_DEREF(browser_process->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
@@ -85,6 +79,7 @@ class WallpaperAshTest : public testing::Test {
   void TearDown() override {
     crash_reporter::ResetCrashKeysForTesting();
     wallpaper_controller_client_.reset();
+    user_session_test_environment_.reset();
     ash::LoginState::Shutdown();
   }
 
@@ -103,10 +98,8 @@ class WallpaperAshTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   WallpaperAsh wallpaper_ash_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  TestingProfileManager testing_profile_manager_;
-  raw_ptr<TestingProfile> testing_profile_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };

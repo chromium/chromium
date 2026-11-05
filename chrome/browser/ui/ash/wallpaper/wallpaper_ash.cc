@@ -9,15 +9,15 @@
 
 #include "ash/public/mojom/wallpaper.mojom.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/user.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_function_crash_keys.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -140,10 +140,11 @@ void WallpaperAsh::OnWallpaperDecoded(
   ash::WallpaperLayout layout = GetLayoutEnum(wallpaper_settings->layout);
   RecordCustomWallpaperLayout(layout);
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  const user_manager::User* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
-  auto account_id = user->GetAccountId();
+  // The extension API this serves only runs in a user session, so there is a
+  // primary one.
+  const session_manager::Session& session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession());
+  const AccountId& account_id = session.account_id();
 
   const std::string file_name =
       base::FilePath(wallpaper_settings->filename).BaseName().value();

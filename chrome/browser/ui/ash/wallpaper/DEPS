@@ -16,6 +16,9 @@ include_rules = [
 
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
+  "wallpaper_ash_unittest\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+  ],
   "wallpaper_controller_client_impl_unittest\\.cc": [
     "+chrome/browser/ash/settings",
   ],
