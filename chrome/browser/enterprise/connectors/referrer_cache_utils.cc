@@ -67,6 +67,7 @@ bool IsReferrerChainNeededForEnterprise(
     return false;
   }
   return service->IsConnectorEnabled(AnalysisConnector::BULK_DATA_ENTRY) ||
+         service->IsConnectorEnabled(AnalysisConnector::DATA_COPIED) ||
          service->IsConnectorEnabled(AnalysisConnector::FILE_ATTACHED) ||
          service->IsConnectorEnabled(AnalysisConnector::FILE_DOWNLOADED) ||
 #if BUILDFLAG(IS_CHROMEOS)

@@ -775,6 +775,25 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// The data copied connector on its own has to resolve the management domain
+// like any other analysis connector. Setting it at the machine scope makes the
+// browser's domain win over the profile's, which is only observable when the
+// two are unaffiliated.
+IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
+                       DataCopiedManagementDomain) {
+  SetPrefs(AnalysisConnectorPref(DATA_COPIED),
+           AnalysisConnectorScopePref(DATA_COPIED), settings_value(),
+           /*profile_scope=*/false);
+
+  ASSERT_EQ(
+      (management_status() == ManagementStatus::kUnaffiliated) ? kDomain2
+                                                               : kDomain1,
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
+          ->GetManagementDomain());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 class ConnectorsServiceRealtimeURLCheckProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<ManagementStatus> {

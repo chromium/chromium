@@ -226,6 +226,7 @@ std::string ConnectorsService::GetManagementDomain() {
         AnalysisConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
 #if !BUILDFLAG(IS_ANDROID)
         AnalysisConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
+        AnalysisConnectorScopePref(AnalysisConnector::DATA_COPIED),
         AnalysisConnectorScopePref(AnalysisConnector::PRINT),
 #endif
         kOnSecurityEventScopePref}) {

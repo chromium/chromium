@@ -360,6 +360,11 @@ INSTANTIATE_TEST_SUITE_P(
         }),
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetAnalysisConnector(
+              prefs, enterprise_connectors::AnalysisConnector::DATA_COPIED,
+              GetAnalysisPolicy());
+        }),
+        base::BindRepeating([](PrefService* prefs) {
+          enterprise_connectors::test::SetAnalysisConnector(
               prefs, enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
               GetAnalysisPolicy());
         }),

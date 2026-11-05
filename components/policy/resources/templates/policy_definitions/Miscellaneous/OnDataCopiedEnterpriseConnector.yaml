@@ -51,9 +51,9 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:159-
+- chrome_os:159-
 owners:
 - cbe-cep-eng@google.com
 - eliashomsi@google.com

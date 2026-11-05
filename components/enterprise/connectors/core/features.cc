@@ -74,7 +74,7 @@ BASE_FEATURE(kNonBlockingFileOpeningJobCancel,
 BASE_FEATURE(kEnableAuditOnlyNetworkRequestConnector,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kContentAnalysisClipboardCopy, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContentAnalysisClipboardCopy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnterpriseExtensionActorAttribution,
              base::FEATURE_DISABLED_BY_DEFAULT);
