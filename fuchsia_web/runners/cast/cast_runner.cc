@@ -93,25 +93,11 @@ void EnsureSoftwareVideoDecodersAreDisabled(
   }
 }
 
-// Populates |params| with web data settings. Web data persistence is only
-// enabled if a soft quota is explicitly specified via config-data.
+// Populates |params| with web data settings. Web data persistence is always
+// enabled, with an optional soft quota.
 // Exits the Runner process if creation of data storage fails for any reason.
 void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
-  // Set the web data quota based on the CastRunner configuration.
-  const std::optional<base::DictValue>& config =
-      fuchsia_component_support::LoadPackageConfig();
-  if (!config)
-    return;
-
-  constexpr char kDataQuotaBytesSwitch[] = "data-quota-bytes";
-  const std::optional<int> data_quota_bytes =
-      config->FindInt(kDataQuotaBytesSwitch);
-  if (!data_quota_bytes)
-    return;
-
-  // Allow best-effort persistent of Cast application data.
-  // TODO(crbug.com/42050202): Remove the need for an explicit quota to be
-  // configured, once the platform provides storage quotas.
+  // Allow best-effort persistence of Cast application data.
   const auto profile_path = base::FilePath(base::kPersistedCacheDirectoryPath)
                                 .Append(kProfileSubdirectoryName);
   auto error_code = base::File::Error::FILE_OK;
@@ -124,6 +110,20 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
     LOG(ERROR) << "Unable to open data to transfer";
     base::Process::TerminateCurrentProcessImmediately(1);
   }
+
+  // Set the web data quota based on the CastRunner configuration.
+  const std::optional<base::DictValue>& config =
+      fuchsia_component_support::LoadPackageConfig();
+  if (!config) {
+    return;
+  }
+
+  const std::optional<int> data_quota_bytes =
+      config->FindInt("data-quota-bytes");
+  if (!data_quota_bytes) {
+    return;
+  }
+
   params->set_data_quota_bytes(*data_quota_bytes);
 }
 
