@@ -7,11 +7,16 @@
 #import <Foundation/Foundation.h>
 #import <stdint.h>
 
+#import <memory>
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/supports_user_data.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -22,6 +27,33 @@
 #import "net/http/http_util.h"
 
 namespace web {
+
+namespace {
+
+// Attached as user data to the BrowserState passed to
+// FakeWebState::SetBrowserState(). Runs `on_destroyed` when destroyed, which
+// happens either when the BrowserState is destroyed or when the FakeWebState
+// stops tracking it. This allows the FakeWebState to reset its pointer to the
+// BrowserState before the latter is freed, preventing it from dangling.
+class BrowserStateDestructionObserver : public base::SupportsUserData::Data {
+ public:
+  explicit BrowserStateDestructionObserver(base::OnceClosure on_destroyed)
+      : on_destroyed_(std::move(on_destroyed)) {}
+
+  BrowserStateDestructionObserver(const BrowserStateDestructionObserver&) =
+      delete;
+  BrowserStateDestructionObserver& operator=(
+      const BrowserStateDestructionObserver&) = delete;
+
+  ~BrowserStateDestructionObserver() override {
+    std::move(on_destroyed_).Run();
+  }
+
+ private:
+  base::OnceClosure on_destroyed_;
+};
+
+}  // namespace
 
 void FakeWebState::AddObserver(WebStateObserver* observer) {
   observers_.AddObserver(observer);
@@ -55,6 +87,7 @@ FakeWebState::~FakeWebState() {
     observer.ResetWebState();
   }
   ClearAllUserData();
+  DetachFromBrowserState();
 }
 
 void FakeWebState::SerializeToProto(proto::WebStateStorage& storage) const {}
@@ -270,7 +303,31 @@ void FakeWebState::SetLastActiveTime(base::Time time) {
 }
 
 void FakeWebState::SetBrowserState(BrowserState* browser_state) {
+  if (browser_state_ == browser_state) {
+    return;
+  }
+
+  DetachFromBrowserState();
   browser_state_ = browser_state;
+  if (browser_state_) {
+    // Use `this` as the key, so that several FakeWebStates can track the
+    // destruction of the same BrowserState.
+    browser_state_->SetUserData(
+        this, std::make_unique<BrowserStateDestructionObserver>(
+                  base::BindOnce(&FakeWebState::OnBrowserStateDestroyed,
+                                 weak_factory_.GetWeakPtr())));
+  }
+}
+
+void FakeWebState::DetachFromBrowserState() {
+  if (BrowserState* browser_state = browser_state_.get()) {
+    browser_state_ = nullptr;
+    browser_state->RemoveUserData(this);
+  }
+}
+
+void FakeWebState::OnBrowserStateDestroyed() {
+  browser_state_ = nullptr;
 }
 
 void FakeWebState::SetIsRealized(bool value) {

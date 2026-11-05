@@ -188,7 +188,17 @@ class FakeWebState : public WebState {
   void OnDownloadFinished(NSError* error);
 
  private:
-  raw_ptr<BrowserState, DanglingUntriaged> browser_state_ = nullptr;
+  // Stops tracking the destruction of `browser_state_` and resets it.
+  void DetachFromBrowserState();
+
+  // Invoked when `browser_state_` is destroyed (or when the FakeWebState
+  // stops tracking its destruction).
+  void OnBrowserStateDestroyed();
+
+  // The BrowserState set by SetBrowserState(). Automatically reset to nullptr
+  // when the BrowserState is destroyed, which can happen before the
+  // FakeWebState in tests.
+  raw_ptr<BrowserState> browser_state_ = nullptr;
   NSString* stable_identifier_ = nil;
   const WebStateID unique_identifier_;
   bool web_usage_enabled_ = true;
