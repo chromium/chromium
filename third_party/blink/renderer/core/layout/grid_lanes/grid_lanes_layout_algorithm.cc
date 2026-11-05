@@ -276,6 +276,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     return RelayoutAndBreakEarlier<GridLanesLayoutAlgorithm>(
         *result->GetEarlyBreak(), &column_early_breaks_);
   }
+  if (result->Status() == LayoutResult::kDisableFragmentation) {
+    // This container is clipped, and we reached the block-end. Lay the rest out
+    // as one fragment.
+    return RelayoutWithoutFragmentation<GridLanesLayoutAlgorithm>();
+  }
   return result;
 }
 
@@ -286,8 +291,6 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
-  const bool has_block_fragmentation =
-      GetConstraintSpace().HasBlockFragmentation();
 
   LayoutUnit total_intrinsic_block_size;
   LayoutUnit previously_consumed_block_size;
@@ -338,7 +341,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
     const auto& track_collection =
         is_for_columns ? layout_data->Columns() : layout_data->Rows();
     // TODO(javiercon): Handle gap decorations in fragmented grid lanes.
-    if (!has_block_fragmentation && style.HasGapRule()) {
+    if (style.HasGapRule() &&
+        !InvolvedInBlockFragmentation(container_builder_)) {
       gap_accumulator.emplace(style);
       gap_accumulator->BuildMainGaps(track_collection);
     }
@@ -354,8 +358,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
       const bool is_stacking_axis_reading_flow =
           style.ReadingFlow() == EReadingFlow::kGridLanesTrack;
       GridLanesDataVector* out_grid_lanes =
-          (has_block_fragmentation || gap_accumulator ||
-           is_stacking_axis_reading_flow)
+          (InvolvedInBlockFragmentation(container_builder_) ||
+           gap_accumulator || is_stacking_axis_reading_flow)
               ? &grid_lanes
               : nullptr;
       GridLanesGapGeometryState* out_gap_geometry_state = nullptr;
@@ -397,7 +401,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
         total_intrinsic_block_size);
   }
 
-  if (has_block_fragmentation) {
+  if (InvolvedInBlockFragmentation(container_builder_)) {
     if (sizing_tree) {
       // Placement can rebuild child geometry, so finalize the layout subtree
       // for fragmentation only after the items have been placed.
@@ -459,7 +463,10 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
   container_builder_.SetMayHaveDescendantAboveBlockStart(false);
 
   if (InvolvedInBlockFragmentation(container_builder_)) {
-    FinishFragmentation(&container_builder_);
+    BreakStatus status = FinishFragmentation(&container_builder_);
+    if (status == BreakStatus::kDisableFragmentation) {
+      return container_builder_.Abort(LayoutResult::kDisableFragmentation);
+    }
   } else {
 #if DCHECK_IS_ON()
     // If we're not participating in a fragmentation context, no block
@@ -518,7 +525,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
     sizing_tree->ReleaseTrackSizingData();
   }
 
-  if (has_block_fragmentation) {
+  if (GetConstraintSpace().HasBlockFragmentation()) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridLanesBreakTokenData>(
             std::move(grid_lanes), grid_layout_subtree,
@@ -851,7 +858,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   // but without fragmentation it is still used to build gap decorations and
   // support reading-flow.
   const bool is_fragmentation_collection =
-      out_grid_lanes && GetConstraintSpace().HasBlockFragmentation();
+      out_grid_lanes && InvolvedInBlockFragmentation(container_builder_);
   if (out_gap_geometry_state) {
     CHECK(out_grid_lanes);
     CHECK(!is_fragmentation_collection);
@@ -1333,7 +1340,7 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         item.node.Layout(child_space, fragmentation);
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
-    if (is_columns) {
+    if (is_columns && GetConstraintSpace().HasBlockFragmentation()) {
       // Before a spanner we may break in any of its lanes. After it, all lanes
       // share the breakpoint found before or inside the spanner.
       ColumnBreakInfo break_info = column_break_info[grid_lane_idx];
@@ -1558,7 +1565,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
   const bool is_for_columns = grid_axis_direction == kForColumns;
   const bool is_fill_reverse = style.IsReverseGridLanesFillDirection();
   const bool is_fragmentation_collection =
-      grid_lanes && GetConstraintSpace().HasBlockFragmentation();
+      grid_lanes && InvolvedInBlockFragmentation(container_builder_);
 
   auto alignment_candidate_iterator =
       running_positions.GetAlignmentCandidateIterator();
@@ -1762,7 +1769,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
   CHECK(sizing_subtree || layout_subtree);
   CHECK(!sizing_subtree || !layout_subtree);
   const bool is_fragmentation_collection =
-      out_grid_lanes && GetConstraintSpace().HasBlockFragmentation();
+      out_grid_lanes && InvolvedInBlockFragmentation(container_builder_);
 
   // The lane graph is only built during actual-layout final placement, since we
   // need each item's final position for reading-flow, gutter positions and for
