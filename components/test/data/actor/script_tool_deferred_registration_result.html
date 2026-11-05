@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebMCP tool result page that registers a tool after asynchronous work</title>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "navigated"
+    }
+  </script>
+  <script>
+    const asyncWork = new Promise(resolve => window.finishAsyncWork = resolve);
+    window.toolsRegistered = asyncWork.then(
+      () => document.modelContext.registerTool({
+        name: 'deferred_tool',
+        description: 'Registered after asynchronous work completes',
+        execute: async () => 'deferred_tool result',
+      }));
+    document.modelContext.waitForToolsUntil(window.toolsRegistered);
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

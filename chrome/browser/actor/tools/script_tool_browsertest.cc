@@ -145,37 +145,6 @@ class ActorToolsTestScriptTool : public ActorToolsTest {
   base::test::ScopedFeatureList features_;
 };
 
-class ActorToolsTestScriptToolWithStability : public ActorToolsTestScriptTool {
- public:
-  ActorToolsTestScriptToolWithStability() {
-    features_.InitAndEnableFeatureWithParameters(
-        actor::kActorScriptToolDelayObservation,
-        {{"script_tool_delay_observation_ms", "1000"}});
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolWithStability,
-                       PageStabilityDelay) {
-  const GURL url = embedded_https_test_server().GetURL(
-      "example.com", "/actor/script_tool.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  const std::string input_arguments = R"JSON({"text": "test"})JSON";
-  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
-
-  base::TimeTicks start = base::TimeTicks::Now();
-  auto [action_result, response] = RunScriptTool(std::move(action));
-  base::TimeDelta duration = base::TimeTicks::Now() - start;
-
-  EXPECT_EQ(response->result, "test");
-  // The delay should be at least 1000ms.
-  EXPECT_GE(duration, base::Milliseconds(1000));
-  EXPECT_TRUE(action_result->requires_page_stabilization);
-}
-
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   const GURL url = embedded_https_test_server().GetURL(
       "example.com", "/actor/script_tool.html");
@@ -192,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   EXPECT_EQ(response->tool->name, "echo");
   EXPECT_EQ(response->tool->description, "echo input");
   EXPECT_EQ(response->tool->annotations->read_only, true);
-  EXPECT_FALSE(action_result->requires_page_stabilization);
+  EXPECT_TRUE(action_result->requires_page_stabilization);
 
   const std::string expected_input_schema =
       R"JSON({"type":"object","properties":{"text":{"description":)JSON"
@@ -1026,6 +995,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolSkipVoting, SkipVoting) {
   EXPECT_EQ(strategy.GetPageContentExtractionPolicy(
                 ActorSurfaceHandle::From(active_tab()->GetHandle())),
             PageContentExtractionPolicy::kSkipped);
+  EXPECT_FALSE(result.Get().at(0).result->requires_page_stabilization);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, PermissionsPolicyDisabled) {
@@ -1216,6 +1186,18 @@ class ActorToolsTestScriptToolRegistration : public ActorToolsTestScriptTool {
   // and registers `deferred_tool` once `finishAsyncWork()` is called in it.
   static constexpr char kDeferredRegistrationPath[] =
       "/actor/script_tool_deferred_registration.html";
+  // Registers `trigger_tool`, whose execution says the tools aren't ready and
+  // registers `deferred_tool` once `finishAsyncWork()` is called in it.
+  static constexpr char kDeferredRegistrationOnExecutePath[] =
+      "/actor/script_tool_deferred_registration_on_execute.html";
+  // Registers `navigate_tool`, whose execution navigates to
+  // `kDeferredRegistrationResultPath`. That page provides the tool's result,
+  // says its tools aren't ready and registers `deferred_tool` once
+  // `finishAsyncWork()` is called in it.
+  static constexpr char kNavigateToDeferredRegistrationPath[] =
+      "/actor/script_tool_navigate_to_deferred_registration.html";
+  static constexpr char kDeferredRegistrationResultPath[] =
+      "/actor/script_tool_deferred_registration_result.html";
 
  private:
   base::test::ScopedFeatureList features_;
@@ -1280,6 +1262,69 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolRegistrationTimeout,
   EXPECT_EQ(result.Get(), ObservationDelayController::Result::kOk);
   EXPECT_THAT(GetObservedToolNames(),
               testing::UnorderedElementsAre("initial_tool"));
+}
+
+// The execution of `trigger_tool` registers `deferred_tool` after asynchronous
+// work. Because an observation is requested after the tool executes, the action
+// waits for the page's tools to be ready, so the observation that follows
+// includes `deferred_tool`.
+IN_PROC_BROWSER_TEST_F(
+    ActorToolsTestScriptToolRegistration,
+    ObservationAfterToolExecutionWaitsForScriptToolsToBeReady) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", kDeferredRegistrationOnExecutePath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ActorJournalRecorder journal_recorder(actor_keyed_service().GetJournal());
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeScriptToolRequest(*main_frame(), "trigger_tool", "{}")),
+      result.GetCallback());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !journal_recorder.GetEntries("WaitForScriptTools").empty();
+  }));
+  EXPECT_FALSE(result.IsReady());
+  content::ExecuteScriptAsync(web_contents(), "finishAsyncWork()");
+
+  ExpectOkResult(result);
+  EXPECT_EQ(result.Get().at(0).result->script_tool_response->result,
+            "trigger_tool result");
+  EXPECT_THAT(GetObservedToolNames(),
+              testing::UnorderedElementsAre("trigger_tool", "deferred_tool"));
+}
+
+// `navigate_tool` navigates, and its result comes from the new page, which
+// registers `deferred_tool` after asynchronous work. The wait is on the new
+// page's tools.
+IN_PROC_BROWSER_TEST_F(
+    ActorToolsTestScriptToolRegistration,
+    ObservationAfterNavigatingToolWaitsForNewPageScriptToolsToBeReady) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", kNavigateToDeferredRegistrationPath);
+  const GURL result_url = embedded_https_test_server().GetURL(
+      "example.com", kDeferredRegistrationResultPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ActorJournalRecorder journal_recorder(actor_keyed_service().GetJournal());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(MakeScriptToolRequest(*main_frame(),
+                                                       "navigate_tool", "{}")),
+                   result.GetCallback());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !journal_recorder.GetEntries("WaitForScriptTools").empty();
+  }));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), result_url);
+  EXPECT_FALSE(result.IsReady());
+  content::ExecuteScriptAsync(web_contents(), "finishAsyncWork()");
+
+  ExpectOkResult(result);
+  EXPECT_EQ(
+      result.Get().at(0).result->script_tool_response->result,
+      R"([{"@context":"https://schema.org","@type":"Message","text":"navigated"}])");
+  EXPECT_THAT(GetObservedToolNames(),
+              testing::UnorderedElementsAre("deferred_tool"));
 }
 
 }  // namespace actor

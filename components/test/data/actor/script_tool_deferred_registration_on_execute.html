@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebMCP tool whose execution registers another tool after asynchronous work</title>
+  <script>
+    document.modelContext.registerTool({
+      name: 'trigger_tool',
+      description: 'Starts asynchronous work that registers deferred_tool',
+      execute: async () => {
+        const asyncWork = new Promise(resolve => window.finishAsyncWork = resolve);
+        window.toolsRegistered = asyncWork.then(
+          () => document.modelContext.registerTool({
+            name: 'deferred_tool',
+            description: 'Registered after asynchronous work completes',
+            execute: async () => 'deferred_tool result',
+          }));
+        document.modelContext.waitForToolsUntil(window.toolsRegistered);
+        return 'trigger_tool result';
+      },
+    });
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

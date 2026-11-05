@@ -42,9 +42,6 @@ class ScriptToolRequest : public TabToolRequest {
       TaskId task_id,
       ToolDelegate& tool_delegate) const override;
 
-  ObservationDelayController::PageStabilityConfig
-  GetObservationPageStabilityConfig() const override;
-
   bool RequiresOpeningWebContents() const override;
 
   const base::UnguessableToken& GetTargetDocumentIdForTesting() const {

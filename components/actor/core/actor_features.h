@@ -158,9 +158,6 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<base::TimeDelta>
     kActorScriptToolCrossDocumentTimeout;
 
-BASE_DECLARE_FEATURE(kActorScriptToolDelayObservation);
-extern const base::FeatureParam<int> kActorScriptToolDelayObservationMillis;
-
 BASE_DECLARE_FEATURE(kActorObserveScreenshotDefault);
 BASE_DECLARE_FEATURE(kActorObservePageContentDefault);
 

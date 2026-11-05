@@ -184,12 +184,6 @@ const base::FeatureParam<base::TimeDelta> kActorScriptToolExecutionTimeout{
 const base::FeatureParam<base::TimeDelta> kActorScriptToolCrossDocumentTimeout{
     &kGlicActorEnableScriptTools, "cross_document_timeout", base::Seconds(5)};
 
-BASE_FEATURE(kActorScriptToolDelayObservation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kActorScriptToolDelayObservationMillis{
-    &kActorScriptToolDelayObservation, "script_tool_delay_observation_ms", 0};
-
 BASE_FEATURE(kActorObserveScreenshotDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorObservePageContentDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 

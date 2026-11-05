@@ -108,19 +108,6 @@ ToolRequest::CreateToolResult ScriptToolRequest::CreateTool(
           MakeOkResult()};
 }
 
-ObservationDelayController::PageStabilityConfig
-ScriptToolRequest::GetObservationPageStabilityConfig() const {
-  if (base::FeatureList::IsEnabled(kActorScriptToolDelayObservation)) {
-    return {
-        .supports_paint_stability = false,
-        .start_delay =
-            base::Milliseconds(kActorScriptToolDelayObservationMillis.Get()),
-    };
-  } else {
-    return ToolRequest::GetObservationPageStabilityConfig();
-  }
-}
-
 bool ScriptToolRequest::RequiresOpeningWebContents() const {
   // The functionality provided by a script tool may require opening new
   // windows. For example, login or payment flows must be performed in a

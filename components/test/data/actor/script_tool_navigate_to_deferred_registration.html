@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebMCP tool that navigates to a page which registers a tool after asynchronous work</title>
+  <script>
+    document.modelContext.registerTool({
+      name: 'navigate_tool',
+      description: 'Navigates to a page that registers deferred_tool',
+      execute: async () => {
+        window.location.href =
+          '/actor/script_tool_deferred_registration_result.html';
+        // Never resolves; the result comes from the new document.
+        return new Promise(() => {});
+      },
+    });
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

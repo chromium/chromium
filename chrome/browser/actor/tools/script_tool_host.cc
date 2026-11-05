@@ -74,7 +74,9 @@ ScriptToolHost::ScriptToolHost(TaskId task_id,
     : Tool(task_id, tool_delegate),
       actor_surface_handle_(target_actor_surface_handle),
       target_document_id_(target_document_id),
-      action_(std::move(action)) {}
+      action_(std::move(action)) {
+  InitializePendingResult();
+}
 
 ScriptToolHost::~ScriptToolHost() {
   TearDown();
@@ -129,7 +131,7 @@ mojom::ActionResultPtr ScriptToolHost::TimeOfUseValidation(
 std::unique_ptr<ObservationDelayController>
 ScriptToolHost::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  if (!base::FeatureList::IsEnabled(kActorScriptToolDelayObservation)) {
+  if (!pending_result_->requires_page_stabilization) {
     return nullptr;
   }
 
@@ -147,7 +149,6 @@ ScriptToolHost::GetObservationDelayer(
 }
 
 void ScriptToolHost::Invoke(ToolCallback callback) {
-  InitializePendingResult();
   auto* frame = target_document_.AsRenderFrameHostIfValid();
   CHECK(frame);
   CHECK(base::FeatureList::IsEnabled(blink::features::kWebMCP));
@@ -273,7 +274,7 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
 
   if (result && result->code == mojom::ActionResultCode::kOk) {
     result->requires_page_stabilization =
-        base::FeatureList::IsEnabled(kActorScriptToolDelayObservation);
+        pending_result_->requires_page_stabilization;
     result->screenshot_policy = pending_result_->screenshot_policy;
     result->page_content_policy = pending_result_->page_content_policy;
   }
@@ -495,8 +496,6 @@ void ScriptToolHost::InitializePendingResult() {
   CHECK(!pending_result_);
   pending_result_ = mojom::ActionResult::New();
   pending_result_->code = mojom::ActionResultCode::kOk;
-  pending_result_->requires_page_stabilization =
-      base::FeatureList::IsEnabled(kActorScriptToolDelayObservation);
   pending_result_->script_tool_response = mojom::ScriptToolResponse::New();
   pending_result_->script_tool_response->input_arguments =
       action_->get_script_tool()->input_arguments;
@@ -512,6 +511,13 @@ void ScriptToolHost::InitializePendingResult() {
       base::FeatureList::IsEnabled(kActorScriptToolSkipPageContent)
           ? mojom::PageContentExtractionPolicy::kSkipped
           : mojom::PageContentExtractionPolicy::kRequired;
+  // TODO(crbug.com/555173199): Currently tools are a part of APC. We need to
+  // revisit with an option to only wait for stabilization of tools once tools
+  // are decoupled from an APC update.
+  pending_result_->requires_page_stabilization =
+      pending_result_->page_content_policy !=
+          mojom::PageContentExtractionPolicy::kSkipped ||
+      pending_result_->screenshot_policy != mojom::ScreenshotPolicy::kSkipped;
 }
 
 void ScriptToolHost::SetScriptToolOutput(const std::string& output) {
