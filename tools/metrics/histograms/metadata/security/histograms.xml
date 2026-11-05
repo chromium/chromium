@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.SecretPortalKeyProvider.GotToken" enum="Boolean"
-    expires_after="2025-11-30">
+    expires_after="2027-11-01">
   <owner>thomasanderson@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.SecretPortalKeyProvider.InitStatus"
-    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-11-30">
+    enum="SecretPortalKeyProviderInitStatus" expires_after="2027-11-01">
   <owner>thomasanderson@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.SecretPortalKeyProvider.NewInitFailure"
-    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-11-30">
+    enum="SecretPortalKeyProviderInitStatus" expires_after="2027-11-01">
   <owner>thomasanderson@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
