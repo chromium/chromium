@@ -9,11 +9,18 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -58,6 +65,12 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 using global_media_controls::GlobalMediaControlsEntryPoint;
 using media_session::mojom::MediaSessionAction;
@@ -73,6 +86,19 @@ static constexpr int kHorizontalMarginDip = 20;
 static constexpr int kImageWidthDip = 20;
 static constexpr int kVerticalMarginDip = 10;
 
+// Whether the platform may activate windows that were shown inactive, such as
+// Picture-in-Picture windows.
+bool PlatformMayActivateInactiveWindows() {
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::IsInitialized() &&
+         !ui::OzonePlatform::GetInstance()
+              ->GetPlatformProperties()
+              .supports_inactive_window_show;
+#else
+  return false;
+#endif
+}
+
 std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
   // The selected language is only shown when Live Caption is enabled.
   if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
@@ -86,6 +112,97 @@ std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
 }
 
 }  // namespace
+
+// Picture-in-Picture windows are shown inactive, but some platforms (e.g.
+// Wayland) let the compositor focus them anyway, which would deactivate and
+// close the dialog right after its Picture-in-Picture button is pressed. This
+// keeps the dialog open while the Picture-in-Picture window has focus, until
+// the dialog or its anchor widget is activated again or Picture-in-Picture
+// ends.
+class MediaDialogView::PictureInPictureFocusHandler
+    : public PictureInPictureWindowManager::Observer,
+      public views::WidgetObserver {
+ public:
+  explicit PictureInPictureFocusHandler(MediaDialogView* dialog)
+      : dialog_(dialog) {
+    pip_observation_.Observe(PictureInPictureWindowManager::GetInstance());
+  }
+  PictureInPictureFocusHandler(const PictureInPictureFocusHandler&) = delete;
+  PictureInPictureFocusHandler& operator=(const PictureInPictureFocusHandler&) =
+      delete;
+  ~PictureInPictureFocusHandler() override = default;
+
+  // PictureInPictureWindowManager::Observer:
+  void OnEnterPictureInPicture() override {
+    views::Widget* widget = dialog_->GetWidget();
+    if (!widget || close_on_deactivate_pin_) {
+      return;
+    }
+    close_on_deactivate_pin_ = dialog_->PreventCloseOnDeactivate();
+    widget_observations_.AddObservation(widget);
+    views::Widget* anchor_widget = dialog_->anchor_widget();
+    if (anchor_widget && anchor_widget != widget) {
+      widget_observations_.AddObservation(anchor_widget);
+    }
+  }
+  void OnExitPictureInPicture() override {
+    // If the dialog has not been activated since Picture-in-Picture started,
+    // it is still inactive, and no further deactivation will close it. Close
+    // it now, unless it gets activated in the meantime.
+    if (close_on_deactivate_pin_) {
+      Reset();
+      PostCloseDialogIfInactive();
+    }
+  }
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (!active) {
+      return;
+    }
+    const bool anchor_activated = widget != dialog_->GetWidget();
+    Reset();
+    if (anchor_activated) {
+      // The user returned to the browser window. Unless that was by clicking
+      // the dialog, which activates it in the same event batch, close the
+      // dialog as if it had lost focus.
+      PostCloseDialogIfInactive();
+    }
+  }
+  void OnWidgetDestroying(views::Widget* widget) override {
+    widget_observations_.RemoveObservation(widget);
+  }
+
+ private:
+  void Reset() {
+    widget_observations_.RemoveAllObservations();
+    close_on_deactivate_pin_.reset();
+  }
+
+  void PostCloseDialogIfInactive() {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PictureInPictureFocusHandler::CloseDialogIfInactive,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void CloseDialogIfInactive() {
+    views::Widget* widget = dialog_->GetWidget();
+    if (widget && !widget->IsActive() && dialog_->ShouldCloseOnDeactivate()) {
+      widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    }
+  }
+
+  const raw_ptr<MediaDialogView> dialog_;
+  std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>
+      close_on_deactivate_pin_;
+  base::ScopedObservation<PictureInPictureWindowManager,
+                          PictureInPictureWindowManager::Observer>
+      pip_observation_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
+  base::WeakPtrFactory<PictureInPictureFocusHandler> weak_factory_{this};
+};
 
 // static
 MediaDialogView* MediaDialogView::instance_ = nullptr;
@@ -385,6 +502,10 @@ MediaDialogView::MediaDialogView(
   SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME));
   CHECK(service_);
+
+  if (PlatformMayActivateInactiveWindows()) {
+    pip_focus_handler_ = std::make_unique<PictureInPictureFocusHandler>(this);
+  }
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   // Observe the prefs the dialog reads and writes: always the original
