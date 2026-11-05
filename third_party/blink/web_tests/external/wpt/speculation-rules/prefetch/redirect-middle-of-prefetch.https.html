@@ -5,8 +5,6 @@
 <meta name="variant" content="?origin=cross-site-initial">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js?feature=bidi"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
@@ -31,7 +29,7 @@ promise_test(async t => {
          redirectToPrefetchInitialUrl,
          redirectToPrefetchFinalUrl} = await prepare(t, prefetchTiming);
 
-  await agent.forceSinglePrefetchAndWaitForStatus(prefetchInitialUrl);
+  await agent.forceSinglePrefetch(prefetchInitialUrl);
   await agent.navigate(prefetchFinalUrl,
                        {expectedDestinationUrl: prefetchFinalUrl});
 
@@ -46,7 +44,7 @@ promise_test(async t => {
          redirectToPrefetchInitialUrl,
          redirectToPrefetchFinalUrl} = await prepare(t, prefetchTiming);
 
-  await agent.forceSinglePrefetchAndWaitForStatus(prefetchInitialUrl);
+  await agent.forceSinglePrefetch(prefetchInitialUrl);
   await agent.navigate(redirectToPrefetchFinalUrl,
                        {expectedDestinationUrl: prefetchFinalUrl});
 

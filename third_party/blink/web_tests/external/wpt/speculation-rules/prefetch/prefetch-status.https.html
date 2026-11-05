@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js?feature=bidi"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
 <script src="../resources/utils.js"></script>
@@ -22,10 +20,7 @@
   promise_test(async t => {
     let agent = await spawnWindow(t);
     let nextUrl = agent.getExecutorURL({ page: 2, pipe: `status(${status})` });
-    const targetStatus = should_prefetch == 'true' ?
-        PRELOADING_STATUS.READY : PRELOADING_STATUS.FAILURE;
-    await agent.forceSinglePrefetchAndWaitForStatus(
-        nextUrl, {}, targetStatus);
+    await agent.forceSinglePrefetch(nextUrl);
     await agent.navigate(nextUrl);
 
     if (should_prefetch == 'true')
