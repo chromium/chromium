@@ -23,26 +23,6 @@
 #import "ios/chrome/browser/signin/model/account_preview_data_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-namespace {
-
-// Returns whether `AccountSwitchingPromoSceneAgent` should be created for
-// `profile`, i.e. whether `profile` is the personal profile, account preview
-// data service is available, and `kEnableAccountPreviewSwitchingAccount` is
-// enabled.
-bool ShouldCreateAccountSwitchingPromoSceneAgent(ProfileIOS* profile) {
-  CHECK(profile, base::NotFatalUntil::M170);
-  if (!profile || !IsPersonalProfile(profile)) {
-    return false;
-  }
-  if (!AccountPreviewDataServiceFactory::GetForProfile(profile)) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      switches::kEnableAccountPreviewSwitchingAccount);
-}
-
-}  // namespace
-
 @interface AccountSwitchingPromoSceneAgent () <IdentityManagerObserving>
 @end
 
@@ -53,7 +33,15 @@ bool ShouldCreateAccountSwitchingPromoSceneAgent(ProfileIOS* profile) {
 }
 
 + (instancetype)agentWithProfile:(ProfileIOS*)profile {
-  if (!ShouldCreateAccountSwitchingPromoSceneAgent(profile)) {
+  CHECK(profile, base::NotFatalUntil::M170);
+  if (!profile || !IsPersonalProfile(profile)) {
+    return nil;
+  }
+  if (!AccountPreviewDataServiceFactory::GetForProfile(profile)) {
+    return nil;
+  }
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewSwitchingAccount)) {
     return nil;
   }
   return [[self alloc]
