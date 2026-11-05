@@ -55,6 +55,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -352,15 +353,14 @@ bool IsSingleUsernameSubmission(const PasswordForm& submitted_form) {
   return true;
 }
 
-// A helper just so the subscription field in PasswordManager can be const.
+// A helper just so the subscription fields in PasswordManager can be const.
 // `manager` must outlive the returned subscription.
 base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
     PasswordManager* manager,
-    PasswordManagerClient* client) {
-  if (PasswordStoreInterface* account_store =
-          client->GetAccountPasswordStore()) {
+    PasswordStoreInterface* store) {
+  if (store) {
     // base::Unretained() safe because of the precondition.
-    return account_store->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
+    return store->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
         &PasswordManager::UpdateFormManagers, base::Unretained(manager)));
   }
   return {};
@@ -669,12 +669,15 @@ void PasswordManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 }
 
 PasswordManager::PasswordManager(PasswordManagerClient* client)
-    : client_(client),
+    : client_(&CHECK_DEREF(client)),
+      leak_delegate_(client),
       account_store_cb_list_subscription_(
-          AddSyncEnabledOrDisabledCallback(this, client)),
-      leak_delegate_(client) {
-  DCHECK(client_);
-}
+          AddSyncEnabledOrDisabledCallback(this,
+                                           client_->GetAccountPasswordStore())),
+      profile_store_cb_list_subscription_(
+          AddSyncEnabledOrDisabledCallback(
+              this,
+              client_->GetProfilePasswordStore())) {}
 
 PasswordManager::~PasswordManager() = default;
 

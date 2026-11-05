@@ -83,8 +83,13 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
 
     password_controller_ = OCMStrictClassMock([SharedPasswordController class]);
 
+    EXPECT_CALL(password_manager_client_, GetProfilePasswordStore)
+        .WillRepeatedly(testing::Return(nullptr));
+    password_manager_ =
+        std::make_unique<PasswordManager>(&password_manager_client_);
+
     IOSPasswordManagerDriverFactory::CreateForWebState(
-        &web_state_, password_controller_, &password_manager_);
+        &web_state_, password_controller_, password_manager_.get());
 
     main_frame_driver_ =
         IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
@@ -100,8 +105,7 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
   raw_ptr<IOSPasswordManagerDriver> subframe_driver_;
   id password_controller_;
   testing::StrictMock<MockPasswordManagerClient> password_manager_client_;
-  PasswordManager password_manager_ =
-      PasswordManager(&password_manager_client_);
+  std::unique_ptr<PasswordManager> password_manager_;
 };
 
 // Tests that the drivers have the correct ids.
@@ -187,7 +191,7 @@ TEST_F(IOSPasswordManagerDriverTest, GetLastCommittedURLWhenWebStateDestroyed) {
   web_state->SetCurrentURL(GURL(kWebStateUrl));
 
   IOSPasswordManagerDriverFactory::CreateForWebState(
-      web_state.get(), password_controller_, &password_manager_);
+      web_state.get(), password_controller_, password_manager_.get());
 
   scoped_refptr<IOSPasswordManagerDriver> retainable_driver =
       IOSPasswordManagerDriverFactory::GetRetainableDriver(web_state.get(),

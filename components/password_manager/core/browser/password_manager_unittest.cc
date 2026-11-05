@@ -23,6 +23,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -3810,19 +3811,75 @@ TEST_P(PasswordManagerTest, GenerationTriggersFormManagerCreation) {
 }
 
 TEST_P(PasswordManagerTest, UpdateFormManagers) {
-  // Seeing a form should result in creating PasswordFormManager and
-  // PasswordFormManager and querying PasswordStore. Calling
-  // UpdateFormManagers should result in querying the store again.
+  // Seeing a form should result in creating a PasswordFormManager and querying
+  // the PasswordStore. Calling UpdateFormManagers should result in querying
+  // the store again.
   PasswordForm form(MakeSimpleForm());
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
-  task_environment_.RunUntilIdle();
+  ASSERT_FALSE(manager()->form_managers().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 
   store_->AddLogin(password_manager::FromPasswordForm(form));
-  autofill::PasswordFormFillData form_data;
+  base::test::TestFuture<autofill::PasswordFormFillData> form_data_future;
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion)
-      .WillOnce(SaveArg<0>(&form_data));
+      .WillOnce([&](const autofill::PasswordFormFillData& fill_data) {
+        form_data_future.SetValue(fill_data);
+      });
   manager()->UpdateFormManagers();
-  task_environment_.RunUntilIdle();
+  const autofill::PasswordFormFillData& form_data = form_data_future.Get();
+
+  EXPECT_EQ(form.username_value, form_data.preferred_login.username_value);
+  EXPECT_EQ(form.password_value, form_data.preferred_login.password_value);
+}
+
+TEST_P(PasswordManagerTest,
+       UpdateFormManagersOnProfileStoreSyncEnabledOrDisabled) {
+  // Seeing a form should result in creating PasswordFormManager and
+  // querying PasswordStore. Triggering sync callback on profile store should
+  // result in querying the store again and updating form managers.
+  PasswordForm form(MakeSimpleForm());
+  manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
+  ASSERT_FALSE(manager()->form_managers().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
+
+  store_->AddLogin(password_manager::FromPasswordForm(form));
+  base::test::TestFuture<autofill::PasswordFormFillData> form_data_future;
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion)
+      .WillOnce([&](const autofill::PasswordFormFillData& fill_data) {
+        form_data_future.SetValue(fill_data);
+      });
+  store_->CallSyncEnabledOrDisabledCallbacks();
+  const autofill::PasswordFormFillData& form_data = form_data_future.Get();
+
+  EXPECT_EQ(form.username_value, form_data.preferred_login.username_value);
+  EXPECT_EQ(form.password_value, form_data.preferred_login.password_value);
+}
+
+TEST_P(PasswordManagerTest,
+       UpdateFormManagersOnAccountStoreSyncEnabledOrDisabled) {
+  if (!ShouldEnableAccountStorage()) {
+    GTEST_SKIP() << "Account storage is disabled";
+  }
+  // Seeing a form should result in creating PasswordFormManager and
+  // querying PasswordStore. Triggering sync callback on account store should
+  // result in querying the store again and updating form managers.
+  PasswordForm form(MakeSimpleForm());
+  form.in_store = PasswordForm::Store::kAccountStore;
+  manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
+  ASSERT_FALSE(manager()->form_managers().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
+
+  account_store_->AddLogin(password_manager::FromPasswordForm(form));
+  base::test::TestFuture<autofill::PasswordFormFillData> form_data_future;
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion)
+      .WillOnce([&](const autofill::PasswordFormFillData& fill_data) {
+        form_data_future.SetValue(fill_data);
+      });
+  account_store_->CallSyncEnabledOrDisabledCallbacks();
+  const autofill::PasswordFormFillData& form_data = form_data_future.Get();
 
   EXPECT_EQ(form.username_value, form_data.preferred_login.username_value);
   EXPECT_EQ(form.password_value, form_data.preferred_login.password_value);
