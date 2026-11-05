@@ -34,6 +34,15 @@ def _parse_feature_definitions(text):
     )
 
 
+def _parse_param_definitions(text):
+    """Calls cpp_parser.parse_param_definitions() with the views that it
+    expects.
+    """
+    return cpp_parser.parse_param_definitions(
+        _PATH, *cpp_lexer.blank_preprocessor_lines(*cpp_lexer.lex(text))
+    )
+
+
 class CppLexerTest(unittest.TestCase):
     def _blanked(self, text):
         """Returns the expected lexer output, where '~' marks a blanked char."""
@@ -393,6 +402,79 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
             _parse_source(text).feature_map_names,
         )
 
+    def testParamArrays(self):
+        text = """\
+namespace chrome {
+
+const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
+
+namespace android {
+const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {
+    &kStringParam,
+};
+}  // namespace android
+
+const std::array<const base::FeatureParam<double>*, 1>
+    kDoubleParamsExposedToJava = {&kDoubleParam};
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &::kAbsoluteParam,
+};
+const base::FeatureParam<bool>* const kBooleanParamsExposedToJava[] = {
+    &kBoolParam,
+    &params::kQualifiedParam,
+};
+
+// Uses of the arrays are not definitions.
+base::android::FeatureMap* GetFeatureMap() {
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava, kBooleanParamsExposedToJava,
+      kIntParamsExposedToJava, kDoubleParamsExposedToJava,
+      kStringParamsExposedToJava);
+  return kFeatureMap.get();
+}
+
+}  // namespace chrome
+"""
+        boolean_type, int_type, double_type, string_type = models.PARAM_TYPES
+        # The arrays are in PARAM_TYPES order, regardless of their order in the
+        # file.
+        self.assertEqual(
+            (
+                models.Array(
+                    param_type=boolean_type,
+                    namespace=('chrome',),
+                    entries=(
+                        models.ArrayEntry(_PATH, 17, '', 'kBoolParam'),
+                        models.ArrayEntry(
+                            _PATH, 18, 'params::', 'kQualifiedParam'
+                        ),
+                    ),
+                ),
+                models.Array(
+                    param_type=int_type,
+                    namespace=('chrome',),
+                    entries=(
+                        models.ArrayEntry(_PATH, 14, '::', 'kAbsoluteParam'),
+                    ),
+                ),
+                models.Array(
+                    param_type=double_type,
+                    namespace=('chrome',),
+                    entries=(models.ArrayEntry(_PATH, 12, '', 'kDoubleParam'),),
+                ),
+                models.Array(
+                    param_type=string_type,
+                    namespace=('chrome', 'android'),
+                    entries=(models.ArrayEntry(_PATH, 7, '', 'kStringParam'),),
+                ),
+            ),
+            _parse_source(text).param_arrays,
+        )
+
+    def testParamArraysAreOptional(self):
+        text = 'const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};'
+        self.assertEqual((), _parse_source(text).param_arrays)
+
     def testErrorNoArray(self):
         text = """\
 BASE_FEATURE(kFoo, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -540,8 +622,56 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
             text,
         )
 
+    def testErrorsInParamArrays(self):
+        # The errors in all arrays are reported at once.
+        text = """\
+const base::Feature* const kFeaturesExposedToJava[] = {kNotAPointer};
+const base::FeatureParam<bool>* const kBooleanParamsExposedToJava[] = {
+    &kFoo,
+    &kFoo,
+};
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    kNotAPointer,
+};
+const base::FeatureParam<double>* const kDoubleParamsExposedToJava[] = {
+#if BUILDFLAG(IS_ANDROID)
+    &kBar,
+#endif
+};
+const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {};
+const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {};
+"""
 
-class ParseDefinitionsTest(unittest.TestCase):
+        def unsupported_entry_message(line, array_name):
+            return (
+                f'{_PATH}:{line}: error: Unsupported entry "kNotAPointer" '
+                f'in {array_name}. Expected the form '
+                '"&namespace::kSomeName".'
+            )
+
+        def preprocessor_message(line):
+            return (
+                f'{_PATH}:{line}: error: Preprocessor directives are not '
+                'supported inside kDoubleParamsExposedToJava, because the '
+                'generated Java class is not conditional.'
+            )
+
+        self._assert_error(
+            [
+                unsupported_entry_message(1, 'kFeaturesExposedToJava'),
+                f'{_PATH}:4: error: Duplicate entry "kFoo" (first listed on '
+                'line 3).',
+                unsupported_entry_message(7, 'kIntParamsExposedToJava'),
+                preprocessor_message(10),
+                preprocessor_message(12),
+                f'{_PATH}: error: Found multiple definitions of '
+                'kStringParamsExposedToJava (lines 14, 15).',
+            ],
+            text,
+        )
+
+
+class ParseFeatureDefinitionsTest(unittest.TestCase):
     def _definition(self, line, namespace, identifier, macro, name):
         return models.FeatureDefinition(
             _PATH, line, namespace, identifier, macro, name
@@ -717,6 +847,161 @@ BASE_FEATURE(kValid, base::FEATURE_DISABLED_BY_DEFAULT);
                 self._definition(3, (), 'kValid', 'BASE_FEATURE', 'Valid'),
             ],
             _parse_feature_definitions(text),
+        )
+
+
+class ParseParamDefinitionsTest(unittest.TestCase):
+    def _definition(
+        self,
+        line,
+        namespace,
+        identifier,
+        name,
+        feature_qualifier,
+        feature_identifier,
+    ):
+        return models.ParamDefinition(
+            _PATH,
+            line,
+            namespace,
+            identifier,
+            name,
+            models.ArrayEntry(
+                _PATH, line, feature_qualifier, feature_identifier
+            ),
+        )
+
+    def testParseParamDefinitions(self):
+        text = """\
+namespace foo {
+
+BASE_FEATURE_PARAM(bool, kDerivedName, &kFeature, false);
+BASE_FEATURE_PARAM(int,
+                   kCustomName,
+                   &kFeature,
+                   "custom_name",
+                   0);
+BASE_FEATURE_PARAM(double, kQualifiedFeature, &features::kFeature, 0.5);
+BASE_FEATURE_PARAM(std::string, kGlobalFeature, & :: kGlobal, "global", "");
+
+namespace bar {
+BASE_FEATURE_PARAM(base::TimeDelta, kNested, &kFeature, base::Seconds(1));
+}  // namespace bar
+
+}  // namespace foo
+"""
+        self.assertEqual(
+            [
+                self._definition(
+                    3, ('foo',), 'kDerivedName', 'DerivedName', '', 'kFeature'
+                ),
+                self._definition(
+                    4, ('foo',), 'kCustomName', 'custom_name', '', 'kFeature'
+                ),
+                self._definition(
+                    9,
+                    ('foo',),
+                    'kQualifiedFeature',
+                    'QualifiedFeature',
+                    'features::',
+                    'kFeature',
+                ),
+                self._definition(
+                    10, ('foo',), 'kGlobalFeature', 'global', '::', 'kGlobal'
+                ),
+                self._definition(
+                    13, ('foo', 'bar'), 'kNested', 'Nested', '', 'kFeature'
+                ),
+            ],
+            _parse_param_definitions(text),
+        )
+
+    def testIgnoredMacroCalls(self):
+        text = """\
+#define BASE_FEATURE_PARAM(T, name, ...) Define(name)
+BASE_DECLARE_FEATURE_PARAM(int, kDeclared);
+BASE_FEATURE(kFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_ENUM_PARAM(Mode, kEnumParam, &kFeature, "mode", Mode::kA,
+                        &kModeOptions);
+constexpr base::FeatureParam<int> kNotAMacro{&kFeature, "not_a_macro", 0};
+// BASE_FEATURE_PARAM(int, kInLineComment, &kFeature, 0);
+/* BASE_FEATURE_PARAM(int, kInBlockComment, &kFeature, 0); */
+const char kText[] = "BASE_FEATURE_PARAM(int, kInString, &kFeature, 0)";
+"""
+        self.assertEqual([], _parse_param_definitions(text))
+
+    def testPreprocessorLinesBetweenArguments(self):
+        text = """\
+BASE_FEATURE_PARAM(int, kPlatformDependent, &kFeature, "size",
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+                   2);
+#else
+                   1);
+#endif
+"""
+        self.assertEqual(
+            [
+                self._definition(
+                    1, (), 'kPlatformDependent', 'size', '', 'kFeature'
+                ),
+            ],
+            _parse_param_definitions(text),
+        )
+
+    def testSpecialCharactersInParamName(self):
+        text = """\
+BASE_FEATURE_PARAM(int, kComma, &kFeature, "comma,name", 0);
+BASE_FEATURE_PARAM(int, kParen, &kFeature, "paren)name", 0);
+"""
+        self.assertEqual(
+            [('kComma', 'comma,name'), ('kParen', 'paren)name')],
+            [(d.identifier, d.name) for d in _parse_param_definitions(text)],
+        )
+
+    def testInvalidParamDefinitions(self):
+        text = """\
+BASE_FEATURE_PARAM(int, kNotALiteral, &kFeature, kName, 0);
+BASE_FEATURE_PARAM(int, kConcatenated, &kFeature, "foo" "bar", 0);
+BASE_FEATURE_PARAM(int, kTooFewArgs, &kFeature);
+BASE_FEATURE_PARAM(int, kTooManyArgs, &kFeature, "name", 0, 1);
+BASE_FEATURE_PARAM(int, kNotAPointer, kFeature, 0);
+BASE_FEATURE_PARAM(int, kFunctionCall, &GetFeature(), 0);
+"""
+        definitions = _parse_param_definitions(text)
+        self.assertEqual(
+            [(None, None)] * 6, [(d.name, d.feature) for d in definitions]
+        )
+        self.assertEqual(
+            [
+                f'{_PATH}:1: The param name of kNotALiteral must be a plain '
+                'string literal, found "kName".',
+                f'{_PATH}:2: The param name of kConcatenated must be a plain '
+                'string literal, found ""foo" "bar"".',
+                f'{_PATH}:3: BASE_FEATURE_PARAM(int, kTooFewArgs, ...) has 3 '
+                'arguments; expected 4 or 5.',
+                f'{_PATH}:4: BASE_FEATURE_PARAM(int, kTooManyArgs, ...) has 6 '
+                'arguments; expected 4 or 5.',
+                f'{_PATH}:5: The feature of kNotAPointer must have the form '
+                '"&namespace::kFeatureName", found "kFeature".',
+                f'{_PATH}:6: The feature of kFunctionCall must have the form '
+                '"&namespace::kFeatureName", found "&GetFeature()".',
+            ],
+            [d.error for d in definitions],
+        )
+
+    def testSkipsMacroCallsThatAreNotDefinitions(self):
+        text = """\
+BASE_FEATURE_PARAM(int, notAKIdentifier, &kFeature, 0);
+BASE_FEATURE_PARAM(kOnlyOneArgument);
+BASE_FEATURE_PARAM(int, kUnterminated, &kFeature,
+BASE_FEATURE_PARAM(int, kMismatched, &kFeature, ];
+BASE_FEATURE_PARAM(int, kValid, &kFeature, 0);
+"""
+        self.assertEqual(
+            [
+                self._definition(5, (), 'kValid', 'Valid', '', 'kFeature'),
+            ],
+            _parse_param_definitions(text),
         )
 
 

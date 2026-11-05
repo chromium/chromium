@@ -13,12 +13,10 @@ import org.chromium.build.annotations.NullMarked;
 /** Typed accessors for the features in kFeaturesExposedToJava. */
 @NullMarked
 public final class SampleFeatures {
-    // Package-private (not private) to avoid D8 nest-access synthetic accessor.
     static boolean isFeatureEnabledInChromeFeatureMap(String featureName) {
         return ChromeFeatureMap.getInstance().isEnabledInNative(featureName);
     }
 
-    // Package-private (not private) to avoid D8 nest-access synthetic accessor.
     static boolean isFeatureEnabledInOtherFeatureMap(String featureName) {
         return OtherFeatureMap.getInstance().isEnabledInNative(featureName);
     }

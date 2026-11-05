@@ -44,6 +44,8 @@ def _class_javadoc(features_class: models.FeaturesClass) -> str:
 
 
 def _helper_methods(features_class: models.FeaturesClass) -> str:
+    # The helper methods are package-private (not private) to avoid D8
+    # nest-access synthetic accessor.
     feature_maps = list(features_class.feature_maps)
     # Only the helpers that are used are generated.
     maps_with_features = {f.feature_map for f in features_class.features}
@@ -57,7 +59,6 @@ def _helper_methods(features_class: models.FeaturesClass) -> str:
                 feature_map, feature_maps
             )
             parts.append(f"""\
-    // Package-private (not private) to avoid D8 nest-access synthetic accessor.
     static boolean {method}(String featureName) {{
         return {feature_map.name}.getInstance().isEnabledInNative(featureName);
     }}
@@ -72,7 +73,6 @@ def _helper_methods(features_class: models.FeaturesClass) -> str:
             java_type = param_type.java_type
             getter = f'getParamValueAs{param_type.name}'
             parts.append(f"""\
-    // Package-private (not private) to avoid D8 nest-access synthetic accessor.
     static {java_type} {method}(String featureName, String paramName) {{
         return {map_name}.getInstance().{getter}(featureName, paramName);
     }}

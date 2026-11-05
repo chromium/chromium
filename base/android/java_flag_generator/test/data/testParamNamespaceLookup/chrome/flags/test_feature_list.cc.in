@@ -1,0 +1,57 @@
+BASE_FEATURE(kGlobalFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShadowedFeature, "GlobalShadowedFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int, kShadowedParam, &kGlobalFeature, "global_param", 0);
+
+namespace params {
+
+BASE_FEATURE(kShadowedFeature, "ParamsShadowedFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace features {
+BASE_FEATURE(kInNestedNamespace, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace features
+
+// The feature of a param is looked up from the namespace of the param's
+// definition, innermost first.
+BASE_FEATURE_PARAM(int, kOfShadowedFeature, &kShadowedFeature, 0);
+BASE_FEATURE_PARAM(int, kOfGlobalFeature, &kGlobalFeature, 0);
+BASE_FEATURE_PARAM(int, kOfQualifiedFeature, &features::kInNestedNamespace, 0);
+BASE_FEATURE_PARAM(int, kOfExplicitlyGlobalFeature, &::kShadowedFeature, 0);
+
+}  // namespace params
+
+namespace real {
+BASE_FEATURE_PARAM(int, kAliased, &::kGlobalFeature, 0);
+}  // namespace real
+
+namespace alias = real;
+
+namespace chrome::android {
+
+BASE_FEATURE_PARAM(int, kShadowedParam, &kGlobalFeature, "inner_param", 0);
+
+namespace {
+
+const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
+
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    // Unqualified names are looked up from the innermost namespace outwards.
+    &kShadowedParam,
+    // Qualified names are relative to the enclosing namespaces.
+    &params::kOfShadowedFeature,
+    &params::kOfGlobalFeature,
+    &params::kOfQualifiedFeature,
+    // A leading "::" refers to the global namespace.
+    &::params::kOfExplicitlyGlobalFeature,
+    // As a fallback, a unique definition with the same identifier is used.
+    &alias::kAliased,
+};
+
+}  // namespace
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace chrome::android

@@ -1,0 +1,21 @@
+namespace foo {
+BASE_FEATURE(kFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE_PARAM(int, kParam, &kFeature, "desktop_param", 0);
+BASE_FEATURE(kConflictingFeature, "DesktopFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE_PARAM(int, kParam, &kFeature, "mobile_param", 0);
+BASE_FEATURE(kConflictingFeature, "MobileFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+BASE_FEATURE_PARAM(int, kOfConflictingFeature, &kConflictingFeature, 0);
+const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &kParam,
+    &kOfConflictingFeature,
+};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

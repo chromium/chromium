@@ -1,0 +1,69 @@
+namespace foo {
+
+BASE_FEATURE(kExposedFeature, "ExposedFeatureName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNotExposedFeature, "NotExposedFeatureName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool, kDerivedName, &kExposedFeature, false);
+BASE_FEATURE_PARAM(int,
+                   kCustomName,
+                   &kExposedFeature,
+                   "custom_name",
+                   0);
+BASE_FEATURE_PARAM(double, kDoubleParam, &kExposedFeature, "ratio", 0.5);
+BASE_FEATURE_PARAM(std::string, kStringParam, &kExposedFeature, "label", "");
+// The name of a feature that is not exposed to Java is passed as a string.
+BASE_FEATURE_PARAM(int, kOfNotExposedFeature, &kNotExposedFeature, 0);
+
+BASE_FEATURE_PARAM(int, kPlatformDependentDefault, &kExposedFeature, "size",
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+                   2);
+#else
+                   1);
+#endif
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE_PARAM(int, kDefinedTwice, &kExposedFeature, "twice", 2);
+#else
+BASE_FEATURE_PARAM(int, kDefinedTwice, &kExposedFeature, "twice", 1);
+#endif
+
+// Definitions of params that are not exposed to Java are not validated.
+BASE_FEATURE_PARAM(int, kNotExposed, &kExposedFeature, kNotAStringLiteral, 0);
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kExposedFeature,
+};
+
+// The generated class lists the params by type (boolean, int, double, then
+// String), and in this order within each type.
+const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {
+    &kStringParam,
+};
+const base::FeatureParam<double>* const kDoubleParamsExposedToJava[] = {
+    &kDoubleParam,
+};
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &kOfNotExposedFeature,
+    &kCustomName,
+    &kPlatformDependentDefault,
+    &kDefinedTwice,
+};
+const base::FeatureParam<bool>* const kBooleanParamsExposedToJava[] = {
+    &kDerivedName,
+};
+
+base::android::FeatureMap* GetFeatureMap() {
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava, kBooleanParamsExposedToJava,
+      kIntParamsExposedToJava, kDoubleParamsExposedToJava,
+      kStringParamsExposedToJava);
+  return kFeatureMap.get();
+}
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace foo

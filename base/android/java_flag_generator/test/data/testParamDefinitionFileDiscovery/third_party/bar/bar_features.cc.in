@@ -1,0 +1,5 @@
+// Only defines a param, whose feature is defined in
+// //components/foo/foo_features.cc.
+namespace bar {
+BASE_FEATURE_PARAM(int, kBarParam, &foo::kFooFeature, "bar_param", 0);
+}  // namespace bar

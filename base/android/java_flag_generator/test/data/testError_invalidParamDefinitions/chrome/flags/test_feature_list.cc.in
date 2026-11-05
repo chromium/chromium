@@ -1,0 +1,18 @@
+namespace foo {
+BASE_FEATURE(kFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInvalidFeature, kName, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int, kNotALiteral, &kFeature, kName, 0);
+BASE_FEATURE_PARAM(int, kTooFewArgs, &kFeature);
+BASE_FEATURE_PARAM(int, kNotAPointer, kFeature, 0);
+BASE_FEATURE_PARAM(int, kOfInvalidFeature, &kInvalidFeature, 0);
+const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &kNotALiteral,
+    &kTooFewArgs,
+    &kNotAPointer,
+    &kOfInvalidFeature,
+};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

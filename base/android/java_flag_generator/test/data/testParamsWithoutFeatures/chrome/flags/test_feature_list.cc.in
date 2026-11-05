@@ -1,0 +1,12 @@
+namespace foo {
+
+BASE_FEATURE(kFooFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double, kFooParam, &kFooFeature, 1.5);
+
+const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
+
+const base::FeatureParam<double>* const kDoubleParamsExposedToJava[] = {
+    &kFooParam,
+};
+
+}  // namespace foo

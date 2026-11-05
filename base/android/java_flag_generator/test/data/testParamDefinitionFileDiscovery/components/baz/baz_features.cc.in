@@ -1,0 +1,4 @@
+// Only defines the feature of a param.
+namespace baz {
+BASE_FEATURE(kBazFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace baz

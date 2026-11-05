@@ -1,0 +1,4 @@
+namespace generated {
+BASE_FEATURE(kGeneratedFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int, kGeneratedParam, &kGeneratedFeature, 0);
+}  // namespace generated

@@ -1,0 +1,4 @@
+namespace foo {
+BASE_FEATURE(kFooFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int, kFooParam, &kFooFeature, 0);
+}  // namespace foo

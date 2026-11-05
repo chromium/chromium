@@ -261,6 +261,38 @@ class Tests(BaseTest):
     def testEmptyFeatureList(self):
         self._test_generate()
 
+    def testParamDefinitionMacros(self):
+        self._test_generate()
+
+    def testParamNamespaceLookup(self):
+        self._test_generate()
+
+    def testParamDefinitionFileDiscovery(self):
+        depfile = self._test_generate()
+        # Files that only define params, or only the features of params, are
+        # also listed.
+        self.assertEqual(
+            (
+                _OUTPUT_SRCJAR,
+                [
+                    '../../chrome/flags/test_feature_list.cc',
+                    '../../components/baz/baz_features.cc',
+                    '../../components/foo/foo_features.cc',
+                    '../../third_party/bar/bar_features.cc',
+                    'gen/third_party/generated/generated_features.cc',
+                ],
+            ),
+            depfile,
+        )
+
+    def testParamsWithMultipleFeatureMaps(self):
+        self._test_generate(sources=[_SOURCE, _OTHER_SOURCE])
+
+    def testParamsWithoutFeatures(self):
+        self._test_generate(
+            feature_map_class_name='org.chromium.base.BaseFeatureMap'
+        )
+
     def testError_invalidClassName(self):
         self._test_error(
             [
@@ -462,6 +494,100 @@ used by the generated class.
                 'org.chromium.foo.SampleFeatureMap.'
             ],
             class_name='org.chromium.foo.SampleFeatureMap',
+        )
+
+    def testError_missingParamDefinitions(self):
+        stderr = self._test_error()
+        self.assertEqual(
+            f"""\
+{_SOURCE_PATH}:11: error: Cannot find the definition of "kMissingParam".
+{_SOURCE_PATH}:12: error: Cannot find the definition of "kMissingFeature" \
+(the feature of kOfMissingFeature at {_SOURCE_PATH}:5).
+Searched these files:
+    //chrome/flags/test_feature_list.cc
+    //components/foo/foo_features.cc
+To fix, add a comment of the form
+    // FEATURE_DEFINITION_FILE: //path/to/file.cc
+to //chrome/flags/test_feature_list.cc,
+where file.cc contains the feature's BASE_FEATURE() or the param's
+BASE_FEATURE_PARAM() definition.
+If file.cc is a generated file, also add the GN target that generates it to
+the `deps` of the java_flag_generator() target.
+""",
+            stderr,
+        )
+
+    def testError_ambiguousParamDefinitions(self):
+        stderr = self._test_error()
+        self.assertEqual(
+            f"""\
+{_SOURCE_PATH}:13: error: Cannot tell which definition "kParam" refers to. \
+Candidates:
+    {_SOURCE_PATH}:3: a::kParam -> param_in_a
+    {_SOURCE_PATH}:7: b::kParam -> param_in_b
+{_SOURCE_PATH}:14: error: Cannot tell which definition "alias::kFeature" \
+(the feature of kOfAmbiguousFeature at {_SOURCE_PATH}:10) refers to. \
+Candidates:
+    {_SOURCE_PATH}:2: a::kFeature -> FeatureInA
+    {_SOURCE_PATH}:6: b::kFeature -> FeatureInB
+""",
+            stderr,
+        )
+
+    def testError_conflictingParamDefinitions(self):
+        stderr = self._test_error()
+        self.assertEqual(
+            f"""\
+{_SOURCE_PATH}:15: error: "kParam" has conflicting definitions:
+    {_SOURCE_PATH}:4: foo::kParam -> desktop_param
+    {_SOURCE_PATH}:8: foo::kParam -> mobile_param
+{_SOURCE_PATH}:16: error: "kConflictingFeature" (the feature of \
+kOfConflictingFeature at {_SOURCE_PATH}:12) has conflicting definitions:
+    {_SOURCE_PATH}:5: foo::kConflictingFeature -> DesktopFeature
+    {_SOURCE_PATH}:9: foo::kConflictingFeature -> MobileFeature
+""",
+            stderr,
+        )
+
+    def testError_invalidParamDefinitions(self):
+        stderr = self._test_error()
+        self.assertEqual(
+            f"""\
+{_SOURCE_PATH}:10: error: {_SOURCE_PATH}:4: The param name of kNotALiteral \
+must be a plain string literal, found "kName".
+{_SOURCE_PATH}:11: error: {_SOURCE_PATH}:5: BASE_FEATURE_PARAM(int, \
+kTooFewArgs, ...) has 3 arguments; expected 4 or 5.
+{_SOURCE_PATH}:12: error: {_SOURCE_PATH}:6: The feature of kNotAPointer must \
+have the form "&namespace::kFeatureName", found "kFeature".
+{_SOURCE_PATH}:13: error: {_SOURCE_PATH}:3: The feature name of \
+kInvalidFeature must be a plain string literal, found "kName".
+""",
+            stderr,
+        )
+
+    def testError_sameParamName(self):
+        # Even params of different types can't have the same name.
+        self._test_error(
+            [
+                f'{_SOURCE_PATH}:7: error: "kFoo" and "kBar" ({_SOURCE_PATH}:6)'
+                ' both have the param name "same" of feature "Feature".'
+            ]
+        )
+
+    def testError_sameNestedClassNamesParams(self):
+        stderr = self._test_error()
+        self.assertEqual(
+            f"""\
+{_SOURCE_PATH}:11: error: "params::kFoo" and "kFoo" ({_SOURCE_PATH}:9) both \
+map to the nested class "Foo".
+{_SOURCE_PATH}:12: error: Nested class "SampleFeatures" would have the same \
+name as the generated class.
+{_SOURCE_PATH}:13: error: Nested class "SampleFeatureMap" would shadow a type \
+used by the generated class.
+{_SOURCE_PATH}:16: error: Nested class "String" would shadow a type used by \
+the generated class.
+""",
+            stderr,
         )
 
     def testEveryDataDirectoryHasATest(self):

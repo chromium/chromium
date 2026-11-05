@@ -1,0 +1,19 @@
+namespace a {
+BASE_FEATURE(kFeature, "FeatureInA", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int, kParam, &kFeature, "param_in_a", 0);
+}  // namespace a
+namespace b {
+BASE_FEATURE(kFeature, "FeatureInB", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int, kParam, &kFeature, "param_in_b", 0);
+}  // namespace b
+namespace c {
+BASE_FEATURE_PARAM(int, kOfAmbiguousFeature, &alias::kFeature, 0);
+const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &kParam,
+    &kOfAmbiguousFeature,
+};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace c

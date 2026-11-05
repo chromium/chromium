@@ -1,0 +1,25 @@
+// FEATURE_DEFINITION_FILE: //chrome/flags/test_feature_list.cc
+
+// Only exposes params, so the generated class has no feature helper method for
+// OtherFeatureMap.
+namespace other {
+
+BASE_FEATURE(kOtherFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string, kOtherParam, &kOtherFeature, "");
+// The feature of this param is exposed to Java by another FeatureMap.
+BASE_FEATURE_PARAM(bool, kOfChromeFeature, &chrome::kChromeFeature, false);
+
+const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
+
+const base::FeatureParam<bool>* const kBooleanParamsExposedToJava[] = {
+    &kOfChromeFeature,
+};
+const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {
+    &kOtherParam,
+};
+
+static int64_t JNI_OtherFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace other

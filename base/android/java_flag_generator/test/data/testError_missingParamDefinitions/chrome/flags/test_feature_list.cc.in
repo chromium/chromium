@@ -1,0 +1,19 @@
+#include "components/foo/foo_features.h"
+
+namespace foo {
+
+BASE_FEATURE_PARAM(int, kOfMissingFeature, &kMissingFeature, 0);
+
+const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
+
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &kFooParam,
+    &kMissingParam,
+    &kOfMissingFeature,
+};
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace foo

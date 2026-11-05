@@ -1,0 +1,26 @@
+#include "components/foo/foo_features.h"
+
+// FEATURE_DEFINITION_FILE: //components/baz/baz_features.cc
+// FEATURE_DEFINITION_FILE: //third_party/bar/bar_features.cc
+// FEATURE_DEFINITION_FILE: //third_party/generated/generated_features.cc
+
+namespace chrome {
+
+BASE_FEATURE_PARAM(int, kOfBazFeature, &baz::kBazFeature, 0);
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &foo::kFooFeature,
+};
+
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &bar::kBarParam,
+    &foo::kFooParam,
+    &generated::kGeneratedParam,
+    &kOfBazFeature,
+};
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace chrome
