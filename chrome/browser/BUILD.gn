@@ -1529,6 +1529,7 @@ source_set("core") {
       "//components/thin_webview",
       "//components/translate/content/android",
       "//components/user_prefs",
+      "//components/webauthn:features",
       "//services/webnn/public/mojom:features",
       "//ui/compositor",
     ]

@@ -32,6 +32,11 @@ BASE_DECLARE_FEATURE(kWebAuthnFilterSmartCardTransport);
 COMPONENT_EXPORT(WEBAUTHN)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidDisallowIncognitoConditionalCreate);
 
+// Deprecation killswitch for legacy caBLEv2 FCM registration and hardware
+// checks.
+COMPONENT_EXPORT(WEBAUTHN)
+BASE_DECLARE_FEATURE(kWebAuthnRegisterForCloudMessages);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

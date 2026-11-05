@@ -25,6 +25,10 @@ BASE_FEATURE(kWebAuthnFilterSmartCardTransport,
 BASE_FEATURE(kWebAuthnAndroidDisallowIncognitoConditionalCreate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Disabled by default in M159. Remove in or after M165.
+BASE_FEATURE(kWebAuthnRegisterForCloudMessages,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

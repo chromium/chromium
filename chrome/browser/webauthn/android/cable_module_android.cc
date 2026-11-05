@@ -141,7 +141,9 @@ class SystemInterface : public RegistrationState::SystemInterface {
       std::optional<std::vector<uint8_t>> cbor) {
     CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
           base::NotFatalUntil::M163);
-    std::move(prelink_callback_).Run(std::move(cbor));
+    if (prelink_callback_) {
+      std::move(prelink_callback_).Run(std::move(cbor));
+    }
   }
 
   // Called when the Java code has finished checking if we're running in a work
@@ -154,7 +156,9 @@ class SystemInterface : public RegistrationState::SystemInterface {
         kWorkProfilePrefName,
         in_work_profile ? kInWorkProfile : kNotInWorkProfile);
 
-    std::move(work_profile_callback_).Run(in_work_profile);
+    if (work_profile_callback_) {
+      std::move(work_profile_callback_).Run(in_work_profile);
+    }
   }
 
  private:

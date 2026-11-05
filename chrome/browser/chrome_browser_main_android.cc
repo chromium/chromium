@@ -28,10 +28,10 @@
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
 #include "components/metrics/stability_metrics_helper.h"
+#include "components/webauthn/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/main_function_params.h"
-#include "device/fido/public/features.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
@@ -99,7 +99,10 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
   // been created. Register non-profile-specific things that use GCM so that no
   // messages can be processed (and dropped) because the handler wasn't
   // installed in time.
-  webauthn::authenticator::RegisterForCloudMessages();
+  if (base::FeatureList::IsEnabled(
+          webauthn::features::kWebAuthnRegisterForCloudMessages)) {
+    webauthn::authenticator::RegisterForCloudMessages();
+  }
 }
 
 int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {
