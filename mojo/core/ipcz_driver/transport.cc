@@ -531,7 +531,8 @@ IpczResult Transport::DeserializeObject(
   const auto& header = *reinterpret_cast<const ObjectHeader*>(bytes.data());
   // Validate header fields.
   const uint32_t header_size = header.size;
-  if (header_size < sizeof(ObjectHeader) || header_size > bytes.size()) {
+  if (header_size < sizeof(ObjectHeader) || header_size > bytes.size() ||
+      header_size % 8 != 0) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 #if BUILDFLAG(IS_WIN)

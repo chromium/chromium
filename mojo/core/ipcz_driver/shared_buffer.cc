@@ -251,7 +251,8 @@ scoped_refptr<SharedBuffer> SharedBuffer::Deserialize(
   const BufferHeader& header =
       *reinterpret_cast<const BufferHeader*>(data.data());
   const size_t header_size = header.size;
-  if (header_size < sizeof(BufferHeader) || header_size % 8 != 0) {
+  if (header_size < sizeof(BufferHeader) || header_size > data.size() ||
+      header_size % 8 != 0) {
     return nullptr;
   }
   if (!ValidateEnum(header.mode)) {

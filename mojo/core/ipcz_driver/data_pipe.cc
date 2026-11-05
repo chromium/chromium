@@ -528,7 +528,8 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
 
   const auto& header = *reinterpret_cast<const DataPipeHeader*>(data.data());
   const size_t header_size = header.size;
-  if (header_size < sizeof(header) || header_size % 8 != 0) {
+  if (header_size < sizeof(header) || header_size > data.size() ||
+      header_size % 8 != 0) {
     return nullptr;
   }
 
