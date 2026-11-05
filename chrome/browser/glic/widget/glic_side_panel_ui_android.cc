@@ -217,11 +217,12 @@ void GlicSidePanelUi::ClosePanel() {
   Close(CloseOptions());
 }
 
-void GlicSidePanelUi::OnReload() {
-  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  if (glic_side_panel_coordinator) {
-    glic_side_panel_coordinator->SetWebContents(
-        delegate_->host().webui_contents());
+void GlicSidePanelUi::ContentsCreated() {
+  if (auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator()) {
+    content::WebContents* web_contents = delegate_->host().webui_contents();
+    SetWebContentsDelegate(web_contents, /*delegate=*/this);
+    ConfigureGlicDragAndDropForWebContents(web_contents);
+    glic_side_panel_coordinator->SetWebContents(web_contents);
   }
 }
 

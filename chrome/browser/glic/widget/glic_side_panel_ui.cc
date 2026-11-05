@@ -229,7 +229,7 @@ void GlicSidePanelUi::ClosePanel() {
   Close(CloseOptions());
 }
 
-void GlicSidePanelUi::OnReload() {
+void GlicSidePanelUi::ContentsCreated() {
   if (glic_view_) {
     glic_view_->SetShowingLoadingPlaceholder(
         delegate_->host().IsShowingNativeLoading());

@@ -142,8 +142,6 @@ void GlicWebUIContentsManager::DidFinishNavigation(
   printing::InitializePrintingForWebContents(web_contents());
 #endif
 
-  host_->OnWebContentsNavigated();
-
   // Re-attach to the (possibly new) GlicUI.
   if (auto* glic_ui = GlicUI::From(web_contents())) {
     glic_ui->AttachToHost(host_);

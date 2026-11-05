@@ -1824,12 +1824,7 @@ bool GlicInstanceImpl::IsHibernated() const {
 }
 
 void GlicInstanceImpl::EnsureHostAwake() {
-  if (IsHibernated()) {
-    if (coordinator_delegate_) {
-      coordinator_delegate_->OnInstanceWillAwaken();
-    }
-    host_.Awaken();
-  }
+  host_.Awaken();
 }
 
 void GlicInstanceImpl::Hibernate() {

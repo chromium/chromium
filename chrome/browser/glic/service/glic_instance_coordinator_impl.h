@@ -90,7 +90,6 @@ class GlicInstanceCoordinatorImpl
   GlicKeyedService* service() { return service_; }
 
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
-  void OnInstanceWillAwaken() override;
   void OnInstanceVisibilityChanged(GlicInstanceImpl* instance,
                                    bool is_showing) override;
   void OnInstanceActivationChanged(GlicInstanceImpl* instance,

@@ -71,7 +71,6 @@ class Host : public GlicSharingManagerProvider {
     virtual void Attach() = 0;
     virtual void Detach() = 0;
     virtual void ClosePanel() = 0;
-    virtual void OnReload() = 0;
     // Sets the minimum widget size that the widget will allow the user to
     // resize to.
     virtual void SetMinimumWidgetSize(const gfx::Size& size);
@@ -159,6 +158,12 @@ class Host : public GlicSharingManagerProvider {
     // Called when the active WebContents in the host changes (e.g. in
     // NoWebview mode when swapping between the overlay WebUI and guest).
     virtual void ActiveWebContentsChanged(content::WebContents* new_contents) {}
+    // Called after the host creates new contents in `Awaken()` (when waking
+    // from hibernation or reloading). Note that active UI embedders
+    // (`GlicFloatingUi`, `GlicSidePanelUi`) are constructed after `Awaken()`
+    // when waking from hibernation, so they handle initial setup in their
+    // constructors and only observe `ContentsCreated()` during `Reload()`.
+    virtual void ContentsCreated() {}
 
     // Called when the WebUI state changes in the glic WebUI.
     // If the glic WebUI is destroyed, the webUI state is returned to
@@ -244,9 +249,6 @@ class Host : public GlicSharingManagerProvider {
   void Close();
   // Reload the web contents.
   void Reload();
-
-  // Called when the WebUI web contents has navigated.
-  void OnWebContentsNavigated();
 
   // Signals the glic WebUI that the glic window will be shown soon.
   void NotifyWindowIntentToShow();
@@ -579,7 +581,6 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
   void Attach() override {}
   void Detach() override {}
   void ClosePanel() override {}
-  void OnReload() override {}
   void SetMinimumWidgetSize(const gfx::Size& size) override {}
   bool IsShowing() const override;
   void SwitchConversation(

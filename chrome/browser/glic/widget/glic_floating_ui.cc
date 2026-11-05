@@ -433,7 +433,7 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
                          EmbedderCloseReason::kExplicitlyClosed);
 }
 
-void GlicFloatingUi::OnReload() {
+void GlicFloatingUi::ContentsCreated() {
   if (auto* glic_view = GetGlicView()) {
     glic_view->SetShowingLoadingPlaceholder(
         delegate_->host().IsShowingNativeLoading());

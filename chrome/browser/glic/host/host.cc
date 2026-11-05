@@ -204,13 +204,6 @@ void Host::Reload() {
   UnsetWebClient();
   Hibernate();
   Awaken();
-  delegate_->OnReload();
-}
-
-void Host::OnWebContentsNavigated() {
-  if (delegate_) {
-    delegate_->OnReload();
-  }
 }
 
 void Host::Awaken() {
@@ -232,6 +225,7 @@ void Host::Awaken() {
   contents_->AttachToHost(this);
   UpdateVisibility();
   UpdateNativeLoadingState();
+  observers_.Notify(&Observer::ContentsCreated);
 }
 
 void Host::OnActiveWebContentsChanged(content::WebContents* new_contents) {

@@ -91,11 +91,11 @@ class GlicSidePanelUi
   bool IsShowing() const override;
   bool IsShowingOrBackgrounded() const override;
   void ClosePanel() override;
-  void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
 
   // Host::Observer:
   void ActiveWebContentsChanged(content::WebContents* new_contents) override;
+  void ContentsCreated() override;
 
   // web_contents_delegate_android::WebContentsDelegateAndroid and
   // pwc::PrivilegedWebContents::EmbedderDelegate:

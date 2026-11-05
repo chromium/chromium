@@ -83,11 +83,11 @@ class GlicFloatingUi : public GlicUiEmbedder,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void ClosePanel() override;
-  void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override;
 
   // Host::Observer:
   void ActiveWebContentsChanged(content::WebContents* new_contents) override;
+  void ContentsCreated() override;
   void NativeLoadingStateChanged(bool is_showing) override;
 
   // views::WidgetObserver implementation, monitoring the glic window widget.

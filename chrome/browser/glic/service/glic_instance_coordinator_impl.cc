@@ -209,13 +209,6 @@ void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
   ComputeContentAccessIndicator();
 }
 
-void GlicInstanceCoordinatorImpl::OnInstanceWillAwaken() {
-  // Before an existing instance creates its WebUI container and awakens,
-  // enforce the max awake limit so that older background instances are pruned
-  // to make room for this one if we are already at capacity.
-  ApplyMaxAwakeInstancesLimit();
-}
-
 void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
     GlicInstanceImpl* instance,
     bool is_showing) {
@@ -1526,6 +1519,10 @@ void GlicInstanceCoordinatorImpl::ContextAccessIndicatorChanged(
 
 std::unique_ptr<GlicWebContentsManager>
 GlicInstanceCoordinatorImpl::CreateWebContentsManager() {
+  // Before an existing instance creates its WebUI container and awakens,
+  // enforce the max awake limit so that older background instances are pruned
+  // to make room for this one if we are already at capacity.
+  ApplyMaxAwakeInstancesLimit();
   metrics_.RecordCountAwakeOnContentsCreated();
   return web_contents_warming_pool_->TakeContainer();
 }
