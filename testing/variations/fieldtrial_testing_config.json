@@ -13286,9 +13286,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20261020",
+                    "name": "Enabled_20261103",
                     "params": {
-                        "retention_period": "30d"
+                        "retention_period": "45d"
                     },
                     "enable_features": [
                         "OnDeviceModelEviction",
