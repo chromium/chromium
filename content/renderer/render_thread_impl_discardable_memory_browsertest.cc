@@ -187,16 +187,17 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                 ->GetBytesAllocated(),
             kSize);
 
-  // Call RenderThreadImpl::ReleaseFreeMemory through a fake memory pressure
-  // notification. The pressure notification will be handled on the test
-  // main thread, so it is sufficient to RunAllTasksUntilIdle(), after which
-  // the manager should report that the memory has been freed.
+  // Call ClientDiscardableSharedMemoryManager::ReleaseFreeMemory through a
+  // fake memory pressure notification. Releasing free memory hops across the
+  // in-process renderer and IO threads before the manager on the browser IO
+  // thread drops the allocated bytes to zero.
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
-  RunAllTasksUntilIdle();
-  EXPECT_EQ(0u, discardable_memory::DiscardableSharedMemoryManager::Get()
-                    ->GetBytesAllocated());
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    return discardable_memory::DiscardableSharedMemoryManager::Get()
+               ->GetBytesAllocated() == 0u;
+  }));
 }
 
 // TODO(crbug.com/364379688): This test is flaky on Windows ASan bots.
