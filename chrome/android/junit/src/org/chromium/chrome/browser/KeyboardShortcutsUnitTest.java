@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -255,16 +256,34 @@ public class KeyboardShortcutsUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
     public void testGetShortcutText_RequiresAlphabeticKeyboard() {
         when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.NEW_TAB))
                 .thenReturn("Ctrl+T");
 
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
-        assertNull(KeyboardShortcuts.getShortcutText(R.id.new_tab_menu_id));
+        assertNull(
+                KeyboardShortcuts.getShortcutText(
+                        ApplicationProvider.getApplicationContext(), R.id.new_tab_menu_id));
 
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        assertEquals("Ctrl+T", KeyboardShortcuts.getShortcutText(R.id.new_tab_menu_id));
+        assertEquals(
+                "Ctrl+T",
+                KeyboardShortcuts.getShortcutText(
+                        ApplicationProvider.getApplicationContext(), R.id.new_tab_menu_id));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
+    public void testGetShortcutText_ReturnsNullOnPhone() {
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.NEW_TAB))
+                .thenReturn("Ctrl+T");
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+
+        assertNull(
+                KeyboardShortcuts.getShortcutText(
+                        ApplicationProvider.getApplicationContext(), R.id.new_tab_menu_id));
     }
 
     private static KeyEvent createKeyEvent(int keyCode, int metaState) {

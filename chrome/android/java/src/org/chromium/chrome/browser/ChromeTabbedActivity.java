@@ -1547,7 +1547,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     mTabModelNotificationDotManager.getNotificationDotObservableSupplier(),
                     mUndoBarPopupController,
                     contextMenuPopulatorFactory,
-                    new ChromeSelectionDropdownMenuDelegate());
+                    new ChromeSelectionDropdownMenuDelegate(this));
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.
