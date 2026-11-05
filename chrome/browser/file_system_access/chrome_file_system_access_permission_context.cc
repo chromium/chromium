@@ -3534,24 +3534,28 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
   // Iterate over all top-level frames by iterating over all tabs in all browser
   // windows. This also counts PWAs in windows without tab strips.
 #if BUILDFLAG(IS_ANDROID)
-  for (TabModel* tabs : TabModelList::models()) {
-    if (tabs->GetProfile() != profile()) {
-      continue;
-    }
-    int tab_count = tabs->GetTabCount();
-    for (int i = 0; i < tab_count; ++i) {
-      content::WebContents* web_contents = tabs->GetWebContentsAt(i);
-      if (!web_contents) {
-        continue;
-      }
-      url::Origin tab_origin = url::Origin::Create(
-          permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              web_contents->GetPrimaryMainFrame()));
-      // Found a tab for this origin, so early exit and don't revoke grants.
-      if (tab_origin == origin) {
-        return;
-      }
-    }
+  bool found_origin = false;
+  TabModelList::ForEach(
+      Profile::FromBrowserContext(profile()), [&](TabModel* tabs) {
+        int tab_count = tabs->GetTabCount();
+        for (int i = 0; i < tab_count; ++i) {
+          content::WebContents* web_contents = tabs->GetWebContentsAt(i);
+          if (!web_contents) {
+            continue;
+          }
+          url::Origin tab_origin = url::Origin::Create(
+              permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+                  web_contents->GetPrimaryMainFrame()));
+          // Found a tab for this origin, so early exit and don't revoke grants.
+          if (tab_origin == origin) {
+            found_origin = true;
+            return false;
+          }
+        }
+        return true;
+      });
+  if (found_origin) {
+    return;
   }
 #else
   bool found_origin = false;
