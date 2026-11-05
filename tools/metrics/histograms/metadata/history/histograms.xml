@@ -2085,7 +2085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MostVisitedTilesVisualDeduplication" units="tiles"
-    expires_after="2026-12-16">
+    expires_after="2027-11-05">
   <owner>hitarthkothari@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
