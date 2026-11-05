@@ -1,7 +1,7 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
 # Chrome Root Store
-Version: 44
+Version: 45
 
 [TOC]
 
@@ -14,7 +14,6 @@ e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092 | CN=Amazon Roo
 657cfe2fa73faa38462571f332a2363a46fce7020951710702cdfbb6eeda3305 | OU=certSIGN ROOT CA G2,O=CERTSIGN SA,C=RO | 2017-02-06 | 2042-02-06
 5cc3d78e4e1d5e45547a04e6873e64f90cf9536d1ccc2ef800f355c4c5fd70fd | CN=CFCA EV ROOT,O=China Financial Certification Authority,C=CN | 2012-08-08 | 2029-12-31
 e23d4a036d7b70e9f595b1422079d2b91edfbb1fb651a0633eaa8a9dc5f80703 | CN=CA Disig Root R2,O=Disig a.s.,L=Bratislava,C=SK | 2012-07-19 | 2042-07-19
-40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367 | CN=emSign Root CA - G1,OU=emSign PKI,O=eMudhra Technologies Limited,C=IN | 2018-02-18 | 2043-02-18
 bfff8fd04433487d6a8aa60c1a29767a9fc2bbb05e420f713a13b992891d3893 | CN=GDCA TrustAUTH R5 ROOT,O=GUANG DONG CERTIFICATE AUTHORITY CO.\,LTD.,C=CN | 2014-11-26 | 2040-12-31
 2ce1cb0bf9d2f9e102993fbe215152c3b2dd0cabde1c68e5319b839154dbb7f5 | CN=Starfield Root Certificate Authority - G2,O=Starfield Technologies\, Inc.,L=Scottsdale,ST=Arizona,C=US | 2009-09-01 | 2037-12-31
 45140b3247eb9cc8c5b4f0d7b53091f73292089e6e5a63e2749dd3aca9198eda | CN=Go Daddy Root Certificate Authority - G2,O=GoDaddy.com\, Inc.,L=Scottsdale,ST=Arizona,C=US | 2009-09-01 | 2037-12-31
@@ -75,6 +74,7 @@ eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881 | CN=D-TRUST Ro
 fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd | CN=T-TeleSec GlobalRoot Class 3,OU=T-Systems Trust Center,O=T-Systems Enterprise Services GmbH,C=DE | 2008-10-01 | 2033-10-01
 31ad6648f8104138c738f39ea4320133393e3a18cc02296ef97c2ac9ef6731d0 | CN=DigiCert Global Root G3,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
 cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f | CN=DigiCert Global Root G2,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
+40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367 | CN=emSign Root CA - G1,OU=emSign PKI,O=eMudhra Technologies Limited,C=IN | 2018-02-18 | 2043-02-18
 179fbc148a3dd00fd24ea13458cc43bfa7f59c8182d783a513f6ebec100c8924 | CN=GlobalSign,OU=GlobalSign ECC Root CA - R5,O=GlobalSign | 2012-11-13 | 2038-01-19
 2cabeafe37d06ca22aba7391c0033d25982952c453647349763a3ab5ad6ccf69 | CN=GlobalSign,OU=GlobalSign Root CA - R6,O=GlobalSign | 2014-12-10 | 2034-12-10
 cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b | CN=GlobalSign,OU=GlobalSign Root CA - R3,O=GlobalSign | 2009-03-18 | 2029-03-18
