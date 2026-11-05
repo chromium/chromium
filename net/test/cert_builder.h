@@ -511,7 +511,6 @@ class MtcLogBuilder {
   using LogIndex = uint64_t;
 
   enum SpecVersion {
-    kPlants05,
     kPlants07,
   };
 

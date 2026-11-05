@@ -449,23 +449,13 @@ TrustStoreChrome::TrustStoreChrome(
         }
       }
 
-      std::shared_ptr<const bssl::MTCAnchor> bssl_mtc_anchor;
-      switch (issuer.spec_version) {
-        case chrome_root_store::SPEC_VERSION_DRAFT05:
-          bssl_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      // Unknown and unsupported spec versions are filtered out in
+      // ParseAndFilterSigner, so we don't need to cleanly handle them here.
+      CHECK_EQ(issuer.spec_version, chrome_root_store::SPEC_VERSION_DRAFT07);
+      std::shared_ptr<const bssl::MTCAnchor> bssl_mtc_anchor =
+          bssl::MTCAnchor::CreatePlants07(
               issuer.base_id, issuer.signature_algorithm,
               bssl::UpRef(issuer.key.get()), std::move(trusted_subtrees));
-          break;
-        case chrome_root_store::SPEC_VERSION_DRAFT07:
-          bssl_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
-              issuer.base_id, issuer.signature_algorithm,
-              bssl::UpRef(issuer.key.get()), std::move(trusted_subtrees));
-          break;
-        default:
-          // Unknown spec versions are filtered out in ParseAndFilterSigner, so
-          // we don't need to cleanly handle it here.
-          NOTREACHED();
-      }
       if (!bssl_mtc_anchor ||
           !trust_store_.AddMTCTrustAnchor(std::move(bssl_mtc_anchor))) {
         // TODO(crbug.com/452986180): ignoring an invalid issuer at this point
@@ -1079,24 +1069,21 @@ bool ParseAndFilterSigner(const chrome_root_store::Signer& signer_proto,
   }
 
   switch (signer_proto.spec_version()) {
-    case chrome_root_store::SPEC_VERSION_DRAFT05:
     case chrome_root_store::SPEC_VERSION_DRAFT07:
       signer.spec_version = signer_proto.spec_version();
       break;
+
+    // Ignore issuers with unknown or unsupported versions, or from before
+    // versions were added to the proto. They are not considered parsing
+    // failures.
+    case chrome_root_store::SPEC_VERSION_DRAFT05:
     case chrome_root_store::SPEC_VERSION_UNSET:
-      // TODO(crbug.com/452986180): The signer_set.textproto doesn't have spec
-      // version on existing issuers, so consider any issuer without a version
-      // as plants-05. Remove this after the proto has been updated with
-      // versions on all issuers.
-      signer.spec_version = chrome_root_store::SPEC_VERSION_DRAFT05;
-      break;
     default:
       if (signer.type == chrome_root_store::SIGNER_TYPE_ISSUER) {
-        // An unknown spec version causes an issuer to be ignored, but is not
-        // considered a parsing failure. Spec version is not required on
-        // mirrors.
+        // Spec version is not required on mirrors.
         return true;
       }
+      break;
   }
 
   std::optional<bssl::SignatureAlgorithm> sigalg =

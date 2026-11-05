@@ -741,84 +741,34 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   histograms.ExpectTotalCount("Net.Certificate.TrustAnchor2.Verify", 0u);
 }
 
-class CertVerifyProcBuiltinMtcTest
-    : public CertVerifyProcBuiltinTest,
-      public ::testing::WithParamInterface<bssl::MTCAnchor::MtcSpecVersion> {
+class CertVerifyProcBuiltinMtcTest : public CertVerifyProcBuiltinTest {
  public:
-  bssl::MTCAnchor::MtcSpecVersion spec_version() const { return GetParam(); }
-
-  MtcLogBuilder::SpecVersion log_builder_spec() const {
-    switch (GetParam()) {
-      // Plants-04 and plants-05 are wire compatible. The enum in boringssl and
-      // chromium happened to be different as to which version they used since
-      // those are the versions of the draft that were current at the time.
-      case bssl::MTCAnchor::kPlants04:
-        return MtcLogBuilder::kPlants05;
-      case bssl::MTCAnchor::kPlants07:
-        return MtcLogBuilder::kPlants07;
-    }
-    NOTREACHED();
-  }
-
   std::shared_ptr<const bssl::MTCAnchor> CreateMTCAnchor(
       base::span<const uint8_t> ca_id,
       bssl::SignatureAlgorithm ca_signature_algorithm,
       bssl::UniquePtr<CRYPTO_BUFFER> ca_key,
       std::vector<bssl::LogTrustedSubtrees> log_trusted_subtrees) const {
-    switch (spec_version()) {
-      case bssl::MTCAnchor::kPlants04:
-        return std::make_shared<bssl::MTCAnchor>(
-            ca_id, ca_signature_algorithm, std::move(ca_key),
-            std::move(log_trusted_subtrees));
-      case bssl::MTCAnchor::kPlants07:
-        return bssl::MTCAnchor::CreatePlants07(ca_id, ca_signature_algorithm,
-                                               std::move(ca_key),
-                                               std::move(log_trusted_subtrees));
-    }
-    NOTREACHED();
+    return bssl::MTCAnchor::CreatePlants07(ca_id, ca_signature_algorithm,
+                                           std::move(ca_key),
+                                           std::move(log_trusted_subtrees));
   }
 
   MtcLogBuilder CreateLogBuilder(base::span<const uint8_t> ca_id,
                                  MtcLogBuilder::LogNumber log_number) const {
-    return MtcLogBuilder(ca_id, log_number, log_builder_spec());
+    return MtcLogBuilder(ca_id, log_number, MtcLogBuilder::kPlants07);
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  chrome_root_store::SpecVersion signer_set_spec() const {
-    switch (GetParam()) {
-      case bssl::MTCAnchor::kPlants04:
-        return chrome_root_store::SPEC_VERSION_DRAFT05;
-      case bssl::MTCAnchor::kPlants07:
-        return chrome_root_store::SPEC_VERSION_DRAFT07;
-    }
-    NOTREACHED();
-  }
-
   Signer CreateIssuerSigner(base::span<const uint8_t> base_id) const {
     auto signer = Signer::CreateForTesting(
         chrome_root_store::SIGNER_TYPE_ISSUER, base_id);
-    signer.spec_version = signer_set_spec();
+    signer.spec_version = chrome_root_store::SPEC_VERSION_DRAFT07;
     return signer;
   }
 #endif
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    CertVerifyProcBuiltinMtcTest,
-    ::testing::Values(bssl::MTCAnchor::kPlants04, bssl::MTCAnchor::kPlants07),
-    [](const testing::TestParamInfo<bssl::MTCAnchor::MtcSpecVersion>&
-           param_info) {
-      switch (param_info.param) {
-        case bssl::MTCAnchor::kPlants04:
-          return "Plants04";
-        case bssl::MTCAnchor::kPlants07:
-          return "Plants07";
-      }
-      NOTREACHED();
-    });
-
-TEST_P(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
+TEST_F(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
   net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
@@ -888,7 +838,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest, MtcNonTrivialProof) {
+TEST_F(CertVerifyProcBuiltinMtcTest, MtcNonTrivialProof) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
   net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
@@ -1005,7 +955,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest, MtcNonTrivialProof) {
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest, StandaloneMtcVerification) {
+TEST_F(CertVerifyProcBuiltinMtcTest, StandaloneMtcVerification) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
   net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
@@ -1088,7 +1038,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest, StandaloneMtcVerification) {
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-TEST_P(CertVerifyProcBuiltinMtcTest, StandaloneMtcCosignerPolicy) {
+TEST_F(CertVerifyProcBuiltinMtcTest, StandaloneMtcCosignerPolicy) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
   net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
@@ -1305,7 +1255,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest, StandaloneMtcCosignerPolicy) {
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
+TEST_F(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
   struct TestCase {
     uint16_t log_number;
     int min_log_number;
@@ -1473,7 +1423,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest, MtcMaxCertLifetime) {
+TEST_F(CertVerifyProcBuiltinMtcTest, MtcMaxCertLifetime) {
   struct TestCase {
     std::optional<base::TimeDelta> max_cert_lifetime;
     base::TimeDelta cert_lifetime;
@@ -1632,7 +1582,7 @@ TEST_F(CertVerifyProcBuiltinTest, CrsAnchorUsageHistogram) {
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest, MtcCrsAnchorUsageHistogram) {
+TEST_F(CertVerifyProcBuiltinMtcTest, MtcCrsAnchorUsageHistogram) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
   net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
@@ -1702,7 +1652,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest, MtcCrsAnchorUsageHistogram) {
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest, MtcRevocation) {
+TEST_F(CertVerifyProcBuiltinMtcTest, MtcRevocation) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint64_t kLogNumber = 1;
 
@@ -1851,7 +1801,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest, MtcRevocation) {
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest,
+TEST_F(CertVerifyProcBuiltinMtcTest,
        SignaturelessMtcChromeRootStoreConstraints) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
@@ -1926,7 +1876,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest,
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest,
+TEST_F(CertVerifyProcBuiltinMtcTest,
        SignaturelessMtcChromeRootStoreConstraintsTimeConstraints) {
   const base::Time leaf_time = base::Time::Now() - base::Seconds(1);
 
@@ -2066,7 +2016,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest,
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest,
+TEST_F(CertVerifyProcBuiltinMtcTest,
        SignaturelessMtcChromeRootStoreConstraintsSctConstraints) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
@@ -2133,7 +2083,7 @@ TEST_P(CertVerifyProcBuiltinMtcTest,
   }
 }
 
-TEST_P(CertVerifyProcBuiltinMtcTest,
+TEST_F(CertVerifyProcBuiltinMtcTest,
        SignaturelessMtcChromeRootStoreConstraintsIndexConstraints) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;

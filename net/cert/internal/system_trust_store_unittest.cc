@@ -214,13 +214,14 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
     EXPECT_TRUE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
   }
   {
+    // The draft-05 issuer is ignored, since draft-05 is no longer supported.
     std::shared_ptr<const bssl::MTCAnchor> mtc_anchor =
-        std::make_shared<bssl::MTCAnchor>(
+        bssl::MTCAnchor::CreatePlants07(
             bssl::MakeSpan(kMtcCaPlants05Id),
             bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(kFakeMtcKey),
             std::vector<bssl::LogTrustedSubtrees>());
-    EXPECT_TRUE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
+    EXPECT_FALSE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
   }
 
   {
@@ -233,7 +234,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
     EXPECT_FALSE(system_trust_store->IsKnownRoot(parsed_root2.get()));
 
     std::shared_ptr<const bssl::MTCAnchor> mtc_anchor2 =
-        std::make_shared<bssl::MTCAnchor>(
+        bssl::MTCAnchor::CreatePlants07(
             bssl::MakeSpan(kUnknownMtcCaId), bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(kFakeMtcKey),
             std::vector<bssl::LogTrustedSubtrees>());

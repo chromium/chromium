@@ -1316,8 +1316,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
 
 class PKIMetadataComponentChromeRootStoreMtcMetadataTest
     : public PKIMetadataComponentChromeRootStoreUpdateTest,
-      public testing::WithParamInterface<
-          std::tuple<bool, bool, bool, chrome_root_store::SpecVersion>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   PKIMetadataComponentChromeRootStoreMtcMetadataTest() {
     feature_list_.InitWithFeatureStates(
@@ -1340,25 +1339,10 @@ class PKIMetadataComponentChromeRootStoreMtcMetadataTest
                             : chrome_root_store::REALM_PUBLICLY_TRUSTED;
   }
 
-  chrome_root_store::SpecVersion signer_set_spec() const {
-    return std::get<3>(GetParam());
-  }
-
-  net::MtcLogBuilder::SpecVersion log_builder_spec() const {
-    switch (signer_set_spec()) {
-      case chrome_root_store::SPEC_VERSION_DRAFT05:
-        return net::MtcLogBuilder::kPlants05;
-      case chrome_root_store::SPEC_VERSION_DRAFT07:
-        return net::MtcLogBuilder::kPlants07;
-      default:
-        NOTREACHED();
-    }
-  }
-
   net::MtcLogBuilder CreateLogBuilder(
       base::span<const uint8_t> ca_id,
       net::MtcLogBuilder::LogNumber log_number) const {
-    return net::MtcLogBuilder(ca_id, log_number, log_builder_spec());
+    return net::MtcLogBuilder(ca_id, log_number, net::MtcLogBuilder::kPlants07);
   }
 
   chrome_root_store::Signer* AddSignerSetIssuer(
@@ -1368,7 +1352,7 @@ class PKIMetadataComponentChromeRootStoreMtcMetadataTest
       std::optional<int32_t> crs_root_id) {
     chrome_root_store::Signer* issuer =
         net::AddSignerSetIssuer(signer_set, log_id, operator_name, crs_root_id);
-    issuer->set_spec_version(signer_set_spec());
+    issuer->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT07);
     issuer->set_realm(realm());
     return issuer;
   }
@@ -1380,29 +1364,13 @@ class PKIMetadataComponentChromeRootStoreMtcMetadataTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     PKIMetadataComponentChromeRootStoreMtcMetadataTest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Values(chrome_root_store::SPEC_VERSION_DRAFT05,
-                                     chrome_root_store::SPEC_VERSION_DRAFT07)),
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
     [](const testing::TestParamInfo<
         PKIMetadataComponentChromeRootStoreMtcMetadataTest::ParamType>& info) {
-      std::string_view spec_string;
-      switch (std::get<3>(info.param)) {
-        case chrome_root_store::SPEC_VERSION_DRAFT05:
-          spec_string = "Plants05";
-          break;
-        case chrome_root_store::SPEC_VERSION_DRAFT07:
-          spec_string = "Plants07";
-          break;
-        default:
-          NOTREACHED();
-      }
       return base::StrCat({
           std::get<0>(info.param) ? "MtcsOn" : "MtcsOff",
           std::get<1>(info.param) ? "TestRootsOn" : "TestRootsOff",
           std::get<2>(info.param) ? "UseTestRealm" : "UsePublicRealm",
-          spec_string,
       });
     });
 

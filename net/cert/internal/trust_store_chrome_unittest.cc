@@ -287,27 +287,26 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
          {net::features::kTestRootStore, use_test_roots}});
 
     constexpr uint8_t kUnconstrainedAnchorCaId[] = {0x09, 0x01, 0x03, 0x04};
-    auto unconstrained_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto unconstrained_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
         kUnconstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
         x509_util::CreateCryptoBuffer(std::string_view("fake key")),
         std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kConstrainedAnchorCaId[] = {0x08, 0x04, 0x05, 0x06};
-    auto constrained_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto constrained_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
         kConstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
         x509_util::CreateCryptoBuffer(std::string_view("fake key")),
         std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kUntrustedConstrainedAnchorCaId[] = {0x06, 0x04, 0x05,
                                                            0x06};
-    auto untrusted_constrained_mtc_anchor =
-        std::make_shared<const bssl::MTCAnchor>(
-            kUntrustedConstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
-            x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-            std::vector<bssl::LogTrustedSubtrees>());
+    auto untrusted_constrained_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
+        kUntrustedConstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
+        x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+        std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kUnknownAnchorCaId[] = {0x07, 0x07, 0x07, 0x07};
-    auto unknown_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto unknown_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
         kUnknownAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
         x509_util::CreateCryptoBuffer(std::string_view("fake key")),
         std::vector<bssl::LogTrustedSubtrees>());
@@ -700,7 +699,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       constexpr uint8_t kCaId[] = {0x01, 0x05};
       AddSignerSetIssuer(signer_set, kCaId, "operator", 11);
 
-      mtc_anchor_with_id_11 = std::make_shared<const bssl::MTCAnchor>(
+      mtc_anchor_with_id_11 = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
           std::vector<bssl::LogTrustedSubtrees>());
@@ -711,7 +710,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       constexpr uint8_t kCaId[] = {0x01, 0x06};
       AddSignerSetIssuer(signer_set, kCaId, "operator", std::nullopt);
 
-      mtc_anchor_with_no_id = std::make_shared<const bssl::MTCAnchor>(
+      mtc_anchor_with_no_id = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
           std::vector<bssl::LogTrustedSubtrees>());
@@ -723,7 +722,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       auto* issuer = AddSignerSetIssuer(signer_set, kCaId, "operator", 13);
       issuer->set_realm(chrome_root_store::REALM_UNTRUSTED_VALIDATION_ONLY);
 
-      untrusted_mtc_anchor_with_id = std::make_shared<const bssl::MTCAnchor>(
+      untrusted_mtc_anchor_with_id = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
           std::vector<bssl::LogTrustedSubtrees>());
@@ -732,7 +731,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
     std::shared_ptr<const bssl::MTCAnchor> unknown_mtc_anchor;
     {
       constexpr uint8_t kCaId[] = {0x01, 0x08};
-      unknown_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      unknown_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
           std::vector<bssl::LogTrustedSubtrees>());
@@ -970,31 +969,14 @@ TEST(TrustStoreChromeTestNoFixture, LoadCompiledInMtcTrustAnchorCaIds) {
   }
 }
 
-class TrustStoreChromeMtcTest
-    : public testing::TestWithParam<
-          std::tuple<bool, chrome_root_store::SpecVersion>> {
+class TrustStoreChromeMtcTest : public testing::TestWithParam<bool> {
  public:
-  bool use_test_roots() const { return std::get<0>(GetParam()); }
-
-  chrome_root_store::SpecVersion signer_set_spec() const {
-    return std::get<1>(GetParam());
-  }
-
-  net::MtcLogBuilder::SpecVersion log_builder_spec() const {
-    switch (signer_set_spec()) {
-      case chrome_root_store::SPEC_VERSION_DRAFT05:
-        return net::MtcLogBuilder::kPlants05;
-      case chrome_root_store::SPEC_VERSION_DRAFT07:
-        return net::MtcLogBuilder::kPlants07;
-      default:
-        NOTREACHED();
-    }
-  }
+  bool use_test_roots() const { return GetParam(); }
 
   net::MtcLogBuilder CreateLogBuilder(
       base::span<const uint8_t> ca_id,
       net::MtcLogBuilder::LogNumber log_number) const {
-    return net::MtcLogBuilder(ca_id, log_number, log_builder_spec());
+    return net::MtcLogBuilder(ca_id, log_number, net::MtcLogBuilder::kPlants07);
   }
 
   std::shared_ptr<const bssl::MTCAnchor> CreateMTCAnchor(
@@ -1002,18 +984,9 @@ class TrustStoreChromeMtcTest
       bssl::SignatureAlgorithm ca_signature_algorithm,
       bssl::UniquePtr<CRYPTO_BUFFER> ca_key,
       std::vector<bssl::LogTrustedSubtrees> log_trusted_subtrees) const {
-    switch (signer_set_spec()) {
-      case chrome_root_store::SPEC_VERSION_DRAFT05:
-        return std::make_shared<bssl::MTCAnchor>(
-            ca_id, ca_signature_algorithm, std::move(ca_key),
-            std::move(log_trusted_subtrees));
-      case chrome_root_store::SPEC_VERSION_DRAFT07:
-        return bssl::MTCAnchor::CreatePlants07(ca_id, ca_signature_algorithm,
-                                               std::move(ca_key),
-                                               std::move(log_trusted_subtrees));
-      default:
-        NOTREACHED();
-    }
+    return bssl::MTCAnchor::CreatePlants07(ca_id, ca_signature_algorithm,
+                                           std::move(ca_key),
+                                           std::move(log_trusted_subtrees));
   }
 
   std::tuple<std::shared_ptr<const bssl::MTCAnchor>,
@@ -1045,34 +1018,17 @@ class TrustStoreChromeMtcTest
       std::optional<int32_t> crs_root_id) {
     chrome_root_store::Signer* issuer =
         net::AddSignerSetIssuer(signer_set, log_id, operator_name, crs_root_id);
-    issuer->set_spec_version(signer_set_spec());
+    issuer->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT07);
     return issuer;
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    TrustStoreChromeMtcTest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(chrome_root_store::SPEC_VERSION_DRAFT05,
-                                     chrome_root_store::SPEC_VERSION_DRAFT07)),
-    [](const testing::TestParamInfo<TrustStoreChromeMtcTest::ParamType>& info) {
-      std::string_view spec_string;
-      switch (std::get<1>(info.param)) {
-        case chrome_root_store::SPEC_VERSION_DRAFT05:
-          spec_string = "Plants05";
-          break;
-        case chrome_root_store::SPEC_VERSION_DRAFT07:
-          spec_string = "Plants07";
-          break;
-        default:
-          NOTREACHED();
-      }
-      return base::StrCat({
-          std::get<0>(info.param) ? "TestRootsOn" : "TestRootsOff",
-          spec_string,
-      });
-    });
+INSTANTIATE_TEST_SUITE_P(,
+                         TrustStoreChromeMtcTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "TestRootsOn" : "TestRootsOff";
+                         });
 
 TEST_P(TrustStoreChromeMtcTest, LoadMtcTrustAnchors) {
   constexpr uint8_t kTestMtcCaId_1[] = {0x09u, 0x01u, 0x03u, 0x04u};
@@ -1668,6 +1624,11 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
   AddSignerSetIssuer(proto, kIssuerUnknownSpecVersion, "op", std::nullopt)
       ->set_spec_version(static_cast<chrome_root_store::SpecVersion>(999999));
 
+  // draft-05 is no longer supported, so this is ignored.
+  const std::vector<uint8_t> kIssuerDraft05 = {0x0d};
+  AddSignerSetIssuer(proto, kIssuerDraft05, "op", std::nullopt)
+      ->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT05);
+
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures({features::kVerifyMTCs},
@@ -1678,18 +1639,10 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
     std::vector<std::vector<uint8_t>> usable_issuer_ids;
     for (const auto& issuer : parsed_set->trusted_issuers()) {
       usable_issuer_ids.push_back(issuer.base_id);
-      if (issuer.base_id == kIssuerNoSpecVersion) {
-        // TODO(crbug.com/452986180): Remove this once issuers with missing
-        // spec_version get filtered out.
-        EXPECT_EQ(issuer.spec_version, chrome_root_store::SPEC_VERSION_DRAFT05);
-      }
     }
-    // TODO(crbug.com/452986180): Remove kIssuerNoSpecVersion here and below
-    // once issuers with missing spec_version get filtered out.
     EXPECT_THAT(usable_issuer_ids,
                 testing::UnorderedElementsAre(
-                    kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen,
-                    kIssuerNoSpecVersion));
+                    kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen));
   }
 
   {
@@ -1709,7 +1662,7 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
     EXPECT_THAT(usable_issuer_ids,
                 testing::UnorderedElementsAre(
                     kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen,
-                    kIssuerNoSpecVersion, kIssuerUntrustedRealm));
+                    kIssuerUntrustedRealm));
   }
 }
 

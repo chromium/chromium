@@ -1617,15 +1617,6 @@ std::vector<bssl::Subtree> SubtreesForLandmarkRange(
   return {{left_start, mid}, {mid, end}};
 }
 
-// For initial experimentation, early implementations of this design will use
-// the OID 1.3.6.1.4.1.44363.47.0 instead of id-alg-mtcProof.
-// This is the DER encoding of an AlgorithmIdentifier with the algorithm OID
-// set and the parameters omitted, eg:
-// SEQUENCE { OBJECT_IDENTIFIER { 1.3.6.1.4.1.44363.47.0 } }
-constexpr uint8_t kMtcSignatureAlgorithmIdentifierPlants05[] = {
-    0x30, 0x0c, 0x06, 0x0a, 0x2b, 0x06, 0x01,
-    0x04, 0x01, 0x82, 0xda, 0x4b, 0x2f, 0x00};
-
 //   id-alg-mtcProof OBJECT IDENTIFIER ::= {
 //       iso(1) identified-organization(3) dod(6) internet(1) security(5)
 //       mechanisms(5) pkix(7) algorithms(6) 67 }
@@ -1695,31 +1686,19 @@ class MtcLogBuilder::Data {
     CHECK(CBB_add_asn1(cbb.get(), &subject_seq, CBS_ASN1_SEQUENCE));
     CHECK(CBB_add_asn1(&subject_seq, &subject_set, CBS_ASN1_SET));
     CHECK(CBB_add_asn1(&subject_set, &subject_log, CBS_ASN1_SEQUENCE));
-    if (spec_ == SpecVersion::kPlants05) {
-      // Section 5.2: Use OID 1.3.6.1.4.1.44363.47.1 as the attribute type for
-      // the log ID's name. Note that this is the early experimentation OID in
-      // the draft rather than the real value of `id-rdna-trustAnchorID`.
-      static const uint8_t log_attr_oid[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
-                                             0x82, 0xda, 0x4b, 0x2f, 0x01};
-      CHECK(CBB_add_asn1_element(&subject_log, CBS_ASN1_OBJECT, log_attr_oid,
-                                 sizeof(log_attr_oid)));
 
-      std::string ca_id_text = x509_util::RelativeOidToString(ca_id_);
-      CHECK(CBBAddAsn1Element(&subject_log, CBS_ASN1_UTF8STRING,
-                              base::as_byte_span(ca_id_text)));
-    } else {
-      // id-rdna-trustAnchorID OBJECT IDENTIFIER ::= {
-      //     iso(1) identified-organization(3) dod(6) internet(1) security(5)
-      //     mechanisms(5) pkix(7) rdna(25) 3 }
-      static const uint8_t tai_attr_oid[] = {0x2b, 0x06, 0x01, 0x05,
-                                             0x05, 0x07, 0x19, 0x03};
-      CHECK(CBB_add_asn1_element(&subject_log, CBS_ASN1_OBJECT, tai_attr_oid,
-                                 sizeof(tai_attr_oid)));
+    CHECK_EQ(spec_, SpecVersion::kPlants07);
+    // id-rdna-trustAnchorID OBJECT IDENTIFIER ::= {
+    //     iso(1) identified-organization(3) dod(6) internet(1) security(5)
+    //     mechanisms(5) pkix(7) rdna(25) 3 }
+    static const uint8_t tai_attr_oid[] = {0x2b, 0x06, 0x01, 0x05,
+                                           0x05, 0x07, 0x19, 0x03};
+    CHECK(CBB_add_asn1_element(&subject_log, CBS_ASN1_OBJECT, tai_attr_oid,
+                               sizeof(tai_attr_oid)));
 
-      // The attribute's value is a RELATIVE-OID containing the trust anchor
-      // ID's ASN.1 representation.
-      CHECK(CBBAddAsn1Element(&subject_log, CBS_ASN1_RELATIVE_OID, ca_id_));
-    }
+    // The attribute's value is a RELATIVE-OID containing the trust anchor
+    // ID's ASN.1 representation.
+    CHECK(CBBAddAsn1Element(&subject_log, CBS_ASN1_RELATIVE_OID, ca_id_));
 
     return FinishCBBToVector(cbb.get());
   }
@@ -1805,11 +1784,8 @@ std::vector<uint8_t> MtcLogBuilder::MtcLogEntry::BuildTBSCertificate(
   CHECK(CBB_add_asn1_uint64(&tbs_cert, serial));
 
   // signature            AlgorithmIdentifier,
-  if (spec == kPlants05) {
-    CHECK(CBBAddBytes(&tbs_cert, kMtcSignatureAlgorithmIdentifierPlants05));
-  } else {
-    CHECK(CBBAddBytes(&tbs_cert, kMtcSignatureAlgorithmIdentifierPlants07));
-  }
+  CHECK_EQ(spec, SpecVersion::kPlants07);
+  CHECK(CBBAddBytes(&tbs_cert, kMtcSignatureAlgorithmIdentifierPlants07));
 
   CHECK(CBBAddBytes(&tbs_cert, issuer_tlv));
   CHECK(CBBAddBytes(&tbs_cert, validity));
@@ -1974,17 +1950,12 @@ std::vector<uint8_t> MtcLogBuilder::CreateMtcProof(
   base::Extend(result, base::U16ToBigEndian(inclusion_proof.size()));
   base::Extend(result, inclusion_proof);
 
-  if (spec_ == SpecVersion::kPlants05) {
-    //     MTCSignature signatures<0..2^16-1>;
-    base::Extend(result, base::U16ToBigEndian(
-                             base::checked_cast<uint16_t>(signatures_size)));
-  } else {
-    //     MTCSignature signatures<0..2^24-1>;
-    base::Extend(result,
-                 base::span(base::U32ToBigEndian(
-                                base::checked_cast<uint32_t>(signatures_size)))
-                     .subspan(1u));
-  }
+  //     MTCSignature signatures<0..2^24-1>;
+  CHECK_EQ(spec_, SpecVersion::kPlants07);
+  base::Extend(result,
+               base::span(base::U32ToBigEndian(
+                              base::checked_cast<uint32_t>(signatures_size)))
+                   .subspan(1u));
   for (const auto& signature : signatures) {
     base::Extend(result, signature);
   }
@@ -2082,11 +2053,10 @@ std::optional<std::vector<uint8_t>> MtcLogBuilder::CreateCertificate(
   CHECK(CBB_init(cbb.get(), tbs_cert.size()));
   CHECK(CBB_add_asn1(cbb.get(), &cert, CBS_ASN1_SEQUENCE));
   CHECK(CBBAddBytes(&cert, tbs_cert));
-  if (spec_ == kPlants05) {
-    CHECK(CBBAddBytes(&cert, kMtcSignatureAlgorithmIdentifierPlants05));
-  } else {
-    CHECK(CBBAddBytes(&cert, kMtcSignatureAlgorithmIdentifierPlants07));
-  }
+
+  CHECK_EQ(spec_, SpecVersion::kPlants07);
+  CHECK(CBBAddBytes(&cert, kMtcSignatureAlgorithmIdentifierPlants07));
+
   CHECK(CBB_add_asn1(&cert, &signature, CBS_ASN1_BITSTRING));
   CHECK(CBB_add_u8(&signature, 0 /* no unused bits */));
   CHECK(CBBAddBytes(&signature, signature_value));
