@@ -71,7 +71,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "permission_util_unittest\.cc": [
+  "permission_util_unittest\\.cc": [
     "+net/http/http_response_headers.h",
   ],
 }

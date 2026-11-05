@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "content_credential_manager_unittest\.cc": [
+  "content_credential_manager_unittest\\.cc": [
     "+content/public/test",
     "+mojo/public/cpp/test_support",
   ],

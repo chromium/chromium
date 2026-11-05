@@ -8,7 +8,7 @@ include_rules = [
 
 # For our own unit tests.
 specific_include_rules = {
-  ".*(benchmark|tests)\.cc": [
+  ".*(benchmark|tests)\\.cc": [
     "+base",
     "+testing",
   ]

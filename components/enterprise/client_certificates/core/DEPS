@@ -14,7 +14,7 @@ include_rules = [
 specific_include_rules = {
   # Kcer error codes are recorded as UMA histograms on ChromeOS (guarded by
   # BUILDFLAG(IS_CHROMEOS)).
-  "metrics_util\.(cc|h)": [
+  "metrics_util\\.(cc|h)": [
     "+chromeos/ash/components/kcer",
   ],
 }

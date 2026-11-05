@@ -10,7 +10,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  'env_chromium\.cc': [
+  'env_chromium\\.cc': [
     '+components/services/storage/public/cpp/filesystem',
   ],
 }

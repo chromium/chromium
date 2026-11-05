@@ -61,12 +61,12 @@ specific_include_rules = {
   # TODO(b/233667677): remove the overlay_processor_ozone.cc dependency on
   # ui/gl/gl_switches.h when the GL path can distinguish between BT.601 and
   # BT.709 YUV resources.
-  "overlay_processor_ozone.cc": [
+  "overlay_processor_ozone\\.cc": [
     # TODO(danakj): gl_switches.h brings runtime flags into the compositor which
     # makes testing coverage harder/less clear, it should not be here.
     "+ui/gl/gl_switches.h",
   ],
-  "overlay_strategy_underlay_cast\\.*" : [
+  "overlay_strategy_underlay_cast\\..*" : [
     "+chromecast/media/service/mojom/video_geometry_setter.mojom.h",
     "+mojo/public",
   ],
@@ -80,11 +80,11 @@ specific_include_rules = {
     "+ui/gl/gl_implementation.h",
     "+third_party/zlib/google",
   ],
-  "test_resource_factory\\.*" : [
+  "test_resource_factory\\..*" : [
     "+components/viz/client",
     "+components/viz/test",
   ],
-  "delegated_ink_point_renderer\\.*" : [
+  "delegated_ink_point_renderer.*" : [
     "+mojo/public/cpp/bindings",
   ],
   "viz_pixel_test\\.(cc|h)": [

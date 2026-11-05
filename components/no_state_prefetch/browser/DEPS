@@ -22,7 +22,7 @@ specific_include_rules = {
   # Tests enable the kConnectionAllowlists feature; production code stays free
   # of network-service deps (the enforced allowlist is read via the
   # RenderFrameHost accessor instead).
-  ".*_unittest\.cc": [
+  ".*_unittest\\.cc": [
     "+services/network/public/cpp",
     "+services/network/public/mojom",
   ],

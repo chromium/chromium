@@ -5,7 +5,7 @@ skip_child_includes = [
 ]
 
 specific_include_rules = {
-  'shims/minimal_logging_chromium\.cc': [
+  'shims/minimal_logging_chromium\\.cc': [
     '+base',
   ]
 }

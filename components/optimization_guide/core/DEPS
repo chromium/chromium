@@ -31,10 +31,10 @@ include_rules = [
 ];
 
 specific_include_rules = {
-  ".*_unittest.cc": [
+  ".*_unittest\\.cc": [
     "+ui/base",
   ],
-  "fake_model_assets\.cc": [
+  "fake_model_assets\\.cc": [
     "+third_party/dawn/include/dawn/dawn_proc.h",
   ],
 };
