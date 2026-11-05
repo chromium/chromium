@@ -9,8 +9,6 @@
 
 #include "ash/webui/recorder_app_ui/mojom/recorder_app.mojom.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
-#include "ash/webui/recorder_app_ui/url_constants.h"
-#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -33,20 +31,6 @@ class MediaDeviceSaltService;
 }  // namespace media_device_salt
 
 namespace ash {
-
-class RecorderAppUI;
-
-// WebUIConfig for chrome://recorder-app
-class RecorderAppUIConfig : public SystemWebAppUIConfig<RecorderAppUI> {
- public:
-  explicit RecorderAppUIConfig(
-      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
-      : SystemWebAppUIConfig(kChromeUIRecorderAppHost,
-                             SystemWebAppType::RECORDER,
-                             create_controller_func) {}
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
-};
 
 // The WebUI for chrome://recorder_app
 class RecorderAppUI

@@ -34,7 +34,6 @@
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/print_management/print_management_ui.h"
-#include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
@@ -77,7 +76,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_ui_config.h"
-#include "chrome/browser/ash/system_web_apps/apps/recorder_app/chrome_recorder_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/recorder_app/recorder_app_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -134,11 +133,9 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "chromeos/ash/components/media_device_salt/media_device_salt_service_provider.h"
-#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/webui_config.h"
@@ -299,43 +296,6 @@ std::unique_ptr<content::WebUIConfig> MakeCameraAppUIConfig() {
 
   return std::make_unique<CameraAppUIConfig>(create_controller_func);
 }
-
-// `local_state` and `application_locale_storage` must not be null and must
-// outlive the returned config.
-std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig(
-    PrefService* local_state,
-    const ApplicationLocaleStorage* application_locale_storage) {
-  CHECK(local_state);
-  CHECK(application_locale_storage);
-  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
-      [](PrefService* local_state,
-         const ApplicationLocaleStorage* application_locale_storage,
-         content::WebUI* web_ui,
-         const GURL& url) -> std::unique_ptr<content::WebUIController> {
-        Profile* profile = Profile::FromWebUI(web_ui);
-        const AccountId& account_id =
-            CHECK_DEREF(AnnotatedAccountId::Get(profile));
-        signin::IdentityManager* identity_manager =
-            IdentityManagerProvider::Get().Find(account_id);
-        consent_auditor::ConsentAuditor* consent_auditor =
-            ConsentAuditorProvider::Get().Find(account_id);
-        media_device_salt::MediaDeviceSaltService* media_device_salt_service =
-            MediaDeviceSaltServiceProvider::Get().Find(account_id);
-
-        auto delegate = std::make_unique<ChromeRecorderAppUIDelegate>(
-            application_locale_storage, g_browser_process->variations_service(),
-            user_manager::UserManager::Get(), account_id, identity_manager,
-            consent_auditor);
-        return std::make_unique<RecorderAppUI>(local_state, web_ui,
-                                               std::move(delegate),
-                                               media_device_salt_service);
-      },
-      base::Unretained(local_state),
-      base::Unretained(application_locale_storage));
-
-  return std::make_unique<RecorderAppUIConfig>(create_controller_func);
-}
-
 std::unique_ptr<content::WebUIConfig> MakeDemoModeAppUntrustedUIConfig() {
   auto create_controller_func = base::BindRepeating(
       [](content::WebUI* web_ui,
@@ -593,8 +553,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
       /*is_stateful=*/false);
   AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>(),
                  /*is_stateful=*/false);
-  AddWebUIConfig(MakeRecorderAppUIConfig(&local_state_.get(),
-                                         &application_locale_storage_.get()),
+  AddWebUIConfig(std::make_unique<RecorderAppUIConfig>(
+                     &local_state_.get(), &application_locale_storage_.get()),
                  /*is_stateful=*/true);
   AddWebUIConfig(
       std::make_unique<RemoteMaintenanceCurtainUIConfig>(&local_state_.get()),

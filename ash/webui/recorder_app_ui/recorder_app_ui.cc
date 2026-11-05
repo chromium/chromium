@@ -220,13 +220,6 @@ void RecorderAppUI::RecordStructuredMetricsImpl(
   }
 }
 
-bool RecorderAppUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(ash::features::kConch) ||
-         base::FeatureList::IsEnabled(
-             speech::kFeatureManagementCrosSodaConchLanguages);
-}
-
 RecorderAppUI::RecorderAppUI(
     PrefService* local_state,
     content::WebUI* web_ui,
