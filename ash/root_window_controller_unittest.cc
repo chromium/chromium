@@ -25,6 +25,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "ui/aura/client/event_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -623,6 +625,41 @@ TEST_F(RootWindowControllerTest, FocusBlockedWindow) {
     EXPECT_FALSE(session_window->HasFocus());
     UnblockUserSession();
   }
+}
+
+// Tests that the live caption bubble can neither receive events nor focus while
+// the user session is blocked by the lock screen. See crbug.com/514013742.
+TEST_F(RootWindowControllerTest, LiveCaptionContainerBlockedWithUserSession) {
+  // This test relies on the lock screen actually being created (and creating
+  // the lock screen requires the existence of an `AuthEventsRecorder`).
+  std::unique_ptr<AuthEventsRecorder> auth_events_recorder =
+      AuthEventsRecorder::CreateForTesting();
+  GetSessionControllerClient()->set_show_lock_screen_views(true);
+
+  std::unique_ptr<views::Widget> live_caption_widget =
+      AshTestBase::CreateTestWidget(
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET, nullptr,
+          kShellWindowId_LiveCaptionContainer, gfx::Rect(0, 0, 100, 100));
+  aura::Window* live_caption_window = live_caption_widget->GetNativeWindow();
+  aura::client::EventClient* event_client =
+      aura::client::GetEventClient(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(
+      event_client->GetCanProcessEventsWithinSubtree(live_caption_window));
+  live_caption_window->Focus();
+  EXPECT_TRUE(live_caption_window->HasFocus());
+
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+  EXPECT_FALSE(
+      event_client->GetCanProcessEventsWithinSubtree(live_caption_window));
+  EXPECT_FALSE(live_caption_window->HasFocus());
+  live_caption_window->Focus();
+  EXPECT_FALSE(live_caption_window->HasFocus());
+
+  UnblockUserSession();
+  EXPECT_TRUE(
+      event_client->GetCanProcessEventsWithinSubtree(live_caption_window));
+  live_caption_window->Focus();
+  EXPECT_TRUE(live_caption_window->HasFocus());
 }
 
 class ExpandedHitRegionRootWindowControllerTest

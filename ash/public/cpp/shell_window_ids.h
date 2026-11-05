@@ -163,7 +163,9 @@ enum ShellWindowId {
   // notifier elements such as notification popups, toasts and system nudges.
   kShellWindowId_SettingBubbleContainer,
 
-  // The container for the live caption window.
+  // The container for the live caption window. Unlike its neighbors in this
+  // enum, it is a child of kShellWindowId_NonLockScreenContainersContainer, so
+  // the live caption bubble is not displayed on top of the lock screen.
   kShellWindowId_LiveCaptionContainer,
 
   // The container for help bubbles which are anchored to views for the purpose

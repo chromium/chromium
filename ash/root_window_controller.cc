@@ -1258,6 +1258,16 @@ void RootWindowController::CreateContainers() {
   modal_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
   window_util::SetChildrenUseExtendedHitRegionForWindow(modal_container);
 
+  // The live caption container is the topmost non-lock-screen container, so the
+  // live caption bubble is stacked above the float, always-on-top and PIP
+  // windows in the user session, but like them it is occluded, blocked from
+  // receiving events and hidden from accessibility while the user session is
+  // blocked (e.g. by the lock screen). See crbug.com/514013742.
+  aura::Window* live_caption_container =
+      CreateContainer(kShellWindowId_LiveCaptionContainer,
+                      "LiveCaptionContainer", non_lock_screen_containers);
+  live_caption_container->SetProperty(wm::kUsesScreenCoordinatesKey, true);
+
   aura::Window* lock_container =
       CreateContainer(kShellWindowId_LockScreenContainer, "LockScreenContainer",
                       lock_screen_containers);
@@ -1281,11 +1291,6 @@ void RootWindowController::CreateContainers() {
   ::wm::SetChildWindowVisibilityChangesAnimated(settings_bubble_container);
   settings_bubble_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
   settings_bubble_container->SetProperty(kLockedToRootKey, true);
-
-  aura::Window* live_caption_container =
-      CreateContainer(kShellWindowId_LiveCaptionContainer,
-                      "LiveCaptionContainer", lock_screen_related_containers);
-  live_caption_container->SetProperty(wm::kUsesScreenCoordinatesKey, true);
 
   aura::Window* help_bubble_container =
       CreateContainer(kShellWindowId_HelpBubbleContainer, "HelpBubbleContainer",
