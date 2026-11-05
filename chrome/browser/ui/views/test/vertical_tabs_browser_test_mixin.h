@@ -42,10 +42,15 @@ class VerticalTabsBrowserTestMixin : public T {
   VerticalTabsBrowserTestMixin& operator=(const VerticalTabsBrowserTestMixin&) =
       delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    T::SetUpCommandLine(command_line);
+  void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                                        GetDisabledFeatures());
+    T::SetUp();
+  }
+
+  void TearDown() override {
+    T::TearDown();
+    scoped_feature_list_.Reset();
   }
 
   void SetUpOnMainThread() override {

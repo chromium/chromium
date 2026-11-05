@@ -1007,6 +1007,9 @@ should be able to be added at any place in this file.
   <variant name="_VerticalTabsExpandOnHoverFeature"
       summary="For showing the vertical tabs expand on hover feature when in
                vertical tabs mode."/>
+  <variant name="_VerticalTabsTabGroupsInOrganizerFeature"
+      summary="For showing the tab groups moved to organizer IPH feature when
+               in vertical tabs mode."/>
   <variant name="_VerticalTabstripTutorialFeature"
       summary="For showing the vertical tabs feature when the horizontal
                tabstrip is crowded."/>

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents.h"
@@ -243,6 +245,19 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
   is_visible_ = visible;
   base::RecordAction(base::UserMetricsAction(
       is_visible_ ? "OrganizerPanel.Open" : "OrganizerPanel.Close"));
+  if (visible) {
+    if (auto* const interface =
+            BrowserUserEducationInterface::From(&*browser_window_)) {
+      const base::Feature& iph_feature =
+          feature_engagement::kIPH_VerticalTabsTabGroupsInOrganizerFeature;
+      if (interface->IsFeaturePromoActive(iph_feature)) {
+        interface->NotifyFeaturePromoFeatureUsed(
+            iph_feature, FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      } else if (interface->IsFeaturePromoQueued(iph_feature)) {
+        interface->AbortFeaturePromo(iph_feature);
+      }
+    }
+  }
   if (is_visible_) {
     UpdatePanelWebContents();
   }

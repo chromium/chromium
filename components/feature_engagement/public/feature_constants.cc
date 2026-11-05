@@ -294,6 +294,8 @@ BASE_FEATURE(kIPHSplitViewHorizontalIndirectAccessFeature,
 BASE_FEATURE(kIPHVerticalTabsExpandOnHoverFeature,
              "IPH_VerticalTabsExpandOnHoverFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPH_VerticalTabsTabGroupsInOrganizerFeature,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHVerticalTabstripTutorialFeature,
              "IPH_VerticalTabstripTutorialFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

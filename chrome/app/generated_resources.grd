@@ -10703,6 +10703,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_ENABLED_IPH_BODY" desc="The body for the vertical tabs expand on hover IPH, when expand on hover is default enabled.">
         You can now expand your tabs by hovering over them. To turn this off, right-click here.
       </message>
+      <message name="IDS_VERTICAL_TABS_TAB_GROUPS_IN_ORGANIZER_IPH_BODY" desc="The body for the IPH that lets users know when tab groups have moved into the organizer panel.">
+        Find all your tab groups in tab search here
+      </message>
+      <message name="IDS_VERTICAL_TABS_TAB_GROUPS_IN_ORGANIZER_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible text for the help bubble informing users that tab groups have moved into the organizer panel.">
+        Find all your tab groups in the tab search button in the vertical tab strip
+      </message>
       <message name="IDS_VERTICAL_RESIZE_AREA" is_accessibility_with_no_ui="true" desc="The accessibility label for the resize area in the vertical tab strip.">
             Vertical Tab Strip Resize Handle (Draggable)
       </message>

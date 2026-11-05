@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
 
 #include "base/callback_list.h"
+#include "base/timer/timer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -52,6 +53,9 @@ class VerticalTabStripTopContainer : public views::View,
 
   // View:
   void Layout(PassKey) override;
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+
+  void MaybeShowTabGroupsMovedIPH();
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
@@ -139,6 +143,8 @@ class VerticalTabStripTopContainer : public views::View,
   // This is updated during layout calculation and then applied during layout.
   mutable views::LayoutOrientation combo_button_orientation_ =
       views::LayoutOrientation::kHorizontal;
+
+  base::OneShotTimer iph_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_

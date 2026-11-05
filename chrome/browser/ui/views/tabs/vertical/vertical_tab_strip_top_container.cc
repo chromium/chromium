@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -99,6 +100,33 @@ void VerticalTabStripTopContainer::Layout(PassKey) {
   combo_button_->SetOrientation(combo_button_orientation_);
   combo_button_->SetClipLayerToVisibleBounds(
       !GetLocalBounds().Contains(combo_button_->bounds()));
+}
+
+void VerticalTabStripTopContainer::VisibilityChanged(views::View* starting_from,
+                                                     bool is_visible) {
+  views::View::VisibilityChanged(starting_from, is_visible);
+  if (is_visible) {
+    iph_timer_.Start(FROM_HERE, base::TimeDelta(), this,
+                     &VerticalTabStripTopContainer::MaybeShowTabGroupsMovedIPH);
+  } else {
+    iph_timer_.Stop();
+  }
+}
+
+void VerticalTabStripTopContainer::MaybeShowTabGroupsMovedIPH() {
+  if (!organizer_panel::IsOrganizerPanelFeatureEnabled() ||
+      !tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+          browser_->GetProfile())) {
+    return;
+  }
+  PrefService* prefs = browser_->GetProfile()->GetPrefs();
+  if (!prefs->GetBoolean(prefs::kEverythingMenuPinnedToTabstrip) ||
+      !prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip) ||
+      prefs->GetTime(prefs::kVerticalTabsEverythingMenuLastPressed).is_null()) {
+    return;
+  }
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      feature_engagement::kIPH_VerticalTabsTabGroupsInOrganizerFeature);
 }
 
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(

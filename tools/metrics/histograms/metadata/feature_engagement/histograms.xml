@@ -864,6 +864,8 @@ chromium-metrics-reviews@google.com.
       summary="updated omnibox connection security indicators"/>
   <variant name="IPH_VerticalTabsExpandOnHoverFeature"
       summary="The vertical tabstrip expand on hover IPH"/>
+  <variant name="IPH_VerticalTabsTabGroupsInOrganizerFeature"
+      summary="tab groups moved into organizer panel in vertical tabs"/>
   <variant name="IPH_VerticalTabstripTutorialFeature"
       summary="The vertical tabstrip IPH"/>
   <variant name="IPH_WebUiHelpBubbleTest"

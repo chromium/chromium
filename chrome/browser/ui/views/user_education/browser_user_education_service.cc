@@ -2306,6 +2306,21 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered when the vertical tabs is enabled and the "
                        "user has not enabled expand on hover before.")));
 
+  // kIPH_VerticalTabsTabGroupsInOrganizerFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPH_VerticalTabsTabGroupsInOrganizerFeature,
+          kTabSearchButtonElementId,
+          IDS_VERTICAL_TABS_TAB_GROUPS_IN_ORGANIZER_IPH_BODY,
+          IDS_VERTICAL_TABS_TAB_GROUPS_IN_ORGANIZER_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetMetadata(
+              159, "agale@chromium.org",
+              "Triggered in vertical tabs mode when tab groups have moved into "
+              "the organizer panel.")));
+
 #if BUILDFLAG(IS_WIN)
   // kIPHSearchPromotionFeature:
   // Query the Finch experiment action at registration time to decide which

@@ -550,6 +550,8 @@ DEFINE_VARIATION_PARAM(kIPHSplitViewHorizontalIndirectAccessFeature,
                        "IPH_SplitViewHorizontalIndirectAccessFeature");
 DEFINE_VARIATION_PARAM(kIPHVerticalTabsExpandOnHoverFeature,
                        "IPH_VerticalTabsExpandOnHoverFeature");
+DEFINE_VARIATION_PARAM(kIPH_VerticalTabsTabGroupsInOrganizerFeature,
+                       "IPH_VerticalTabsTabGroupsInOrganizerFeature");
 DEFINE_VARIATION_PARAM(kIPHVerticalTabstripTutorialFeature,
                        "IPH_VerticalTabstripTutorialFeature");
 
