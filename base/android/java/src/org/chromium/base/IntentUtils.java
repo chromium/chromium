@@ -313,8 +313,9 @@ public class IntentUtils {
      * Returns the value associated with the given name, or null if no mapping of the desired type
      * exists for the given name or a null value is explicitly associated with the name.
      *
-     * @param name a key string
-     * @return an IBinder value, or null
+     * @param bundle The bundle to get the binder from.
+     * @param name A key string.
+     * @return An IBinder value, or null.
      */
     public static @Nullable IBinder safeGetBinder(@Nullable Bundle bundle, String name) {
         if (bundle == null) return null;
@@ -328,10 +329,10 @@ public class IntentUtils {
     }
 
     /**
-     * @return a Binder from an Intent, or null.
+     * Returns a Binder from an Intent, or null.
      *
-     * Creates a temporary copy of the extra Bundle, which is required as
-     * Intent#getBinderExtra() doesn't exist, but Bundle.getBinder() does.
+     * <p>Creates a temporary copy of the extra Bundle, which is required as Intent#getBinderExtra()
+     * doesn't exist, but Bundle.getBinder() does.
      */
     public static @Nullable IBinder safeGetBinderExtra(Intent intent, String name) {
         if (!intent.hasExtra(name)) return null;
@@ -480,9 +481,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * @return True if the intent is a MAIN intent a launcher would send.
-     */
+    /** Returns true if the intent is a MAIN intent a launcher would send. */
     public static boolean isMainIntentFromLauncher(Intent intent) {
         return intent != null
                 && TextUtils.equals(intent.getAction(), Intent.ACTION_MAIN)

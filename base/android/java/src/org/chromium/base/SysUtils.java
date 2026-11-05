@@ -114,9 +114,7 @@ public class SysUtils {
         return 0;
     }
 
-    /**
-     * @return Whether or not this device should be considered a low end device.
-     */
+    /** Returns whether or not this device should be considered a low end device. */
     public static boolean isLowEndDevice() {
         if (sLowEndDevice == null) {
             // Do not cache in tests since command-line flags can change.
@@ -129,9 +127,7 @@ public class SysUtils {
         return sLowEndDevice;
     }
 
-    /**
-     * @return amount of physical ram detected in KB, or 0 if detection failed.
-     */
+    /** Returns the amount of physical ram detected in KB, or 0 if detection failed. */
     public static int amountOfPhysicalMemoryKB() {
         if (sAmountOfPhysicalMemoryKB == null) {
             sAmountOfPhysicalMemoryKB = detectAmountOfPhysicalMemoryKB();
@@ -139,9 +135,7 @@ public class SysUtils {
         return sAmountOfPhysicalMemoryKB;
     }
 
-    /**
-     * @return Whether or not the system has low available memory.
-     */
+    /** Returns whether or not the system has low available memory. */
     public static boolean isCurrentlyLowMemory() {
         if (sIsCurrentlyLowMemoryForTesting != null) {
             return sIsCurrentlyLowMemoryForTesting;
@@ -225,9 +219,7 @@ public class SysUtils {
         SysUtilsJni.get().logPageFaultCountToTracing();
     }
 
-    /**
-     * @return Whether the device has support for large process counts.
-     */
+    /** Returns whether the device has support for large process counts. */
     public static boolean hasLargeProcessCountSupport() {
         return SysUtilsJni.get().hasLargeProcessCountSupport();
     }

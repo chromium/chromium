@@ -57,8 +57,8 @@ public class LocaleUtils {
     }
 
     /**
-     * @return a locale with updated language codes for Chromium, with translated modern language
-     *         codes used by Chromium.
+     * Returns a locale with updated language codes for Chromium, with translated modern language
+     * codes used by Chromium.
      */
     @VisibleForTesting
     public static Locale getUpdatedLocaleForChromium(Locale locale) {
@@ -90,8 +90,8 @@ public class LocaleUtils {
     }
 
     /**
-     * @return a locale with updated language codes for Android, from translated modern language
-     *         codes used by Chromium.
+     * Returns a locale with updated language codes for Android, from translated modern language
+     * codes used by Chromium.
      */
     @VisibleForTesting
     public static Locale getUpdatedLocaleForAndroid(Locale locale) {
@@ -173,8 +173,8 @@ public class LocaleUtils {
     }
 
     /**
-     * @return a language tag string that represents the default locale. The language tag is
-     *     well-formed IETF BCP 47 language tag with language and country code.
+     * Returns a language tag string that represents the default locale. The language tag is
+     * well-formed IETF BCP 47 language tag with language and country code.
      */
     @CalledByNative
     public static @JniType("std::string") String getDefaultLocaleString() {
@@ -182,8 +182,8 @@ public class LocaleUtils {
     }
 
     /**
-     * @return a comma separated language tags string that represents a default locale or locales.
-     *     Each language tag is well-formed IETF BCP 47 language tag with language and country code.
+     * Returns a comma separated language tags string that represents a default locale or locales.
+     * Each language tag is well-formed IETF BCP 47 language tag with language and country code.
      */
     @CalledByNative
     public static @JniType("std::string") String getDefaultLocaleListString() {
@@ -193,9 +193,7 @@ public class LocaleUtils {
         return getDefaultLocaleString();
     }
 
-    /**
-     * @return The default country code set during install.
-     */
+    /** Returns the default country code set during install. */
     @CalledByNative
     public static @JniType("std::string") String getDefaultCountryCode() {
         CommandLine commandLine = CommandLine.getInstance();

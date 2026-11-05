@@ -43,11 +43,11 @@ public abstract class FileProviderUtils {
     }
 
     /**
-     * Get a URI for |file| which has the image capture. This function assumes that path of |file|
-     * is based on the result of UiUtils.getDirectoryForImageCapture().
+     * Get a URI for {@code file} which has the image capture. This function assumes that path of
+     * {@code file} is based on the result of UiUtils.getDirectoryForImageCapture().
      *
      * @param file image capture file.
-     * @return URI for |file|.
+     * @return URI for {@code file}.
      * @throws IllegalArgumentException when the given File is outside the paths supported by the
      *     provider.
      */

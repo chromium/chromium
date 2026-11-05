@@ -433,9 +433,7 @@ public abstract class ContentUriUtils {
                 && (cursor.getLong(index) & DocumentsContract.Document.FLAG_VIRTUAL_DOCUMENT) != 0;
     }
 
-    /**
-     * @return whether a Uri has content scheme.
-     */
+    /** Returns whether a Uri has content scheme. */
     public static boolean isContentUri(@Nullable String uri) {
         if (uri == null) return false;
         Uri parsedUri = Uri.parse(uri);

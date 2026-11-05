@@ -167,9 +167,7 @@ public final class ApkInfo {
         return sInstance;
     }
 
-    /**
-     * @return ApplicationInfo for Chrome/WebView (as opposed to host app).
-     */
+    /** Returns ApplicationInfo for Chrome/WebView (as opposed to host app). */
     public ApplicationInfo getBrowserApplicationInfo() {
         return mBrowserApplicationInfo;
     }

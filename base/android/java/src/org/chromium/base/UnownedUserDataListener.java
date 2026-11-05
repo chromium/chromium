@@ -20,7 +20,8 @@ public interface UnownedUserDataListener<T> {
      *
      * <p>This method is invoked asynchronously, but from the correct thread.
      *
-     * @param host from which host the UnownedUserData was detached.
+     * @param value The value that was detached.
+     * @param host From which host the UnownedUserData was detached.
      */
     void onDetachedFromHost(T value, UnownedUserDataHost host);
 }

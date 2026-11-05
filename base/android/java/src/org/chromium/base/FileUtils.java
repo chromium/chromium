@@ -49,8 +49,8 @@ public class FileUtils {
      * @param currentFile The file or directory to delete. Does not need to exist.
      * @param canDelete The {@link Function} function used to check if the file can be deleted.
      *     Caveat: {@code canDelete} is not robust, see https://crbug.com/1066733.
-     * @return True if the files are deleted, or files reserved by |canDelete|, false if failed to
-     *     delete files.
+     * @return True if the files are deleted, or files reserved by {@code canDelete}, false if
+     *     failed to delete files.
      */
     public static boolean recursivelyDeleteFile(
             File currentFile, Function<String, Boolean> canDelete) {
@@ -200,6 +200,7 @@ public class FileUtils {
      * Copies a file from app-private storage into the public Downloads collection.
      *
      * @param sourceFilePath Absolute path to the source file.
+     * @param mimeType The MIME type of the file.
      * @return The public content URI string on success, or null on failure.
      */
     @CalledByNative
@@ -261,11 +262,11 @@ public class FileUtils {
     }
 
     /**
-     * Gets the canonicalised absolute pathname for |filePath|. Returns empty string if the path is
-     * invalid. This function can result in I/O so it can be slow.
+     * Gets the canonicalised absolute pathname for {@code filePath}. Returns empty string if the
+     * path is invalid. This function can result in I/O so it can be slow.
      *
      * @param filePath Path of the file, has to be a file path instead of a content URI.
-     * @return canonicalised absolute pathname for |filePath|.
+     * @return canonicalised absolute pathname for {@code filePath}.
      */
     public static String getAbsoluteFilePath(String filePath) {
         return FileUtilsJni.get().getAbsoluteFilePath(filePath);
@@ -273,7 +274,7 @@ public class FileUtils {
 
     @NativeMethods
     public interface Natives {
-        /** Returns the canonicalised absolute pathname for |filePath|. */
+        /** Returns the canonicalised absolute pathname for {@code filePath}. */
         @JniType("std::string")
         String getAbsoluteFilePath(@JniType("std::string") String filePath);
     }
