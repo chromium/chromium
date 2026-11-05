@@ -1036,6 +1036,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                           kComposeboxInputItemTypeImage
                               assetID:assetID
                                source:source];
+  item.title = itemProvider.suggestedName;
   item.uploadIndex = _imageUploadCount++;
   [self addItem:item];
   item.imageProvider = itemProvider;

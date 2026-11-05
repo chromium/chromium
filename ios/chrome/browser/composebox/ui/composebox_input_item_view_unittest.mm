@@ -57,12 +57,16 @@ class ComposeboxInputItemViewTest : public PlatformTest {
   ComposeboxTheme* theme_;
 };
 
-// Test that `accessibilityLabelForImageItem:` formats the 0-based `uploadIndex`
-// as a 1-based position in the label.
+// Tests that `accessibilityLabelForImageItem:` uses the item's `title` when
+// available and falls back to the 1-based `uploadIndex` when `title` is empty.
 TEST_F(ComposeboxInputItemViewTest, TestAccessibilityLabelForImageItem) {
   ComposeboxInputItem* item =
       CreateItem(ComposeboxInputItemType::kComposeboxInputItemTypeImage);
+  NSString* named_label =
+      [ComposeboxInputItemView accessibilityLabelForImageItem:item];
+  EXPECT_TRUE([named_label containsString:kItemTitle]);
 
+  item.title = nil;
   item.uploadIndex = 0;
   NSString* first_label =
       [ComposeboxInputItemView accessibilityLabelForImageItem:item];

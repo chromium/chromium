@@ -23,8 +23,9 @@
 // Returns the size required to display `item`.
 + (CGSize)sizeWithItem:(ComposeboxInputItem*)item;
 
-/// Returns the accessibility label of the image `item`, with its index. Image
-/// chips have no text, so their Large Content Viewer shows it too.
+/// Returns the accessibility label of the image `item`, using its title when
+/// available or falling back to its 1-based upload index. Image chips have no
+/// text, so their Large Content Viewer shows it too.
 + (NSString*)accessibilityLabelForImageItem:(ComposeboxInputItem*)item;
 
 @end

@@ -1695,6 +1695,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, ImageAttachmentUploadIndex) {
 
   UIImage* image = [[UIImage alloc] init];
   NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
+  provider.suggestedName = @"IMG_0001";
 
   [mediator_
       processImageItemProvider:provider
@@ -1706,6 +1707,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, ImageAttachmentUploadIndex) {
                         source:ComposeboxInputItemSource::kGalleryPicker];
 
   ASSERT_EQ(consumer_.items.count, 2U);
+  EXPECT_TRUE([consumer_.items[0].title isEqualToString:@"IMG_0001"]);
   EXPECT_EQ(consumer_.items[0].uploadIndex, 0);
   EXPECT_EQ(consumer_.items[1].uploadIndex, 1);
 

@@ -318,6 +318,14 @@ UIImage* LargeContentSymbol(ComposeboxInputItemType type) {
 }
 
 + (NSString*)accessibilityLabelForImageItem:(ComposeboxInputItem*)item {
+  if (item.title.length > 0) {
+    std::u16string title = base::SysNSStringToUTF16(item.title);
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_NAMED_ACCESSIBILITY_LABEL);
+    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "title", title);
+    return base::SysUTF16ToNSString(message);
+  }
   std::u16string pattern = l10n_util::GetStringUTF16(
       IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_INDEXED_ACCESSIBILITY_LABEL);
   std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(

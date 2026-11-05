@@ -1917,6 +1917,9 @@
       <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_INDEXED_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for a image attachment in AI Mode input plate, with its index. Example: `Attached image 1` for the first attached image. [iOS only].">
         Attached image {index}
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_NAMED_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="The accessibility announcement prefix read by Voice Over for an image attachment in AI Mode input plate, with its name. [iOS only].">
+        Attached image {title}
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_TAB_ACCESSIBILITY_LABEL" desc="The accessibility announcement prefix read by Voice Over for a tab attachment in AI Mode input plate. [iOS only].">
         Attached tab {title}
       </message>
