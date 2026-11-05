@@ -290,6 +290,15 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   is_hiding_contextual_tasks_panel_ = true;
+
+  // The pinning promo is only meaningful while the Contextual Tasks panel is
+  // showing. Dismiss it explicitly when the panel is hidden.
+  if (auto* user_education =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    user_education->AbortFeaturePromo(
+        feature_engagement::kIPHSidePanelContextualTasksPinnableFeature);
+  }
+
   std::optional<base::Uuid> task_id = GetActiveTaskId();
   if (!task_id.has_value() ||
       reason == SidePanelEntryHideReason::kBackgrounded) {
