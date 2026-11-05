@@ -1337,15 +1337,19 @@ auto GraphBuilderTflite::SerializeInputTensorInfo(
     if (fuse_dequantize) {
       operand_id = dequantize_op.input_operand_id;
     }
-    // The `operand_id` should already be serialized by
-    // `SerializeDequantizeLinear` or `TrySerializeQuantizedInput`.
-    auto it = operand_to_tensor_info_map_.find(operand_id);
-    CHECK(it != operand_to_tensor_info_map_.end());
-    return it->second;
   }
   auto it = operand_to_tensor_info_map_.find(operand_id);
   TensorInfo input_tensor_info;
-  if (it == operand_to_tensor_info_map_.end()) {
+  if (dequantize_it != lazy_serialized_dequantize_operations_.end()) {
+    // The `operand_id` should already be serialized by
+    // `SerializeDequantizeLinear` or `TrySerializeQuantizedInput`. Do not
+    // return it directly: when the dequantize output is a named float16 graph
+    // output, `operand_to_tensor_info_map_` holds the FLOAT16 graph output
+    // tensor, which must go through the float16 -> float32 promotion below
+    // before being handed to an operation that does not support float16.
+    CHECK(it != operand_to_tensor_info_map_.end());
+    input_tensor_info = it->second;
+  } else if (it == operand_to_tensor_info_map_.end()) {
     ASSIGN_OR_RETURN(input_tensor_info,
                      SerializeOperand(operand_id, quantize_params));
   } else {
