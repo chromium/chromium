@@ -161,7 +161,6 @@ void ScriptAncestryTracker::DidCreateAsyncTask(
   DCHECK(task_context);
   v8::Isolate* isolate = GetIsolate();
   if (isolate && !isolate->GetCurrentContext().IsEmpty()) {
-    v8::HandleScope handle_scope(isolate);
     // TODO(jkarlin): Restrict the kNodeAppendChild monkeypatch exception
     // specifically to script element creation tasks (e.g., PendingScript) by
     // passing the async task name/type to DidCreateAsyncTask.
@@ -503,7 +502,7 @@ void ScriptAncestryTracker::MaybeResetBottomMostScript() {
 bool ScriptAncestryTracker::WasApiCalledByNonAttributedScript(
     v8::Isolate* isolate,
     MonkeyPatchableApi api,
-    LazyStackTrace& /*stack_trace*/) const {
+    LazyStackTrace& stack_trace) const {
   MonkeyPatchableApiFunctionInfo api_info =
       GetMonkeyPatchableApiFunctionInfo(isolate, api);
   if (!api_info.is_monkey_patched) {
@@ -515,7 +514,6 @@ bool ScriptAncestryTracker::WasApiCalledByNonAttributedScript(
     return false;
   }
 
-  LazyStackTrace stack_trace(isolate);
   auto stack = stack_trace.GetStack(5);
 
   MonkeyPatchCallerResult result =

@@ -7149,17 +7149,18 @@ WebView* RenderFrameImpl::CreateNewWindow(
     params->pip_options = std::move(pip_mojom_opts);
   }
 
+  const bool is_ad_frame = GetWebFrame()->IsAdFrame();
+  const bool is_ad_script_in_stack = GetWebFrame()->IsAdScriptInStack();
   params->download_policy.ApplyDownloadFramePolicy(
       /*is_opener_navigation=*/false, request.HasUserGesture(),
       // `openee_can_access_opener_origin` only matters for opener navigations,
       // so its value here is irrelevant.
       /*openee_can_access_opener_origin=*/true,
-      !GetWebFrame()->IsAllowedToDownload(), GetWebFrame()->IsAdFrame(),
-      GetWebFrame()->IsAdScriptInStack());
+      !GetWebFrame()->IsAllowedToDownload(), is_ad_frame,
+      is_ad_script_in_stack);
 
   params->started_with_transient_activation = request.HasUserGesture();
-  params->started_by_ad =
-      GetWebFrame()->IsAdFrame() || GetWebFrame()->IsAdScriptInStack();
+  params->started_by_ad = is_ad_frame || is_ad_script_in_stack;
 
   // We preserve this information before sending the message since |params| is
   // moved on send.
