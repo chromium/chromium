@@ -2,28 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
+// <if expr="not is_chromeos">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_page/settings_subpage.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
 // </if>
 
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import {getCss} from './geic_subpage.css.js';
 import {getHtml} from './geic_subpage.html.js';
 
+// Matches `glic::prefs::AssistantSelection::kConsumer` in
+// chrome/browser/glic/glic_pref_names.h.
+const ASSISTANT_SELECTION_CONSUMER = 1;
+
 const SettingsGeicSubpageElementBase =
-    SettingsViewMixinLit(I18nMixinLit(CrLitElement));
+    SettingsViewMixinLit(RelaunchMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
   static get is() {
@@ -41,10 +52,27 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
   static override get properties() {
     return {
       defaultTabAccessToggleExpanded_: {type: Boolean},
+      devicePolicyButtonDisabled_: {type: Boolean},
+      showDevicePolicyToggle_: {type: Boolean},
     };
   }
 
   protected accessor defaultTabAccessToggleExpanded_: boolean = false;
+  protected accessor devicePolicyButtonDisabled_: boolean = false;
+  protected accessor showDevicePolicyToggle_: boolean =
+      loadTimeData.getBoolean('showGeicDevicePolicyToggle');
+
+  override onRelaunchDialogClose(event: Event) {
+    super.onRelaunchDialogClose(event);
+    this.devicePolicyButtonDisabled_ = false;
+  }
+
+  protected async onDevicePolicyButtonClick_() {
+    this.devicePolicyButtonDisabled_ = true;
+    await PrefService.getInstance().setPrefValue(
+        'glic.assistant_selection', ASSISTANT_SELECTION_CONSUMER);
+    this.performRestart(RestartType.RELAUNCH);
+  }
 
   protected onDefaultTabAccessExpandClick_() {
     this.defaultTabAccessToggleExpanded_ =

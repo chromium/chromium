@@ -3471,6 +3471,15 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_SETTINGS_GEIC_SECTION_TITLE" desc="Text of the Gemini Enterprise section header on the AI settings page. Also used as the label of the row button leading to the Gemini Enterprise subpage, and as the title of that subpage.">
         Gemini Enterprise in Chrome
       </message>
+      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE" desc="Label for the setting in Gemini Enterprise in Chrome settings that allows a user to turn off Gemini Enterprise in Chrome when it was enabled by a device-level policy." translateable="false">
+        Use Gemini Enterprise in Chrome
+      </message>
+      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE_SUBLABEL" desc="Sublabel for the setting in Gemini Enterprise in Chrome settings that explains turning off Gemini Enterprise in Chrome switches to Gemini in Chrome on this profile." translateable="false">
+        Turn off to use Gemini in Chrome on this profile
+      </message>
+      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_BUTTON" desc="Label for the button in Gemini Enterprise in Chrome settings that turns off Gemini Enterprise in Chrome on this profile and relaunches the browser." translateable="false">
+        Turn off and relaunch
+      </message>
 
       <if expr="is_macosx">
         <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE" desc="In Title Case: Label for the toggle item in the Search in Chrome status tray context menu.">

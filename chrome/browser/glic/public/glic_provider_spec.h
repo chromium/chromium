@@ -29,6 +29,7 @@ inline constexpr char kGeminiGuestUrlKey[] = "gemini.google.com";
 
 struct GeicProviderInitOptions {
   GURL guest_url;
+  bool can_opt_out_to_consumer_in_settings = false;
 };
 
 class GlicFreStore;
@@ -60,6 +61,9 @@ class GlicProviderSpec {
   virtual std::string_view GetSettingsSectionId() const = 0;
   // The settings subpage that OpenGlicSettingsPage opens, e.g. "ai/gemini".
   virtual std::string_view GetSettingsSubpage() const = 0;
+  // Whether the settings UI for this provider should offer the control to opt
+  // out and switch the profile to consumer Gemini.
+  virtual bool CanOptOutToConsumerInSettings() const = 0;
   // Resource ID of the entry-point (Glic button) icon.
   virtual int GetEntryPointIconId() const = 0;
   // Resource ID of the Glic IPH promo body string.

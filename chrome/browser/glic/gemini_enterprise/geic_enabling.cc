@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -13,12 +14,20 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -94,6 +103,54 @@ GURL CanonicalizeGuestUrl(const GURL& input_url) {
   return result;
 }
 
+const policy::PolicyMap::Entry* GetGeminiEnterpriseUrlPolicyEntry(
+    Profile* profile) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (!profile || !profile->GetProfilePolicyConnector() ||
+      !profile->GetProfilePolicyConnector()->policy_service()) {
+    return nullptr;
+  }
+  const policy::PolicyMap& policies =
+      profile->GetProfilePolicyConnector()->policy_service()->GetPolicies(
+          policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+  return policies.Get(policy::key::kGeminiEnterpriseUrl);
+#else
+  return nullptr;
+#endif
+}
+
+bool IsConsumerGeminiAllowedByPolicy(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
+      optimization_guide::prefs::kGeminiSettings);
+  return !pref ||
+         pref->GetValue()->GetIfInt() ==
+             std::to_underlying(
+                 optimization_guide::prefs::GeminiSettingsPolicyState::
+                     kEnabled);
+}
+
+bool IsPersonalProfile(Profile* profile) {
+  return profile && !profile->IsOffTheRecord() &&
+         profile->GetProfilePolicyConnector() &&
+         !profile->GetProfilePolicyConnector()->IsManaged();
+}
+
+// Which configuration source produced the resolved guest URL.
+enum class GuestUrlSource {
+  kSwitch,
+  kPolicy,
+  kFinch,
+};
+
+struct ResolvedGuestUrl {
+  GURL url;
+  GuestUrlSource source;
+};
+
 // Why a guest URL source didn't produce a usable URL.
 enum class GuestUrlError {
   // The source is not set.
@@ -137,6 +194,36 @@ base::expected<GURL, GuestUrlError> GetFinchGuestUrl(
   return ToGuestUrl(features::kGeicGuestURL.Get());
 }
 
+std::optional<ResolvedGuestUrl> ResolveGuestUrlWithSource(
+    content::BrowserContext* browser_context) {
+  if (!IsGeicEnabledByFeature()) {
+    return std::nullopt;
+  }
+
+  // `--geic-guest-url` is evaluated before the enterprise policy to simplify
+  // development and local testing; `IsValidGuestUrl()` still restricts the URL
+  // to valid Gemini Enterprise origins and GEiC requires signing in to GE.
+  const std::pair<GuestUrlSource, base::expected<GURL, GuestUrlError>>
+      candidates[] = {
+          {GuestUrlSource::kSwitch,
+           ToGuestUrl(
+               base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                   kGeicGuestURLSwitch))},
+          {GuestUrlSource::kPolicy, GetPolicyGuestUrl(browser_context)},
+          {GuestUrlSource::kFinch, GetFinchGuestUrl(browser_context)},
+      };
+  // The first set candidate wins, even if it is invalid, so that an invalid
+  // higher-priority source doesn't silently fall through.
+  auto it = std::ranges::find_if(candidates, [](const auto& entry) {
+    return entry.second.has_value() ||
+           entry.second.error() != GuestUrlError::kUnset;
+  });
+  if (it == std::end(candidates) || !it->second.has_value()) {
+    return std::nullopt;
+  }
+  return ResolvedGuestUrl{CanonicalizeGuestUrl(it->second.value()), it->first};
+}
+
 }  // namespace
 
 bool IsGeicEnabledByFeature() {
@@ -144,30 +231,26 @@ bool IsGeicEnabledByFeature() {
          features::kGeicEnabledParam.Get();
 }
 
-GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
-  if (!IsGeicEnabledByFeature()) {
-    return GURL();
+bool CanOptOutOfGeicInSettings(content::BrowserContext* browser_context) {
+  std::optional<ResolvedGuestUrl> resolved =
+      ResolveGuestUrlWithSource(browser_context);
+  if (!resolved || resolved->source != GuestUrlSource::kPolicy) {
+    return false;
   }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!IsPersonalProfile(profile) ||
+      !IsConsumerGeminiAllowedByPolicy(profile)) {
+    return false;
+  }
+  const policy::PolicyMap::Entry* entry =
+      GetGeminiEnterpriseUrlPolicyEntry(profile);
+  return entry && entry->scope == policy::POLICY_SCOPE_MACHINE;
+}
 
-  // `--geic-guest-url` is evaluated before the enterprise policy to simplify
-  // development and local testing; `IsValidGuestUrl()` still restricts the URL
-  // to valid Gemini Enterprise origins and GEiC requires signing in to GE.
-  const base::expected<GURL, GuestUrlError> candidates[] = {
-      ToGuestUrl(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kGeicGuestURLSwitch)),
-      GetPolicyGuestUrl(browser_context),
-      GetFinchGuestUrl(browser_context),
-  };
-  // The first set candidate wins, even if it is invalid, so that an invalid
-  // higher-priority source doesn't silently fall through.
-  auto it = std::ranges::find_if(
-      candidates, [](const base::expected<GURL, GuestUrlError>& candidate) {
-        return candidate.has_value() ||
-               candidate.error() != GuestUrlError::kUnset;
-      });
-  return it != std::end(candidates) && it->has_value()
-             ? CanonicalizeGuestUrl(it->value())
-             : GURL();
+GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
+  std::optional<ResolvedGuestUrl> resolved =
+      ResolveGuestUrlWithSource(browser_context);
+  return resolved ? std::move(resolved->url) : GURL();
 }
 
 bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
@@ -175,6 +258,9 @@ bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (resolved_guest_url.is_empty() || !profile || !profile->GetPrefs()) {
     return false;
+  }
+  if (!CanOptOutOfGeicInSettings(browser_context)) {
+    return true;
   }
   // Any selection other than explicit `kConsumer` (including `kAuto`,
   // `kEnterprise`, or unconfigured/corrupted values) latches to Enterprise when

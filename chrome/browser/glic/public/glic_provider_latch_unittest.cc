@@ -25,9 +25,15 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -190,6 +196,8 @@ TEST(GlicProviderLatchDefaultTest, ProfileIsLatchedAsGemini) {
             GetLocalizedGuestURL(GURL(kGuestUrl)));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 struct AssistantSelectionLatchTestCase {
   const char* test_name;
   bool has_enterprise_url;
@@ -205,16 +213,29 @@ TEST_P(GlicProviderLatchAssistantSelectionTest, ResolvesExpectedProvider) {
   const AssistantSelectionLatchTestCase& param = GetParam();
   scoped_command_line_.GetProcessCommandLine()->RemoveSwitch("geic-guest-url");
 
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider;
+  policy_provider.SetDefaultReturns(
+      /*is_initialization_complete_return=*/true,
+      /*is_first_policy_load_complete_return=*/true);
+
   auto prefs = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   RegisterUserProfilePrefs(prefs->registry());
   if (param.has_enterprise_url) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kGeminiEnterpriseUrl,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(kGuestUrl), nullptr);
+    policy_provider.UpdateChromePolicy(policies);
     prefs->SetManagedPref(prefs::kGlicGeminiEnterpriseUrl,
                           base::Value(kGuestUrl));
   }
   prefs->SetInteger(prefs::kGlicAssistantSelection,
                     static_cast<int>(param.assistant_selection));
 
+  policy::PolicyServiceImpl::Providers providers = {&policy_provider};
   TestingProfile::Builder builder;
+  builder.SetPolicyService(
+      std::make_unique<policy::PolicyServiceImpl>(std::move(providers)));
   builder.SetPrefService(std::move(prefs));
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
@@ -223,6 +244,9 @@ TEST_P(GlicProviderLatchAssistantSelectionTest, ResolvesExpectedProvider) {
   } else {
     ExpectDefaultLatch(profile.get());
   }
+
+  profile.reset();
+  policy_provider.Shutdown();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -254,6 +278,8 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<AssistantSelectionLatchTestCase>& info) {
       return info.param.test_name;
     });
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // The GE guest URL key is the latched guest URL without `hl`.
 TEST_F(GlicProviderLatchTest, GeminiEnterpriseGuestUrlKey) {

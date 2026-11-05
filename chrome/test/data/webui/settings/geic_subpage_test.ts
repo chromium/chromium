@@ -5,16 +5,19 @@
 import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
-import {AiSettingsSection, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
-import type {SettingsGeicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {AiSettingsSection, LifetimeBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import type {CrButtonElement, SettingsGeicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
 suite('GeicSubpage', function() {
   let page: SettingsGeicSubpageElement;
   let prefService: PrefService;
   let openWindowProxy: TestOpenWindowProxy;
+  let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -26,14 +29,23 @@ suite('GeicSubpage', function() {
     return prefService.whenInitialized();
   });
 
-  setup(async function() {
+  async function createPage(showDevicePolicyToggle: boolean = false) {
+    loadTimeData.overrideValues({
+      showGeicDevicePolicyToggle: showDevicePolicyToggle,
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-
     page = document.createElement('settings-geic-subpage');
     document.body.appendChild(page);
     await microtasksFinished();
+  }
+
+  setup(async function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
+    LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
+    await prefService.setPrefValue('glic.assistant_selection', 0);
+    await createPage();
   });
 
   suite('Default', () => {
@@ -53,7 +65,6 @@ suite('GeicSubpage', function() {
           url);
       assertEquals(page.i18n('geicDefaultTabAccessToggleLearnMoreUrl'), url);
     });
-
     // Each test awaits the initial pref write to the browser and then toggles
     // once, so a late pref update from the browser can't race the click.
     test('TabstripButtonTogglePref', async () => {
@@ -137,6 +148,39 @@ suite('GeicSubpage', function() {
       assertFalse(
           prefService.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED)
               .value);
+    });
+
+    test('DevicePolicyRowHiddenByDefault', () => {
+      assertFalse(
+          !!page.shadowRoot.querySelector<HTMLElement>('#devicePolicyRow'));
+      assertFalse(!!page.shadowRoot.querySelector<CrButtonElement>(
+          '#devicePolicyButton'));
+    });
+
+    test('DevicePolicyButtonDisablesGeicAndRelaunches', async () => {
+      await createPage(/*showDevicePolicyToggle=*/ true);
+
+      const row =
+          page.shadowRoot.querySelector<HTMLElement>('#devicePolicyRow');
+      const button = page.shadowRoot.querySelector<CrButtonElement>(
+          '#devicePolicyButton');
+      assertTrue(!!row);
+      assertTrue(!!button);
+      assertTrue(isVisible(row));
+      assertTrue(isVisible(button));
+      assertFalse(button.disabled);
+      assertEquals(
+          0, prefService.getPref<number>('glic.assistant_selection').value);
+
+      button.click();
+      await microtasksFinished();
+      assertTrue(button.disabled);
+      // <if expr="not is_chromeos">
+      await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
+      // </if>
+      await lifetimeBrowserProxy.whenCalled('relaunch');
+      assertEquals(
+          1, prefService.getPref<number>('glic.assistant_selection').value);
     });
   });
 

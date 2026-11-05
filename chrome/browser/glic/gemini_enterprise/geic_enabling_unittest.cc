@@ -18,8 +18,15 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
@@ -27,6 +34,7 @@
 #include "components/variations/service/google_groups_manager_prefs.h"
 #include "components/variations/variations_seed_processor.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -35,12 +43,25 @@ namespace {
 
 class GeicEnablingTest : public testing::Test {
  public:
-  void TearDown() override { profile_.reset(); }
+  void SetUp() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+  }
+
+  void TearDown() override {
+    profile_.reset();
+    policy_provider_.Shutdown();
+  }
 
  protected:
   TestingProfile* profile() {
     if (!profile_) {
-      profile_ = std::make_unique<TestingProfile>();
+      policy::PolicyServiceImpl::Providers providers = {&policy_provider_};
+      TestingProfile::Builder builder;
+      builder.SetPolicyService(
+          std::make_unique<policy::PolicyServiceImpl>(std::move(providers)));
+      profile_ = builder.Build();
     }
     return profile_.get();
   }
@@ -49,6 +70,18 @@ class GeicEnablingTest : public testing::Test {
     profile()->GetPrefs()->SetString(glic::prefs::kGlicGeminiEnterpriseUrl,
                                      url);
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  void SetPolicyWithScope(const std::string& url, policy::PolicyScope scope) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kGeminiEnterpriseUrl,
+                 policy::POLICY_LEVEL_MANDATORY, scope,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(url), nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+    SetPolicyUrl(url);
+  }
+#endif
 
   void SetSwitchUrl(const std::string& url) {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
@@ -62,6 +95,7 @@ class GeicEnablingTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedCommandLine scoped_command_line_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -414,9 +448,21 @@ TEST_F(GeicEnablingTest, GoogleGroupsFilterEnablesOnlyMatchingProfile) {
             GURL("https://enterprise.gemini.cloud.google/side-panel"));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 TEST_F(GeicEnablingTest, ShouldLatchToGeminiEnterprise) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url", "https://business.gemini.google/side-panel"}}}},
+      {});
+
   TestingProfile* p = profile();
   const GURL kValidGuestUrl("https://business.gemini.google/side-panel");
+
+  SetPolicyWithScope("https://business.gemini.google/home/cid/device",
+                     policy::POLICY_SCOPE_MACHINE);
 
   // Default pref (kAuto) on fresh profile with a valid guest URL -> Enterprise.
   EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
@@ -427,10 +473,53 @@ TEST_F(GeicEnablingTest, ShouldLatchToGeminiEnterprise) {
       static_cast<int>(glic::prefs::AssistantSelection::kAuto));
   EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
 
-  // kConsumer with a valid guest URL -> Consumer.
+  // kConsumer with a machine-scoped policy on a personal profile -> Consumer.
   p->GetPrefs()->SetInteger(
       glic::prefs::kGlicAssistantSelection,
       static_cast<int>(glic::prefs::AssistantSelection::kConsumer));
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // kConsumer on a managed profile is ignored -> Enterprise.
+  p->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+  p->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // kConsumer with a user-scoped policy is ignored -> Enterprise.
+  SetPolicyWithScope("https://business.gemini.google/home/cid/user",
+                     policy::POLICY_SCOPE_USER);
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+  SetPolicyWithScope("https://business.gemini.google/home/cid/device",
+                     policy::POLICY_SCOPE_MACHINE);
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // kConsumer when consumer Gemini is disabled by policy -> Enterprise.
+  p->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      static_cast<int>(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+  p->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      static_cast<int>(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // kConsumer is ignored when GEiC is resolved via --geic-guest-url switch ->
+  // Enterprise.
+  SetSwitchUrl("https://business.gemini.google/cli-panel");
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+  scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+      kGeicGuestURLSwitch);
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // kConsumer is ignored when GEiC is resolved via Finch (no policy set) ->
+  // Enterprise.
+  policy_provider_.UpdateChromePolicy(policy::PolicyMap());
+  SetPolicyUrl("");
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+  SetPolicyWithScope("https://business.gemini.google/home/cid/device",
+                     policy::POLICY_SCOPE_MACHINE);
   EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
 
   // kEnterprise with a valid guest URL -> Enterprise.
@@ -445,6 +534,67 @@ TEST_F(GeicEnablingTest, ShouldLatchToGeminiEnterprise) {
   // Null BrowserContext -> Consumer.
   EXPECT_FALSE(ShouldLatchToGeminiEnterprise(nullptr, kValidGuestUrl));
 }
+
+TEST_F(GeicEnablingTest, CanOptOutOfGeicInSettings) {
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(nullptr));
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url", "https://business.gemini.google/side-panel"}}}},
+      {});
+
+  // Finch URL alone does not allow opting out in settings.
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+
+  // User-scoped policy does not allow opting out in settings.
+  SetPolicyWithScope("https://business.gemini.google/home/cid/user",
+                     policy::POLICY_SCOPE_USER);
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+
+  // Machine-scoped policy with a disallowed URL does not allow opting out.
+  SetPolicyWithScope("https://evil.com/side-panel",
+                     policy::POLICY_SCOPE_MACHINE);
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+
+  // Machine-scoped policy with a valid URL allows opting out on a personal
+  // (unmanaged) profile.
+  SetPolicyWithScope("https://business.gemini.google/home/cid/device",
+                     policy::POLICY_SCOPE_MACHINE);
+  EXPECT_TRUE(CanOptOutOfGeicInSettings(profile()));
+
+  // Off-the-record profiles return false.
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+
+  // On a managed profile, `CanOptOutOfGeicInSettings` returns false even when
+  // the policy is machine-scoped.
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EXPECT_TRUE(CanOptOutOfGeicInSettings(profile()));
+
+  // When consumer Gemini is disabled by admin policy (`GeminiSettings`), the
+  // switch is not offered.
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      static_cast<int>(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      static_cast<int>(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+  EXPECT_TRUE(CanOptOutOfGeicInSettings(profile()));
+
+  // Command-line switch takes precedence over the device policy.
+  SetSwitchUrl("https://business.gemini.google/cli-panel");
+  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace geic

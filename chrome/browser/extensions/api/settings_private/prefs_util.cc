@@ -1394,6 +1394,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
 
   // Glic prefs
+  (*s_allowlist)[glic::prefs::kGlicAssistantSelection] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[glic::prefs::kGlicPinnedToTabstrip] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[glic::prefs::kGlicLauncherEnabled] =

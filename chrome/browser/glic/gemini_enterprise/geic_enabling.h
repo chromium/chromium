@@ -39,6 +39,10 @@ inline constexpr auto& kGeicGuestURLSwitch = switches::kGeicGuestURL;
 // enabled, independent of profile state or guest URL configuration.
 bool IsGeicEnabledByFeature();
 
+// Returns true if the settings UI may offer opting out of GEiC to switch
+// `browser_context` to consumer Gemini.
+bool CanOptOutOfGeicInSettings(content::BrowserContext* browser_context);
+
 // Resolves the Gemini Enterprise guest URL for `browser_context` from the
 // current configuration on every call, without reading or writing the latch, or
 // returns an empty GURL() if GEiC is not enabled or no valid URL is configured.
@@ -62,8 +66,7 @@ GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
 
 // Returns true if `browser_context` should latch to
 // `GlicProvider::kGeminiEnterprise` at profile startup, or false to latch to
-// consumer `GlicProvider::kGemini`. Evaluates `resolved_guest_url` and
-// `prefs::kGlicAssistantSelection`.
+// consumer `GlicProvider::kGemini`.
 bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
                                    const GURL& resolved_guest_url);
 

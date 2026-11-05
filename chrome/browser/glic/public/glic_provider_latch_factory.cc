@@ -118,6 +118,8 @@ GlicProviderLatchFactory::BuildServiceInstanceForBrowserContext(
   if (geic::ShouldLatchToGeminiEnterprise(context, geic_guest_url)) {
     provider = GlicProvider::kGeminiEnterprise;
     geic_options.guest_url = std::move(geic_guest_url);
+    geic_options.can_opt_out_to_consumer_in_settings =
+        geic::CanOptOutOfGeicInSettings(context);
   } else {
     provider = GlicProvider::kGemini;
   }

@@ -5,12 +5,15 @@
 #include "chrome/browser/glic/public/glic_provider_change.h"
 
 #include <initializer_list>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -18,7 +21,14 @@
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -38,6 +48,12 @@ constexpr char kGeicGuestUrlSwitch[] = "geic-guest-url";
 
 // Real latches, with the configuration changed after the profile is created.
 class GlicProviderChangeTest : public testing::Test {
+ public:
+  void TearDown() override {
+    profile_.reset();
+    policy_provider_.Shutdown();
+  }
+
  protected:
   // Profiles latch to `finch_guest_url` if it's not empty.
   void InitFeatures(const std::string& finch_guest_url = "") {
@@ -52,10 +68,22 @@ class GlicProviderChangeTest : public testing::Test {
   }
 
   void SetPolicyUrl(const std::string& url) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kGeminiEnterpriseUrl,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(url), nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+#endif
     profile()->GetPrefs()->SetString(prefs::kGlicGeminiEnterpriseUrl, url);
   }
 
   void ClearPolicyUrl() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    policy_provider_.UpdateChromePolicy(policy::PolicyMap());
+#endif
     profile()->GetPrefs()->ClearPref(prefs::kGlicGeminiEnterpriseUrl);
   }
 
@@ -64,7 +92,19 @@ class GlicProviderChangeTest : public testing::Test {
                                       std::to_underlying(selection));
   }
 
-  Profile* profile() { return helper_.regular_profile(); }
+  Profile* profile() {
+    if (!profile_) {
+      policy_provider_.SetDefaultReturns(
+          /*is_initialization_complete_return=*/true,
+          /*is_first_policy_load_complete_return=*/true);
+      policy::PolicyServiceImpl::Providers providers = {&policy_provider_};
+      TestingProfile::Builder builder;
+      builder.SetPolicyService(
+          std::make_unique<policy::PolicyServiceImpl>(std::move(providers)));
+      profile_ = builder.Build();
+    }
+    return profile_.get();
+  }
 
   GlicProviderChange GetPendingProviderChange() {
     return GlicEnabling::GetPendingProviderChange(profile());
@@ -73,6 +113,8 @@ class GlicProviderChangeTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
   ProfileTestingHelper helper_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 class GlicProviderChangeGeminiLatchedTest : public GlicProviderChangeTest {
@@ -107,6 +149,8 @@ TEST_F(GlicProviderChangeGeminiLatchedTest, InvalidPolicyIsNone) {
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kNone);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // A profile that selected consumer Gemini stays on Gemini after a relaunch, so
 // a GEiC policy isn't a pending change.
 TEST_F(GlicProviderChangeGeminiLatchedTest,
@@ -115,6 +159,8 @@ TEST_F(GlicProviderChangeGeminiLatchedTest,
   SetPolicyUrl(kGeicAPolicyUrl);
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kNone);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(GlicProviderChangeGeminiLatchedTest,
        PolicyAddedWithEnterpriseSelectedIsGeminiToGeic) {
@@ -123,6 +169,8 @@ TEST_F(GlicProviderChangeGeminiLatchedTest,
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeminiToGeic);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Selecting consumer Gemini later reports the change, until it's reverted.
 TEST_F(GlicProviderChangeGeminiLatchedTest,
        ConsumerSelectionTogglesPendingGeminiToGeic) {
@@ -135,6 +183,8 @@ TEST_F(GlicProviderChangeGeminiLatchedTest,
   SetAssistantSelection(prefs::AssistantSelection::kAuto);
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeminiToGeic);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(GlicProviderChangeGeminiLatchedTest, LatchIsUnchanged) {
   SetPolicyUrl(kGeicAPolicyUrl);
@@ -199,15 +249,20 @@ TEST_F(GlicProviderChangeGeicLatchedTest, InvalidPolicyIsGeicToGemini) {
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeicToGemini);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Selecting consumer Gemini reports the change, until it's reverted.
 TEST_F(GlicProviderChangeGeicLatchedTest,
        ConsumerSelectionTogglesPendingGeicToGemini) {
+  SetPolicyUrl(kGeicAPolicyUrl);
   SetAssistantSelection(prefs::AssistantSelection::kConsumer);
   ASSERT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeicToGemini);
 
   SetAssistantSelection(prefs::AssistantSelection::kAuto);
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kNone);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // `--geic-guest-url` takes precedence over Finch. GEiC guest URLs are compared
 // without `hl`.

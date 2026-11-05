@@ -613,6 +613,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddString("aiSettingsSection", ai_settings_section);
   html_source->AddBoolean("glicDisallowedByAdmin", glic_disallowed_by_admin);
+  html_source->AddBoolean(
+      "showGeicDevicePolicyToggle",
+      glic::GetGlicProviderSpec(profile).CanOptOutToConsumerInSettings());
 
   const auto& autofill_client =
       *autofill::ContentAutofillClient::FromWebContents(
