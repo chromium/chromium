@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -31,11 +32,13 @@ class HttpResponse;
 
 namespace updater::test {
 
+struct HttpRequest;
 class IntegrationTestCommands;
 
 // A test HTTP server that answers expected requests and fails the test on any
 // other request. Matchers and response body providers run on the server's IO
-// thread and must not call `ExpectOnce` or the setters.
+// thread. Matchers must not call into the `ScopedServer`; response body
+// providers may.
 class ScopedServer {
  public:
   // An expected request and the response to it. A request matches if every
@@ -148,6 +151,11 @@ class ScopedServer {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
+
+  // Removes and returns the next expectation if `request` matches it. Fails the
+  // test and returns `std::nullopt` otherwise.
+  std::optional<Expectation> TakeMatchingExpectation(const HttpRequest& request)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   net::test_server::EmbeddedTestServer test_server_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;

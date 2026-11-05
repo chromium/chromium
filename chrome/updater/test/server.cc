@@ -84,6 +84,25 @@ testing::AssertionResult MatchAll(const request::MatcherGroup& matchers,
   return testing::AssertionSuccess();
 }
 
+std::unique_ptr<net::test_server::HttpResponse> MakeErrorResponse() {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+  return response;
+}
+
+bool AcceptsGzip(const HttpRequest& request) {
+  auto it = request.headers.find("Accept-Encoding");
+  return it != request.headers.end() &&
+         it->second.find("gzip") != std::string::npos;
+}
+
+// Returns whether the decoded request body has a `"protocol": "4.0"` entry,
+// with any number of spaces after the colon.
+bool IsProtocolV4(const HttpRequest& request) {
+  return re2::RE2::PartialMatch(request.decoded_content,
+                                R"("protocol": *"4\.0")");
+}
+
 }  // namespace
 
 ScopedServer::Expectation::Expectation(request::MatcherGroup matchers,
@@ -130,7 +149,8 @@ ScopedServer::ScopedServer(scoped_refptr<IntegrationTestCommands> commands)
 
 ScopedServer::~ScopedServer() {
   // Stop the server: `HandleRequest` must not run during the checks below or
-  // after the members it uses are destroyed.
+  // after the members it uses are destroyed. Stop it before taking `lock_`:
+  // stopping waits for an in-flight `HandleRequest`, which takes `lock_`.
   test_server_handle_ = net::test_server::EmbeddedTestServerHandle();
   base::AutoLock lock(lock_);
   for (const Expectation& expectation : expectations_) {
@@ -175,71 +195,82 @@ void ScopedServer::set_gzip_response(bool gzip_response) {
   gzip_response_ = gzip_response;
 }
 
-std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
-    const net::test_server::HttpRequest& req) {
-  HttpRequest request(req);
-  VLOG(0) << "Handle request at path:" << request.relative_url;
-  VLOG(3) << DebugStringForReq(request);
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  base::AutoLock lock(lock_);
+std::optional<ScopedServer::Expectation> ScopedServer::TakeMatchingExpectation(
+    const HttpRequest& request) {
   if (expectations_.empty()) {
-    VLOG(0) << "Unexpected request.";
     ADD_FAILURE() << "Unexpected " << DebugStringForReq(request);
-    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-    return response;
+    return std::nullopt;
   }
-  const Expectation& expectation = expectations_.front();
-  if (testing::AssertionResult result = MatchAll(expectation.matchers, request);
+  if (testing::AssertionResult result =
+          MatchAll(expectations_.front().matchers, request);
       !result) {
-    VLOG(0) << "Request did not match.";
     ADD_FAILURE() << "Unmatched " << DebugStringForReq(request) << "\n  "
                   << result.message();
-    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-    return response;
+    return std::nullopt;
+  }
+  Expectation expectation = std::move(expectations_.front());
+  expectations_.pop_front();
+  return expectation;
+}
+
+std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
+    const net::test_server::HttpRequest& req) {
+  const HttpRequest request(req);
+  VLOG(0) << "Handle request at path: " << request.relative_url;
+  VLOG(3) << DebugStringForReq(request);
+
+  std::optional<Expectation> expectation;
+  base::TimeDelta download_delay;
+  bool gzip_response = false;
+  {
+    base::AutoLock lock(lock_);
+    gzip_response = gzip_response_;
+    // Check before matching, so a rejected request keeps its expectation.
+    if (gzip_response && !AcceptsGzip(request)) {
+      ADD_FAILURE() << "gzip `Accept-Encoding` not found in request, "
+                    << DebugStringForReq(request);
+      return MakeErrorResponse();
+    }
+    expectation = TakeMatchingExpectation(request);
+    download_delay = download_delay_;
+  }
+  if (!expectation) {
+    return MakeErrorResponse();
   }
 
-  if (request.relative_url.starts_with(download_path()) &&
-      !download_delay_.is_zero()) {
-    VLOG(0) << "Delay download response by: " << download_delay_;
-    response.reset(new net::test_server::DelayedHttpResponse(download_delay_));
-  }
-
-  const std::string response_body =
-      expectation.response_body_provider.Run(re2::RE2::PartialMatch(
-          request.decoded_content, "\"protocol\": *\"4\\.0\""));
-  response->set_code(expectation.response_status_code);
-  if (request.relative_url.starts_with(device_management_path())) {
-    response->set_content_type("application/x-protobuf");
-  }
+  // Runs without holding `lock_`, so the provider may call into this server.
+  std::string response_body =
+      expectation->response_body_provider.Run(IsProtocolV4(request));
   if (request.relative_url.starts_with(proxy_pac_path())) {
     VLOG(1) << "PAC proxy settings: [ " << response_body << "]";
   }
-
-  if (gzip_response_) {
-    if (!request.headers.contains("Accept-Encoding") ||
-        request.headers["Accept-Encoding"].find("gzip") == std::string::npos) {
-      VLOG(0) << "gzip `Accept-Encoding` not found in request.";
-      ADD_FAILURE() << "gzip `Accept-Encoding` not found in request, "
-                    << DebugStringForReq(request);
-      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-      return response;
-    }
-
+  if (gzip_response) {
     std::string compressed_body;
     if (!compression::GzipCompress(response_body, &compressed_body)) {
-      VLOG(0) << "gzip compression failed.";
       ADD_FAILURE() << "gzip compression failed, "
                     << DebugStringForReq(request);
-      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-      return response;
+      return MakeErrorResponse();
     }
-    response->AddCustomHeader("Content-Encoding", "gzip");
-    response->set_content(compressed_body);
-  } else {
-    response->set_content(response_body);
+    response_body = std::move(compressed_body);
   }
 
-  expectations_.pop_front();
+  std::unique_ptr<net::test_server::BasicHttpResponse> response;
+  if (request.relative_url.starts_with(download_path()) &&
+      !download_delay.is_zero()) {
+    VLOG(0) << "Delay download response by: " << download_delay;
+    response =
+        std::make_unique<net::test_server::DelayedHttpResponse>(download_delay);
+  } else {
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
+  }
+  response->set_code(expectation->response_status_code);
+  if (request.relative_url.starts_with(device_management_path())) {
+    response->set_content_type("application/x-protobuf");
+  }
+  if (gzip_response) {
+    response->AddCustomHeader("Content-Encoding", "gzip");
+  }
+  response->set_content(response_body);
   return response;
 }
 

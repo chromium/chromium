@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/updater/test/request_matcher.h"
 #include "net/http/http_status_code.h"
@@ -119,6 +120,19 @@ TEST_F(ScopedServerTest, ResponseBodyProviderReceivesProtocolVersion) {
       Handle(MakeRequest("/update", R"({"request": {"protocol": "3.1"}})"));
   EXPECT_EQ(response->code(), net::HTTP_ACCEPTED);
   EXPECT_EQ(response->content(), "v3");
+}
+
+TEST_F(ScopedServerTest, ResponseBodyProviderCanCallIntoServer) {
+  // `ExpectOnce` and the setters take the server's lock.
+  server_.ExpectOnce(PathIs("/first"),
+                     base::BindLambdaForTesting([&](bool /*is_v4*/) {
+                       server_.ExpectOnce(PathIs("/second"), "2");
+                       server_.set_download_delay(base::TimeDelta());
+                       return std::string("1");
+                     }));
+
+  EXPECT_EQ(Handle(MakeRequest("/first"))->content(), "1");
+  EXPECT_EQ(Handle(MakeRequest("/second"))->content(), "2");
 }
 
 TEST_F(ScopedServerTest, DestructorReportsUnmetExpectation) {
