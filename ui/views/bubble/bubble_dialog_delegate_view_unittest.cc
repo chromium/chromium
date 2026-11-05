@@ -6,13 +6,16 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,6 +49,7 @@
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -1809,6 +1813,239 @@ TEST_F(BubbleDialogDelegateViewAnchorTest, GetAnchoredDialog) {
   // Closing the first bubble clears the anchored dialog completely.
   element_bubble1->CloseNow();
   EXPECT_EQ(nullptr, BubbleDialogDelegate::GetAnchoredDialog(element_anchor));
+}
+
+namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFocusTestAnchorElementId);
+
+// Records which bubbles are in the focus order of a ui::test::TestElement
+// anchor, like the WebUI backend does for TrackedElementWebUI anchors.
+class TestAnchoredDialogBackend : public ui::AnchoredDialogRegistry::Backend {
+ public:
+  TestAnchoredDialogBackend() = default;
+  ~TestAnchoredDialogBackend() override = default;
+
+  DECLARE_SAFE_CAST_TARGET()
+
+  // ui::AnchoredDialogRegistry::Backend:
+  std::unique_ptr<ui::AnchoredDialogRegistry::Registration> Register(
+      ui::TrackedElement& anchor,
+      ui::AnchoredDialogRegistry::FocusTarget& target) override {
+    if (!anchor.IsA<ui::test::TestElement>()) {
+      return nullptr;
+    }
+    return std::make_unique<TestRegistration>(*this, target);
+  }
+
+  bool IsRegistered(BubbleDialogDelegate* bubble) const {
+    ui::AnchoredDialogRegistry::FocusTarget* const target = bubble;
+    return std::ranges::any_of(registered_, [target](const auto& registered) {
+      return registered.get() == target;
+    });
+  }
+
+  size_t registered_count() const { return registered_.size(); }
+
+ private:
+  class TestRegistration : public ui::AnchoredDialogRegistry::Registration {
+   public:
+    TestRegistration(TestAnchoredDialogBackend& backend,
+                     ui::AnchoredDialogRegistry::FocusTarget& target)
+        : backend_(backend), target_(target) {
+      backend_->registered_.push_back(&target);
+    }
+    ~TestRegistration() override {
+      std::erase(backend_->registered_, &*target_);
+    }
+
+   private:
+    const raw_ref<TestAnchoredDialogBackend> backend_;
+    const raw_ref<ui::AnchoredDialogRegistry::FocusTarget> target_;
+  };
+
+  std::vector<raw_ptr<ui::AnchoredDialogRegistry::FocusTarget>> registered_;
+};
+
+DEFINE_SAFE_CAST_TARGET(TestAnchoredDialogBackend)
+
+}  // namespace
+
+// Tests bubbles anchored to non-Views TrackedElements taking part in their
+// anchor's focus order through ui::AnchoredDialogRegistry.
+class BubbleDialogDelegateViewAnchoredFocusTest
+    : public BubbleDialogDelegateViewAnchorTest {
+ public:
+  void SetUp() override {
+    BubbleDialogDelegateViewAnchorTest::SetUp();
+    auto* const registry = ui::AnchoredDialogRegistry::GetInstance();
+    registry->MaybeRegisterBackend<TestAnchoredDialogBackend>();
+    backend_ = registry->GetBackend<TestAnchoredDialogBackend>();
+    ASSERT_TRUE(backend_);
+    ASSERT_EQ(0u, backend_->registered_count());
+
+    anchor_ = std::make_unique<ui::test::TestElement>(
+        kFocusTestAnchorElementId,
+        ElementTrackerViews::GetContextForWidget(dummy_widget()));
+    anchor_->SetScreenBounds(gfx::Rect(10, 10, 50, 50));
+    anchor_->SetNativeView(dummy_widget()->GetNativeView());
+    anchor_->Show();
+  }
+
+  void TearDown() override {
+    anchor_.reset();
+    backend_ = nullptr;
+    BubbleDialogDelegateViewAnchorTest::TearDown();
+  }
+
+ protected:
+  TestAnchoredDialogBackend* backend() { return backend_; }
+  ui::test::TestElement* anchor() { return anchor_.get(); }
+
+ private:
+  raw_ptr<TestAnchoredDialogBackend> backend_ = nullptr;
+  std::unique_ptr<ui::test::TestElement> anchor_;
+};
+
+TEST_F(BubbleDialogDelegateViewAnchoredFocusTest, RegisteredWhileVisible) {
+  auto* const delegate =
+      new AnchorTestBubbleDialogDelegateView(BubbleAnchor(anchor()));
+  delegate->set_close_on_deactivate(false);
+  Widget* const bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(delegate);
+
+  // A bubble isn't in its anchor's focus order until it is shown.
+  EXPECT_FALSE(backend()->IsRegistered(delegate));
+
+  bubble_widget->ShowInactive();
+  EXPECT_TRUE(backend()->IsRegistered(delegate));
+
+  bubble_widget->Hide();
+  EXPECT_FALSE(backend()->IsRegistered(delegate));
+
+  bubble_widget->ShowInactive();
+  EXPECT_TRUE(backend()->IsRegistered(delegate));
+
+  bubble_widget->CloseNow();
+  EXPECT_EQ(0u, backend()->registered_count());
+}
+
+TEST_F(BubbleDialogDelegateViewAnchoredFocusTest,
+       NotRegisteredIfNotFocusTraversable) {
+  auto* const delegate =
+      new AnchorTestBubbleDialogDelegateView(BubbleAnchor(anchor()));
+  delegate->set_close_on_deactivate(false);
+  delegate->set_focus_traversable_from_anchor_view(false);
+  Widget* const bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(delegate);
+
+  bubble_widget->ShowInactive();
+  EXPECT_FALSE(backend()->IsRegistered(delegate));
+
+  bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogDelegateViewAnchoredFocusTest,
+       ChangingFocusTraversableWhileVisible) {
+  auto* const delegate =
+      new AnchorTestBubbleDialogDelegateView(BubbleAnchor(anchor()));
+  delegate->set_close_on_deactivate(false);
+  delegate->set_focus_traversable_from_anchor_view(false);
+  Widget* const bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(delegate);
+  bubble_widget->ShowInactive();
+  ASSERT_FALSE(backend()->IsRegistered(delegate));
+
+  delegate->set_focus_traversable_from_anchor_view(true);
+  EXPECT_TRUE(backend()->IsRegistered(delegate));
+
+  delegate->set_focus_traversable_from_anchor_view(false);
+  EXPECT_FALSE(backend()->IsRegistered(delegate));
+
+  bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogDelegateViewAnchoredFocusTest, ViewAnchorNotRegistered) {
+  // Bubbles anchored to Views use kAnchoredDialogKey instead.
+  Widget* const bubble_widget = CreateBubble(dummy_widget());
+  bubble_widget->ShowInactive();
+  EXPECT_EQ(0u, backend()->registered_count());
+
+  bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogDelegateViewAnchoredFocusTest, ChangingAnchor) {
+  auto* const delegate =
+      new AnchorTestBubbleDialogDelegateView(BubbleAnchor(anchor()));
+  delegate->set_close_on_deactivate(false);
+  Widget* const bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(delegate);
+  bubble_widget->ShowInactive();
+  ASSERT_TRUE(backend()->IsRegistered(delegate));
+
+  delegate->SetAnchorView(GetAnchorView(dummy_widget()));
+  EXPECT_FALSE(backend()->IsRegistered(delegate));
+  EXPECT_EQ(delegate, BubbleDialogDelegate::GetAnchoredDialog(
+                          BubbleAnchor(GetAnchorView(dummy_widget()))));
+
+  delegate->SetAnchor(BubbleAnchor(anchor()));
+  EXPECT_TRUE(backend()->IsRegistered(delegate));
+
+  bubble_widget->CloseNow();
+  EXPECT_EQ(0u, backend()->registered_count());
+}
+
+TEST_F(BubbleDialogDelegateViewAnchoredFocusTest, FocusFromAnchor) {
+  // A bubble whose only focusable views are two contents views.
+  auto* const delegate =
+      new AnchorTestBubbleDialogDelegateView(BubbleAnchor(anchor()));
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate->set_close_on_deactivate(false);
+  View* const first = delegate->AddChildView(std::make_unique<View>());
+  first->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  View* const last = delegate->AddChildView(std::make_unique<View>());
+  last->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  Widget* const bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(delegate);
+  bubble_widget->ShowInactive();
+  ASSERT_FALSE(bubble_widget->IsActive());
+
+  // Forward traversal enters at the first focusable view.
+  EXPECT_TRUE(delegate->FocusFromAnchor(/*reverse=*/false));
+  test::WaitForWidgetActive(bubble_widget, true);
+  EXPECT_TRUE(first->HasFocus());
+
+  // Move activation elsewhere.
+  auto other_widget = CreateTopLevelWidget();
+  other_widget->Show();
+  test::WaitForWidgetActive(bubble_widget, false);
+
+  // Reverse traversal enters at the last focusable view.
+  EXPECT_TRUE(delegate->FocusFromAnchor(/*reverse=*/true));
+  test::WaitForWidgetActive(bubble_widget, true);
+  EXPECT_TRUE(last->HasFocus());
+
+  bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogDelegateViewAnchoredFocusTest,
+       FocusFromAnchorWithoutFocusableViews) {
+  auto* const delegate =
+      new AnchorTestBubbleDialogDelegateView(BubbleAnchor(anchor()));
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate->set_close_on_deactivate(false);
+  Widget* const bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(delegate);
+  bubble_widget->ShowInactive();
+
+  EXPECT_FALSE(delegate->FocusFromAnchor(/*reverse=*/false));
+  EXPECT_FALSE(bubble_widget->IsActive());
+
+  // A hidden bubble can't be focused either.
+  bubble_widget->Hide();
+  EXPECT_FALSE(delegate->FocusFromAnchor(/*reverse=*/false));
+
+  bubble_widget->CloseNow();
 }
 
 // Tests that if the anchor view has kWidgetForAnchoringKey property,

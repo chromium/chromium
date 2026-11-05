@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
+#include "ui/base/interaction/anchored_dialog_registry.h"
 #include "ui/base/interaction/element_highlighter.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -212,7 +213,9 @@ FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, ActivateSurface);
 FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, Confirm);
 }  // namespace test
 
-class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
+class VIEWS_EXPORT BubbleDialogDelegate
+    : public DialogDelegate,
+      public ui::AnchoredDialogRegistry::FocusTarget {
  public:
   BubbleDialogDelegate(
       BubbleAnchor anchor,
@@ -235,6 +238,12 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override;
   ClientView* CreateClientView(Widget* widget) override;
   ax::mojom::Role GetAccessibleWindowRole() final;
+
+  // ui::AnchoredDialogRegistry::FocusTarget:
+  // Moves focus into the bubble the same way views::FocusManager does when
+  // focus traversal enters a dialog anchored to a View: to the first focusable
+  // view, or to the last one if `reverse` is true.
+  bool FocusFromAnchor(bool reverse) override;
 
   // Create and initialize the bubble Widget with proper bounds.
   // It's preferred to used `CLIENT_OWNS_WIDGET` as ownership. With
@@ -516,8 +525,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     accept_drag_drop_ = accept_drag_drop;
   }
 
-  // Whether focus can traverse from the anchor view into the bubble. Only
-  // meaningful if there is an anchor view.
+  // Whether focus can traverse from the anchor into the bubble. Only meaningful
+  // if there is an anchor view, or an anchor that is a non-Views TrackedElement
+  // (see ui::AnchoredDialogRegistry).
   // TODO(pbos): See if this can be inferred from if the bubble is activatable
   // or if there's anything focusable within the dialog. This is currently used
   // for bubbles that should never receive focus and we should be able have
@@ -528,6 +538,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // if fixing that bug removes the need for this for other dialogs.
   void set_focus_traversable_from_anchor_view(bool focusable) {
     focus_traversable_from_anchor_view_ = focusable;
+    UpdateAnchoredDialogRegistration();
   }
 
   // If this is true and either:
@@ -734,6 +745,12 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchoredDialogKey();
   void ClearAnchoredDialogKey();
 
+  // Keeps `anchored_dialog_registration_` in sync: a bubble that is anchored to
+  // a non-Views TrackedElement is inserted into that element's focus order
+  // while it is visible and focus-traversable from its anchor. Called whenever
+  // any of these might have changed.
+  void UpdateAnchoredDialogRegistration();
+
   gfx::Rect GetDesiredBubbleBounds();
 
   // Can be called with nullptr.
@@ -745,6 +762,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   ui::ColorVariant color_ = ui::kColorBubbleBackground;
   raw_ptr<Widget> anchor_widget_ = nullptr;
   ui::SafeElementReference anchor_tracked_element_;
+  // Set while this bubble is in the focus order of `anchor_tracked_element_`.
+  std::unique_ptr<ui::AnchoredDialogRegistry::Registration>
+      anchored_dialog_registration_;
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;

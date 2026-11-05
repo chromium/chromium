@@ -10,6 +10,7 @@ component("interaction") {
   defines = [ "IS_UI_BASE_INTERACTION_IMPL" ]
 
   public = [
+    "anchored_dialog_registry.h",
     "element_events.h",
     "element_highlighter.h",
     "element_identifier.h",
@@ -29,6 +30,7 @@ component("interaction") {
   ]
 
   sources = [
+    "anchored_dialog_registry.cc",
     "element_events.cc",
     "element_highlighter.cc",
     "element_identifier.cc",
@@ -106,6 +108,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "anchored_dialog_registry_unittest.cc",
     "element_highlighter_unittest.cc",
     "element_tracker_unittest.cc",
     "implementation_list_unittest.cc",
