@@ -304,9 +304,22 @@ suite('OrganizerListSectionHeaderTest', () => {
     await nextSectionPromise;
   });
 
-  test('focus method delegates to expand button', () => {
+  test('focus method delegates to expand button when enabled', () => {
     header.focus();
     assertEquals(header.$.expandButton.$.icon, getDeepActiveElement());
+  });
+
+  test('supports focus when disabled', async () => {
+    header.disabled = true;
+    await microtasksFinished();
+
+    assertEquals('0', header.getAttribute('tabindex'));
+    header.focus();
+    assertEquals(header, getDeepActiveElement());
+
+    header.disabled = false;
+    await microtasksFinished();
+    assertFalse(header.hasAttribute('tabindex'));
   });
 
   test('disables focus ring on expand button icon', async () => {

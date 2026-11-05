@@ -556,7 +556,7 @@ suite('OrganizerPanelAppTest', () => {
     await microtasksFinished();
     assertFalse(inputTabEvent.defaultPrevented);
 
-    // Tab on the clear button focuses the first search result item.
+    // Tab on the clear button focuses the first section header.
     const clearButton = app.$.searchField.shadowRoot.querySelector<HTMLElement>(
         '#clearSearch')!;
     assertTrue(!!clearButton);
@@ -570,10 +570,7 @@ suite('OrganizerPanelAppTest', () => {
     clearButton.dispatchEvent(clearButtonTabEvent);
     await microtasksFinished();
     assertTrue(clearButtonTabEvent.defaultPrevented);
-    assertEquals(
-        sections[0]!.getVisibleItems()[0]!.$.crUrlListItem
-            .getFocusableElement(),
-        getDeepActiveElement());
+    assertEquals(sections[0]!.$.header, getDeepActiveElement());
   });
 
   test('records user actions when delegates are interacted with', () => {

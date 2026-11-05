@@ -104,8 +104,23 @@ export class OrganizerListSectionHeaderElement extends
     FocusOutlineManager.forDocument(document);
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('disabled')) {
+      if (this.disabled) {
+        this.setAttribute('tabindex', '0');
+      } else {
+        this.removeAttribute('tabindex');
+      }
+    }
+  }
+
   override focus() {
-    this.$.expandButton.focus();
+    if (this.disabled) {
+      super.focus();
+    } else {
+      this.$.expandButton.focus();
+    }
   }
 
   focusMenuButton() {

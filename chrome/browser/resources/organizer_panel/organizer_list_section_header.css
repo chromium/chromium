@@ -12,13 +12,14 @@
   border-radius: 8px;
   display: flex;
   height: 38px;
+  outline: none;
   position: relative;
 }
 
 :host(:not([disabled]):hover),
 :host(.hovered:not([disabled])),
 :host([menu-open_]:not([disabled])),
-:host-context(html.focus-outline-visible):host(:not([disabled]):focus-within) {
+:host-context(html.focus-outline-visible):host(:focus-within) {
   background-color: var(--cr-hover-background-color);
 }
 

@@ -132,6 +132,7 @@ export class OrganizerListSectionItemElement extends
         reflect: true,
       },
       item: {type: Object},
+      tabbable: {type: Boolean},
     };
   }
 
@@ -139,14 +140,18 @@ export class OrganizerListSectionItemElement extends
   accessor item: HighlightableOrganizerListSectionItem<unknown> = {
     title: [],
   };
+  accessor tabbable: boolean = false;
 
   private listFormatter_ = new Intl.ListFormat(
       document.documentElement.lang || undefined,
       {style: 'narrow', type: 'conjunction'});
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.$.crUrlListItem.getFocusableElement().tabIndex = -1;
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('tabbable')) {
+      this.$.crUrlListItem.getFocusableElement().tabIndex =
+          this.tabbable ? 0 : -1;
+    }
   }
 
   override focus() {
@@ -161,19 +166,30 @@ export class OrganizerListSectionItemElement extends
     }
   }
 
+  focusLast() {
+    if (this.hasActionButton_()) {
+      this.focusActionButton();
+    } else {
+      this.focus();
+    }
+  }
+
   protected onItemKeydown_(e: KeyboardEvent) {
     if (e.key === 'Tab') {
+      const actionButton =
+          this.shadowRoot.querySelector<HTMLElement>('#actionButton');
+      if (actionButton && e.composedPath().includes(actionButton)) {
+        return;
+      }
       if (!e.shiftKey) {
-        const actionButton =
-            this.shadowRoot.querySelector<HTMLElement>('#actionButton');
-        if (actionButton && this.hasActionButton_()) {
+        if (actionButton) {
           actionButton.focus();
           e.preventDefault();
           e.stopPropagation();
         } else {
           this.fire('focus-next-section', {sourceEvent: e});
         }
-      } else {
+      } else if (!this.tabbable) {
         this.fire('focus-current-section', {sourceEvent: e});
       }
     }

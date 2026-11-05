@@ -368,10 +368,18 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   override focus() {
+    this.$.header.focus();
+  }
+
+  focusLast(focusMenuButtonIfVisible: boolean = false) {
     if (this.isSearching_()) {
-      this.getVisibleItems()[0]?.focus();
+      this.getVisibleItems().at(-1)?.focusLast();
+      return;
+    }
+    if (focusMenuButtonIfVisible && this.$.header.isMenuButtonVisible()) {
+      this.$.header.focusMenuButton();
     } else {
-      this.$.header.focus();
+      this.focus();
     }
   }
 
@@ -379,7 +387,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     if (this.hidden) {
       return [];
     }
-    const elements: HTMLElement[] = this.isSearching_() ? [] : [this.$.header];
+    const elements: HTMLElement[] = [this.$.header];
     if (this.isExpanded_()) {
       elements.push(
           ...this.shadowRoot.querySelectorAll<OrganizerListSectionItemElement>(

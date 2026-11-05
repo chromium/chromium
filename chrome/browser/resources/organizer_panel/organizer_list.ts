@@ -112,13 +112,7 @@ export class OrganizerListElement extends CrLitElement {
       return false;
     }
 
-    const lastSection = sections[sections.length - 1]!;
-    if (focusMenuButtonIfVisible &&
-        lastSection.$.header.isMenuButtonVisible()) {
-      lastSection.$.header.focusMenuButton();
-    } else {
-      lastSection.focus();
-    }
+    sections[sections.length - 1]!.focusLast(focusMenuButtonIfVisible);
     return true;
   }
 
@@ -137,11 +131,18 @@ export class OrganizerListElement extends CrLitElement {
     const customEvent = e as CustomEvent<{sourceEvent?: KeyboardEvent}>;
     const sections = this.getVisibleSections();
     const path = e.composedPath();
+    if (this.searchQuery) {
+      const lastItem = sections.at(-1)?.getVisibleItems().at(-1);
+      if (lastItem && path.includes(lastItem)) {
+        this.fire('focus-after-list', customEvent.detail);
+      }
+      return;
+    }
+
     const currentSection = sections.find(s => path.includes(s));
     const currentIndex = currentSection ? sections.indexOf(currentSection) : -1;
 
-    if (this.searchQuery || currentIndex === -1 ||
-        currentIndex === sections.length - 1) {
+    if (currentIndex === -1 || currentIndex === sections.length - 1) {
       this.fire('focus-after-list', customEvent.detail);
     } else {
       sections[currentIndex + 1]!.focus();
@@ -160,12 +161,7 @@ export class OrganizerListElement extends CrLitElement {
     if (currentIndex <= 0) {
       this.fire('focus-before-list', customEvent.detail);
     } else {
-      const prevSection = sections[currentIndex - 1]!;
-      if (prevSection.$.header.isMenuButtonVisible()) {
-        prevSection.$.header.focusMenuButton();
-      } else {
-        prevSection.focus();
-      }
+      sections[currentIndex - 1]!.focusLast(/*focusMenuButtonIfVisible=*/ true);
       customEvent.detail?.sourceEvent?.preventDefault();
       customEvent.detail?.sourceEvent?.stopPropagation();
     }
@@ -173,17 +169,13 @@ export class OrganizerListElement extends CrLitElement {
 
   private onFocusCurrentSection_(e: Event) {
     const customEvent = e as CustomEvent<{sourceEvent?: KeyboardEvent}>;
-    if (this.searchQuery) {
-      this.fire('focus-before-list', customEvent.detail);
-    } else {
-      const sections = this.getVisibleSections();
-      const path = e.composedPath();
-      const currentSection = sections.find(s => path.includes(s));
-      if (currentSection) {
-        currentSection.focus();
-        customEvent.detail?.sourceEvent?.preventDefault();
-        customEvent.detail?.sourceEvent?.stopPropagation();
-      }
+    const sections = this.getVisibleSections();
+    const path = e.composedPath();
+    const currentSection = sections.find(s => path.includes(s));
+    if (currentSection) {
+      currentSection.focus();
+      customEvent.detail?.sourceEvent?.preventDefault();
+      customEvent.detail?.sourceEvent?.stopPropagation();
     }
   }
 }

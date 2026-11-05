@@ -7,7 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -472,7 +472,13 @@ suite('OrganizerListTest', () => {
       new TestSectionDelegate(
           'Section 1',
           [
-            {title: ['Item 1A']},
+            {
+              title: ['Item 1A'],
+              hoveredActionButton: {
+                icon: 'cr:close',
+                ariaLabel: 'Close tab',
+              },
+            },
             {title: ['Item 1B']},
           ]),
       new TestSectionDelegate(
@@ -490,65 +496,63 @@ suite('OrganizerListTest', () => {
     assertEquals(2, sections.length);
     const sec1Items = sections[0]!.getVisibleItems();
     const sec2Items = sections[1]!.getVisibleItems();
+    const item1AActionButton =
+        sec1Items[0]!.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
+    assertTrue(sec1Items[0]!.tabbable);
+    assertTrue(sec1Items[1]!.tabbable);
+    assertTrue(sec2Items[0]!.tabbable);
 
-    // focusFirstSection focuses the first item of Section 1.
+    // focusFirstSection focuses Section 1 header, and getNavigableElements()
+    // includes both headers and items across sections.
     assertTrue(list.focusFirstSection());
-    assertEquals(
-        sec1Items[0]!.$.crUrlListItem.getFocusableElement(),
-        getDeepActiveElement());
+    assertEquals(sections[0]!.$.header, getDeepActiveElement());
+    assertDeepEquals(
+        [
+          sections[0]!.$.header,
+          sec1Items[0]!,
+          sec1Items[1]!,
+          sections[1]!.$.header,
+          sec2Items[0]!,
+        ],
+        list.getNavigableElements());
 
-    // ArrowDown navigates directly across items, skipping disabled headers.
-    sec1Items[0]!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'ArrowDown',
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertEquals(
-        sec1Items[1]!.$.crUrlListItem.getFocusableElement(),
-        getDeepActiveElement());
-
-    sec1Items[1]!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'ArrowDown',
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
+    // focusLastSection in search mode focuses the last item of the last
+    // visible section.
+    assertTrue(list.focusLastSection());
     assertEquals(
         sec2Items[0]!.$.crUrlListItem.getFocusableElement(),
         getDeepActiveElement());
 
-    // ArrowUp navigates back across sections, skipping disabled headers.
-    sec2Items[0]!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'ArrowUp',
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertEquals(
-        sec1Items[1]!.$.crUrlListItem.getFocusableElement(),
-        getDeepActiveElement());
-
-    // Tab from a search result item exits the list (fires focus-after-list).
-    const whenFocusAfterList = eventToPromise('focus-after-list', list);
+    // Tab on Item 1A focuses its action button, and Tab on the action button
+    // does not prevent default so native Tab moves to the next tabbable item.
+    sec1Items[0]!.focus();
     sec1Items[0]!.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'Tab',
       bubbles: true,
       composed: true,
       cancelable: true,
     }));
-    await whenFocusAfterList;
+    await microtasksFinished();
+    assertEquals(item1AActionButton, getDeepActiveElement());
 
-    // Shift+Tab from any search result item exits the list backwards (fires
-    // focus-before-list).
-    const whenFocusBeforeList = eventToPromise('focus-before-list', list);
+    const actionTabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    item1AActionButton.dispatchEvent(actionTabEvent);
+    await microtasksFinished();
+    assertFalse(actionTabEvent.defaultPrevented);
+
+    // Tab on the last item of the last visible section fires focus-after-list.
+    const whenFocusAfterList = eventToPromise('focus-after-list', list);
     sec2Items[0]!.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'Tab',
-      shiftKey: true,
       bubbles: true,
       composed: true,
       cancelable: true,
     }));
-    await whenFocusBeforeList;
+    await whenFocusAfterList;
   });
 });

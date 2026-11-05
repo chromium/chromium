@@ -23,7 +23,7 @@ export function getHtml(this: OrganizerListSectionElement) {
   ${this.getFilteredItems_().map((item, index) => html`
     <organizer-list-section-item .item="${item}" role="listitem"
         data-index="${index}" ?has-context-menu="${this.hasContextMenu_()}"
-        @click="${this.onItemClick_}"
+        ?tabbable="${this.isSearching_()}" @click="${this.onItemClick_}"
         @action-button-click="${this.onItemActionButtonClick_}"
         @context-menu-click="${this.onItemContextMenuClick_}">
     </organizer-list-section-item>

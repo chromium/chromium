@@ -46,7 +46,8 @@ export function getHtml(this: OrganizerListSectionItemElement) {
     </cr-icon>
   ` : ''}
   ${this.item.hoveredActionButton ? html`
-    <cr-icon-button id="actionButton" slot="suffix" tabindex="-1"
+    <cr-icon-button id="actionButton" slot="suffix"
+        tabindex="${this.tabbable ? 0 : -1}"
         iron-icon="${this.item.hoveredActionButton.icon}"
         aria-label="${this.item.hoveredActionButton.ariaLabel}"
         title="${this.item.hoveredActionButton.tooltip || nothing}"

@@ -65,15 +65,20 @@
       var(--organizer-list-section-item-trailing-icon-size_);
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  --cr-icon-button-size:
-      var(--organizer-list-section-item-trailing-button-size_);
-  display: none;
+  --cr-icon-button-size: 0px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :host(.hovered) #actionButton,
 :host(:focus-within) #actionButton,
 #crUrlListItem.hovered #actionButton {
-  display: inline-flex;
+  --cr-icon-button-size:
+      var(--organizer-list-section-item-trailing-button-size_);
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
 }
 
 :host(.hovered) #trailingIcon.has-action-button,

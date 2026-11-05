@@ -463,22 +463,51 @@ suite('OrganizerListSectionItemTest', () => {
         assertDeepEquals([[]], listItem.$.description.highlightRanges);
       });
 
-  test(
-      'sets tabIndex to -1 on focusable element and supports focus()',
-      async () => {
-        listItem.item = {
-          title: ['Google Search'],
-        };
-        await microtasksFinished();
+  test('updates tabIndex from tabbable and supports focus()', async () => {
+    listItem.item = {
+      title: ['Google Search'],
+      hoveredActionButton: {
+        icon: 'cr:close',
+        ariaLabel: 'Close tab',
+      },
+    };
+    await microtasksFinished();
 
-        assertEquals(
-            -1, listItem.$.crUrlListItem.getFocusableElement().tabIndex);
+    const actionButton =
+        listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
+    assertEquals(-1, listItem.$.crUrlListItem.getFocusableElement().tabIndex);
+    assertEquals(-1, actionButton.tabIndex);
 
-        listItem.focus();
-        assertEquals(
-            listItem.$.crUrlListItem.getFocusableElement(),
-            getDeepActiveElement());
-      });
+    listItem.tabbable = true;
+    await microtasksFinished();
+    assertEquals(0, listItem.$.crUrlListItem.getFocusableElement().tabIndex);
+    assertEquals(0, actionButton.tabIndex);
+
+    // Focusing actionButton directly when the row is not hovered or focused
+    // (as native Shift+Tab does) focuses and reveals actionButton.
+    assertFalse(isVisible(actionButton));
+    actionButton.focus();
+    assertEquals(actionButton, getDeepActiveElement());
+    assertTrue(isVisible(actionButton));
+
+    listItem.tabbable = false;
+    await microtasksFinished();
+    assertEquals(-1, listItem.$.crUrlListItem.getFocusableElement().tabIndex);
+    assertEquals(-1, actionButton.tabIndex);
+
+    listItem.focus();
+    assertEquals(
+        listItem.$.crUrlListItem.getFocusableElement(), getDeepActiveElement());
+
+    listItem.focusLast();
+    assertEquals(actionButton, getDeepActiveElement());
+
+    listItem.item = {title: ['Google Search']};
+    await microtasksFinished();
+    listItem.focusLast();
+    assertEquals(
+        listItem.$.crUrlListItem.getFocusableElement(), getDeepActiveElement());
+  });
 
   test('tab navigation on item with action button', async () => {
     listItem.item = {
@@ -518,15 +547,17 @@ suite('OrganizerListSectionItemTest', () => {
     assertEquals(
         listItem.$.crUrlListItem.getFocusableElement(), getDeepActiveElement());
 
-    // Tab on action button fires focus-next-section
+    // Tab on action button fires focus-next-section without preventing default
     const whenFocusNextSection = eventToPromise('focus-next-section', listItem);
-    actionButton.dispatchEvent(new KeyboardEvent('keydown', {
+    const tabEvent = new KeyboardEvent('keydown', {
       key: 'Tab',
       bubbles: true,
       composed: true,
       cancelable: true,
-    }));
+    });
+    actionButton.dispatchEvent(tabEvent);
     await whenFocusNextSection;
+    assertFalse(tabEvent.defaultPrevented);
   });
 
   test('tab navigation on item without action button', async () => {
@@ -566,5 +597,20 @@ suite('OrganizerListSectionItemTest', () => {
       cancelable: true,
     }));
     await whenFocusCurrentSection;
+
+    let currentSectionFired = false;
+    listItem.addEventListener('focus-current-section', () => {
+      currentSectionFired = true;
+    });
+    listItem.tabbable = true;
+    await microtasksFinished();
+    listItem.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    assertFalse(currentSectionFired);
   });
 });
