@@ -51,6 +51,13 @@ interface AccountReconcilorEvent {
   result: string;
 }
 
+interface BoundSessionFeatureStatus {
+  type: string;
+  serviceEnabled: boolean;
+  googleRegistrationsEnabled: boolean;
+  multiloginBindingEnabled: boolean;
+}
+
 interface BoundSessionInfo {
   sessionID: string;
   type?: string;
@@ -103,6 +110,7 @@ interface SigninInfo {
   accountInfo: AccountInfo[];
   refreshTokenEvents: RefreshTokenEvent[];
   accountReconcilorEvents: AccountReconcilorEvent[];
+  boundSessionFeatureStatus?: BoundSessionFeatureStatus[];
   boundSessionInfo?: BoundSessionInfo[];
   signin_info: BasicInfo[];
   token_info: TokenInfo[];
@@ -281,15 +289,34 @@ function getAccountReconcilorEventsHtml(events: AccountReconcilorEvent[]) {
   // clang-format on
 }
 
-function getBoundSessionInfoHtml(infos?: BoundSessionInfo[]) {
-  if (!infos) {
+function getBoundSessionInfoHtml(
+    infos?: BoundSessionInfo[], featureStatuses?: BoundSessionFeatureStatus[]) {
+  if (!infos || !featureStatuses) {
     return html``;
   }
 
   // clang-format off
   return html`
-    <div id="bound-session-info"">
+    <div id="bound-session-info">
       <h2>Bound sessions</h2>
+      <div style="margin-bottom: 1em;">
+        <table class="signin-details">
+          <tr class="header">
+            <td>Type</td>
+            <td>Service enabled</td>
+            <td>New registrations on google.com enabled</td>
+            <td>OAuthMultilogin cookie binding enabled</td>
+          </tr>
+          ${featureStatuses.map(status => html`
+            <tr>
+              <td>${status.type}</td>
+              <td>${status.serviceEnabled}</td>
+              <td>${status.googleRegistrationsEnabled}</td>
+              <td>${status.multiloginBindingEnabled}</td>
+            </tr>
+          `)}
+        </table>
+      </div>
       <div>
         <table class="signin-details">
           <tr class="header">
@@ -499,7 +526,9 @@ function refreshSigninInfo(signinInfo: SigninInfo) {
       getAccountReconcilorEventsHtml(displaySigninInfo.accountReconcilorEvents),
       getRequiredElement('account-reconcilor-events'));
   render(
-      getBoundSessionInfoHtml(displaySigninInfo.boundSessionInfo),
+      getBoundSessionInfoHtml(
+          displaySigninInfo.boundSessionInfo,
+          displaySigninInfo.boundSessionFeatureStatus),
       getRequiredElement('bound-session-info'));
   render(
       getAccountCapabilitiesHtml(displaySigninInfo.accountCapabilities),

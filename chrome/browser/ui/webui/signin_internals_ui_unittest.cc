@@ -29,6 +29,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/device_bound_sessions/cookie_craving_display.h"
@@ -90,24 +91,31 @@ class SignInInternalsHandlerTest : public testing::Test {
  protected:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        BoundSessionCookieRefreshServiceFactory::GetInstance(),
-        base::BindOnce([](content::BrowserContext*) {
-          return MockBoundSessionCookieRefreshService::Build();
-        }));
+    if (base::FeatureList::IsEnabled(
+            switches::kEnableBoundSessionCredentials) &&
+        !base::FeatureList::IsEnabled(
+            switches::kBoundSessionCredentialsKillSwitch)) {
+      profile_builder.AddTestingFactory(
+          BoundSessionCookieRefreshServiceFactory::GetInstance(),
+          base::BindOnce([](content::BrowserContext*) {
+            return MockBoundSessionCookieRefreshService::Build();
+          }));
+    }
     profile_ = profile_builder.Build();
 
-    auto mock_session_manager = std::make_unique<
-        testing::NiceMock<network::MockDeviceBoundSessionManager>>();
-    ON_CALL(*mock_session_manager, AddEventObserver)
-        .WillByDefault(
-            [this](mojo::PendingRemote<
-                   network::mojom::DeviceBoundSessionEventObserver> observer) {
-              observer_remote_.Bind(std::move(observer));
-            });
-    profile_->GetDefaultStoragePartition()
-        ->OverrideDeviceBoundSessionManagerForTesting(
-            std::move(mock_session_manager));
+    if (base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions)) {
+      auto mock_session_manager = std::make_unique<
+          testing::NiceMock<network::MockDeviceBoundSessionManager>>();
+      ON_CALL(*mock_session_manager, AddEventObserver)
+          .WillByDefault([this](mojo::PendingRemote<
+                                network::mojom::DeviceBoundSessionEventObserver>
+                                    observer) {
+            observer_remote_.Bind(std::move(observer));
+          });
+      profile_->GetDefaultStoragePartition()
+          ->OverrideDeviceBoundSessionManagerForTesting(
+              std::move(mock_session_manager));
+    }
 
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
@@ -165,8 +173,33 @@ class SignInInternalsHandlerTest : public testing::Test {
     return nullptr;
   }
 
+  // Extracts the "boundSessionFeatureStatus" list (containing the feature
+  // status rows for Prototype and Standard DBSC) from the response to a
+  // `chrome.send("getSigninInfo", [callback_id])` request sent via
+  // `ResolveJavascriptCallback(callback_id, signin_status)`.
+  // `ResolveJavascriptCallback` invokes
+  // `cr.webUIResponse(callback_id, is_success, data)`:
+  //   - arg1(): callback_id
+  //   - arg2(): is_success (boolean)
+  //   - arg3(): data (the `signin_status` dictionary)
+  const base::ListValue* GetLatestBoundSessionFeatureStatusFromCallback(
+      std::string_view callback_id) {
+    for (const auto& call_data_ptr : base::Reversed(web_ui_.call_data())) {
+      const content::TestWebUI::CallData& call_data = *call_data_ptr;
+      if (call_data.function_name() == "cr.webUIResponse" && call_data.arg1() &&
+          call_data.arg1()->is_string() &&
+          call_data.arg1()->GetString() == callback_id && call_data.arg3() &&
+          call_data.arg3()->is_dict()) {
+        return call_data.arg3()->GetDict().FindList(
+            "boundSessionFeatureStatus");
+      }
+    }
+    return nullptr;
+  }
+
   base::test::ScopedFeatureList feature_list_{
-      switches::kEnableBoundSessionCredentials};
+      /*enabled_features=*/{switches::kEnableBoundSessionCredentials,
+                            net::features::kDeviceBoundSessions}};
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
@@ -365,4 +398,77 @@ TEST_F(SignInInternalsHandlerTest,
   EXPECT_THAT(*bound_sessions,
               ElementsAre(DictionaryHasValues(base::DictValue().Set(
                   "sessionID", "No active bound sessions."))));
+}
+TEST_F(SignInInternalsHandlerTest,
+       DisplaysBoundSessionFeatureStatusWhenEnabled) {
+  base::test::ScopedFeatureList scoped_features(
+      /*enabled_features=*/
+      {switches::kEnableBoundSessionCredentials,
+       switches::kEnableOAuthMultiloginCookiesBinding,
+       net::features::kDeviceBoundSessions,
+       net::features::kDeviceBoundSessionsForRestrictedSites,
+       switches::kEnableOAuthMultiloginStandardCookiesBinding});
+
+  web_ui_.ClearTrackedCalls();
+  base::ListValue args;
+  args.Append("callback_enabled");
+  web_ui_.HandleReceivedMessage("getSigninInfo", args);
+
+  const base::ListValue* feature_status =
+      GetLatestBoundSessionFeatureStatusFromCallback("callback_enabled");
+  ASSERT_NE(feature_status, nullptr);
+  EXPECT_THAT(
+      *feature_status,
+      ElementsAre(
+          DictionaryHasValues(base::DictValue()
+                                  .Set("type", "Prototype")
+                                  .Set("serviceEnabled", true)
+                                  .Set("googleRegistrationsEnabled", true)
+                                  .Set("multiloginBindingEnabled", true)),
+          DictionaryHasValues(base::DictValue()
+                                  .Set("type", "Standard")
+                                  .Set("serviceEnabled", true)
+                                  .Set("googleRegistrationsEnabled", true)
+                                  .Set("multiloginBindingEnabled", true))));
+}
+
+class SignInInternalsHandlerDisabledServicesTest
+    : public SignInInternalsHandlerTest {
+ private:
+  base::test::ScopedFeatureList scoped_features_{
+      /*enabled_features=*/
+      {switches::kEnableBoundSessionCredentials,
+       switches::kBoundSessionCredentialsKillSwitch,
+       switches::kEnableOAuthMultiloginCookiesBinding,
+       net::features::kDeviceBoundSessionsForRestrictedSites,
+       switches::kEnableOAuthMultiloginStandardCookiesBinding},
+      /*disabled_features=*/{net::features::kDeviceBoundSessions}};
+};
+
+TEST_F(SignInInternalsHandlerDisabledServicesTest,
+       DisplaysBoundSessionFeatureStatusWhenServicesDisabled) {
+  // When both services are disabled (`kBoundSessionCredentialsKillSwitch`
+  // enabled for Prototype and `kDeviceBoundSessions` disabled for Standard),
+  // `serviceEnabled` and all dependent flags report `false`.
+  web_ui_.ClearTrackedCalls();
+  base::ListValue args;
+  args.Append("callback_disabled");
+  web_ui_.HandleReceivedMessage("getSigninInfo", args);
+
+  const base::ListValue* feature_status =
+      GetLatestBoundSessionFeatureStatusFromCallback("callback_disabled");
+  ASSERT_NE(feature_status, nullptr);
+  EXPECT_THAT(
+      *feature_status,
+      ElementsAre(
+          DictionaryHasValues(base::DictValue()
+                                  .Set("type", "Prototype")
+                                  .Set("serviceEnabled", false)
+                                  .Set("googleRegistrationsEnabled", false)
+                                  .Set("multiloginBindingEnabled", false)),
+          DictionaryHasValues(base::DictValue()
+                                  .Set("type", "Standard")
+                                  .Set("serviceEnabled", false)
+                                  .Set("googleRegistrationsEnabled", false)
+                                  .Set("multiloginBindingEnabled", false))));
 }

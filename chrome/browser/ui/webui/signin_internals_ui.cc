@@ -32,6 +32,7 @@
 #include <variant>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
@@ -39,6 +40,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/session_display.h"
@@ -68,18 +70,62 @@ std::string GetBoundSessionExpirationString(base::Time expiration_time) {
          base::TimeFormatAsIso8601(expiration_time);
 }
 
+base::ListValue GetBoundSessionFeatureStatus(Profile* profile) {
+  const bool prototype_service_enabled =
+      BoundSessionCookieRefreshServiceFactory::GetForProfile(profile) !=
+      nullptr;
+  const bool prototype_registrations_enabled =
+      prototype_service_enabled &&
+      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs());
+  const bool prototype_multilogin_enabled =
+      prototype_service_enabled &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableOAuthMultiloginCookiesBinding);
+
+  const bool standard_service_enabled =
+      base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions) &&
+      profile->GetDefaultStoragePartition()->GetDeviceBoundSessionManager() !=
+          nullptr;
+  const bool standard_registrations_enabled =
+      standard_service_enabled &&
+      base::FeatureList::IsEnabled(
+          net::features::kDeviceBoundSessionsForRestrictedSites);
+  const bool standard_multilogin_enabled =
+      standard_service_enabled &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableOAuthMultiloginStandardCookiesBinding);
+
+  return base::ListValue()
+      .Append(
+          base::DictValue()
+              .Set("type", "Prototype")
+              .Set("serviceEnabled", prototype_service_enabled)
+              .Set("googleRegistrationsEnabled",
+                   prototype_registrations_enabled)
+              .Set("multiloginBindingEnabled", prototype_multilogin_enabled))
+      .Append(
+          base::DictValue()
+              .Set("type", "Standard")
+              .Set("serviceEnabled", standard_service_enabled)
+              .Set("googleRegistrationsEnabled", standard_registrations_enabled)
+              .Set("multiloginBindingEnabled", standard_multilogin_enabled));
+}
+
 void AppendBoundSessionInfo(
     base::DictValue& signin_status,
-    BoundSessionCookieRefreshService* bound_session_service,
+    Profile* profile,
     const std::map<net::device_bound_sessions::SessionKey::Id,
                    net::device_bound_sessions::SessionDisplay>&
-        standard_bound_sessions,
-    bool is_prototype_feature_enabled) {
+        standard_bound_sessions) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
   static constexpr std::string_view kSessionIdKey = "sessionID";
+  signin_status.Set("boundSessionFeatureStatus",
+                    GetBoundSessionFeatureStatus(profile));
+
   base::ListValue bound_sessions_list;
-  if (bound_session_service) {
+  if (BoundSessionCookieRefreshService* bound_session_service =
+          BoundSessionCookieRefreshServiceFactory::GetForProfile(profile)) {
     for (const auto& info : bound_session_service->GetBoundSessionDebugInfo()) {
       bound_sessions_list.Append(
           base::DictValue()
@@ -120,15 +166,8 @@ void AppendBoundSessionInfo(
   }
 
   if (bound_sessions_list.empty()) {
-    if (!bound_session_service) {
-      bound_sessions_list.Append(base::DictValue().Set(
-          kSessionIdKey, "Bound session service is disabled."));
-    } else {
-      bound_sessions_list.Append(base::DictValue().Set(
-          kSessionIdKey, is_prototype_feature_enabled
-                             ? "No active bound sessions."
-                             : "Bound session feature is disabled."));
-    }
+    bound_sessions_list.Append(
+        base::DictValue().Set(kSessionIdKey, "No active bound sessions."));
   }
   signin_status.Set("boundSessionInfo", std::move(bound_sessions_list));
 }
@@ -266,11 +305,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue& args) {
                              : base::DictValue();
   AddAccountCapabilitiesOverridesInfo(signin_status);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  AppendBoundSessionInfo(
-      signin_status,
-      BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
-      standard_bound_sessions_,
-      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
+  AppendBoundSessionInfo(signin_status, profile, standard_bound_sessions_);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   ResolveJavascriptCallback(base::Value(callback_id), std::move(signin_status));
 
@@ -297,11 +332,7 @@ void SignInInternalsHandler::NotifySigninStateChanged(
   AddAccountCapabilitiesOverridesInfo(signin_status);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (Profile* profile = Profile::FromWebUI(web_ui())) {
-    AppendBoundSessionInfo(
-        signin_status,
-        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
-        standard_bound_sessions_,
-        switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
+    AppendBoundSessionInfo(signin_status, profile, standard_bound_sessions_);
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
