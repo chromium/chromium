@@ -252,6 +252,23 @@ class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
     enabled.push_back({chrome_pdf::features::kPdfPartialLoading, {}});
     return enabled;
   }
+
+  // TODO(crbug.com/40123601): Partial loading doesn't work with
+  // `features::kPdfOpaqueOrigin` yet, so disable it here to keep testing
+  // partial loading. With it, the PDF plugin's range requests to the PDF URL
+  // are rejected by the network service: their initiator is the PDF URL's
+  // origin (derived from their referrer), which doesn't match the opaque origin
+  // that the PDF frame's URLLoaderFactory is locked to, so
+  // `network::VerifyRequestInitiatorLock()` fails and the renderer is killed.
+  // Supporting this will need a narrowly scoped exception for the PDF's
+  // original (precursor) origin. Don't relax such checks for the whole PDF
+  // process, since that would let a compromised PDF process read cross-origin
+  // data.
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    auto disabled = PDFExtensionTest::GetDisabledFeatures();
+    disabled.push_back(::features::kPdfOpaqueOrigin);
+    return disabled;
+  }
 };
 
 // Historically, https://crrev.com/352991 focused the PDF embed element when it

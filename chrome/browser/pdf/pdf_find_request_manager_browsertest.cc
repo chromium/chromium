@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -97,10 +98,13 @@ class PdfFindRequestManagerTestWithPdfPartialLoading
     : public PdfFindRequestManagerTest {
  public:
   PdfFindRequestManagerTestWithPdfPartialLoading() {
+    // TODO(crbug.com/40123601): Partial loading doesn't work with
+    // `features::kPdfOpaqueOrigin` yet, so disable it here to keep testing
+    // partial loading. See PDFExtensionTestWithPartialLoading for details.
     feature_list_.InitWithFeatures(
         {chrome_pdf::features::kPdfIncrementalLoading,
          chrome_pdf::features::kPdfPartialLoading},
-        {});
+        {::features::kPdfOpaqueOrigin});
   }
 
  private:
