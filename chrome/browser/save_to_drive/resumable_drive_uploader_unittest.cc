@@ -16,7 +16,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/drive_uploader.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -48,7 +50,9 @@ using testing::Return;
 constexpr char kInitiationUrl[] =
     "https://www.googleapis.com/upload/drive/v3beta/"
     "files";
-constexpr char kTestUploadUrl[] = "https://example.com/upload";
+constexpr char kTestUploadUrl[] =
+    "https://www.googleapis.com/upload/drive/v3beta/"
+    "files?uploadType=resumable&upload_id=test_upload_id";
 constexpr std::string_view kTestContent = "test_content";
 constexpr std::string_view kTestFileId = "test_file_id";
 constexpr std::string_view kTestTitle = "test_title";
@@ -74,6 +78,20 @@ AccountInfo CreateAccountInfo() {
   return AccountInfo::Builder(GaiaId("12345"), "test@example.com")
       .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("12345")))
       .Build();
+}
+
+bool RespondWithUploadUrlOnInitiation(
+    std::string_view upload_url,
+    content::URLLoaderInterceptor::RequestParams* params) {
+  if (params->url_request.url == GURL(kInitiationUrl)) {
+    content::URLLoaderInterceptor::WriteResponse(
+        base::StrCat({"HTTP/1.1 200 OK\nX-Goog-Upload-URL: ", upload_url,
+                      "\nX-Goog-Upload-Status: active\n\n"}),
+        "", params->client.get());
+    return true;
+  }
+  ADD_FAILURE() << "Unexpected request to " << params->url_request.url;
+  return false;
 }
 
 class MockContentReader : public ContentReader {
@@ -361,6 +379,44 @@ TEST_F(ResumableDriveUploaderTest, UploadFailsInitiationNoUploadUrlHeader) {
                               SaveToDriveErrorType::kUnknownError))));
   uploader_->UploadFile();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(ResumableDriveUploaderTest, UploadFailsInitiationCrossOriginUploadUrl) {
+  EXPECT_CALL(mock_content_reader_, GetSize())
+      .WillRepeatedly(Return(kTestContent.size()));
+  EXPECT_CALL(mock_content_reader_, Read).Times(0);
+  const content::URLLoaderInterceptor interceptor(base::BindRepeating(
+      &RespondWithUploadUrlOnInitiation, "https://example.com/upload"));
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(progress_callback_,
+              Run(AllOf(Field(&SaveToDriveProgress::status,
+                              SaveToDriveStatus::kUploadFailed),
+                        Field(&SaveToDriveProgress::error_type,
+                              SaveToDriveErrorType::kUnknownError))))
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  uploader_->UploadFile();
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(ResumableDriveUploaderTest, UploadFailsInitiationNonHttpsUploadUrl) {
+  EXPECT_CALL(mock_content_reader_, GetSize())
+      .WillRepeatedly(Return(kTestContent.size()));
+  EXPECT_CALL(mock_content_reader_, Read).Times(0);
+  const content::URLLoaderInterceptor interceptor(base::BindRepeating(
+      &RespondWithUploadUrlOnInitiation,
+      "http://www.googleapis.com/upload/drive/v3beta/"
+      "files?uploadType=resumable&upload_id=test_upload_id"));
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(progress_callback_,
+              Run(AllOf(Field(&SaveToDriveProgress::status,
+                              SaveToDriveStatus::kUploadFailed),
+                        Field(&SaveToDriveProgress::error_type,
+                              SaveToDriveErrorType::kUnknownError))))
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  uploader_->UploadFile();
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(ResumableDriveUploaderTest, UploadFailsContentReadError) {

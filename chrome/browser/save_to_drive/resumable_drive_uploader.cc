@@ -23,6 +23,8 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace save_to_drive {
 
@@ -136,7 +138,8 @@ void ResumableDriveUploader::HandleInitiationResponse(
   upload_url_ = GURL(
       response->headers->EnumerateHeader(nullptr, kXUploadUrlResponseHeader)
           .value_or(""));
-  if (!upload_url_.is_valid()) {
+  if (!upload_url_.is_valid() || !upload_url_.SchemeIs(url::kHttpsScheme) ||
+      !url::IsSameOriginWith(upload_url_, GURL(kDriveUploadUrl))) {
     NotifyError(SaveToDriveErrorType::kUnknownError);
     return;
   }
