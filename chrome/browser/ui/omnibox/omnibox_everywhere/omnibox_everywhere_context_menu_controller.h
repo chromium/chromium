@@ -148,7 +148,8 @@ class OmniboxEverywhereContextMenuController
   void RunMenu(views::Widget* host_widget,
                const gfx::Rect& anchor_screen_rect,
                views::MenuAnchorPosition anchor_position,
-               ui::mojom::MenuSourceType source_type);
+               ui::mojom::MenuSourceType source_type,
+               int32_t run_types);
   void OnMenuClosed();
   void RunOverflowMenuClosedCallback();
   void ReleaseRunner();

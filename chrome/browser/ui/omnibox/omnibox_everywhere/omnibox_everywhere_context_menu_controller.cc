@@ -154,21 +154,11 @@ void OmniboxEverywhereContextMenuController::ShowOverflowMenu(
 #endif  // BUILDFLAG(IS_WIN)
 
   overflow_menu_closed_callback_ = std::move(on_closed);
-  // In Views the menu is anchored below the button, aligned to its right edge
-  // (mirrored automatically in RTL). The native macOS menu ignores the anchor
-  // position: when opened by a mouse click it opens at the click location,
-  // like a right-click menu, and otherwise (e.g. keyboard activation) at the
-  // center of the anchor rect. Pass the button's bottom leading corner so the
-  // keyboard case opens below the button.
-  gfx::Rect anchor_rect = anchor_screen_rect;
-#if BUILDFLAG(IS_MAC)
-  anchor_rect =
-      gfx::Rect(base::i18n::IsRTL() ? anchor_screen_rect.bottom_right()
-                                    : anchor_screen_rect.bottom_left(),
-                gfx::Size());
-#endif  // BUILDFLAG(IS_MAC)
-  RunMenu(host_widget, anchor_rect, views::MenuAnchorPosition::kTopRight,
-          source_type);
+  // Leave out CONTEXT_MENU so macOS shows a Views menu, like the Lens menu. A
+  // native menu would open at the click location and block tasks, so the popup
+  // couldn't resize to hide the most visited tiles.
+  RunMenu(host_widget, anchor_screen_rect, views::MenuAnchorPosition::kTopLeft,
+          source_type, views::MenuRunner::HAS_MNEMONICS);
 }
 
 void OmniboxEverywhereContextMenuController::ShowContextMenu(
@@ -213,14 +203,16 @@ void OmniboxEverywhereContextMenuController::ShowContextMenu(
   views::View::ConvertPointToScreen(host_widget->GetContentsView(),
                                     &screen_point);
   RunMenu(host_widget, gfx::Rect(screen_point, gfx::Size()),
-          views::MenuAnchorPosition::kTopLeft, params.source_type);
+          views::MenuAnchorPosition::kTopLeft, params.source_type,
+          views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
 }
 
 void OmniboxEverywhereContextMenuController::RunMenu(
     views::Widget* host_widget,
     const gfx::Rect& anchor_screen_rect,
     views::MenuAnchorPosition anchor_position,
-    ui::mojom::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type,
+    int32_t run_types) {
   is_open_ = true;
   auto on_closed_callback =
       base::BindRepeating(&OmniboxEverywhereContextMenuController::OnMenuClosed,
@@ -230,9 +222,7 @@ void OmniboxEverywhereContextMenuController::RunMenu(
         menu_runner_factory_.Run(context_menu_model_.get(), on_closed_callback);
   } else {
     context_menu_runner_ = std::make_unique<views::MenuRunner>(
-        context_menu_model_.get(),
-        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-        on_closed_callback);
+        context_menu_model_.get(), run_types, on_closed_callback);
   }
 
   context_menu_runner_->RunMenuAt(host_widget, nullptr, anchor_screen_rect,
