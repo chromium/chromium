@@ -15,6 +15,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -103,10 +104,13 @@ struct SessionSnapshot {
 // LINT.ThenChange(//chrome/browser/browser_actuator/internals/browser_actuator_internals_mojom_traits.cc)
 
 // Records canonical protobuf messages (ActuatorDownstreamMessage and
-// ActuatorUpstreamMessage) for a single TransportSession using an unbounded
-// std::vector. Observers can subscribe to receive live messages as they occur.
+// ActuatorUpstreamMessage) for a single TransportSession using a bounded
+// buffer (`kMaxEntriesPerSession`). Observers can subscribe to receive live
+// messages as they occur.
 class SessionStreamRecorder {
  public:
+  static constexpr size_t kMaxEntriesPerSession = 256;
+
   // Stored entry pairing timestamp with canonical protobuf message.
   struct Entry {
     base::TimeTicks timestamp;
@@ -161,7 +165,7 @@ class SessionStreamRecorder {
 
   std::string_view session_id() const;
   const SessionMetadata& metadata() const;
-  const std::vector<Entry>& entries() const;
+  const base::circular_deque<Entry>& entries() const;
 
   // Marks the session as closed.
   void MarkSessionClosed();
@@ -171,7 +175,7 @@ class SessionStreamRecorder {
 
   const std::string session_id_;
   SessionMetadata metadata_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<Entry> entries_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::circular_deque<Entry> entries_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

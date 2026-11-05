@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/containers/circular_deque.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -102,13 +103,31 @@ SessionEventSnapshot BuildEventSnapshot(
   event.downstream_status = entry.downstream_status;
 
   std::visit(
-      [&event](const auto& msg) {
+      [&event, max_message_bytes](const auto& msg) {
+        bool has_oversized_payload = false;
         for (const auto& payload : msg.typed_payloads()) {
           event.payload_types.emplace_back(
               PayloadTypeName(payload.payload_type()));
+          if (payload.proto_payload().value().size() > max_message_bytes) {
+            has_oversized_payload = true;
+          }
         }
-        event.message =
-            base::WriteJson(browser_actuator::ToValue(msg)).value_or("");
+        if (has_oversized_payload) {
+          auto truncated_msg = msg;
+          for (auto& payload : *truncated_msg.mutable_typed_payloads()) {
+            if (payload.proto_payload().value().size() > max_message_bytes) {
+              payload.mutable_proto_payload()->mutable_value()->resize(
+                  max_message_bytes);
+              event.message_truncated = true;
+            }
+          }
+          event.message =
+              base::WriteJson(browser_actuator::ToValue(truncated_msg))
+                  .value_or("");
+        } else {
+          event.message =
+              base::WriteJson(browser_actuator::ToValue(msg)).value_or("");
+        }
       },
       entry.message);
 
@@ -123,7 +142,7 @@ SessionEventSnapshot BuildEventSnapshot(
 
 SessionSnapshot BuildSessionSnapshot(
     const SessionMetadata& metadata,
-    const std::vector<SessionStreamRecorder::Entry>& entries,
+    const base::circular_deque<SessionStreamRecorder::Entry>& entries,
     size_t max_events,
     size_t max_message_bytes) {
   SessionSnapshot snapshot;
@@ -134,7 +153,8 @@ SessionSnapshot BuildSessionSnapshot(
   }
   snapshot.total_downstream_messages = metadata.total_downstream_messages;
   snapshot.total_upstream_messages = metadata.total_upstream_messages;
-  snapshot.total_events = entries.size();
+  snapshot.total_events =
+      metadata.total_downstream_messages + metadata.total_upstream_messages;
 
   size_t kept_count = std::min(max_events, entries.size());
   size_t start_index = entries.size() - kept_count;
@@ -236,6 +256,9 @@ void SessionStreamRecorder::RecordDownstreamMessage(
       }
     }
   }
+  if (entries_.size() >= kMaxEntriesPerSession) {
+    entries_.pop_front();
+  }
   base::TimeTicks now = base::TimeTicks::Now();
   entries_.push_back(Entry{
       .timestamp = now,
@@ -275,6 +298,9 @@ void SessionStreamRecorder::RecordUpstreamMessage(
     int http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_.total_upstream_messages++;
+  if (entries_.size() >= kMaxEntriesPerSession) {
+    entries_.pop_front();
+  }
   base::TimeTicks now = base::TimeTicks::Now();
   entries_.push_back(Entry{
       .timestamp = now,
@@ -308,7 +334,7 @@ const SessionMetadata& SessionStreamRecorder::metadata() const {
   return metadata_;
 }
 
-const std::vector<SessionStreamRecorder::Entry>&
+const base::circular_deque<SessionStreamRecorder::Entry>&
 SessionStreamRecorder::entries() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return entries_;

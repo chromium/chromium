@@ -1055,5 +1055,67 @@ TEST(SessionStreamRecorderTest,
   EXPECT_FALSE(recorded.typed_payloads(2).has_proto_payload());
 }
 
+TEST(SessionStreamRecorderTest,
+     CapsEntriesPerSessionWhilePreservingTotalMessageCounts) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_bounded");
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
+
+  for (size_t i = 0; i < SessionStreamRecorder::kMaxEntriesPerSession + 10;
+       ++i) {
+    ActuatorDownstreamMessage msg;
+    msg.set_session_id("session_bounded");
+    msg.set_sequence_number(static_cast<int64_t>(i + 1));
+    recorder->RecordDownstreamMessage(std::move(msg),
+                                      DownstreamDeliveryStatus::kSuccess);
+  }
+
+  EXPECT_EQ(recorder->metadata().total_downstream_messages,
+            SessionStreamRecorder::kMaxEntriesPerSession + 10);
+  ASSERT_EQ(recorder->entries().size(),
+            SessionStreamRecorder::kMaxEntriesPerSession);
+  EXPECT_EQ(
+      std::get<ActuatorDownstreamMessage>(recorder->entries().front().message)
+          .sequence_number(),
+      11);
+  EXPECT_EQ(
+      std::get<ActuatorDownstreamMessage>(recorder->entries().back().message)
+          .sequence_number(),
+      static_cast<int64_t>(SessionStreamRecorder::kMaxEntriesPerSession + 10));
+
+  for (size_t i = 0; i < 5; ++i) {
+    ActuatorUpstreamMessage upstream;
+    upstream.set_session_id("session_bounded");
+    upstream.set_client_sequence_number(static_cast<int64_t>(i + 1));
+    recorder->RecordUpstreamMessage(std::move(upstream), 200);
+  }
+
+  EXPECT_EQ(recorder->metadata().total_upstream_messages, 5u);
+  ASSERT_EQ(recorder->entries().size(),
+            SessionStreamRecorder::kMaxEntriesPerSession);
+  EXPECT_EQ(
+      std::get<ActuatorDownstreamMessage>(recorder->entries().front().message)
+          .sequence_number(),
+      16);
+  EXPECT_EQ(
+      std::get<ActuatorUpstreamMessage>(recorder->entries().back().message)
+          .client_sequence_number(),
+      5);
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/500, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_EQ(sessions[0].events.size(),
+            SessionStreamRecorder::kMaxEntriesPerSession);
+  EXPECT_EQ(sessions[0].total_downstream_messages,
+            SessionStreamRecorder::kMaxEntriesPerSession + 10);
+  EXPECT_EQ(sessions[0].total_upstream_messages, 5u);
+  EXPECT_EQ(sessions[0].total_events, sessions[0].total_downstream_messages +
+                                          sessions[0].total_upstream_messages);
+}
+
 }  // namespace
 }  // namespace browser_actuator::transport
