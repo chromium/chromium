@@ -19,8 +19,8 @@ public final class XrFloatSize3dImpl implements XrFloatSize3d {
     }
 
     public static FloatSize3d toFloatSize3d(XrFloatSize3d ext) {
-        if (ext instanceof XrFloatSize3dImpl) {
-            return ((XrFloatSize3dImpl) ext).getSize();
+        if (ext instanceof XrFloatSize3dImpl impl) {
+            return impl.getSize();
         }
         return new FloatSize3d(ext.getWidth(), ext.getHeight(), ext.getDepth());
     }
@@ -61,11 +61,10 @@ public final class XrFloatSize3dImpl implements XrFloatSize3d {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof XrFloatSize3dImpl) {
-            return Objects.equals(mSize, ((XrFloatSize3dImpl) o).mSize);
+        if (o instanceof XrFloatSize3dImpl other) {
+            return Objects.equals(mSize, other.mSize);
         }
-        if (o instanceof XrFloatSize3d) {
-            XrFloatSize3d other = (XrFloatSize3d) o;
+        if (o instanceof XrFloatSize3d other) {
             return Float.compare(getWidth(), other.getWidth()) == 0
                     && Float.compare(getHeight(), other.getHeight()) == 0
                     && Float.compare(getDepth(), other.getDepth()) == 0;

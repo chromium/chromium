@@ -203,8 +203,8 @@ public class ImmersiveVideoPlayerCoordinator {
             playerView.setAccessibilityDelegate(mAccessibilityDelegate);
         }
         mHolder =
-                (playerView instanceof XrSurfaceEntityView)
-                        ? ((XrSurfaceEntityView) playerView).getHolder()
+                (playerView instanceof XrSurfaceEntityView entityView)
+                        ? entityView.getHolder()
                         : null;
 
         if (mHolder != null) {
@@ -322,8 +322,8 @@ public class ImmersiveVideoPlayerCoordinator {
 
     /** Returns the curve radius. */
     public float getCurveRadius() {
-        if (mHolder != null && mHolder instanceof XrCurvedSurfaceEntityHolder) {
-            return ((XrCurvedSurfaceEntityHolder) mHolder).getEntityRadius();
+        if (mHolder instanceof XrCurvedSurfaceEntityHolder curvedHolder) {
+            return curvedHolder.getEntityRadius();
         }
         int defaultRadiusDp = mModel.get(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS_DP);
         if (defaultRadiusDp > 0) {

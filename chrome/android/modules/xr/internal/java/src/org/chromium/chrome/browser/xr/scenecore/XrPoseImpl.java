@@ -21,8 +21,8 @@ public final class XrPoseImpl implements XrPose {
     }
 
     public static Pose toPose(XrPose pose) {
-        if (pose instanceof XrPoseImpl) {
-            return ((XrPoseImpl) pose).getPose();
+        if (pose instanceof XrPoseImpl impl) {
+            return impl.getPose();
         }
         return new Pose(
                 XrVector3Impl.toVector3(pose.getTranslation()),
@@ -68,11 +68,10 @@ public final class XrPoseImpl implements XrPose {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof XrPoseImpl) {
-            return Objects.equals(mPose, ((XrPoseImpl) o).mPose);
+        if (o instanceof XrPoseImpl other) {
+            return Objects.equals(mPose, other.mPose);
         }
-        if (o instanceof XrPose) {
-            XrPose other = (XrPose) o;
+        if (o instanceof XrPose other) {
             return Objects.equals(getTranslation(), other.getTranslation())
                     && Objects.equals(getRotation(), other.getRotation());
         }

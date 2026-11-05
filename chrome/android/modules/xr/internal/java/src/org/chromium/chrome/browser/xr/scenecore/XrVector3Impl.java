@@ -19,8 +19,8 @@ public final class XrVector3Impl implements XrVector3 {
     }
 
     public static Vector3 toVector3(XrVector3 v) {
-        if (v instanceof XrVector3Impl) {
-            return ((XrVector3Impl) v).getVector();
+        if (v instanceof XrVector3Impl impl) {
+            return impl.getVector();
         }
         return new Vector3(v.getX(), v.getY(), v.getZ());
     }
@@ -91,11 +91,10 @@ public final class XrVector3Impl implements XrVector3 {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof XrVector3Impl) {
-            return Objects.equals(mVector, ((XrVector3Impl) o).mVector);
+        if (o instanceof XrVector3Impl other) {
+            return Objects.equals(mVector, other.mVector);
         }
-        if (o instanceof XrVector3) {
-            XrVector3 other = (XrVector3) o;
+        if (o instanceof XrVector3 other) {
             return Float.compare(getX(), other.getX()) == 0
                     && Float.compare(getY(), other.getY()) == 0
                     && Float.compare(getZ(), other.getZ()) == 0;

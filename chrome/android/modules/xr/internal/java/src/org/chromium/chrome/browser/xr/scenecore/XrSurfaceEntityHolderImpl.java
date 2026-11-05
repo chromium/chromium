@@ -282,8 +282,8 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     @Override
     public SizeF getEntitySize() {
         assertDisposed();
-        if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
-            return ((XrPlanarMeshHolder) mCustomMeshHolder).getSize();
+        if (mCustomMeshHolder instanceof XrPlanarMeshHolder planarHolder) {
+            return planarHolder.getSize();
         }
         FloatSize3d dimensions = mEntity.getDimensions();
         return new SizeF(dimensions.getWidth(), dimensions.getHeight());
@@ -293,11 +293,11 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public void setEntitySize(float width, float height) {
         assertDisposed();
         if (width <= 0f || height <= 0f) return;
-        if (mEntity.getShape() instanceof Shape.Quad) {
-            float cornerRadius = ((Shape.Quad) mEntity.getShape()).getCornerRadius();
+        if (mEntity.getShape() instanceof Shape.Quad quad) {
+            float cornerRadius = quad.getCornerRadius();
             mEntity.setShape(new Shape.Quad(new FloatSize2d(width, height), cornerRadius));
-        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
-            ((XrPlanarMeshHolder) mCustomMeshHolder).setDimensions(width, height);
+        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder planarHolder) {
+            planarHolder.setDimensions(width, height);
         }
         mMovableComponent.setSize(width, height, 0f);
 
@@ -321,10 +321,10 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     @Override
     public float getCornerRadius() {
         assertDisposed();
-        if (mEntity.getShape() instanceof Shape.Quad) {
-            return ((Shape.Quad) mEntity.getShape()).getCornerRadius();
-        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
-            return ((XrPlanarMeshHolder) mCustomMeshHolder).getCornerRadius();
+        if (mEntity.getShape() instanceof Shape.Quad quad) {
+            return quad.getCornerRadius();
+        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder planarHolder) {
+            return planarHolder.getCornerRadius();
         }
         return 0f;
     }
@@ -333,11 +333,11 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public void setCornerRadius(float radius) {
         assertDisposed();
         if (radius < 0f) return;
-        if (mEntity.getShape() instanceof Shape.Quad) {
-            FloatSize2d extents = ((Shape.Quad) mEntity.getShape()).getExtents();
+        if (mEntity.getShape() instanceof Shape.Quad quad) {
+            FloatSize2d extents = quad.getExtents();
             mEntity.setShape(new Shape.Quad(extents, radius));
-        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
-            ((XrPlanarMeshHolder) mCustomMeshHolder).setCornerRadius(radius);
+        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder planarHolder) {
+            planarHolder.setCornerRadius(radius);
         }
     }
 
@@ -358,12 +358,12 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public float getEntityRadius() {
         assertDisposed();
         Shape shape = mEntity.getShape();
-        if (shape instanceof Shape.Sphere) {
-            return ((Shape.Sphere) shape).getRadius();
-        } else if (shape instanceof Shape.Hemisphere) {
-            return ((Shape.Hemisphere) shape).getRadius();
-        } else if (mCustomMeshHolder instanceof XrCurvedMeshHolder) {
-            return ((XrCurvedMeshHolder) mCustomMeshHolder).getRadius();
+        if (shape instanceof Shape.Sphere sphere) {
+            return sphere.getRadius();
+        } else if (shape instanceof Shape.Hemisphere hemisphere) {
+            return hemisphere.getRadius();
+        } else if (mCustomMeshHolder instanceof XrCurvedMeshHolder curvedHolder) {
+            return curvedHolder.getRadius();
         }
         return 0f;
     }
@@ -377,8 +377,8 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
             mEntity.setShape(new Shape.Sphere(radius));
         } else if (shape instanceof Shape.Hemisphere) {
             mEntity.setShape(new Shape.Hemisphere(radius));
-        } else if (mCustomMeshHolder instanceof XrCurvedMeshHolder) {
-            ((XrCurvedMeshHolder) mCustomMeshHolder).setRadius(radius);
+        } else if (mCustomMeshHolder instanceof XrCurvedMeshHolder curvedHolder) {
+            curvedHolder.setRadius(radius);
             return;
         }
     }

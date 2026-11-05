@@ -26,8 +26,8 @@ public final class XrQuaternionImpl implements XrQuaternion {
     }
 
     public static Quaternion toQuaternion(XrQuaternion q) {
-        if (q instanceof XrQuaternionImpl) {
-            return ((XrQuaternionImpl) q).getQuaternion();
+        if (q instanceof XrQuaternionImpl impl) {
+            return impl.getQuaternion();
         }
         return new Quaternion(q.getX(), q.getY(), q.getZ(), q.getW());
     }
@@ -86,11 +86,10 @@ public final class XrQuaternionImpl implements XrQuaternion {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof XrQuaternionImpl) {
-            return Objects.equals(mQuaternion, ((XrQuaternionImpl) o).mQuaternion);
+        if (o instanceof XrQuaternionImpl other) {
+            return Objects.equals(mQuaternion, other.mQuaternion);
         }
-        if (o instanceof XrQuaternion) {
-            XrQuaternion other = (XrQuaternion) o;
+        if (o instanceof XrQuaternion other) {
             return Float.compare(getX(), other.getX()) == 0
                     && Float.compare(getY(), other.getY()) == 0
                     && Float.compare(getZ(), other.getZ()) == 0

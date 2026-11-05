@@ -72,12 +72,11 @@ public class ImmersiveVideoPlayerViewBinder {
                     view.setRectangleEdgeFeathering(featherMeters, featherMeters);
                 }
 
-                if (view instanceof XrCurvedSurfaceEntityHolder) {
+                if (view instanceof XrCurvedSurfaceEntityHolder curvedHolder) {
                     int curveRadiusDp =
                             model.get(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS_DP);
                     if (curveRadiusDp > 0) {
-                        ((XrCurvedSurfaceEntityHolder) view)
-                                .setEntityRadius(pixelDensity.convertDpToMeters(curveRadiusDp));
+                        curvedHolder.setEntityRadius(pixelDensity.convertDpToMeters(curveRadiusDp));
                     }
                 }
             }
