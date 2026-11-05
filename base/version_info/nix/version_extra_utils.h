@@ -34,6 +34,11 @@ BASE_EXPORT std::string GetAppName(base::Environment& env);
 // Returns the session name prefix (e.g. "chrome_beta" or "chromium").
 BASE_EXPORT std::string GetSessionNamePrefix(base::Environment& env);
 
+// Returns the channel-specific file name of the desktop file used to launch
+// the browser (e.g. "google-chrome-beta.desktop" or
+// "chromium-browser.desktop").
+BASE_EXPORT std::string GetDesktopName(base::Environment& env);
+
 }  // namespace version_info::nix
 
 #endif  // BASE_VERSION_INFO_NIX_VERSION_EXTRA_UTILS_H_

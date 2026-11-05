@@ -164,4 +164,41 @@ TEST(VersionExtraUtilsTest, GetSessionNamePrefix) {
   EXPECT_EQ(kExpectedPrefix, GetSessionNamePrefix(env));
 }
 
+TEST(VersionExtraUtilsTest, GetDesktopName) {
+  MockEnvironment env;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_CALL(env, GetVar(StrEq("SNAP_NAME")))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(env, GetVar(StrEq(kChromeVersionExtra)))
+      .WillOnce(Return("stable"));
+  EXPECT_EQ("google-chrome.desktop", GetDesktopName(env));
+
+  EXPECT_CALL(env, GetVar(StrEq(kChromeVersionExtra))).WillOnce(Return("beta"));
+  EXPECT_EQ("google-chrome-beta.desktop", GetDesktopName(env));
+
+  EXPECT_CALL(env, GetVar(StrEq(kChromeVersionExtra)))
+      .WillOnce(Return("unstable"));
+  EXPECT_EQ("google-chrome-unstable.desktop", GetDesktopName(env));
+
+  EXPECT_CALL(env, GetVar(StrEq(kChromeVersionExtra)))
+      .WillOnce(Return("canary"));
+  EXPECT_EQ("google-chrome-canary.desktop", GetDesktopName(env));
+
+  EXPECT_CALL(env, GetVar(StrEq("SNAP_NAME")))
+      .WillOnce(Return("google-chrome"));
+  EXPECT_EQ("google-chrome.desktop", GetDesktopName(env));
+#else
+  EXPECT_CALL(env, GetVar(StrEq("CHROME_DESKTOP")))
+      .WillOnce(Return(std::nullopt));
+  EXPECT_EQ("chromium-browser.desktop", GetDesktopName(env));
+
+  EXPECT_CALL(env, GetVar(StrEq("CHROME_DESKTOP"))).WillOnce(Return(""));
+  EXPECT_EQ("chromium-browser.desktop", GetDesktopName(env));
+
+  EXPECT_CALL(env, GetVar(StrEq("CHROME_DESKTOP")))
+      .WillOnce(Return("chromium.desktop"));
+  EXPECT_EQ("chromium.desktop", GetDesktopName(env));
+#endif
+}
+
 }  // namespace version_info::nix
