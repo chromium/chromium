@@ -5,6 +5,9 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_FAKE_FAKE_CHROME_ML_API_H_
 #define SERVICES_ON_DEVICE_MODEL_FAKE_FAKE_CHROME_ML_API_H_
 
+#include <cstdint>
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/component_export.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
@@ -26,7 +29,26 @@ inline constexpr char kFakeAsrTranscript[] = "test";
 inline constexpr int64_t kFakeAsrStartTimeMicros = 1000000;
 inline constexpr int64_t kFakeAsrEndTimeMicros = 2500000;
 
+// Snapshot of the scalar fields passed to the most recent `ASRCreateStream`
+// call, for test verification.
+struct CapturedAsrStreamOptions {
+  uint32_t sample_rate_hz = 0;
+  int32_t decoder_prefill_backoff = 0;
+  bool enable_token_stability = false;
+  int32_t interim_token_holdback = 0;
+  int32_t interim_release_silence_ms = 0;
+  int32_t interim_stability_steps = 0;
+  bool enable_draft_verification = false;
+  int32_t final_decoder_prefill_backoff = 0;
+};
+
 const ChromeMLAPI* GetFakeMlApi();
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
+std::optional<CapturedAsrStreamOptions> GetLastAsrStreamOptionsForTesting();
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
+void ResetLastAsrStreamOptionsForTesting();
 
 // TODO(crbug.com/540118700): Remove once the legacy engine has been removed and
 // all of these unittests use context_usage by default.

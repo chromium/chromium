@@ -4,11 +4,14 @@
 
 #include <array>
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-test-utils.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -16,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/audio_parameters.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-test-utils.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -354,6 +358,139 @@ TEST(OnDeviceSpeechRecognitionEngine, TimestampsPropagation) {
   results.push_back(std::move(r));
 
   engine.OnResponse(std::move(results));
+}
+
+class TestOptimizationGuideLoggerObserver
+    : public OptimizationGuideLogger::Observer {
+ public:
+  void OnLogMessageAdded(base::Time event_time,
+                         optimization_guide_common::mojom::LogSource log_source,
+                         const std::string& source_file,
+                         int source_line,
+                         const std::string& message) override {
+    if (!first_message_future_.IsReady()) {
+      first_message_future_.SetValue(message);
+    }
+  }
+
+  std::string TakeFirstMessage() { return first_message_future_.Take(); }
+
+ private:
+  base::test::TestFuture<std::string> first_message_future_;
+};
+
+class OnDeviceSpeechRecognitionEngineTest : public testing::Test {
+ protected:
+  static std::string RunSessionAndCaptureDebugLog() {
+    BrowserTaskEnvironment task_environment;
+
+    OptimizationGuideLogger logger;
+    TestOptimizationGuideLoggerObserver observer;
+    logger.AddObserver(&observer);
+
+    SpeechRecognitionSessionConfig session_config;
+    session_config.language = "en-US";
+    OnDeviceSpeechRecognitionEngine engine(session_config);
+
+    FakeSession fake_session;
+    FakeModelSolution fake_solution(&fake_session);
+
+    mojo::Remote<optimization_guide::mojom::ModelSolution> solution_remote;
+    fake_solution.receiver_.Bind(solution_remote.BindNewPipeAndPassReceiver());
+
+    auto config = optimization_guide::mojom::ModelSolutionConfig::New();
+    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
+        feature_config;
+    feature_config.set_feature(
+        optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+    config->feature_config = mojo_base::ProtoWrapper(feature_config);
+    config->model_versions = mojo_base::ProtoWrapper(
+        optimization_guide::proto::OnDeviceModelVersions());
+
+    std::unique_ptr<optimization_guide::ModelClient> ui_model_client;
+
+    base::test::TestFuture<void> client_ready;
+    engine.core_.PostTaskWithThisObject(base::BindLambdaForTesting(
+        [&](OnDeviceSpeechRecognitionEngine::Core* core) {
+          ui_model_client = std::make_unique<optimization_guide::ModelClient>(
+              solution_remote.Unbind(), std::move(config),
+              on_device_model::Capabilities());
+          core->model_client_ = ui_model_client->GetWeakPtr();
+          core->logger_ = logger.GetWeakPtr();
+          client_ready.SetValue();
+        }));
+    EXPECT_TRUE(client_ready.Wait());
+
+    media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                  media::ChannelLayoutConfig::Mono(), 16000,
+                                  160);
+    engine.SetAudioParameters(params);
+    std::string message = observer.TakeFirstMessage();
+
+    base::test::TestFuture<void> cleanup_done;
+    content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
+        base::BindLambdaForTesting([&]() { ui_model_client.reset(); }),
+        cleanup_done.GetCallback());
+    EXPECT_TRUE(cleanup_done.Wait());
+
+    logger.RemoveObserver(&observer);
+    return message;
+  }
+};
+
+TEST_F(OnDeviceSpeechRecognitionEngineTest, AsrFlagSnapshotDefaultDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          on_device_model::features::kOnDeviceModelAsrDecoderPrefill,
+          on_device_model::features::kOnDeviceModelAsrTokenStability,
+          on_device_model::features::kOnDeviceModelAsrSpeculativeDecoding});
+
+  EXPECT_EQ(
+      RunSessionAndCaptureDebugLog(),
+      "Starting WebSpeech ASR session: (sample_rate=16000Hz, language=en-US, "
+      "asr_decoder_prefill=disabled, asr_token_stability=disabled, "
+      "asr_speculative_decoding=disabled)");
+}
+
+TEST_F(OnDeviceSpeechRecognitionEngineTest,
+       AsrFlagSnapshotSpeculativeDecodingDefaultParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{on_device_model::features::
+                                kOnDeviceModelAsrSpeculativeDecoding},
+      /*disabled_features=*/{
+          on_device_model::features::kOnDeviceModelAsrDecoderPrefill,
+          on_device_model::features::kOnDeviceModelAsrTokenStability});
+
+  EXPECT_EQ(
+      RunSessionAndCaptureDebugLog(),
+      "Starting WebSpeech ASR session: (sample_rate=16000Hz, language=en-US, "
+      "asr_decoder_prefill=disabled, asr_token_stability=disabled, "
+      "asr_speculative_decoding=enabled, enable_draft_verification=true, "
+      "decoder_prefill_backoff=-1, final_decoder_prefill_backoff=-2)");
+}
+
+TEST_F(OnDeviceSpeechRecognitionEngineTest,
+       AsrFlagSnapshotSpeculativeDecodingExplicitParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{on_device_model::features::kOnDeviceModelAsrSpeculativeDecoding,
+        {{"enable_draft_verification", "false"},
+         {"decoder_prefill_backoff", "4"},
+         {"final_decoder_prefill_backoff", "-1"}}}},
+      /*disabled_features=*/{
+          on_device_model::features::kOnDeviceModelAsrDecoderPrefill,
+          on_device_model::features::kOnDeviceModelAsrTokenStability});
+
+  EXPECT_EQ(
+      RunSessionAndCaptureDebugLog(),
+      "Starting WebSpeech ASR session: (sample_rate=16000Hz, language=en-US, "
+      "asr_decoder_prefill=disabled, asr_token_stability=disabled, "
+      "asr_speculative_decoding=enabled, enable_draft_verification=false, "
+      "decoder_prefill_backoff=4, final_decoder_prefill_backoff=-1)");
 }
 
 }  // namespace content

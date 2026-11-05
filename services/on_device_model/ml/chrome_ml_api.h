@@ -473,6 +473,8 @@ struct ChromeMLASRStreamOptions {
   int32_t interim_token_holdback = -1;
   int32_t interim_release_silence_ms = -1;
   int32_t interim_stability_steps = -1;
+  bool enable_draft_verification = false;
+  int32_t final_decoder_prefill_backoff = -2;
 };
 
 struct ChromeMLASRAPI {

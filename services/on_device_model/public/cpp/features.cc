@@ -40,4 +40,16 @@ const base::FeatureParam<int> kOnDeviceModelAsrInterimReleaseSilenceMs{
 const base::FeatureParam<int> kOnDeviceModelAsrInterimStabilitySteps{
     &kOnDeviceModelAsrTokenStability, "interim_stability_steps", 0};
 
+BASE_FEATURE(kOnDeviceModelAsrSpeculativeDecoding,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kOnDeviceModelAsrEnableDraftVerification{
+    &kOnDeviceModelAsrSpeculativeDecoding, "enable_draft_verification", true};
+
+const base::FeatureParam<int> kOnDeviceModelAsrInterimDecoderPrefillBackoff{
+    &kOnDeviceModelAsrSpeculativeDecoding, "decoder_prefill_backoff", -1};
+
+const base::FeatureParam<int> kOnDeviceModelAsrFinalDecoderPrefillBackoff{
+    &kOnDeviceModelAsrSpeculativeDecoding, "final_decoder_prefill_backoff", -2};
+
 }  // namespace on_device_model::features

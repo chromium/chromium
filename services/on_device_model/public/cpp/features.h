@@ -59,6 +59,26 @@ extern const base::FeatureParam<int> kOnDeviceModelAsrInterimReleaseSilenceMs;
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 extern const base::FeatureParam<int> kOnDeviceModelAsrInterimStabilitySteps;
 
+// Controls speculative decoding and decoder prefill settings for on-device ASR
+// stream.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelAsrSpeculativeDecoding);
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<bool> kOnDeviceModelAsrEnableDraftVerification;
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<int>
+    kOnDeviceModelAsrInterimDecoderPrefillBackoff;
+
+// End-of-session / final decoder prefill backoff setting:
+// -2 = unset (uses the same setting as `decoder_prefill_backoff`),
+// -1 = disable final prefill (`final_prefill_disabled`),
+// >= 0 = `final_decoder_prefill_backoff` token count.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<int>
+    kOnDeviceModelAsrFinalDecoderPrefillBackoff;
+
 }  // namespace on_device_model::features
 
 #endif  // SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_FEATURES_H_
