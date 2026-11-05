@@ -23,6 +23,11 @@ void DisassociatePopupOnMac(gfx::NativeWindow native_window);
 
 // Activates the browser window and ensures macOS switches spaces to Chrome.
 void ActivateBrowserWindowOnMac(BrowserWindowInterface* bwi);
+
+// Returns true when the active AppKit event is a non-control left mouse down so
+// WebUI elements inside `-webkit-app-region: drag` containers still receive
+// hover and non-drag events on macOS.
+bool ShouldTreatCurrentEventAsDraggableOnMac();
 #endif
 
 }  // namespace omnibox_everywhere

@@ -7,10 +7,14 @@
 #import <AppKit/AppKit.h>
 
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/base_window.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -107,6 +111,44 @@ TEST_F(MacWindowUtilTest, DisassociatePopupOnMac) {
                             NSWindowCollectionBehaviorFullScreenAuxiliary];
   DisassociatePopupOnMac(gfx::NativeWindow(nswindow_));
   EXPECT_EQ([nswindow_ collectionBehavior], NSWindowCollectionBehaviorDefault);
+}
+
+TEST_F(MacWindowUtilTest, NonClientHitTestAllowsHoverInDraggableRegion) {
+  OmniboxEverywhereWidgetDelegate delegate;
+  SkRegion region;
+  region.op(SkIRect::MakeXYWH(0, 0, 200, 100), SkRegion::kUnion_Op);
+  delegate.SetDraggableRegion(region);
+
+  auto set_current_mouse_event = [&](NSEventType type,
+                                     NSEventModifierFlags modifiers = 0) {
+    NSEvent* event = [NSEvent mouseEventWithType:type
+                                        location:NSMakePoint(50, 50)
+                                   modifierFlags:modifiers
+                                       timestamp:0
+                                    windowNumber:[nswindow_ windowNumber]
+                                         context:nil
+                                     eventNumber:0
+                                      clickCount:1
+                                        pressure:1.0];
+    [NSApp postEvent:event atStart:YES];
+    [NSApp nextEventMatchingMask:NSEventMaskAny
+                       untilDate:nil
+                          inMode:NSDefaultRunLoopMode
+                         dequeue:YES];
+  };
+
+  set_current_mouse_event(NSEventTypeMouseMoved);
+  EXPECT_FALSE(ShouldTreatCurrentEventAsDraggableOnMac());
+  EXPECT_EQ(delegate.NonClientHitTest(gfx::Point(50, 50)), HTNOWHERE);
+
+  set_current_mouse_event(NSEventTypeLeftMouseDown, NSEventModifierFlagControl);
+  EXPECT_FALSE(ShouldTreatCurrentEventAsDraggableOnMac());
+  EXPECT_EQ(delegate.NonClientHitTest(gfx::Point(50, 50)), HTNOWHERE);
+
+  set_current_mouse_event(NSEventTypeLeftMouseDown);
+  EXPECT_TRUE(ShouldTreatCurrentEventAsDraggableOnMac());
+  EXPECT_EQ(delegate.NonClientHitTest(gfx::Point(50, 50)), HTCAPTION);
+  EXPECT_EQ(delegate.NonClientHitTest(gfx::Point(300, 300)), HTNOWHERE);
 }
 
 }  // namespace

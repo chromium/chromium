@@ -46,4 +46,14 @@ void ActivateBrowserWindowOnMac(BrowserWindowInterface* bwi) {
   }
 }
 
+bool ShouldTreatCurrentEventAsDraggableOnMac() {
+  // TODO(b/581982251): Move away from the HTCAPTION approach for dragging.
+  NSEvent* event = [NSApp currentEvent];
+  if (!event) {
+    return true;
+  }
+  return [event type] == NSEventTypeLeftMouseDown &&
+         ([event modifierFlags] & NSEventModifierFlagControl) == 0;
+}
+
 }  // namespace omnibox_everywhere
