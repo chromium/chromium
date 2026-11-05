@@ -15,6 +15,10 @@ import android.view.Surface;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -57,14 +61,18 @@ public abstract class VideoCapture {
 
     protected @Nullable VideoCaptureFormat mCaptureFormat;
 
+    @JniType("media::VideoCaptureDeviceAndroid")
+    interface NativeVideoCaptureDeviceAndroid extends JniTypeToken {}
+
     protected final String mId;
     // Native callback context variable.
-    private long mNativeVideoCaptureDeviceAndroid;
+    private @Nullable JniRawPtr<NativeVideoCaptureDeviceAndroid> mNativeVideoCaptureDeviceAndroid;
 
     // Lock for guarding |mNativeVideoCaptureDeviceAndroid|.
     private final Object mNativeVideoCaptureLock = new Object();
 
-    VideoCapture(String id, long nativeVideoCaptureDeviceAndroid) {
+    VideoCapture(
+            String id, JniRawPtr<NativeVideoCaptureDeviceAndroid> nativeVideoCaptureDeviceAndroid) {
         mId = id;
         mNativeVideoCaptureDeviceAndroid = nativeVideoCaptureDeviceAndroid;
     }
@@ -144,7 +152,10 @@ public abstract class VideoCapture {
     @CalledByNative
     public void deallocate() {
         synchronized (mNativeVideoCaptureLock) {
-            mNativeVideoCaptureDeviceAndroid = 0;
+            if (mNativeVideoCaptureDeviceAndroid != null) {
+                mNativeVideoCaptureDeviceAndroid.release();
+                mNativeVideoCaptureDeviceAndroid = null;
+            }
         }
         deallocateInternal();
     }
@@ -225,7 +236,7 @@ public abstract class VideoCapture {
     // problem after {@link takePhotoAsync()} has returned true.
     protected void notifyTakePhotoError(long callbackId) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onPhotoTaken(mNativeVideoCaptureDeviceAndroid, callbackId, null);
             }
@@ -312,7 +323,7 @@ public abstract class VideoCapture {
             long timestamp,
             int dataSpace) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onI420FrameAvailable(
                                 mNativeVideoCaptureDeviceAndroid,
@@ -334,7 +345,7 @@ public abstract class VideoCapture {
     protected void onHardwareBufferAvailable(
             HardwareBuffer hardwareBuffer, int dataSpace, int rotation, long timestamp) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onHardwareBufferAvailable(
                                 mNativeVideoCaptureDeviceAndroid,
@@ -348,7 +359,7 @@ public abstract class VideoCapture {
 
     protected void onError(int androidVideoCaptureError, String message) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onError(
                                 mNativeVideoCaptureDeviceAndroid,
@@ -361,7 +372,7 @@ public abstract class VideoCapture {
     // Method for VideoCapture implementations to signal that a frame was dropped.
     protected void onFrameDropped(int androidVideoCaptureFrameDropReason) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onFrameDropped(
                                 mNativeVideoCaptureDeviceAndroid,
@@ -373,7 +384,7 @@ public abstract class VideoCapture {
     protected void onGetPhotoCapabilitiesReply(
             long callbackId, @Nullable PhotoCapabilities result) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onGetPhotoCapabilitiesReply(
                                 mNativeVideoCaptureDeviceAndroid, callbackId, result);
@@ -383,7 +394,7 @@ public abstract class VideoCapture {
 
     protected void onPhotoTaken(long callbackId, byte[] data) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onPhotoTaken(mNativeVideoCaptureDeviceAndroid, callbackId, data);
             }
@@ -392,7 +403,7 @@ public abstract class VideoCapture {
 
     protected void onStarted() {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get().onStarted(mNativeVideoCaptureDeviceAndroid);
             }
         }
@@ -400,7 +411,7 @@ public abstract class VideoCapture {
 
     protected void onInteractiveStateChanged(boolean isInteractive) {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .onInteractiveStateChanged(mNativeVideoCaptureDeviceAndroid, isInteractive);
             }
@@ -409,7 +420,7 @@ public abstract class VideoCapture {
 
     protected void dCheckCurrentlyOnIncomingTaskRunner() {
         synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
+            if (mNativeVideoCaptureDeviceAndroid != null) {
                 VideoCaptureJni.get()
                         .dCheckCurrentlyOnIncomingTaskRunner(mNativeVideoCaptureDeviceAndroid);
             }
@@ -420,7 +431,7 @@ public abstract class VideoCapture {
     interface Natives {
         // Method for VideoCapture implementations to call back native code.
         void onI420FrameAvailable(
-                long nativeVideoCaptureDeviceAndroid,
+                JniPtr<NativeVideoCaptureDeviceAndroid> self,
                 ByteBuffer yBuffer,
                 int yStride,
                 ByteBuffer uBuffer,
@@ -434,7 +445,7 @@ public abstract class VideoCapture {
                 int dataSpace);
 
         void onHardwareBufferAvailable(
-                long nativeVideoCaptureDeviceAndroid,
+                JniPtr<NativeVideoCaptureDeviceAndroid> self,
                 HardwareBuffer hardwareBuffer,
                 int dataSpace,
                 int rotation,
@@ -442,28 +453,34 @@ public abstract class VideoCapture {
 
         // Method for VideoCapture implementations to signal an asynchronous error.
         void onError(
-                long nativeVideoCaptureDeviceAndroid, int androidVideoCaptureError, String message);
+                JniPtr<NativeVideoCaptureDeviceAndroid> self,
+                int androidVideoCaptureError,
+                String message);
 
         // Method for VideoCapture implementations to signal that a frame was dropped.
         void onFrameDropped(
-                long nativeVideoCaptureDeviceAndroid, int androidVideoCaptureFrameDropReason);
+                JniPtr<NativeVideoCaptureDeviceAndroid> self,
+                int androidVideoCaptureFrameDropReason);
 
         void onGetPhotoCapabilitiesReply(
-                long nativeVideoCaptureDeviceAndroid,
+                JniPtr<NativeVideoCaptureDeviceAndroid> self,
                 long callbackId,
                 @Nullable PhotoCapabilities result);
 
         // Callback for calls to takePhoto(). This can indicate both success and
         // failure. Failure is indicated by |data| being null.
         void onPhotoTaken(
-                long nativeVideoCaptureDeviceAndroid, long callbackId, byte @Nullable [] data);
+                JniPtr<NativeVideoCaptureDeviceAndroid> self,
+                long callbackId,
+                byte @Nullable [] data);
 
         // Method for VideoCapture implementations to report device started event.
-        void onStarted(long nativeVideoCaptureDeviceAndroid);
+        void onStarted(JniPtr<NativeVideoCaptureDeviceAndroid> self);
 
         // Method for VideoCapture implementations to report screen state change.
-        void onInteractiveStateChanged(long nativeVideoCaptureDeviceAndroid, boolean isInteractive);
+        void onInteractiveStateChanged(
+                JniPtr<NativeVideoCaptureDeviceAndroid> self, boolean isInteractive);
 
-        void dCheckCurrentlyOnIncomingTaskRunner(long nativeVideoCaptureDeviceAndroid);
+        void dCheckCurrentlyOnIncomingTaskRunner(JniPtr<NativeVideoCaptureDeviceAndroid> self);
     }
 }

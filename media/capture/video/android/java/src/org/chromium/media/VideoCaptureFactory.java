@@ -6,6 +6,7 @@ package org.chromium.media;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniRawPtr;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -21,7 +22,10 @@ import org.chromium.build.annotations.Nullable;
 class VideoCaptureFactory {
     // Factory methods.
     @CalledByNative
-    static VideoCapture createVideoCapture(String id, long nativeVideoCaptureDeviceAndroid) {
+    static VideoCapture createVideoCapture(
+            String id,
+            JniRawPtr<VideoCapture.NativeVideoCaptureDeviceAndroid>
+                    nativeVideoCaptureDeviceAndroid) {
         return new VideoCaptureCamera2(id, nativeVideoCaptureDeviceAndroid);
     }
 

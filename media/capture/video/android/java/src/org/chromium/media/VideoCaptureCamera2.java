@@ -38,6 +38,7 @@ import android.view.Surface;
 import androidx.annotation.IntDef;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniRawPtr;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
@@ -1721,7 +1722,10 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     private @Nullable BroadcastReceiver mInteractiveStateReceiver;
 
-    VideoCaptureCamera2(String id, long nativeVideoCaptureDeviceAndroid) {
+    VideoCaptureCamera2(
+            String id,
+            JniRawPtr<VideoCapture.NativeVideoCaptureDeviceAndroid>
+                    nativeVideoCaptureDeviceAndroid) {
         super(id, nativeVideoCaptureDeviceAndroid);
 
         dCheckCurrentlyOnIncomingTaskRunner();

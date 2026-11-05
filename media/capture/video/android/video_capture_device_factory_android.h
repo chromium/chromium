@@ -16,6 +16,8 @@
 
 namespace media {
 
+class VideoCaptureDeviceAndroid;
+
 // VideoCaptureDeviceFactory on Android. This class implements the static
 // VideoCapture methods and the factory of VideoCaptureAndroid.
 class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
@@ -23,7 +25,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
  public:
   static base::android::ScopedJavaLocalRef<jobject> createVideoCaptureAndroid(
       const std::string& id,
-      int64_t nativeVideoCaptureDeviceAndroid);
+      VideoCaptureDeviceAndroid* nativeVideoCaptureDeviceAndroid);
 
   explicit VideoCaptureDeviceFactoryAndroid(
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);

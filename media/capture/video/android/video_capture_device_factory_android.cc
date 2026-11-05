@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/android/video_capture_device_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/capture/video/android/capture_jni_headers/VideoCaptureFactory_jni.h"
@@ -27,11 +28,11 @@ namespace media {
 ScopedJavaLocalRef<jobject>
 VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
     const std::string& id,
-    int64_t nativeVideoCaptureDeviceAndroid) {
+    VideoCaptureDeviceAndroid* nativeVideoCaptureDeviceAndroid) {
   JNIEnv* env = AttachCurrentThread();
   return Java_VideoCaptureFactory_createVideoCapture(
       env, base::android::ConvertUTF8ToJavaString(env, id),
-      nativeVideoCaptureDeviceAndroid);
+      jni_zero::MakeRaw(nativeVideoCaptureDeviceAndroid));
 }
 
 VideoCaptureDeviceFactoryAndroid::VideoCaptureDeviceFactoryAndroid(

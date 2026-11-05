@@ -219,7 +219,7 @@ VideoCaptureDeviceAndroid::~VideoCaptureDeviceAndroid() {
 
 void VideoCaptureDeviceAndroid::Init() {
   j_capture_.Reset(VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
-      device_descriptor_.device_id, reinterpret_cast<intptr_t>(this)));
+      device_descriptor_.device_id, this));
 }
 
 void VideoCaptureDeviceAndroid::AllocateAndStart(
