@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_promo.bottom_sheet;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import java.util.Locale;
 @NullMarked
 public class SafetyPromoBottomSheetView extends LinearLayout {
     private ScrollView mScrollView;
+    private LinearLayout mScrollContent;
     private TextView mTitleView;
     private LinearLayout mInstructionsContainer;
     private ButtonCompat mGotItButton;
@@ -39,10 +41,25 @@ public class SafetyPromoBottomSheetView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mScrollView = findViewById(R.id.safety_promo_bottom_sheet_scroll_view);
+        mScrollContent = findViewById(R.id.safety_promo_bottom_sheet_scroll_content);
         mTitleView = findViewById(R.id.safety_promo_bottom_sheet_title);
         mInstructionsContainer =
                 findViewById(R.id.safety_promo_bottom_sheet_instructions_container);
         mGotItButton = findViewById(R.id.safety_promo_bottom_sheet_got_it_button);
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // The view isn't re-inflated on rotation, so re-read the width-dependent padding.
+        int paddingHorizontal =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.safety_fre_bottom_sheet_padding_horizontal);
+        mScrollContent.setPaddingRelative(
+                paddingHorizontal,
+                mScrollContent.getPaddingTop(),
+                paddingHorizontal,
+                mScrollContent.getPaddingBottom());
     }
 
     /** Sets the title of the sheet. */

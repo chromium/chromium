@@ -61,6 +61,7 @@ android_resources("java_resources") {
     "java/res/layout/safety_promo_fre_illustration_landscape_view.xml",
     "java/res/layout/safety_promo_fre_illustration_portrait_view.xml",
     "java/res/layout/safety_promo_show_me_how_bottom_sheet.xml",
+    "java/res/values-w600dp/dimens.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [
@@ -87,6 +88,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetContentUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetViewUnitTest.java",
   ]
 
   deps = [
