@@ -178,6 +178,19 @@ class DownloadFuzzCorporaTest(unittest.TestCase):
       self.fake_download_dir,
     )
 
+  def test_get_num_workers_caps_on_windows(self):
+    for platform, cpus, expected in [
+      ('win32', 64, 56),
+      ('win32', 32, 32),
+      ('linux', 64, 64),
+    ]:
+      with (
+        self.subTest(platform=platform, cpus=cpus),
+        patch('download_fuzz_corpora.sys.platform', platform),
+        patch('download_fuzz_corpora.cpu_count', return_value=cpus),
+      ):
+        self.assertEqual(download_fuzz_corpora._get_num_workers(), expected)
+
 
 if __name__ == '__main__':
   unittest.main()

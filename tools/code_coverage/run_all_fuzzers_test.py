@@ -238,6 +238,19 @@ class TargetDetailsWindowsTest(unittest.TestCase):
         run_all_fuzzers._run_and_log(['fuzzer.exe'], {}, 1, 'annotation')
       )
 
+  def test_get_num_workers_caps_on_windows(self):
+    for platform, cpus, expected in [
+      ('win32', 64, 56),
+      ('win32', 32, 32),
+      ('linux', 64, 64),
+    ]:
+      with (
+        self.subTest(platform=platform, cpus=cpus),
+        mock.patch('sys.platform', platform),
+        mock.patch('run_all_fuzzers.cpu_count', return_value=cpus),
+      ):
+        self.assertEqual(run_all_fuzzers._get_num_workers(), expected)
+
 
 class BlackboxCoverageTest(unittest.TestCase):
   def test_run_testcases_continuous_merges_all_profraws(self):

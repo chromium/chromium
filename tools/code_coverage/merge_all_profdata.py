@@ -14,6 +14,8 @@ import argparse
 import logging
 import os
 import subprocess
+import sys
+import tempfile
 
 
 def _ParseCommandArguments():
@@ -58,10 +60,21 @@ for profdata_file in os.listdir(args.profdata_dir):
 
 subprocess_cmd = [args.llvm_profdata, 'merge', '-o', args.outfile]
 
-for target in targets_to_cover:
-  subprocess_cmd.append(target)
+input_file_path = None
 try:
+  # Pass inputs via -f so 900+ paths stay under command-line length limits
+  # (32 KB on Windows).
+  with tempfile.NamedTemporaryFile(
+    mode='w', suffix='.txt', delete=False
+  ) as input_file:
+    input_file_path = input_file.name
+    for target in targets_to_cover:
+      input_file.write(f'{target}\n')
+  subprocess_cmd.extend(['-f', input_file_path])
   subprocess.check_call(subprocess_cmd)
-except:
-  logging.error("An error occured while merging the profdata.")
-  exit(1)
+except Exception:
+  logging.exception('An error occured while merging the profdata.')
+  sys.exit(1)
+finally:
+  if input_file_path and os.path.exists(input_file_path):
+    os.remove(input_file_path)

@@ -40,6 +40,16 @@ import zipfile
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, '..', '..'))
 _GSUTIL_PY = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'gsutil.py')
+# Windows only: Pool(n) waits on n+2 handles, but WaitForMultipleObjects
+# takes at most 63. Match coverage.py's 56-worker cap (crbug.com/40755900).
+MAX_WIN_POOL_WORKERS = 56
+
+
+def _get_num_workers() -> int:
+  num_cpus = int(cpu_count())
+  if sys.platform == 'win32':
+    return min(num_cpus, MAX_WIN_POOL_WORKERS)
+  return num_cpus
 
 
 def _gsutil(cmd, cwd):
@@ -176,7 +186,8 @@ def Main():
 
   print("Corpora to download: " + str(corpora_to_download))
 
-  with Pool(cpu_count()) as p:
+  num_workers = _get_num_workers()
+  with Pool(num_workers) as p:
     results = p.map(
       _download_corpus,
       [
@@ -189,7 +200,7 @@ def Main():
     if args.corpora_type == FUZZILLI_CORPORA_TYPE
     else _unzip_corpus
   )
-  with Pool(cpu_count()) as p:
+  with Pool(num_workers) as p:
     results = p.map(
       unzip_func,
       [(corpus, args.download_dir) for corpus in corpora_to_download],

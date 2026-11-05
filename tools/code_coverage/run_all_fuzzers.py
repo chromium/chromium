@@ -44,6 +44,16 @@ REPORT_DIR = 'out/report'
 LLVM_PROFDATA = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata' + (
   '.exe' if sys.platform == 'win32' else ''
 )
+# Windows only: Pool(n) waits on n+2 handles, but WaitForMultipleObjects
+# takes at most 63. Match coverage.py's 56-worker cap (crbug.com/40755900).
+MAX_WIN_POOL_WORKERS = 56
+
+
+def _get_num_workers() -> int:
+  num_cpus = int(cpu_count())
+  if sys.platform == 'win32':
+    return min(num_cpus, MAX_WIN_POOL_WORKERS)
+  return num_cpus
 
 
 class EngineRunner(abc.ABC):
@@ -938,9 +948,7 @@ def _get_all_target_details(args):
           fuzz_target_path=fuzzer_target_binpath,
         )
       else:  # libfuzzer
-        cmd = CmdRunner(
-          [fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=0']
-        )
+        cmd = CmdRunner([fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=0'])
       all_target_details.append(
         {
           'name': fuzzer_target,
@@ -1107,10 +1115,10 @@ def main():
     all_target_details = _get_all_target_details(args)
 
   # Run the fuzzers in parallel.
-  num_cpus = int(cpu_count())
+  num_workers = _get_num_workers()
   num_targets = len(all_target_details)
-  logging.info('Running %d fuzzers across %d CPUs', num_targets, num_cpus)
-  with Pool(num_cpus) as p:
+  logging.info('Running %d fuzzers across %d workers', num_targets, num_workers)
+  with Pool(num_workers) as p:
     results = p.map(
       _run_fuzzer_target,
       [
