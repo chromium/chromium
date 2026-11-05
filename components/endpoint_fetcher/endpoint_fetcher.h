@@ -153,6 +153,7 @@ class EndpointFetcher {
     const std::string& content_type() const { return content_type_; }
 
     std::optional<CredentialsMode> credentials_mode;
+    std::optional<network::mojom::RedirectMode> redirect_mode;
     std::optional<int> max_retries;
     std::optional<bool> set_site_for_cookies;
     std::optional<UploadProgressCallback> upload_progress_callback;
@@ -189,6 +190,11 @@ class EndpointFetcher {
 
       Builder& SetCredentialsMode(const CredentialsMode& mode) {
         request_params_->credentials_mode = mode;
+        return *this;
+      }
+
+      Builder& SetRedirectMode(network::mojom::RedirectMode mode) {
+        request_params_->redirect_mode = mode;
         return *this;
       }
 

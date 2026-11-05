@@ -213,6 +213,9 @@ void EndpointFetcher::PerformHttpRequest(
   resource_request->method = GetHttpMethodString(request_params_.http_method());
   resource_request->url = request_params_.url();
   resource_request->credentials_mode = GetCredentialsMode();
+  if (request_params_.redirect_mode.has_value()) {
+    resource_request->redirect_mode = *request_params_.redirect_mode;
+  }
 
   if (GetSetSiteForCookies()) {
     resource_request->site_for_cookies =
