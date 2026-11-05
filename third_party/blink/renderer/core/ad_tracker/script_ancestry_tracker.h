@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-inspector.h"
@@ -257,7 +258,7 @@ class CORE_EXPORT ScriptAncestryTracker
 
   // Tracks active monkey-patched API calls in the current task scope to ensure
   // the ignore-monkey-patch heuristic only applies once per task.
-  MonkeyPatchableApiSet monkey_patch_calls_in_scope_;
+  HashSet<MonkeyPatchableApi> monkey_patch_calls_in_scope_;
 
   // Tracks frames created by marked scripts (or descendant frames).
   HeapHashMap<WeakMember<LocalFrame>, V8ScriptId> marked_frames_;

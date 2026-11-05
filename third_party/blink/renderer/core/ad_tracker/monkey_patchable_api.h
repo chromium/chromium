@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_MONKEY_PATCHABLE_API_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_MONKEY_PATCHABLE_API_H_
 
-#include "base/containers/enum_set.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "v8/include/v8.h"
 
@@ -17,17 +16,13 @@ namespace blink {
 enum class MonkeyPatchableApi {
   // Default setting to disable the heuristic.
   kNone,
-  kMinValue = kNone,
   // history.pushState
   kHistoryPushState,
   // history.replaceState
   kHistoryReplaceState,
   // Node.prototype.appendChild
-  kNodeAppendChild,
-  kMaxValue = kNodeAppendChild,
+  kNodeAppendChild
 };
-
-using MonkeyPatchableApiSet = base::EnumSet<MonkeyPatchableApi>;
 
 // A struct to hold the results from `GetMonkeyPatchableApiFunctionInfo`.
 struct MonkeyPatchableApiFunctionInfo {

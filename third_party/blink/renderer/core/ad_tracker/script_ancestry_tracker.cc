@@ -103,7 +103,7 @@ void ScriptAncestryTracker::DidExecuteScript(V8ScriptId script_id) {
   MaybeResetBottomMostScript();
 
   if (running_sync_tasks_ == 0) {
-    monkey_patch_calls_in_scope_.Clear();
+    monkey_patch_calls_in_scope_.clear();
   }
 }
 
@@ -151,7 +151,7 @@ void ScriptAncestryTracker::DidCallFunction(V8ScriptId script_id,
   MaybeResetBottomMostScript();
 
   if (running_sync_tasks_ == 0) {
-    monkey_patch_calls_in_scope_.Clear();
+    monkey_patch_calls_in_scope_.clear();
   }
 }
 
@@ -398,7 +398,7 @@ void ScriptAncestryTracker::Shutdown() {
   async_script_stack_.clear();
   bottom_most_script_.reset();
   bottom_most_script_depth_ = 0;
-  monkey_patch_calls_in_scope_.Clear();
+  monkey_patch_calls_in_scope_.clear();
   if (monitor_) {
     monitor_->RemoveObserver(this);
     monitor_ = nullptr;
@@ -447,10 +447,10 @@ bool ScriptAncestryTracker::IsFirstMonkeyPatchCall(MonkeyPatchableApi api) {
   if (running_sync_tasks_ == 0) {
     return true;
   }
-  if (monkey_patch_calls_in_scope_.Has(api)) {
+  if (monkey_patch_calls_in_scope_.Contains(api)) {
     return false;
   }
-  monkey_patch_calls_in_scope_.Put(api);
+  monkey_patch_calls_in_scope_.insert(api);
   return true;
 }
 
