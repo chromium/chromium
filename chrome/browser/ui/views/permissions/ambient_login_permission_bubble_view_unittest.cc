@@ -715,10 +715,93 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
 }
 
 TEST_F(AmbientLoginPermissionBubbleViewTest,
-       FederatedCredentialWithoutPictureShowsDefaultIcon) {
+       FederatedCredentialShowsBadgeOnAccountPicture) {
   std::vector<ambient_signin::FederatedCredential> fed_creds = {
       {u"idp.example.com", u"Carol", u"carol@example.com",
-       GURL("https://idp.example.com")}};
+       GURL("https://idp.example.com"),
+       ui::ImageModel::FromImage(gfx::test::CreateImage(
+           ambient_signin::kAccountPictureSize, SK_ColorRED)),
+       ui::ImageModel::FromImage(gfx::test::CreateImage(
+           ambient_signin::kBadgeImageSize, SK_ColorBLUE))}};
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"), GURL("https://example.com"),
+          /*credentials=*/
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::move(fed_creds), base::DoNothing(),
+          ambient_signin::AmbientLoginPermissionRequest::Options{}));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // The badge's image is in the middle of the badge's circle, which extends
+  // beyond the bottom right corner of the picture. These match `kBadgeRadius`
+  // and `kBadgeOverhang` in ambient_login_permission_bubble_view.cc.
+  constexpr int kBadgeRadius = 10;
+  constexpr int kBadgeOverhang = 2;
+  constexpr int kBadgeCenter =
+      ambient_signin::kAccountPictureSize + kBadgeOverhang - kBadgeRadius;
+
+  // Like the badge on a monogram, the badge extends beyond the picture in the
+  // collapsed view, while only the picture takes up space.
+  ASSERT_EQ(bubble->children().size(), 4u);
+  views::View* icon_view = bubble->children()[0];
+  EXPECT_EQ(icon_view->GetPreferredSize(),
+            gfx::Size(ambient_signin::kAccountPictureSize,
+                      ambient_signin::kAccountPictureSize));
+  views::ImageView* image_view = FindImageViewWithImage(icon_view);
+  ASSERT_NE(image_view, nullptr);
+  EXPECT_GT(image_view->width(), ambient_signin::kAccountPictureSize);
+  const gfx::ImageSkia image =
+      image_view->GetImageModel().Rasterize(image_view->GetColorProvider());
+  const SkBitmap* bitmap = image.bitmap();
+  ASSERT_TRUE(bitmap);
+  EXPECT_EQ(bitmap->getColor(10, 10), SK_ColorRED);
+  EXPECT_EQ(bitmap->getColor(kBadgeCenter, kBadgeCenter), SK_ColorBLUE);
+
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // The expanded row shows the badge on the picture too.
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  ASSERT_EQ(scroll_view->contents()->children().size(), 1u);
+  HoverButton* row =
+      views::AsViewClass<HoverButton>(scroll_view->contents()->children()[0]);
+  ASSERT_NE(row, nullptr);
+  views::ImageView* row_image_view = FindImageViewWithImage(row);
+  ASSERT_NE(row_image_view, nullptr);
+  EXPECT_GT(row_image_view->width(), ambient_signin::kAccountPictureSize);
+  const gfx::ImageSkia row_image = row_image_view->GetImageModel().Rasterize(
+      row_image_view->GetColorProvider());
+  const SkBitmap* row_bitmap = row_image.bitmap();
+  ASSERT_TRUE(row_bitmap);
+  EXPECT_EQ(row_bitmap->getColor(10, 10), SK_ColorRED);
+  EXPECT_EQ(row_bitmap->getColor(kBadgeCenter, kBadgeCenter), SK_ColorBLUE);
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       FederatedCredentialWithoutPictureShowsDefaultIcon) {
+  // The badge isn't shown without a picture.
+  std::vector<ambient_signin::FederatedCredential> fed_creds = {
+      {u"idp.example.com", u"Carol", u"carol@example.com",
+       GURL("https://idp.example.com"), /*icon=*/ui::ImageModel(),
+       /*badge=*/
+       ui::ImageModel::FromImage(
+           gfx::test::CreateImage(ambient_signin::kBadgeImageSize))}};
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
   requests.push_back(
       std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(

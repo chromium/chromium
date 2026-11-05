@@ -66,6 +66,15 @@ struct FederatedCredential {
   // `kAccountPictureSize` wide, e.g. FedCM crops it into a circle like in its
   // own UI.
   ui::ImageModel icon;
+  // Optional badge on `icon`, e.g. the identity provider's icon. The prompt
+  // doesn't show it without `icon`.
+  //
+  // Like `icon`, the badge must come from the identity provider and be fetched
+  // by the browser, never from the requesting site.
+  //
+  // The caller crops the badge so that it is square and `kBadgeImageSize`
+  // wide, e.g. FedCM crops the IdP's icon into a circle like in its own UI.
+  ui::ImageModel badge;
   // Whether choosing this credential signs the user in without further UI,
   // e.g. without a dialog to review what is shared with the site. If so, the
   // chip shows that the user is signing in.

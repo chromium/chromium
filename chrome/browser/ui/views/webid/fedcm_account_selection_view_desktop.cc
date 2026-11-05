@@ -56,6 +56,7 @@
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -1783,6 +1784,18 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
             *account, ambient_signin::kAccountPictureSize,
             /*idp_image=*/std::nullopt,
             /*device_scale_factor=*/1.0f));
+    // Like in the regular FedCM UI with multiple IdPs, the IdP's icon is a
+    // badge on the account picture. There is no badge if the icon is missing,
+    // isn't square, or is so small that its safe zone would be scaled up.
+    const gfx::ImageSkia idp_icon = account->identity_provider->idp_metadata
+                                        .brand_decoded_icon.AsImageSkia();
+    if (idp_icon.width() == idp_icon.height() &&
+        idp_icon.width() >= ambient_signin::kBadgeImageSize /
+                                webid::kMaskableWebIconSafeZoneRatio) {
+      federated_credential.badge =
+          ui::ImageModel::FromImageSkia(webid::CreateCircleCroppedImage(
+              idp_icon, ambient_signin::kBadgeImageSize));
+    }
     // Accounts with fields to share show the disclosure text in the modal
     // dialog after the bubble. Other accounts are signed in right away, which
     // the chip shows. These include all sign-in accounts, whose fields content

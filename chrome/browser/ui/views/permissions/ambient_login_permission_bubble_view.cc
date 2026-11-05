@@ -373,6 +373,7 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
     provider = fed_cred.idp_name;
     provider_elide_behavior = kIdpNameElideBehavior;
     credential_icon = GetFederatedCredentialIcon(fed_cred);
+    credential_badge = fed_cred.badge;
   }
 
   if (username.empty()) {
@@ -648,7 +649,8 @@ AmbientLoginPermissionBubbleView::CreateFederatedCredentialRow(
     const ambient_signin::FederatedCredential& credential,
     size_t index) {
   HoverButton::Params params;
-  params.icon_view = CreateIconView(GetFederatedCredentialIcon(credential));
+  params.icon_view =
+      CreateIconView(GetFederatedCredentialIcon(credential), credential.badge);
   const bool has_name_and_email =
       !credential.account_name.empty() && !credential.email.empty();
   if (has_name_and_email) {
