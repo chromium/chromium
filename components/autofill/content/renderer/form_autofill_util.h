@@ -46,6 +46,10 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
+namespace gfx {
+class RectF;
+}  // namespace gfx
+
 namespace autofill {
 
 class FieldDataManager;
@@ -273,6 +277,23 @@ blink::WebElement GetContentEditableByRendererId(
     FieldRendererId field_renderer_id);
 
 std::string GetAutocompleteAttribute(const blink::WebElement& element);
+
+// Returns the ARIA label text of the elements denoted by the aria-labelledby
+// attribute of `element` or the value of the aria-label attribute of
+// `element`, with priority given to the aria-labelledby attribute.
+std::u16string GetAriaLabel(const blink::WebDocument& document,
+                            const blink::WebElement& element);
+
+// Returns the ARIA description text of the elements denoted by the
+// aria-describedby attribute of `element` or the value of the aria-description
+// attribute of `element`, with priority given to the aria-describedby
+// attribute.
+std::u16string GetAriaDescription(const blink::WebDocument& document,
+                                  const blink::WebElement& element);
+
+// Returns the bounds of `element` in window coordinates, or an empty
+// `gfx::RectF` if the element's frame cannot be resolved.
+gfx::RectF GetBoundsInWindow(const blink::WebElement& element);
 
 // Iterates through the node neighbors of form and form control elements in
 // `document` in search of four digit combinations.

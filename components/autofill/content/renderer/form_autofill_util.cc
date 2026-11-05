@@ -75,6 +75,8 @@
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
 using blink::WebAutofillState;
@@ -638,37 +640,6 @@ std::u16string CoalesceTextByIdList(const WebDocument& document,
   }
   base::TrimWhitespace(text, base::TRIM_ALL, &text);
   return text;
-}
-
-// Returns the ARIA label text of the elements denoted by the aria-labelledby
-// attribute of `element` or the value of the aria-label attribute of
-// `element`, with priority given to the aria-labelledby attribute.
-std::u16string GetAriaLabel(const WebDocument& document,
-                            const WebElement& element) {
-  if (HasAttribute<kAriaLabelledBy>(element)) {
-    std::u16string text =
-        CoalesceTextByIdList(document, GetAttribute<kAriaLabelledBy>(element));
-    if (!text.empty()) {
-      return text;
-    }
-  }
-  return GetAttribute<kAriaLabel>(element).Utf16();
-}
-
-// Returns the ARIA description text of the elements denoted by the
-// aria-describedby attribute of `element` or the value of the aria-description
-// attribute of `element`, with priority given to the aria-describedby
-// attribute.
-std::u16string GetAriaDescription(const WebDocument& document,
-                                  const WebElement& element) {
-  if (HasAttribute<kAriaDescribedBy>(element)) {
-    std::u16string text =
-        CoalesceTextByIdList(document, GetAttribute<kAriaDescribedBy>(element));
-    if (!text.empty()) {
-      return text;
-    }
-  }
-  return GetAttribute<kAriaDescription>(element).Utf16();
 }
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -2006,17 +1977,7 @@ void WebFormControlElementToFormField(
     }
   }
 
-  // `BoundsInWidget()` triggers style and layout updates, which may
-  // synchronously detach the frame and destroy the `content::RenderFrame`.
-  // Evaluate it before retrieving the frame.
-  gfx::Rect bounds = element.BoundsInWidget();
-  if (auto* local_frame = element.GetDocument().GetFrame()) {
-    if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
-      field->set_bounds(
-          gfx::RectF(render_frame->ConvertViewportToWindow(bounds)));
-    }
-  }
-
+  field->set_bounds(GetBoundsInWindow(element));
   field->set_value(element.Value().Utf16().substr(0, kMaxStringLength));
   field->set_selected_text(
       element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength));
@@ -2230,6 +2191,43 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
     return "x-max-data-length-exceeded";
   }
   return autocomplete_attribute;
+}
+
+std::u16string GetAriaLabel(const WebDocument& document,
+                            const WebElement& element) {
+  if (HasAttribute<kAriaLabelledBy>(element)) {
+    std::u16string text =
+        CoalesceTextByIdList(document, GetAttribute<kAriaLabelledBy>(element));
+    if (!text.empty()) {
+      return text;
+    }
+  }
+  return GetAttribute<kAriaLabel>(element).Utf16();
+}
+
+std::u16string GetAriaDescription(const WebDocument& document,
+                                  const WebElement& element) {
+  if (HasAttribute<kAriaDescribedBy>(element)) {
+    std::u16string text =
+        CoalesceTextByIdList(document, GetAttribute<kAriaDescribedBy>(element));
+    if (!text.empty()) {
+      return text;
+    }
+  }
+  return GetAttribute<kAriaDescription>(element).Utf16();
+}
+
+gfx::RectF GetBoundsInWindow(const WebElement& element) {
+  // `BoundsInWidget()` triggers style and layout updates, which may
+  // synchronously detach the frame and destroy the `content::RenderFrame`.
+  // Evaluate it before retrieving the frame.
+  gfx::Rect bounds = element.BoundsInWidget();
+  if (auto* local_frame = element.GetDocument().GetFrame()) {
+    if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
+      return gfx::RectF(render_frame->ConvertViewportToWindow(bounds));
+    }
+  }
+  return gfx::RectF();
 }
 
 std::optional<FormData> ExtractFormData(
@@ -2568,16 +2566,7 @@ std::optional<FormData> FindFormForContentEditable(
   field.set_autocomplete_attribute(GetAutocompleteAttribute(content_editable));
   field.set_parsed_autocomplete(
       ParseAutocompleteAttribute(field.autocomplete_attribute()));
-  // `BoundsInWidget()` triggers style and layout updates, which may
-  // synchronously detach the frame and destroy the `content::RenderFrame`.
-  // Evaluate it before retrieving the frame.
-  gfx::Rect bounds = content_editable.BoundsInWidget();
-  if (auto* local_frame = document.GetFrame()) {
-    if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
-      field.set_bounds(
-          gfx::RectF(render_frame->ConvertViewportToWindow(bounds)));
-    }
-  }
+  field.set_bounds(GetBoundsInWindow(content_editable));
   if (base::EqualsCaseInsensitiveASCII(
           GetAttribute<kRole>(content_editable).Utf16(), "presentation")) {
     field.set_role(FormFieldData::RoleAttribute::kPresentation);

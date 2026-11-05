@@ -42,6 +42,9 @@ struct CustomFormControl {
 base::flat_map<blink::WebFormElement, std::vector<CustomFormControl>>
 GroupCustomFormControlsByForm(std::vector<CustomFormControl> controls);
 
+// Converts a `CustomFormControl` to a `FormFieldData`.
+FormFieldData CustomFormControlToFormField(const CustomFormControl& control);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_UTIL_H_
