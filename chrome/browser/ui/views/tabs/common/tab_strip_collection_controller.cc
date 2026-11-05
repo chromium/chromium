@@ -15,6 +15,8 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
@@ -94,6 +97,14 @@ TabStripCollectionController::TabStripCollectionController(
                 base::Unretained(this)));
     OnGlassFrameEligibilityChanged(
         service->IsBrowserWindowEligible(browser_view_->browser()));
+  }
+
+  if (auto* const anim_controller = GetBrowserAnimationController()) {
+    focus_animation_subscription_ = anim_controller->Subscribe(
+        FocusModeAnimations::kFocusMode,
+        base::BindRepeating(
+            &TabStripCollectionController::OnFocusAnimationUpdated,
+            base::Unretained(this)));
   }
 }
 
@@ -591,6 +602,39 @@ void TabStripCollectionController::TabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {
   CHECK(browser_view_);
+  CHECK(new_focused_group_id.has_value() || old_focused_group_id.has_value());
+
+  auto* const anim_controller = GetBrowserAnimationController();
+  const bool is_entering = new_focused_group_id.has_value();
+
+  if (anim_controller) {
+    // Each sequence of `kEnter` starts from its persisted value. After a direct
+    // switch between groups that value is the focused resting state, so
+    // `kProgress` would sit at 1.0 for the whole motion and nothing would move
+    // (and the unrelated tabs' opacity would start from 0). Reset to the
+    // unfocused resting values first. This emits kEnded, which clears
+    // `focus_transition_`, so it must happen before the new transition is
+    // recorded.
+    if (is_entering && old_focused_group_id.has_value()) {
+      anim_controller->Reset(FocusModeAnimations::kFocusMode,
+                             FocusModeAnimations::kExit);
+    }
+
+    focus_transition_ = FocusTransition{
+        .target_group =
+            is_entering ? *new_focused_group_id : *old_focused_group_id,
+        .previous_group = is_entering ? old_focused_group_id : std::nullopt};
+
+    const auto motion =
+        is_entering ? FocusModeAnimations::kEnter : FocusModeAnimations::kExit;
+    if (ShouldAnimateLayout()) {
+      base::AutoReset<bool> starting(
+          &focus_transition_->is_starting_focus_motion, true);
+      anim_controller->Start(FocusModeAnimations::kFocusMode, motion);
+    } else {
+      anim_controller->Reset(FocusModeAnimations::kFocusMode, motion);
+    }
+  }
 
   if (auto* tab_strip_view = browser_view_->tab_strip_view()) {
     tab_strip_view->OnTabGroupFocusChanged(new_focused_group_id,
@@ -943,6 +987,41 @@ BrowserFrameView* TabStripCollectionController::GetBrowserFrameView() const {
   return browser_view_->browser_widget()
              ? browser_view_->browser_widget()->GetFrameView()
              : nullptr;
+}
+
+BrowserAnimationController*
+TabStripCollectionController::GetBrowserAnimationController() const {
+  return BrowserAnimationController::From(browser_view_->browser());
+}
+
+void TabStripCollectionController::OnFocusAnimationUpdated(
+    const BrowserAnimationController* controller,
+    BrowserAnimationUpdate status) {
+  switch (status) {
+    case BrowserAnimationUpdate::kStarted:
+    case BrowserAnimationUpdate::kProgressed:
+      break;
+    case BrowserAnimationUpdate::kCanceled:
+      // `Start()` cancels the motion it interrupts; `focus_transition_` already
+      // describes the new transition then, so only an external cancel ends it.
+      if (focus_transition_.has_value() &&
+          !focus_transition_->is_starting_focus_motion) {
+        EndFocusTransition();
+      }
+      break;
+    case BrowserAnimationUpdate::kEnded:
+      EndFocusTransition();
+      break;
+  }
+}
+
+void TabStripCollectionController::EndFocusTransition() {
+  focus_transition_.reset();
+}
+
+std::optional<TabStripCollectionController::FocusTransition>
+TabStripCollectionController::GetFocusTransition() const {
+  return focus_transition_;
 }
 
 void TabStripCollectionController::OnGlassFrameEligibilityChanged(
