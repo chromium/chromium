@@ -139,6 +139,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(kAndroidMediaPicker);
   feature_overrides.EnableFeature(features::kUserMediaScreenCapturing);
 
+  // Enables the tab sharing toolbar on Desktop Android.
+  // TODO(crbug.com/552925889): Remove when rollout to other form factors is
+  // complete.
+  feature_overrides.EnableFeature(chrome::android::kTabSharingToolbarAndroid);
+
   // Enable background media capturing on desktop devices.
   // TODO(crbug.com/426461170): Remove once we enable this feature for all form
   // factors. Currently we have no conclusion whether to enable this on mobile
