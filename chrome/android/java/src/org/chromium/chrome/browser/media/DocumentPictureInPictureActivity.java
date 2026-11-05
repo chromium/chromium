@@ -593,7 +593,10 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* occlusionTrackingAllowed= */ true);
+                // The pinned window stays above the browser window, but WindowOcclusionTracker
+                // ranks windows by top resumed state and would report it as occluded once the
+                // browser window is focused.
+                /* occlusionTrackingAllowed= */ false);
     }
 
     @Override
