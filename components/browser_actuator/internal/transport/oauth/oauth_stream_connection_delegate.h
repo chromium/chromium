@@ -13,6 +13,7 @@
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin {
@@ -68,6 +69,7 @@ class OAuthStreamConnectionDelegate : public StreamConnectionDelegate {
 
  private:
   void OnTokenFetched(base::TimeTicks start_time,
+                      CoreAccountId account_id,
                       std::unique_ptr<network::ResourceRequest> request,
                       PrepareRequestCallback callback,
                       GoogleServiceAuthError error,
@@ -80,8 +82,10 @@ class OAuthStreamConnectionDelegate : public StreamConnectionDelegate {
   // Live while a token fetch is in flight; destroying it cancels the fetch.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
 
-  // The token attached to the current/last attempt, kept for cache
-  // invalidation on 401.
+  // The account and token attached to the current/last attempt, kept for cache
+  // invalidation on 401 even if the primary account changes before the 401
+  // arrives.
+  CoreAccountId last_token_account_id_;
   std::string last_access_token_;
 
   // 401 rejections since the last established connection; drives the

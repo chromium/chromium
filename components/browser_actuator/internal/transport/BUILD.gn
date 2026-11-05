@@ -133,6 +133,7 @@ source_set("service") {
   public_deps = [
     "//base",
     "//components/browser_actuator/public/transport:service",
+    "//components/signin/public/identity_manager",
     "//url",
   ]
 
@@ -147,7 +148,6 @@ source_set("service") {
     "//components/browser_actuator/internal/transport/upstream_message_client",
     "//components/browser_actuator/public/transport",
     "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
     "//net",
     "//services/network/public/cpp",
   ]

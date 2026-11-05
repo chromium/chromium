@@ -66,11 +66,14 @@ void OAuthStreamConnectionDelegate::PrepareRequest(
   // layer tears the client down on signout.
   // base::Unretained is safe: `this` owns `token_fetcher_`, which cancels the
   // fetch and callback upon destruction.
+  CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       oauth_consumer_id_, identity_manager_,
       base::BindOnce(&OAuthStreamConnectionDelegate::OnTokenFetched,
                      base::Unretained(this), base::TimeTicks::Now(),
-                     std::move(request), std::move(callback)),
+                     std::move(account_id), std::move(request),
+                     std::move(callback)),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSignin);
 }
@@ -87,9 +90,9 @@ bool OAuthStreamConnectionDelegate::ShouldRetryOnHttpFailure(
   // one.
   if (!last_access_token_.empty()) {
     identity_manager_->RemoveAccessTokenFromCache(
-        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-        oauth_consumer_id_, last_access_token_);
+        last_token_account_id_, oauth_consumer_id_, last_access_token_);
     last_access_token_.clear();
+    last_token_account_id_ = CoreAccountId();
   }
   if (++consecutive_auth_failures_ >= kMaxConsecutiveAuthFailures) {
     // Permanent failure: the client stops, so the next 401 can only belong
@@ -103,6 +106,7 @@ bool OAuthStreamConnectionDelegate::ShouldRetryOnHttpFailure(
 
 void OAuthStreamConnectionDelegate::OnTokenFetched(
     base::TimeTicks start_time,
+    CoreAccountId account_id,
     std::unique_ptr<network::ResourceRequest> request,
     PrepareRequestCallback callback,
     GoogleServiceAuthError error,
@@ -116,6 +120,7 @@ void OAuthStreamConnectionDelegate::OnTokenFetched(
   // primary account) complete near-instantly and would skew the distribution.
   base::UmaHistogramTimes("Browser.Actuator.Transport.OAuth.TokenFetchLatency",
                           base::TimeTicks::Now() - start_time);
+  last_token_account_id_ = std::move(account_id);
   last_access_token_ = access_token_info.token;
   request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,

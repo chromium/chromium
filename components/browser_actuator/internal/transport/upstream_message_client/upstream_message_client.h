@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_UPSTREAM_MESSAGE_CLIENT_UPSTREAM_MESSAGE_CLIENT_H_
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_UPSTREAM_MESSAGE_CLIENT_UPSTREAM_MESSAGE_CLIENT_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -67,6 +68,15 @@ class UpstreamMessageClient {
       PayloadType payload_type,
       const google::protobuf::MessageLite& message,
       SendCompleteCallback callback);
+
+  // Cancels all in-flight upstream requests without invoking their completion
+  // callbacks. Used when the primary account signs out or changes.
+  void CancelPendingRequests();
+
+  size_t GetPendingRequestsCountForTesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return pending_requests_.size();
+  }
 
  private:
   void OnMessageSent(

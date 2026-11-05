@@ -9,17 +9,15 @@
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/browser_actuator/public/transport/transport_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 namespace browser_actuator::transport {
 
@@ -48,7 +46,8 @@ struct TransportServiceConfig {
   bool record_sessions = false;
 };
 
-class TransportServiceImpl : public TransportService {
+class TransportServiceImpl : public TransportService,
+                             public signin::IdentityManager::Observer {
  public:
   // `identity_manager` must outlive this service; `TransportServiceFactory`
   // depends on `IdentityManagerFactory` to guarantee that.
@@ -61,13 +60,25 @@ class TransportServiceImpl : public TransportService {
   TransportServiceImpl(const TransportServiceImpl&) = delete;
   TransportServiceImpl& operator=(const TransportServiceImpl&) = delete;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // TransportService:
   TransportChannel* GetChannel() override;
   TransportSession* CreateSession(std::string_view session_id) override;
   TransportSession* GetSession(std::string_view session_id) override;
   SessionStreamRecorderFactory* GetStreamRecorderFactory() override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
  private:
+  void ResetForAccountChange();
+  void TearDownChannel();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Declared before `channel_` on purpose. C++ destroys members in reverse
@@ -78,6 +89,10 @@ class TransportServiceImpl : public TransportService {
       session_stream_recorder_factory_;
 
   std::unique_ptr<TransportChannelImpl> channel_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 }  // namespace browser_actuator::transport

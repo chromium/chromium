@@ -99,6 +99,17 @@ void TransportChannelImpl::Disconnect() {
   }
 }
 
+void TransportChannelImpl::ResetForAccountChange() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Disconnect();
+  if (session_registry_) {
+    session_registry_->Clear();
+  }
+  if (upstream_message_client_) {
+    upstream_message_client_->CancelPendingRequests();
+  }
+}
+
 TransportHandlerFactoryRegistry*
 TransportChannelImpl::GetHandlerFactoryRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

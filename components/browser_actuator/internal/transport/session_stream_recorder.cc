@@ -479,4 +479,10 @@ std::string SessionStreamRecorderFactory::ExportSessionsAsJson(
       .value_or("");
 }
 
+void SessionStreamRecorderFactory::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  active_recorders_.clear();
+  retained_recorders_.clear();
+}
+
 }  // namespace browser_actuator::transport

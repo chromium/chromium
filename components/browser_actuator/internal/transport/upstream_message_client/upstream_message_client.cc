@@ -57,6 +57,11 @@ UpstreamMessageClient::~UpstreamMessageClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void UpstreamMessageClient::CancelPendingRequests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_requests_.clear();
+}
+
 ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
     std::string_view session_id,
     int64_t client_sequence_number,

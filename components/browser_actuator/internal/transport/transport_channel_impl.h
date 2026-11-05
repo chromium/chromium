@@ -100,6 +100,11 @@ class TransportChannelImpl : public TransportChannel,
   void OnSessionRegistered(TransportSession* session) override;
   void OnSessionRemoved(std::string_view session_id) override;
 
+  // Tears down the downstream stream, destroys all active sessions, and
+  // cancels any in-flight upstream requests when the primary account signs out
+  // or switches.
+  void ResetForAccountChange();
+
   DownstreamConnectionState downstream_connection_state() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return downstream_connection_state_;

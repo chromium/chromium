@@ -250,5 +250,44 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
       "Browser.Actuator.Transport.Upstream.HttpStatus", 0);
 }
 
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       CancelPendingRequestsClearsInFlightRequestsWithoutRunningCallbacks) {
+  base::HistogramTester histogram_tester;
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(0u, client.GetPendingRequestsCountForTesting());
+
+  ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> first_future;
+  client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
+                             /*responding_to_sequence_number=*/std::nullopt,
+                             PayloadType::kControl, command,
+                             first_future.GetCallback());
+  base::test::TestFuture<bool, int> second_future;
+  client.SendUpstreamMessage("session_2", /*client_sequence_number=*/1,
+                             /*responding_to_sequence_number=*/std::nullopt,
+                             PayloadType::kControl, command,
+                             second_future.GetCallback());
+
+  EXPECT_EQ(2u, client.GetPendingRequestsCountForTesting());
+  EXPECT_TRUE(
+      base::test::RunUntil([this]() { return requests_.size() == 2u; }));
+
+  client.CancelPendingRequests();
+
+  EXPECT_EQ(0u, client.GetPendingRequestsCountForTesting());
+  EXPECT_FALSE(first_future.IsReady());
+  EXPECT_FALSE(second_future.IsReady());
+
+  // Latency and HttpStatus should not be logged for cancelled requests.
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Transport.Upstream.UploadLatency.Control", 0);
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Transport.Upstream.HttpStatus", 0);
+}
+
 }  // namespace
 }  // namespace browser_actuator::transport

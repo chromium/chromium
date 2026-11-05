@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
@@ -153,6 +154,100 @@ TEST_F(
   const base::DictValue* s1_dict = (*sessions)[0].GetIfDict();
   ASSERT_NE(s1_dict, nullptr);
   EXPECT_EQ(s1_dict->FindInt("total_upstream_messages"), 1);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(TransportServiceImplTest,
+       ClearsSessionsAndRecordedHistoryOnPrimaryAccountCleared) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  identity_test_env_.MakePrimaryAccountAvailable("user@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/true);
+
+  TransportSession* session = service->CreateSession("session-before-signout");
+  ASSERT_NE(session, nullptr);
+  SessionStreamRecorderFactory* recorder_factory =
+      service->GetStreamRecorderFactory();
+  ASSERT_NE(recorder_factory, nullptr);
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  service->GetChannel()->SendUpstreamMessage("session-before-signout",
+                                             PayloadType::kControl, command, 1);
+  ASSERT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
+
+  // Signing out must destroy active sessions and wipe recorded session history
+  // while keeping the channel available if the user signs back in.
+  identity_test_env_.ClearPrimaryAccount();
+
+  EXPECT_EQ(service->GetSession("session-before-signout"), nullptr);
+  EXPECT_NE(service->GetChannel(), nullptr);
+  EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 0u);
+  base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  EXPECT_TRUE(sessions->empty());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(TransportServiceImplTest,
+       ClearsSessionsAndRecordedHistoryOnPrimaryAccountSwitched) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  identity_test_env_.MakePrimaryAccountAvailable("first@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/true);
+
+  TransportSession* session = service->CreateSession("session-first-account");
+  ASSERT_NE(session, nullptr);
+  SessionStreamRecorderFactory* recorder_factory =
+      service->GetStreamRecorderFactory();
+  ASSERT_NE(recorder_factory, nullptr);
+  ASSERT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
+
+  // Directly switching primary accounts without an intermediate sign-out must
+  // also reset sessions and recorded history.
+  identity_test_env_.MakePrimaryAccountAvailable("second@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  EXPECT_EQ(service->GetSession("session-first-account"), nullptr);
+  EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 0u);
+  base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  EXPECT_TRUE(sessions->empty());
+}
+
+TEST_F(TransportServiceImplTest, ShutdownTearsDownChannelBeforeDestruction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/true);
+  ASSERT_NE(service->GetChannel(), nullptr);
+  SessionStreamRecorderFactory* recorder_factory =
+      service->GetStreamRecorderFactory();
+  ASSERT_NE(recorder_factory, nullptr);
+
+  ASSERT_NE(service->CreateSession("session-closed"), nullptr);
+  service->GetChannel()->GetSessionRegistry()->DestroySession("session-closed");
+  ASSERT_NE(service->CreateSession("session-active"), nullptr);
+  ASSERT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
+
+  service->Shutdown();
+
+  EXPECT_EQ(service->GetChannel(), nullptr);
+  EXPECT_EQ(service->GetSession("session-active"), nullptr);
+  EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 0u);
+  base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  EXPECT_TRUE(sessions->empty());
 }
 
 }  // namespace

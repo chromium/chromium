@@ -54,6 +54,7 @@ class OAuthStreamConnectionDelegateTest
   void OnAccessTokenRemovedFromCache(const CoreAccountId& account_id,
                                      const signin::ScopeSet& scopes) override {
     ++tokens_removed_from_cache_;
+    last_removed_account_id_ = account_id;
   }
 
   std::unique_ptr<OAuthStreamConnectionDelegate> MakeDelegate(
@@ -73,6 +74,7 @@ class OAuthStreamConnectionDelegateTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   int tokens_removed_from_cache_ = 0;
+  CoreAccountId last_removed_account_id_;
 };
 
 TEST_F(OAuthStreamConnectionDelegateTest, AttachesBearerTokenAndForwardsInner) {
@@ -325,6 +327,30 @@ TEST_F(OAuthStreamConnectionDelegateTest, ForwardsInnerConnectionRequestBody) {
   ASSERT_TRUE(body);
   EXPECT_EQ(body->content, "inner-watch-body");
   EXPECT_EQ(body->content_type, "application/x-protobuf");
+}
+
+TEST_F(OAuthStreamConnectionDelegateTest,
+       InvalidatesTokenUnderMintingAccountAfterPrimaryAccountSwitch) {
+  AccountInfo first_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "first@gmail.com", signin::ConsentLevel::kSignin);
+  std::unique_ptr<OAuthStreamConnectionDelegate> delegate = MakeDelegate();
+
+  RequestFuture first_future;
+  delegate->PrepareRequest(std::make_unique<network::ResourceRequest>(),
+                           first_future.GetCallback());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "first-account-token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(first_future.Take());
+
+  // Switch the primary account before the 401 arrives for the first account's
+  // request.
+  AccountInfo second_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "second@gmail.com", signin::ConsentLevel::kSignin);
+  ASSERT_NE(first_account.GetAccountId(), second_account.GetAccountId());
+
+  EXPECT_TRUE(delegate->ShouldRetryOnHttpFailure(net::HTTP_UNAUTHORIZED));
+  EXPECT_EQ(tokens_removed_from_cache_, 1);
+  EXPECT_EQ(last_removed_account_id_, first_account.GetAccountId());
 }
 
 }  // namespace

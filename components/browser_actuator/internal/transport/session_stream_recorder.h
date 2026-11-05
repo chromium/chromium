@@ -238,6 +238,10 @@ class SessionStreamRecorderFactory : public TransportSessionRegistry::Observer,
   std::string ExportSessionsAsJson(
       base::span<const std::string> session_ids) const;
 
+  // Clears all active and retained session recordings (e.g. on sign-out,
+  // primary account switch, or service shutdown).
+  void Clear();
+
   // For testing: returns the number of tracked active session recorders.
   size_t GetActiveRecordersCountForTesting() const;
 
