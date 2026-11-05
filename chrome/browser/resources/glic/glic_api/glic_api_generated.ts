@@ -1500,7 +1500,10 @@ export declare interface TaskOptions {
   duration?: TaskDuration;
   // The feature mode for the task.
   featureMode?: FeatureMode;
-  // The initial target tab to actuate on.
+  // The actor surface ID of the initial target to actuate on, such as a tab's
+  // surface or a headless surface. A tab's actor surface ID matches its tab ID
+  // only while kUseTabHandleAsSurfaceHandle is enabled. The field name
+  // predates actor surfaces.
   actuationTabId?: string;
 }
 

@@ -5,12 +5,15 @@
 #include "chrome/browser/actor/transport/actor_keyed_service_adapter.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_enterprise_policy_checker.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/common/actor.mojom.h"
@@ -21,6 +24,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,10 +41,12 @@ class ActorKeyedServiceAdapterTest : public testing::Test {
 
   void TearDown() override { actor_service_->Shutdown(); }
 
-  std::unique_ptr<tabs::MockTabInterface> CreateMockTab() {
+  std::unique_ptr<tabs::MockTabInterface> CreateMockTab(
+      content::WebContents* contents) {
     auto mock_tab = std::make_unique<tabs::MockTabInterface>();
     ON_CALL(*mock_tab, GetProfile)
         .WillByDefault(testing::Return(profile_.get()));
+    ON_CALL(*mock_tab, GetContents).WillByDefault(testing::Return(contents));
     actor_service_->GetSurfaceRegistry().OnTabCreated(*mock_tab);
     return mock_tab;
   }
@@ -60,6 +66,9 @@ class ActorKeyedServiceAdapterTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  // Lets ActorKeyedService::CreateHeadlessActorSurface() create a WebContents
+  // in this unit test.
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<ActorKeyedService> actor_service_;
   ActorEnterprisePolicyChecker enterprise_policy_checker_;
@@ -87,13 +96,15 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskCreatesBrowserActuatorTask) {
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, StartTaskPopulatesTitleAndBoundSurfaces) {
-  std::unique_ptr<tabs::MockTabInterface> mock_tab = CreateMockTab();
-  const int32_t tab_id = mock_tab->GetHandle().raw_value();
+  std::unique_ptr<tabs::MockTabInterface> mock_tab =
+      CreateMockTab(/*contents=*/nullptr);
+  const int32_t surface_id =
+      ActorSurfaceHandle::From(mock_tab->GetHandle()).raw_value();
 
   proto::StartTaskRequest request;
   request.set_task_title("Book flight");
   proto::TargetSurface* surface = request.add_target_surfaces();
-  surface->set_tab_id(tab_id);
+  surface->set_tab_id(surface_id);
   surface->set_execution_mode(proto::TargetSurface::HEADED);
 
   base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
@@ -102,7 +113,7 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskPopulatesTitleAndBoundSurfaces) {
   const auto& [task_id, response] = future.Get();
   EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
   ASSERT_EQ(response.bound_surfaces_size(), 1);
-  EXPECT_EQ(response.bound_surfaces(0).tab_id(), tab_id);
+  EXPECT_EQ(response.bound_surfaces(0).tab_id(), surface_id);
   EXPECT_EQ(response.bound_surfaces(0).execution_mode(),
             proto::TargetSurface::HEADED);
 
@@ -110,6 +121,57 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskPopulatesTitleAndBoundSurfaces) {
   ASSERT_TRUE(task);
   EXPECT_EQ(task->title(), "Book flight");
   EXPECT_TRUE(task->HasTab(mock_tab->GetHandle()));
+}
+
+TEST_F(ActorKeyedServiceAdapterTest, StartTaskBindsHeadlessSurface) {
+  ScopedHeadlessActorSurface headless =
+      actor_service_->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+
+  proto::StartTaskRequest request;
+  proto::TargetSurface* target = request.add_target_surfaces();
+  target->set_tab_id(handle.raw_value());
+  target->set_execution_mode(proto::TargetSurface::HEADLESS);
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+  adapter_.StartTask(request, future.GetCallback());
+
+  const auto& [task_id, response] = future.Get();
+  EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
+  ASSERT_EQ(response.bound_surfaces_size(), 1);
+  EXPECT_EQ(response.bound_surfaces(0).tab_id(), handle.raw_value());
+  ActorTask* task = actor_service_->GetTask(task_id);
+  ASSERT_TRUE(task);
+  EXPECT_TRUE(task->IsActingOnActorSurface(handle));
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       StartTaskRejectsTabIdThatIsNotAnActorSurfaceId) {
+  // ActorSurfaceRegistry::OnTabCreated() maps a tab that hosts a headless
+  // surface's WebContents to that surface, so the tab ID differs from the
+  // actor surface ID.
+  ScopedHeadlessActorSurface headless =
+      actor_service_->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  ActorSurface* surface = handle.Get();
+  ASSERT_TRUE(surface);
+  std::unique_ptr<tabs::MockTabInterface> mock_tab =
+      CreateMockTab(surface->GetWebContents());
+  ASSERT_NE(mock_tab->GetHandle().raw_value(), handle.raw_value());
+
+  proto::StartTaskRequest request;
+  request.add_target_surfaces()->set_tab_id(mock_tab->GetHandle().raw_value());
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+  adapter_.StartTask(request, future.GetCallback());
+
+  const auto& [task_id, response] = future.Get();
+  EXPECT_FALSE(task_id);
+  EXPECT_EQ(response.status(),
+            proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
+
+  // CreateMockTab() made the surface tab-backed. Demote it before `headless`
+  // is destroyed, because ActorKeyedService::DestroyHeadlessActorSurface()
+  // CHECKs that the surface is not tab-backed.
+  actor_service_->GetSurfaceRegistry().OnSurfaceWillBeDemoted(handle);
 }
 
 TEST_F(ActorKeyedServiceAdapterTest,
@@ -128,6 +190,53 @@ TEST_F(ActorKeyedServiceAdapterTest,
             proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
   EXPECT_TRUE(response.bound_surfaces().empty());
   EXPECT_EQ(actor_service_->GetActiveTasksCount(), 0u);
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       StartTaskReturnsTargetTabNotFoundForUnresolvedSurfaceIds) {
+  // An unset or 0 ID asks Chrome to create a surface, which StartTask() does
+  // not support yet. CreateForTesting() mints a handle that resolves to no
+  // surface; it is negative while kUseTabHandleAsSurfaceHandle is enabled.
+  const std::optional<int32_t> tab_ids[] = {
+      std::nullopt, 0, ActorSurfaceHandle::CreateForTesting().raw_value()};
+  for (const std::optional<int32_t>& tab_id : tab_ids) {
+    SCOPED_TRACE(testing::PrintToString(tab_id));
+    proto::StartTaskRequest request;
+    proto::TargetSurface* surface = request.add_target_surfaces();
+    if (tab_id) {
+      surface->set_tab_id(*tab_id);
+    }
+
+    base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+    adapter_.StartTask(request, future.GetCallback());
+
+    const auto& [task_id, response] = future.Get();
+    EXPECT_FALSE(task_id);
+    EXPECT_EQ(response.status(),
+              proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
+  }
+  EXPECT_EQ(actor_service_->GetActiveTasksCount(), 0u);
+}
+
+// The surface ID comes from the server, so a surface that another profile owns
+// must not resolve in this profile's registry.
+TEST_F(ActorKeyedServiceAdapterTest,
+       StartTaskReturnsTargetTabNotFoundForOtherProfileSurface) {
+  std::unique_ptr<TestingProfile> other_profile =
+      TestingProfile::Builder().Build();
+  ScopedHeadlessActorSurface other_headless =
+      ActorKeyedService::Get(other_profile.get())->CreateHeadlessActorSurface();
+
+  proto::StartTaskRequest request;
+  request.add_target_surfaces()->set_tab_id(
+      other_headless.actor_surface_handle().raw_value());
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+  adapter_.StartTask(request, future.GetCallback());
+
+  const auto& [task_id, response] = future.Get();
+  EXPECT_FALSE(task_id);
+  EXPECT_EQ(response.status(),
+            proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, StopTaskStopsExistingTaskAndReturnsTrue) {

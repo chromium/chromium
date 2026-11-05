@@ -645,9 +645,10 @@ TaskId ActorKeyedService::CreateTaskImpl(
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
   const TaskId task_id = next_task_id_.GenerateNextId();
-  tabs::TabHandle initial_tab_handle = tabs::TabHandle::Null();
+  ActorSurfaceHandle initial_actor_surface;
   if (options && options->actuation_tab_id.has_value()) {
-    initial_tab_handle = tabs::TabHandle(options->actuation_tab_id.value());
+    initial_actor_surface =
+        ActorSurfaceHandle::FromRawValue(options->actuation_tab_id.value());
   }
 
   CHECK(ui_state_manager);
@@ -657,8 +658,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
       policy_checker, std::move(delegate), initial_invocation_source,
       allowed_schemes);
 
-  if (initial_tab_handle != tabs::TabHandle::Null()) {
-    actor_task->AddActorSurface(ActorSurfaceHandle::From(initial_tab_handle),
+  if (!initial_actor_surface.is_null()) {
+    actor_task->AddActorSurface(initial_actor_surface,
                                 /*stop_task_on_detach=*/true,
                                 base::DoNothing());
   }

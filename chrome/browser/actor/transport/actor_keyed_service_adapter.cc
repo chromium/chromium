@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
@@ -195,9 +196,12 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
   // and failing task creation on unbindable tabs in ActorKeyedService.
   if (!request.target_surfaces().empty()) {
     const proto::TargetSurface& surface = request.target_surfaces(0);
-    if (!surface.has_tab_id() || surface.tab_id() <= 0 ||
-        !actor_service_->GetSurfaceRegistry().GetForTab(
-            tabs::TabHandle(surface.tab_id()))) {
+    // `tab_id` holds an actor surface ID, so it can name a tab-backed or a
+    // headless surface. An unset or 0 ID asks Chrome to create a surface,
+    // which StartTask() does not support yet; ActorSurfaceRegistry::Get()
+    // resolves no surface for it.
+    if (!actor_service_->GetSurfaceRegistry().Get(
+            ActorSurfaceHandle::FromRawValue(surface.tab_id()))) {
       response.set_status(
           proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
       std::move(callback).Run(TaskId(), std::move(response));
