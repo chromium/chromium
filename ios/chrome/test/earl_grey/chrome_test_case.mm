@@ -154,6 +154,16 @@ void ResetAuthentication() {
   [ChromeTestCaseAppInterface resetAuthentication];
 }
 
+// Sets the device orientation matching `interface_orientation` if the device
+// is in another orientation. Only uses XCUITest (not EarlGrey).
+void RestoreDeviceOrientation(UIInterfaceOrientation interface_orientation) {
+  const UIDeviceOrientation device_orientation = [GREYConstants
+      deviceOrientationForInterfaceOrientation:interface_orientation];
+  if ([XCUIDevice sharedDevice].orientation != device_orientation) {
+    [XCUIDevice sharedDevice].orientation = device_orientation;
+  }
+}
+
 }  // namespace
 
 @interface ChromeTestCase () <AppLaunchManagerObserver> {
@@ -347,6 +357,13 @@ void ResetAuthentication() {
         // Rotate the device back to the original orientation, since some tests
         // attempt to run in other orientations.
         [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
+      } else {
+        // The interface orientation is unknown before a scene exists, and
+        // does not always follow the device orientation (e.g. while a
+        // portrait-only view controller is presented). Still restore the
+        // device orientation, otherwise it leaks into the following tests, as
+        // the relaunched app follows the device orientation.
+        RestoreDeviceOrientation(_originalOrientation);
       }
     }
   }
