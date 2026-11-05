@@ -1506,6 +1506,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mGlicUiCoordinator =
                     new GlicUiCoordinator(
                             mActivity,
+                            mWindowAndroid,
                             mTabBottomSheetManager,
                             mProfileSupplier,
                             mActivityTabProvider.asObservable(),

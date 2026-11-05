@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.glic.ui;
 import android.app.Activity;
 import android.view.ViewStub;
 
+import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Coordinator for Glic UI. It owns and manages Glic-related UI components, currently including
@@ -36,7 +38,10 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistr
 @NullMarked
 public class GlicUiCoordinator implements Destroyable {
 
+    private static final UnownedUserDataKey<GlicUiCoordinator> KEY = new UnownedUserDataKey<>();
+
     private final Activity mActivity;
+    private final WindowAndroid mWindowAndroid;
     private final ActorOverlayCoordinator mActorOverlayCoordinator;
     private final ActorTaskHelper mActorTaskHelper;
     private final ActorExternalTriggerSnackbarController mExternalTriggerSnackbarController;
@@ -45,6 +50,7 @@ public class GlicUiCoordinator implements Destroyable {
      * Constructs a new {@link GlicUiCoordinator}.
      *
      * @param activity The {@link Activity} hosting the UI.
+     * @param windowAndroid The {@link WindowAndroid} for the current window.
      * @param tabBottomSheetManager The {@link TabBottomSheetManager} for managing bottom sheets.
      * @param profileSupplier Supplier for the current {@link Profile}.
      * @param activityTabProvider Supplier for the active {@link Tab}.
@@ -61,6 +67,7 @@ public class GlicUiCoordinator implements Destroyable {
      */
     public GlicUiCoordinator(
             Activity activity,
+            WindowAndroid windowAndroid,
             @Nullable TabBottomSheetManager tabBottomSheetManager,
             MonotonicObservableSupplier<Profile> profileSupplier,
             NullableObservableSupplier<Tab> activityTabProvider,
@@ -75,6 +82,7 @@ public class GlicUiCoordinator implements Destroyable {
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @Nullable SideUiStateProvider sideUiStateProvider) {
         mActivity = activity;
+        mWindowAndroid = windowAndroid;
 
         mActorOverlayCoordinator =
                 new ActorOverlayCoordinator(
@@ -99,17 +107,29 @@ public class GlicUiCoordinator implements Destroyable {
         mExternalTriggerSnackbarController =
                 new ActorExternalTriggerSnackbarController(
                         mActivity, snackbarManager, profileSupplier, activityLifecycleDispatcher);
+
+        KEY.attachToHost(mWindowAndroid.getUnownedUserDataHost(), this);
+    }
+
+    /** Returns the {@link GlicUiCoordinator} associated with the given {@link WindowAndroid}. */
+    static @Nullable GlicUiCoordinator from(@Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return null;
+        return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
     @Override
     public void destroy() {
+        KEY.detachFromHost(mWindowAndroid.getUnownedUserDataHost());
         mExternalTriggerSnackbarController.destroy();
         mActorOverlayCoordinator.destroy();
         mActorTaskHelper.onDestroy();
         mActorTaskHelper.destroy();
     }
 
-    /** Notifies the snackbar controller that a pending actor task trigger was received. */
+    /**
+     * Notifies the snackbar controller that a pending actor task trigger was received (either from
+     * an external-trigger fallback intent or when showing the experimental opt-in dialog).
+     */
     public void onPendingActorTaskTrigger() {
         mExternalTriggerSnackbarController.onPendingActorTaskTrigger();
     }

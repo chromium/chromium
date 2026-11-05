@@ -96,10 +96,14 @@ public class ActorExternalTriggerSnackbarController
     }
 
     /**
-     * Called when ChromeTabbedActivity receives a trusted Glic external-trigger fallback intent
-     * indicating that a new actor task is pending creation.
+     * Called when ChromeTabbedActivity receives a trusted Glic external-trigger fallback intent or
+     * when the experimental opt-in dialog is shown for a pending actor task.
      */
     public void onPendingActorTaskTrigger() {
+        if (mIsPendingTaskStart) {
+            schedulePreparingTimeout();
+            return;
+        }
         dismissSnackbar();
         mIsPendingTaskStart = true;
         schedulePreparingTimeout();

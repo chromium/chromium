@@ -102,6 +102,27 @@ public class ActorExternalTriggerSnackbarControllerTest {
     }
 
     @Test
+    public void testSecondPendingTriggerWhilePending_refreshesTimeoutWithoutFlicker() {
+        mController.onPendingActorTaskTrigger();
+        clearInvocations(mSnackbarManager);
+
+        ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
+        mController.onPendingActorTaskTrigger();
+
+        verify(mSnackbarManager, never()).dismissSnackbars(mController);
+        verify(mSnackbarManager, never()).showSnackbar(any());
+        assertTrue(mController.isPendingTaskStartForTesting());
+
+        ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
+        assertTrue(mController.isPendingTaskStartForTesting());
+        assertFalse(mController.isErrorSnackbarShowingForTesting());
+
+        ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
+        assertFalse(mController.isPendingTaskStartForTesting());
+        assertTrue(mController.isErrorSnackbarShowingForTesting());
+    }
+
+    @Test
     public void testShowsOnStartWhenInitiallyCannotShowSnackbar() {
         when(mSnackbarManager.canShowSnackbar()).thenReturn(false);
         mController.onPendingActorTaskTrigger();

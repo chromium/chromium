@@ -126,6 +126,10 @@ public class GlicExperimentalOptInUiCoordinator {
                 coordinator.destroy();
                 return null;
             }
+            GlicUiCoordinator glicUiCoordinator = GlicUiCoordinator.from(windowAndroid);
+            if (glicUiCoordinator != null) {
+                glicUiCoordinator.onPendingActorTaskTrigger();
+            }
             ptrToRelease = null;
             return coordinator;
         } finally {
