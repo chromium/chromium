@@ -4789,7 +4789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.AppBundlePromo.Impression" enum="Boolean"
-    expires_after="2026-11-29">
+    expires_after="2027-11-01">
   <owner>ericekey@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -4807,7 +4807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.AppBundlePromo" units="index"
-    expires_after="2026-11-01">
+    expires_after="2027-11-01">
   <owner>ericekey@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
