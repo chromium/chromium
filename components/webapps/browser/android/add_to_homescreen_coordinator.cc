@@ -18,6 +18,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenCoordinator_jni.h"
@@ -57,8 +58,9 @@ void AddToHomescreenCoordinator::OnUserTitleAvailable(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  mediator_ = Java_AddToHomescreenCoordinator_buildMediatorAndShowDialog(
-      env, java_coordinator_);
+  mediator_ = reinterpret_cast<AddToHomescreenMediator*>(
+      Java_AddToHomescreenCoordinator_buildMediatorAndShowDialog(
+          env, java_coordinator_));
   CHECK(mediator_);
 
   if (app_menu_type_ ==
@@ -115,10 +117,6 @@ void AddToHomescreenCoordinator::OnDataAvailable(
 
 AddToHomescreenCoordinator::~AddToHomescreenCoordinator() = default;
 
-void AddToHomescreenCoordinator::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 // static
 bool AddToHomescreenCoordinator::ShowForAppBanner(
     base::WeakPtr<AppBannerManager> weak_manager,
@@ -137,7 +135,7 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  AddToHomescreenMediator* mediator =
+  AddToHomescreenMediator* mediator = (AddToHomescreenMediator*)
       Java_AddToHomescreenCoordinator_initMvcAndReturnMediator(
           env, weak_manager->web_contents()->GetJavaWebContents());
   if (!mediator)
@@ -169,15 +167,16 @@ void AddToHomescreenCoordinator::RecordEventForAppMenu(
 }
 
 // static
-int64_t JNI_AddToHomescreenCoordinator_StartForAppMenu(
+jni_zero::JniUniquePtr<AddToHomescreenCoordinator>
+JNI_AddToHomescreenCoordinator_StartForAppMenu(
     JNIEnv* env,
     const JavaRef<jobject>& java_coordinator,
     const base::android::JavaRef<jobject>& java_web_contents,
     int app_menu_type) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  return reinterpret_cast<intptr_t>(new AddToHomescreenCoordinator(
-      web_contents, app_menu_type, java_coordinator));
+  return jni_zero::MakeUnique<AddToHomescreenCoordinator>(
+      web_contents, app_menu_type, java_coordinator);
 }
 
 }  // namespace webapps

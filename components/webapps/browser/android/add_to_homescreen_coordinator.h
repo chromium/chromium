@@ -32,8 +32,7 @@ class AddToHomescreenCoordinator : public AddToHomescreenDataFetcher::Observer {
       int app_menu_type,
       const base::android::JavaRef<jobject>& java_coordinator);
 
-  // Called from the Java side and destructs this object.
-  void Destroy(JNIEnv* env);
+  ~AddToHomescreenCoordinator() override;
 
   // Called for showing the add-to-homescreen UI for AppBannerManager.
   static bool ShowForAppBanner(base::WeakPtr<AppBannerManager> weak_manager,
@@ -46,7 +45,6 @@ class AddToHomescreenCoordinator : public AddToHomescreenDataFetcher::Observer {
       delete;
 
  private:
-  ~AddToHomescreenCoordinator() override;
 
   // AddToHomescreenDataFetcher::Observer overrides:
   void OnUserTitleAvailable(const std::u16string& user_title,
