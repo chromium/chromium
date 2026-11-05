@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
@@ -14,6 +15,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace policy {
 
 // Concrete implementation of dlp_internals::mojom::PageHandler.
@@ -21,8 +26,11 @@ class DlpInternalsPageHandler
     : public dlp_internals::mojom::PageHandler,
       public data_controls::DlpReportingManager::Observer {
  public:
-  explicit DlpInternalsPageHandler(
-      mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver);
+  // `user` is the User associated with the WebUI. May be nullptr if the WebUI
+  // is not associated with any User (e.g., on the sign-in screen).
+  DlpInternalsPageHandler(
+      mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver,
+      const user_manager::User* user);
 
   DlpInternalsPageHandler(const DlpInternalsPageHandler&) = delete;
   DlpInternalsPageHandler& operator=(const DlpInternalsPageHandler&) = delete;
@@ -50,6 +58,7 @@ class DlpInternalsPageHandler
                               ::dlp::GetDatabaseEntriesResponse response_proto);
 
   mojo::Receiver<dlp_internals::mojom::PageHandler> receiver_;
+  const raw_ptr<const user_manager::User> user_;
   mojo::RemoteSet<dlp_internals::mojom::ReportingObserver> reporting_observers_;
 
   base::ScopedObservation<data_controls::DlpReportingManager,

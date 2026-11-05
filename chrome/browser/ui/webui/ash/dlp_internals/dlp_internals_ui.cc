@@ -9,8 +9,11 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/grit/dlp_internals_resources.h"
 #include "chrome/grit/dlp_internals_resources_map.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
@@ -45,8 +48,11 @@ DlpInternalsUI::~DlpInternalsUI() = default;
 
 void DlpInternalsUI::BindInterface(
     mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver) {
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext());
   page_handler_ =
-      std::make_unique<DlpInternalsPageHandler>(std::move(receiver));
+      std::make_unique<DlpInternalsPageHandler>(std::move(receiver), user);
 }
 
 }  // namespace policy

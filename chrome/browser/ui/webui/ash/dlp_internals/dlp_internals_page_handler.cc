@@ -8,16 +8,16 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/path_service.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals.mojom.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/rule.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -184,8 +184,9 @@ dlp_internals::mojom::EventDestinationPtr EventDestinationToMojo(
 }  // namespace
 
 DlpInternalsPageHandler::DlpInternalsPageHandler(
-    mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver)
-    : receiver_(this, std::move(receiver)) {
+    mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver,
+    const user_manager::User* user)
+    : receiver_(this, std::move(receiver)), user_(user) {
   auto* rules_manager = DlpRulesManagerFactory::GetForPrimaryProfile();
   auto* reporting_manager =
       rules_manager ? rules_manager->GetReportingManager() : nullptr;
@@ -297,9 +298,13 @@ void DlpInternalsPageHandler::GetFilesDatabaseEntries(
 
 void DlpInternalsPageHandler::GetFileInode(const std::string& file_name,
                                            GetFileInodeCallback callback) {
-  base::FilePath downloads_path;
-  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE, &downloads_path);
-  auto file_path = downloads_path.Append(file_name);
+  if (!user_) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  auto file_path =
+      file_manager::util::GetDownloadsFolder(*user_).Append(file_name);
 
   struct stat file_stats;
   if (stat(file_path.value().c_str(), &file_stats) != 0) {
