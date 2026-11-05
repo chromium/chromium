@@ -993,10 +993,6 @@ interface LocalFrame {
   // focused node.
   AdvanceFocusForIME(blink.mojom.FocusType focus_type);
 
-  // Notifies the document navigation was blocked because a content security
-  // policy was violated.
-  ReportContentSecurityPolicyViolation(network.mojom.CSPViolation violation);
-
   // Notifies the frame that its parent has changed the frame's sandbox flags or
   // container policy.
   DidUpdateFramePolicy(blink.mojom.FramePolicy frame_policy);

@@ -16,6 +16,10 @@ import "services/network/public/mojom/content_security_policy.mojom";
 // https://w3c.github.io/webappsec-csp/#create-violation-for-request
 // The remote is passed to the worker or the worklet on its creation, and the
 // receiver is bound in the context that created it.
+//
+// Some directives are checked in the frame host (e.g. form-action,
+// frame-ancestors, and frame-src). The frame host reports the violations to
+// its frame.
 interface OutsideContextCSPViolationReporter {
   // Reports a CSP violation on the context that holds the Content Security
   // Policy. Runs the violation reporting steps on the context: logging the

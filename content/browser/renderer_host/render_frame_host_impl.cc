@@ -14242,6 +14242,15 @@ RenderFrameHostImpl::GetAssociatedLocalFrame() {
   return local_frame_;
 }
 
+const mojo::AssociatedRemote<blink::mojom::OutsideContextCSPViolationReporter>&
+RenderFrameHostImpl::GetAssociatedOutsideContextCSPViolationReporter() {
+  if (!outside_context_csp_violation_reporter_) {
+    GetRemoteAssociatedInterfaces()->GetInterface(
+        &outside_context_csp_violation_reporter_);
+  }
+  return outside_context_csp_violation_reporter_;
+}
+
 blink::mojom::LocalMainFrame*
 RenderFrameHostImpl::GetAssociatedLocalMainFrame() {
   CHECK(is_main_frame());

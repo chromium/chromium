@@ -184,6 +184,7 @@
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-forward.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
+#include "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom.h"
 #include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-forward.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-forward.h"
@@ -1650,6 +1651,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns associated remote for the blink::mojom::LocalFrame Mojo interface.
   const mojo::AssociatedRemote<blink::mojom::LocalFrame>&
   GetAssociatedLocalFrame();
+
+  // Returns associated remote for the
+  // blink::mojom::OutsideContextCSPViolationReporter Mojo interface, which
+  // reports the CSP violations checked in the frame host to the frame.
+  const mojo::AssociatedRemote<
+      blink::mojom::OutsideContextCSPViolationReporter>&
+  GetAssociatedOutsideContextCSPViolationReporter();
 
   // Returns the AgentSchedulingGroupHost associated with this
   // RenderFrameHostImpl.
@@ -4824,6 +4832,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Holder of Mojo connection with the LocalFrame in Blink.
   mojo::AssociatedRemote<blink::mojom::LocalFrame> local_frame_;
+
+  // Holder of Mojo connection with the OutsideContextCSPViolationReporter of
+  // the frame in Blink.
+  mojo::AssociatedRemote<blink::mojom::OutsideContextCSPViolationReporter>
+      outside_context_csp_violation_reporter_;
 
   // Holder of Mojo connection with the LocalMainFrame in Blink. This
   // remote will be valid when the frame is the active main frame.

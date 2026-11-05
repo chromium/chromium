@@ -7,13 +7,10 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "services/network/public/mojom/source_location.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -60,8 +57,9 @@ OutsideSettingsCSPViolationReporter::OutsideSettingsCSPViolationReporter(
     ExecutionContext& context)
     : Supplement<ExecutionContext>(context), receivers_(this, &context) {}
 
-void OutsideSettingsCSPViolationReporter::ReportCSPViolation(
-    network::mojom::blink::CSPViolationPtr violation) {
+bool OutsideSettingsCSPViolationReporter::
+    IsCSPEffectiveDirectiveAllowedForViolationReporting(
+        CSPDirectiveName effective_type) const {
   // The fetches with the outside settings object are the module graph fetches
   // of workers (worker-src) and worklets (script-src-elem), including the JSON
   // and text module imports in them (connect-src) [1][2], and their mixed
@@ -71,31 +69,19 @@ void OutsideSettingsCSPViolationReporter::ReportCSPViolation(
   // [1] https://w3c.github.io/webappsec-csp/#effective-directive-for-a-request
   // [2] https://html.spec.whatwg.org/#fetch-destination-from-module-type
   // [3] https://www.w3.org/TR/mixed-content/#strict-checking
-  CSPDirectiveName effective_type =
-      ContentSecurityPolicy::GetDirectiveType(violation->effective_directive);
-  if (effective_type != CSPDirectiveName::WorkerSrc &&
-      effective_type != CSPDirectiveName::ScriptSrcElem &&
-      effective_type != CSPDirectiveName::ConnectSrc &&
-      effective_type != CSPDirectiveName::BlockAllMixedContent) {
-    mojo::ReportBadMessage("Unexpected CSP violation effective directive");
-    return;
-  }
+  return effective_type == CSPDirectiveName::WorkerSrc ||
+         effective_type == CSPDirectiveName::ScriptSrcElem ||
+         effective_type == CSPDirectiveName::ConnectSrc ||
+         effective_type == CSPDirectiveName::BlockAllMixedContent;
+}
 
+ContentSecurityPolicy* OutsideSettingsCSPViolationReporter::
+    GetContentSecurityPolicyForViolationReporting() {
   ExecutionContext* context = GetSupplementable();
   if (!context || context->IsContextDestroyed()) {
-    return;
+    return nullptr;
   }
-  if (ContentSecurityPolicy* policy = context->GetContentSecurityPolicy()) {
-    policy->LogToConsoleAndReportViolation(
-        effective_type, violation->console_message, violation->blocked_url,
-        violation->report_endpoints, violation->use_reporting_api,
-        violation->header, violation->type,
-        ContentSecurityPolicyViolationType::kURLViolation,
-        MakeGarbageCollected<SourceLocation>(
-            violation->source_location->url, String(),
-            violation->source_location->line,
-            violation->source_location->column, nullptr));
-  }
+  return context->GetContentSecurityPolicy();
 }
 
 void OutsideSettingsCSPViolationReporter::Trace(Visitor* visitor) const {

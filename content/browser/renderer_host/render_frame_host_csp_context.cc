@@ -19,8 +19,8 @@ void RenderFrameHostCSPContext::ReportContentSecurityPolicyViolation(
     network::mojom::CSPViolationPtr violation_params) {
   if (!render_frame_host_)
     return;
-  render_frame_host_->GetAssociatedLocalFrame()
-      ->ReportContentSecurityPolicyViolation(std::move(violation_params));
+  render_frame_host_->GetAssociatedOutsideContextCSPViolationReporter()
+      ->ReportCSPViolation(std::move(violation_params));
 }
 
 void RenderFrameHostCSPContext::SanitizeDataForUseInCspViolation(

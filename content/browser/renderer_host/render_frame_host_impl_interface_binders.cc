@@ -356,6 +356,7 @@ void RenderFrameHostImpl::TearDownMojoConnection() {
   mojo_image_downloader_.reset();
   find_in_page_.reset();
   local_frame_.reset();
+  outside_context_csp_violation_reporter_.reset();
   local_main_frame_.reset();
 
   frame_host_associated_receiver_.reset();

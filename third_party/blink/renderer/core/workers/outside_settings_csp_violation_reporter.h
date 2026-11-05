@@ -9,6 +9,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/csp/outside_context_csp_violation_reporter_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -23,7 +24,7 @@ class ExecutionContext;
 // mojom::blink::OutsideContextCSPViolationReporter.
 class CORE_EXPORT OutsideSettingsCSPViolationReporter final
     : public GarbageCollected<OutsideSettingsCSPViolationReporter>,
-      public mojom::blink::OutsideContextCSPViolationReporter,
+      public OutsideContextCSPViolationReporterBase,
       public Supplement<ExecutionContext> {
  public:
   static const char kSupplementName[];
@@ -35,13 +36,15 @@ class CORE_EXPORT OutsideSettingsCSPViolationReporter final
 
   explicit OutsideSettingsCSPViolationReporter(ExecutionContext& context);
 
-  // mojom::blink::OutsideContextCSPViolationReporter:
-  void ReportCSPViolation(
-      network::mojom::blink::CSPViolationPtr violation) override;
-
   void Trace(Visitor* visitor) const override;
 
  private:
+  // OutsideContextCSPViolationReporterBase:
+  bool IsCSPEffectiveDirectiveAllowedForViolationReporting(
+      network::mojom::blink::CSPDirectiveName effective_type) const override;
+  ContentSecurityPolicy* GetContentSecurityPolicyForViolationReporting()
+      override;
+
   HeapMojoReceiverSet<mojom::blink::OutsideContextCSPViolationReporter,
                       OutsideSettingsCSPViolationReporter>
       receivers_;

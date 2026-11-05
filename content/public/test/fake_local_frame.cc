@@ -5,7 +5,6 @@
 #include "content/public/test/fake_local_frame.h"
 
 #include "build/build_config.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -111,9 +110,6 @@ void FakeLocalFrame::AdvanceFocusInFrame(
     const std::optional<blink::RemoteFrameToken>& source_frame_token) {}
 
 void FakeLocalFrame::AdvanceFocusForIME(blink::mojom::FocusType focus_type) {}
-
-void FakeLocalFrame::ReportContentSecurityPolicyViolation(
-    network::mojom::CSPViolationPtr violation) {}
 
 void FakeLocalFrame::DidUpdateFramePolicy(
     const blink::FramePolicy& frame_policy) {}
