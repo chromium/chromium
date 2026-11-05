@@ -40,7 +40,8 @@ class RecentlyAudibleHelperTest : public testing::Test {
             task_runner_);
 
     tabs::TabLookupFromWebContents::CreateForWebContents(contents_, &tab_);
-    helper_ = std::make_unique<RecentlyAudibleHelper>(tab_, contents_);
+    owned_helper_ = std::make_unique<RecentlyAudibleHelper>(tab_, contents_);
+    helper_ = owned_helper_.get();
     helper_->SetTickClockForTesting(task_runner_->GetMockTickClock());
     subscription_ =
         helper_->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
@@ -49,15 +50,50 @@ class RecentlyAudibleHelperTest : public testing::Test {
   }
 
   void TearDown() override {
-    helper_->SetTickClockForTesting(nullptr);
+    if (helper_) {
+      helper_->SetTickClockForTesting(nullptr);
+    }
     subscription_ = {};
     task_runner_->RunUntilIdle();
     EXPECT_TRUE(recently_audible_messages_.empty());
 
-    helper_.reset();
+    helper_ = nullptr;
+    contents_ = nullptr;
+    owned_helper_.reset();
     scoped_context_.reset();
     test_web_contents_factory_.reset();
   }
+
+  void InitForNonTabWebContents(bool initially_audible = false) {
+    if (helper_) {
+      helper_->SetTickClockForTesting(nullptr);
+    }
+    subscription_ = {};
+    helper_ = nullptr;
+    owned_helper_.reset();
+
+    contents_ =
+        test_web_contents_factory_->CreateWebContents(&testing_profile_);
+    if (initially_audible) {
+      SimulateAudioStarts();
+    }
+    RecentlyAudibleHelper::CreateForWebContents(contents_);
+    helper_ = RecentlyAudibleHelper::FromWebContents(contents_);
+    ASSERT_NE(nullptr, helper_);
+    helper_->SetTickClockForTesting(task_runner_->GetMockTickClock());
+    subscription_ =
+        helper_->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
+            &RecentlyAudibleHelperTest::OnRecentlyAudibleCallback,
+            base::Unretained(this)));
+  }
+
+  content::WebContents* CreateWebContents() {
+    return test_web_contents_factory_->CreateWebContents(&testing_profile_);
+  }
+
+  content::WebContents* contents() { return contents_; }
+  tabs::MockTabInterface& tab() { return tab_; }
+  RecentlyAudibleHelper* helper() { return helper_; }
 
   void SimulateAudioStarts() {
     content::WebContentsTester::For(contents_)->SetIsCurrentlyAudible(true);
@@ -122,7 +158,8 @@ class RecentlyAudibleHelperTest : public testing::Test {
   // A test WebContents and its associated helper.
   raw_ptr<content::WebContents, DanglingUntriaged> contents_;
   tabs::MockTabInterface tab_;
-  std::unique_ptr<RecentlyAudibleHelper> helper_;
+  std::unique_ptr<RecentlyAudibleHelper> owned_helper_;
+  raw_ptr<RecentlyAudibleHelper> helper_;
   base::CallbackListSubscription subscription_;
 
   std::list<bool> recently_audible_messages_;
@@ -167,6 +204,126 @@ TEST_F(RecentlyAudibleHelperTest, AllStateTransitions) {
 
   // Advance time by the timeout period and this time expect a transition to not
   // recently audible.
+  AdvanceTime(RecentlyAudibleHelper::kRecentlyAudibleTimeout);
+  ExpectRecentlyAudibleTransition(false);
+  ExpectNotRecentlyAudible();
+  VerifyAndClearExpectations();
+}
+
+TEST_F(RecentlyAudibleHelperTest, FromAndFromWebContents) {
+  // Null lookups return nullptr.
+  EXPECT_EQ(nullptr, RecentlyAudibleHelper::From(nullptr));
+  EXPECT_EQ(nullptr, RecentlyAudibleHelper::FromWebContents(nullptr));
+
+  // Tab-attached helper is retrievable via both From(tab) and
+  // FromWebContents(contents).
+  EXPECT_EQ(&tab(), tabs::TabInterface::MaybeGetFromContents(contents()));
+  EXPECT_EQ(helper(), RecentlyAudibleHelper::From(&tab()));
+  EXPECT_EQ(helper(), RecentlyAudibleHelper::FromWebContents(contents()));
+
+  // Calling CreateForWebContents / GetOrCreateForWebContents on a tab-backed
+  // WebContents is a no-op that returns the tab-attached helper without
+  // creating a duplicate WebContentsUserData instance.
+  RecentlyAudibleHelper::CreateForWebContents(contents());
+  EXPECT_EQ(helper(), RecentlyAudibleHelper::FromWebContents(contents()));
+  EXPECT_EQ(helper(),
+            RecentlyAudibleHelper::GetOrCreateForWebContents(contents()));
+  EXPECT_EQ(
+      nullptr,
+      content::WebContentsUserData<RecentlyAudibleHelper>::FromWebContents(
+          contents()));
+
+  // A non-tabbed WebContents without a helper attached returns nullptr.
+  content::WebContents* non_tab_contents = CreateWebContents();
+  EXPECT_EQ(nullptr,
+            tabs::TabInterface::MaybeGetFromContents(non_tab_contents));
+  EXPECT_EQ(nullptr, RecentlyAudibleHelper::FromWebContents(non_tab_contents));
+
+  // Attaching via CreateForWebContents makes it retrievable via
+  // FromWebContents(non_tab_contents), and subsequent CreateForWebContents /
+  // GetOrCreateForWebContents calls return the same instance.
+  RecentlyAudibleHelper::CreateForWebContents(non_tab_contents);
+  EXPECT_EQ(nullptr,
+            tabs::TabInterface::MaybeGetFromContents(non_tab_contents));
+  RecentlyAudibleHelper* non_tab_helper =
+      RecentlyAudibleHelper::FromWebContents(non_tab_contents);
+  EXPECT_NE(nullptr, non_tab_helper);
+  EXPECT_NE(helper(), non_tab_helper);
+  RecentlyAudibleHelper::CreateForWebContents(non_tab_contents);
+  EXPECT_EQ(non_tab_helper,
+            RecentlyAudibleHelper::FromWebContents(non_tab_contents));
+  EXPECT_EQ(non_tab_helper,
+            RecentlyAudibleHelper::GetOrCreateForWebContents(non_tab_contents));
+}
+
+TEST_F(RecentlyAudibleHelperTest, CreateForWebContentsAllStateTransitions) {
+  ASSERT_NO_FATAL_FAILURE(InitForNonTabWebContents());
+  EXPECT_EQ(nullptr, tabs::TabInterface::MaybeGetFromContents(contents()));
+  EXPECT_EQ(helper(), RecentlyAudibleHelper::FromWebContents(contents()));
+
+  // Initially nothing has ever been audible.
+  ExpectNeverAudible();
+  VerifyAndClearExpectations();
+
+  // Start audio and expect a transition.
+  SimulateAudioStarts();
+  ExpectRecentlyAudibleTransition(true);
+  ExpectCurrentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Keep audio playing and don't expect any transitions.
+  AdvanceTime(base::Seconds(30));
+  ExpectCurrentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Stop audio, but don't expect a transition.
+  SimulateAudioStops();
+  ExpectRecentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Advance time by half the timeout period. Still don't expect a transition.
+  AdvanceTime(RecentlyAudibleHelper::kRecentlyAudibleTimeout / 2);
+  ExpectRecentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Start audio again. Still don't expect a transition.
+  SimulateAudioStarts();
+  ExpectCurrentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Advance time and stop audio, not expecting a transition.
+  AdvanceTime(base::Seconds(30));
+  SimulateAudioStops();
+  ExpectRecentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Advance time by the timeout period and this time expect a transition to not
+  // recently audible.
+  AdvanceTime(RecentlyAudibleHelper::kRecentlyAudibleTimeout);
+  ExpectRecentlyAudibleTransition(false);
+  ExpectNotRecentlyAudible();
+  VerifyAndClearExpectations();
+}
+
+TEST_F(RecentlyAudibleHelperTest, CreateForWebContentsInitiallyAudible) {
+  ASSERT_NO_FATAL_FAILURE(InitForNonTabWebContents(/*initially_audible=*/true));
+  EXPECT_EQ(nullptr, tabs::TabInterface::MaybeGetFromContents(contents()));
+  EXPECT_EQ(helper(), RecentlyAudibleHelper::FromWebContents(contents()));
+
+  // Helper created on an already-audible WebContents starts in the currently
+  // audible state without emitting a transition callback.
+  ExpectCurrentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Advance time so the mock tick clock is non-null when audio stops, then stop
+  // audio; helper remains recently audible until the timeout elapses.
+  AdvanceTime(base::Seconds(30));
+  SimulateAudioStops();
+  ExpectRecentlyAudible();
+  VerifyAndClearExpectations();
+
+  // Advance time by the timeout period and expect a transition to not recently
+  // audible.
   AdvanceTime(RecentlyAudibleHelper::kRecentlyAudibleTimeout);
   ExpectRecentlyAudibleTransition(false);
   ExpectNotRecentlyAudible();

@@ -5,23 +5,31 @@
 #ifndef CHROME_BROWSER_UI_RECENTLY_AUDIBLE_HELPER_H_
 #define CHROME_BROWSER_UI_RECENTLY_AUDIBLE_HELPER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace base {
 class TickClock;
 }
 
-// A helper that observers tab audibility and calculates whether or not a tab
-// is recently audible. This is used to make the "audio playing" icon persist
-// for a short period after audio stops. This class is only safe to use from the
-// UI thread.
-class RecentlyAudibleHelper : public content::WebContentsObserver {
+// A helper that observes WebContents audibility and calculates whether or not a
+// WebContents is recently audible. This is used to make the "audio playing"
+// icon persist for a short period after audio stops. Supports attachment to a
+// `tabs::TabInterface` (via `ui::ScopedUnownedUserData`) or directly to a
+// non-tab `content::WebContents` (via `CreateForWebContents()` /
+// `content::WebContentsUserData`). This class is only safe to use from the UI
+// thread.
+class RecentlyAudibleHelper
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<RecentlyAudibleHelper> {
  public:
   DECLARE_USER_DATA(RecentlyAudibleHelper);
 
@@ -40,7 +48,15 @@ class RecentlyAudibleHelper : public content::WebContentsObserver {
 
   ~RecentlyAudibleHelper() override;
 
+  // Creates `RecentlyAudibleHelper` and attaches it to `contents` for non-tab
+  // `WebContents` that do not have an external owner.
+  static void CreateForWebContents(content::WebContents* contents);
+  static RecentlyAudibleHelper* GetOrCreateForWebContents(
+      content::WebContents* contents);
   static RecentlyAudibleHelper* From(tabs::TabInterface* tab);
+
+  // Retrieves the helper for `contents`, checking `tabs::TabInterface` first
+  // and falling back to `content::WebContentsUserData`.
   static RecentlyAudibleHelper* FromWebContents(content::WebContents* contents);
 
   // Returns true if the WebContents was ever audible over its lifetime.
@@ -76,6 +92,11 @@ class RecentlyAudibleHelper : public content::WebContentsObserver {
 
  private:
   friend class RecentlyAudibleHelperTest;
+  friend class content::WebContentsUserData<RecentlyAudibleHelper>;
+
+  explicit RecentlyAudibleHelper(content::WebContents* contents);
+  RecentlyAudibleHelper(tabs::TabInterface* tab,
+                        content::WebContents* contents);
 
   // contents::WebContentsObserver implementation:
   void OnAudioStateChanged(bool audible) override;
@@ -102,7 +123,10 @@ class RecentlyAudibleHelper : public content::WebContentsObserver {
   // The tick clock this object is using.
   raw_ptr<const base::TickClock> tick_clock_;
 
-  ui::ScopedUnownedUserData<RecentlyAudibleHelper> scoped_unowned_user_data_;
+  std::optional<ui::ScopedUnownedUserData<RecentlyAudibleHelper>>
+      scoped_unowned_user_data_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_RECENTLY_AUDIBLE_HELPER_H_
