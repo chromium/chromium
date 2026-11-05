@@ -370,28 +370,16 @@ struct SmartTabSharingState {
 // Implemented in HTML/TS and called from C++
 // (ContextualTasksExtensionHandler or
 // ContextualTasksExtensionServiceWorkerHandler) to control the extension UI and
-// forward messages from the browser to the webview or connected search page.
+// forward messages from the browser to the connected search page.
 interface ExtensionPage {
-  // Sends a message from the browser to the extension to be forwarded to GWS.
-  // Called by C++ to deliver data (e.g. from the AIM server) to the guest.
-  //
-  // Inputs:
-  // - `message`: The raw bytes of the serialized protobuf message.
-  // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
-  PostAimMessage(array<uint8> message);
-
   // Sends a search communication message (e.g.
   // lens.chrome.ClientToSearchMessage) from the browser to the extension to be
   // forwarded to the search page. `document_id` is the target frame's
   // serialized `ExtensionApiFrameIdMap::DocumentId` when routing through the
-  // extension Service Worker, or null when routing to a document-bound
-  // extension frame.
+  // extension Service Worker, or null in unit/browser tests that do not target
+  // a specific frame.
   PostSearchMessage(
       mojo_base.mojom.ProtoWrapper message, string? document_id);
-
-  // Signals to the extension that the handshake with GWS is complete.
-  // Called by C++ after the browser processes the handshake response.
-  OnHandshakeComplete();
 
   // Called by the browser process (C++) when the Lens overlay is shown/hidden.
   OnLensOverlayStateChanged(bool is_showing);

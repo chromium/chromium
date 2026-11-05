@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -50,10 +49,6 @@ class InputStateModel;
 struct TabContextState;
 }  // namespace contextual_search
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace contextual_tasks {
 class ContextualTasksWebContentsUserData;
 }  // namespace contextual_tasks
@@ -71,24 +66,15 @@ class ContextualTasksExtensionHandler
       public composebox::mojom::PageHandlerFactory,
       public composebox::mojom::PageHandler,
       public searchbox::mojom::PageHandler,
-      public contextual_tasks::AimMessagePoster,
       public PermissionPromptObserver::Observer {
  public:
   ~ContextualTasksExtensionHandler() override;
-
-  // Returns the bound ContextualTasksExtensionHandler associated with the
-  // extension document in `web_contents`, or nullptr if not found or unbound.
-  static ContextualTasksExtensionHandler* FromWebContents(
-      content::WebContents* web_contents);
 
   void OnLensOverlayStateChanged(bool is_showing);
 
   // PermissionPromptObserver::Observer:
   void OnPermissionPromptChanged(bool is_showing,
                                  const gfx::Size& prompt_size) override;
-
-  // contextual_tasks::AimMessagePoster:
-  void PostAimMessage(const lens::ClientToAimMessage& message) override;
 
   void BindContextualTasksFactory(
       mojo::PendingReceiver<
