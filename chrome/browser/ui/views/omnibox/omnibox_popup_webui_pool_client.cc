@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_client.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,8 @@
 std::unique_ptr<OmniboxPopupWebUIPoolClient>
 OmniboxPopupWebUIPoolClient::CreateIfSharingEnabled(
     OmniboxPopupPresenterBase& presenter,
-    Profile* profile) {
+    Profile* profile,
+    views::Widget* browser_widget) {
   if (!base::FeatureList::IsEnabled(
           omnibox::kOmniboxWebUIPopupShareAcrossWindows) ||
       presenter.GetSharedPopupKind() == OmniboxPopupState::kNone) {
@@ -33,14 +35,21 @@ OmniboxPopupWebUIPoolClient::CreateIfSharingEnabled(
   if (!pool) {
     return nullptr;
   }
-  return std::make_unique<OmniboxPopupWebUIPoolClient>(presenter, *pool);
+  return std::make_unique<OmniboxPopupWebUIPoolClient>(presenter, *pool,
+                                                       browser_widget);
 }
 
 OmniboxPopupWebUIPoolClient::OmniboxPopupWebUIPoolClient(
     OmniboxPopupPresenterBase& presenter,
-    OmniboxPopupWebUIPool& pool)
+    OmniboxPopupWebUIPool& pool,
+    views::Widget* browser_widget)
     : presenter_(presenter), pool_(pool.GetWeakPtr()) {
   pool.AddPresenter(&presenter);
+  // Presenters are built after the location bar joins the browser window's
+  // widget, so this is set outside unit tests.
+  if (browser_widget) {
+    browser_widget_observation_.Observe(browser_widget);
+  }
 }
 
 OmniboxPopupWebUIPoolClient::~OmniboxPopupWebUIPoolClient() {
@@ -65,6 +74,34 @@ void OmniboxPopupWebUIPoolClient::OnPopupHidden() {
       FROM_HERE,
       base::BindOnce(&OmniboxPopupWebUIPoolClient::DropOtherIdleWebUIContents,
                      weak_factory_.GetWeakPtr()));
+}
+
+void OmniboxPopupWebUIPoolClient::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  if (!active || presenter_->GetWebUIContent()) {
+    return;
+  }
+  // Post rather than move the popup inside the activation change, which is
+  // still being dispatched to other observers.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &OmniboxPopupWebUIPoolClient::TakeIdleWebUIContentsIfNeeded,
+          weak_factory_.GetWeakPtr()));
+}
+
+void OmniboxPopupWebUIPoolClient::OnWidgetDestroying(views::Widget* widget) {
+  browser_widget_observation_.Reset();
+}
+
+void OmniboxPopupWebUIPoolClient::TakeIdleWebUIContentsIfNeeded() {
+  if (presenter_->GetWebUIContent()) {
+    return;
+  }
+  if (auto contents = TakeIdleWebUIContents()) {
+    presenter_->AdoptWebUIContents(std::move(contents));
+  }
 }
 
 void OmniboxPopupWebUIPoolClient::DropOtherIdleWebUIContents() {

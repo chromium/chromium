@@ -130,6 +130,14 @@ class OmniboxPopupShareAcrossWindowsBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  // Notifies the browser window's observers that it became active. Some
+  // window managers (e.g. Mutter on Wayland) ignore programmatic activation.
+  static void ActivateBrowser(BrowserWindowInterface* browser) {
+    BrowserView::GetBrowserViewForBrowser(browser)
+        ->GetWidget()
+        ->OnNativeWidgetActivationChanged(/*active=*/true);
+  }
+
   static std::string GetPageResultInput(content::WebContents* contents) {
     return content::EvalJs(contents, kPageResultInputScript).ExtractString();
   }
@@ -271,6 +279,48 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   EXPECT_EQ(GetPopupContents(browser()), contents);
 }
 
+// A window that becomes active takes the idle popup of another window, so
+// that the popup is in place before the user types.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       ActivationTakesIdlePopup) {
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  ActivateBrowser(other_browser);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetPopupContents(other_browser) == contents; }));
+  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+
+  ActivateBrowser(browser());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetPopupContents(browser()) == contents; }));
+  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+}
+
+// A window that becomes active leaves a popup that is not idle where it is.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       ActivationLeavesBusyPopup) {
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+      GetPresenter(browser())->CreateDeactivationBlocker();
+  ASSERT_TRUE(blocker);
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  ActivateBrowser(other_browser);
+  // Runs after the task that the activation posted.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+}
+
 // Tests sharing when windows prewarm their popup, as in
 // production.
 class OmniboxPopupShareAcrossWindowsEagerBrowserTest
@@ -298,7 +348,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
 
   BrowserWindowInterface* other_browser =
       CreateBrowser(browser()->GetProfile());
-  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  // The new window may already have taken the popup on activation, but it
+  // never creates its own.
+  content::WebContents* other_contents = GetPopupContents(other_browser);
+  EXPECT_TRUE(!other_contents || other_contents == contents);
 
   StartAutocomplete(other_browser, u"bar");
 

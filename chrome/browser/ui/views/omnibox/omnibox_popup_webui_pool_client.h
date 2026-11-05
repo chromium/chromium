@@ -9,6 +9,9 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 class OmniboxPopupPresenterBase;
 class OmniboxPopupUI;
@@ -19,21 +22,26 @@ class WebUIContentsWrapperT;
 
 // Connects a presenter that shares its popup to its profile's
 // `OmniboxPopupWebUIPool`, and holds the sharing policy, so that the presenter
-// only asks it at the points where it creates or hides its popup.
-class OmniboxPopupWebUIPoolClient {
+// only asks it at the points where it creates or hides its popup. Also takes
+// an idle popup when the presenter's browser window becomes active, so that
+// the popup is in place before the user types.
+class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
  public:
   // Returns null unless `omnibox::kOmniboxWebUIPopupShareAcrossWindows` is
   // enabled, `presenter` shares its popup kind and `profile` has a pool.
+  // `browser_widget` is the browser window that hosts the popup.
   static std::unique_ptr<OmniboxPopupWebUIPoolClient> CreateIfSharingEnabled(
       OmniboxPopupPresenterBase& presenter,
-      Profile* profile);
+      Profile* profile,
+      views::Widget* browser_widget);
 
   OmniboxPopupWebUIPoolClient(OmniboxPopupPresenterBase& presenter,
-                              OmniboxPopupWebUIPool& pool);
+                              OmniboxPopupWebUIPool& pool,
+                              views::Widget* browser_widget);
   OmniboxPopupWebUIPoolClient(const OmniboxPopupWebUIPoolClient&) = delete;
   OmniboxPopupWebUIPoolClient& operator=(const OmniboxPopupWebUIPoolClient&) =
       delete;
-  ~OmniboxPopupWebUIPoolClient();
+  ~OmniboxPopupWebUIPoolClient() override;
 
   // Whether another window of the profile has a popup of the same kind, which
   // moves to this window when this window needs it.
@@ -51,6 +59,13 @@ class OmniboxPopupWebUIPoolClient {
   void OnPopupHidden();
 
  private:
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // Takes an idle popup from another window if the presenter still has none.
+  void TakeIdleWebUIContentsIfNeeded();
+
   void DropOtherIdleWebUIContents();
 
   const raw_ref<OmniboxPopupPresenterBase> presenter_;
@@ -59,6 +74,8 @@ class OmniboxPopupWebUIPoolClient {
   // their profile alive; the weak pointer makes the order not matter.
   base::WeakPtr<OmniboxPopupWebUIPool> pool_;
 
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      browser_widget_observation_{this};
   base::WeakPtrFactory<OmniboxPopupWebUIPoolClient> weak_factory_{this};
 };
 

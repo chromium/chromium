@@ -582,8 +582,10 @@ void OmniboxPopupPresenterBase::ApplyWebUIContentCreationStrategy(
   // Joins the profile's pool before prewarming, so that prewarming can see the
   // other windows' popups. `location_bar_` is null in unit tests.
   if (location_bar_) {
+    views::Widget* widget = presenter_delegate_->GetLocationBarWidget();
     pool_client_ = OmniboxPopupWebUIPoolClient::CreateIfSharingEnabled(
-        *this, location_bar_->GetProfile());
+        *this, location_bar_->GetProfile(),
+        widget ? widget->GetTopLevelWidget() : nullptr);
   }
   switch (strategy) {
     case WebUIContentCreationStrategy::kEager:
