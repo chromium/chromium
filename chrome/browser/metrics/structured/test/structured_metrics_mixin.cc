@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -159,11 +160,13 @@ void StructuredMetricsMixin::WaitUntilEventRecorded(uint64_t project_name_hash,
 }
 
 void StructuredMetricsMixin::WaitUntilKeysReady() {
-  keys_run_loop_ = std::make_unique<base::RunLoop>();
-  base::RepeatingClosure callback =
-      base::BindLambdaForTesting([this]() { keys_run_loop_->Quit(); });
-  GetRecorder()->SetOnReadyToRecord(std::move(callback));
-  keys_run_loop_->Run();
+  // Device and profile keys load independently and in either order. Wait for
+  // the device keys and, if a profile was set up, the profile keys as well.
+  StructuredMetricsRecorder* recorder = GetRecorder();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return recorder->IsInitialized() &&
+           (!setup_profile_ || recorder->IsProfileInitialized());
+  })) << "Timed out waiting for structured metrics keys to load.";
 }
 
 void StructuredMetricsMixin::UpdateRecordingState(bool state) {

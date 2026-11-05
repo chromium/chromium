@@ -20,6 +20,10 @@ void KeyDataProvider::RemoveObserver(KeyDataProvider::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool KeyDataProvider::IsProfileReady() {
+  return false;
+}
+
 void KeyDataProvider::NotifyKeyReady() {
   for (Observer& obs : observers_) {
     obs.OnKeyReady();

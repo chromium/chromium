@@ -34,6 +34,7 @@ class TestKeyDataProvider : public KeyDataProvider, KeyDataProvider::Observer {
 
   // KeyDataProvider:
   bool IsReady() override;
+  bool IsProfileReady() override;
   std::optional<uint64_t> GetId(const std::string& project_name) override;
   std::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;

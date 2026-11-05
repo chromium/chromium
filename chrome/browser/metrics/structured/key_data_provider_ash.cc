@@ -49,6 +49,10 @@ bool KeyDataProviderAsh::IsReady() {
   return device_key_->IsReady();
 }
 
+bool KeyDataProviderAsh::IsProfileReady() {
+  return profile_key_ && profile_key_->IsReady();
+}
+
 std::optional<uint64_t> KeyDataProviderAsh::GetId(
     const std::string& project_name) {
   KeyDataProvider* key_data_provider = GetKeyDataProvider(project_name);

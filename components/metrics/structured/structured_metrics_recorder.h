@@ -111,7 +111,7 @@ class StructuredMetricsRecorder
   // Different initialization states for the recorder.
   enum State {
     kUninitialized,
-    // Set once OnKeyReady has been called once.
+    // Set once the device key data has been initialized.
     kKeyDataInitialized,
     // Set once the profile key data has been initialized.
     kProfileKeyDataInitialized,
@@ -180,7 +180,7 @@ class StructuredMetricsRecorder
   // Builds a cache of disallow projects from the Finch controlled variable.
   void CacheDisallowedProjectsSet();
 
-  // Returns true if key data is ready to use.
+  // Returns true if device or profile key data is ready to use.
   bool IsKeyDataInitialized();
 
   // Returns true if ready to record events.

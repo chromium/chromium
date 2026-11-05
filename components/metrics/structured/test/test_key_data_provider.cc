@@ -126,6 +126,10 @@ bool TestKeyDataProvider::IsReady() {
   return device_key_data_->IsReady();
 }
 
+bool TestKeyDataProvider::IsProfileReady() {
+  return profile_key_data_ && profile_key_data_->IsReady();
+}
+
 void TestKeyDataProvider::OnProfileAdded(const base::FilePath& profile_path) {
   // If the profile path has not been set, then set it here.
   if (profile_key_path_.empty()) {

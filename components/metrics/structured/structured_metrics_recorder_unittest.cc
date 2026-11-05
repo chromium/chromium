@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -20,6 +22,8 @@
 #include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/metrics/structured/event.h"
+#include "components/metrics/structured/key_data_provider_file.h"
+#include "components/metrics/structured/lib/key_data_provider.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
@@ -135,6 +139,52 @@ class TestSMRecorder : public StructuredMetricsRecorder {
 
  private:
   raw_ptr<TestKeyDataProvider> test_key_data_provider_;
+};
+
+// KeyDataProvider whose device and profile key readiness is controlled by the
+// test. Profile keys are backed by a real file so profile events can be hashed.
+class FakeKeyDataProvider : public KeyDataProvider {
+ public:
+  explicit FakeKeyDataProvider(const base::FilePath& profile_key_path)
+      : profile_key_data_(
+            std::make_unique<KeyDataProviderFile>(profile_key_path,
+                                                  base::Milliseconds(0))) {}
+  ~FakeKeyDataProvider() override = default;
+
+  // KeyDataProvider:
+  bool IsReady() override { return device_ready_; }
+  bool IsProfileReady() override { return profile_ready_; }
+  std::optional<uint64_t> GetId(const std::string& project_name) override {
+    if (!profile_ready_) {
+      return std::nullopt;
+    }
+    return profile_key_data_->GetId(project_name);
+  }
+  KeyData* GetKeyData(const std::string& project_name) override {
+    if (!profile_ready_) {
+      return nullptr;
+    }
+    return profile_key_data_->GetKeyData(project_name);
+  }
+  void Purge() override {}
+
+  void SetDeviceKeysReady() {
+    device_ready_ = true;
+    NotifyKeyReady();
+  }
+
+  // The backing profile key file must have finished loading before calling
+  // this.
+  void SetProfileKeysReady() {
+    CHECK(profile_key_data_->IsReady());
+    profile_ready_ = true;
+    NotifyKeyReady();
+  }
+
+ private:
+  std::unique_ptr<KeyDataProvider> profile_key_data_;
+  bool device_ready_ = false;
+  bool profile_ready_ = false;
 };
 
 }  // namespace
@@ -268,6 +318,14 @@ class StructuredMetricsRecorderTest : public testing::Test {
   }
 
   bool is_initialized() { return recorder_->IsInitialized(); }
+
+  static bool IsInitialized(StructuredMetricsRecorder& recorder) {
+    return recorder.IsInitialized();
+  }
+
+  static bool IsProfileInitialized(StructuredMetricsRecorder& recorder) {
+    return recorder.IsProfileInitialized();
+  }
 
   bool is_recording_enabled() { return recorder_->recording_enabled_; }
 
@@ -681,6 +739,51 @@ TEST_F(StructuredMetricsRecorderTest, EventsRecordedBeforeKeysInitialized) {
   EXPECT_EQ(GetEventMetrics().events_size(), 2);
 
   ExpectNoErrors();
+}
+
+// Test that the recorder tracks device and profile key readiness correctly
+// regardless of the order in which the keys finish loading, and that profile
+// events queued before any keys were ready are recorded once only the profile
+// keys are ready.
+TEST_F(StructuredMetricsRecorderTest, ProfileKeysReadyBeforeDeviceKeys) {
+  auto provider = std::make_unique<FakeKeyDataProvider>(ProfileKeyFilePath());
+  FakeKeyDataProvider* provider_ptr = provider.get();
+  StructuredMetricsRecorder recorder(std::move(provider),
+                                     std::make_unique<TestEventStorage>());
+  recorder.EnableRecording();
+  // Let the backing profile key file finish loading.
+  Wait();
+
+  // TestProjectOne is profile-scoped, so this is queued until profile keys are
+  // ready.
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+  EXPECT_EQ(recorder.event_storage()->RecordedEventsCount(), 0);
+
+  provider_ptr->SetProfileKeysReady();
+  EXPECT_FALSE(IsInitialized(recorder));
+  EXPECT_TRUE(IsProfileInitialized(recorder));
+  EXPECT_EQ(recorder.event_storage()->RecordedEventsCount(), 1);
+
+  provider_ptr->SetDeviceKeysReady();
+  EXPECT_TRUE(IsInitialized(recorder));
+  EXPECT_TRUE(IsProfileInitialized(recorder));
+
+  ExpectNoErrors();
+}
+
+// Test that a provider without profile keys only marks device keys ready.
+TEST_F(StructuredMetricsRecorderTest, DeviceKeysReadyWithoutProfileKeys) {
+  auto provider = std::make_unique<FakeKeyDataProvider>(ProfileKeyFilePath());
+  FakeKeyDataProvider* provider_ptr = provider.get();
+  StructuredMetricsRecorder recorder(std::move(provider),
+                                     std::make_unique<TestEventStorage>());
+  recorder.EnableRecording();
+
+  provider_ptr->SetDeviceKeysReady();
+  EXPECT_TRUE(IsInitialized(recorder));
+  EXPECT_FALSE(IsProfileInitialized(recorder));
 }
 
 // Ensure a call to OnRecordingDisabled not only prevents the reporting of new

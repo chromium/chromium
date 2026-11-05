@@ -111,13 +111,12 @@ void StructuredMetricsRecorder::OnKeyReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::CurrentUIThread::IsSet());
 
-  // If key data has not been initialized, it is highly likely that the key data
-  // is initialized.
-  if (!init_state_.Has(State::kKeyDataInitialized)) {
+  // Device and profile keys may be loaded in any order, so query the provider
+  // for which keys are ready rather than inferring it from the call count.
+  if (key_data_provider_->IsReady()) {
     init_state_.Put(State::kKeyDataInitialized);
-  } else {
-    // If kKeyDataInitialized, then this is the second time this callback is
-    // being called, which must be the profile keys.
+  }
+  if (key_data_provider_->IsProfileReady()) {
     init_state_.Put(State::kProfileKeyDataInitialized);
   }
 
@@ -395,7 +394,9 @@ void StructuredMetricsRecorder::CacheDisallowedProjectsSet() {
 
 bool StructuredMetricsRecorder::IsKeyDataInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return key_data_provider_->IsReady();
+  // Device and profile keys load independently, so either being ready is
+  // enough to record events of the corresponding scope.
+  return key_data_provider_->IsReady() || key_data_provider_->IsProfileReady();
 }
 
 bool StructuredMetricsRecorder::IsInitialized() {

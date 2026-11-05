@@ -312,6 +312,10 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, CreateLogs) {
   structured_metrics_mixin_.UpdateRecordingState(true);
   WaitForConsentChanges();
 
+  // Keys must be ready for events to be recorded actively. Otherwise, they will
+  // be queued to be recorded and the test may fail.
+  WaitUntilKeysReady();
+
   structured::StructuredMetricsClient::Record(
       structured::events::v2::test_project_seven::TestEventEight());
 
@@ -327,10 +331,10 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, CreateLogs) {
       /*notify_scheduler=*/false);
   run_loop.Run();
 
-  EXPECT_TRUE(HasUnsentLogs());
+  ASSERT_TRUE(HasUnsentLogs());
 
   std::unique_ptr<ChromeUserMetricsExtension> uma_proto = GetStagedLog();
-  EXPECT_NE(uma_proto.get(), nullptr);
+  ASSERT_NE(uma_proto.get(), nullptr);
 
   EXPECT_EQ(uma_proto->structured_data().events_size(), 1);
 }

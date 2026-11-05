@@ -46,8 +46,8 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
   void WaitUntilEventRecorded(uint64_t project_name_hash,
                               uint64_t event_name_hash);
 
-  // Waits until the keys have been loaded and the recorder is ready to actively
-  // record events.
+  // Waits until the device keys and, if a profile was set up, the profile keys
+  // have been loaded so the recorder can actively record events.
   void WaitUntilKeysReady();
 
   // Returns a pointer to the recorder used.
@@ -88,7 +88,6 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
   const bool setup_profile_;
 
   std::unique_ptr<base::RunLoop> record_run_loop_;
-  std::unique_ptr<base::RunLoop> keys_run_loop_;
 };
 
 }  // namespace metrics::structured

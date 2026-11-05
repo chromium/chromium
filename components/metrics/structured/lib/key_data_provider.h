@@ -44,6 +44,10 @@ class KeyDataProvider {
   // Returns true if the keys are ready to be used.
   virtual bool IsReady() = 0;
 
+  // Returns true if the profile keys are ready to be used. Providers that do
+  // not support profile keys always return false.
+  virtual bool IsProfileReady();
+
   // Retrieves the ID for given |project_name|.
   //
   // If no valid key is found for |project_name|, this function will return
