@@ -405,11 +405,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
-    enum="MobileMessagesBadgeState" expires_after="2026-12-06">
+    enum="MobileMessagesBadgeState" expires_after="2027-10-31">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
-    Records the state of a badge when it was tapped. {MobileInfobarType}
+    Records whether an iOS location bar infobar badge was in the accepted
+    (Active) or unaccepted (Inactive) state when directly tapped by the user.
+
+    Not emitted when the user taps the overflow badge or selects an infobar from
+    the overflow menu, nor for infobar types without a tappable location bar
+    badge.
+
+    Emitted once per direct user tap on an infobar badge button in the location
+    bar. {MobileInfobarType}
   </summary>
   <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
