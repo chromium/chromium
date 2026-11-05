@@ -2,14 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -140,6 +150,72 @@ IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
 
   EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
   EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
+}
+
+// Returns a NavigateAction to `url` in a new tab.
+optimization_guide::proto::Actions MakeNavigateInNewTab(std::string_view url) {
+  optimization_guide::proto::Actions actions;
+  optimization_guide::proto::NavigateAction* navigate =
+      actions.add_actions()->mutable_navigate();
+  navigate->set_url(url);
+  navigate->mutable_new_surface();
+  return actions;
+}
+
+// Test that a NavigateAction with new_surface creates a new foreground tab
+// in the most recently active window, adds it to the task, and navigates it to
+// the target URL.
+IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
+                       NavigateTool_OpenInNewTab) {
+  const GURL url_start = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+  const int initial_tab_count = tab_list()->GetTabCount();
+  tabs::TabInterface* source_tab = active_tab();
+
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<std::unique_ptr<ToolRequest>> requests,
+      BuildToolRequest(MakeNavigateInNewTab(url_target.spec())));
+
+  ActResultFuture result_success;
+  actor_task().Act(std::move(requests), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  EXPECT_EQ(tab_list()->GetTabCount(), initial_tab_count + 1);
+  tabs::TabInterface* new_tab = tab_list()->GetActiveTab();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(new_tab, source_tab);
+  EXPECT_EQ(new_tab->GetBrowserWindowInterface(),
+            source_tab->GetBrowserWindowInterface());
+  EXPECT_TRUE(actor_task().HasTab(new_tab->GetHandle()));
+  EXPECT_EQ(new_tab->GetContents()->GetLastCommittedURL(), url_target);
+  EXPECT_EQ(source_tab->GetContents()->GetLastCommittedURL(), url_start);
+}
+
+// Test that a NavigateAction with new_surface and a blocked URL fails
+// validation without creating a new tab.
+IN_PROC_BROWSER_TEST_F(
+    ActorNavigateToolBrowserTest,
+    NavigateTool_OpenInNewTab_BlockedUrlDoesNotCreateNewTab) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+  const int initial_tab_count = tab_list()->GetTabCount();
+
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<std::unique_ptr<ToolRequest>> requests,
+      BuildToolRequest(MakeNavigateInNewTab(url_target.spec())));
+
+  ActResultFuture result;
+  actor_task().Act(std::move(requests), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+
+  EXPECT_EQ(tab_list()->GetTabCount(), initial_tab_count);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_start);
 }
 
 class ActorNavigateToolRequestBrowserTest

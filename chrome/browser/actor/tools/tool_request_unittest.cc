@@ -126,7 +126,7 @@ TEST_F(ToolRequestTest, SubclassSurfaceConstructorsStoreTarget) {
   ActorSurfaceImpl actor_surface(actor_surface_handle_, tab.GetHandle());
   const PageTarget target(gfx::Point(1, 2));
 
-  auto expect_targets_surface = [&](const TabToolRequest& request) {
+  auto expect_targets_surface = [&](const ToolRequest& request) {
     SCOPED_TRACE(request.Name());
     EXPECT_EQ(request.GetActorSurfaceHandle(), actor_surface_handle_);
   };
@@ -215,6 +215,16 @@ TEST_F(ToolRequestTest, WaitRequestForMissingSurfaceStillRequiresUrlCheck) {
 
 TEST_F(ToolRequestTest, WaitRequestWithoutSurfaceSkipsUrlCheck) {
   WaitToolRequest request(base::Seconds(0));
+  EXPECT_TRUE(request.GetActorSurfaceForValidation().is_null());
+  EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
+}
+
+TEST_F(ToolRequestTest, NavigateRequestInNewTabAllowsNullSurface) {
+  NavigateToolRequest request(ActorSurfaceHandle::Null(),
+                              GURL("https://example.com"),
+                              /*open_in_new_tab=*/true);
+  EXPECT_TRUE(request.open_in_new_tab());
+  EXPECT_TRUE(request.GetActorSurfaceHandle().is_null());
   EXPECT_TRUE(request.GetActorSurfaceForValidation().is_null());
   EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
 }

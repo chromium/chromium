@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -1012,6 +1013,71 @@ TEST_F(ActorProtoConversionTest, ToScreenshotResult) {
             TabObservation::SCREENSHOT_ERROR);
   EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kEncodingError),
             TabObservation::SCREENSHOT_ERROR);
+}
+
+TEST_F(ActorProtoConversionTest, BuildToolRequest_Navigate_WithTabId) {
+  optimization_guide::proto::Actions actions;
+  optimization_guide::proto::NavigateAction* navigate_action =
+      actions.add_actions()->mutable_navigate();
+  navigate_action->set_tab_id(42);
+  navigate_action->set_url("https://example.com");
+
+  ASSERT_OK_AND_ASSIGN(std::vector<std::unique_ptr<ToolRequest>> requests,
+                       BuildToolRequest(actions));
+  ASSERT_EQ(requests.size(), 1u);
+  EXPECT_EQ(NavigateToolRequest::kName, requests.front()->Name());
+  EXPECT_EQ(42, requests.front()->GetActorSurfaceHandle().raw_value());
+}
+
+TEST_F(ActorProtoConversionTest, BuildToolRequest_Navigate_NoTabFails) {
+  optimization_guide::proto::Actions zero_tab_actions;
+  optimization_guide::proto::NavigateAction* zero_tab_navigate =
+      zero_tab_actions.add_actions()->mutable_navigate();
+  zero_tab_navigate->set_tab_id(0);
+  zero_tab_navigate->set_url("https://example.com");
+
+  optimization_guide::proto::Actions unset_tab_actions;
+  unset_tab_actions.add_actions()->mutable_navigate()->set_url(
+      "https://example.com");
+
+  for (const auto* actions : {&zero_tab_actions, &unset_tab_actions}) {
+    auto result = BuildToolRequest(*actions);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error().first, 0u);
+    EXPECT_EQ(result.error().second,
+              mojom::ActionResultCode::kArgumentsInvalid);
+  }
+}
+
+TEST_F(ActorProtoConversionTest, BuildToolRequest_Navigate_NewSurface) {
+  optimization_guide::proto::Actions actions;
+  optimization_guide::proto::NavigateAction* navigate_action =
+      actions.add_actions()->mutable_navigate();
+  navigate_action->set_url("https://example.com");
+  navigate_action->mutable_new_surface();
+
+  ASSERT_OK_AND_ASSIGN(std::vector<std::unique_ptr<ToolRequest>> requests,
+                       BuildToolRequest(actions));
+  ASSERT_EQ(requests.size(), 1u);
+  ASSERT_EQ(NavigateToolRequest::kName, requests.front()->Name());
+  const auto& request = static_cast<const NavigateToolRequest&>(*requests[0]);
+  EXPECT_TRUE(request.GetActorSurfaceHandle().is_null());
+  EXPECT_TRUE(request.open_in_new_tab());
+}
+
+TEST_F(ActorProtoConversionTest, BuildToolRequest_Navigate_MissingUrlFails) {
+  optimization_guide::proto::Actions tab_actions;
+  tab_actions.add_actions()->mutable_navigate()->set_tab_id(42);
+
+  optimization_guide::proto::Actions new_surface_actions;
+  new_surface_actions.add_actions()->mutable_navigate()->mutable_new_surface();
+
+  for (const auto* actions : {&tab_actions, &new_surface_actions}) {
+    auto result = BuildToolRequest(*actions);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error().second,
+              mojom::ActionResultCode::kArgumentsInvalid);
+  }
 }
 
 void CanConvertAnyProto(

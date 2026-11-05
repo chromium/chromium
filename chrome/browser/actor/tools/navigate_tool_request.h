@@ -17,8 +17,11 @@
 namespace actor {
 class ToolRequestVisitorFunctor;
 
-// Navigates a specified tab to a specified URL.
-class NavigateToolRequest : public TabToolRequest {
+// Navigates a specified tab to a specified URL. If `open_in_new_tab` is true,
+// instead opens a new foreground tab in the profile's most recently active
+// normal window, adds it to the task, and navigates it to the URL. In that case
+// `actor_surface_handle` must be null.
+class NavigateToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "Navigate";
   // Canonical model-facing name exposed in LLM prompt schemas and indexed by
@@ -27,11 +30,16 @@ class NavigateToolRequest : public TabToolRequest {
   // JSON argument key for the destination URL parameter.
   static constexpr std::string_view kUrlParam = "url";
 
-  NavigateToolRequest(ActorSurfaceHandle actor_surface_handle, GURL url);
+  NavigateToolRequest(ActorSurfaceHandle actor_surface_handle,
+                      GURL url,
+                      bool open_in_new_tab = false);
   ~NavigateToolRequest() override;
 
   // Returns the `ToolId::kNavigate` tool schema definition.
   static std::optional<ToolDefinition> GetToolDefinition();
+
+  const GURL& url() const { return url_; }
+  bool open_in_new_tab() const { return open_in_new_tab_; }
 
   bool RequiresUrlCheckInCurrentTab() const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
@@ -40,11 +48,17 @@ class NavigateToolRequest : public TabToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   std::string_view Name() const override;
+  ActorSurfaceHandle GetActorSurfaceHandle() const override;
+  GURL GetURLForJournal() const override;
 
   std::optional<url::Origin> AssociatedOriginGrant() const override;
 
  private:
+  // Null if and only if `open_in_new_tab_` is true. Otherwise, it may point to
+  // an actor surface that no longer exists.
+  ActorSurfaceHandle actor_surface_handle_;
   GURL url_;
+  bool open_in_new_tab_;
 };
 
 }  // namespace actor
