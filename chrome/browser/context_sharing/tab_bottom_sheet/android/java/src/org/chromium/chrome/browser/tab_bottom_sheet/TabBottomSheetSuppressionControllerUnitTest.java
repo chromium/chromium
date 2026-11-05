@@ -131,6 +131,27 @@ public class TabBottomSheetSuppressionControllerUnitTest {
 
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(LayoutType.BROWSING);
         observer.onStartedHiding(LayoutType.HUB);
+        observer.onFinishedHiding(LayoutType.HUB);
+        assertTrue(mController.isInternallySuppressed());
+        verify(mDelegate, never()).onSuppressionEnded();
+
+        observer.onStartedShowing(LayoutType.BROWSING);
+        assertFalse(mController.isInternallySuppressed());
+        verify(mDelegate).onSuppressionEnded();
+    }
+
+    @Test
+    public void testLayoutState_hubToOtherLayoutStaysSuppressedUntilBrowsing() {
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
+        observer.onStartedShowing(LayoutType.HUB);
+
+        when(mLayoutStateProvider.getNextLayoutType()).thenReturn(LayoutType.TOOLBAR_SWIPE);
+        observer.onStartedHiding(LayoutType.HUB);
+        observer.onFinishedHiding(LayoutType.HUB);
+        assertTrue(mController.isInternallySuppressed());
+        verify(mDelegate, never()).onSuppressionEnded();
+
+        observer.onStartedShowing(LayoutType.BROWSING);
         assertFalse(mController.isInternallySuppressed());
         verify(mDelegate).onSuppressionEnded();
     }
