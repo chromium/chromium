@@ -180,6 +180,25 @@ suite('GlicSelectionOverlay', () => {
     assertEquals('ellipsis', getComputedStyle(label1).textOverflow);
     assertTrue(label1.scrollWidth > label1.clientWidth);
   });
+
+  test('SearchboxPillUsesThemeColors', () => {
+    const pill =
+        overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill')!;
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+
+    document.documentElement.style.setProperty(
+        '--cr-fallback-color-surface', 'rgb(31, 31, 31)');
+    document.documentElement.style.setProperty(
+        '--cr-primary-text-color', 'rgb(227, 227, 227)');
+
+    assertEquals('rgb(31, 31, 31)', getComputedStyle(pill).backgroundColor);
+    assertEquals('rgb(227, 227, 227)', getComputedStyle(input).color);
+
+    document.documentElement.style.removeProperty(
+        '--cr-fallback-color-surface');
+    document.documentElement.style.removeProperty('--cr-primary-text-color');
+  });
 });
 
 function fakeScreenshotBitmap(

@@ -286,7 +286,7 @@
 
 .searchbox-pill {
   align-items: center;
-  background-color: #FFF;
+  background-color: var(--cr-fallback-color-surface);
   border-radius: 28px;
   box-shadow: var(--cr-elevation-2);
   box-sizing: border-box;
@@ -319,7 +319,7 @@
 #promptInput {
   background: transparent;
   border: none;
-  color: #1F1F1F;
+  color: var(--cr-primary-text-color);
   flex: 1;
   font-family: inherit;
   font-size: 14px;
@@ -329,7 +329,7 @@
 }
 
 #promptInput::placeholder {
-  color: #747775;
+  color: var(--cr-fallback-color-outline);
 }
 
 #submitPromptButton {
@@ -634,6 +634,7 @@
   /* Add a border since the shadow is not visible in hcm. */
   #inlineFulfillmentHost,
   .action-chip,
+  .searchbox-pill,
   .settings-button,
   .dogfood-feedback-button {
     border: 1px solid ButtonBorder;
