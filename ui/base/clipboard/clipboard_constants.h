@@ -51,6 +51,11 @@ inline constexpr char kMimeTypeLinuxUtf8String[] = "UTF8_STRING";
 inline constexpr char kMimeTypeLinuxString[] = "STRING";
 inline constexpr char kMimeTypeLinuxText[] = "TEXT";
 
+// Used to hint to Linux clipboard managers (e.g. KDE Klipper, CopyQ, GPaste,
+// wl-clipboard/cliphist) not to persist sensitive clipboard data to history.
+inline constexpr char kMimeTypeLinuxPasswordManagerHint[] =
+    "x-kde-passwordManagerHint";
+
 // Used for file transfer using the XDG file transfer portal.
 inline constexpr char kMimeTypePortalFileTransfer[] =
     "application/vnd.portal.filetransfer";

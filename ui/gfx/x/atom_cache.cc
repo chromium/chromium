@@ -179,6 +179,7 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "text/rtf",
     "text/uri-list",
     "text/x-moz-url",
+    "x-kde-passwordManagerHint",
     "xwayland-keyboard",
     "xwayland-pointer",
     "xwayland-touch",

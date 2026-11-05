@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
@@ -46,6 +47,19 @@ TEST(SelectionUtilsTest, SelectionFormatMap_Contains) {
            base::MakeRefCounted<base::RefCountedString>("test"));
   EXPECT_TRUE(m.contains(x11::Atom::PRIMARY));
   EXPECT_FALSE(m.contains(x11::Atom::SECONDARY));
+}
+
+TEST(SelectionUtilsTest, SelectionData_TakeBytesReleasesUnderlyingMemory) {
+  SelectionData empty;
+  EXPECT_EQ(nullptr, empty.TakeBytes());
+
+  SelectionData data(x11::Atom::STRING,
+                     base::MakeRefCounted<base::RefCountedString>("secret"));
+  scoped_refptr<base::RefCountedBytes> taken = data.TakeBytes();
+  ASSERT_TRUE(taken);
+  EXPECT_EQ(base::as_byte_span(std::string_view("secret")), base::span(*taken));
+  EXPECT_TRUE(data.GetSpan().empty());
+  EXPECT_EQ(nullptr, data.TakeBytes());
 }
 
 }  // namespace

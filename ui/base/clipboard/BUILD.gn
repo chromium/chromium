@@ -327,7 +327,9 @@ source_set("clipboard_test") {
     ]
 
     if (use_ozone) {
+      sources += [ "clipboard_ozone_unittest.cc" ]
       deps += [
+        "//ui/ozone",
         "//ui/ozone:ozone_switches",
         "//ui/ozone:platform",
       ]

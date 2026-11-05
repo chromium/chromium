@@ -182,6 +182,10 @@ class ClipboardOzone::AsyncClipboardOzone {
     }
   }
 
+  bool HasFormatToOffer(const std::string& mime_type) const {
+    return data_to_offer_.contains(mime_type);
+  }
+
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const {
     return buffer == ClipboardBuffer::kCopyPaste ? clipboard_sequence_number_
@@ -322,10 +326,10 @@ class ClipboardOzone::AsyncClipboardOzone {
 };
 
 // ClipboardOzone implementation.
-ClipboardOzone::ClipboardOzone() {
-  auto* platform_clipboard =
-      OzonePlatform::GetInstance()->GetPlatformClipboard();
+ClipboardOzone::ClipboardOzone()
+    : ClipboardOzone(OzonePlatform::GetInstance()->GetPlatformClipboard()) {}
 
+ClipboardOzone::ClipboardOzone(PlatformClipboard* platform_clipboard) {
   if (platform_clipboard) {
     async_clipboard_ozone_ =
         std::make_unique<ClipboardOzone::AsyncClipboardOzone>(
@@ -665,11 +669,15 @@ bool ClipboardOzone::IsSelectionBufferAvailable() const {
   return async_clipboard_ozone_->IsSelectionBufferAvailable();
 }
 
-void ClipboardOzone::WritePortableTextRepresentation(ClipboardBuffer buffer,
-                                                     const ObjectMap& objects) {
+void ClipboardOzone::WritePortableTextRepresentation(
+    ClipboardBuffer buffer,
+    const ObjectMap& objects,
+    PrivacyTypes privacy_types) {
   // Just like Non-Backed/X11 implementation does, copy text data from the
-  // copy/paste selection to the primary selection.
-  if (buffer != ClipboardBuffer::kCopyPaste || !IsSelectionBufferAvailable()) {
+  // copy/paste selection to the primary selection, except for confidential
+  // credentials (`kNoDisplay`) which must not be exposed to middle-click paste.
+  if (buffer != ClipboardBuffer::kCopyPaste || !IsSelectionBufferAvailable() ||
+      (privacy_types & PrivacyTypes::kNoDisplay) != 0) {
     return;
   }
 
@@ -685,7 +693,24 @@ void ClipboardOzone::WritePortableTextRepresentation(ClipboardBuffer buffer,
 
   async_clipboard_ozone_->PrepareForWriting();
   WriteText(text_data.data);
+  WritePrivacyMetadata(privacy_types);
   async_clipboard_ozone_->OfferData(ClipboardBuffer::kSelection);
+}
+
+void ClipboardOzone::WritePrivacyMetadata(PrivacyTypes privacy_types) {
+  if ((privacy_types & (PrivacyTypes::kNoLocalClipboardHistory |
+                        PrivacyTypes::kNoDisplay)) == 0) {
+    return;
+  }
+  if (async_clipboard_ozone_->HasFormatToOffer(
+          kMimeTypeLinuxPasswordManagerHint)) {
+    return;
+  }
+  constexpr std::string_view kPasswordManagerHintSecret = "secret";
+  async_clipboard_ozone_->InsertData(
+      std::vector<uint8_t>(kPasswordManagerHintSecret.begin(),
+                           kPasswordManagerHintSecret.end()),
+      {kMimeTypeLinuxPasswordManagerHint});
 }
 
 void ClipboardOzone::WritePortableAndPlatformRepresentations(
@@ -708,9 +733,11 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
   for (const auto& raw_object : raw_objects) {
     DispatchPortableRepresentation(raw_object);
   }
+  const auto privacy_type_flags = static_cast<PrivacyTypes>(privacy_types);
+  WritePrivacyMetadata(privacy_type_flags);
   async_clipboard_ozone_->OfferData(buffer);
 
-  WritePortableTextRepresentation(buffer, objects);
+  WritePortableTextRepresentation(buffer, objects, privacy_type_flags);
 }
 
 void ClipboardOzone::WriteText(std::string_view text) {

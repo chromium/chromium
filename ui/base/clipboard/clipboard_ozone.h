@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
@@ -21,15 +22,17 @@ namespace ui {
 // Clipboard implementation for Ozone-based ports. It delegates the platform
 // specifics to the PlatformClipboard instance provided by the Ozone platform.
 // Currently, used on Linux Desktop, i.e: X11 and Wayland platforms.
-class ClipboardOzone : public Clipboard {
+class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardOzone : public Clipboard {
  public:
   ClipboardOzone(const ClipboardOzone&) = delete;
   ClipboardOzone& operator=(const ClipboardOzone&) = delete;
 
  private:
   friend class Clipboard;
+  friend class ClipboardOzoneTest;
 
   ClipboardOzone();
+  explicit ClipboardOzone(PlatformClipboard* platform_clipboard);
   ~ClipboardOzone() override;
 
   // Clipboard overrides:
@@ -84,7 +87,9 @@ class ClipboardOzone : public Clipboard {
 
   bool IsSelectionBufferAvailable() const override;
   void WritePortableTextRepresentation(ClipboardBuffer buffer,
-                                       const ObjectMap& objects);
+                                       const ObjectMap& objects,
+                                       PrivacyTypes privacy_types);
+  void WritePrivacyMetadata(PrivacyTypes privacy_types);
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,

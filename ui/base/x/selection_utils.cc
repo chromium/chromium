@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -227,10 +228,10 @@ void SelectionData::AssignTo(std::vector<uint8_t>* result) const {
 }
 
 scoped_refptr<base::RefCountedBytes> SelectionData::TakeBytes() {
-  if (!memory_.get()) {
+  if (!memory_) {
     return nullptr;
   }
-  auto* memory = memory_.release();
+  scoped_refptr<base::RefCountedMemory> memory = std::move(memory_);
   return base::MakeRefCounted<base::RefCountedBytes>(*memory);
 }
 
