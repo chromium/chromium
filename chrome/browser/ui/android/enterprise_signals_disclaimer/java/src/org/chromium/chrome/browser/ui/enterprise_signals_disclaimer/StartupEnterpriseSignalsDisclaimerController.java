@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -123,7 +122,7 @@ public class StartupEnterpriseSignalsDisclaimerController
                 ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT)) {
             // Clears the acknowledgment for the primary account, so the disclaimer is shown again
             // on each startup.
-            final CoreAccountInfo primaryAccountInfo =
+            final AccountInfo primaryAccountInfo =
                     mSigninManager.getIdentityManager().getPrimaryAccountInfo();
             if (primaryAccountInfo != null) {
                 EnterpriseSignalsDisclaimerBridge.clearAccountAcknowledgedSignalsDisclaimer(
@@ -197,7 +196,7 @@ public class StartupEnterpriseSignalsDisclaimerController
         destroyDisclaimer();
     }
 
-    private void onDisclaimerAccepted(CoreAccountInfo account) {
+    private void onDisclaimerAccepted(AccountInfo account) {
         EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
                 mProfile, account.getGaiaId());
     }
