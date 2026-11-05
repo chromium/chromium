@@ -19,9 +19,10 @@ NSString* GetPromoLabelStringForWebSignin(
     const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
         preference);
 
-// Returns the promo label string for NTP sign-in based on `preference`, or nil
-// if no customized subtitle applies.
-NSString* GetPromoLabelStringForNtpSignedOutIcon(
+// Returns the promo label string for default sign-in flows (e.g. NTP signed-out
+// icon, FRE, and fullscreen sign-in promo) based on `preference`, or nil if no
+// customized subtitle applies.
+NSString* GetPromoLabelStringForDefaultFlow(
     const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
         preference);
 

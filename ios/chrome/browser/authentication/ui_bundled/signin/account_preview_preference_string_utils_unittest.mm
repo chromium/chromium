@@ -26,7 +26,7 @@ using AccountPreviewPreferenceStringUtilsTest = PlatformTest;
 struct DataTypeTestCase {
   syncer::DataType data_type;
   int web_signin_string_id;
-  int ntp_signin_string_id;
+  int default_flow_string_id;
 };
 
 // Creates an `AccountPreviewPreference` with a single `data_type` and
@@ -42,7 +42,7 @@ AccountPreviewDataService::AccountPreviewPreference CreatePreference(
 }
 
 // Tests that `GetPromoLabelStringForWebSignin` and
-// `GetPromoLabelStringForNtpSignedOutIcon` return the expected string for all
+// `GetPromoLabelStringForDefaultFlow` return the expected string for all
 // pairs of supported data types and device form factors.
 TEST_F(AccountPreviewPreferenceStringUtilsTest,
        SupportedDataTypesAndDeviceTypesReturnExpectedString) {
@@ -98,15 +98,15 @@ TEST_F(AccountPreviewPreferenceStringUtilsTest,
       EXPECT_NSEQ(GetPromoLabelStringForWebSignin(preference),
                   l10n_util::GetNSStringF(data_case.web_signin_string_id,
                                           device_string));
-      EXPECT_NSEQ(GetPromoLabelStringForNtpSignedOutIcon(preference),
-                  l10n_util::GetNSStringF(data_case.ntp_signin_string_id,
+      EXPECT_NSEQ(GetPromoLabelStringForDefaultFlow(preference),
+                  l10n_util::GetNSStringF(data_case.default_flow_string_id,
                                           device_string));
     }
   }
 }
 
 // Tests that `GetPromoLabelStringForWebSignin` and
-// `GetPromoLabelStringForNtpSignedOutIcon` return `nil` when the data type is
+// `GetPromoLabelStringForDefaultFlow` return `nil` when the data type is
 // not in the supported categories.
 TEST_F(AccountPreviewPreferenceStringUtilsTest, UnsupportedDataTypeReturnsNil) {
   constexpr syncer::DataType kUnsupportedDataTypes[] = {
@@ -123,12 +123,12 @@ TEST_F(AccountPreviewPreferenceStringUtilsTest, UnsupportedDataTypeReturnsNil) {
             sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE);
 
     EXPECT_NSEQ(GetPromoLabelStringForWebSignin(preference), nil);
-    EXPECT_NSEQ(GetPromoLabelStringForNtpSignedOutIcon(preference), nil);
+    EXPECT_NSEQ(GetPromoLabelStringForDefaultFlow(preference), nil);
   }
 }
 
 // Tests that `GetPromoLabelStringForWebSignin` and
-// `GetPromoLabelStringForNtpSignedOutIcon` return the all-devices string for
+// `GetPromoLabelStringForDefaultFlow` return the all-devices string for
 // all supported data types when the device form factor is not phone, tablet, or
 // laptop.
 TEST_F(AccountPreviewPreferenceStringUtilsTest,
@@ -164,25 +164,25 @@ TEST_F(AccountPreviewPreferenceStringUtilsTest,
 
     EXPECT_NSEQ(GetPromoLabelStringForWebSignin(preference),
                 l10n_util::GetNSString(data_case.web_signin_string_id));
-    EXPECT_NSEQ(GetPromoLabelStringForNtpSignedOutIcon(preference),
-                l10n_util::GetNSString(data_case.ntp_signin_string_id));
+    EXPECT_NSEQ(GetPromoLabelStringForDefaultFlow(preference),
+                l10n_util::GetNSString(data_case.default_flow_string_id));
   }
 }
 
 // Tests that `GetPromoLabelStringForWebSignin` and
-// `GetPromoLabelStringForNtpSignedOutIcon` return `nil` when `preference` is
+// `GetPromoLabelStringForDefaultFlow` return `nil` when `preference` is
 // `std::nullopt` or has empty `preferred_data_types`.
 TEST_F(AccountPreviewPreferenceStringUtilsTest, NoPreferenceReturnsNil) {
   EXPECT_NSEQ(GetPromoLabelStringForWebSignin(std::nullopt), nil);
-  EXPECT_NSEQ(GetPromoLabelStringForNtpSignedOutIcon(std::nullopt), nil);
+  EXPECT_NSEQ(GetPromoLabelStringForDefaultFlow(std::nullopt), nil);
 
   AccountPreviewDataService::AccountPreviewPreference empty_preference;
   EXPECT_NSEQ(GetPromoLabelStringForWebSignin(empty_preference), nil);
-  EXPECT_NSEQ(GetPromoLabelStringForNtpSignedOutIcon(empty_preference), nil);
+  EXPECT_NSEQ(GetPromoLabelStringForDefaultFlow(empty_preference), nil);
 }
 
 // Tests that `GetPromoLabelStringForWebSignin` and
-// `GetPromoLabelStringForNtpSignedOutIcon` skip preferred data types that are
+// `GetPromoLabelStringForDefaultFlow` skip preferred data types that are
 // not in `other_device_info.enabled_data_types`, returning `nil` if no enabled
 // type matches or falling back to the next enabled preferred data type.
 TEST_F(AccountPreviewPreferenceStringUtilsTest,
@@ -192,7 +192,7 @@ TEST_F(AccountPreviewPreferenceStringUtilsTest,
   preference.other_device_info.enabled_data_types = {syncer::PASSWORDS};
 
   EXPECT_NSEQ(GetPromoLabelStringForWebSignin(preference), nil);
-  EXPECT_NSEQ(GetPromoLabelStringForNtpSignedOutIcon(preference), nil);
+  EXPECT_NSEQ(GetPromoLabelStringForDefaultFlow(preference), nil);
 
   preference.preferred_data_types.push_back({.data_type = syncer::PASSWORDS});
 
@@ -201,7 +201,7 @@ TEST_F(AccountPreviewPreferenceStringUtilsTest,
       l10n_util::GetNSString(
           IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_PASSWORDS));
   EXPECT_NSEQ(
-      GetPromoLabelStringForNtpSignedOutIcon(preference),
+      GetPromoLabelStringForDefaultFlow(preference),
       l10n_util::GetNSString(
           IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_ON_ALL_DEVICES_PASSWORDS));
 }

@@ -82,7 +82,7 @@ NSString* GetPromoLabelString(
         return nil;
       }
       if (NSString* label =
-              signin::GetPromoLabelStringForNtpSignedOutIcon(preference)) {
+              signin::GetPromoLabelStringForDefaultFlow(preference)) {
         return label;
       }
       return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);

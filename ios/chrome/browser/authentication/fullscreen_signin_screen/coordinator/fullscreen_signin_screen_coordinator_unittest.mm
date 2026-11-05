@@ -22,9 +22,12 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -90,6 +93,45 @@ TEST_F(FullscreenSigninScreenCoordinatorTest, ActionsAfterStopDoNotCrash) {
       static_cast<id<ButtonStackActionDelegate>>(view_controller);
   [action_delegate didTapPrimaryActionButton];
   [action_delegate didTapSecondaryActionButton];
+}
+
+// Tests that `FullscreenSigninScreenViewController` updates its subtitle when
+// `subtitleOverride` is set.
+TEST_F(FullscreenSigninScreenCoordinatorTest,
+       UpdatesSubtitleWhenSubtitleOverrideChanges) {
+  UINavigationController* navigation_controller =
+      [[UINavigationController alloc] init];
+  FullscreenSigninScreenCoordinator* coordinator =
+      [[FullscreenSigninScreenCoordinator alloc]
+           initWithBaseNavigationController:navigation_controller
+                                    browser:browser_.get()
+                                   delegate:nil
+                               contextStyle:SigninContextStyle::kDefault
+                                accessPoint:signin_metrics::AccessPoint::
+                                                kFullscreenSigninPromo
+                                promoAction:signin_metrics::PromoAction::
+                                                PROMO_ACTION_NO_SIGNIN_PROMO
+          changeProfileContinuationProvider:DoNothingContinuationProvider()];
+
+  [coordinator start];
+
+  FullscreenSigninScreenViewController* view_controller =
+      base::apple::ObjCCast<FullscreenSigninScreenViewController>(
+          navigation_controller.topViewController);
+  ASSERT_NE(nil, view_controller);
+  [view_controller loadViewIfNeeded];
+
+  NSString* default_subtitle =
+      l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE);
+  EXPECT_NSEQ(default_subtitle, view_controller.subtitleText);
+  EXPECT_NSEQ(default_subtitle, view_controller.subtitleLabel.text);
+
+  NSString* subtitle_override = @"Custom subtitle for preferred account";
+  view_controller.subtitleOverride = subtitle_override;
+  EXPECT_NSEQ(subtitle_override, view_controller.subtitleText);
+  EXPECT_NSEQ(subtitle_override, view_controller.subtitleLabel.text);
+
+  [coordinator stop];
 }
 
 }  // namespace

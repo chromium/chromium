@@ -98,10 +98,10 @@ NSString* GetPromoLabelStringForWebSignin(
   return GetPromoLabelStringWithIds(preference, kWebSigninIds);
 }
 
-NSString* GetPromoLabelStringForNtpSignedOutIcon(
+NSString* GetPromoLabelStringForDefaultFlow(
     const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
         preference) {
-  constexpr PromoLabelStringIds kNtpIds = {
+  constexpr PromoLabelStringIds kDefaultIds = {
       IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_DEVICE_TYPE_BOOKMARKS,
       IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_ON_ALL_DEVICES_BOOKMARKS,
       IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_DEVICE_TYPE_PASSWORDS,
@@ -109,7 +109,7 @@ NSString* GetPromoLabelStringForNtpSignedOutIcon(
       IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_DEVICE_TYPE_SAVED_INFO,
       IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_ON_ALL_DEVICES_SAVED_INFO,
   };
-  return GetPromoLabelStringWithIds(preference, kNtpIds);
+  return GetPromoLabelStringWithIds(preference, kDefaultIds);
 }
 
 }  // namespace signin

@@ -60,6 +60,8 @@ NSString* const kCollaborationSigninHeaderBackground =
 @implementation FullscreenSigninScreenViewController {
   // Used to customize content on screen.
   SigninContextStyle _contextStyle;
+  // Default subtitle text before any `subtitleOverride` is applied.
+  NSString* _defaultSubtitleText;
 }
 
 @dynamic delegate;
@@ -69,6 +71,7 @@ NSString* const kCollaborationSigninHeaderBackground =
 @synthesize syncEnabled = _syncEnabled;
 @synthesize currentPrimaryIdentityEmail = _currentPrimaryIdentityEmail;
 @synthesize targetIdentityEmail = _targetIdentityEmail;
+@synthesize subtitleOverride = _subtitleOverride;
 
 - (instancetype)initWithContextStyle:(SigninContextStyle)contextStyle {
   self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
@@ -111,7 +114,7 @@ NSString* const kCollaborationSigninHeaderBackground =
         case SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin:
           // Use in the context of the FRE dialog.
           self.titleText = [self FRESignInHeaderText];
-          self.subtitleText =
+          _defaultSubtitleText =
               self.syncEnabled
                   ? l10n_util::GetNSString(
                         IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT)
@@ -124,7 +127,7 @@ NSString* const kCollaborationSigninHeaderBackground =
     case SigninScreenConsumerSigninStatusForced: {
       self.titleText =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED);
-      self.subtitleText = l10n_util::GetNSString(
+      _defaultSubtitleText = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED);
       break;
     }
@@ -136,11 +139,12 @@ NSString* const kCollaborationSigninHeaderBackground =
         self.titleText = l10n_util::GetNSString(
             IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
       }
-      self.subtitleText =
+      _defaultSubtitleText =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
       break;
     }
   }
+  [self updateSubtitleText];
   [self generateDisclaimer];
 
   // Add `self.identityControl` if needed.
@@ -263,6 +267,15 @@ NSString* const kCollaborationSigninHeaderBackground =
   self.view.userInteractionEnabled = UIEnabled;
 }
 
+- (void)setSubtitleOverride:(NSString*)subtitleOverride {
+  if (_subtitleOverride == subtitleOverride ||
+      [_subtitleOverride isEqual:subtitleOverride]) {
+    return;
+  }
+  _subtitleOverride = [subtitleOverride copy];
+  [self updateSubtitleText];
+}
+
 #pragma mark - Private
 
 // Generates the promo sign-in header string.
@@ -342,7 +355,7 @@ NSString* const kCollaborationSigninHeaderBackground =
       self.headerImageType = PromoStyleImageType::kImage;
       self.titleText =
           l10n_util::GetNSString(IDS_IOS_SIGNIN_GROUP_COLLABORATION_TITLE);
-      self.subtitleText =
+      _defaultSubtitleText =
           l10n_util::GetNSString(IDS_IOS_SIGNIN_GROUP_COLLABORATION_SUBTITLE);
       break;
     }
@@ -351,14 +364,14 @@ NSString* const kCollaborationSigninHeaderBackground =
         CHECK(self.targetIdentityEmail);
         self.titleText =
             l10n_util::GetNSString(IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_TITLE);
-        self.subtitleText = l10n_util::GetNSStringF(
+        _defaultSubtitleText = l10n_util::GetNSStringF(
             IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_SUBTITLE,
             base::SysNSStringToUTF16(self.currentPrimaryIdentityEmail),
             base::SysNSStringToUTF16(self.targetIdentityEmail));
       } else {
         self.titleText =
             l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_1);
-        self.subtitleText =
+        _defaultSubtitleText =
             l10n_util::GetNSString(IDS_IOS_DEEPLINK_SIGNIN_SUBTITLE);
       }
       break;
@@ -366,7 +379,7 @@ NSString* const kCollaborationSigninHeaderBackground =
     case SigninContextStyle::kDefault: {
       // Use in the context of the fullscreen sign-in promo dialog.
       self.titleText = [self promoSignInHeaderText];
-      self.subtitleText =
+      _defaultSubtitleText =
           self.syncEnabled
               ? l10n_util::GetNSString(
                     IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE)
@@ -374,6 +387,15 @@ NSString* const kCollaborationSigninHeaderBackground =
                     IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE_SYNC_DISABLED);
       break;
     }
+  }
+}
+
+// Updates `subtitleText` (and `subtitleLabel.text` if the view is loaded)
+// using `subtitleOverride` if present, or `_defaultSubtitleText` otherwise.
+- (void)updateSubtitleText {
+  self.subtitleText = self.subtitleOverride ?: _defaultSubtitleText;
+  if (self.viewLoaded) {
+    self.subtitleLabel.text = self.subtitleText;
   }
 }
 
