@@ -166,6 +166,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Fills or previews the form corresponding to `form_id` with the information
   // in `filling_payload`.
+  // `filling_product` must correspond to the type of `filling_payload`.
   // `action_persistence` denotes whether the operation is a fill or preview.
   // `trigger_source` is the reason for triggering the filling operation.
   // `require_user_confirmation` indicates if some form of user confirmation
@@ -181,6 +182,7 @@ class BrowserAutofillManager : public AutofillManager {
       mojom::ActionPersistence action_persistence,
       const FormGlobalId& form_id,
       const FieldGlobalId& trigger_field_id,
+      FillingProduct filling_product,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
       bool require_user_confirmation,

@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -902,7 +903,8 @@ TEST_F(PaymentMethodAccessoryControllerTestForBnpl,
       form, form.fields().front().global_id());
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
-      form.fields().front().global_id(), FillingPayload(&bnpl_card),
+      form.fields().front().global_id(), FillingProduct::kCreditCard,
+      FillingPayload(&bnpl_card),
       AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});

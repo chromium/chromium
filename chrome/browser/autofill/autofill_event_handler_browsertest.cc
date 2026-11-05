@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -140,11 +141,11 @@ class AutofillEventHandlerBrowserTest : public InProcessBrowserTest {
     profile.FinalizeAfterImport();
 
     TestAutofillManager* manager = autofill_manager_injector_[rfh];
-    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                               form.global_id(), triggered_field.global_id(),
-                               &profile, AutofillTriggerSource::kPopup,
-                               /*require_user_confirmation=*/false,
-                               /*blocked_fields=*/{});
+    manager->FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form.global_id(),
+        triggered_field.global_id(), FillingProduct::kAddress, &profile,
+        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+        /*blocked_fields=*/{});
   }
 
   void NavigateAndTriggerAutofill() {
@@ -803,11 +804,11 @@ class AutofillEventMultiFrameBrowserTest : public InProcessBrowserTest {
     test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
                             base::ASCIIToUTF16(std::string_view(kCvc)));
     TestAutofillManager* manager = autofill_manager_injector_[rfh];
-    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                               form.global_id(), triggered_field.global_id(),
-                               &card, AutofillTriggerSource::kPopup,
-                               /*require_user_confirmation=*/false,
-                               /*blocked_fields=*/{});
+    manager->FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form.global_id(),
+        triggered_field.global_id(), FillingProduct::kCreditCard, &card,
+        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+        /*blocked_fields=*/{});
   }
 
   // Returns a form with `num_fields` fields. If no such form exists and no such

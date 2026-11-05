@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
@@ -69,7 +70,7 @@ class CategoryResolvedKeyMetricsTest : public AutofillMetricsBaseTest,
         form, form.fields().front().global_id());
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields().front().global_id(), &profile,
+        form.fields().front().global_id(), FillingProduct::kAddress, &profile,
         AutofillTriggerSource::kPopup,
         /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});

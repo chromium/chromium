@@ -200,6 +200,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (mojom::ActionPersistence action_persistence,
                const FormGlobalId& form_id,
                const FieldGlobalId& field_id,
+               FillingProduct filling_product,
                const FillingPayload& filling_payload,
                AutofillTriggerSource trigger_source,
                bool require_user_confirmation,
@@ -423,7 +424,7 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewForm(
                   mojom::ActionPersistence::kFill, form_.global_id(),
-                  form_.fields()[0].global_id(),
+                  form_.fields()[0].global_id(), FillingProduct::kCreditCard,
                   ::testing::VariantWith<const CreditCard*>(Pointee(test_card)),
                   AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
                   /*require_user_confirmation=*/false, _));

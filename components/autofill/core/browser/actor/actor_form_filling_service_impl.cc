@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -1224,8 +1225,8 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
                                fill_data->split_part, action_persistence);
                        autofill_manager.FillOrPreviewForm(
                            action_persistence, form_structure->global_id(),
-                           trigger_field_id, &autofill_profile,
-                           AutofillTriggerSource::kGlic,
+                           trigger_field_id, FillingProduct::kAddress,
+                           &autofill_profile, AutofillTriggerSource::kGlic,
                            /*require_user_confirmation=*/false, blocked_fields);
                      },
                      [&](const CreditCard& credit_card) {
@@ -1233,8 +1234,8 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
                        // authentication can be required here.
                        autofill_manager.FillOrPreviewForm(
                            action_persistence, form_structure->global_id(),
-                           trigger_field_id, &credit_card,
-                           AutofillTriggerSource::kGlic,
+                           trigger_field_id, FillingProduct::kCreditCard,
+                           &credit_card, AutofillTriggerSource::kGlic,
                            /*require_user_confirmation=*/false,
                            /*blocked_fields=*/{});
                      },

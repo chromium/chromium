@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
@@ -1298,7 +1299,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
                FieldTypeGroup::kCreditCard) {
       autofill_manager().FillOrPreviewForm(
           mojom::ActionPersistence::kFill, form.global_id(),
-          first_field.global_id(),
+          first_field.global_id(), FillingProduct::kCreditCard,
           paydm().GetCreditCardByGUID("10000000-0000-0000-0000-000000000001"),
           AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
           /*blocked_fields=*/{});

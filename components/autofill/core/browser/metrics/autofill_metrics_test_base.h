@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -265,7 +266,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
                          size_t field_index = 0) {
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields()[field_index].global_id(),
+        form.fields()[field_index].global_id(), FillingProduct::kAddress,
         personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});

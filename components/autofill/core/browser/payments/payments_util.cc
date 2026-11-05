@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -98,7 +99,8 @@ void FillOrPreviewCard(mojom::ActionPersistence action_persistence,
     card_to_fill = &*virtual_card;
   }
 
-  manager.FillOrPreviewForm(action_persistence, form_id, field_id, card_to_fill,
+  manager.FillOrPreviewForm(action_persistence, form_id, field_id,
+                            FillingProduct::kCreditCard, card_to_fill,
                             trigger_source, require_user_confirmation,
                             /*blocked_fields=*/{});
 }

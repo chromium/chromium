@@ -469,7 +469,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
   EntityInstance passport = test::GetPassportEntityInstance();
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
-      form.fields().front().global_id(), &passport,
+      form.fields().front().global_id(), FillingProduct::kAutofillAi, &passport,
       AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,

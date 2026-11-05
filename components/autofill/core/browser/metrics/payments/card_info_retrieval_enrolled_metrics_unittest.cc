@@ -7,6 +7,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -93,7 +94,7 @@ TEST_F(CardInfoRetrievalEnrolledMetricsTest, LogSelectedMetrics) {
       form(), form().fields().front().global_id());
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -111,7 +112,7 @@ TEST_F(CardInfoRetrievalEnrolledMetricsTest, LogSelectedMetrics) {
   // Simulate selecting the suggestion again.
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -138,7 +139,7 @@ TEST_F(CardInfoRetrievalEnrolledMetricsTest, LogFilledMetrics) {
       .WillOnce(base::test::RunOnceCallback<2>(card()));
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -158,7 +159,7 @@ TEST_F(CardInfoRetrievalEnrolledMetricsTest, LogFilledMetrics) {
       .WillOnce(base::test::RunOnceCallback<2>(card()));
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -184,7 +185,7 @@ TEST_F(CardInfoRetrievalEnrolledMetricsTest, LogSubmitMetrics) {
       .WillOnce(base::test::RunOnceCallback<2>(card()));
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});

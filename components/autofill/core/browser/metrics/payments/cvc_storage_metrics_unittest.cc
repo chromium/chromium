@@ -7,6 +7,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
@@ -171,7 +172,7 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
                              SuggestionType::kCreditCardEntry);
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().back().global_id(),
+      form().fields().back().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -190,7 +191,7 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
   // Simulate selecting the suggestion again.
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -221,7 +222,7 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   }
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -244,7 +245,7 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   }
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
@@ -277,7 +278,7 @@ TEST_P(CvcStorageMetricsTest, LogSubmitMetrics) {
   }
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
-      form().fields().front().global_id(),
+      form().fields().front().global_id(), FillingProduct::kCreditCard,
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});

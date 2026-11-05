@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_router.h"
@@ -146,7 +147,7 @@ class OmniboxAutofillDelegateTest
     // Filling should trigger on the "Card Number" field located at index 1.
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields()[1].global_id(), &credit_card,
+        form.fields()[1].global_id(), FillingProduct::kCreditCard, &credit_card,
         AutofillTriggerSource::kOmniboxAutofill,
         /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});

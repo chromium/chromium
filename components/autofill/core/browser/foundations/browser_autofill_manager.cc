@@ -1907,10 +1907,26 @@ void BrowserAutofillManager::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
     const FormGlobalId& form_id,
     const FieldGlobalId& trigger_field_id,
+    FillingProduct filling_product,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     bool require_user_confirmation,
     const base::flat_set<FieldGlobalId>& blocked_fields) {
+  CHECK_EQ(
+      filling_product,
+      std::visit(
+          absl::Overload{
+              [](const AutofillProfile*) { return FillingProduct::kAddress; },
+              [](const CreditCard*) { return FillingProduct::kCreditCard; },
+              [](const EntityInstance*) { return FillingProduct::kAutofillAi; },
+              [](const VerifiedProfile*) {
+                return FillingProduct::kIdentityCredential;
+              },
+              [](const OtpFillData*) {
+                return FillingProduct::kOneTimePassword;
+              }},
+          filling_payload));
+
   auto [form, trigger_field] =
       FindMutableFormAndField(form_id, trigger_field_id);
   if (!form || !trigger_field) {
@@ -1926,16 +1942,6 @@ void BrowserAutofillManager::FillOrPreviewForm(
                                 require_user_confirmation, blocked_fields);
     return;
   }
-  const FillingProduct filling_product = std::visit(
-      absl::Overload{
-          [](const AutofillProfile*) { return FillingProduct::kAddress; },
-          [](const CreditCard*) -> FillingProduct { NOTREACHED(); },
-          [](const EntityInstance*) { return FillingProduct::kAutofillAi; },
-          [](const VerifiedProfile*) {
-            return FillingProduct::kIdentityCredential;
-          },
-          [](const OtpFillData*) { return FillingProduct::kOneTimePassword; }},
-      filling_payload);
   form_filler_->FillOrPreviewForm(
       action_persistence, filling_product, filling_payload, CHECK_DEREF(form),
       CHECK_DEREF(trigger_field), trigger_source, blocked_fields,

@@ -18,6 +18,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -267,8 +268,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
 
   manager->FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(), field_id,
-      &autofill_profile_.value(), AutofillTriggerSource::kPopup,
-      /*require_user_confirmation=*/false,
+      FillingProduct::kAddress, &autofill_profile_.value(),
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   // 3. Wait for the deferred browser task to execute and trigger the popup
@@ -371,8 +372,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
 
   manager->FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(), field_id,
-      &autofill_profile_.value(), AutofillTriggerSource::kPopup,
-      /*require_user_confirmation=*/false,
+      FillingProduct::kAddress, &autofill_profile_.value(),
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   popup_run_loop1.Run();
@@ -595,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
 
   manager->FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(), field_id,
-      &autofill_profile_.value(), AutofillTriggerSource::kPopup,
-      /*require_user_confirmation=*/false,
+      FillingProduct::kAddress, &autofill_profile_.value(),
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   toast_run_loop.Run();
@@ -684,8 +685,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
 
   manager->FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(), field_id,
-      &autofill_profile_.value(), AutofillTriggerSource::kPopup,
-      /*require_user_confirmation=*/false,
+      FillingProduct::kAddress, &autofill_profile_.value(),
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   toast_run_loop.Run();
@@ -758,8 +759,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
 
   manager->FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(), field_id,
-      &autofill_profile_.value(), AutofillTriggerSource::kPopup,
-      /*require_user_confirmation=*/false,
+      FillingProduct::kAddress, &autofill_profile_.value(),
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   popup_run_loop.Run();

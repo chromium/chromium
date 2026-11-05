@@ -124,10 +124,10 @@ void OnCreditCardFetched(base::WeakPtr<BrowserAutofillManager> manager,
   if (manager) {
     // TODO(crbug.com/561395976): Figure out if credit cards filled via this
     // method require additional protection.
-    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form_id,
-                               field_id, &card, trigger_source,
-                               /*require_user_confirmation=*/false,
-                               /*blocked_fields=*/{});
+    manager->FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form_id, field_id,
+        FillingProduct::kCreditCard, &card, trigger_source,
+        /*require_user_confirmation=*/false, /*blocked_fields=*/{});
   }
 }
 
@@ -200,10 +200,10 @@ void OnEntityInstanceFetched(
   }
 
   if (result.has_value()) {
-    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form_id,
-                               field_id, &result.value(), trigger_source,
-                               /*require_user_confirmation=*/false,
-                               /*blocked_fields=*/{});
+    manager->FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form_id, field_id,
+        FillingProduct::kAutofillAi, &result.value(), trigger_source,
+        /*require_user_confirmation=*/false, /*blocked_fields=*/{});
   } else if (result.error() ==
              AutofillAiAccessManager::FailureReason::kFetchFailed) {
     manager->client().ShowAutofillAiFetchEntityFailureNotification();
@@ -824,11 +824,11 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillAutofillAi:
       if (base::optional_ref<const EntityInstance> entity =
               GetEntityInstance(suggestion)) {
-        manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
-                                    effective_form_id, effective_field_id,
-                                    entity.as_ptr(), GetTriggerSource(),
-                                    /*require_user_confirmation=*/false,
-                                    /*blocked_fields=*/{});
+        manager_->FillOrPreviewForm(
+            mojom::ActionPersistence::kPreview, effective_form_id,
+            effective_field_id, FillingProduct::kAutofillAi, entity.as_ptr(),
+            GetTriggerSource(), /*require_user_confirmation=*/false,
+            /*blocked_fields=*/{});
       }
       break;
     case SuggestionType::kAddressEntryOnTyping:
@@ -842,11 +842,11 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kIdentityCredential: {
       VerifiedProfile profile =
           suggestion.GetPayload<Suggestion::IdentityCredentialPayload>().fields;
-      manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
-                                  effective_form_id, effective_field_id,
-                                  &profile, GetTriggerSource(),
-                                  /*require_user_confirmation=*/false,
-                                  /*blocked_fields=*/{});
+      manager_->FillOrPreviewForm(
+          mojom::ActionPersistence::kPreview, effective_form_id,
+          effective_field_id, FillingProduct::kIdentityCredential, &profile,
+          GetTriggerSource(), /*require_user_confirmation=*/false,
+          /*blocked_fields=*/{});
       break;
     }
     case SuggestionType::kLoyaltyCardEntry:
@@ -1147,8 +1147,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                   // require additional authentication for security reasons.
                   manager->FillOrPreviewForm(
                       mojom::ActionPersistence::kFill, form_id, field_id,
-                      &profile, trigger_source,
-                      /*require_user_confirmation=*/false,
+                      FillingProduct::kIdentityCredential, &profile,
+                      trigger_source, /*require_user_confirmation=*/false,
                       /*blocked_fields=*/{});
                 },
                 manager_->GetBrowserAutofillManagerWeakPtr(), suggestion,
@@ -1191,11 +1191,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           *form_structure, *autofill_field, suggestion.main_text.value);
       // TODO(crbug.com/561395976): Figure out if OTPs require additional
       // protection for security reasons.
-      manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                  effective_form_id, effective_field_id,
-                                  &otp_fill_data, GetTriggerSource(),
-                                  /*require_user_confirmation=*/false,
-                                  /*blocked_fields=*/{});
+      manager_->FillOrPreviewForm(
+          mojom::ActionPersistence::kFill, effective_form_id,
+          effective_field_id, FillingProduct::kOneTimePassword, &otp_fill_data,
+          GetTriggerSource(),
+          /*require_user_confirmation=*/false, /*blocked_fields=*/{});
       break;
     }
     case SuggestionType::kAtMemoryInactivityNudge:
@@ -1470,7 +1470,8 @@ void AutofillExternalDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
                   // TODO(crbug.com/561395976): Figure out if authentication
                   // can be required here.
                   manager->FillOrPreviewForm(
-                      mojom::ActionPersistence::kFill, form_id, field_id, &card,
+                      mojom::ActionPersistence::kFill, form_id, field_id,
+                      FillingProduct::kCreditCard, &card,
                       AutofillTriggerSource::kPopup,
                       /*require_user_confirmation=*/false,
                       /*blocked_fields=*/{});
@@ -1578,10 +1579,10 @@ void AutofillExternalDelegate::AutofillForm(
             : GetProfileFromPayload(pdm.address_data_manager(),
                                     *profile_payload);
     if (profile) {
-      manager_->FillOrPreviewForm(action_persistence, form_id, field_id,
-                                  &*profile, trigger_source,
-                                  /*require_user_confirmation=*/false,
-                                  /*blocked_fields=*/{});
+      manager_->FillOrPreviewForm(
+          action_persistence, form_id, field_id, FillingProduct::kAddress,
+          &*profile, trigger_source, /*require_user_confirmation=*/false,
+          /*blocked_fields=*/{});
     }
     return;
   }

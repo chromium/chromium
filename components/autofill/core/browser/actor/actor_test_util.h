@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 #include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -102,6 +103,7 @@ class TestBrowserAutofillManagerWithTestCCAM
       mojom::ActionPersistence action_persistence,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
+      FillingProduct filling_product,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
       bool require_user_confirmation,

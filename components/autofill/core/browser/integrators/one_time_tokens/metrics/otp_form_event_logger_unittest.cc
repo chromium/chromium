@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
@@ -318,9 +319,9 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
   OtpFillData fill_data = {{otp_form.fields().front().global_id(), u"123456"}};
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, otp_form.global_id(),
-      otp_form.fields().front().global_id(), &fill_data,
-      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-      /*blocked_fields=*/{});
+      otp_form.fields().front().global_id(), FillingProduct::kOneTimePassword,
+      &fill_data, AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false, /*blocked_fields=*/{});
 
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
@@ -471,9 +472,9 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   OtpFillData fill_data = {{otp_form.fields().front().global_id(), u"123456"}};
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, otp_form.global_id(),
-      otp_form.fields().front().global_id(), &fill_data,
-      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-      /*blocked_fields=*/{});
+      otp_form.fields().front().global_id(), FillingProduct::kOneTimePassword,
+      &fill_data, AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false, /*blocked_fields=*/{});
   // Simulate the user correcting the value.
   SimulateUserChangedFieldTo(otp_form, otp_form.fields().front().global_id(),
                              u"654321");

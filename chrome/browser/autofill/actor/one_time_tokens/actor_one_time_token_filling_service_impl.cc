@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -574,8 +575,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   // required here.
   autofill_manager.FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(),
-      trigger_field_id, &otp_fill_data, AutofillTriggerSource::kGlic,
-      /*require_user_confirmation=*/false,
+      trigger_field_id, FillingProduct::kOneTimePassword, &otp_fill_data,
+      AutofillTriggerSource::kGlic, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   // Activate the observer and wait for completion.

@@ -26,6 +26,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -137,11 +138,11 @@ void FillCard(content::RenderFrameHost* rfh,
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
                           base::ASCIIToUTF16(std::string_view(kCvc)));
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
-  manager.FillOrPreviewForm(mojom::ActionPersistence::kFill, form.global_id(),
-                            triggered_field.global_id(), &card,
-                            AutofillTriggerSource::kPopup,
-                            /*require_user_confirmation=*/false,
-                            /*blocked_fields=*/{});
+  manager.FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form.global_id(),
+      triggered_field.global_id(), FillingProduct::kCreditCard, &card,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
 }
 
 // Returns the values of all fields in the  frames of `web_contents`.
