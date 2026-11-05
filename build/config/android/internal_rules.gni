@@ -3153,12 +3153,18 @@ if (enable_java_templates) {
           rebase_path(_turbine_path, root_build_dir),
           "--generated-jar-path",
           rebase_path(invoker.generated_jar_path, root_build_dir),
-
-          # Turbine needs only direct deps.
-          "--classpath=@FileArg($_rebased_build_config:interface_classpath)",
         ]
+
+        # Turbine needs only direct deps.
+        if (!defined(invoker.omit_classpath) || !invoker.omit_classpath) {
+          args += [
+            "--classpath=@FileArg($_rebased_build_config:interface_classpath)",
+          ]
+        }
       } else {
-        args += [ "--classpath=@FileArg($_rebased_build_config:javac_full_interface_classpath)" ]
+        if (!defined(invoker.omit_classpath) || !invoker.omit_classpath) {
+          args += [ "--classpath=@FileArg($_rebased_build_config:javac_full_interface_classpath)" ]
+        }
         if (invoker.chromium_code) {
           args += [ "--chromium-code" ]
         }
@@ -3570,6 +3576,7 @@ if (enable_java_templates) {
     if (defined(invoker.srcjar_deps)) {
       _srcjar_deps = invoker.srcjar_deps
     }
+    _rjava_srcjar_deps = []
     _kotlin_srcjar_deps = []
     if (defined(invoker.kotlin_srcjar_deps)) {
       _kotlin_srcjar_deps = invoker.kotlin_srcjar_deps
@@ -3664,11 +3671,32 @@ if (enable_java_templates) {
                         _type == "java_library" || _type == "dist_jar"
       _build_device_jar = _type != "system_java_library" && _supports_android
 
+      # APK and base bundle module targets with no direct .java/.kt sources or
+      # custom srcjars only compile self-contained generated srcjars (R.java,
+      # BuildConfig.java, NativeLibraries.java, GEN_JNI.java) and do not
+      # reference library classes. Non-base bundle modules (where
+      # base_module_target is defined) have R.java inner classes that extend
+      # gen.base_module.R.* and still require their classpath.
+      _omit_apk_classpath =
+          ((_type == "android_apk" && !defined(invoker.apk_under_test)) ||
+           (_type == "android_app_bundle_module" &&
+            !defined(invoker.base_module_target))) && _source_files == [] &&
+          _srcjars == [] && _kotlin_srcjar_deps == [] &&
+          filter_exclude(_srcjar_deps,
+                         [
+                           "*__compile_resources",
+                           "*__native_libraries",
+                           "*__build_config_srcjar",
+                           "*jni_registration*",
+                           "*final_jni*",
+                         ]) == []
+
       if (_build_host_jar || _build_device_jar) {
         _enable_bytecode_checks =
             (!defined(invoker.enable_bytecode_checks) ||
              invoker.enable_bytecode_checks) && !_is_prebuilt &&
-            android_static_analysis != "off" && !_skip_header_jar
+            android_static_analysis != "off" && !_skip_header_jar &&
+            !_omit_apk_classpath
       }
 
       _jacoco_instrument =
@@ -3823,7 +3851,10 @@ if (enable_java_templates) {
       # __assetres deps.
       # _non_java_deps are needed for input_jars_paths that are generated.
       _header_classpath_deps =
-          _java_header_deps + _non_java_deps + [ ":$_build_config_target_name" ]
+          _non_java_deps + [ ":$_build_config_target_name" ]
+      if (!_omit_apk_classpath) {
+        _header_classpath_deps += _java_header_deps
+      }
 
       _javac_classpath_deps =
           _java_host_deps + _non_java_deps + [ ":$_build_config_target_name" ]
@@ -3849,6 +3880,7 @@ if (enable_java_templates) {
                  "_header_classpath_deps",
                  "_javac_classpath_deps",
                  "_non_java_deps",
+                 "_rjava_srcjar_deps",
                  "_supports_host",
                ])
 
@@ -4017,9 +4049,7 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
-      if ((!defined(invoker.enable_bytecode_checks) ||
-           invoker.enable_bytecode_checks) && !_is_prebuilt &&
-          android_static_analysis != "off" && !_skip_header_jar) {
+      if (_enable_bytecode_checks) {
         _validate_deps_target_name = "${target_name}__validate_deps"
       }
     }
@@ -4053,11 +4083,9 @@ if (enable_java_templates) {
                    "android_library(), or robolectric_library(). " +
                    "Target=$target_name")
 
-        # Serves double purpose: Generating R.java, as well as being the
-        #__assetres target (instead of using a separate group).
-        _fake_rjava_target = "${target_name}__assetres"
+        _rjava_target = "${target_name}__rjava"
 
-        generate_r_java(_fake_rjava_target) {
+        generate_r_java(_rjava_target) {
           deps = [ ":$_build_config_target_name" ] + _java_assetres_deps +
                  _non_java_deps
           _rtxt_build_config =
@@ -4065,11 +4093,11 @@ if (enable_java_templates) {
           rtxt_build_config = _rtxt_build_config
 
           # Filepath has to be exactly this because compile_java looks for the
-          # srcjar of srcjar_deps at this location $gen_dir/$target_name.srcjar
-          srcjar_path = "$target_gen_dir/$target_name.srcjar"
+          # srcjar of srcjar_deps at $target_gen_dir/$_rjava_target.srcjar.
+          srcjar_path = "$target_gen_dir/$_rjava_target.srcjar"
           package = invoker.resources_package
         }
-        _srcjar_deps += [ ":$_fake_rjava_target" ]
+        _rjava_srcjar_deps = [ ":$_rjava_target" ]
       }
 
       _javac_build_config = string_replace(_build_config,
@@ -4110,7 +4138,7 @@ if (enable_java_templates) {
           output_interface_jar_path = _kotlin_interface_jar_path
           main_target_name = _main_target_name
           build_config = _javac_build_config
-          srcjar_deps = _srcjar_deps
+          srcjar_deps = _srcjar_deps + _rjava_srcjar_deps
           kotlin_srcjar_deps = _kotlin_srcjar_deps
           srcjars = _srcjars
           source_files = _source_files
@@ -4147,6 +4175,7 @@ if (enable_java_templates) {
           }
           enable_errorprone = _enable_errorprone
           use_turbine = defined(invoker.use_turbine) && invoker.use_turbine
+          omit_classpath = _omit_apk_classpath
 
           if (use_turbine) {
             build_config = _turbine_build_config
@@ -4159,6 +4188,14 @@ if (enable_java_templates) {
           } else {
             source_files = _source_files
             srcjar_deps = _srcjar_deps
+
+            # Standard javac compiles that are given Turbine's --header-jar
+            # resolve R.class from it, avoiding extracting and recompiling
+            # generated R.java sources.
+            if (use_turbine || !defined(invoker.header_jar_path) ||
+                _source_files == []) {
+              srcjar_deps += _rjava_srcjar_deps
+            }
             srcjars = _srcjars
           }
 
@@ -4196,6 +4233,11 @@ if (enable_java_templates) {
       }
 
       if (!_skip_header_jar) {
+        if (_omit_apk_classpath) {
+          _own_header_target_name = "${target_name}__own_header"
+        } else {
+          _own_header_target_name = _header_target_name
+        }
         _annotation_processor_deps = []
         if (defined(invoker.annotation_processor_deps)) {
           _annotation_processor_deps = invoker.annotation_processor_deps
@@ -4211,7 +4253,7 @@ if (enable_java_templates) {
           _allow_javac_sharding = invoker.allow_javac_sharding
         }
 
-        compile_java_helper(_header_target_name) {
+        compile_java_helper(_own_header_target_name) {
           forward_variables_from(invoker, _compile_java_forward_variables)
           use_turbine = true
           has_annotation_processors = _has_annotation_processors
@@ -4220,6 +4262,16 @@ if (enable_java_templates) {
           deps = _annotation_processor_deps
           if (_has_kt_files) {
             kotlin_jar_path = _kotlin_interface_jar_path
+          }
+        }
+        if (_omit_apk_classpath) {
+          # Downstream targets using apk_under_test or base_module_target depend
+          # on __header and inherit our transitive library interface jars via
+          # write_build_config.py. Keep __header depending on _java_header_deps
+          # while allowing this target's own __compile_java to depend only on
+          # __own_header.
+          group(_header_target_name) {
+            public_deps = [ ":$_own_header_target_name" ] + _java_header_deps
           }
         }
       }
@@ -4244,7 +4296,7 @@ if (enable_java_templates) {
         # and javac concurrently.
         if (!_skip_header_jar &&
             (_allow_javac_sharding || _has_annotation_processors)) {
-          deps = [ ":$_header_target_name" ]
+          deps = [ ":$_own_header_target_name" ]
           header_jar_path = _header_jar_path
           if (_has_annotation_processors) {
             generated_jar_path = _generated_jar_path
@@ -4279,7 +4331,7 @@ if (enable_java_templates) {
             kotlin_jar_path = _kotlinc_jar_path
           }
           if (!_skip_header_jar) {
-            deps = [ ":$_header_target_name" ]
+            deps = [ ":$_own_header_target_name" ]
             header_jar_path = _header_jar_path
           }
         }
@@ -4477,7 +4529,7 @@ if (enable_java_templates) {
             inputs = invoker.proguard_configs
 
             # For the aapt-generated proguard rules.
-            deps += _non_java_deps + _srcjar_deps
+            deps += _non_java_deps + _srcjar_deps + _rjava_srcjar_deps
           }
         }
       }
@@ -4542,10 +4594,10 @@ if (enable_java_templates) {
 
     # robolectric_library can depend on java_library, so java_library must
     # define __assetres.
-    if ((_is_library || _supports_android || _requires_robolectric) &&
-        !defined(_fake_rjava_target)) {
+    if (_is_library || _supports_android || _requires_robolectric) {
       group("${target_name}__assetres") {
-        if (_supports_android || _requires_robolectric) {
+        if (_supports_android || _requires_robolectric ||
+            _bypass_platform_checks) {
           deps = _java_assetres_deps
         }
       }

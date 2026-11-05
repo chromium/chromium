@@ -102,6 +102,17 @@ class CompileJavaTests(unittest.TestCase):
 
         self.assertRaises(Exception, inner)
 
+    def testFilteredJarExcludesRClasses(self):
+        base_filter = compile_java._CreateGlobFilter(
+            exclude_globs=['*/R.class', '*/R$*.class', '*/Excluded.class'],
+            include_globs=[],
+        )
+        filtered_jar_filter = compile_java._CreateFilteredJarFilter(base_filter)
+        self.assertFalse(filtered_jar_filter('org/chromium/Included.class'))
+        self.assertTrue(filtered_jar_filter('org/chromium/Excluded.class'))
+        self.assertFalse(filtered_jar_filter('org/chromium/R.class'))
+        self.assertFalse(filtered_jar_filter('org/chromium/R$string.class'))
+
 
 class ShardingTests(unittest.TestCase):
     def setUp(self):
