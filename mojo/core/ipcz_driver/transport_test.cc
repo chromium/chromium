@@ -650,8 +650,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitMemoryClient,
       DeserializeObjectFrom<SharedBuffer>(*transport, message)->region()));
   EXPECT_EQ(kMemoryMessage.size(), region.GetSize());
   auto mapping = region.Map();
-  auto contents = std::string_view(static_cast<const char*>(mapping.memory()),
-                                   kMemoryMessage.size());
+  auto contents =
+      base::as_string_view(base::span(mapping).first(kMemoryMessage.size()));
   EXPECT_EQ(kMemoryMessage, contents);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }

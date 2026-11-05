@@ -8,8 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -143,7 +144,7 @@ TYPED_TEST(SharedMemoryRegionTypedTest, WriteAndRead) {
   const size_t pre_size = pre_pickle.GetSize();
 
   const std::string content = "Hello, world!";
-  UNSAFE_TODO(memcpy(pre_mapping.memory(), content.data(), content.size()));
+  base::span(pre_mapping).copy_prefix_from(base::as_byte_span(content));
 
   IPC::Message message;
   IPC::WriteParam(&message, pre_pickle);
@@ -155,8 +156,7 @@ TYPED_TEST(SharedMemoryRegionTypedTest, WriteAndRead) {
   EXPECT_EQ(pre_size, post_pickle.GetSize());
   typename TypeParam::MappingType post_mapping = post_pickle.Map();
   EXPECT_EQ(pre_mapping.guid(), post_mapping.guid());
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(pre_mapping.memory(), post_mapping.memory(),
-                                  post_pickle.GetSize())));
+  EXPECT_EQ(base::span(pre_mapping), base::span(post_mapping));
 }
 
 TYPED_TEST(SharedMemoryRegionTypedTest, InvalidRegion) {
