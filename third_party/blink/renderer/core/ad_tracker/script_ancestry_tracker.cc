@@ -80,13 +80,19 @@ void ScriptAncestryTracker::WillExecuteScript(
       StackType::kTopOnly, stack_trace,
       /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
 
-  OnScriptRegistered(execution_context, script_id, url, marked_script_id);
-
-  if (IsMarkedScript(script_id) && !GetScriptMetadata(script_id)) {
+  // Since this is our first time running the script, this is the first we've
+  // seen of its script id. Record the id so that we can refer to the script
+  // by id rather than string.
+  if (!GetScriptMetadata(script_id)) {
     v8_inspector::V8DebuggerId debugger_id =
         GetDebuggerIdForCurrentContext(execution_context.GetIsolate());
-    script_metadata_.insert(script_id, ScriptMetadata{debugger_id, url});
+    script_metadata_.insert(
+        script_id,
+        ScriptMetadata{debugger_id, marked_script_id.value_or(V8ScriptId()),
+                       url});
   }
+
+  OnScriptRegistered(execution_context, script_id, url, marked_script_id);
 
   MaybeSetBottomMostScript(execution_context, script_id);
 }
@@ -415,15 +421,16 @@ void ScriptAncestryTracker::RegisterScript(
 
   v8::Isolate* isolate = GetIsolate();
   v8::HandleScope handle_scope(isolate);
+  v8_inspector::V8DebuggerId debugger_id =
+      GetDebuggerIdForCurrentContext(isolate);
+
+  script_metadata_.insert(
+      script_id,
+      ScriptMetadata{debugger_id, marked_script_id.value_or(V8ScriptId()),
+                     script_name});
+
   OnScriptRegistered(CHECK_DEREF(CurrentExecutionContext(isolate)), script_id,
                      script_name, marked_script_id);
-
-  if (IsMarkedScript(script_id) && !GetScriptMetadata(script_id)) {
-    v8_inspector::V8DebuggerId debugger_id =
-        GetDebuggerIdForCurrentContext(isolate);
-    script_metadata_.insert(script_id,
-                            ScriptMetadata{debugger_id, script_name});
-  }
 }
 
 const ScriptAncestryTracker::ScriptMetadata*

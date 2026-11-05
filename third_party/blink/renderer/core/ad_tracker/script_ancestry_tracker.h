@@ -73,6 +73,7 @@ class CORE_EXPORT ScriptAncestryTracker
 
   struct ScriptMetadata {
     v8_inspector::V8DebuggerId context_id;
+    V8ScriptId marked_script_id;
     String url;
   };
 
@@ -185,8 +186,8 @@ class CORE_EXPORT ScriptAncestryTracker
   void RegisterScript(V8ScriptId script_id,
                       std::optional<V8ScriptId> marked_script_id);
 
-  // Retrieves metadata (context ID and resolved URL) for a marked script's
-  // V8ScriptId, or nullptr if the script is not marked.
+  // Retrieves generic metadata (like parent script relationship and resolved
+  // URL) for a given V8ScriptId.
   const ScriptMetadata* GetScriptMetadata(V8ScriptId script_id) const;
 
   ScriptInitiationMonitor* GetScriptInitiationMonitor() const {
@@ -245,8 +246,9 @@ class CORE_EXPORT ScriptAncestryTracker
   // finish.
   Vector<std::optional<V8ScriptId>> async_script_stack_;
 
-  // Maps each marked script's V8ScriptId to its debugger context ID and
-  // resolved URL. Empty until at least one marked script has been registered.
+  // The permanent registry mapping each compiled V8ScriptId to its resolved URL
+  // and marked parent script ID. This represents our compilation graph for
+  // marked scripts and their descendants.
   HashMap<V8ScriptId, ScriptMetadata> script_metadata_;
 
   // Counter tracking the number of active synchronous script/task executions
@@ -261,6 +263,7 @@ class CORE_EXPORT ScriptAncestryTracker
   HeapHashMap<WeakMember<LocalFrame>, V8ScriptId> marked_frames_;
 
   friend class AdTrackerTest;
+  friend class ScriptAncestryTrackerTest;
 };
 
 }  // namespace blink
