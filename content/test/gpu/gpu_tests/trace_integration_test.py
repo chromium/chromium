@@ -1117,14 +1117,14 @@ WHERE
       )
 
   @staticmethod
-  def _IsSmallUiSwapChain(dirty_rect: str) -> bool:
-    """Returns True if dirty_rect (e.g. '0,0 64x64') is <= 64x64."""
+  def _GetDirtyRectArea(dirty_rect: str) -> int:
+    """Returns the area (width * height) of dirty_rect (e.g. '0,0 1280x960')."""
     if ' ' not in dirty_rect:
-      return False
+      return 0
     width, height = (
       int(dim) for dim in dirty_rect.split(' ', 1)[1].split('x', 1)
     )
-    return width <= 64 and height <= 64
+    return width * height
 
   def _EvaluateSuccess_CheckSwapChainHasAlpha(
     self, category: str, trace_processor: tp.TraceProcessor, other_args: dict
@@ -1166,19 +1166,34 @@ ORDER BY slices.id
         case _SwapChainKey.DIRTY_RECT:
           swap_events[row.id][row.key] = row.string_value
 
-    has_present_swap_chain_event_with_has_alpha = False
-    for event_args in swap_events.values():
-      if _SwapChainKey.HAS_ALPHA not in event_args:
-        continue
-      # Under DelegatedCompositing, small transparent browser UI surfaces
-      # (such as the 34x34 WebUIReloadButton in the toolbar, backed by a
-      # 64x64 swap chain) can present alongside the main WebContents swap
-      # chain. Ignore small UI swap chains when checking the main/root swap
-      # chain.
-      if self._IsSmallUiSwapChain(event_args.get(_SwapChainKey.DIRTY_RECT, '')):
+    events_with_has_alpha_arg = [
+      event_args
+      for event_args in swap_events.values()
+      if _SwapChainKey.HAS_ALPHA in event_args
+    ]
+    # It's also considered a failure if we did not see the expected event.
+    if not events_with_has_alpha_arg:
+      self.fail(
+        f'Expected events with name {_PRESENT_SWAP_CHAIN_EVENT_NAME} and '
+        'has_alpha value, but were not found'
+      )
+
+    # Under DelegatedCompositing, both the main WebContents surface and smaller
+    # transparent browser WebUI surfaces (such as WebUIToolbar) are embedded
+    # child viz::Surface root passes that can present as DXGI swap chains.
+    # Check the largest swap chain (the main WebContents or root window swap
+    # chain) to account for any WebUI surface dimensions.
+    max_area = max(
+      self._GetDirtyRectArea(event_args.get(_SwapChainKey.DIRTY_RECT, ''))
+      for event_args in events_with_has_alpha_arg
+    )
+    for event_args in events_with_has_alpha_arg:
+      if (
+        self._GetDirtyRectArea(event_args.get(_SwapChainKey.DIRTY_RECT, ''))
+        < max_area
+      ):
         continue
 
-      has_present_swap_chain_event_with_has_alpha = True
       got_has_alpha = event_args[_SwapChainKey.HAS_ALPHA]
       if expect_has_alpha != got_has_alpha:
         self.fail(
@@ -1186,13 +1201,6 @@ ORDER BY slices.id
           f'with has_alpha expected {expect_has_alpha}, got '
           f'{got_has_alpha}'
         )
-
-    # It's also considered a failure if we did not see the expected event.
-    if not has_present_swap_chain_event_with_has_alpha:
-      self.fail(
-        f'Expected events with name {_PRESENT_SWAP_CHAIN_EVENT_NAME} and '
-        'has_alpha value, but were not found'
-      )
 
   def _EvaluateSuccess_CheckWebGLCanvasCapture(
     self, category: str, trace_processor: tp.TraceProcessor, other_args: dict
