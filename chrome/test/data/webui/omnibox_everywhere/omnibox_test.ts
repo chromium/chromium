@@ -1442,6 +1442,28 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           'false', omnibox.$.overflowMenuButton.getAttribute('aria-expanded'));
     });
 
+    test('is hidden when expanded unless focused', async () => {
+      const container = omnibox.$.overflowMenuButton.parentElement!;
+      const display = () => window.getComputedStyle(container).display;
+      assertEquals('flex', display());
+
+      omnibox.dropdownIsVisible = true;
+      await microtasksFinished();
+      assertEquals('none', display());
+
+      omnibox.dropdownIsVisible = false;
+      omnibox.setInputText('query');
+      await microtasksFinished();
+      assertEquals('none', display());
+
+      omnibox.setInputText('');
+      await microtasksFinished();
+      omnibox.$.overflowMenuButton.focus();
+      omnibox.dropdownIsVisible = true;
+      await microtasksFinished();
+      assertEquals('flex', display());
+    });
+
     test(
         'opens with rounded rect, preserves dropdown on focusout, and resets ' +
             'on close or dismissing click',

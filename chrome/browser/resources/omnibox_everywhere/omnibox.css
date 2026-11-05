@@ -427,6 +427,12 @@ cr-searchbox-input::part(icon),
   display: none;
 }
 
+/* Pill-only; a focused button stays so ArrowDown on it doesn't drop focus. */
+:host(:is([dropdown-is-visible], [has-user-input]))
+    .searchbox-icon-button-container.overflow:not(:focus-within) {
+  display: none;
+}
+
 :host(:not([dropdown-is-visible]):not([has-user-input])) #bottomControls {
   inset-inline-end: 48px;
   padding: 0;
