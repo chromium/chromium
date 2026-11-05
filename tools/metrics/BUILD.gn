@@ -51,14 +51,20 @@ group("metrics_metadata") {
 }
 
 # This group defines the isolate files needed to run metrics_python_tests.py on
-# on bots. This also tells the build system when the tests should be re-run -
+# bots. This also tells the build system when the tests should be re-run -
 # when one of the dependent files changes.
 #
-# When adding new entries to this test suite, you can test things locally with
-# isolation using the following command:
+# Every test file in the directories scanned by metrics_python_tests.py has to
+# be listed below; tools/metrics/PRESUBMIT.py reports the missing ones.
 #
-#  tools/mb/mb.py run out/gn metrics_python_tests -- \
-#    --isolated-script-test-output=/tmp/output.json
+# To run all the tests locally from src/:
+#
+#  vpython3 tools/metrics/metrics_python_tests.py
+#
+# To run the suite the way the bots do, use the UTR (tools/utr/README.md):
+#
+#  vpython3 tools/utr/run.py -B try -b linux-rel -t metrics_python_tests \
+#    compile-and-test
 #
 group("metrics_python_tests") {
   data = [
