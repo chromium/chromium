@@ -9,9 +9,12 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/expected.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -56,6 +59,10 @@ using password_manager::RemoteActorCredentialSharingResult;
   // Controller coordinating the sharing flow with password stores and backend.
   std::unique_ptr<password_manager::RemoteActorCredentialSharingController>
       _controller;
+
+  // Pending callback to return the chosen credential or error to the
+  // controller.
+  RemoteActorCredentialSelectionCallback _credentialSelectedCallback;
 
   // Stored password forms matching `_origin`.
   std::vector<std::unique_ptr<password_manager::PasswordForm>> _credentials;
@@ -119,6 +126,12 @@ using password_manager::RemoteActorCredentialSharingResult;
 }
 
 - (void)disconnect {
+  if (_credentialSelectedCallback) {
+    std::move(_credentialSelectedCallback)
+        .Run(base::unexpected(
+            RemoteActorCredentialSharingResult::kUserCancelledDialog));
+  }
+
   _controller.reset();
   _delegateBridge.reset();
   _identityManager = nullptr;
@@ -155,13 +168,35 @@ using password_manager::RemoteActorCredentialSharingResult;
                                   callback:
                                       (RemoteActorCredentialSelectionCallback)
                                           callback {
-  // TODO(crbug.com/579011876): Resolve `callback` from the mutator once added.
   // The controller resolves the flow itself when no credentials are found.
   CHECK(!credentials.empty());
   _origin = origin;
+  _credentialSelectedCallback = std::move(callback);
   _credentials = std::move(credentials);
   [self pushStateToConsumer];
   [self.delegate mediatorDidRequestPresentation:self];
+}
+
+#pragma mark - RemoteActorCredentialBottomSheetMutator
+
+- (void)didSelectCredentialAtIndex:(NSInteger)index {
+  if (!_credentialSelectedCallback) {
+    return;
+  }
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), _credentials.size());
+  std::move(_credentialSelectedCallback).Run(*_credentials[index]);
+}
+
+- (void)didCancel {
+  if (_credentialSelectedCallback) {
+    // The controller reports the final result through `handleSharingResult:`.
+    std::move(_credentialSelectedCallback)
+        .Run(base::unexpected(
+            RemoteActorCredentialSharingResult::kUserCancelledDialog));
+    return;
+  }
+  [self.delegate mediator:self didFinishWithSuccess:NO];
 }
 
 #pragma mark - Private

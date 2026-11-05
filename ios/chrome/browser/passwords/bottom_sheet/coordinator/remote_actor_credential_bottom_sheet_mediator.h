@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_mutator.h"
+
 class FaviconLoader;
 @class RemoteActorCredentialBottomSheetMediator;
 @protocol RemoteActorCredentialBottomSheetConsumer;
@@ -50,7 +52,8 @@ class SyncService;
 // credentials, lets the user pick one and shares the chosen credential. Device
 // reauthentication is handled by the controller through
 // `passwordManagerClient`.
-@interface RemoteActorCredentialBottomSheetMediator : NSObject
+@interface RemoteActorCredentialBottomSheetMediator
+    : NSObject <RemoteActorCredentialBottomSheetMutator>
 
 // Consumer of the mediator.
 @property(nonatomic, weak) id<RemoteActorCredentialBottomSheetConsumer>
