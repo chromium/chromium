@@ -78,6 +78,15 @@ class CONTENT_EXPORT MediaDevicesManager
     BoolDeviceTypes() { fill(false); }
   };
 
+  struct DevicePermissionState {
+    bool has_browser_permission = false;
+    // When true, activating a device may show a system permission prompt.
+    bool system_may_prompt = false;
+  };
+  using DevicePermissionStates =
+      std::array<DevicePermissionState,
+                 static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes)>;
+
   enum class DeviceStartMonitoringMode {
     kNone,
     kStartAudio,          // Start audio monitoring, leave video unmodified.
@@ -403,7 +412,7 @@ class CONTENT_EXPORT MediaDevicesManager
       bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
-      const MediaDevicesManager::BoolDeviceTypes& has_permissions);
+      const MediaDevicesManager::DevicePermissionStates& permission_states);
   void OnDevicesEnumeratedAndRanked(
       uint64_t request_id,
       GlobalRenderFrameHostId render_frame_host_id,
@@ -412,7 +421,7 @@ class CONTENT_EXPORT MediaDevicesManager
       bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
-      const MediaDevicesManager::BoolDeviceTypes& has_permissions,
+      const MediaDevicesManager::DevicePermissionStates& permission_states,
       const MediaDeviceEnumeration& enumeration);
   void GetAudioInputCapabilities(
       uint64_t request_id,

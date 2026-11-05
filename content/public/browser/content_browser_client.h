@@ -1195,6 +1195,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual device::GeolocationSystemPermissionManager*
   GetGeolocationSystemPermissionManager();
 
+#if BUILDFLAG(IS_WIN)
+  // Returns true if activating the camera might show a system
+  // permission prompt.
+  virtual bool SystemMayPromptForVideoCapture();
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   // Allows an embedder to decide whether to use the GmsCoreLocationProvider.
   virtual bool ShouldUseGmsCoreGeolocationProvider();

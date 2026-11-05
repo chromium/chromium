@@ -143,6 +143,7 @@
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/performance_manager/public/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/public/chrome_content_browser_client_performance_manager_part.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
@@ -3897,6 +3898,18 @@ std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
 device::GeolocationSystemPermissionManager*
 ChromeContentBrowserClient::GetGeolocationSystemPermissionManager() {
   return device::GeolocationSystemPermissionManager::GetInstance();
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+bool ChromeContentBrowserClient::SystemMayPromptForVideoCapture() {
+  // CanPrompt() is hard-coded to false for camera permission on Windows. So we
+  // check both the allowed and denied states to determine if the system may
+  // prompt.
+  return !system_permission_settings::IsAllowed(
+             ContentSettingsType::MEDIASTREAM_CAMERA) &&
+         !system_permission_settings::IsDenied(
+             ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 #endif
 

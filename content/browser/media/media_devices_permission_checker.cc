@@ -27,24 +27,39 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#include "media/capture/capture_switches.h"
+#endif
+
 namespace content {
 
 namespace {
 
-MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
+MediaDevicesManager::DevicePermissionStates DoCheckPermissionsOnUIThread(
     MediaDevicesManager::BoolDeviceTypes requested_device_types,
     GlobalRenderFrameHostId render_frame_host_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  MediaDevicesManager::DevicePermissionStates result;
+#if BUILDFLAG(IS_WIN)
+  if (switches::IsWinDeviceEnumerationWithoutActivationEnabled()) {
+    ContentBrowserClient* browser = GetContentClient()->browser();
+    result[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)]
+        .system_may_prompt = browser->SystemMayPromptForVideoCapture();
+  }
+#endif
+
   RenderFrameHostImpl* frame_host =
       RenderFrameHostImpl::FromID(render_frame_host_id);
 
-  // If there is no |frame_host|, return false for all permissions.
+  // If there is no |frame_host|, return false for all browser permissions.
   if (!frame_host)
-    return MediaDevicesManager::BoolDeviceTypes();
+    return result;
 
   RenderFrameHostDelegate* delegate = frame_host->delegate();
   if (!delegate) {
-    return MediaDevicesManager::BoolDeviceTypes();
+    return result;
   }
 
   url::Origin origin = frame_host->GetLastCommittedOrigin();
@@ -67,24 +82,24 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
   bool speaker_selection_permissions_policy = frame_host->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kSpeakerSelection);
 
-  MediaDevicesManager::BoolDeviceTypes result;
-
   // Speakers. Also allow speakers if the microphone permission is given, even
   // if speaker permission is not explicitly given.
-  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
+  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
+      .has_browser_permission =
       requested_device_types[static_cast<size_t>(
           MediaDeviceType::kMediaAudioOutput)] &&
       ((microphone_permission && mic_permissions_policy) ||
        (speaker_selection_permission && speaker_selection_permissions_policy));
 
   // Mic.
-  result[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
-      requested_device_types[static_cast<size_t>(
-          MediaDeviceType::kMediaAudioInput)] &&
-      microphone_permission && mic_permissions_policy;
+  result[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)]
+      .has_browser_permission = requested_device_types[static_cast<size_t>(
+                                    MediaDeviceType::kMediaAudioInput)] &&
+                                microphone_permission && mic_permissions_policy;
 
   // Camera.
-  result[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+  result[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)]
+      .has_browser_permission =
       requested_device_types[static_cast<size_t>(
           MediaDeviceType::kMediaVideoInput)] &&
       delegate->CheckMediaAccessPermission(
@@ -101,9 +116,9 @@ bool CheckSinglePermissionOnUIThread(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   MediaDevicesManager::BoolDeviceTypes requested;
   requested[static_cast<size_t>(device_type)] = true;
-  MediaDevicesManager::BoolDeviceTypes result =
+  MediaDevicesManager::DevicePermissionStates result =
       DoCheckPermissionsOnUIThread(requested, render_frame_host_id);
-  return result[static_cast<size_t>(device_type)];
+  return result[static_cast<size_t>(device_type)].has_browser_permission;
 }
 
 void GetSpeakerSelectionAndMicrophoneState(
@@ -156,11 +171,15 @@ MediaDevicesPermissionChecker::MediaDevicesPermissionChecker()
           switches::kUseFakeUIForMediaStream)),
       override_value_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              switches::kUseFakeUIForMediaStream) != "deny") {}
+              switches::kUseFakeUIForMediaStream) != "deny"),
+      override_system_may_prompt_(false) {}
 
 MediaDevicesPermissionChecker::MediaDevicesPermissionChecker(
-    bool override_value)
-    : use_override_(true), override_value_(override_value) {}
+    bool override_value,
+    bool override_system_may_prompt)
+    : use_override_(true),
+      override_value_(override_value),
+      override_system_may_prompt_(override_system_may_prompt) {}
 
 bool MediaDevicesPermissionChecker::CheckPermissionOnUIThread(
     MediaDeviceType device_type,
@@ -214,11 +233,14 @@ void MediaDevicesPermissionChecker::CheckPermission(
 void MediaDevicesPermissionChecker::CheckPermissions(
     MediaDevicesManager::BoolDeviceTypes requested,
     GlobalRenderFrameHostId render_frame_host_id,
-    base::OnceCallback<void(const MediaDevicesManager::BoolDeviceTypes&)>
+    base::OnceCallback<void(const MediaDevicesManager::DevicePermissionStates&)>
         callback) const {
   if (use_override_) {
-    MediaDevicesManager::BoolDeviceTypes result;
-    result.fill(override_value_);
+    MediaDevicesManager::DevicePermissionStates result;
+    for (auto& permission_state : result) {
+      permission_state.has_browser_permission = override_value_;
+      permission_state.system_may_prompt = override_system_may_prompt_;
+    }
     std::move(callback).Run(result);
     return;
   }

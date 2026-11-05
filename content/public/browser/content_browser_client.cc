@@ -793,6 +793,12 @@ ContentBrowserClient::GetGeolocationSystemPermissionManager() {
   return nullptr;
 }
 
+#if BUILDFLAG(IS_WIN)
+bool ContentBrowserClient::SystemMayPromptForVideoCapture() {
+  return false;
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 bool ContentBrowserClient::ShouldUseGmsCoreGeolocationProvider() {
   return false;

@@ -22,9 +22,12 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
  public:
   MediaDevicesPermissionChecker();
 
-  // This constructor creates a MediaDevicesPermissionChecker that replies
-  // |override_value| to all permission requests. Use only for testing.
-  explicit MediaDevicesPermissionChecker(bool override_value);
+  // This constructor overrides browser permission with |override_value| and
+  // system prompt risk with |override_system_may_prompt| for every device type.
+  // Use only for testing.
+  explicit MediaDevicesPermissionChecker(
+      bool override_value,
+      bool override_system_may_prompt = false);
 
   MediaDevicesPermissionChecker(const MediaDevicesPermissionChecker&) = delete;
   MediaDevicesPermissionChecker& operator=(
@@ -59,15 +62,17 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
   // Checks if the origin associated with |render_frame_host_id| is allowed to
   // access the media device types marked with a value of true in
   // |requested_device_types|. The result is passed to |callback| and indexed by
-  // blink::mojom::MediaDeviceType. Entries with a value of true for requested
-  // device types indicate that the frame has permission to access devices of
-  // the corresponding types. This method can be called on any thread.
-  // |callback| is fired on the same thread this method is called on.
+  // blink::mojom::MediaDeviceType. Each entry indicates whether the frame has
+  // browser permission to access the corresponding device type. On Windows,
+  // when `kWinDeviceEnumerationWithoutActivation` is enabled, the video-input
+  // entry also indicates whether the system may prompt for camera permission.
+  // This method can be called on any thread. |callback| is fired on the same
+  // thread this method is called on.
   void CheckPermissions(
       MediaDevicesManager::BoolDeviceTypes requested_device_types,
       GlobalRenderFrameHostId render_frame_host_id,
-      base::OnceCallback<void(const MediaDevicesManager::BoolDeviceTypes&)>
-          callback) const;
+      base::OnceCallback<void(
+          const MediaDevicesManager::DevicePermissionStates&)> callback) const;
 
   // Returns true if the origin associated with |render_frame_host_id| is
   // allowed to control camera movement (pan, tilt, and zoom). Otherwise,
@@ -78,6 +83,7 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
  private:
   const bool use_override_;
   const bool override_value_;
+  const bool override_system_may_prompt_;
 };
 
 }  // namespace content

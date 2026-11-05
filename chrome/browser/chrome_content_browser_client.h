@@ -469,6 +469,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   GetGeolocationSystemPermissionManager() override;
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  bool SystemMayPromptForVideoCapture() override;
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldUseGmsCoreGeolocationProvider() override;
 #endif
