@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 import {ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
-import type {ComposeboxElement, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-
-export type ComposeboxUnionElement = ComposeboxElement|NtpComposeboxElement;
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadStatus, InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
@@ -57,22 +55,18 @@ export function createComposeboxFile(
       override);
 }
 
-export interface ComposeboxTestElement<T extends ComposeboxUnionElement =
-                                                     ComposeboxElement> {
-  element: T;
+export interface ComposeboxTestElement {
+  element: NtpComposeboxElement;
   handler: TestMock<PageHandlerRemote>;
   searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   searchboxCallbackRouterRemote: SearchboxPageRemote;
   metrics: MetricsTracker;
 }
 
-
-export function
-setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
-    ComposeboxTestElement<T> {
+export function setupComposeboxTest(): ComposeboxTestElement {
   // We can't return the variables initialized in setup() directly because
   // setup() runs later. We can return an object that will be populated.
-  const testProxy = {} as ComposeboxTestElement<T>;
+  const testProxy = {} as ComposeboxTestElement;
 
   setup(() => {
     class MockSpeechRecognition {
@@ -145,10 +139,10 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
   return testProxy;
 }
 
-export function
-createComposeboxElement<T extends ComposeboxUnionElement = ComposeboxElement>(
-    testProxy: ComposeboxTestElement<T>, properties: Partial<T> = {}) {
-  testProxy.element = document.createElement('ntp-composebox') as unknown as T;
+export function createComposeboxElement(
+    testProxy: ComposeboxTestElement,
+    properties: Partial<NtpComposeboxElement> = {}) {
+  testProxy.element = document.createElement('ntp-composebox');
   Object.assign(testProxy.element, {
     usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
     smartTabSharingVisible:
@@ -196,7 +190,8 @@ export async function waitForAddFileCallCount(
 }
 
 export function getInputForFileType(
-    composeboxElement: ComposeboxElement, fileType: string): HTMLInputElement {
+    composeboxElement: NtpComposeboxElement,
+    fileType: string): HTMLInputElement {
   return fileType === 'application/pdf' ?
       composeboxElement.$.fileInputs.shadowRoot.querySelector<HTMLInputElement>(
           '#fileInput')! :
@@ -205,7 +200,7 @@ export function getInputForFileType(
 }
 
 export function getMockFileChangeEventForType(
-    composeboxElement: ComposeboxElement, fileType: string): Event {
+    composeboxElement: NtpComposeboxElement, fileType: string): Event {
   if (fileType === 'application/pdf') {
     return new Event('change');
   }
@@ -220,7 +215,7 @@ export function getMockFileChangeEventForType(
 }
 
 export async function areMatchesShowing(
-    composeboxElement: ComposeboxElement,
+    composeboxElement: NtpComposeboxElement,
     searchboxCallbackRouterRemote: SearchboxPageRemote): Promise<boolean> {
   // Force a synchronous render.
   await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -306,9 +301,8 @@ export async function addTab(
   return FAKE_TOKEN_STRING;
 }
 
-export function
-getSubmitContainer<T extends ComposeboxUnionElement = ComposeboxElement>(
-    testProxy: ComposeboxTestElement<T>): HTMLElement {
+export function getSubmitContainer(testProxy: ComposeboxTestElement):
+    HTMLElement {
   const button = testProxy.element.shadowRoot.querySelector(
       'cr-composebox-submit');
   assertTrue(!!button);
@@ -316,9 +310,7 @@ getSubmitContainer<T extends ComposeboxUnionElement = ComposeboxElement>(
   return container;
 }
 
-export function
-getSubmitIcon<T extends ComposeboxUnionElement = ComposeboxElement>(
-    testProxy: ComposeboxTestElement<T>): HTMLElement {
+export function getSubmitIcon(testProxy: ComposeboxTestElement): HTMLElement {
   const button = testProxy.element.shadowRoot.querySelector(
       'cr-composebox-submit');
   assertTrue(!!button);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ComposeboxElement, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {AimButtonMode, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, InputSource, QueryActionOverride, SearchboxTutorial} from 'chrome://new-tab-page/new_tab_page.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
@@ -1509,7 +1509,7 @@ suite('NewTabPageComposeboxTest', () => {
     // overridden before createComposeboxElement().
     async function createWithAimButton(
         enabled: boolean, withX: boolean,
-        properties: Partial<ComposeboxElement> = {}) {
+        properties: Partial<NtpComposeboxElement> = {}) {
       loadTimeData.overrideValues({
         'composeboxPersistentAimButton': enabled,
         'composeboxPersistentAimButtonWithX': withX,
