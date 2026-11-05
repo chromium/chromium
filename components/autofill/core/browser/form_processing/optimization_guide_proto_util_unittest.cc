@@ -139,5 +139,22 @@ TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProtoForExtensionAPI) {
   EXPECT_EQ(field_proto.global_id().renderer_id(), *field_id.renderer_id);
 }
 
+// Tests that `ToFormDataProto()` excludes fields of type kSyntheticSelectOne.
+TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProtoSyntheticSelect) {
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.form_control_type = FormControlType::kInputText},
+           {.form_control_type = FormControlType::kSelectOne},
+           {.form_control_type = FormControlType::kSyntheticSelectOne}}});
+  optimization_guide::proto::FormData form_proto =
+      ToFormDataProto(form, FormDataProtoConversionReason::kExtensionAPI);
+
+  ASSERT_THAT(form_proto.fields(), SizeIs(2));
+  EXPECT_THAT(form_proto.fields(0).form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+  EXPECT_THAT(form_proto.fields(1).form_control_type(),
+              optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE);
+}
+
 }  // namespace
 }  // namespace autofill

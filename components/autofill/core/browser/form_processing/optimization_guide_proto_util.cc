@@ -29,19 +29,16 @@ optimization_guide::proto::AutofillGlobalId ToGlobalIdProto(T global_id) {
   return proto;
 }
 
-void PopulateExtensionAPISpecificFields(
+void PopulateExtensionAPISpecificFormLevelMetadata(
     const FormData& form_data,
     optimization_guide::proto::FormData& form_proto) {
-  // Add additional form-level metadata.
   *form_proto.mutable_global_id() = ToGlobalIdProto(form_data.global_id());
-  // Add additional field-level metadata.
-  CHECK_EQ(form_data.fields().size(),
-           static_cast<size_t>(form_proto.fields_size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    const FormFieldData& field = form_data.fields()[i];
-    *form_proto.mutable_fields(i)->mutable_global_id() =
-        ToGlobalIdProto(field.global_id());
-  }
+}
+
+void PopulateExtensionAPISpecificFieldLevelMetadata(
+    const FormFieldData& field_data,
+    optimization_guide::proto::FormFieldData& field_proto) {
+  *field_proto.mutable_global_id() = ToGlobalIdProto(field_data.global_id());
 }
 
 }  // namespace
@@ -74,10 +71,13 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
       return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE;
     case FormControlType::kTextArea:
       return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
-    // TODO(crbug.com/581337039): Exclude synthetic selects from
-    // `ToFormDataProto()`'s conversion logic.
+    // For the purposes of converting `autofill::FormData` to
+    // `optimization_guide::proto::FormData` (used for the AutofillAi model),
+    // synthetic select elements are currently not supported. The model was
+    // never evaluated on them and it's unclear how well the classifier would
+    // perform on them.
     case FormControlType::kSyntheticSelectOne:
-      NOTREACHED();
+      return optimization_guide::proto::FORM_CONTROL_TYPE_UNSPECIFIED;
   }
   NOTREACHED();
 }
@@ -89,6 +89,12 @@ optimization_guide::proto::FormData ToFormDataProto(
   form_data_proto.set_form_signature(*CalculateFormSignature(form_data));
   form_data_proto.set_form_name(base::UTF16ToUTF8(form_data.name()));
   for (const FormFieldData& field : form_data.fields()) {
+    optimization_guide::proto::FormControlType form_control_type =
+        ToFormControlTypeProto(field.form_control_type());
+    if (form_control_type ==
+        optimization_guide::proto::FORM_CONTROL_TYPE_UNSPECIFIED) {
+      continue;
+    }
     optimization_guide::proto::FormFieldData* field_proto =
         form_data_proto.add_fields();
     field_proto->set_field_signature(*CalculateFieldSignatureForField(field));
@@ -100,8 +106,7 @@ optimization_guide::proto::FormData ToFormDataProto(
         base::UTF16ToUTF8(field.aria_description()));
     field_proto->set_is_focusable(field.is_focusable());
     field_proto->set_placeholder(base::UTF16ToUTF8(field.placeholder()));
-    field_proto->set_form_control_type(
-        ToFormControlTypeProto(field.form_control_type()));
+    field_proto->set_form_control_type(form_control_type);
     for (const SelectOption& option : field.options()) {
       optimization_guide::proto::SelectOption* select_option_proto =
           field_proto->add_select_options();
@@ -109,13 +114,20 @@ optimization_guide::proto::FormData ToFormDataProto(
       select_option_proto->set_text(base::UTF16ToUTF8(option.text));
     }
     field_proto->set_form_control_ax_node_id(field.form_control_ax_id());
+    switch (conversion_reason) {
+      case FormDataProtoConversionReason::kModelRequest:
+        break;
+      case FormDataProtoConversionReason::kExtensionAPI:
+        PopulateExtensionAPISpecificFieldLevelMetadata(field, *field_proto);
+        break;
+    }
   }
 
   switch (conversion_reason) {
     case FormDataProtoConversionReason::kModelRequest:
       break;
     case FormDataProtoConversionReason::kExtensionAPI:
-      PopulateExtensionAPISpecificFields(form_data, form_data_proto);
+      PopulateExtensionAPISpecificFormLevelMetadata(form_data, form_data_proto);
       break;
   }
   return form_data_proto;
