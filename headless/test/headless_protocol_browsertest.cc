@@ -390,8 +390,8 @@ class HeadlessProtocolBrowserTestWithAllowedCrashes
 // Some platforms take very long time to handle crashes, and the test depends
 // on a large number of simulated crashes. See https://crbug.com/517040374 for
 // additional context.
-#define PLATFORM_SUPPORTS_CRASH_TEST()                                       \
-  !(BUILDFLAG(IS_WIN) && !defined(NDEBUG)) && !defined(ADDRESS_SANITIZER) && \
+#define PLATFORM_SUPPORTS_CRASH_TEST()                 \
+  !BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER) && \
       !defined(THREAD_SANITIZER)
 
 #if PLATFORM_SUPPORTS_CRASH_TEST()
