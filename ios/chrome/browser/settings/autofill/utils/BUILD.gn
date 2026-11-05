@@ -9,8 +9,6 @@ source_set("autofill_settings_ui_util") {
   ]
   deps = [
     "//base",
-    "//base:i18n",
-    "//components/autofill/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/shared/ui/table_view/cells",

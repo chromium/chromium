@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <optional>
 #import <vector>
 
 namespace autofill {
@@ -17,9 +16,6 @@ class EntityType;
 // Protocol for the Autofill AI "Add Entities" context menu.
 @protocol AutofillAIAddEntitiesMenuDelegate <NSObject>
 
-// Called when "Address" is selected to be added.
-- (void)didSelectAddAutofillProfile;
-
 // Called when an entity type is selected to be added.
 - (void)didSelectAddEntityWithType:(autofill::EntityType)type;
 
@@ -28,9 +24,8 @@ class EntityType;
 // Builder for the Autofill AI "Add Entities" context menu.
 @interface AutofillAIAddEntitiesMenuBuilder : NSObject
 
-// Returns a UIMenu for adding an address or a new entity.
+// Returns a UIMenu for adding a new entity.
 + (UIMenu*)buildMenuWithTypes:(const std::vector<autofill::EntityType>&)types
-               profileEnabled:(BOOL)profileEnabled
               entitiesEnabled:(BOOL)entitiesEnabled
                      delegate:(id<AutofillAIAddEntitiesMenuDelegate>)delegate;
 

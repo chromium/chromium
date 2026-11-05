@@ -10,7 +10,6 @@ NSString* const kAutofillProfileTableViewID = @"kAutofillProfileTableViewID";
 NSString* const kAutofillAddressSwitchViewId = @"kAutofillAddressSwitchViewId";
 NSString* const kAutofillAddressManagedViewId =
     @"kAutofillAddressManagedViewId";
-NSString* const kEnhancedAutofillTableViewId = @"kEnhancedAutofillTableViewId";
 NSString* const kSuggestionsFromGeminiTableViewId =
     @"kSuggestionsFromGeminiTableViewId";
 NSString* const kAutofillVerificationSwitchTableViewId =

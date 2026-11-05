@@ -8,32 +8,15 @@
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 @implementation AutofillAIAddEntitiesMenuBuilder
 
 + (UIMenu*)buildMenuWithTypes:(const std::vector<autofill::EntityType>&)types
-               profileEnabled:(BOOL)profileEnabled
               entitiesEnabled:(BOOL)entitiesEnabled
                      delegate:(id<AutofillAIAddEntitiesMenuDelegate>)delegate {
   __weak id<AutofillAIAddEntitiesMenuDelegate> weakDelegate = delegate;
 
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
-
-  if (profileEnabled) {
-    // Address
-    UIAction* addressAction =
-        [UIAction actionWithTitle:l10n_util::GetNSString(
-                                      IDS_IOS_AUTOFILL_ADD_ADDRESS_BUTTON_TEXT)
-                            image:SymbolWithPointSize(SymbolEnvelope,
-                                                      kSymbolActionPointSize)
-                       identifier:nil
-                          handler:^(UIAction* action) {
-                            [weakDelegate didSelectAddAutofillProfile];
-                          }];
-    [actions addObject:addressAction];
-  }
 
   for (const auto& entityType : types) {
     NSString* title = base::SysUTF16ToNSString(entityType.GetNameForI18n());
@@ -57,7 +40,7 @@
 
   // When UIMenu is presented from a bottom toolbar, iOS draws the first array
   // element at the bottom (closest to the anchor). Reversing the array ensures
-  // Address rendering explicitly at the top and subsequent entities rendering
+  // the first entity type renders at the top and subsequent entities render
   // downwards.
   return [UIMenu menuWithTitle:@""
                       children:[[actions reverseObjectEnumerator] allObjects]];

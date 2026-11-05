@@ -294,7 +294,6 @@ enum class ItemType {
   _addButtonInToolbar.target = nil;
   _addButtonInToolbar.menu = [AutofillAIAddEntitiesMenuBuilder
       buildMenuWithTypes:_writableEntityTypes
-          profileEnabled:NO
          entitiesEnabled:_identityDocsEnabled && _identityDocsToggleEnabled &&
                          !_identityDocsToggleManaged
                 delegate:self];
@@ -304,10 +303,6 @@ enum class ItemType {
 }
 
 #pragma mark - AutofillAIAddEntitiesMenuDelegate
-
-- (void)didSelectAddAutofillProfile {
-  NOTREACHED();
-}
 
 - (void)didSelectAddEntityWithType:(autofill::EntityType)type {
   [self.mutator didSelectAddEntityWithType:type];
@@ -351,7 +346,7 @@ enum class ItemType {
   }
 
   NSString* deletionConfirmationString =
-      GetDeletionConfirmationStringWithEntities(false, std::u16string());
+      GetDeletionConfirmationStringWithEntities();
 
   UIAlertControllerStyle preferredStyle = UIAlertControllerStyleActionSheet;
   if (UIContentSizeCategoryIsAccessibilityCategory(
