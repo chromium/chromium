@@ -859,6 +859,44 @@ TEST_F(AudioContextTest, ExecutionContextPaused) {
   EXPECT_FALSE(web_audio_device_paused_);
 }
 
+TEST_F(AudioContextTest, FrozenLifecycleClearsAudibility) {
+  AudioContext* audio_context =
+      AudioContext::Create(GetFrame().DomWindow(),
+                           AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  ExpectContextBecomesRunningAsync(audio_context);
+
+  FakeAudioThread audio_thread;
+  scoped_refptr<AudioBus> audible_bus = AudioBus::Create(1, 128);
+  audible_bus->Channel(0)->MutableSpan()[0] = 1.0f;
+  auto feed_audible = [&]() {
+    audio_thread.RunOnAudioThreadWithContext(
+        audio_context,
+        CrossThreadBindOnce(&AudioContext::HandleAudibility,
+                            WrapCrossThreadPersistent(audio_context),
+                            CrossThreadUnretained(audible_bus.get())));
+  };
+
+  feed_audible();
+  test::RunPendingTasks();
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 1);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // Freezing pauses rendering and clears audibility state.
+  GetFrame().DomWindow()->SetLifecycleState(
+      mojom::FrameLifecycleState::kFrozen);
+  test::RunPendingTasks();
+  EXPECT_TRUE(web_audio_device_paused_);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 1);
+
+  // Restoring to kRunning allows audible rendering to report start again.
+  GetFrame().DomWindow()->SetLifecycleState(
+      mojom::FrameLifecycleState::kRunning);
+  feed_audible();
+  test::RunPendingTasks();
+  EXPECT_FALSE(web_audio_device_paused_);
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 2);
+}
+
 TEST_F(AudioContextTest, CloseWhileFrozenStopsDestination) {
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* audio_context = AudioContext::Create(

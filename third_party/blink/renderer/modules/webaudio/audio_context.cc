@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -1655,6 +1656,15 @@ void AudioContext::RecordAutoplayMetrics() {
                                   autoplay_unlock_type_.value());
 
     autoplay_unlock_type_.reset();
+  }
+}
+
+void AudioContext::ContextLifecycleStateChanged(
+    mojom::blink::FrameLifecycleState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  BaseAudioContext::ContextLifecycleStateChanged(state);
+  if (state == mojom::blink::FrameLifecycleState::kFrozen) {
+    ClearAudibilityState();
   }
 }
 

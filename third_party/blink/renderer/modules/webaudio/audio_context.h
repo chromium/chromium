@@ -140,6 +140,8 @@ class MODULES_EXPORT AudioContext final
   void Trace(Visitor*) const override;
 
   // For ContextLifeCycleObserver
+  void ContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) override;
   void ContextDestroyed() override;
   bool HasPendingActivity() const override;
 
