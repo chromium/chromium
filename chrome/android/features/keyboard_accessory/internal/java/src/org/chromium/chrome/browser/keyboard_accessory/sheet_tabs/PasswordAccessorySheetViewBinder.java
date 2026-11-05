@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.PasswordTransformationMethod;
@@ -13,6 +15,8 @@ import android.view.ViewGroup;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -28,11 +32,16 @@ import org.chromium.ui.modelutil.ListModel;
  * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>} to the
  * {@link RecyclerView} used as view of a tab for the accessory sheet component.
  */
+@NullMarked
 class PasswordAccessorySheetViewBinder {
     /** Generic UI Configurations that help to transform specific model data. */
     static class UiConfiguration {
         /** Supports loading favicons for accessory data. */
-        public FaviconHelper faviconHelper;
+        public final FaviconHelper faviconHelper;
+
+        UiConfiguration(FaviconHelper faviconHelper) {
+            this.faviconHelper = faviconHelper;
+        }
     }
 
     static ElementViewHolder create(
@@ -52,7 +61,7 @@ class PasswordAccessorySheetViewBinder {
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
-        return null;
+        return assertNonNull(null);
     }
 
     /** Holds a clickable {@link ChipView} that represents a Passkey. */
@@ -76,7 +85,7 @@ class PasswordAccessorySheetViewBinder {
     static class PasswordInfoViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.UserInfo, PasswordAccessoryInfoView> {
         private final FaviconHelper mFaviconHelper;
-        String mFaviconRequestOrigin;
+        @Nullable String mFaviconRequestOrigin;
 
         PasswordInfoViewHolder(ViewGroup parent, FaviconHelper faviconHelper) {
             super(parent, R.layout.keyboard_accessory_sheet_tab_password_info);

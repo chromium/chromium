@@ -6,16 +6,19 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** These properties make up the model of the AccessorySheetTab component. */
+@NullMarked
 class AccessorySheetTabProperties {
     static final ReadableObjectPropertyKey<AccessorySheetTabItemsModel> ITEMS =
             new ReadableObjectPropertyKey<>("items");
-    static final ReadableObjectPropertyKey<RecyclerView.OnScrollListener> SCROLL_LISTENER =
-            new ReadableObjectPropertyKey<>("scroll_listener");
+    static final ReadableObjectPropertyKey<RecyclerView.@Nullable OnScrollListener>
+            SCROLL_LISTENER = new ReadableObjectPropertyKey<>("scroll_listener");
     static final WritableObjectPropertyKey<Boolean> IS_DEFAULT_A11Y_FOCUS_REQUESTED =
             new WritableObjectPropertyKey<>("is_default_a11y_focus_requested");
 

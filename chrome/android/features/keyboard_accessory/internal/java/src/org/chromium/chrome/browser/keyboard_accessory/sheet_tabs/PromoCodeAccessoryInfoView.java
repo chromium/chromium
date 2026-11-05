@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -20,6 +21,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * This view represents a section of promo code offer details in the payment methods tab of the
  * keyboard accessory (manual fallback) sheet.
  */
+@NullMarked
 class PromoCodeAccessoryInfoView extends LinearLayout {
     private ImageView mIcon;
     private ChipView mPromoCode;

@@ -63,7 +63,7 @@ public class EmptyManualFillingComponent implements ManualFillingComponent {
     public void registerSheetDataProvider(
             WebContents webContents,
             @AccessoryTabType int sheetType,
-            Provider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider) {}
+            Provider<KeyboardAccessoryData.@Nullable AccessorySheetData> sheetDataProvider) {}
 
     @Override
     public void registerSheetUpdateDelegate(

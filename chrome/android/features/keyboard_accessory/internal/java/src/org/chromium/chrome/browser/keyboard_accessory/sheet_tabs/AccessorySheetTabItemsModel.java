@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.ui.modelutil.ListModel;
 
@@ -14,9 +16,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This class describes the {@link ListModel} used for keyboard accessory sheets like the
- * {@link PasswordAccessorySheetCoordinator}.
+ * This class describes the {@link ListModel} used for keyboard accessory sheets like the {@link
+ * PasswordAccessorySheetCoordinator}.
  */
+@NullMarked
 class AccessorySheetTabItemsModel
         extends ListModel<AccessorySheetTabItemsModel.AccessorySheetDataPiece> {
     /**
@@ -86,10 +89,10 @@ class AccessorySheetTabItemsModel
             int DIVIDER = 13;
         }
 
-        private final Object mDataPiece;
+        private final @Nullable Object mDataPiece;
         private final @Type int mType;
 
-        AccessorySheetDataPiece(Object dataPiece, @Type int type) {
+        AccessorySheetDataPiece(@Nullable Object dataPiece, @Type int type) {
             mDataPiece = dataPiece;
             mType = type;
         }
@@ -98,7 +101,7 @@ class AccessorySheetTabItemsModel
             return accessorySheetDataPiece.mType;
         }
 
-        Object getDataPiece() {
+        @Nullable Object getDataPiece() {
             return mDataPiece;
         }
     }

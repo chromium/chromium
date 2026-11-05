@@ -10,6 +10,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent.UpdateAccessorySheetDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.data.CachedProviderAdapter;
@@ -26,16 +27,17 @@ import java.util.ArrayList;
  * This class holds all data that is necessary to restore the state of the Keyboard accessory and
  * its sheet for the {@link WebContents} it is attached to.
  */
+@NullMarked
 class ManualFillingState {
     private static final int[] TAB_ORDER = {
         AccessoryTabType.PASSWORDS, AccessoryTabType.CREDIT_CARDS, AccessoryTabType.ADDRESSES,
     };
-    private final WebContents mWebContents;
+    private final @Nullable WebContents mWebContents;
     private final SparseArray<MonotonicObservableSupplier<AccessorySheetData>> mSheetDataProviders =
             new SparseArray<>();
     private final SparseArray<KeyboardAccessoryData.Tab> mAvailableTabs = new SparseArray<>();
     private @Nullable UpdateAccessorySheetDelegate mUpdater;
-    @Nullable private CachedProviderAdapter<KeyboardAccessoryData.Action[]> mActionsProvider;
+    private @Nullable CachedProviderAdapter<KeyboardAccessoryData.Action[]> mActionsProvider;
     private boolean mWebContentsShowing;
 
     private class Observer extends WebContentsObserver {
@@ -52,10 +54,11 @@ class ManualFillingState {
         }
     }
 
-    private final WebContentsObserver mWebContentsObserver;
+    private final @Nullable WebContentsObserver mWebContentsObserver;
 
     /**
      * Creates a new set of user data that is bound to and observing the given web contents.
+     *
      * @param webContents Some {@link WebContents} which are assumed to be shown right now.
      */
     ManualFillingState(@Nullable WebContents webContents) {
@@ -126,7 +129,7 @@ class ManualFillingState {
      *
      * @return A {@link CachedProviderAdapter} wrapping a {@link Provider}.
      */
-    Provider<KeyboardAccessoryData.Action[]> getActionsProvider() {
+    @Nullable Provider<KeyboardAccessoryData.Action[]> getActionsProvider() {
         return mActionsProvider;
     }
 
@@ -137,7 +140,7 @@ class ManualFillingState {
      * @param provider A {@link Provider} providing sheet data.
      */
     void wrapSheetDataProvider(
-            @AccessoryTabType int tabType, Provider<AccessorySheetData> provider) {
+            @AccessoryTabType int tabType, Provider<@Nullable AccessorySheetData> provider) {
         SettableMonotonicObservableSupplier<AccessorySheetData> conditionalSupplier =
                 ObservableSuppliers.createMonotonic();
         provider.addObserver(
@@ -176,7 +179,7 @@ class ManualFillingState {
         if (mWebContentsShowing) adapter.notifyAboutCachedItems();
     }
 
-    WebContentsObserver getWebContentsObserverForTesting() {
+    @Nullable WebContentsObserver getWebContentsObserverForTesting() {
         return mWebContentsObserver;
     }
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
@@ -27,6 +28,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
  * This component is a tab that can be added to the ManualFillingCoordinator which shows it as
  * bottom sheet below the keyboard accessory.
  */
+@NullMarked
 public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final AccessorySheetTabMediator mMediator;
     private final Profile mProfile;

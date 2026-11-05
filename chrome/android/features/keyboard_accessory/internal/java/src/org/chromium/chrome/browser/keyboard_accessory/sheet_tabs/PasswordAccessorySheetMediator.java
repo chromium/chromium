@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class contains the logic specific to the password accessory sheet. */
+@NullMarked
 class PasswordAccessorySheetMediator extends AccessorySheetTabMediator {
     private final Callback<Boolean> mOnToggleChanged;
 
@@ -23,7 +26,7 @@ class PasswordAccessorySheetMediator extends AccessorySheetTabMediator {
     }
 
     @Override
-    public void onItemAvailable(int typeId, AccessorySheetData accessorySheetData) {
+    public void onItemAvailable(int typeId, @Nullable AccessorySheetData accessorySheetData) {
         super.onItemAvailable(typeId, accessorySheetData);
         if (accessorySheetData == null || accessorySheetData.getOptionToggle() == null) {
             // This call makes sure that the default tab icon is used when the toggle doesn't exist,

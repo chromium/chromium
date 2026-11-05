@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -19,6 +20,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * This view represents a section of IBAN details in the payment methods tab of the keyboard
  * accessory (manual fallback) sheet.
  */
+@NullMarked
 class IbanAccessoryInfoView extends LinearLayout {
     private ImageView mIcon;
     private ChipView mValue;

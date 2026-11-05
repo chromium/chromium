@@ -20,6 +20,7 @@ import org.chromium.base.BaseFeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -97,7 +98,7 @@ public final class KeyboardUtils {
      * @param rootView A {@link View}.
      * @return The size of the bottom margin which most likely is exactly the keyboard size.
      */
-    public static int calculateKeyboardHeightFromWindowInsets(View rootView) {
+    public static int calculateKeyboardHeightFromWindowInsets(@Nullable View rootView) {
         try (TraceEvent te =
                 TraceEvent.scoped("KeyboardVisibilityDelegate.calculateKeyboardHeight")) {
             if (rootView == null || rootView.getRootWindowInsets() == null) return 0;

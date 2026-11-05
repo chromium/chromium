@@ -142,6 +142,7 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
@@ -210,6 +211,7 @@ public class ManualFillingControllerTest {
     @Captor private ArgumentCaptor<KeyboardAccessoryStyle> mStyleCaptor;
 
     @Mock private ChromeWindow mMockWindow;
+    @Mock private ModalDialogManager mMockModalDialogManager;
     @Mock private Profile mMockProfile;
     @Mock private Profile.Natives mProfileJniMock;
     @Mock private TabModelSelector mMockTabModelSelector;
@@ -406,6 +408,7 @@ public class ManualFillingControllerTest {
         mContentView = ContentView.createContentView(mActivity, /* webContents= */ null);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mMockWindow.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
+        when(mMockWindow.getModalDialogManager()).thenReturn(mMockModalDialogManager);
         mInsetSupplier.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         mInsetSupplier.setKeyboardAccessoryInsetSupplier(mController.getBottomInsetSupplier());
         when(mMockWindow.getApplicationBottomInsetTracker()).thenReturn(mInsetSupplier);

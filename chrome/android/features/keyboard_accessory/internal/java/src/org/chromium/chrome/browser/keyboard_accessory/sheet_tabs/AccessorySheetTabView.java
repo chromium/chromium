@@ -11,7 +11,10 @@ import android.util.AttributeSet;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Base View class for a tab. */
+@NullMarked
 class AccessorySheetTabView extends RecyclerView {
     /** Constructor for inflating from XML. */
     public AccessorySheetTabView(Context context, AttributeSet attrs) {

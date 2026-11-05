@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
@@ -29,6 +30,7 @@ import org.chromium.components.autofill.ImageSize;
  * This component is a tab that can be added to the ManualFillingCoordinator. This tab allows
  * selecting credit card information from a sheet below the keyboard accessory.
  */
+@NullMarked
 public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final AccessorySheetTabMediator mMediator;
     private final CreditCardAccessorySheetViewBinder.UiConfiguration mUiConfiguration;
@@ -71,9 +73,7 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
     @VisibleForTesting
     static CreditCardAccessorySheetViewBinder.UiConfiguration createUiConfiguration(
             Context context, AutofillImageFetcher imageFetcher) {
-        CreditCardAccessorySheetViewBinder.UiConfiguration uiConfiguration =
-                new CreditCardAccessorySheetViewBinder.UiConfiguration();
-        uiConfiguration.cardDrawableFunction =
+        return new CreditCardAccessorySheetViewBinder.UiConfiguration(
                 (info) ->
                         getCardIcon(
                                 context,
@@ -82,15 +82,13 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
                                 CreditCardAccessorySheetViewBinder.getDrawableForOrigin(
                                         info.getOrigin()),
                                 ImageSize.SMALL,
-                                /* showCustomIcon= */ true);
-        uiConfiguration.loyaltyCardDrawableFunction =
+                                /* showCustomIcon= */ true),
                 (info) ->
                         getValuableIcon(
                                 context,
                                 imageFetcher,
                                 info.getProgramLogoUrl(),
                                 ImageSize.SMALL,
-                                info.getMerchantName());
-        return uiConfiguration;
+                                info.getMerchantName()));
     }
 }

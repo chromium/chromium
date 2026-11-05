@@ -105,15 +105,16 @@ public class PasswordAccessorySheetViewTest {
                                                 mView.set((RecyclerView) view);
                                                 AccessorySheetTabViewBinder.initializeView(
                                                         mView.get(), null);
-                                                PasswordAccessorySheetViewBinder.UiConfiguration
-                                                        uiConfiguration =
-                                                                new PasswordAccessorySheetViewBinder
-                                                                        .UiConfiguration();
-                                                uiConfiguration.faviconHelper =
+                                                FaviconHelper faviconHelper =
                                                         FaviconHelper.create(
                                                                 view.getContext(),
                                                                 mActivityTestRule.getProfile(
                                                                         false));
+                                                PasswordAccessorySheetViewBinder.UiConfiguration
+                                                        uiConfiguration =
+                                                                new PasswordAccessorySheetViewBinder
+                                                                        .UiConfiguration(
+                                                                        faviconHelper);
                                                 PasswordAccessorySheetViewBinder.initializeView(
                                                         mView.get(),
                                                         PasswordAccessorySheetCoordinator

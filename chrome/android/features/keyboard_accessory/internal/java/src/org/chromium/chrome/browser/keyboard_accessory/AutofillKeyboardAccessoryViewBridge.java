@@ -18,6 +18,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.Acceptability;
 import org.chromium.components.autofill.AutofillDelegate;
@@ -34,6 +35,7 @@ import java.util.List;
 
 /** JNI call glue between C++ (AutofillKeyboardAccessoryViewImpl) and Java objects. */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @JniType("::autofill::AutofillKeyboardAccessoryViewImpl")
     interface NativeAutofillKeyboardAccessoryViewImpl extends JniTypeToken {}

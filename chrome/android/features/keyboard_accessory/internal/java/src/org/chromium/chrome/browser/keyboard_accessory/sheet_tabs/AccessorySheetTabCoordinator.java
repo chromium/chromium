@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -29,9 +30,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * This coordinator aims to be the base class for sheets to be added to the ManualFillingCoordinator
  * It mainly enforces a consistent use of scroll listeners in {@link RecyclerView}s.
  */
+@NullMarked
 public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryData.Tab.Listener {
     private final KeyboardAccessoryData.Tab mTab;
-    private final OnScrollListener mScrollListener;
+    private final @Nullable OnScrollListener mScrollListener;
 
     protected final PropertyModel mModel;
 

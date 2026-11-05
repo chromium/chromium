@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.IS_DEFAULT_A11Y_FOCUS_REQUESTED;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.SCROLL_LISTENER;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -31,14 +33,16 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>} to the
  * {@link RecyclerView} used as view of a tab for the accessory sheet component.
  */
+@NullMarked
 class AccessorySheetTabViewBinder {
     /** Holds any View that represents a list entry. */
-    abstract static class ElementViewHolder<T, V extends View> extends RecyclerView.ViewHolder {
+    abstract static class ElementViewHolder<T extends @Nullable Object, V extends View>
+            extends RecyclerView.ViewHolder {
         ElementViewHolder(ViewGroup parent, int layout) {
             super(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "NullAway"})
         void bind(AccessorySheetDataPiece accessorySheetDataWrapper) {
             bind((T) accessorySheetDataWrapper.getDataPiece(), (V) itemView);
         }
@@ -63,7 +67,7 @@ class AccessorySheetTabViewBinder {
                 return new DividerViewHolder(parent);
         }
         assert false : "Unhandled type of data piece: " + viewType;
-        return null;
+        return assertNonNull(null);
     }
 
     /** Holds a Title consisting of a top divider, a text view and a bottom divider. */
@@ -80,13 +84,13 @@ class AccessorySheetTabViewBinder {
     }
 
     /** Holds a view that is used as a divider. */
-    static class DividerViewHolder extends ElementViewHolder<Void, View> {
+    static class DividerViewHolder extends ElementViewHolder<@Nullable Void, View> {
         DividerViewHolder(ViewGroup parent) {
             super(parent, R.layout.horizontal_divider);
         }
 
         @Override
-        protected void bind(Void unused, View view) {}
+        protected void bind(@Nullable Void unused, View view) {}
     }
 
     /** Holds a clickable {@link TextView} that represents a footer command. */

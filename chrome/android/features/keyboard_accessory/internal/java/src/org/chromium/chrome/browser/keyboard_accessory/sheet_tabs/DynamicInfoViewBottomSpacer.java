@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /**
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
  * to define a margin below the whole list of info views without having to wrap them in a new
  * layout. This would reduce the reusability of single info containers in a RecyclerView.
  */
+@NullMarked
 class DynamicInfoViewBottomSpacer extends RecyclerView.ItemDecoration {
     private final Class mInfoViewClass;
 

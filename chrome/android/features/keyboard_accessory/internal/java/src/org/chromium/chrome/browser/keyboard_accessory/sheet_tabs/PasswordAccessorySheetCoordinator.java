@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
@@ -28,6 +29,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
  * This component is a tab that can be added to the ManualFillingCoordinator which shows it as
  * bottom sheet below the keyboard accessory.
  */
+@NullMarked
 public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final PasswordAccessorySheetMediator mMediator;
     private final Profile mProfile;
@@ -62,8 +64,8 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     public void onTabCreated(ViewGroup view) {
         super.onTabCreated(view);
         PasswordAccessorySheetViewBinder.UiConfiguration uiConfiguration =
-                new PasswordAccessorySheetViewBinder.UiConfiguration();
-        uiConfiguration.faviconHelper = FaviconHelper.create(view.getContext(), mProfile);
+                new PasswordAccessorySheetViewBinder.UiConfiguration(
+                        FaviconHelper.create(view.getContext(), mProfile));
         PasswordAccessorySheetViewBinder.initializeView(
                 (RecyclerView) view, createAdapter(uiConfiguration, mModel.get(ITEMS)));
     }

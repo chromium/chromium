@@ -166,7 +166,7 @@ public final class UserInfoField {
             return this;
         }
 
-        public Builder setCallback(Callback<UserInfoField> callback) {
+        public Builder setCallback(@Nullable Callback<UserInfoField> callback) {
             this.mCallback = callback;
             return this;
         }

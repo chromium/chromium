@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -26,6 +29,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
 import java.util.function.Function;
 
+@NullMarked
 class CreditCardAccessorySheetViewBinder {
     /** Generic UI Configurations that help to transform specific model data. */
     static class UiConfiguration {
@@ -33,13 +37,22 @@ class CreditCardAccessorySheetViewBinder {
          * Converts an {@link KeyboardAccessoryData.UserInfo} associated with a credit card to the
          * appropriate drawable.
          */
-        public Function<KeyboardAccessoryData.UserInfo, Drawable> cardDrawableFunction;
+        public final Function<KeyboardAccessoryData.UserInfo, @Nullable Drawable>
+                cardDrawableFunction;
 
         /**
          * Converts an {@link KeyboardAccessoryData.LoyaltyCardInfo} to the appropriate drawable.
          */
-        public Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+        public final Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
                 loyaltyCardDrawableFunction;
+
+        UiConfiguration(
+                Function<KeyboardAccessoryData.UserInfo, @Nullable Drawable> cardDrawableFunction,
+                Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+                        loyaltyCardDrawableFunction) {
+            this.cardDrawableFunction = cardDrawableFunction;
+            this.loyaltyCardDrawableFunction = loyaltyCardDrawableFunction;
+        }
     }
 
     static ElementViewHolder create(
@@ -64,7 +77,7 @@ class CreditCardAccessorySheetViewBinder {
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
-        return null;
+        return assertNonNull(null);
     }
 
     private static void bindChipView(ChipView chip, UserInfoField field) {
@@ -83,11 +96,12 @@ class CreditCardAccessorySheetViewBinder {
     /** View which represents a single credit card and its selectable fields. */
     static class CreditCardInfoViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.UserInfo, CreditCardAccessoryInfoView> {
-        private final Function<KeyboardAccessoryData.UserInfo, Drawable> mCardDrawableFunction;
+        private final Function<KeyboardAccessoryData.UserInfo, @Nullable Drawable>
+                mCardDrawableFunction;
 
         CreditCardInfoViewHolder(
                 ViewGroup parent,
-                Function<KeyboardAccessoryData.UserInfo, Drawable> cardDrawableFunction) {
+                Function<KeyboardAccessoryData.UserInfo, @Nullable Drawable> cardDrawableFunction) {
             super(parent, R.layout.keyboard_accessory_sheet_tab_credit_card_info);
             mCardDrawableFunction = cardDrawableFunction;
         }
@@ -141,7 +155,7 @@ class CreditCardAccessorySheetViewBinder {
 
         @Override
         protected void bind(KeyboardAccessoryData.IbanInfo info, IbanAccessoryInfoView view) {
-            bindChipView(view.getValue(), info.getValue());
+            bindChipView(view.getValue(), assertNonNull(info.getValue()));
 
             view.setIcon(AppCompatResources.getDrawable(view.getContext(), R.drawable.iban_icon));
         }
@@ -210,8 +224,7 @@ class CreditCardAccessorySheetViewBinder {
             case "affirm":
             case "klarna":
             case "zip":
-                @Nullable
-                final TouchToFillResourceProvider resourceProvider =
+                TouchToFillResourceProvider resourceProvider =
                         ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
                 return resourceProvider == null
                         ? R.drawable.bnpl_icon_generic

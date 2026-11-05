@@ -85,7 +85,7 @@ public interface ManualFillingComponent extends BackPressHandler {
          * @return The soft keyboard size in pixels.
          */
         @Px
-        int calculateSoftKeyboardHeight(View rootView);
+        int calculateSoftKeyboardHeight(@Nullable View rootView);
     }
 
     /** A delegate that can be used to request updates for accessory sheets. */
@@ -149,7 +149,7 @@ public interface ManualFillingComponent extends BackPressHandler {
     void registerSheetDataProvider(
             WebContents webContents,
             @AccessoryTabType int sheetType,
-            Provider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider);
+            Provider<KeyboardAccessoryData.@Nullable AccessorySheetData> sheetDataProvider);
 
     /**
      * Registers an updater delegate which requests new accessory sheets for a given `webContents`.

@@ -13,6 +13,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
@@ -42,10 +44,11 @@ import java.util.function.Supplier;
  * KeyboardAccessoryCoordinator} and {@link AccessorySheetCoordinator} to add and trigger surfaces
  * that may assist users while filling fields.
  */
+@NullMarked
 class ManualFillingCoordinator implements ManualFillingComponent {
     private final ManualFillingMediator mMediator = new ManualFillingMediator();
     private final ObserverList<Observer> mObserverList = new ObserverList<>();
-    private KeyboardAccessoryCoordinator mKeyboardAccessoryCoordinator;
+    private @MonotonicNonNull KeyboardAccessoryCoordinator mKeyboardAccessoryCoordinator;
 
     ManualFillingCoordinator() {}
 
@@ -100,7 +103,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BottomSheetController sheetController,
             BooleanSupplier isContextualSearchOpened,
             BackPressManager backPressManager,
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            Supplier<@Nullable EdgeToEdgeController> edgeToEdgeControllerSupplier,
             SoftKeyboardDelegate keyboardDelegate) {
         mMediator.initialize(
                 accessoryBar,
@@ -162,7 +165,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     public void registerSheetDataProvider(
             WebContents webContents,
             @AccessoryTabType int sheetType,
-            Provider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider) {
+            Provider<KeyboardAccessoryData.@Nullable AccessorySheetData> sheetDataProvider) {
         mMediator.registerSheetDataProvider(webContents, sheetType, sheetDataProvider);
     }
 

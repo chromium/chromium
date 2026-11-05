@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.FIELD_BOUNDS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_FULLSCREEN;
@@ -43,6 +44,9 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSourceAttributionCoordinator;
@@ -119,6 +123,7 @@ import java.util.function.Supplier;
  * This part of the manual filling component manages the state of the manual filling flow depending
  * on the currently shown tab.
  */
+@NullMarked
 class ManualFillingMediator
         implements KeyboardAccessoryCoordinator.BarVisibilityDelegate,
                 AccessorySheetCoordinator.SheetVisibilityDelegate,
@@ -137,27 +142,29 @@ class ManualFillingMediator
 
     private final SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
     private final PropertyModel mModel = ManualFillingProperties.createFillingModel();
-    private WindowAndroid mWindowAndroid;
-    private NonNullObservableSupplier<ViewportInsets> mApplicationViewportInsetTracker;
+    private @Nullable WindowAndroid mWindowAndroid;
+    private @MonotonicNonNull NonNullObservableSupplier<ViewportInsets>
+            mApplicationViewportInsetTracker;
     private final SettableNonNullObservableSupplier<Integer> mBottomInsetSupplier =
             ObservableSuppliers.createNonNull(0);
     private final SettableNonNullObservableSupplier<Boolean> mIsAccessoryRequestedSupplier =
             ObservableSuppliers.createNonNull(false);
     private final ManualFillingStateCache mStateCache = new ManualFillingStateCache();
     private final HashSet<Tab> mObservedTabs = new HashSet<>();
-    private KeyboardAccessoryCoordinator mKeyboardAccessory;
-    private AccessorySheetCoordinator mAccessorySheet;
+    private @MonotonicNonNull KeyboardAccessoryCoordinator mKeyboardAccessory;
+    private @MonotonicNonNull AccessorySheetCoordinator mAccessorySheet;
     private boolean mWaitingForFetch;
-    private ChromeActivity mActivity; // Used to control the keyboard.
-    private TabModelSelectorTabModelObserver mTabModelObserver;
-    private BottomSheetController mBottomSheetController;
-    private ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
-    private ActionConfirmationDialog mActionConfirmationDialog;
+    private @Nullable ChromeActivity mActivity; // Used to control the keyboard.
+    private @MonotonicNonNull TabModelSelectorTabModelObserver mTabModelObserver;
+    private @MonotonicNonNull BottomSheetController mBottomSheetController;
+    private @MonotonicNonNull ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
+    private @Nullable ActionConfirmationDialog mActionConfirmationDialog;
     private @Nullable DialogHandle mConfirmationDialogDismissHandler;
     private @Nullable AutofillAiSourceAttributionCoordinator mSourceAttributionCoordinator;
-    private BackPressManager mBackPressManager;
-    private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier = SupplierUtils.ofNull();
-    private BooleanSupplier mIsContextualSearchOpened;
+    private @Nullable BackPressManager mBackPressManager;
+    private Supplier<@Nullable EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
+            SupplierUtils.ofNull();
+    private @MonotonicNonNull BooleanSupplier mIsContextualSearchOpened;
     private final Callback<ViewportInsets> mViewportInsetsObserver = this::onViewportInsetChanged;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -223,6 +230,7 @@ class ManualFillingMediator
             new BottomSheetObserver() {
                 @Override
                 public void onSheetStateChanged(@SheetState int newState, int reason) {
+                    assert isInitialized();
                     @Nullable BottomSheetContent currentContent =
                             mBottomSheetController.getCurrentSheetContent();
                     // TODO(crbug.com/505050661): Remove COBROWSE condition once modes is
@@ -246,10 +254,9 @@ class ManualFillingMediator
             BottomSheetController sheetController,
             BooleanSupplier isContextualSearchOpened,
             BackPressManager backPressManager,
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            Supplier<@Nullable EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate) {
-        mActivity = (ChromeActivity) windowAndroid.getActivity().get();
-        assert mActivity != null;
+        mActivity = (ChromeActivity) assertNonNull(windowAndroid.getActivity().get());
         mWindowAndroid = windowAndroid;
         mKeyboardAccessory = keyboardAccessory;
         mKeyboardAccessory.setAtMemoryCallback(this::onAtMemoryClicked);
@@ -257,7 +264,8 @@ class ManualFillingMediator
         mIsContextualSearchOpened = isContextualSearchOpened;
         mSoftKeyboardDelegate = keyboardDelegate;
         mActionConfirmationDialog =
-                new ActionConfirmationDialog(mActivity, windowAndroid.getModalDialogManager());
+                new ActionConfirmationDialog(
+                        mActivity, assertNonNull(windowAndroid.getModalDialogManager()));
         mModel.set(PORTRAIT_ORIENTATION, hasPortraitOrientation());
         mModel.addObserver(this::onPropertyChanged);
         mAccessorySheet = accessorySheet;
@@ -297,6 +305,22 @@ class ManualFillingMediator
         refreshTabs();
     }
 
+    @EnsuresNonNullIf(
+            value = {
+                "mWindowAndroid",
+                "mActivity",
+                "mActionConfirmationDialog",
+                "mBackPressManager",
+                "mApplicationViewportInsetTracker",
+                "mKeyboardAccessory",
+                "mAccessorySheet",
+                "mTabModelObserver",
+                "mBottomSheetController",
+                "mSoftKeyboardDelegate",
+                "mIsContextualSearchOpened"
+            },
+            result = true)
+    @SuppressWarnings("NullAway")
     boolean isInitialized() {
         return mWindowAndroid != null;
     }
@@ -368,6 +392,7 @@ class ManualFillingMediator
     }
 
     private boolean hasPortraitOrientation() {
+        assert isInitialized();
         return mWindowAndroid.getDisplay().getRotation() == Surface.ROTATION_0
                 || mWindowAndroid.getDisplay().getRotation() == Surface.ROTATION_180;
     }
@@ -382,7 +407,7 @@ class ManualFillingMediator
     void registerSheetDataProvider(
             WebContents webContents,
             @AccessoryTabType int tabType,
-            Provider<KeyboardAccessoryData.AccessorySheetData> dataProvider) {
+            Provider<KeyboardAccessoryData.@Nullable AccessorySheetData> dataProvider) {
         if (!isInitialized()) return;
         ManualFillingState state = mStateCache.getStateFor(webContents);
 
@@ -391,7 +416,7 @@ class ManualFillingMediator
         if (accessorySheet == null) return; // Not available or initialized yet.
 
         if (state.addAvailableTab(accessorySheet.getTab())) {
-            accessorySheet.registerDataProvider(state.getSheetDataProvider(tabType));
+            accessorySheet.registerDataProvider(assertNonNull(state.getSheetDataProvider(tabType)));
         }
         refreshTabs();
     }
@@ -432,7 +457,7 @@ class ManualFillingMediator
         ManualFillingState state = mStateCache.getStateFor(webContents);
 
         state.wrapActionsProvider(actionProvider, new Action[0]);
-        mKeyboardAccessory.registerActionProvider(state.getActionsProvider());
+        mKeyboardAccessory.registerActionProvider(assertNonNull(state.getActionsProvider()));
     }
 
     void destroy() {
@@ -540,6 +565,7 @@ class ManualFillingMediator
     }
 
     private void onAtMemoryClicked() {
+        assert isInitialized();
         WebContents webContents = mActivity.getCurrentWebContents();
         if (webContents != null && !webContents.isDestroyed()) {
             ManualFillingMetricsRecorder.recordActionSelected(
@@ -556,7 +582,8 @@ class ManualFillingMediator
     }
 
     private void updateAtMemoryEnablement() {
-        WebContents webContents = mActivity != null ? mActivity.getCurrentWebContents() : null;
+        assert isInitialized();
+        WebContents webContents = mActivity.getCurrentWebContents();
         boolean enabled = false;
         if (webContents != null && !webContents.isDestroyed()) {
             enabled = ManualFillingComponentBridge.isAtMemoryEnabled(webContents);
@@ -598,6 +625,7 @@ class ManualFillingMediator
         // shown already. If we have space for a bar, we continue to have it. The sheet is never
         // bigger than an open keyboard — so if an open sheet affects the inset, we can safely
         // ignore it, too.
+        assert isInitialized();
         height +=
                 mApplicationViewportInsetTracker.get().webContentsHeightInset
                         / mWindowAndroid.getDisplay().getDipScale();
@@ -690,7 +718,7 @@ class ManualFillingMediator
                     return false;
                 }
                 if (!mModel.get(SHOULD_EXTEND_KEYBOARD)) return true;
-                // Intentional fallthrough.
+            // Intentional fallthrough.
             case EXTENDING_KEYBOARD:
                 if (!canExtendKeyboard() || mModel.get(SUPPRESSED_BY_BOTTOM_SHEET)) {
                     mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
@@ -706,13 +734,13 @@ class ManualFillingMediator
                     mModel.set(KEYBOARD_EXTENSION_STATE, EXTENDING_KEYBOARD);
                     return false;
                 }
-                // Intentional fallthrough.
+            // Intentional fallthrough.
             case REPLACING_KEYBOARD:
                 if (isSoftKeyboardShowing(getContentView())) {
                     mModel.set(KEYBOARD_EXTENSION_STATE, WAITING_TO_REPLACE);
                     return false; // Wait for the keyboard to disappear before replacing!
                 }
-                // Intentional fallthrough.
+            // Intentional fallthrough.
             case WAITING_TO_REPLACE:
                 if (!hasSufficientSpace() || mModel.get(SUPPRESSED_BY_BOTTOM_SHEET)) {
                     mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
@@ -766,6 +794,7 @@ class ManualFillingMediator
 
     private void enforceStateProperties(@KeyboardExtensionState int extensionState) {
         TraceEvent.begin("ManualFillingMediator#enforceStateProperties");
+        assert isInitialized();
         if (requiresVisibleBar(extensionState)) {
             mKeyboardAccessory.setHasStickyLastItem(shouldHaveStickyLastItem());
             mKeyboardAccessory.setAnimateSuggestionsFromTop(shouldAnimateSuggestionsFromTop());
@@ -802,6 +831,7 @@ class ManualFillingMediator
             // the REPLACING state transitions into FLOATING_SHEET which triggers the keyboard which
             // transitions into the EXTENDING state as soon as the keyboard appeared.
             ViewGroup contentView = getContentView();
+            assert isInitialized();
             if (contentView != null) mSoftKeyboardDelegate.showSoftKeyboard(contentView);
         } else if (extensionState == WAITING_TO_REPLACE) {
             // In order to give the keyboard time to disappear, hide the keyboard and enter the
@@ -816,16 +846,19 @@ class ManualFillingMediator
         if (contentView == null) return; // Apparently the tab was cleaned up already.
         View rootView = contentView.getRootView();
         if (rootView == null) return;
+        assert isInitialized();
         mAccessorySheet.setHeight(calculateAccessorySheetHeight());
         mSoftKeyboardDelegate.hideSoftKeyboardOnly(rootView);
     }
 
     /**
      * Returns whether the accessory bar can be shown.
+     *
      * @return True if the keyboard can (and should) be shown. False otherwise.
      */
     private boolean canExtendKeyboard() {
         if (!mModel.get(SHOW_WHEN_VISIBLE)) return false;
+        assert mIsContextualSearchOpened != null && mAccessorySheet != null;
 
         // Don't open the accessory inside the contextual search panel.
         if (mIsContextualSearchOpened.getAsBoolean()) {
@@ -869,6 +902,7 @@ class ManualFillingMediator
     public int getKeyboardExtensionHeight() {
         if (!canExtendKeyboard()) return 0;
 
+        assert isInitialized();
         return mActivity
                 .getResources()
                 .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height);
@@ -894,7 +928,8 @@ class ManualFillingMediator
                                     new CustomTabsIntent.Builder()
                                             .setShowTitle(true)
                                             .build()
-                                            .launchUrl(mActivity, Uri.parse(bodyLink)));
+                                            .launchUrl(
+                                                    assertNonNull(mActivity), Uri.parse(bodyLink)));
             try {
                 return SpanApplier.applySpans(
                         body, new SpanApplier.SpanInfo("<link>", "</link>", span));
@@ -969,6 +1004,7 @@ class ManualFillingMediator
             Runnable confirmedCallback,
             Runnable declinedCallback) {
         dismissConfirmationDialogIfShown();
+        assert isInitialized();
         mConfirmationDialogDismissHandler =
                 mActionConfirmationDialog.show(
                         new ConfirmationDialogParams.Builder(mActivity)
@@ -994,6 +1030,7 @@ class ManualFillingMediator
         assert !sources.isEmpty()
                 : "Sources should not be empty for Autofill AI suggestion details";
         dismissConfirmationDialogIfShown();
+        assert isInitialized();
         ConfirmationDialogParams params =
                 new ConfirmationDialogParams.Builder(mActivity)
                         .withTitle(title)
@@ -1053,6 +1090,7 @@ class ManualFillingMediator
             return getTopOffsetForDynamicPositioning() + contentOffset;
         }
 
+        assert isInitialized();
         int topInsetOverlap =
                 mActivity
                         .getResources()
@@ -1061,15 +1099,18 @@ class ManualFillingMediator
     }
 
     private @Px int getFocusedFieldBottomPx() {
+        assert isInitialized();
         return Math.round(
                 mModel.get(FIELD_BOUNDS).bottom * mWindowAndroid.getDisplay().getDipScale());
     }
 
     private @Px int getFocusedFieldTopPx() {
+        assert isInitialized();
         return Math.round(mModel.get(FIELD_BOUNDS).top * mWindowAndroid.getDisplay().getDipScale());
     }
 
     private @Px int getBarWithNotchHeightPx() {
+        assert isInitialized();
         Resources resources = mActivity.getResources();
         return resources.getDimensionPixelSize(R.dimen.keyboard_accessory_height)
                 + resources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height);
@@ -1101,6 +1142,7 @@ class ManualFillingMediator
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList
                                 .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            assert isInitialized();
             @Px int viewportLeft = Math.round(getVisibleViewport().left);
             @Px
             int leftBound =
@@ -1116,6 +1158,7 @@ class ManualFillingMediator
     }
 
     private RectF getVisibleViewport() {
+        assert isInitialized();
         CompositorViewHolder compositorViewHolder =
                 assumeNonNull(mActivity.getCompositorViewHolderSupplier().get());
         RectF viewport = new RectF();
@@ -1124,6 +1167,7 @@ class ManualFillingMediator
     }
 
     private @Px int getMaxWidth() {
+        assert isInitialized();
         if (DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList
@@ -1148,6 +1192,7 @@ class ManualFillingMediator
                                         .AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
 
         if (requiresVisibleSheet(extensionState)) {
+            assert isInitialized();
             boolean isDocked = !useUndockedLayout;
             if (isDocked
                     || (DeviceInfo.isDesktop()
@@ -1159,6 +1204,7 @@ class ManualFillingMediator
         }
 
         if (requiresVisibleBar(extensionState)) {
+            assert isInitialized();
             mKeyboardAccessory.setStyle(getAccessoryStyle(extensionState, useUndockedLayout));
         }
 
@@ -1180,6 +1226,7 @@ class ManualFillingMediator
             offset = getKeyboardAndNavigationHeight();
         }
         if (requiresVisibleSheet(extensionState)) {
+            assert isInitialized();
             offset += mAccessorySheet.getHeight();
         }
         return KeyboardAccessoryStyle.createDockedKeyboardAccessoryStyle(offset);
@@ -1197,6 +1244,7 @@ class ManualFillingMediator
             }
         }
         if (requiresVisibleSheet(extensionState)) {
+            assert isInitialized();
             int shadowHeight =
                     mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
             inset += (mAccessorySheet.getHeight() - shadowHeight);
@@ -1242,9 +1290,11 @@ class ManualFillingMediator
 
     /**
      * Shorthand to get the activity tab.
+     *
      * @return The currently visible {@link Tab}, if any.
      */
     private @Nullable Tab getActiveBrowserTab() {
+        assert isInitialized();
         return mActivity.getActivityTabProvider().get();
     }
 
@@ -1276,6 +1326,7 @@ class ManualFillingMediator
     }
 
     private boolean isSoftKeyboardShowing(@Nullable View view) {
+        assert isInitialized();
         return view != null && mSoftKeyboardDelegate.isSoftKeyboardShowing(view);
     }
 
@@ -1313,6 +1364,7 @@ class ManualFillingMediator
         }
         // If the insets don't work, use the defaults of the KeyboardDelegate. Now, it uses the same
         // WindowInsetsCompat methods so the following line almost certainly means the height is 0.
+        assert isInitialized();
         return mSoftKeyboardDelegate.calculateSoftKeyboardHeight(getContentView());
     }
 
@@ -1322,6 +1374,7 @@ class ManualFillingMediator
         // TODO(bokan): Once mApplicationViewportInsetSupplier includes browser controls, we can use
         // CompositorViewHolder instead of WebContents and simply apply the viewVisibleHeightInset
         // to it, rather than awkwardly undoing the webContentsHeightInset.
+        assert isInitialized();
         WebContents webContents = mActivity.getCurrentWebContents();
         if (webContents == null || webContents.isDestroyed()) return;
         float density = mWindowAndroid.getDisplay().getDipScale();
@@ -1378,7 +1431,7 @@ class ManualFillingMediator
     }
 
     @VisibleForTesting
-    AccessorySheetTabCoordinator getOrCreateSheet(
+    @Nullable AccessorySheetTabCoordinator getOrCreateSheet(
             WebContents webContents, @AccessoryTabType int tabType) {
         if (!canCreateSheet(tabType) || webContents.isDestroyed()) return null;
         AccessorySheetTabCoordinator sheet;
@@ -1388,9 +1441,10 @@ class ManualFillingMediator
         sheet = createNewSheet(Profile.fromWebContents(webContents), tabType);
 
         mSheets.put(tabType, sheet);
-        if (state.getSheetDataProvider(tabType) != null) {
+        var sheetDataProvider = state.getSheetDataProvider(tabType);
+        if (sheetDataProvider != null) {
             if (state.addAvailableTab(sheet.getTab())) {
-                sheet.registerDataProvider(state.getSheetDataProvider(tabType));
+                sheet.registerDataProvider(sheetDataProvider);
             }
         }
         return sheet;
@@ -1415,6 +1469,7 @@ class ManualFillingMediator
 
     private AccessorySheetTabCoordinator createNewSheet(
             Profile profile, @AccessoryTabType int tabType) {
+        assert isInitialized();
         switch (tabType) {
             case AccessoryTabType.CREDIT_CARDS:
                 return new CreditCardAccessorySheetCoordinator(
@@ -1430,7 +1485,7 @@ class ManualFillingMediator
             case AccessoryTabType.COUNT: // Intentional fallthrough.
         }
         assert false : "Cannot create sheet for type " + tabType;
-        return null;
+        return assertNonNull(null);
     }
 
     private boolean isFloating(@KeyboardExtensionState int state) {
@@ -1473,7 +1528,7 @@ class ManualFillingMediator
             case FLOATING_SHEET:
                 return "FLOATING_SHEET";
         }
-        return null;
+        return assertNonNull(null);
     }
 
     private void trySetA11yFocusOnWebContents() {
@@ -1484,16 +1539,19 @@ class ManualFillingMediator
     }
 
     private @Px int getBarHeightWithoutShadow() {
+        assert isInitialized();
         return mActivity.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_height);
     }
 
     private @Px int getHeaderHeight() {
+        assert isInitialized();
         return mActivity
                 .getResources()
                 .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow);
     }
 
     private @Px int getIdealSheetHeight() {
+        assert isInitialized();
         int idealHeight =
                 3
                         * mActivity
@@ -1522,7 +1580,7 @@ class ManualFillingMediator
     }
 
     TabModelObserver getTabModelObserverForTesting() {
-        return mTabModelObserver;
+        return assertNonNull(mTabModelObserver);
     }
 
     TabObserver getTabObserverForTesting() {
@@ -1537,7 +1595,7 @@ class ManualFillingMediator
         return mModel;
     }
 
-    ActionConfirmationDialog getActionConfirmationDialogForTesting() {
+    @Nullable ActionConfirmationDialog getActionConfirmationDialogForTesting() {
         return mActionConfirmationDialog;
     }
 
@@ -1550,7 +1608,7 @@ class ManualFillingMediator
     }
 
     KeyboardAccessoryCoordinator getKeyboardAccessoryForTesting() {
-        return mKeyboardAccessory;
+        return assertNonNull(mKeyboardAccessory);
     }
 
     void setWaitingForFetch(boolean waiting) {

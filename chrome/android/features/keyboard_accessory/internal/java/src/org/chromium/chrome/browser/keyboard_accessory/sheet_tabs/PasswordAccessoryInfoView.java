@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -18,6 +19,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 /**
  * This view represents a section of user credentials in the password tab of the keyboard accessory.
  */
+@NullMarked
 class PasswordAccessoryInfoView extends LinearLayout {
     private TextView mTitle;
     private ImageView mIcon;

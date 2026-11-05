@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -22,6 +25,7 @@ import org.chromium.ui.modelutil.ListModel;
  * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>} to the
  * {@link RecyclerView} used as view of a tab for the address accessory sheet component.
  */
+@NullMarked
 class AddressAccessorySheetViewBinder {
     static ElementViewHolder create(
             ViewGroup parent,
@@ -37,7 +41,7 @@ class AddressAccessorySheetViewBinder {
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
-        return null;
+        return assertNonNull(null);
     }
 
     /** Holds a View representing a set of address data. */

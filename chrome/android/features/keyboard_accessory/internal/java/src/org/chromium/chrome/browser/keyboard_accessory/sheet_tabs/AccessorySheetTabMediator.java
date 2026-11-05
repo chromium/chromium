@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.IS_DEFAULT_A11Y_FOCUS_REQUESTED;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
 
 import androidx.annotation.CallSuper;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -36,13 +39,14 @@ import java.util.List;
  * PropertyModel} are observed by a {@link PropertyModelChangeProcessor} and affect the accessory
  * sheet tab view.
  */
+@NullMarked
 class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData> {
     private final PropertyModel mModel;
     private final @Type int mUserInfoType;
     private final @AccessoryAction int mManageActionToRecord;
 
     @Override
-    public void onItemAvailable(int typeId, AccessorySheetData accessorySheetData) {
+    public void onItemAvailable(int typeId, @Nullable AccessorySheetData accessorySheetData) {
         TraceEvent.begin("AccessorySheetTabMediator#onItemAvailable");
         mModel.get(ITEMS).set(splitIntoDataPieces(accessorySheetData));
         TraceEvent.end("AccessorySheetTabMediator#onItemAvailable");
@@ -86,7 +90,8 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
      */
     protected void onToggleChanged(boolean enabled) {}
 
-    private AccessorySheetDataPiece[] splitIntoDataPieces(AccessorySheetData accessorySheetData) {
+    private AccessorySheetDataPiece[] splitIntoDataPieces(
+            @Nullable AccessorySheetData accessorySheetData) {
         if (accessorySheetData == null) return new AccessorySheetDataPiece[0];
 
         List<AccessorySheetDataPiece> items = new ArrayList<>();
@@ -147,7 +152,7 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         for (int i = 0; i < mModel.get(ITEMS).size(); ++i) {
             AccessorySheetDataPiece data = mModel.get(ITEMS).get(i);
             if (AccessorySheetDataPiece.getType(data) == Type.OPTION_TOGGLE) {
-                OptionToggle toggle = (OptionToggle) data.getDataPiece();
+                OptionToggle toggle = (OptionToggle) assertNonNull(data.getDataPiece());
                 OptionToggle updatedToggle =
                         new OptionToggle(
                                 toggle.getDisplayText(),
@@ -165,7 +170,7 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         for (int i = 0; i < mModel.get(ITEMS).size(); ++i) {
             AccessorySheetDataPiece data = mModel.get(ITEMS).get(i);
             if (AccessorySheetDataPiece.getType(data) == Type.OPTION_TOGGLE) {
-                OptionToggle toggle = (OptionToggle) data.getDataPiece();
+                OptionToggle toggle = (OptionToggle) assertNonNull(data.getDataPiece());
                 ManualFillingMetricsRecorder.recordToggleImpression(
                         getRecordingTypeForToggle(toggle));
             }

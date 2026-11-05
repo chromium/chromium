@@ -107,7 +107,7 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
      * @see ManualFillingComponent.SoftKeyboardDelegate#calculateSoftKeyboardHeight(View)
      */
     @Override
-    public @Px int calculateSoftKeyboardHeight(View rootView) {
+    public @Px int calculateSoftKeyboardHeight(@Nullable View rootView) {
         return KeyboardUtils.calculateKeyboardHeightFromWindowInsets(rootView);
     }
 }

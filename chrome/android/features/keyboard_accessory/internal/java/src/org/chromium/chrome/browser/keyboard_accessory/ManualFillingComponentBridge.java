@@ -15,6 +15,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
@@ -35,8 +36,10 @@ import org.chromium.url.GURL;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+@NullMarked
 class ManualFillingComponentBridge {
-    private final SparseArray<Provider<AccessorySheetData>> mProviders = new SparseArray<>();
+    private final SparseArray<Provider<@Nullable AccessorySheetData>> mProviders =
+            new SparseArray<>();
     private final HashMap<Integer, Provider<Action[]>> mActionProviders = new HashMap<>();
     private final WindowAndroid mWindowAndroid;
     private final WebContents mWebContents;
@@ -50,8 +53,9 @@ class ManualFillingComponentBridge {
         mWebContents = webContents;
     }
 
-    Provider<AccessorySheetData> getOrCreateProvider(@AccessoryTabType int tabType) {
-        Provider<AccessorySheetData> provider = mProviders.get(tabType);
+    @Nullable Provider<@Nullable AccessorySheetData> getOrCreateProvider(
+            @AccessoryTabType int tabType) {
+        Provider<@Nullable AccessorySheetData> provider = mProviders.get(tabType);
         if (provider != null) return provider;
         if (getManualFillingComponent() == null) return null;
         if (mWebContents.isDestroyed()) return null;
@@ -76,7 +80,7 @@ class ManualFillingComponentBridge {
     @CalledByNative
     private void onItemsAvailable(AccessorySheetData accessorySheetData) {
         assertOnUiThread();
-        Provider<AccessorySheetData> provider =
+        Provider<@Nullable AccessorySheetData> provider =
                 getOrCreateProvider(accessorySheetData.getSheetType());
         if (provider != null) provider.notifyObservers(accessorySheetData);
     }
@@ -424,8 +428,8 @@ class ManualFillingComponentBridge {
         ManualFillingComponentBridgeJni.get().disableServerPredictionsForTesting();
     }
 
-    private ManualFillingComponent getManualFillingComponent() {
-        Supplier<ManualFillingComponent> manualFillingComponentSupplier =
+    private @Nullable ManualFillingComponent getManualFillingComponent() {
+        Supplier<@Nullable ManualFillingComponent> manualFillingComponentSupplier =
                 ManualFillingComponentSupplier.from(mWindowAndroid);
         if (manualFillingComponentSupplier == null) return null;
 

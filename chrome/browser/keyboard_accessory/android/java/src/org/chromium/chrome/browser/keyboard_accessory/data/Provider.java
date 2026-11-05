@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,13 +17,13 @@ import java.util.Set;
  * @param <T> The object this provider provides.
  */
 @NullMarked
-public class Provider<T> {
+public class Provider<T extends @Nullable Object> {
     /**
      * An observer receives notifications from a {@link Provider} it is subscribed to.
      *
      * @param <T> Any object that this instance observes.
      */
-    public interface Observer<T> {
+    public interface Observer<T extends @Nullable Object> {
         int DEFAULT_TYPE = Integer.MIN_VALUE;
 
         /**
