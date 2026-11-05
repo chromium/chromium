@@ -133,18 +133,6 @@ CanvasNon2DResourceProvider::Create(
 }
 
 std::unique_ptr<CanvasNon2DResourceProvider>
-CanvasNon2DResourceProvider::Create(
-    gfx::Size size,
-    const Canvas2DColorParams& color_params,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    gpu::SharedImageUsageSet shared_image_usage_flags) {
-  return Create(size, color_params.GetSharedImageFormat(),
-                color_params.GetAlphaType(), color_params.GetGfxColorSpace(),
-                color_params.GetGfxHdrMetadata(),
-                std::move(context_provider_wrapper), shared_image_usage_flags);
-}
-
-std::unique_ptr<CanvasNon2DResourceProvider>
 CanvasNon2DResourceProvider::CreateForWebGPU(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -190,17 +178,6 @@ CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
       size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, std::move(context_lost_callback)));
   return provider->IsValid() ? std::move(provider) : nullptr;
-}
-
-std::unique_ptr<CanvasNon2DResourceProvider>
-CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
-    gfx::Size size,
-    const Canvas2DColorParams& color_params,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider) {
-  return CreateForSoftwareCompositor(
-      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), color_params.GetGfxHdrMetadata(),
-      shared_image_interface_provider);
 }
 
 CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(

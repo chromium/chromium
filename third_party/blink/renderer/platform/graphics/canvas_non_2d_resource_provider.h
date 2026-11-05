@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
@@ -75,12 +74,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::OnceClosure context_lost_callback = {});
 
-  static std::unique_ptr<CanvasNon2DResourceProvider> Create(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
-
   static std::unique_ptr<CanvasNon2DResourceProvider> CreateForWebGPU(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -99,12 +92,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       const gfx::HDRMetadata& hdr_metadata,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       base::OnceClosure context_lost_callback = {});
-
-  static std::unique_ptr<CanvasNon2DResourceProvider>
-  CreateForSoftwareCompositor(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider);
 
   ~CanvasNon2DResourceProvider() override;
 
