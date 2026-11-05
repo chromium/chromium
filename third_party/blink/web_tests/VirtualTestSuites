@@ -632,6 +632,22 @@
     "expires": "Jul 1, 2027"
   },
   {
+    "prefix": "force-dark-light",
+    "owners": [
+      "helmut@januschka.com"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "dark-mode/force-dark"
+    ],
+    "args": [
+      "--blink-settings=preferredColorScheme=1,forceDarkModeEnabled=true"
+    ],
+    "expires": "May 1, 2027"
+  },
+  {
     "prefix": "dbsc-enabled",
     "owners": [
       "thefrog@chromium.org",

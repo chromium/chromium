@@ -74,9 +74,9 @@ TEST_F(ForceDarkTest, ForcedColorScheme) {
   UpdateAllLifecyclePhasesForTest();
 
   TestCase test_cases_preferred_light[] = {
-      {"t1", true, true}, {"t2", true, true}, {"t3", true, true},
-      {"t4", true, true}, {"t5", true, true}, {"t6", true, true},
-      {"t7", true, true}, {"t8", true, true},
+      {"t1", true, true},   {"t2", true, true},   {"t3", true, true},
+      {"t4", true, true},   {"t5", false, false}, {"t6", true, false},
+      {"t7", false, false}, {"t8", true, true},
   };
 
   for (const auto& test_case : test_cases_preferred_light) {
