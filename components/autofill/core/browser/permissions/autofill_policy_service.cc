@@ -4,11 +4,16 @@
 
 #include "components/autofill/core/browser/permissions/autofill_policy_service.h"
 
+#include <algorithm>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -76,9 +81,26 @@ bool IsCategoryGloballyBlocked(
   return false;
 }
 
+// LINT.IfChange(AutofillPolicyDataCategory)
+constexpr auto kCategoryByName =
+    base::MakeFixedFlatMap<std::string_view,
+                           AutofillClient::AutofillPolicyDataCategory>({
+        {prefs::kAutofillBlockedTypesContactInfoValue,
+         AutofillClient::AutofillPolicyDataCategory::kContactInfo},
+        {prefs::kAutofillBlockedTypesPaymentsValue,
+         AutofillClient::AutofillPolicyDataCategory::kPayments},
+        {prefs::kAutofillBlockedTypesIdentityDocsValue,
+         AutofillClient::AutofillPolicyDataCategory::kIdentityDocs},
+        {prefs::kAutofillBlockedTypesTravelValue,
+         AutofillClient::AutofillPolicyDataCategory::kTravel},
+        {prefs::kAutofillBlockedTypesShoppingValue,
+         AutofillClient::AutofillPolicyDataCategory::kShopping},
+    });
+// LINT.ThenChange(//components/autofill/core/browser/foundations/autofill_client.h:AutofillPolicyDataCategory,//components/autofill/core/browser/permissions/autofill_policy_service_unittest.cc:AutofillPolicyDataCategory,//chrome/browser/resources/settings/autofill_page/policy_utils.ts:AutofillPolicyDataCategory)
+
 struct ParsedPolicyEntry {
   ContentSettingsPattern pattern;
-  std::vector<AutofillClient::AutofillPolicyDataCategory> categories;
+  DenseSet<AutofillClient::AutofillPolicyDataCategory> categories;
 };
 
 // Parses a base::Value entry from the `kAutofillTypesBlocked` pref into a
@@ -109,39 +131,21 @@ std::optional<ParsedPolicyEntry> ParsePolicyEntry(const base::Value& entry) {
     return std::nullopt;
   }
 
-  std::vector<AutofillClient::AutofillPolicyDataCategory> categories;
+  DenseSet<AutofillClient::AutofillPolicyDataCategory> categories;
   for (const base::Value& blocked_type : *blocked_types) {
     if (!blocked_type.is_string()) {
       continue;
     }
-    std::string_view type_str = blocked_type.GetString();
-    if (type_str == prefs::kAutofillBlockedTypesContactInfoValue) {
-      categories.push_back(
-          AutofillClient::AutofillPolicyDataCategory::kContactInfo);
-    } else if (type_str == prefs::kAutofillBlockedTypesPaymentsValue) {
-      categories.push_back(
-          AutofillClient::AutofillPolicyDataCategory::kPayments);
-    } else if (type_str == prefs::kAutofillBlockedTypesIdentityDocsValue) {
-      categories.push_back(
-          AutofillClient::AutofillPolicyDataCategory::kIdentityDocs);
-    } else if (type_str == prefs::kAutofillBlockedTypesTravelValue) {
-      categories.push_back(AutofillClient::AutofillPolicyDataCategory::kTravel);
-    } else if (type_str == prefs::kAutofillBlockedTypesShoppingValue) {
-      categories.push_back(
-          AutofillClient::AutofillPolicyDataCategory::kShopping);
-    } else if (type_str == prefs::kAutofillBlockedTypesAllValue) {
-      // LINT.IfChange(AutofillPolicyDataCategory)
-      categories.insert(
-          categories.end(),
-          {AutofillClient::AutofillPolicyDataCategory::kContactInfo,
-           AutofillClient::AutofillPolicyDataCategory::kPayments,
-           AutofillClient::AutofillPolicyDataCategory::kIdentityDocs,
-           AutofillClient::AutofillPolicyDataCategory::kTravel,
-           AutofillClient::AutofillPolicyDataCategory::kShopping});
-      // LINT.ThenChange(//components/autofill/core/browser/foundations/autofill_client.h:AutofillPolicyDataCategory,//components/autofill/core/browser/permissions/autofill_policy_service_unittest.cc:AutofillPolicyDataCategory,//chrome/browser/resources/settings/autofill_page/policy_utils.ts:AutofillPolicyDataCategory)
+    const std::string_view type_str = blocked_type.GetString();
+    if (type_str == prefs::kAutofillBlockedTypesAllValue) {
+      categories.insert_all(
+          DenseSet<AutofillClient::AutofillPolicyDataCategory>::all());
+    } else if (const auto* category =
+                   base::FindOrNull(kCategoryByName, type_str)) {
+      categories.insert(*category);
     }
   }
-  return ParsedPolicyEntry{std::move(pattern), std::move(categories)};
+  return ParsedPolicyEntry{std::move(pattern), categories};
 }
 
 // Evaluates the given `policy_list` (from the `kAutofillTypesBlocked` pref)
@@ -152,23 +156,23 @@ bool EvaluatePolicyList(const base::ListValue& policy_list,
                         const GURL& url,
                         AutofillClient::AutofillPolicyDataCategory category) {
   return std::ranges::any_of(policy_list, [&](const base::Value& entry) {
-    std::optional<ParsedPolicyEntry> parsed_entry = ParsePolicyEntry(entry);
+    const std::optional<ParsedPolicyEntry> parsed_entry =
+        ParsePolicyEntry(entry);
     if (!parsed_entry) {
       return false;
     }
 
-    bool matches_url =
+    const bool matches_url =
         url.is_empty()
             ? (parsed_entry->pattern == ContentSettingsPattern::Wildcard())
             : parsed_entry->pattern.Matches(url);
 
-    return matches_url &&
-           std::ranges::contains(parsed_entry->categories, category);
+    return matches_url && parsed_entry->categories.contains(category);
   });
 }
 
 // Maps an Autofill AI EntityType to its corresponding policy data category.
-AutofillClient::AutofillPolicyDataCategory
+constexpr AutofillClient::AutofillPolicyDataCategory
 GetAutofillPolicyDataCategoryForEntityType(EntityType entity_type) {
   switch (entity_type.name()) {
     case EntityTypeName::kNationalIdCard:
@@ -257,7 +261,7 @@ bool AutofillPolicyService::IsAutofillTypeBlockedByPolicy(
   return std::ranges::any_of(
       blocked_patterns_cache_, [&](const BlockedPatternEntry& entry) {
         return entry.pattern.Matches(url) &&
-               std::ranges::contains(entry.blocked_categories, category);
+               entry.blocked_categories.contains(category);
       });
 }
 
@@ -293,8 +297,8 @@ void AutofillPolicyService::OnAutofillPolicyChanged() {
   for (const base::Value& entry : blocked_list) {
     if (std::optional<ParsedPolicyEntry> parsed_entry =
             ParsePolicyEntry(entry)) {
-      blocked_patterns_cache_.push_back({std::move(parsed_entry->pattern),
-                                         std::move(parsed_entry->categories)});
+      blocked_patterns_cache_.push_back(
+          {std::move(parsed_entry->pattern), parsed_entry->categories});
     }
   }
 }

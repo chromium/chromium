@@ -66,7 +66,7 @@ class AutofillPolicyService : public KeyedService {
 
   struct BlockedPatternEntry {
     ContentSettingsPattern pattern;
-    std::vector<AutofillClient::AutofillPolicyDataCategory> blocked_categories;
+    DenseSet<AutofillClient::AutofillPolicyDataCategory> blocked_categories;
   };
   std::vector<BlockedPatternEntry> blocked_patterns_cache_;
 };
