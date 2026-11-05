@@ -7,12 +7,18 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,6 +53,7 @@ class TestMetricsReporter : public MetricsReporter {
  public:
   using MetricsReporter::OnGetMark;
   using MetricsReporter::OnPageRemoteCreated;
+  using MetricsReporter::OnUmaReportLongTimeSpan;
 };
 class WebUIMetricsReporterTest : public testing::Test {
  public:
@@ -255,6 +262,87 @@ TEST_F(WebUIMetricsReporterTest,
 
   run_loop.Run();
 }
+
+// OnUmaReportLongTimeSpan() should record the time between `start` and `end`,
+// including times past the 10 second range of OnUmaReportTime().
+TEST_F(WebUIMetricsReporterTest, UmaReportLongTimeSpan) {
+  base::HistogramTester histograms;
+  const base::TimeTicks end = base::TimeTicks::Now();
+
+  metrics_reporter_.OnUmaReportLongTimeSpan(kHistogram, end - base::Seconds(25),
+                                            end);
+
+  const std::vector<base::Bucket> buckets =
+      histograms.GetAllSamples(kHistogram);
+  ASSERT_EQ(buckets.size(), 1u);
+  EXPECT_EQ(buckets[0].count, 1);
+  EXPECT_GT(buckets[0].min, base::Seconds(10).InMilliseconds());
+  EXPECT_LE(buckets[0].min, base::Seconds(25).InMilliseconds());
+  // From 1 ms to 1 hour, in 100 buckets.
+  const base::HistogramBase* histogram =
+      base::StatisticsRecorder::FindHistogram(kHistogram);
+  ASSERT_TRUE(histogram);
+  EXPECT_TRUE(histogram->HasConstructionArguments(
+      /*expected_minimum=*/1, /*expected_maximum=*/3'600'000,
+      /*expected_bucket_count=*/100));
+}
+
+// OnUmaReportLongTimeSpan() should drop spans that can't be real.
+TEST_F(WebUIMetricsReporterTest, UmaReportLongTimeSpanDropsInvalidSpans) {
+  base::HistogramTester histograms;
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  // Ends before it starts.
+  metrics_reporter_.OnUmaReportLongTimeSpan(kHistogram, now,
+                                            now - base::Seconds(1));
+  // Has no start.
+  metrics_reporter_.OnUmaReportLongTimeSpan(kHistogram, base::TimeTicks(), now);
+
+  histograms.ExpectTotalCount(kHistogram, 0);
+}
+
+// OnUmaReportLongTimeSpan() should record spans that end a little in the
+// future, since some platforms report the next vsync as a frame's presentation
+// time.
+TEST_F(WebUIMetricsReporterTest, UmaReportLongTimeSpanRecordsFutureEnd) {
+  base::HistogramTester histograms;
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  metrics_reporter_.OnUmaReportLongTimeSpan(
+      kHistogram, now - base::Milliseconds(500), now + base::Milliseconds(16));
+
+  histograms.ExpectUniqueTimeSample(kHistogram, base::Milliseconds(516), 1);
+}
+
+#if defined(TEST_TRACE_PROCESSOR_ENABLED)
+// OnUmaReportLongTimeSpan() should trace the span on a track named after the
+// histogram.
+TEST(WebUIMetricsReporterTraceTest, UmaReportLongTimeSpanTracesSlice) {
+  content::BrowserTaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
+  base::test::TestTraceProcessor trace_processor;
+  trace_processor.StartTrace("ui");
+  TestMetricsReporter metrics_reporter;
+  const base::TimeTicks end = base::TimeTicks::Now();
+
+  metrics_reporter.OnUmaReportLongTimeSpan("TestHistogram",
+                                           end - base::Milliseconds(30), end);
+
+  const absl::Status status = trace_processor.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  const auto result = trace_processor.RunQuery(R"(
+    SELECT slice.name, track.name AS track_name, slice.dur
+    FROM slice JOIN track ON slice.track_id = track.id
+    WHERE slice.name = 'TestHistogram'
+  )");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"name", "track_name", "dur"},
+                  std::vector<std::string>{"TestHistogram", "TestHistogram",
+                                           "30000000"}));
+}
+#endif  // defined(TEST_TRACE_PROCESSOR_ENABLED)
 
 TEST(WebUIMetricsReporterUnboundTest, HasMarkBeforeRemoteCreated) {
   content::BrowserTaskEnvironment task_environment;

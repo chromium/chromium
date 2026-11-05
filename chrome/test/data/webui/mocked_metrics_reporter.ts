@@ -22,4 +22,7 @@ export class MockedMetricsReporter implements MetricsReporter {
   clearMark(_name: string): void {}
 
   umaReportTime(_histogram: string, _time: bigint): void {}
+
+  umaReportLongTimeSpan(_histogram: string, _start: bigint, _end: bigint):
+      void {}
 }

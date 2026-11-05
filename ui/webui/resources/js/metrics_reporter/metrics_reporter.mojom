@@ -23,6 +23,12 @@ interface PageMetricsHost {
 
   // Record a time in UMA histogram.
   OnUmaReportTime(string name, mojo_base.mojom.TimeDelta time);
+
+  // Record the time from `start` to `end`, of up to an hour, in UMA histogram,
+  // and trace it as a slice from `start` to `end`.
+  OnUmaReportLongTimeSpan(string name,
+                          mojo_base.mojom.TimeTicks start,
+                          mojo_base.mojom.TimeTicks end);
 };
 
 // WebUI-side handler for requests from the browser.

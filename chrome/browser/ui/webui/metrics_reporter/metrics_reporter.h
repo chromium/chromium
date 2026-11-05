@@ -51,6 +51,9 @@ class MetricsReporter : public metrics_reporter::mojom::PageMetricsHost {
   void OnGetMark(const std::string& name, OnGetMarkCallback callback) override;
   void OnClearMark(const std::string& name) override;
   void OnUmaReportTime(const std::string& name, base::TimeDelta time) override;
+  void OnUmaReportLongTimeSpan(const std::string& name,
+                               base::TimeTicks start,
+                               base::TimeTicks end) override;
 
  private:
   friend MetricsReporterClient;
