@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_untrusted_ui_config.h"
 
+#include <functional>
 #include <memory>
 #include <string_view>
 
@@ -13,13 +14,13 @@
 #include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 #include "ash/webui/help_app_ui/url_constants.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
@@ -68,18 +68,16 @@ constexpr auto kCrosSwitcherCountriesSet =
          "my", "ng", "nl", "no", "nz", "pe", "ph", "pl", "pt", "ro", "ru",
          "sa", "se", "sg", "sk", "th", "tr", "tw", "ua", "uy", "vn", "za"});
 
-bool IsCrosSwitcherEnabled(variations::VariationsService* variations_service) {
-  if (!variations_service) {
-    // Disables Switcher as a fail-safe behavior.
-    return false;
-  }
-
+bool IsCrosSwitcherEnabled(
+    const variations::VariationsService& variations_service) {
   return kCrosSwitcherCountriesSet.contains(
-      variations_service->GetStoredPermanentCountry());
+      variations_service.GetStoredPermanentCountry());
 }
 
-void PopulateLoadTimeData(content::WebUI* web_ui,
-                          content::WebUIDataSource* source) {
+void PopulateLoadTimeData(
+    const variations::VariationsService& variations_service,
+    content::WebUI* web_ui,
+    content::WebUIDataSource* source) {
   // Enable accessibility mode (slower balloons) if either spoken feedback
   // or switch access is enabled.
   auto* accessibility_manager = AccessibilityManager::Get();
@@ -138,9 +136,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
         "isVcBackgroundReplaceAllowed",
         ash::features::IsVideoConferenceEnabled() &&
             ash::personalization_app::IsEligibleForSeaPen(profile));
-    source->AddBoolean(
-        "isCrosSwitcherEnabled",
-        IsCrosSwitcherEnabled(g_browser_process->variations_service()));
+    source->AddBoolean("isCrosSwitcherEnabled",
+                       IsCrosSwitcherEnabled(variations_service));
     source->AddBoolean(
         "featureManagementShowoff",
         base::FeatureList::IsEnabled(ash::features::kFeatureManagementShowoff));
@@ -233,11 +230,26 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
 }  // namespace
 
 HelpAppUntrustedUIConfig::HelpAppUntrustedUIConfig(
-    const ApplicationLocaleStorage* application_locale_storage)
+    const ApplicationLocaleStorage* application_locale_storage,
+    variations::VariationsService* variations_service)
     : WebUIConfig(content::kChromeUIUntrustedScheme, kChromeUIHelpAppHost),
-      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      variations_service_(variations_service) {
+  if (variations_service_) {
+    variations_service_observation_.Observe(variations_service_);
+  } else {
+    CHECK_IS_TEST();
+  }
+}
 
 HelpAppUntrustedUIConfig::~HelpAppUntrustedUIConfig() = default;
+
+// static
+bool HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
+    const variations::VariationsService& variations_service) {
+  CHECK_IS_TEST();
+  return IsCrosSwitcherEnabled(variations_service);
+}
 
 bool HelpAppUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -246,21 +258,24 @@ bool HelpAppUntrustedUIConfig::IsWebUIEnabled(
   return !IsShimlessRmaAppBrowserContext(browser_context);
 }
 
-// static
-bool HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
-    variations::VariationsService* variations_service) {
-  CHECK_IS_TEST();
-  return IsCrosSwitcherEnabled(variations_service);
-}
-
 std::unique_ptr<content::WebUIController>
 HelpAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                 const GURL& url) {
-  base::RepeatingCallback<void(content::WebUIDataSource*)> callback =
-      base::BindRepeating(&PopulateLoadTimeData, web_ui);
-
+  CHECK(variations_service_);
+  // `std::cref(*variations_service_)` is safe because `HelpAppUntrustedUI`
+  // invokes the callback synchronously in its constructor without retaining it.
   return std::make_unique<HelpAppUntrustedUI>(
-      application_locale_storage_->GetTag(), web_ui, callback);
+      application_locale_storage_->GetTag(), web_ui,
+      base::BindRepeating(&PopulateLoadTimeData,
+                          std::cref(*variations_service_), web_ui));
+}
+
+void HelpAppUntrustedUIConfig::OnVariationsServiceDestroyed() {
+  // `VariationsService` is destroyed in `BrowserProcessImpl::StartTearDown()`,
+  // before `AshWebUIConfigManager` unregisters this config in
+  // `ChromeBrowserMainPartsAsh::PostMainMessageLoopRun()`.
+  variations_service_observation_.Reset();
+  variations_service_ = nullptr;
 }
 
 }  // namespace ash

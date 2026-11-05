@@ -686,8 +686,10 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>(
                               &application_locale_storage_.get()),
                           /*is_stateful=*/true);
+  // TODO(crbug.com/404133902): Avoid using g_browser_process.
   AddUntrustedWebUIConfig(std::make_unique<HelpAppUntrustedUIConfig>(
-                              &application_locale_storage_.get()),
+                              &application_locale_storage_.get(),
+                              g_browser_process->variations_service()),
                           /*is_stateful=*/true);
   AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>(),
                           /*is_stateful=*/false);

@@ -42,18 +42,10 @@ class HelpAppUntrustedUiConfigCrosSwitcherTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(HelpAppUntrustedUiConfigCrosSwitcherTest,
-       VariationsServiceNotAvailable) {
-  EXPECT_FALSE(HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
-      /*variations_service=*/nullptr))
-      << "Switcher is disabled for fail safe if variations_service instance is "
-         "not provided.";
-}
-
 TEST_F(HelpAppUntrustedUiConfigCrosSwitcherTest, NotInAvailableCountry) {
   variations_service_->OverrideStoredPermanentCountry("zz");
   EXPECT_FALSE(HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
-      variations_service_.get()))
+      *variations_service_))
       << "Switcher is not available if stored permanent country is not in "
          "available countries list.";
 }
@@ -61,7 +53,7 @@ TEST_F(HelpAppUntrustedUiConfigCrosSwitcherTest, NotInAvailableCountry) {
 TEST_F(HelpAppUntrustedUiConfigCrosSwitcherTest, Available) {
   variations_service_->OverrideStoredPermanentCountry("us");
   EXPECT_TRUE(HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
-      variations_service_.get()));
+      *variations_service_));
 }
 
 }  // namespace ash

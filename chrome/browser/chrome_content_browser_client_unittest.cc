@@ -1290,7 +1290,8 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestExploreURL) {
       std::make_unique<ash::HelpAppUntrustedUIConfig>(
           TestingBrowserProcess::GetGlobal()
               ->GetFeatures()
-              ->application_locale_storage()));
+              ->application_locale_storage(),
+          TestingBrowserProcess::GetGlobal()->variations_service()));
 
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL help_url(ash::kChromeUIHelpAppUntrustedURL);
