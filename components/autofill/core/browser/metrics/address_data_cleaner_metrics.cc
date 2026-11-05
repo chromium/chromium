@@ -6,10 +6,7 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "base/metrics/histogram_functions.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::autofill_metrics {
 
@@ -26,24 +23,6 @@ void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed) {
 void LogNumberOfAddressesDeletedForDisuse(size_t num_profiles) {
   base::UmaHistogramCounts100("Autofill.AddressesDeletedForDisuse",
                               num_profiles);
-}
-
-void LogNumberOfProfilesConsideredForDedupePerCountryCode(
-    const absl::flat_hash_map<std::string, int>&
-        profile_count_by_country_code) {
-  // TODO(b/496153767): Remove these metrics once enough data to evaluate the
-  // bucketing optimization impact on deduplication is available.
-  for (const auto& [country_code, count] : profile_count_by_country_code) {
-    if (country_code.empty()) {
-      base::UmaHistogramCounts1000(
-          "Autofill.NumberOfProfilesWithMissingCountryCodeConsideredForDedupe",
-          count);
-    } else {
-      base::UmaHistogramCounts1000(
-          "Autofill.NumberOfProfilesPerValidCountryCodeConsideredForDedupe",
-          count);
-    }
-  }
 }
 
 }  // namespace autofill::autofill_metrics

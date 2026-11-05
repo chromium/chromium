@@ -41,7 +41,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -119,23 +118,6 @@ std::vector<T> CalculateMinimalIncompatibleTypeSetsImpl(
     }
   }
   return min_incompatible_sets;
-}
-
-// Counts and logs the number of profiles considered for deduplication, grouped
-// by country code. Profiles in `profiles_with_action` with an action of
-// `ProfileAction::kRemove` are excluded from the count.
-void LogNumberOfProfilesConsideredForDedupePerCountryCode(
-    const std::vector<ProfileWithAction>& profiles_with_action) {
-  // Count the number of remaining (non-removed) profiles per country code
-  // and log it to UMA metrics
-  absl::flat_hash_map<std::string, int> profile_count_by_country_code;
-  for (const auto& [profile, action] : profiles_with_action) {
-    if (action != ProfileAction::kRemove) {
-      ++profile_count_by_country_code[profile.GetAddressCountryCode().value()];
-    }
-  }
-  autofill_metrics::LogNumberOfProfilesConsideredForDedupePerCountryCode(
-      profile_count_by_country_code);
 }
 
 // Deduplicates mergeable profiles in `profiles_with_action` and marks profiles
@@ -268,7 +250,6 @@ void ApplyDeduplicationRoutine(
 
   autofill_metrics::LogNumberOfProfilesConsideredForDedupe(
       profiles_to_deduplicate_count);
-  LogNumberOfProfilesConsideredForDedupePerCountryCode(profiles_with_action);
 
   DeduplicateProfiles(app_locale, profiles_with_action);
 }

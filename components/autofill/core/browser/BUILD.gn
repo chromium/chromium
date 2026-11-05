@@ -2217,7 +2217,6 @@ source_set("unit_tests") {
     "logging/log_router_unittest.cc",
     "logging/text_log_receiver_unittest.cc",
     "manual_testing_import_unittest.cc",
-    "metrics/address_data_cleaner_metrics_unittest.cc",
     "metrics/autocomplete_key_metrics_logger_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
     "metrics/autofill_metrics_util_unittest.cc",
