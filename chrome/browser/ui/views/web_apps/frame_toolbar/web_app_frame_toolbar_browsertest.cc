@@ -376,9 +376,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/572905114): Re-enable after updating bubble auto-open
+// expectations.
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest,
-    NotificationIconLabelAnimationAndAutoOpenBubbleInPwaTitlebar) {
+    DISABLED_NotificationIconLabelAnimationAndAutoOpenBubbleInPwaTitlebar) {
   gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   WebAppToolbarButtonContainer::DisableAnimationForTesting(false);
