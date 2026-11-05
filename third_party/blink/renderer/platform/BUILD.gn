@@ -1918,6 +1918,7 @@ component("platform") {
     "//ui/gfx/mojom",
     "//ui/gl:buildflags",
     "//ui/native_theme",
+    "//v8/src/inspector:inspector_headers",
   ]
 
   if (has_zstd_compression) {
