@@ -186,13 +186,18 @@ void BookmarkDataTypeProcessor::DisconnectSync() {
 
 void BookmarkDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
+    size_t max_target_specifics_bytes,
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_GT(max_entries, 0u);
+  CHECK_GT(max_target_specifics_bytes, 0u);
   // Processor should never connect if
   // `initial_merge_remote_updates_exceeded_limit_timestamp_` is set.
   DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
   BookmarkLocalChangesBuilder builder(bookmark_tracker_.get(), bookmark_model_);
-  std::move(callback).Run(builder.BuildCommitRequests(max_entries));
+  syncer::CommitRequestDataList local_changes =
+      builder.BuildCommitRequests(max_entries, max_target_specifics_bytes);
+  std::move(callback).Run(std::move(local_changes), builder.has_more_changes());
 }
 
 void BookmarkDataTypeProcessor::OnCommitCompleted(

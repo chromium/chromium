@@ -24,12 +24,19 @@ class BookmarkLocalChangesBuilder {
   BookmarkLocalChangesBuilder& operator=(const BookmarkLocalChangesBuilder&) =
       delete;
 
-  // Builds the commit requests list.
-  syncer::CommitRequestDataList BuildCommitRequests(size_t max_entries);
+  // Builds the commit requests list. `has_more_changes()` can be called
+  // afterwards to check whether additional local changes were left behind due
+  // to reaching `max_entries` or `max_target_specifics_bytes`.
+  syncer::CommitRequestDataList BuildCommitRequests(
+      size_t max_entries,
+      size_t max_target_specifics_bytes);
+
+  bool has_more_changes() const { return has_more_changes_; }
 
  private:
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
   const raw_ptr<BookmarkModelView> bookmark_model_;
+  bool has_more_changes_ = false;
 };
 
 }  // namespace sync_bookmarks

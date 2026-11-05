@@ -15,6 +15,7 @@ namespace syncer {
 namespace {
 
 constexpr int kMaxEntries = 17;
+constexpr size_t kMaxBytes = 1000;
 
 using testing::_;
 using testing::IsEmpty;
@@ -26,11 +27,16 @@ MATCHER_P(HasNumEntries, num_entries, "") {
 }
 
 // Simple implementation of CommitContribution that only implements
-// GetNumEntries().
+// GetNumEntries(), GetPostEncryptionSpecificsByteSize(), and
+// HasMoreLocalChanges().
 class FakeCommitContribution : public CommitContribution {
  public:
-  explicit FakeCommitContribution(size_t num_entries)
-      : num_entries_(num_entries) {}
+  FakeCommitContribution(size_t num_entries,
+                         size_t specifics_byte_size,
+                         bool has_more_local_changes)
+      : num_entries_(num_entries),
+        specifics_byte_size_(specifics_byte_size),
+        has_more_local_changes_(has_more_local_changes) {}
 
   ~FakeCommitContribution() override = default;
 
@@ -43,13 +49,37 @@ class FakeCommitContribution : public CommitContribution {
   }
   void ProcessCommitFailure(SyncCommitError commit_error) override {}
   size_t GetNumEntries() const override { return num_entries_; }
+  size_t GetPostEncryptionSpecificsByteSize() const override {
+    return specifics_byte_size_;
+  }
+  bool HasMoreLocalChanges() const override { return has_more_local_changes_; }
 
  private:
   const size_t num_entries_;
+  const size_t specifics_byte_size_;
+  const bool has_more_local_changes_;
 };
 
 ACTION_P(ReturnContributionWithEntries, num_entries) {
-  return std::make_unique<FakeCommitContribution>(num_entries);
+  return std::make_unique<FakeCommitContribution>(
+      num_entries,
+      /*specifics_byte_size=*/0,
+      /*has_more_local_changes=*/false);
+}
+
+ACTION_P(ReturnPartialContributionWithEntries, num_entries) {
+  return std::make_unique<FakeCommitContribution>(
+      num_entries,
+      /*specifics_byte_size=*/0,
+      /*has_more_local_changes=*/true);
+}
+
+ACTION_P3(ReturnContribution,
+          num_entries,
+          specifics_byte_size,
+          has_more_local_changes) {
+  return std::make_unique<FakeCommitContribution>(
+      num_entries, specifics_byte_size, has_more_local_changes);
 }
 
 class MockCommitContributor : public CommitContributor {
@@ -58,7 +88,7 @@ class MockCommitContributor : public CommitContributor {
   ~MockCommitContributor() override = default;
   MOCK_METHOD(std::unique_ptr<CommitContribution>,
               GetContribution,
-              (size_t max_entries),
+              (size_t max_entries, size_t max_target_specifics_bytes),
               (override));
 };
 
@@ -97,7 +127,7 @@ class CommitProcessorTest : public testing::Test {
 };
 
 TEST_F(CommitProcessorTest, ShouldGatherNigoriOnlyContribution) {
-  EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries))
+  EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries, kMaxBytes))
       .WillOnce(ReturnContributionWithEntries(/*num_entries=*/1));
 
   // No user types should be gathered and combined with NIGORI.
@@ -106,7 +136,9 @@ TEST_F(CommitProcessorTest, ShouldGatherNigoriOnlyContribution) {
   EXPECT_CALL(preference_contributor_, GetContribution).Times(0);
   EXPECT_CALL(history_contributor_, GetContribution).Times(0);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               UnorderedElementsAre(Pair(NIGORI, HasNumEntries(1))));
 }
 
@@ -115,7 +147,8 @@ TEST_F(CommitProcessorTest, ShouldGatherHighPriorityUserTypesOnlyContribution) {
 
   testing::Sequence s1, s2, s3;
 
-  EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes))
       .InSequence(s1, s2, s3)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedEntries));
 
@@ -125,7 +158,9 @@ TEST_F(CommitProcessorTest, ShouldGatherHighPriorityUserTypesOnlyContribution) {
   EXPECT_CALL(preference_contributor_, GetContribution).InSequence(s2);
   EXPECT_CALL(history_contributor_, GetContribution).InSequence(s3);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               UnorderedElementsAre(
                   Pair(SHARING_MESSAGE, HasNumEntries(kNumReturnedEntries))));
 }
@@ -134,11 +169,12 @@ TEST_F(CommitProcessorTest, ShouldGatherRegularUserTypes) {
   const int kNumReturnedBookmarks = 7;
 
   // High-priority types should be gathered, but no entries are produced.
-  EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries));
-  EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries));
+  EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries, kMaxBytes));
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes));
 
   // Return `kNumReturnedBookmarks` bookmarks.
-  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries))
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries, kMaxBytes))
       .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks));
 
   // Preferences should also be gathered, but no entries are produced in this
@@ -150,7 +186,9 @@ TEST_F(CommitProcessorTest, ShouldGatherRegularUserTypes) {
   // should also be gathered (but don't have any contributions).
   EXPECT_CALL(history_contributor_, GetContribution);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               UnorderedElementsAre(
                   Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks))));
 }
@@ -160,17 +198,20 @@ TEST_F(CommitProcessorTest, ShouldGatherLowPriorityUserTypes) {
 
   // High-priority types and regular types should be gathered, but no entries
   // are produced.
-  EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries));
-  EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries));
-  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries));
-  EXPECT_CALL(preference_contributor_, GetContribution(kMaxEntries));
+  EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries, kMaxBytes));
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes));
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries, kMaxBytes));
+  EXPECT_CALL(preference_contributor_, GetContribution(kMaxEntries, kMaxBytes));
 
   // Return `kNumReturnedHistory` history entries.
-  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries))
+  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries, kMaxBytes))
       .WillOnce(ReturnContributionWithEntries(kNumReturnedHistory));
 
   EXPECT_THAT(
-      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
       UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kNumReturnedHistory))));
 }
 
@@ -190,7 +231,9 @@ TEST_F(CommitProcessorTest, ShouldGatherMultipleRegularUserTypes) {
   // types should also be gathered (but don't have any contributions).
   EXPECT_CALL(history_contributor_, GetContribution);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               UnorderedElementsAre(
                   Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks)),
                   Pair(PREFERENCES, HasNumEntries(kNumReturnedPreferences))));
@@ -199,9 +242,10 @@ TEST_F(CommitProcessorTest, ShouldGatherMultipleRegularUserTypes) {
 TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
   const int kNumReturnedSharingMessages = 3;
 
-  // First, return `kMaxEntries` sharing messages.
-  EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))
-      .WillOnce(ReturnContributionWithEntries(kMaxEntries));
+  // First, return `kMaxEntries` sharing messages with more changes left.
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes))
+      .WillOnce(ReturnPartialContributionWithEntries(kMaxEntries));
 
   // Non-priority user types shouldn't even be gathered.
   EXPECT_CALL(bookmark_contributor_, GetContribution).Times(0);
@@ -209,7 +253,9 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
   EXPECT_CALL(history_contributor_, GetContribution).Times(0);
 
   EXPECT_THAT(
-      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
       UnorderedElementsAre(Pair(SHARING_MESSAGE, HasNumEntries(kMaxEntries))));
 
   // Now, return only `kNumReturnedSharingMessages` sharing messages (all that's
@@ -223,7 +269,9 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
   EXPECT_CALL(history_contributor_, GetContribution);
 
   EXPECT_THAT(
-      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
       UnorderedElementsAre(
           Pair(SHARING_MESSAGE, HasNumEntries(kNumReturnedSharingMessages))));
 
@@ -234,26 +282,32 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
   EXPECT_CALL(preference_contributor_, GetContribution).Times(0);
   EXPECT_CALL(history_contributor_, GetContribution).Times(0);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               IsEmpty());
 }
 
 TEST_F(CommitProcessorTest, ShouldContinueGatheringRegularContributions) {
   const int kNumReturnedBookmarks = 7;
 
-  // First, return `kMaxEntries` bookmarks.
-  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries))
-      .WillOnce(ReturnContributionWithEntries(kMaxEntries));
+  // First, return `kMaxEntries` bookmarks with more changes left.
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries, kMaxBytes))
+      .WillOnce(ReturnPartialContributionWithEntries(kMaxEntries));
 
   EXPECT_THAT(
-      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
       UnorderedElementsAre(Pair(BOOKMARKS, HasNumEntries(kMaxEntries))));
 
   // Now, return only `kNumReturnedBookmarks` bookmarks (all that's left).
   EXPECT_CALL(bookmark_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks));
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               UnorderedElementsAre(
                   Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks))));
 
@@ -261,18 +315,22 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringRegularContributions) {
   // call the contributor.
   EXPECT_CALL(bookmark_contributor_, GetContribution).Times(0);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               IsEmpty());
 }
 
 TEST_F(CommitProcessorTest, ShouldContinueGatheringLowPriorityContributions) {
   const int kNumReturnedHistory = 7;
 
-  // First, return `kMaxEntries` history entries.
-  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries))
-      .WillOnce(ReturnContributionWithEntries(kMaxEntries));
+  // First, return `kMaxEntries` history entries with more changes left.
+  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries, kMaxBytes))
+      .WillOnce(ReturnPartialContributionWithEntries(kMaxEntries));
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kMaxEntries))));
 
   // Now, return only `kNumReturnedHistory` entries (all that's left).
@@ -280,33 +338,41 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringLowPriorityContributions) {
       .WillOnce(ReturnContributionWithEntries(kNumReturnedHistory));
 
   EXPECT_THAT(
-      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
       UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kNumReturnedHistory))));
 
   // There are no contributions left, do not return any further and do not even
   // call the contributor.
   EXPECT_CALL(history_contributor_, GetContribution).Times(0);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               IsEmpty());
 }
 
 TEST_F(CommitProcessorTest,
        ShouldContinueGatheringRegularContributionsIfMatchingMaxEntries) {
   // Return `kMaxEntries` bookmarks.
-  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries))
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries, kMaxBytes))
       .WillOnce(ReturnContributionWithEntries(kMaxEntries));
 
   EXPECT_THAT(
-      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
       UnorderedElementsAre(Pair(BOOKMARKS, HasNumEntries(kMaxEntries))));
 
   // There are no contributions left, do not return any further.
-  // GetContribution() should however get called since `processor` cannot tell
-  // that there are no left.
+  // GetContribution() should however get called since `PREFERENCES` (another
+  // regular type) was not queried yet in the first pass.
   EXPECT_CALL(bookmark_contributor_, GetContribution);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               IsEmpty());
 }
 
@@ -320,11 +386,12 @@ TEST_F(CommitProcessorTest, ShouldGatherInPriorityOrder) {
   // non-zero contributions.
   testing::InSequence s;
   // First pass: High-priority, and parts of regular.
-  EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes))
       .WillOnce(ReturnContributionWithEntries(kNumReturnedSharingMessages))
       .RetiresOnSaturation();
   EXPECT_CALL(bookmark_contributor_, GetContribution)
-      .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks1));
+      .WillOnce(ReturnPartialContributionWithEntries(kNumReturnedBookmarks1));
   // Second pass: Remaining regular, and low-priority.
   EXPECT_CALL(bookmark_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks2));
@@ -334,30 +401,182 @@ TEST_F(CommitProcessorTest, ShouldGatherInPriorityOrder) {
   // The first call should return the high-priority types, and as much of the
   // regular-priority types as still fits in the budget.
   EXPECT_THAT(
-      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
       UnorderedElementsAre(
           Pair(SHARING_MESSAGE, HasNumEntries(kNumReturnedSharingMessages)),
           Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks1))));
 
   // Processor has gathered all contributions for SHARING_MESSAGE previously, no
   // further call should happen.
-  EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes))
       .Times(0);
 
   // The second call should return the remaining regular types as well as the
   // low-priority types.
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               UnorderedElementsAre(
                   Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks2)),
                   Pair(HISTORY, HasNumEntries(kNumReturnedHistory))));
 
   // All contributions were gathered; no further calls should happen.
-  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries)).Times(0);
-  EXPECT_CALL(preference_contributor_, GetContribution(kMaxEntries)).Times(0);
-  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries)).Times(0);
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries, kMaxBytes))
+      .Times(0);
+  EXPECT_CALL(preference_contributor_, GetContribution(kMaxEntries, kMaxBytes))
+      .Times(0);
+  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries, kMaxBytes))
+      .Times(0);
 
-  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
               IsEmpty());
+}
+
+TEST_F(CommitProcessorTest, ShouldRespectMaxBytesAcrossPhases) {
+  const int kNumReturnedSharingMessages = 2;
+  const size_t kSharingMessageBytes = 400;
+  const int kNumReturnedBookmarks1 = 3;
+  const size_t kBookmarkBytes1 = kMaxBytes - kSharingMessageBytes;
+  const int kNumReturnedBookmarks2 = 2;
+  const size_t kBookmarkBytes2 = 300;
+  const int kNumReturnedHistory = 1;
+  const size_t kHistoryBytes = 200;
+
+  testing::InSequence s;
+  // First pass: High-priority uses 400 bytes, regular uses remaining 600 bytes.
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes))
+      .WillOnce(ReturnContribution(kNumReturnedSharingMessages,
+                                   kSharingMessageBytes,
+                                   /*has_more_local_changes=*/false))
+      .RetiresOnSaturation();
+  EXPECT_CALL(bookmark_contributor_,
+              GetContribution(kMaxEntries - kNumReturnedSharingMessages,
+                              kMaxBytes - kSharingMessageBytes))
+      .WillOnce(ReturnContribution(kNumReturnedBookmarks1, kBookmarkBytes1,
+                                   /*has_more_local_changes=*/true));
+  // Second pass: Remaining regular, and low-priority.
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries, kMaxBytes))
+      .WillOnce(ReturnContribution(kNumReturnedBookmarks2, kBookmarkBytes2,
+                                   /*has_more_local_changes=*/false));
+  EXPECT_CALL(preference_contributor_,
+              GetContribution(kMaxEntries - kNumReturnedBookmarks2,
+                              kMaxBytes - kBookmarkBytes2));
+  EXPECT_CALL(history_contributor_,
+              GetContribution(kMaxEntries - kNumReturnedBookmarks2,
+                              kMaxBytes - kBookmarkBytes2))
+      .WillOnce(ReturnContribution(kNumReturnedHistory, kHistoryBytes,
+                                   /*has_more_local_changes=*/false));
+
+  EXPECT_THAT(
+      processor_.GatherCommitContributions(
+          /*max_entries=*/kMaxEntries,
+          /*max_target_specifics_bytes=*/kMaxBytes),
+      UnorderedElementsAre(
+          Pair(SHARING_MESSAGE, HasNumEntries(kNumReturnedSharingMessages)),
+          Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks1))));
+
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
+              UnorderedElementsAre(
+                  Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks2)),
+                  Pair(HISTORY, HasNumEntries(kNumReturnedHistory))));
+
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
+              IsEmpty());
+}
+
+TEST_F(CommitProcessorTest, ShouldRespectSingleByteMaxBytes) {
+  testing::InSequence s;
+  // First pass: High-priority has nothing, regular type BOOKMARKS contributes
+  // 1 entry, which already exceeds `max_target_specifics_bytes=1` and stops
+  // before PREFERENCES.
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, /*max_target_specifics_bytes=*/1));
+  EXPECT_CALL(bookmark_contributor_,
+              GetContribution(kMaxEntries, /*max_target_specifics_bytes=*/1))
+      .WillOnce(ReturnContribution(
+          /*num_entries=*/1,
+          /*specifics_byte_size=*/100,
+          /*has_more_local_changes=*/false));
+  // Second pass: BOOKMARKS has nothing left, PREFERENCES (the last regular
+  // type) contributes 1 entry, which also exceeds
+  // `max_target_specifics_bytes=1` and stops before querying HISTORY.
+  EXPECT_CALL(bookmark_contributor_,
+              GetContribution(kMaxEntries, /*max_target_specifics_bytes=*/1));
+  EXPECT_CALL(preference_contributor_,
+              GetContribution(kMaxEntries, /*max_target_specifics_bytes=*/1))
+      .WillOnce(ReturnContribution(
+          /*num_entries=*/1,
+          /*specifics_byte_size=*/100,
+          /*has_more_local_changes=*/false));
+  // Third pass: Regular types now have nothing left, so regular phase
+  // completes and low-priority types are queried.
+  EXPECT_CALL(bookmark_contributor_,
+              GetContribution(kMaxEntries, /*max_target_specifics_bytes=*/1));
+  EXPECT_CALL(preference_contributor_,
+              GetContribution(kMaxEntries, /*max_target_specifics_bytes=*/1));
+  EXPECT_CALL(history_contributor_,
+              GetContribution(kMaxEntries, /*max_target_specifics_bytes=*/1));
+
+  EXPECT_THAT(
+      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries,
+                                           /*max_target_specifics_bytes=*/1),
+      UnorderedElementsAre(Pair(BOOKMARKS, HasNumEntries(1))));
+
+  EXPECT_THAT(
+      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries,
+                                           /*max_target_specifics_bytes=*/1),
+      UnorderedElementsAre(Pair(PREFERENCES, HasNumEntries(1))));
+
+  EXPECT_THAT(
+      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries,
+                                           /*max_target_specifics_bytes=*/1),
+      IsEmpty());
+}
+
+TEST_F(CommitProcessorTest,
+       ShouldStopWhenContributionHasMoreLocalChangesBelowLimits) {
+  // Even if the returned contribution has fewer entries than `kMaxEntries` and
+  // fewer bytes than `kMaxBytes` (e.g. due to pre-encryption byte limit
+  // scaling), `HasMoreLocalChanges() == true` should stop gathering and keep
+  // the current phase active for the next call.
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes))
+      .WillOnce(ReturnContribution(/*num_entries=*/1,
+                                   /*specifics_byte_size=*/500,
+                                   /*has_more_local_changes=*/true));
+  EXPECT_CALL(bookmark_contributor_, GetContribution).Times(0);
+  EXPECT_CALL(preference_contributor_, GetContribution).Times(0);
+  EXPECT_CALL(history_contributor_, GetContribution).Times(0);
+
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
+              UnorderedElementsAre(Pair(SHARING_MESSAGE, HasNumEntries(1))));
+
+  // Second pass should still query `SHARING_MESSAGE`.
+  EXPECT_CALL(sharing_message_contributor_,
+              GetContribution(kMaxEntries, kMaxBytes))
+      .WillOnce(ReturnContribution(/*num_entries=*/1,
+                                   /*specifics_byte_size=*/200,
+                                   /*has_more_local_changes=*/false));
+  EXPECT_CALL(bookmark_contributor_, GetContribution);
+  EXPECT_CALL(preference_contributor_, GetContribution);
+  EXPECT_CALL(history_contributor_, GetContribution);
+
+  EXPECT_THAT(processor_.GatherCommitContributions(
+                  /*max_entries=*/kMaxEntries,
+                  /*max_target_specifics_bytes=*/kMaxBytes),
+              UnorderedElementsAre(Pair(SHARING_MESSAGE, HasNumEntries(1))));
 }
 
 }  // namespace

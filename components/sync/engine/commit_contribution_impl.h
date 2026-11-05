@@ -38,7 +38,8 @@ class CommitContributionImpl : public CommitContribution {
                               const FailedCommitResponseDataList&)>
           on_commit_response_callback,
       base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback,
-      PassphraseType passphrase_type);
+      PassphraseType passphrase_type,
+      bool has_more_local_changes);
 
   CommitContributionImpl(const CommitContributionImpl&) = delete;
   CommitContributionImpl& operator=(const CommitContributionImpl&) = delete;
@@ -52,6 +53,8 @@ class CommitContributionImpl : public CommitContribution {
       StatusController* status) override;
   void ProcessCommitFailure(SyncCommitError commit_error) override;
   size_t GetNumEntries() const override;
+  size_t GetPostEncryptionSpecificsByteSize() const override;
+  bool HasMoreLocalChanges() const override;
 
   // Public for testing.
   // Copies data to be committed from CommitRequestData into SyncEntity proto.
@@ -84,6 +87,8 @@ class CommitContributionImpl : public CommitContribution {
 
   // The list of entities to be committed.
   CommitRequestDataList commit_requests_;
+
+  const bool has_more_local_changes_;
 
   // The index in the commit message where this contribution's entities are
   // added.  Used to correlate per-item requests with per-item responses.

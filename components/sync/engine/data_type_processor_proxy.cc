@@ -36,21 +36,26 @@ void DataTypeProcessorProxy::DisconnectSync() {
 void ForwardGetLocalChangesCall(
     base::WeakPtr<DataTypeProcessor> processor,
     size_t max_entries,
+    size_t max_target_specifics_bytes,
     DataTypeProcessor::GetLocalChangesCallback callback) {
   if (processor) {
-    processor->GetLocalChanges(max_entries, std::move(callback));
+    processor->GetLocalChanges(max_entries, max_target_specifics_bytes,
+                               std::move(callback));
   } else {
     // If the processor is not valid anymore call the callback to unblock sync
     // thread.
-    std::move(callback).Run(CommitRequestDataList());
+    std::move(callback).Run(CommitRequestDataList(),
+                            /*has_more_local_changes=*/false);
   }
 }
 
 void DataTypeProcessorProxy::GetLocalChanges(size_t max_entries,
+                                             size_t max_target_specifics_bytes,
                                              GetLocalChangesCallback callback) {
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&ForwardGetLocalChangesCall, processor_,
-                                        max_entries, std::move(callback)));
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ForwardGetLocalChangesCall, processor_, max_entries,
+                     max_target_specifics_bytes, std::move(callback)));
 }
 
 void DataTypeProcessorProxy::OnCommitCompleted(

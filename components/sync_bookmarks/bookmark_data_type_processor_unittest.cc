@@ -4,6 +4,7 @@
 
 #include "components/sync_bookmarks/bookmark_data_type_processor.h"
 
+#include <limits>
 #include <map>
 #include <string>
 #include <utility>
@@ -361,13 +362,16 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
   }
 
   syncer::CommitRequestDataList GetLocalChangesFromProcessor(
-      size_t max_entries) {
-    base::MockOnceCallback<void(syncer::CommitRequestDataList&&)> callback;
+      size_t max_entries,
+      size_t max_target_specifics_bytes = std::numeric_limits<size_t>::max()) {
+    base::MockOnceCallback<void(syncer::CommitRequestDataList&&, bool)>
+        callback;
     syncer::CommitRequestDataList local_changes;
     // Destruction of the mock upon return will verify that Run() was indeed
     // invoked.
-    EXPECT_CALL(callback, Run).WillOnce(MoveArg(&local_changes));
-    processor_->GetLocalChanges(max_entries, callback.Get());
+    EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&local_changes));
+    processor_->GetLocalChanges(max_entries, max_target_specifics_bytes,
+                                callback.Get());
     return local_changes;
   }
 
@@ -2582,6 +2586,29 @@ TEST_F(BookmarkDataTypeProcessorTest,
         "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", /*sample=*/1,
         /*expected_bucket_count=*/1);
   }
+}
+
+TEST_F(BookmarkDataTypeProcessorTest, ShouldTruncateLocalChangesToMaxBytes) {
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  bookmark_model()->AddFolder(bookmark_model()->bookmark_bar_node(),
+                              /*index=*/0, u"Folder 1");
+  bookmark_model()->AddFolder(bookmark_model()->bookmark_bar_node(),
+                              /*index=*/1, u"Folder 2");
+
+  // With `max_target_specifics_bytes=1`, only the first bookmark should be
+  // returned even though `max_entries` allows both, and
+  // `has_more_local_changes` should be true.
+  base::MockOnceCallback<void(syncer::CommitRequestDataList&&, bool)> callback;
+  syncer::CommitRequestDataList local_changes;
+  EXPECT_CALL(callback, Run(_, /*has_more_local_changes=*/true))
+      .WillOnce(MoveArg<0>(&local_changes));
+  processor()->GetLocalChanges(/*max_entries=*/10,
+                               /*max_target_specifics_bytes=*/1,
+                               callback.Get());
+  EXPECT_THAT(local_changes, SizeIs(1));
 }
 
 }  // namespace

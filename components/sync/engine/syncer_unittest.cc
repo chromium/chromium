@@ -801,6 +801,39 @@ TEST_P(SyncerTest, TestClientCommandDuringCommit) {
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
 }
 
+TEST_P(SyncerTest, CommitManyItemsInOneGo_MaxCommitBatchBytes) {
+  using sync_pb::ClientCommand;
+
+  sync_pb::EntitySpecifics specifics = MakeSpecifics(PREFERENCES);
+  specifics.mutable_preference()->set_value(std::string(400, 'x'));
+  const size_t single_item_bytes = specifics.ByteSizeLong();
+  ASSERT_GT(single_item_bytes, 400u);
+
+  // Configure `max_target_commit_batch_specifics_bytes` via `ClientCommand` so
+  // that at most 2 items fit in a single commit batch.
+  auto command = std::make_unique<ClientCommand>();
+  command->set_max_target_commit_batch_specifics_bytes(single_item_bytes * 2);
+  mock_server_->SetGUClientCommand(std::move(command));
+
+  for (int i = 0; i < 5; ++i) {
+    GetProcessor(PREFERENCES)
+        ->AppendCommitRequest(
+            ClientTagHash::FromHashed(base::StringPrintf("tag%d", i)),
+            specifics);
+  }
+
+  EXPECT_TRUE(SyncShareNudge());
+  EXPECT_EQ(single_item_bytes * 2,
+            context_->max_target_commit_batch_specifics_bytes());
+
+  // 5 items with a batch limit of 2 items' worth of bytes should be split into
+  // 3 commit messages (2 + 2 + 1).
+  ASSERT_EQ(3u, mock_server_->commit_messages().size());
+  EXPECT_EQ(2, mock_server_->commit_messages()[0]->entries_size());
+  EXPECT_EQ(2, mock_server_->commit_messages()[1]->entries_size());
+  EXPECT_EQ(1, mock_server_->commit_messages()[2]->entries_size());
+}
+
 TEST_P(SyncerTest, ShouldPopulateSingleClientFlag) {
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),

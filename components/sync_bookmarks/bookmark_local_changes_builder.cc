@@ -28,15 +28,22 @@ BookmarkLocalChangesBuilder::BookmarkLocalChangesBuilder(
 }
 
 syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
-    size_t max_entries) {
+    size_t max_entries,
+    size_t max_target_specifics_bytes) {
+  CHECK_GT(max_entries, 0u);
+  CHECK_GT(max_target_specifics_bytes, 0u);
   DCHECK(bookmark_tracker_);
 
+  has_more_changes_ = false;
   const std::vector<SyncedBookmarkTrackerEntity*> entities_with_local_changes =
       bookmark_tracker_->GetMutableEntitiesWithLocalChanges();
 
   syncer::CommitRequestDataList commit_requests;
+  size_t specifics_bytes = 0;
   for (SyncedBookmarkTrackerEntity* entity : entities_with_local_changes) {
-    if (commit_requests.size() >= max_entries) {
+    if (commit_requests.size() >= max_entries ||
+        specifics_bytes >= max_target_specifics_bytes) {
+      has_more_changes_ = true;
       break;
     }
 
@@ -120,6 +127,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
     entity->MarkCommitMayHaveStarted();
 
+    specifics_bytes += request->entity->specifics.ByteSizeLong();
     commit_requests.push_back(std::move(request));
   }
   return commit_requests;

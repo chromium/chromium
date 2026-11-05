@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <map>
 #include <optional>
 #include <utility>
@@ -172,8 +173,17 @@ EntitySpecifics WriteUserEventItem(FakeDataTypeSyncBridge* bridge,
 }
 
 void CaptureCommitRequest(CommitRequestDataList* dst,
-                          CommitRequestDataList&& src) {
+                          CommitRequestDataList&& src,
+                          bool /*has_more_local_changes*/) {
   *dst = std::move(src);
+}
+
+void CaptureCommitRequestAndHasMore(CommitRequestDataList* dst,
+                                    bool* dst_has_more_local_changes,
+                                    CommitRequestDataList&& src,
+                                    bool has_more_local_changes) {
+  *dst = std::move(src);
+  *dst_has_more_local_changes = has_more_local_changes;
 }
 
 void CaptureTypeEntitiesCount(TypeEntitiesCount* dst,
@@ -1596,14 +1606,18 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldRetryCommitAfterServerError) {
   // Entity is sent to server. Processor shouldn't include it in local changes.
   CommitRequestDataList commit_request;
   type_processor()->GetLocalChanges(
-      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
+      base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_TRUE(commit_request.empty());
 
   // Fail commit from worker side indicating this entity was not committed.
   // Processor should include it in consecutive GetLocalChanges responses.
   worker()->FailOneCommit();
   type_processor()->GetLocalChanges(
-      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
+      base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(1U, commit_request.size());
   EXPECT_EQ(GetPrefHash(kKey1), commit_request[0]->entity->client_tag_hash);
 }
@@ -1621,14 +1635,18 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // Entity is sent to server. Processor shouldn't include it in local changes.
   CommitRequestDataList commit_request;
   type_processor()->GetLocalChanges(
-      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
+      base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_TRUE(commit_request.empty());
 
   // Fail commit from worker side indicating this entity was not committed.
   // Processor should include it in consecutive GetLocalChanges responses.
   worker()->FailFullCommitRequest();
   type_processor()->GetLocalChanges(
-      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
+      base::BindOnce(&CaptureCommitRequest, &commit_request));
   ASSERT_EQ(1U, commit_request.size());
   EXPECT_EQ(GetPrefHash(kKey1), commit_request[0]->entity->client_tag_hash);
 }
@@ -1650,8 +1668,42 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   CommitRequestDataList commit_request;
   type_processor()->GetLocalChanges(
       /*max_entries=*/1,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(1U, commit_request.size());
+}
+
+// Tests that GetLocalChanges honors max_target_specifics_bytes parameter.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldTruncateLocalChangesToMaxBytes) {
+  InitializeToReadyState();
+  worker()->DisableGetLocalChangesUponNudge();
+
+  WritePrefItem(bridge(), kKey1, kValue1);
+  WritePrefItem(bridge(), kKey2, kValue2);
+
+  // Request with `max_target_specifics_bytes=1` so the first entity already
+  // exceeds the soft byte threshold and stops gathering before the second
+  // entity.
+  CommitRequestDataList commit_request;
+  bool has_more_local_changes = false;
+  type_processor()->GetLocalChanges(
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/1,
+      base::BindOnce(&CaptureCommitRequestAndHasMore, &commit_request,
+                     &has_more_local_changes));
+  EXPECT_EQ(1U, commit_request.size());
+  EXPECT_TRUE(has_more_local_changes);
+
+  // The second entity should still be returned in a subsequent call.
+  commit_request.clear();
+  type_processor()->GetLocalChanges(
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/1,
+      base::BindOnce(&CaptureCommitRequestAndHasMore, &commit_request,
+                     &has_more_local_changes));
+  EXPECT_EQ(1U, commit_request.size());
+  EXPECT_FALSE(has_more_local_changes);
 }
 
 // Creates two different sync items.
@@ -2967,7 +3019,9 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // shouldn't ask the bridge or return local changes.
   CommitRequestDataList commit_request;
   type_processor()->GetLocalChanges(
-      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
+      base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(0U, commit_request.size());
 
   // The processor should not report orphan again in UMA.
@@ -2996,7 +3050,9 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // Now everything is committed and GetLocalChanges is empty again.
   CommitRequestDataList commit_request;
   type_processor()->GetLocalChanges(
-      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
+      base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(0U, commit_request.size());
 
   // The processor never reports any orphan.

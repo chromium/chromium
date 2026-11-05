@@ -79,6 +79,7 @@ Commit::~Commit() = default;
 std::unique_ptr<Commit> Commit::Init(
     DataTypeSet enabled_types,
     size_t max_entries,
+    size_t max_target_specifics_bytes,
     const std::string& account_name,
     const std::string& cache_guid,
     bool cookie_jar_mismatch,
@@ -86,8 +87,8 @@ std::unique_ptr<Commit> Commit::Init(
     CommitProcessor* commit_processor,
     ExtensionsActivity* extensions_activity) {
   // Gather per-type contributions.
-  ContributionMap contributions =
-      commit_processor->GatherCommitContributions(max_entries);
+  ContributionMap contributions = commit_processor->GatherCommitContributions(
+      max_entries, max_target_specifics_bytes);
 
   // Give up if no one had anything to commit.
   if (contributions.empty()) {

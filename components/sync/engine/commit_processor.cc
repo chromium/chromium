@@ -29,8 +29,8 @@ CommitProcessor::CommitProcessor(DataTypeSet commit_types,
 CommitProcessor::~CommitProcessor() = default;
 
 Commit::ContributionMap CommitProcessor::GatherCommitContributions(
-    size_t max_entries) {
-  DCHECK_GT(max_entries, 0u);
+    size_t max_entries,
+    size_t max_target_specifics_bytes) {
   if (phase_ == GatheringPhase::kDone) {
     return Commit::ContributionMap();
   }
@@ -40,29 +40,53 @@ Commit::ContributionMap CommitProcessor::GatherCommitContributions(
   // NIGORI contributions are always gathered to make sure that no encrypted
   // data gets committed before the corresponding NIGORI commit, which can
   // otherwise lead to data loss if the commit fails partially.
-  if (GatherCommitContributionsForType(NIGORI, max_entries, &contributions) >
-      0) {
+  if (std::unique_ptr<CommitContribution> nigori_contribution =
+          GatherCommitContributionsForType(NIGORI, max_entries,
+                                           max_target_specifics_bytes)) {
     // Encryptable entities cannot get combined in the same commit with NIGORI.
     // NIGORI commits are rare so to keep it simple and to play it safe, the
     // processor does not combine any other entities with NIGORI.
+    contributions.emplace(NIGORI, std::move(nigori_contribution));
     return contributions;
   }
 
   size_t num_entries = 0;
-  do {
-    num_entries += GatherCommitContributionsForTypes(
-        GetUserTypesForCurrentCommitPhase(), max_entries - num_entries,
-        &contributions);
-    DCHECK_LE(num_entries, max_entries);
-    if (num_entries < max_entries) {
-      // Move to the next phase because there are no further commit
-      // contributions for this phase at this moment (as there's still capacity
-      // left). Even if new contributions for this phase appear while this
-      // commit is in flight, they will get ignored until the next nudge. This
-      // prevents infinite commit cycles.
-      phase_ = IncrementGatheringPhase(phase_);
+  size_t specifics_bytes = 0;
+  while (phase_ != GatheringPhase::kDone) {
+    for (DataType type : GetUserTypesForCurrentCommitPhase()) {
+      std::unique_ptr<CommitContribution> contribution =
+          GatherCommitContributionsForType(
+              type, max_entries - num_entries,
+              max_target_specifics_bytes - specifics_bytes);
+      if (!contribution) {
+        continue;
+      }
+      num_entries += contribution->GetNumEntries();
+      specifics_bytes += contribution->GetPostEncryptionSpecificsByteSize();
+      const bool has_more_local_changes = contribution->HasMoreLocalChanges();
+      contributions.emplace(type, std::move(contribution));
+      if (has_more_local_changes || num_entries >= max_entries ||
+          specifics_bytes >= max_target_specifics_bytes) {
+        // Stop gathering and keep `phase_` unchanged for the next call if:
+        // 1) `type` truncated its changes (`has_more_local_changes`), which can
+        //    happen even when the post-encryption `specifics_bytes` is below
+        //    `max_target_specifics_bytes` (because DataTypeWorker passes an
+        //    estimated pre-encryption byte limit to the processor), or
+        // 2) `type` exhausted its own changes (`has_more_local_changes` is
+        //    false) but filled or overshot the batch budget, so subsequent
+        //    types cannot be queried with positive remaining capacity.
+        // Note: because progress is tracked per `phase_` rather than per
+        // DataType, the next call will re-query all types in `phase_`.
+        return contributions;
+      }
     }
-  } while (phase_ != GatheringPhase::kDone && num_entries < max_entries);
+    // Move to the next phase because there are no further commit
+    // contributions for this phase at this moment (as there's still capacity
+    // left). Even if new contributions for this phase appear while this
+    // commit is in flight, they will get ignored until the next nudge. This
+    // prevents infinite commit cycles.
+    phase_ = IncrementGatheringPhase(phase_);
+  }
 
   return contributions;
 }
@@ -97,53 +121,33 @@ DataTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
   }
 }
 
-size_t CommitProcessor::GatherCommitContributionsForType(
+std::unique_ptr<CommitContribution>
+CommitProcessor::GatherCommitContributionsForType(
     DataType type,
     size_t max_entries,
-    Commit::ContributionMap* contributions) {
+    size_t max_target_specifics_bytes) {
   // Use base::debug::Alias() to ensure that crash dumps in reports include
   // DataType.
   base::debug::Alias(&type);
 
-  if (max_entries == 0) {
-    return 0;
-  }
+  CHECK_GT(max_entries, 0u);
+  CHECK_GT(max_target_specifics_bytes, 0u);
   CommitContributor* commit_contributor =
       base::FindPtrOrNull(*commit_contributor_map_, type);
   if (!commit_contributor) {
     DLOG(ERROR) << "Could not find requested type "
                 << DataTypeToDebugString(type) << " in contributor map.";
-    return 0;
+    return nullptr;
   }
 
   std::unique_ptr<CommitContribution> contribution =
-      commit_contributor->GetContribution(max_entries);
-  if (!contribution) {
-    return 0;
+      commit_contributor->GetContribution(max_entries,
+                                          max_target_specifics_bytes);
+  if (contribution) {
+    DCHECK_GT(contribution->GetNumEntries(), 0u);
+    DCHECK_LE(contribution->GetNumEntries(), max_entries);
   }
-
-  size_t num_entries = contribution->GetNumEntries();
-  DCHECK_LE(num_entries, max_entries);
-  contributions->emplace(type, std::move(contribution));
-
-  return num_entries;
-}
-
-size_t CommitProcessor::GatherCommitContributionsForTypes(
-    DataTypeSet types,
-    size_t max_entries,
-    Commit::ContributionMap* contributions) {
-  size_t num_entries = 0;
-  for (DataType type : types) {
-    num_entries += GatherCommitContributionsForType(
-        type, max_entries - num_entries, contributions);
-    if (num_entries >= max_entries) {
-      DCHECK_EQ(num_entries, max_entries)
-          << "Number of commit entries exceeds maximum";
-      break;
-    }
-  }
-  return num_entries;
+  return contribution;
 }
 
 }  // namespace syncer

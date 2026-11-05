@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_SYNC_ENGINE_CYCLE_SYNC_CYCLE_CONTEXT_H_
 #define COMPONENTS_SYNC_ENGINE_CYCLE_SYNC_CYCLE_CONTEXT_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -89,6 +92,14 @@ class SyncCycleContext {
   }
   int32_t max_commit_batch_size() const { return max_commit_batch_size_; }
 
+  void set_max_target_commit_batch_specifics_bytes(size_t batch_bytes) {
+    CHECK_GT(batch_bytes, 0u);
+    max_target_commit_batch_specifics_bytes_ = batch_bytes;
+  }
+  size_t max_target_commit_batch_specifics_bytes() const {
+    return max_target_commit_batch_specifics_bytes_;
+  }
+
   base::ObserverList<SyncEngineEventListener>* listeners() {
     return &listeners_;
   }
@@ -146,8 +157,11 @@ class SyncCycleContext {
 
   std::string bag_of_chips_;
 
-  // The server limits the number of items a client can commit in one batch.
+  // The server limits the number of items and total `EntitySpecifics` bytes a
+  // client can commit in one batch.
   int max_commit_batch_size_ = kDefaultMaxCommitBatchSize;
+  size_t max_target_commit_batch_specifics_bytes_ =
+      std::numeric_limits<size_t>::max();
 
   // We use this to get debug info to send to the server for debugging
   // client behavior on server side.

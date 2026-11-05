@@ -41,11 +41,20 @@ class DataTypeProcessor {
   virtual void DisconnectSync() = 0;
 
   // Sync engine calls GetLocalChanges to request local entities to be committed
-  // to server. Processor should call callback passing local entities when they
-  // are ready. Processor should not pass more than `max_entities`.
+  // to server. `max_entries` and `max_target_specifics_bytes` are guaranteed to
+  // be strictly positive. Processor must call `callback` passing at most
+  // `max_entries` local entities (hard limit), and must include at least one
+  // entity when committable changes exist (even if its size exceeds
+  // `max_target_specifics_bytes`) to guarantee forward progress. Processor
+  // should stop adding further entities once the accumulated serialized size of
+  // `EntitySpecifics` (prior to encryption) reaches or exceeds
+  // `max_target_specifics_bytes` (soft limit). `has_more_local_changes` must be
+  // true iff committable entities were left behind.
   using GetLocalChangesCallback =
-      base::OnceCallback<void(CommitRequestDataList&&)>;
+      base::OnceCallback<void(CommitRequestDataList&&,
+                              bool /*has_more_local_changes*/)>;
   virtual void GetLocalChanges(size_t max_entries,
+                               size_t max_target_specifics_bytes,
                                GetLocalChangesCallback callback) = 0;
 
   // Informs this object that some of its commit requests have been

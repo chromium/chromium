@@ -491,6 +491,7 @@ VISIT_PROTO_FIELDS(const sync_pb::CustomNudgeDelay& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::ClientCommand& proto) {
   VISIT(set_sync_poll_interval);
   VISIT(max_commit_batch_size);
+  VISIT(max_target_commit_batch_specifics_bytes);
   VISIT(throttle_delay_seconds);
   VISIT(client_invalidation_hint_buffer_size);
   VISIT_REP(custom_nudge_delays);

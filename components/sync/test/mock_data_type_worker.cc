@@ -4,6 +4,7 @@
 
 #include "components/sync/test/mock_data_type_worker.h"
 
+#include <limits>
 #include <map>
 #include <ranges>
 #include <set>
@@ -70,8 +71,10 @@ MockDataTypeWorker::~MockDataTypeWorker() = default;
 void MockDataTypeWorker::NudgeForCommit() {
   if (get_local_changes_upon_nudge_enabled_) {
     processor_->GetLocalChanges(
-        INT_MAX, base::BindRepeating(&MockDataTypeWorker::LocalChangesReceived,
-                                     weak_ptr_factory_.GetWeakPtr()));
+        /*max_entries=*/std::numeric_limits<size_t>::max(),
+        /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
+        base::BindRepeating(&MockDataTypeWorker::LocalChangesReceived,
+                            weak_ptr_factory_.GetWeakPtr()));
     // Processors often use a proxy object to communicate with the worker, so it
     // is necessary to process posted tasks.
     base::RunLoop().RunUntilIdle();
@@ -79,7 +82,8 @@ void MockDataTypeWorker::NudgeForCommit() {
 }
 
 void MockDataTypeWorker::LocalChangesReceived(
-    CommitRequestDataList&& commit_request) {
+    CommitRequestDataList&& commit_request,
+    bool /*has_more_local_changes*/) {
   if (commit_request.empty()) {
     return;
   }

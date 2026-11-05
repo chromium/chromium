@@ -51,6 +51,7 @@ class Commit {
   static std::unique_ptr<Commit> Init(
       DataTypeSet enabled_types,
       size_t max_entries,
+      size_t max_target_specifics_bytes,
       const std::string& account_name,
       const std::string& cache_guid,
       bool cookie_jar_mismatch,

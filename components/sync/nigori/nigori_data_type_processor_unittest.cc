@@ -4,6 +4,7 @@
 
 #include "components/sync/nigori/nigori_data_type_processor.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -48,7 +49,8 @@ MATCHER_P(OptionalEntityDataHasDecryptorTokenKeyName, expected_key_name, "") {
 }
 
 void CaptureCommitRequest(CommitRequestDataList* dst,
-                          CommitRequestDataList&& src) {
+                          CommitRequestDataList&& src,
+                          bool /*has_more_local_changes*/) {
   *dst = std::move(src);
 }
 
@@ -243,6 +245,7 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldGetEmptyLocalChanges) {
   CommitRequestDataList commit_request;
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(0U, commit_request.size());
 }
@@ -271,6 +274,7 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
   CommitRequestDataList commit_request;
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request));
   ASSERT_EQ(1U, commit_request.size());
   EXPECT_EQ(kNigoriNonUniqueName, commit_request[0]->entity->name);
@@ -301,6 +305,7 @@ TEST_F(NigoriDataTypeProcessorTest,
   CommitRequestDataList commit_request_list;
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request_list));
   ASSERT_EQ(1U, commit_request_list.size());
 
@@ -328,6 +333,7 @@ TEST_F(NigoriDataTypeProcessorTest,
   commit_response_list.clear();
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request_list));
   EXPECT_TRUE(commit_request_list.empty());
 }
@@ -344,6 +350,7 @@ TEST_F(NigoriDataTypeProcessorTest,
   CommitRequestDataList commit_request_list;
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request_list));
   ASSERT_EQ(1U, commit_request_list.size());
 
@@ -369,6 +376,7 @@ TEST_F(NigoriDataTypeProcessorTest,
   CommitResponseDataList commit_response_list;
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request_list));
   EXPECT_EQ(1U, commit_request_list.size());
 }
@@ -388,6 +396,7 @@ TEST_F(NigoriDataTypeProcessorTest,
   CommitRequestDataList commit_request_list;
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request_list));
   ASSERT_EQ(1U, commit_request_list.size());
 
@@ -419,6 +428,7 @@ TEST_F(NigoriDataTypeProcessorTest,
   commit_response_list.clear();
   processor()->GetLocalChanges(
       /*max_entries=*/10,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),
       base::BindOnce(&CaptureCommitRequest, &commit_request_list));
   EXPECT_EQ(1U, commit_request_list.size());
 }

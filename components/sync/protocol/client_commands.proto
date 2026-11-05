@@ -29,6 +29,14 @@ message ClientCommand {
 
   optional int32 max_commit_batch_size = 3;
 
+  // Soft limit on the total size in bytes of `EntitySpecifics` committed in a
+  // single commit message (once a batch reaches or exceeds this threshold, no
+  // further entities are added to the batch). Note that the client measures
+  // each entity's size using the serialized size of `EntitySpecifics` (with an
+  // adjustment for encryption / base64 overhead on Nigori-encrypted types),
+  // which excludes other `SyncEntity` envelope fields.
+  optional int32 max_target_commit_batch_specifics_bytes = 12;
+
   // Number of seconds to delay before the throttled client should retry.
   optional int32 throttle_delay_seconds = 5;
 

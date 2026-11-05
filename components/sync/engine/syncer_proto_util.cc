@@ -194,6 +194,12 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
         command.max_commit_batch_size());
   }
 
+  if (command.has_max_target_commit_batch_specifics_bytes() &&
+      command.max_target_commit_batch_specifics_bytes() > 0) {
+    cycle->context()->set_max_target_commit_batch_specifics_bytes(
+        command.max_target_commit_batch_specifics_bytes());
+  }
+
   if (command.has_set_sync_poll_interval()) {
     base::TimeDelta interval = base::Seconds(command.set_sync_poll_interval());
     if (interval.is_zero()) {

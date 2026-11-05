@@ -22,10 +22,12 @@ class CommitContributor {
   virtual ~CommitContributor() = default;
 
   // Gathers up to `max_entries` unsynced items from this contributor into a
-  // CommitContribution.  Returns null when the contributor has nothing to
-  // contribute.
+  // CommitContribution, stopping once the accumulated `EntitySpecifics` byte
+  // size reaches or exceeds `max_target_specifics_bytes`. Returns null when the
+  // contributor has nothing to contribute.
   virtual std::unique_ptr<CommitContribution> GetContribution(
-      size_t max_entries) = 0;
+      size_t max_entries,
+      size_t max_target_specifics_bytes) = 0;
 };
 
 }  // namespace syncer

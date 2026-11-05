@@ -123,6 +123,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
   void DisconnectSync() override;
   void GetLocalChanges(size_t max_entries,
+                       size_t max_target_specifics_bytes,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
       const sync_pb::DataTypeState& type_state,
@@ -255,7 +256,9 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
                         std::unique_ptr<DataBatch> data_batch);
 
   // Prepares Commit requests and passes them to the GetLocalChanges callback.
-  void CommitLocalChanges(size_t max_entries, GetLocalChangesCallback callback);
+  void CommitLocalChanges(size_t max_entries,
+                          size_t max_target_specifics_bytes,
+                          GetLocalChangesCallback callback);
 
   // Nudges worker if there are any local entities to be committed.
   void NudgeForCommitIfNeeded();

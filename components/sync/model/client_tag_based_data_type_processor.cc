@@ -831,9 +831,11 @@ void ClientTagBasedDataTypeProcessor::NudgeForCommitIfNeeded() {
 
 void ClientTagBasedDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
+    size_t max_target_specifics_bytes,
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GT(max_entries, 0U);
+  CHECK_GT(max_target_specifics_bytes, 0U);
   CHECK(IsConnected());
   CHECK(!model_error_);
 
@@ -845,7 +847,8 @@ void ClientTagBasedDataTypeProcessor::GetLocalChanges(
   // In some cases local changes may be requested before entity tracker is
   // loaded. Just invoke the callback with empty list.
   if (!entity_tracker_) {
-    std::move(callback).Run(CommitRequestDataList());
+    std::move(callback).Run(CommitRequestDataList(),
+                            /*has_more_local_changes=*/false);
     return;
   }
 
@@ -873,7 +876,8 @@ void ClientTagBasedDataTypeProcessor::GetLocalChanges(
     ConsumeDataBatch(std::move(storage_keys_to_load), std::move(data_batch));
   }
 
-  CommitLocalChanges(max_entries, std::move(callback));
+  CommitLocalChanges(max_entries, max_target_specifics_bytes,
+                     std::move(callback));
 }
 
 void ClientTagBasedDataTypeProcessor::OnCommitCompleted(
@@ -1357,12 +1361,14 @@ void ClientTagBasedDataTypeProcessor::ConsumeDataBatch(
 
 void ClientTagBasedDataTypeProcessor::CommitLocalChanges(
     size_t max_entries,
+    size_t max_target_specifics_bytes,
     GetLocalChangesCallback callback) {
   CHECK(!model_error_);
   CHECK(entity_tracker_);
   // Prepares entities commit request data for entities which are
   // out of sync with the sync thread.
   CommitRequestDataList commit_requests;
+  size_t specifics_bytes = 0;
   // TODO(rlarocque): Do something smarter than iterate here.
   std::vector<ProcessorEntity*> entities =
       entity_tracker_->GetEntitiesWithLocalChanges(max_entries);
@@ -1370,13 +1376,17 @@ void ClientTagBasedDataTypeProcessor::CommitLocalChanges(
     if (entity->RequiresCommitRequest() && !entity->RequiresCommitData()) {
       auto request = std::make_unique<CommitRequestData>();
       entity->InitializeCommitRequestData(request.get());
+      specifics_bytes += request->entity->specifics.ByteSizeLong();
       commit_requests.push_back(std::move(request));
-      if (commit_requests.size() >= max_entries) {
+      if (commit_requests.size() >= max_entries ||
+          specifics_bytes >= max_target_specifics_bytes) {
         break;
       }
     }
   }
-  std::move(callback).Run(std::move(commit_requests));
+  std::move(callback).Run(
+      std::move(commit_requests),
+      /*has_more_local_changes=*/entity_tracker_->HasLocalChanges());
 }
 
 size_t ClientTagBasedDataTypeProcessor::EstimateMemoryUsage() const {

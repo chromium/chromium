@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit.h"
@@ -38,10 +40,13 @@ class CommitProcessor {
   // For each of the `commit_types` in this CommitProcessor's CommitContributor
   // map, gather any entries queued for commit into CommitContributions.  The
   // total number of entries in all the returned CommitContributions shall not
-  // exceed `max_entries`.
+  // exceed `max_entries`, and the total `EntitySpecifics` byte size stops
+  // growing once it reaches or exceeds `max_target_specifics_bytes`.
   // Returns no contribution if previous call collected them from all datatypes
-  // and total number of collected entries was less than `max_entries`.
-  Commit::ContributionMap GatherCommitContributions(size_t max_entries);
+  // and no datatype had remaining local changes.
+  Commit::ContributionMap GatherCommitContributions(
+      size_t max_entries,
+      size_t max_target_specifics_bytes);
 
  private:
   // Gathering is split into phases for 2 reasons: 1) to provide prioritization,
@@ -56,19 +61,12 @@ class CommitProcessor {
   // current phase.
   DataTypeSet GetUserTypesForCurrentCommitPhase() const;
 
-  // Gathers commit contributions for an individual datatype and populates
-  // `*contributions`. Returns the number of entries added.
-  size_t GatherCommitContributionsForType(
+  // Gathers commit contributions for an individual datatype, or returns null if
+  // nothing is contributed.
+  std::unique_ptr<CommitContribution> GatherCommitContributionsForType(
       DataType type,
       size_t max_entries,
-      Commit::ContributionMap* contributions);
-
-  // Gathers commit contributions for `types` and populates `*contributions`.
-  // Returns the number of entries added.
-  size_t GatherCommitContributionsForTypes(
-      DataTypeSet types,
-      size_t max_entries,
-      Commit::ContributionMap* contributions);
+      size_t max_target_specifics_bytes);
 
   const DataTypeSet commit_types_;
 

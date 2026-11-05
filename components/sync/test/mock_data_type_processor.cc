@@ -33,21 +33,29 @@ void MockDataTypeProcessor::DisconnectSync() {
 }
 
 void MockDataTypeProcessor::GetLocalChanges(size_t max_entries,
+                                            size_t max_target_specifics_bytes,
                                             GetLocalChangesCallback callback) {
+  CHECK_GT(max_entries, 0u);
+  CHECK_GT(max_target_specifics_bytes, 0u);
   get_local_changes_call_count_++;
 
-  // Truncation may be needed due to `max_entries`.
-  CommitRequestDataList remaining_changes;
-  if (commit_request_.size() > max_entries) {
-    for (size_t i = max_entries; i < commit_request_.size(); ++i) {
-      remaining_changes.push_back(std::move(commit_request_[i]));
+  // Truncation may be needed due to `max_entries` or
+  // `max_target_specifics_bytes`.
+  CommitRequestDataList returned_changes;
+  size_t specifics_bytes = 0;
+  auto it = commit_request_.begin();
+  while (it != commit_request_.end()) {
+    specifics_bytes += (*it)->entity->specifics.ByteSizeLong();
+    returned_changes.push_back(std::move(*it));
+    ++it;
+    if (returned_changes.size() >= max_entries ||
+        specifics_bytes >= max_target_specifics_bytes) {
+      break;
     }
-    commit_request_.resize(max_entries);
   }
-
-  CommitRequestDataList returned_changes = std::move(commit_request_);
-  commit_request_ = std::move(remaining_changes);
-  std::move(callback).Run(std::move(returned_changes));
+  commit_request_.erase(commit_request_.begin(), it);
+  std::move(callback).Run(std::move(returned_changes),
+                          /*has_more_local_changes=*/!commit_request_.empty());
 }
 
 void MockDataTypeProcessor::OnCommitCompleted(

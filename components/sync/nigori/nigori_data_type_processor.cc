@@ -64,14 +64,17 @@ void NigoriDataTypeProcessor::DisconnectSync() {
 
 void NigoriDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
+    size_t max_target_specifics_bytes,
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(max_entries, 0U);
+  CHECK_GT(max_entries, 0U);
+  CHECK_GT(max_target_specifics_bytes, 0U);
   // If there is a model error, it must have been reported already but hasn't
   // reached the sync engine yet. In this case return directly to avoid
   // interactions with the bridge.
   if (model_error_) {
-    std::move(callback).Run(CommitRequestDataList());
+    std::move(callback).Run(CommitRequestDataList(),
+                            /*has_more_local_changes=*/false);
     return;
   }
 
@@ -79,7 +82,8 @@ void NigoriDataTypeProcessor::GetLocalChanges(
 
   // No local changes to commit.
   if (!entity_->RequiresCommitRequest()) {
-    std::move(callback).Run(CommitRequestDataList());
+    std::move(callback).Run(CommitRequestDataList(),
+                            /*has_more_local_changes=*/false);
     return;
   }
 
@@ -95,7 +99,8 @@ void NigoriDataTypeProcessor::GetLocalChanges(
   CommitRequestDataList commit_request_data_list;
   commit_request_data_list.push_back(std::move(commit_request_data));
 
-  std::move(callback).Run(std::move(commit_request_data_list));
+  std::move(callback).Run(std::move(commit_request_data_list),
+                          /*has_more_local_changes=*/false);
 }
 
 void NigoriDataTypeProcessor::OnCommitCompleted(

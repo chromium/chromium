@@ -48,7 +48,8 @@ class MockDataTypeWorker : public CommitQueue {
   ~MockDataTypeWorker() override;
 
   // Callback when local changes are received from the processor.
-  void LocalChangesReceived(CommitRequestDataList&& commit_request);
+  void LocalChangesReceived(CommitRequestDataList&& commit_request,
+                            bool has_more_local_changes);
 
   // Implementation for CommitQueue.
   void NudgeForCommit() override;

@@ -899,8 +899,11 @@ void DataTypeWorker::NudgeIfReadyToCommit() {
 }
 
 std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
-    size_t max_entries) {
+    size_t max_entries,
+    size_t max_target_specifics_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_GT(max_entries, 0u);
+  CHECK_GT(max_target_specifics_bytes, 0u);
   DCHECK(
       IsInitialSyncAtLeastPartiallyDone(data_type_state_.initial_sync_state()));
   DCHECK(data_type_processor_);
@@ -915,6 +918,14 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
   // updates it received.
   DCHECK(updates_pending_decryption_by_server_id_.empty());
 
+  // Encrypted data is Base64-encoded (~4/3 size expansion), so scale down the
+  // unencrypted byte limit passed to the processor accordingly.
+  const size_t max_target_specifics_bytes_before_encryption =
+      encryption_enabled_
+          ? std::max<size_t>(
+                1, max_target_specifics_bytes - max_target_specifics_bytes / 4)
+          : max_target_specifics_bytes;
+
   // Pull local changes from the processor (in the model thread/sequence). Note
   // that this takes place independently of nudges (i.e.
   // `has_local_changes_state_`), in case the processor decided a local change
@@ -922,7 +933,7 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
   scoped_refptr<GetLocalChangesRequest> request =
       base::MakeRefCounted<GetLocalChangesRequest>();
   data_type_processor_->GetLocalChanges(
-      max_entries,
+      max_entries, max_target_specifics_bytes_before_encryption,
       base::BindOnce(&GetLocalChangesRequest::SetResponse, request));
   request->WaitForResponseOrCancelation(cancelation_signal_);
   CommitRequestDataList response;
@@ -935,14 +946,10 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
   }
 
   DCHECK(response.size() <= max_entries);
-  if (response.size() < max_entries) {
-    // In case when response.size() equals to `max_entries`, there will be
-    // another commit request (see CommitProcessor::GatherCommitContributions).
-    // Hence, in general it should be normal if `has_local_changes_state_` is
-    // `kNewlyNudgedLocalChanges` (even if there are no more items in the
-    // processor). In other words, `kAllNudgedLocalChangesInFlight` means that
-    // there might not be another commit request in the current sync cycle (but
-    // still possible if some other data type contributes `max_entities`).
+  if (!request->has_more_local_changes()) {
+    // In absence of additional local changes reported by the processor, there
+    // is no need to nudge for commit again until new changes happen. If Commit
+    // fails, it will transition back to `kNewlyNudgedLocalChanges`.
     has_local_changes_state_ = kAllNudgedLocalChangesInFlight;
   }
 
@@ -971,7 +978,7 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&DataTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      passphrase_type_);
+      passphrase_type_, request->has_more_local_changes());
 }
 
 bool DataTypeWorker::HasLocalChanges() const {
@@ -1565,14 +1572,19 @@ void GetLocalChangesRequest::WaitForResponseOrCancelation(
   cancelation_signal->UnregisterHandler(this);
 }
 
-void GetLocalChangesRequest::SetResponse(
-    CommitRequestDataList&& local_changes) {
+void GetLocalChangesRequest::SetResponse(CommitRequestDataList&& local_changes,
+                                         bool has_more_local_changes) {
   response_ = std::move(local_changes);
+  has_more_local_changes_ = has_more_local_changes;
   response_accepted_.Signal();
 }
 
 CommitRequestDataList&& GetLocalChangesRequest::ExtractResponse() {
   return std::move(response_);
+}
+
+bool GetLocalChangesRequest::has_more_local_changes() const {
+  return has_more_local_changes_;
 }
 
 }  // namespace syncer

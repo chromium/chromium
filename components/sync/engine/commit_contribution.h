@@ -53,6 +53,15 @@ class CommitContribution {
 
   // Returns the number of entries included in this contribution.
   virtual size_t GetNumEntries() const = 0;
+
+  // Returns the post-encryption size in bytes of `EntitySpecifics` included in
+  // this contribution, measured as the sum of serialized `EntitySpecifics`
+  // sizes.
+  virtual size_t GetPostEncryptionSpecificsByteSize() const = 0;
+
+  // Returns whether the contributor has additional local changes that were not
+  // included in this contribution due to reaching batch limits.
+  virtual bool HasMoreLocalChanges() const = 0;
 };
 
 }  // namespace syncer

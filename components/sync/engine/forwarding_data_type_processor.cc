@@ -31,8 +31,10 @@ void ForwardingDataTypeProcessor::DisconnectSync() {
 
 void ForwardingDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
+    size_t max_target_specifics_bytes,
     GetLocalChangesCallback callback) {
-  processor_->GetLocalChanges(max_entries, std::move(callback));
+  processor_->GetLocalChanges(max_entries, max_target_specifics_bytes,
+                              std::move(callback));
 }
 
 void ForwardingDataTypeProcessor::OnCommitCompleted(

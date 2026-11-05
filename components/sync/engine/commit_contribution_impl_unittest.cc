@@ -297,7 +297,7 @@ TEST_F(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       std::move(on_commit_response_callback),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
-      PassphraseType::kCustomPassphrase);
+      PassphraseType::kCustomPassphrase, /*has_more_local_changes=*/false);
 
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);
@@ -336,7 +336,8 @@ TEST_F(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
   CommitContributionImpl contribution(
       BOOKMARKS, sync_pb::DataTypeContext(), CommitRequestDataList(),
       /*on_commit_response_callback=*/base::NullCallback(),
-      on_commit_failure_callback.Get(), PassphraseType::kKeystorePassphrase);
+      on_commit_failure_callback.Get(), PassphraseType::kKeystorePassphrase,
+      /*has_more_local_changes=*/false);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
 }
@@ -356,7 +357,7 @@ TEST_F(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
       SHARING_MESSAGE, sync_pb::DataTypeContext(), std::move(requests_data),
       /*on_commit_response_callback=*/base::NullCallback(),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
-      PassphraseType::kKeystorePassphrase);
+      PassphraseType::kKeystorePassphrase, /*has_more_local_changes=*/false);
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);
 
@@ -447,7 +448,7 @@ TEST_F(CommitContributionImplTest,
           },
           &committed_response_list),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
-      PassphraseType::kKeystorePassphrase);
+      PassphraseType::kKeystorePassphrase, /*has_more_local_changes=*/false);
 
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);

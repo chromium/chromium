@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -482,7 +483,12 @@ class DataTypeWorkerTest : public ::testing::Test {
   void PumpModelThread() { processor()->RunQueuedTasks(); }
 
   // Returns true if the `worker_` is ready to commit something.
-  bool WillCommit() { return worker()->GetContribution(INT_MAX) != nullptr; }
+  bool WillCommit() {
+    return worker()->GetContribution(
+               /*max_entries=*/std::numeric_limits<size_t>::max(),
+               /*max_target_specifics_bytes=*/std::numeric_limits<
+                   size_t>::max()) != nullptr;
+  }
 
   // Pretend to successfully commit all outstanding unsynced items.
   // It is safe to call this only if WillCommit() returns true.
@@ -491,7 +497,9 @@ class DataTypeWorkerTest : public ::testing::Test {
   // about other tasks being run between the time when the commit request is
   // issued and the time when the commit response is received.
   void DoSuccessfulCommit() {
-    DoSuccessfulCommit(worker()->GetContribution(INT_MAX));
+    DoSuccessfulCommit(worker()->GetContribution(
+        /*max_entries=*/std::numeric_limits<size_t>::max(),
+        /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max()));
   }
 
   void DoSuccessfulCommit(std::unique_ptr<CommitContribution> contribution) {
@@ -507,8 +515,9 @@ class DataTypeWorkerTest : public ::testing::Test {
   }
 
   void DoCommitFailure() {
-    std::unique_ptr<CommitContribution> contribution(
-        worker()->GetContribution(INT_MAX));
+    std::unique_ptr<CommitContribution> contribution(worker()->GetContribution(
+        /*max_entries=*/std::numeric_limits<size_t>::max(),
+        /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max()));
     DCHECK(contribution);
 
     contribution->ProcessCommitFailure(SyncCommitError::kNetworkError);
@@ -608,7 +617,11 @@ TEST_F(DataTypeWorkerTest, SimpleCommit) {
   NormalInitialize();
 
   EXPECT_EQ(0, nudge_handler()->GetNumCommitNudges());
-  EXPECT_EQ(nullptr, worker()->GetContribution(INT_MAX));
+  EXPECT_EQ(
+      nullptr,
+      worker()->GetContribution(
+          /*max_entries=*/std::numeric_limits<size_t>::max(),
+          /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max()));
   EXPECT_EQ(0U, server()->GetNumCommitMessages());
   EXPECT_EQ(0U, processor()->GetNumCommitResponses());
   histogram_tester.ExpectBucketCount(
@@ -2066,12 +2079,13 @@ TEST_F(GetLocalChangesRequestTest, SuccessfulRequest) {
     CommitRequestDataList response;
     response.push_back(std::make_unique<CommitRequestData>());
     response.back()->specifics_hash = kHash1;
-    request->SetResponse(std::move(response));
+    request->SetResponse(std::move(response), /*has_more_local_changes=*/true);
   }
   done_event_.Wait();
   CommitRequestDataList response = request->ExtractResponse();
   EXPECT_EQ(1U, response.size());
   EXPECT_EQ(kHash1, response[0]->specifics_hash);
+  EXPECT_TRUE(request->has_more_local_changes());
 }
 
 // Analogous test fixture but uses PASSWORDS instead of PREFERENCES, in order
@@ -2595,8 +2609,9 @@ TEST_F(DataTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
   worker()->NudgeForCommit();
   ASSERT_TRUE(worker()->HasLocalChanges());
 
-  std::unique_ptr<CommitContribution> contribution(
-      worker()->GetContribution(kMaxEntities));
+  std::unique_ptr<CommitContribution> contribution(worker()->GetContribution(
+      kMaxEntities,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max()));
   ASSERT_THAT(contribution, NotNull());
   ASSERT_EQ(1u, contribution->GetNumEntries());
 
@@ -2634,8 +2649,9 @@ TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
   worker()->NudgeForCommit();
   ASSERT_TRUE(worker()->HasLocalChanges());
 
-  std::unique_ptr<CommitContribution> contribution(
-      worker()->GetContribution(kMaxEntities));
+  std::unique_ptr<CommitContribution> contribution(worker()->GetContribution(
+      kMaxEntities,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max()));
   ASSERT_THAT(contribution, NotNull());
   ASSERT_EQ(kMaxEntities, contribution->GetNumEntries());
   DoSuccessfulCommit(std::move(contribution));
@@ -2658,8 +2674,9 @@ TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
   ASSERT_TRUE(worker()->HasLocalChanges());
 
   // Start a commit.
-  std::unique_ptr<CommitContribution> contribution(
-      worker()->GetContribution(kMaxEntities));
+  std::unique_ptr<CommitContribution> contribution(worker()->GetContribution(
+      kMaxEntities,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max()));
   ASSERT_THAT(contribution, NotNull());
   ASSERT_EQ(1u, contribution->GetNumEntries());
 
@@ -2679,7 +2696,8 @@ TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
   EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
-TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
+TEST_F(DataTypeWorkerTest,
+       ShouldNotHaveLocalChangesWhenContributedMaxEntities) {
   const size_t kMaxEntities = 2;
   NormalInitialize();
   ASSERT_FALSE(worker()->HasLocalChanges());
@@ -2689,19 +2707,108 @@ TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   worker()->NudgeForCommit();
   ASSERT_TRUE(worker()->HasLocalChanges());
 
-  std::unique_ptr<CommitContribution> contribution(
-      worker()->GetContribution(kMaxEntities));
+  std::unique_ptr<CommitContribution> contribution(worker()->GetContribution(
+      kMaxEntities,
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max()));
   ASSERT_THAT(contribution, NotNull());
   ASSERT_EQ(kMaxEntities, contribution->GetNumEntries());
   DoSuccessfulCommit(std::move(contribution));
+  EXPECT_FALSE(worker()->HasLocalChanges());
+}
 
-  // The worker is still not aware if there are more changes available. It is
-  // supposed that GetContribution() will be called until it returns less than
-  // `max_entities` items. This is not the intended behaviour, but this is how
-  // things currently work.
+TEST_F(DataTypeWorkerTest, ShouldLimitContributionByMaxBytes) {
+  NormalInitialize();
+
+  const sync_pb::EntitySpecifics specifics1 = GenerateSpecifics(kTag1, kValue1);
+  const sync_pb::EntitySpecifics specifics2 = GenerateSpecifics(kTag2, kValue2);
+  const sync_pb::EntitySpecifics specifics3 = GenerateSpecifics(kTag3, kValue3);
+  const size_t kTwoEntriesBytes =
+      specifics1.ByteSizeLong() + specifics2.ByteSizeLong();
+
+  processor()->AppendCommitRequest(kHash1, specifics1);
+  processor()->AppendCommitRequest(kHash2, specifics2);
+  processor()->AppendCommitRequest(kHash3, specifics3);
+  worker()->NudgeForCommit();
+
+  // Only the first two entries fit within `kTwoEntriesBytes`.
+  std::unique_ptr<CommitContribution> contribution =
+      worker()->GetContribution(/*max_entries=*/10, kTwoEntriesBytes);
+  ASSERT_THAT(contribution, NotNull());
+  EXPECT_EQ(2u, contribution->GetNumEntries());
+  EXPECT_EQ(kTwoEntriesBytes,
+            contribution->GetPostEncryptionSpecificsByteSize());
+  DoSuccessfulCommit(std::move(contribution));
   EXPECT_TRUE(worker()->HasLocalChanges());
-  contribution = worker()->GetContribution(kMaxEntities);
-  ASSERT_THAT(contribution, IsNull());
+
+  // The remaining entry is committed in the next contribution.
+  contribution =
+      worker()->GetContribution(/*max_entries=*/10, kTwoEntriesBytes);
+  ASSERT_THAT(contribution, NotNull());
+  EXPECT_EQ(1u, contribution->GetNumEntries());
+  EXPECT_EQ(specifics3.ByteSizeLong(),
+            contribution->GetPostEncryptionSpecificsByteSize());
+  DoSuccessfulCommit(std::move(contribution));
+  EXPECT_FALSE(worker()->HasLocalChanges());
+}
+
+TEST_F(DataTypeWorkerTest,
+       ShouldLimitContributionByMaxBytesWithEncryptionOverhead) {
+  NormalInitialize();
+  AddPendingKey();
+  DecryptPendingKey();
+
+  const sync_pb::EntitySpecifics specifics1 = GenerateSpecifics(kTag1, kValue1);
+  const sync_pb::EntitySpecifics specifics2 = GenerateSpecifics(kTag2, kValue2);
+  ASSERT_GE(specifics1.ByteSizeLong(), 3u);
+  const size_t kMaxBytes = specifics1.ByteSizeLong() + 1;
+
+  processor()->AppendCommitRequest(kHash1, specifics1);
+  processor()->AppendCommitRequest(kHash2, specifics2);
+  worker()->NudgeForCommit();
+
+  // Without encryption, `kMaxBytes` (> 1 entry's unencrypted size) would gather
+  // both entries. With encryption enabled, `max_target_specifics_bytes` is
+  // scaled down by 3/4 to account for Base64 overhead, so the first entry
+  // already reaches the scaled limit.
+  std::unique_ptr<CommitContribution> contribution =
+      worker()->GetContribution(/*max_entries=*/10, kMaxBytes);
+  ASSERT_THAT(contribution, NotNull());
+  EXPECT_EQ(1u, contribution->GetNumEntries());
+  DoSuccessfulCommit(std::move(contribution));
+  EXPECT_TRUE(worker()->HasLocalChanges());
+
+  contribution = worker()->GetContribution(/*max_entries=*/10, kMaxBytes);
+  ASSERT_THAT(contribution, NotNull());
+  EXPECT_EQ(1u, contribution->GetNumEntries());
+  DoSuccessfulCommit(std::move(contribution));
+  EXPECT_FALSE(worker()->HasLocalChanges());
+}
+
+TEST_F(DataTypeWorkerTest, ShouldCommitSingleOversizedEntry) {
+  NormalInitialize();
+
+  const sync_pb::EntitySpecifics specifics1 = GenerateSpecifics(kTag1, kValue1);
+  const sync_pb::EntitySpecifics specifics2 = GenerateSpecifics(kTag2, kValue2);
+  ASSERT_GT(specifics1.ByteSizeLong(), 1u);
+
+  processor()->AppendCommitRequest(kHash1, specifics1);
+  processor()->AppendCommitRequest(kHash2, specifics2);
+  worker()->NudgeForCommit();
+
+  // Even when `max_target_specifics_bytes` is smaller than a single entry, the
+  // first entry is still included so progress is made.
+  std::unique_ptr<CommitContribution> contribution = worker()->GetContribution(
+      /*max_entries=*/10, /*max_target_specifics_bytes=*/1);
+  ASSERT_THAT(contribution, NotNull());
+  EXPECT_EQ(1u, contribution->GetNumEntries());
+  DoSuccessfulCommit(std::move(contribution));
+  EXPECT_TRUE(worker()->HasLocalChanges());
+
+  contribution = worker()->GetContribution(
+      /*max_entries=*/10, /*max_target_specifics_bytes=*/1);
+  ASSERT_THAT(contribution, NotNull());
+  EXPECT_EQ(1u, contribution->GetNumEntries());
+  DoSuccessfulCommit(std::move(contribution));
   EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
@@ -2958,8 +3065,9 @@ TEST_F(DataTypeWorkerSendTabToSelfTest, SendTabToSelfCommitWithPageContext) {
   // Normal commit request stuff.
   const ClientTagHash hash = GenerateSTTSHash("guid");
   processor()->SetCommitRequest(GenerateCommitRequest(hash, specifics));
-  std::unique_ptr<CommitContribution> contribution =
-      worker()->GetContribution(INT_MAX);
+  std::unique_ptr<CommitContribution> contribution = worker()->GetContribution(
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max());
   ASSERT_NE(nullptr, contribution);
   DoSuccessfulCommit(std::move(contribution));
 
@@ -3116,8 +3224,9 @@ TEST_F(DataTypeWorkerSendTabToSelfTest,
 
   const ClientTagHash hash = GenerateSTTSHash("guid");
   processor()->SetCommitRequest(GenerateCommitRequest(hash, specifics));
-  std::unique_ptr<CommitContribution> contribution =
-      worker()->GetContribution(INT_MAX);
+  std::unique_ptr<CommitContribution> contribution = worker()->GetContribution(
+      /*max_entries=*/std::numeric_limits<size_t>::max(),
+      /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max());
   ASSERT_NE(nullptr, contribution);
   DoSuccessfulCommit(std::move(contribution));
 

@@ -31,6 +31,7 @@ class ForwardingDataTypeProcessor : public DataTypeProcessor {
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
   void DisconnectSync() override;
   void GetLocalChanges(size_t max_entries,
+                       size_t max_target_specifics_bytes,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
       const sync_pb::DataTypeState& type_state,
