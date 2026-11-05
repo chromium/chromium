@@ -3409,10 +3409,20 @@ class LensOverlayBrowserTest : public LensBrowserBaseTest {
         IDC_CONTENT_CONTEXT_SEARCHWEBFOR, event_flags, std::move(callback));
     RightClickToOpenContextMenu();
   }
+
+  // Loads a page with rendered content so that the simulated right click
+  // opens a context menu. On some builders, right clicking the initial empty
+  // tab never opens the menu and the region search tests time out.
+  void LoadPageForContextMenu() {
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,text")));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                        RegionSearchContextMenuOpensLensOverlay) {
+  ASSERT_NO_FATAL_FAILURE(LoadPageForContextMenu());
+
   // State should start in off.
   auto* controller = browser()
                          ->GetTabStripModel()
@@ -3466,6 +3476,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                        RegionSearchContextMenuDoesNotOpenRegionSearch) {
+  ASSERT_NO_FATAL_FAILURE(LoadPageForContextMenu());
+
   bool run = false;
   OpenContextMenuAndSelectRegionSearchEntrypoint(
       ui::EF_MOUSE_BUTTON,
@@ -3482,6 +3494,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                        RegionSearchContextMenuOpensRegionSearchForKeyboard) {
+  ASSERT_NO_FATAL_FAILURE(LoadPageForContextMenu());
+
   bool run = false;
   // EF_NONE event_type will be treated as a keyboard press.
   OpenContextMenuAndSelectRegionSearchEntrypoint(
