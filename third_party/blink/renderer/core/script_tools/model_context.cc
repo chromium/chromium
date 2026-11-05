@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/events/tool_cancel_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -84,6 +85,14 @@ const char kNotFoundErrorMessage[] =
 const char kDataErrorMessage[] = "Failed to parse tool input arguments.";
 const char kOperationErrorMessage[] = "Tool execution failed.";
 const char kAbortErrorMessage[] = "Tool execution aborted.";
+
+// Matches the default of the timeout used by the actor stack in the browser
+// when the agent initiates an observation.
+constexpr base::TimeDelta kWaitForToolsWarningDelay = base::Seconds(10);
+const char kWaitForToolsWarningMessage[] =
+    "WebMCP: This page's tools have not been ready for 10 seconds, waiting on "
+    "a promise passed to waitForToolsUntil(). Agents delay using the page "
+    "until its tools are ready, and may stop waiting before then.";
 
 // `input` must be a non-empty, non-null object.
 String ValidateAndStringifyValue(ScriptState* script_state,
@@ -296,6 +305,59 @@ class ModelContext::ToolFunctionFinishedCallback
   const bool success_;
 };
 
+// The wrapper is used to ensure promises passed from contexts with synchronous
+// access to this Document settle if the other context is destroyed.
+class ModelContext::PendingWaitForTools final
+    : public GarbageCollected<PendingWaitForTools>,
+      public ExecutionContextLifecycleObserver {
+ public:
+  // `other_context` is the context the promise was created in if it isn't the
+  // document's own, and null otherwise.
+  PendingWaitForTools(ModelContext* model_context,
+                      ExecutionContext* other_context)
+      : ExecutionContextLifecycleObserver(other_context),
+        model_context_(model_context) {}
+
+  void Settle() {
+    // A promise from another context can settle and also have its context
+    // destroyed, in either order.
+    if (settled_) {
+      return;
+    }
+    settled_ = true;
+    model_context_->OnWaitForToolsPromiseSettled(this);
+  }
+
+  // ExecutionContextLifecycleObserver:
+  void ContextDestroyed() override { Settle(); }
+
+  void Trace(Visitor* visitor) const override {
+    ExecutionContextLifecycleObserver::Trace(visitor);
+    visitor->Trace(model_context_);
+  }
+
+ private:
+  Member<ModelContext> model_context_;
+  bool settled_ = false;
+};
+
+class ModelContext::WaitForToolsSettled final
+    : public ThenCallable<IDLAny, WaitForToolsSettled> {
+ public:
+  explicit WaitForToolsSettled(PendingWaitForTools* pending)
+      : pending_(pending) {}
+
+  void React(ScriptState*, ScriptValue) { pending_->Settle(); }
+
+  void Trace(Visitor* visitor) const override {
+    ThenCallable<IDLAny, WaitForToolsSettled>::Trace(visitor);
+    visitor->Trace(pending_);
+  }
+
+ private:
+  Member<PendingWaitForTools> pending_;
+};
+
 // static
 bool ModelContext::IsDeclarativeWebMCPEnabled(const ExecutionContext* context) {
   return RuntimeEnabledFeatures::DeclarativeWebMCPEnabled(context) &&
@@ -307,7 +369,11 @@ ModelContext::ModelContext(Document& document)
       task_runner_(document.GetTaskRunner(TaskType::kUserInteraction)),
       script_tool_host_remote_(document.GetExecutionContext()),
       model_context_host_remote_(document.GetExecutionContext()),
-      model_context_receiver_(this, document.GetExecutionContext()) {
+      model_context_receiver_(this, document.GetExecutionContext()),
+      wait_for_tools_warning_timer_(
+          task_runner_,
+          this,
+          &ModelContext::OnWaitForToolsWarningTimerFired) {
   // Documents without a frame can share another document's execution context,
   // but must not bind to that document's browser host.
   if (!document.GetFrame()) {
@@ -520,6 +586,83 @@ void ModelContext::UnregisterTool(const ScriptToolToken& tool_id) {
   if (document_->IsActive()) {
     model_context_host_remote_->UnregisterScriptTool(tool_id);
   }
+}
+
+void ModelContext::waitForToolsUntil(ScriptState* script_state,
+                                     ScriptPromise<IDLAny> promise,
+                                     ExceptionState& exception_state) {
+  if (!document_->IsActive()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInactiveDocumentErrorMessage);
+    return;
+  }
+
+  ExecutionContext* execution_context = document_->GetExecutionContext();
+  if (!execution_context->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      kPermissionPolicyNotEnabledErrorMessage);
+    return;
+  }
+
+  // An already-settled promise has nothing to wait for.
+  if (promise.V8Promise()->State() != v8::Promise::kPending) {
+    promise.MarkAsHandled();
+    return;
+  }
+
+  // If the promise was created in another document, e.g. a same-origin
+  // iframe's, observe that context so the promise stops holding up tools if
+  // that document goes away.
+  ExecutionContext* other_context = nullptr;
+  v8::Local<v8::Context> creation_context;
+  if (promise.V8Promise()
+          ->GetCreationContext(script_state->GetIsolate())
+          .ToLocal(&creation_context)) {
+    ExecutionContext* promise_context =
+        ExecutionContext::From(creation_context);
+    if (promise_context != execution_context) {
+      other_context = promise_context;
+    }
+  }
+  if (other_context && other_context->IsContextDestroyed()) {
+    promise.MarkAsHandled();
+    return;
+  }
+
+  auto* pending =
+      MakeGarbageCollected<PendingWaitForTools>(this, other_context);
+  unsettled_wait_for_tools_promises_.insert(pending);
+  if (unsettled_wait_for_tools_promises_.size() == 1) {
+    model_context_host_remote_->SetScriptToolsReady(/*ready=*/false);
+    wait_for_tools_warning_timer_.StartOneShot(kWaitForToolsWarningDelay,
+                                               FROM_HERE);
+  }
+  auto* settled = MakeGarbageCollected<WaitForToolsSettled>(pending);
+  promise.Then(script_state, settled, settled);
+}
+
+void ModelContext::OnWaitForToolsPromiseSettled(PendingWaitForTools* pending) {
+  CHECK(unsettled_wait_for_tools_promises_.Contains(pending));
+  unsettled_wait_for_tools_promises_.erase(pending);
+  if (!unsettled_wait_for_tools_promises_.empty()) {
+    return;
+  }
+  wait_for_tools_warning_timer_.Stop();
+  if (!document_->IsActive()) {
+    return;
+  }
+  model_context_host_remote_->SetScriptToolsReady(/*ready=*/true);
+}
+
+void ModelContext::OnWaitForToolsWarningTimerFired(TimerBase*) {
+  if (!document_->IsActive()) {
+    return;
+  }
+  GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      kWaitForToolsWarningMessage));
 }
 
 std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
@@ -1362,6 +1505,8 @@ void ModelContext::Trace(Visitor* visitor) const {
   visitor->Trace(script_tool_host_remote_);
   visitor->Trace(model_context_host_remote_);
   visitor->Trace(model_context_receiver_);
+  visitor->Trace(unsettled_wait_for_tools_promises_);
+  visitor->Trace(wait_for_tools_warning_timer_);
 }
 
 const String& ToolData::Name() const {

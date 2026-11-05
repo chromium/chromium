@@ -1093,6 +1093,26 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns true if this frame has fired DOMContentLoaded.
   virtual bool IsDOMContentLoaded() = 0;
 
+  enum class ScriptToolsReadyState {
+    // The Document hasn't reached a lifecycle milestone where the ready state
+    // is evaluated.
+    kLoading,
+    // The Document is still updating the tool registry.
+    kWaiting,
+    // The Document's tool registry is stable.
+    kReady,
+    // The frame has no live RenderFrame in the renderer process (e.g. the
+    // renderer process crashed).
+    kNoRenderer,
+  };
+
+  // Returns whether the script tools of this frame's current document are
+  // ready. Changes for a live RenderFrame are notified via
+  // `WebContentsObserver::ScriptToolsReadyStateChanged()`; transitions to and
+  // from `kNoRenderer` are notified via `RenderFrameDeleted()` and
+  // `RenderFrameCreated()`.
+  virtual ScriptToolsReadyState GetScriptToolsReadyState() = 0;
+
   // Marks the frame as an ad frame.
   //
   // Note: This ad status is currently maintained and updated *outside* content.

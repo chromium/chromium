@@ -291,6 +291,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
@@ -7199,6 +7200,9 @@ void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
   }
 
   delegate_->DOMContentLoaded(this);
+  if (base::FeatureList::IsEnabled(blink::features::kWebMCPWaitForToolsUntil)) {
+    delegate_->ScriptToolsReadyStateChanged(this);
+  }
   if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
     RecordIsProcessBackgrounded("OnDOMContentLoaded",
                                 GetProcess()->GetPriority());
@@ -10044,6 +10048,7 @@ bool RenderFrameHostImpl::GetSuddenTerminationDisablerState(
 }
 
 void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
+  const auto previous_script_tools_ready_state = GetScriptToolsReadyState();
   document_associated_data_->MarkDomContentLoaded();
 
   // In case of prerendering, we dispatch DOMContentLoaded on activation. This
@@ -10055,6 +10060,9 @@ void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
   }
 
   delegate_->DOMContentLoaded(this);
+  if (previous_script_tools_ready_state != GetScriptToolsReadyState()) {
+    delegate_->ScriptToolsReadyStateChanged(this);
+  }
   if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
     RecordIsProcessBackgrounded("OnDOMContentLoaded",
                                 GetProcess()->GetPriority());
@@ -17258,6 +17266,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     return false;
   }
 
+  if (navigated_to_new_document &&
+      lifecycle_state() != LifecycleStateImpl::kPrerendering &&
+      base::FeatureList::IsEnabled(blink::features::kWebMCPWaitForToolsUntil)) {
+    delegate_->ScriptToolsReadyStateChanged(this);
+  }
+
   // Reset back the state to false after navigation commits.
   // TODO(crbug.com/40052076): Undo this plumbing after removing the
   // early post-crash CommitPending() call.
@@ -17305,7 +17319,11 @@ void RenderFrameHostImpl::ResetStateForReplacedRendererDocument() {
   // are processed in order with the IPC that reports the replacement.
   // TODO(crbug.com/576419973): Do this for all Document scoped user data.
   if (ModelContextUserData::GetForCurrentDocument(this)) {
+    const auto previous_state = GetScriptToolsReadyState();
     ModelContextUserData::DeleteForCurrentDocument(this);
+    if (previous_state != GetScriptToolsReadyState()) {
+      delegate_->ScriptToolsReadyStateChanged(this);
+    }
   }
 }
 
@@ -19643,6 +19661,25 @@ bool RenderFrameHostImpl::IsBackForwardCacheDisabled() const {
 
 bool RenderFrameHostImpl::IsDOMContentLoaded() {
   return document_associated_data_->dom_content_loaded();
+}
+
+RenderFrameHost::ScriptToolsReadyState
+RenderFrameHostImpl::GetScriptToolsReadyState() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebMCPWaitForToolsUntil)) {
+    return ScriptToolsReadyState::kReady;
+  }
+  if (!IsRenderFrameLive()) {
+    return ScriptToolsReadyState::kNoRenderer;
+  }
+  if (!IsDOMContentLoaded()) {
+    return ScriptToolsReadyState::kLoading;
+  }
+  auto* user_data = ModelContextUserData::GetForCurrentDocument(this);
+  if (user_data && user_data->script_tools_waiting()) {
+    return ScriptToolsReadyState::kWaiting;
+  }
+  return ScriptToolsReadyState::kReady;
 }
 
 void RenderFrameHostImpl::UpdateToAdFrame() {

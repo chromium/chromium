@@ -764,6 +764,8 @@ class CONTENT_EXPORT WebContentsImpl
   void FrameSizeChanged(RenderFrameHostImpl* render_frame_host,
                         const gfx::Size& frame_size) override;
   void DOMContentLoaded(RenderFrameHostImpl* render_frame_host) override;
+  void ScriptToolsReadyStateChanged(
+      RenderFrameHostImpl* render_frame_host) override;
   void DocumentOnLoadCompleted(RenderFrameHostImpl* render_frame_host) override;
   void UpdateTitle(RenderFrameHostImpl* render_frame_host,
                    const std::u16string& title) override;

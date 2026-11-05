@@ -152,6 +152,10 @@ interface ModelContextHost {
 
   // Cancels a pending execution of a remote script tool.
   CancelRemoteScriptTool(blink.mojom.ToolInvocationToken invocation_id);
+
+  // Notifies whether the script tools associated with this Document are ready,
+  // i.e. not being updated by the page.
+  SetScriptToolsReady(bool ready);
 };
 
 // Interface implemented by `blink::ModelContext` for the browser to notify the

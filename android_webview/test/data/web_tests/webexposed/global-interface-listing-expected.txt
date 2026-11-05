@@ -6515,6 +6515,7 @@ interface ModelContext : EventTarget
     method getTools
     method registerTool
     method resumeTool
+    method waitForToolsUntil
     setter ontoolactivated
     setter ontoolcancel
     setter ontoolchange

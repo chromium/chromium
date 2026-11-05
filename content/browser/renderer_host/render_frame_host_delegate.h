@@ -269,6 +269,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The DOMContentLoaded handler in the frame has completed.
   virtual void DOMContentLoaded(RenderFrameHostImpl* render_frame_host) {}
 
+  // The script tool ready status for this frame has changed.
+  virtual void ScriptToolsReadyStateChanged(
+      RenderFrameHostImpl* render_frame_host) {}
+
   // The onload handler in the frame has completed. Only called for the main
   // frames.
   virtual void DocumentOnLoadCompleted(RenderFrameHostImpl* render_frame_host) {

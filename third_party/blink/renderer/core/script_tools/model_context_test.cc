@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
@@ -86,6 +88,8 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
             std::move(handle)));
   }
 
+  bool is_bound() const { return receiver_.is_bound(); }
+
   void BindModelContext(
       mojo::PendingAssociatedRemote<mojom::blink::ModelContext> model_context)
       override {
@@ -137,13 +141,23 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
   void CancelRemoteScriptTool(
       const ToolInvocationToken& invocation_id) override {}
 
+  void SetScriptToolsReady(bool ready) override {
+    script_tools_ready_updates_.push_back(ready);
+  }
+
   const Vector<String>& registered_tools() const { return registered_tools_; }
+
+  // The values received by `SetScriptToolsReady()`, in order.
+  const Vector<bool>& script_tools_ready_updates() const {
+    return script_tools_ready_updates_;
+  }
 
  private:
   mojo::AssociatedReceiver<mojom::blink::ModelContextHost> receiver_{this};
   mojo::AssociatedRemote<mojom::blink::ModelContext> model_context_;
   Vector<String> registered_tools_;
   HashMap<ScriptToolToken, String> tool_names_by_id_;
+  Vector<bool> script_tools_ready_updates_;
 };
 
 class ModelContextTestBase : public SimTest {
@@ -971,6 +985,108 @@ TEST_F(ModelContextTest, ListTools) {
   EXPECT_EQ("append", tools[0]->Name());
   EXPECT_EQ("delete", tools[1]->Name());
   EXPECT_EQ("squash", tools[2]->Name());
+}
+
+class ModelContextWaitForToolsUntilTest : public ModelContextTest {
+ private:
+  ScopedWebMCPWaitForToolsUntilForTest scoped_wait_for_tools_until_{true};
+};
+
+// `waitForToolsUntil()` only tells the browser when the document's tools stop
+// and start being ready, however many promises it was given.
+TEST_F(ModelContextWaitForToolsUntilTest, NotifiesHostOnReadyTransitions) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(<!DOCTYPE html>
+    <head>
+    <script>
+    const first = Promise.withResolvers();
+    const second = Promise.withResolvers();
+    document.modelContext.waitForToolsUntil(first.promise);
+    document.modelContext.waitForToolsUntil(second.promise);
+    </script>
+    </head>
+    <body></body>
+  )");
+  test::RunPendingTasks();
+  EXPECT_THAT(mock_model_context_host_.script_tools_ready_updates(),
+              testing::ElementsAre(false));
+
+  // Still waiting on `second`.
+  MainFrame().ExecuteScript(WebScriptSource("first.resolve()"));
+  test::RunPendingTasks();
+  EXPECT_THAT(mock_model_context_host_.script_tools_ready_updates(),
+              testing::ElementsAre(false));
+
+  // Rejection counts as settling.
+  MainFrame().ExecuteScript(
+      WebScriptSource("second.reject(new Error('nope'))"));
+  test::RunPendingTasks();
+  EXPECT_THAT(mock_model_context_host_.script_tools_ready_updates(),
+              testing::ElementsAre(false, true));
+
+  // An already-settled promise changes nothing.
+  MainFrame().ExecuteScript(WebScriptSource(
+      "document.modelContext.waitForToolsUntil(Promise.resolve());"
+      "document.modelContext.waitForToolsUntil(Promise.reject(new Error()));"));
+  test::RunPendingTasks();
+  EXPECT_THAT(mock_model_context_host_.script_tools_ready_updates(),
+              testing::ElementsAre(false, true));
+
+  // A new pending promise starts a new not-ready period.
+  MainFrame().ExecuteScript(
+      WebScriptSource("const third = Promise.withResolvers();"
+                      "document.modelContext.waitForToolsUntil(third.promise);"
+                      "third.resolve();"));
+  test::RunPendingTasks();
+  EXPECT_THAT(mock_model_context_host_.script_tools_ready_updates(),
+              testing::ElementsAre(false, true, false, true));
+}
+
+// Uses mock time, to run past how long agents wait for a page's tools.
+class ModelContextWaitForToolsUntilWarningTest : public SimTest {
+ public:
+  ModelContextWaitForToolsUntilWarningTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  // Returns how many times the page was warned that its tools stayed not ready.
+  size_t WarningCount() {
+    return std::ranges::count_if(ConsoleMessages(), [](const String& message) {
+      return message.contains("waitForToolsUntil()");
+    });
+  }
+
+ private:
+  ScopedWebMCPForTest scoped_webmcp_{true};
+  ScopedWebMCPWaitForToolsUntilForTest scoped_wait_for_tools_until_{true};
+};
+
+// The page is warned when promises passed to `waitForToolsUntil()` keep its
+// tools not ready for as long as agents wait for them, whether or not an agent
+// is waiting.
+TEST_F(ModelContextWaitForToolsUntilWarningTest, WarnsWhenToolsStayNotReady) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"(<!DOCTYPE html>
+    <script>
+    const first = Promise.withResolvers();
+    document.modelContext.waitForToolsUntil(first.promise);
+    </script>
+  )");
+
+  task_environment().FastForwardBy(base::Seconds(9));
+  MainFrame().ExecuteScript(WebScriptSource("first.resolve()"));
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(WarningCount(), 0u);
+
+  MainFrame().ExecuteScript(WebScriptSource(
+      "document.modelContext.waitForToolsUntil(new Promise(() => {}))"));
+  task_environment().FastForwardBy(base::Seconds(9));
+  EXPECT_EQ(WarningCount(), 0u);
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(WarningCount(), 1u);
 }
 
 TEST_F(ModelContextTest, SourceLocation) {

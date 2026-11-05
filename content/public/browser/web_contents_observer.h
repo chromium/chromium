@@ -494,6 +494,10 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // content scripts marked "document_end" get injected into the frame.
   virtual void DOMContentLoaded(RenderFrameHost* render_frame_host) {}
 
+  // Invoked when the script tools ready status for this frame has changed.
+  virtual void ScriptToolsReadyStateChanged(
+      RenderFrameHost* render_frame_host) {}
+
   // This method is invoked when the load is done for the document represented
   // by `render_frame_host` on the renderer side, e.g. the onload event was
   // dispatched. Note that this function is not related to

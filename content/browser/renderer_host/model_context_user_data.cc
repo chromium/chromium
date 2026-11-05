@@ -6,14 +6,18 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/script_tools/script_tool_utils.h"
 #include "url/origin.h"
 
@@ -436,6 +440,21 @@ void ModelContextUserData::CancelRemoteScriptTool(
           ModelContextPageUserData::GetOrCreateForPage(
               render_frame_host().GetPage())) {
     page_data->CancelPendingScriptToolExecution(invocation_id);
+  }
+}
+
+void ModelContextUserData::SetScriptToolsReady(bool ready) {
+  if (!IsWebMCPEnabled(render_frame_host()) ||
+      !base::FeatureList::IsEnabled(
+          blink::features::kWebMCPWaitForToolsUntil)) {
+    mojo::ReportBadMessage("WebMCPWaitForToolsUntil is not enabled.");
+    return;
+  }
+  auto& rfh = static_cast<RenderFrameHostImpl&>(render_frame_host());
+  const auto previous_state = rfh.GetScriptToolsReadyState();
+  script_tools_waiting_ = !ready;
+  if (previous_state != rfh.GetScriptToolsReadyState()) {
+    rfh.delegate()->ScriptToolsReadyStateChanged(&rfh);
   }
 }
 

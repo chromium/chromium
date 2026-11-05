@@ -9130,6 +9130,12 @@ void WebContentsImpl::DOMContentLoaded(RenderFrameHostImpl* render_frame_host) {
                              render_frame_host);
 }
 
+void WebContentsImpl::ScriptToolsReadyStateChanged(
+    RenderFrameHostImpl* render_frame_host) {
+  observers_.NotifyObservers(&WebContentsObserver::ScriptToolsReadyStateChanged,
+                             render_frame_host);
+}
+
 void WebContentsImpl::OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
                                       const GURL& url) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnDidFinishLoad",

@@ -144,10 +144,13 @@ class CONTENT_EXPORT ModelContextUserData
       ExecuteRemoteScriptToolCallback callback) override;
   void CancelRemoteScriptTool(
       const blink::ToolInvocationToken& invocation_id) override;
+  void SetScriptToolsReady(bool ready) override;
 
   std::vector<blink::mojom::ScriptToolPtr>& script_tools() {
     return script_tools_;
   }
+
+  bool script_tools_waiting() const { return script_tools_waiting_; }
 
  private:
   friend class DocumentUserData<ModelContextUserData>;
@@ -164,6 +167,10 @@ class CONTENT_EXPORT ModelContextUserData
   mojo::AssociatedRemote<blink::mojom::ModelContext> model_context_remote_;
 
   std::vector<blink::mojom::ScriptToolPtr> script_tools_;
+
+  // Whether the document is waiting for script tools to be ready
+  // via unsettled Promises passed to modelContext.waitForToolsUntil().
+  bool script_tools_waiting_ = false;
 
   base::WeakPtrFactory<ModelContextUserData> weak_factory_{this};
 };

@@ -55,6 +55,7 @@ dictionary ModelContextGetToolOptions {
       DOMString token,
       ToolExecuteCallback callback
   );
+  [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebMCPWaitForToolsUntil] undefined waitForToolsUntil(Promise<any> promise);
   attribute EventHandler ontoolchange;
   attribute EventHandler ontoolactivated;
   attribute EventHandler ontoolcancel;

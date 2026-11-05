@@ -7691,7 +7691,8 @@
       implied_by: [
         "WebMCPContinuations",
         "WebMCPDeclarativeFileInput",
-        "WebMCPFormAssociatedCustomElements"
+        "WebMCPFormAssociatedCustomElements",
+        "WebMCPWaitForToolsUntil"
       ],
       status: "experimental",
     },
@@ -7708,6 +7709,12 @@
       // Support for form-associated custom elements in declarative
       // WebMCP tools.
       name: "WebMCPFormAssociatedCustomElements",
+      status: "experimental",
+    },
+    {
+      // `document.modelContext.waitForToolsUntil()`, which lets a document
+      // signal that it is still registering tools.
+      name: "WebMCPWaitForToolsUntil",
       status: "experimental",
     },
     {

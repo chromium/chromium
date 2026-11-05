@@ -22,15 +22,18 @@
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 
 namespace blink {
 class AbortController;
 class Document;
 class Element;
+class ExceptionState;
 class ExecuteToolOptions;
 class SourceLocation;
 class ModelContextGetToolOptions;
@@ -183,6 +186,11 @@ class CORE_EXPORT ModelContext : public EventTarget,
       const ToolInvocationToken& invocation_id,
       bool& did_request_token);
 
+  // Marks this document's tools as not ready until `promise` settles.
+  void waitForToolsUntil(ScriptState* script_state,
+                         ScriptPromise<IDLAny> promise,
+                         ExceptionState& exception_state);
+
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
       const String& name) const;
 
@@ -265,6 +273,8 @@ class CORE_EXPORT ModelContext : public EventTarget,
  private:
   class ToolFunctionFinishedCallback;
   class ToolUnregisterAbortAlgorithm;
+  class PendingWaitForTools;
+  class WaitForToolsSettled;
 
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               ToolInvocationToken invocation_id,
@@ -289,6 +299,10 @@ class CORE_EXPORT ModelContext : public EventTarget,
       base::expected<String, std::pair<ScriptValue, ScriptState*>> result);
 
   void MaybeRecordToolCount();
+
+  // Called when a promise passed to `waitForToolsUntil()` settles.
+  void OnWaitForToolsPromiseSettled(PendingWaitForTools* pending);
+  void OnWaitForToolsWarningTimerFired(TimerBase*);
 
   HeapHashMap<ScriptToolToken, Member<ToolData>> tool_map_;
 
@@ -330,6 +344,13 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // true when there is a pending or completed task to record the number
   // of registered tools.
   bool will_record_tool_count_ = false;
+
+  // This document's tools are ready while this is empty.
+  HeapHashSet<Member<PendingWaitForTools>> unsettled_wait_for_tools_promises_;
+
+  // Fires a warning if a promise is keeping tools in not ready state for too
+  // long.
+  HeapTaskRunnerTimer<ModelContext> wait_for_tools_warning_timer_;
 };
 
 }  // namespace blink
