@@ -7,27 +7,24 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
+    <script>
       // Reasonably low sample rate for the optimum test speed.
-      let sampleRate = 8192;
-
-      let audit = Audit.createTaskRunner();
+      const sampleRate = 8192;
 
       // Task: create a short linear ramp and enable looping.  The test will
       // verify that the ramp was looped the appropriate number of times.
-      audit.define('loop-count', (task, should) => {
+      promise_test(() => {
         // How many loops of the source we want to render. Any whole number
         // greater than 1 will work.
-        let loopCount = 4;
-        let sourceFrames = 8;
-        let renderFrames = sourceFrames * loopCount;
+        const loopCount = 4;
+        const sourceFrames = 8;
+        const renderFrames = sourceFrames * loopCount;
 
-        let context = new OfflineAudioContext(1, renderFrames, sampleRate);
-        let source = context.createBufferSource();
-        let linearRampBuffer = createLinearRampBuffer(context, sourceFrames);
+        const context = new OfflineAudioContext(1, renderFrames, sampleRate);
+        const source = context.createBufferSource();
+        const linearRampBuffer = createLinearRampBuffer(context, sourceFrames);
 
         source.buffer = linearRampBuffer;
         source.connect(context.destination);
@@ -38,27 +35,22 @@
         source.loop = true;
         source.start(0, 0);
 
-        context.startRendering()
-            .then(function(renderedBuffer) {
-              let badIndex = -1;
-              let success = true;
+        return context.startRendering().then(renderedBuffer => {
+          const actual = renderedBuffer.getChannelData(0);
+          const linearRamp = linearRampBuffer.getChannelData(0);
 
-              let actual = renderedBuffer.getChannelData(0);
-              let linearRamp = linearRampBuffer.getChannelData(0);
+          // Manually create a |loopCount| copies of linear ramps.
+          const expected = new Float32Array(linearRamp.length * loopCount);
+          for (let i = 0; i < loopCount; i++) {
+            expected.set(linearRamp, linearRamp.length * i);
+          }
 
-              // Manually create a |loopCount| copies of linear ramps.
-              let expected = new Float32Array(linearRamp.length * loopCount);
-              for (let i = 0; i < loopCount; i++)
-                expected.set(linearRamp, linearRamp.length * i);
-
-              // The actual output should match the created loop.
-              should(actual, 'The output of actual and expected loops')
-                  .beEqualToArray(expected);
-            })
-            .then(() => task.done());
-      });
-
-      audit.run();
+          // The actual output should match the created loop.
+          assert_array_equals(
+              actual, expected,
+              'The output of actual and expected loops should match');
+        });
+      }, 'loop-count');
     </script>
   </body>
 </html>
