@@ -135,6 +135,7 @@ public class WebViewResizingHelper {
     private @Nullable View mResizingPlaceholder;
     private @Nullable ResizingPlaceholderCoordinator mPlaceholderCoordinator;
     private boolean mPlaceholderInitialized;
+    private @Px int mLastPlaceholderHeight = -1;
     private @Px int mLastPlaceholderBottomInsetPx = -1;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -207,6 +208,7 @@ public class WebViewResizingHelper {
      * @param visibleHeight The visible height of the sheet in pixels.
      */
     public void updatePlaceholderHeight(@Px int visibleHeight) {
+        mLastPlaceholderHeight = Math.max(0, visibleHeight);
         if (mPlaceholderCoordinator != null) {
             mPlaceholderCoordinator.updateVisibleHeight(visibleHeight);
         }
@@ -223,8 +225,26 @@ public class WebViewResizingHelper {
         mPlaceholderCoordinator =
                 mComponentProvider.createResizingPlaceholderCoordinator(
                         mContext, mBackgroundColor, mPlaceholderElemColor);
-        mResizingPlaceholder =
-                mPlaceholderCoordinator != null ? mPlaceholderCoordinator.getView() : null;
+        if (mPlaceholderCoordinator != null) {
+            mResizingPlaceholder = mPlaceholderCoordinator.getView();
+            if (mResizingPlaceholder != null) {
+                mResizingPlaceholder.setVisibility(View.INVISIBLE);
+                mResizingPlaceholder.setAlpha(1f);
+                mResizingContainer.addView(mResizingPlaceholder, /* index= */ 0);
+            }
+            if (isEdgeToEdgeEnabled() && !mIsSidePanel) {
+                @Px
+                int bottomInsetPx =
+                        mLastPlaceholderBottomInsetPx >= 0
+                                ? mLastPlaceholderBottomInsetPx
+                                : getBottomSafeAreaInsetPx();
+                mLastPlaceholderBottomInsetPx = bottomInsetPx;
+                mPlaceholderCoordinator.updateBottomInset(bottomInsetPx);
+            }
+            if (mLastPlaceholderHeight >= 0) {
+                mPlaceholderCoordinator.updateVisibleHeight(mLastPlaceholderHeight);
+            }
+        }
     }
 
     /** Destroys the helper and releases the WebContents. */
@@ -232,6 +252,7 @@ public class WebViewResizingHelper {
         if (mPlaceholderCoordinator != null) {
             mPlaceholderCoordinator.destroy();
         }
+        mLastPlaceholderHeight = -1;
         mLastPlaceholderBottomInsetPx = -1;
         mLastSafeAreaInsets.set(0, 0, 0, -1);
         resetInternal(/* reattachPlaceholder= */ false);
@@ -249,7 +270,6 @@ public class WebViewResizingHelper {
 
     /** Resets the helper to its initial state without resetting the WebContents. */
     public void reset() {
-        ensurePlaceholderCoordinator();
         resetInternal(/* reattachPlaceholder= */ true);
         updateSafeAreaInsets(/* ignoreCache= */ false);
     }
@@ -268,7 +288,7 @@ public class WebViewResizingHelper {
             mResizingPlaceholder.setVisibility(View.INVISIBLE);
             mResizingPlaceholder.setAlpha(1f);
             if (reattachPlaceholder) {
-                mResizingContainer.addView(mResizingPlaceholder);
+                mResizingContainer.addView(mResizingPlaceholder, /* index= */ 0);
             }
         }
         mThinWebView = null;
@@ -384,6 +404,8 @@ public class WebViewResizingHelper {
 
     private void enableResizingMode() {
         if (mThinWebView == null) return;
+
+        ensurePlaceholderCoordinator();
 
         View webView = mThinWebView.getView();
 

@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -167,8 +169,12 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testDestroy() {
-        mHelper.reset();
-        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
+        ResizingPlaceholderCoordinator placeholderCoordinator = mHelper.getPlaceholderCoordinator();
+        assertNotNull(placeholderCoordinator);
+        View placeholder = placeholderCoordinator.getView();
         placeholder.setVisibility(View.VISIBLE);
         placeholder.setAlpha(0.4f);
 
@@ -186,8 +192,8 @@ public class WebViewResizingHelperUnitTest {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        assertEquals(2, container.getChildCount());
-        assertEquals(mView, container.getChildAt(1));
+        assertEquals(1, container.getChildCount());
+        assertEquals(mView, container.getChildAt(0));
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
         assertEquals(Gravity.TOP, layoutParams.gravity);
@@ -196,6 +202,8 @@ public class WebViewResizingHelperUnitTest {
     @Test
     public void testReset() {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
         View placeholder = mHelper.getPlaceholderCoordinator().getView();
         placeholder.setVisibility(View.VISIBLE);
         placeholder.setAlpha(0.4f);
@@ -208,13 +216,46 @@ public class WebViewResizingHelperUnitTest {
     }
 
     @Test
+    public void testLazyPlaceholderInflation_InflatesOnResizeAtZIndexZero() {
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        assertEquals(0, container.getChildCount());
+        verify(mMockComponentProvider, never())
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+
+        // Updating placeholder height before resize caches the height without inflating.
+        mHelper.updatePlaceholderHeight(350);
+        verify(mMockComponentProvider, never())
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        assertEquals(0, container.getChildCount());
+
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        assertEquals(1, container.getChildCount());
+        assertSame(mView, container.getChildAt(0));
+        verify(mMockComponentProvider, never())
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
+        verify(mMockComponentProvider)
+                .createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
+        assertEquals(2, container.getChildCount());
+        assertSame(mHelper.getPlaceholderCoordinator().getView(), container.getChildAt(0));
+        assertSame(mView, container.getChildAt(1));
+
+        lock.unlock();
+    }
+
+    @Test
     public void testRequestResize() {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         mView.layout(0, 0, 100, 200);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        View placeholder = container.getChildAt(0);
 
         ResizeLock lock = mHelper.requestResize();
+        assertNotNull(mHelper.getPlaceholderCoordinator());
+        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        assertSame(placeholder, container.getChildAt(0));
+
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
 
         assertEquals(1000, layoutParams.height);
@@ -230,12 +271,14 @@ public class WebViewResizingHelperUnitTest {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         mView.layout(0, 0, 100, 200);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        View placeholder = container.getChildAt(0);
 
         // Override runOnNextFrame behavior to not automatically run.
         doAnswer(invocation -> null).when(mMockThinWebView).runOnNextFrame(any());
 
         ResizeLock lock = mHelper.requestResize();
+        assertNotNull(mHelper.getPlaceholderCoordinator());
+        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        assertSame(placeholder, container.getChildAt(0));
         assertEquals(View.VISIBLE, placeholder.getVisibility());
 
         ArgumentCaptor<Runnable> frameCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
@@ -261,8 +304,8 @@ public class WebViewResizingHelperUnitTest {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        assertEquals(2, container.getChildCount());
-        assertEquals(mView, container.getChildAt(1));
+        assertEquals(1, container.getChildCount());
+        assertEquals(mView, container.getChildAt(0));
     }
 
     @Test
@@ -351,9 +394,8 @@ public class WebViewResizingHelperUnitTest {
         mHelper.setThinWebView(mMockThinWebView, null);
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        // Place holder + ThinWebView
-        assertEquals(2, container.getChildCount());
-        assertEquals(mView, container.getChildAt(1));
+        assertEquals(1, container.getChildCount());
+        assertEquals(mView, container.getChildAt(0));
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
         assertEquals(1000, layoutParams.height);
@@ -364,7 +406,7 @@ public class WebViewResizingHelperUnitTest {
         mHelper.setThinWebView(null, mMockWebContents);
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        assertEquals(1, container.getChildCount());
+        assertEquals(0, container.getChildCount());
 
         when(mMockWebContents.getWidth()).thenReturn(50);
         when(mMockWebContents.getHeight()).thenReturn(50);
@@ -385,8 +427,7 @@ public class WebViewResizingHelperUnitTest {
         mHelper.reset();
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        assertEquals(1, container.getChildCount());
-        assertEquals(View.INVISIBLE, container.getChildAt(0).getVisibility());
+        assertEquals(0, container.getChildCount());
     }
 
     @Test
@@ -512,8 +553,77 @@ public class WebViewResizingHelperUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testUpdatePlaceholderHeight_ClampsNegativeAndAppliesInsetsBeforeHeight() {
+        CoBrowseComponentProvider provider = mock(CoBrowseComponentProvider.class);
+        ResizingPlaceholderCoordinator customCoordinator =
+                mock(ResizingPlaceholderCoordinator.class);
+        when(provider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
+                .thenReturn(customCoordinator);
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+
+        WebViewResizingHelper helper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        /* isSidePanel= */ false,
+                        provider);
+
+        // Positive height cached first.
+        helper.updatePlaceholderHeight(250);
+        // Overwritten by negative height which clamps to 0.
+        helper.updatePlaceholderHeight(-50);
+
+        helper.setThinWebView(mMockThinWebView, mMockWebContents);
+        verify(provider, never()).createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+
+        ResizeLock lock = helper.requestResize();
+        assertNotNull(lock);
+        verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
+
+        // Verify bottom inset is updated before visible height so skeleton layout has updated
+        // padding.
+        InOrder inOrder = inOrder(customCoordinator);
+        inOrder.verify(customCoordinator).updateBottomInset(48);
+        inOrder.verify(customCoordinator).updateVisibleHeight(0);
+
+        lock.unlock();
+        helper.destroy();
+    }
+
+    @Test
+    public void testDestroy_BeforeResizeDoesNotInflatePlaceholder() {
+        CoBrowseComponentProvider provider = mock(CoBrowseComponentProvider.class);
+        WebViewResizingHelper helper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        /* isSidePanel= */ false,
+                        provider);
+
+        helper.setThinWebView(mMockThinWebView, mMockWebContents);
+        helper.reset();
+        helper.destroy();
+
+        verify(provider, never()).createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        assertNull(helper.getPlaceholderCoordinator());
+    }
+
+    @Test
     public void testUpdatePlaceholderHeight_LimitsAndAlphaTransitions() {
-        mHelper.reset();
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
         FrameLayout resizingContainer = (FrameLayout) mHelper.getResizingContainer();
         View placeholder = resizingContainer.getChildAt(0);
         View content = placeholder.findViewById(R.id.tab_bottom_sheet_resizing_content);
@@ -562,6 +672,8 @@ public class WebViewResizingHelperUnitTest {
         // fadeOffset (40dp) <= minHeight (72dp), so maxHeight (40dp) <= minHeight (72dp)
         mHelper.updatePlaceholderHeight(minHeight + 20);
         assertEquals(1.0f, content.getAlpha(), 0.01f);
+
+        lock.unlock();
     }
 
     @Test
@@ -656,7 +768,6 @@ public class WebViewResizingHelperUnitTest {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         mView.layout(0, 0, 100, 200);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        View placeholder = container.getChildAt(0);
 
         doAnswer(invocation -> null).when(mMockThinWebView).runOnNextFrame(any());
 
@@ -664,6 +775,9 @@ public class WebViewResizingHelperUnitTest {
         when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 200));
 
         ResizeLock lock1 = mHelper.requestResize();
+        assertNotNull(mHelper.getPlaceholderCoordinator());
+        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        assertSame(placeholder, container.getChildAt(0));
         assertEquals(View.VISIBLE, placeholder.getVisibility());
 
         // Container size changes while resizing mode is active.
@@ -815,15 +929,22 @@ public class WebViewResizingHelperUnitTest {
         verify(provider, never()).createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
         assertNull(helper.getPlaceholderCoordinator());
 
-        helper.reset();
+        helper.setThinWebView(mMockThinWebView, mMockWebContents);
+        assertNull(helper.getPlaceholderCoordinator());
+        verify(provider, never()).createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+
+        ResizeLock lock = helper.requestResize();
+        assertNotNull(lock);
         verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
         assertSame(customCoordinator, helper.getPlaceholderCoordinator());
+        verify(customCoordinator, never()).updateVisibleHeight(anyInt());
 
         helper.updatePlaceholderHeight(250);
         verify(customCoordinator).updateVisibleHeight(250);
 
         customPlaceholderView.setVisibility(View.VISIBLE);
         customPlaceholderView.setAlpha(0.4f);
+        lock.unlock();
         helper.destroy();
         verify(customCoordinator).destroy();
         assertEquals(View.INVISIBLE, customPlaceholderView.getVisibility());
@@ -832,7 +953,7 @@ public class WebViewResizingHelperUnitTest {
     }
 
     @Test
-    public void testUpdatePlaceholderHeight_BeforeReset_NoOpUntilReset() {
+    public void testUpdatePlaceholderHeight_BeforeResize_CachesAndAppliesOnResize() {
         CoBrowseComponentProvider provider = mock(CoBrowseComponentProvider.class);
         ResizingPlaceholderCoordinator customCoordinator =
                 mock(ResizingPlaceholderCoordinator.class);
@@ -857,10 +978,14 @@ public class WebViewResizingHelperUnitTest {
         assertNull(helper.getPlaceholderCoordinator());
         verify(customCoordinator, never()).updateVisibleHeight(anyInt());
 
-        helper.reset();
+        helper.setThinWebView(mMockThinWebView, mMockWebContents);
+        verify(provider, never()).createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        assertNull(helper.getPlaceholderCoordinator());
 
+        ResizeLock lock = helper.requestResize();
+        assertNotNull(lock);
         verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
-        verify(customCoordinator, never()).updateVisibleHeight(anyInt());
+        verify(customCoordinator).updateVisibleHeight(180);
 
         helper.updatePlaceholderHeight(320);
         verify(customCoordinator).updateVisibleHeight(320);
@@ -1113,7 +1238,9 @@ public class WebViewResizingHelperUnitTest {
                 .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
         when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
 
-        mHelper.reset();
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
         verify(coordinator).updateBottomInset(48);
 
         ArgumentCaptor<WindowInsetObserver> insetObserverCaptor =
@@ -1140,6 +1267,7 @@ public class WebViewResizingHelperUnitTest {
         sheetObserverCaptor.getValue().onContainerBottomMarginChanged(100);
         verify(coordinator).updateBottomInset(0);
 
+        lock.unlock();
         mHelper.destroy();
 
         // Side panel helper never propagates bottom inset.
@@ -1158,8 +1286,11 @@ public class WebViewResizingHelperUnitTest {
                         Color.LTGRAY,
                         /* isSidePanel= */ true,
                         mMockComponentProvider);
-        sidePanelHelper.reset();
+        sidePanelHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        ResizeLock sideLock = sidePanelHelper.requestResize();
+        assertNotNull(sideLock);
         verify(sidePanelCoordinator, never()).updateBottomInset(anyInt());
+        sideLock.unlock();
         sidePanelHelper.destroy();
     }
 }

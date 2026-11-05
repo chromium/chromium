@@ -448,6 +448,40 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
+    public void testDestroy_withoutResize_doesNotInflatePlaceholder() {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        when(mMockComponentProvider.createResizingPlaceholderCoordinator(
+                        any(), eq(Color.WHITE), eq(Color.LTGRAY)))
+                .thenReturn(mMockPlaceholderCoordinator);
+        View containerView = new View(context);
+        TabBottomSheetWebUi webUi =
+                new TabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mBottomSheetController,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        null,
+                        null,
+                        mMockComponentProvider);
+
+        webUi.setWebContents(mWebContents, false);
+        webUi.destroy();
+
+        verify(mMockComponentProvider, never())
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        verify(mMockPlaceholderCoordinator, never()).destroy();
+    }
+
+    @Test
     public void testDestroy_destroysPlaceholderCoordinator() {
         Context context =
                 new ContextThemeWrapper(
@@ -476,6 +510,14 @@ public class TabBottomSheetWebUiUnitTest {
         verify(mMockComponentProvider, never())
                 .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
         webUi.setWebContents(mWebContents, false);
+        verify(mMockComponentProvider, never())
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+
+        WebViewResizingHelper.ResizeLock lock = webUi.getWebViewResizingHelper().requestResize();
+        assertNotNull(lock);
+        verify(mMockComponentProvider)
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+
         webUi.destroy();
         verify(mMockPlaceholderCoordinator).destroy();
     }
