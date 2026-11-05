@@ -19,14 +19,14 @@ import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createFuseboxAction} from '../test_support.js';
+import {assertCenterAligned, createFuseboxAction, getCenter, getTextCenter, LAYOUT_TOLERANCE_PX} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, createComposeboxElement, getSubmitContainer, getSubmitIcon, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, createComposeboxElement, createComposeboxFile, getSubmitContainer, getSubmitIcon, setupComposeboxTest} from './test_support.js';
 
 suite('NewTabPageComposeboxTest', () => {
   const testProxy = setupComposeboxTest();
@@ -1553,6 +1553,30 @@ suite('NewTabPageComposeboxTest', () => {
       await microtasksFinished();
     }
 
+    function queryDivider(): Element|null {
+      return testProxy.element.shadowRoot.querySelector('.carousel-divider');
+    }
+
+    async function showSuggestions() {
+      testProxy.element.queryAutocomplete(/*clearMatches=*/ false);
+      testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResultForTesting({
+            queryId: testProxy.element.activeQueryId,
+            input: testProxy.element.lastQueriedInput,
+            matches: [
+              createSearchMatchForTesting(),
+              createSearchMatchForTesting(),
+            ],
+          }));
+      await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+    }
+
+    function getDropdownTop(): number {
+      return testProxy.element.$.matches.getBoundingClientRect().top -
+          testProxy.element.$.composebox.getBoundingClientRect().top;
+    }
+
     [false, true].forEach(enabled => {
       [false, true].forEach(withX => {
         test(
@@ -1653,6 +1677,106 @@ suite('NewTabPageComposeboxTest', () => {
           new FocusEvent('focusin', {bubbles: true, composed: true}));
       await microtasksFinished();
       assertEquals(0, testProxy.element.selectedMatchIndex);
+    });
+
+    test('typed and zero-prefix suggestions start at the same y', async () => {
+      await createWithAimButton(true, false);
+
+      await showSuggestions();
+      assertTrue(testProxy.element.showDropdown);
+      assertFalse(testProxy.element.hasAttribute('has-context-row_'));
+      assertFalse(!!queryDivider());
+      const zpsDropdownTop = getDropdownTop();
+
+      await typeInput('test');
+      await showSuggestions();
+      assertTrue(testProxy.element.showDropdown);
+      assertTrue(testProxy.element.submitEnabled);
+      assertFalse(testProxy.element.hasAttribute('has-context-row_'));
+      assertFalse(!!queryDivider());
+      assertNear(zpsDropdownTop, getDropdownTop(), LAYOUT_TOLERANCE_PX);
+    });
+
+    test('attached file adds the context row and divider', async () => {
+      await createWithAimButton(true, false);
+      testProxy.element.addFileContextForTesting(createComposeboxFile(1));
+      await microtasksFinished();
+      assertTrue(testProxy.element.hasAttribute('has-context-row_'));
+      assertFalse(!!queryDivider());
+
+      await showSuggestions();
+      assertTrue(testProxy.element.showDropdown);
+      assertTrue(!!queryDivider());
+    });
+
+    test('tool mode or tab context adds the context row', async () => {
+      await createWithAimButton(
+          true, false, {tabFaviconChipsToCoinsEnabled: true});
+      assertFalse(testProxy.element.hasAttribute('has-context-row_'));
+
+      testProxy.element.inToolMode = true;
+      await microtasksFinished();
+      assertTrue(testProxy.element.hasAttribute('has-context-row_'));
+
+      testProxy.element.inToolMode = false;
+      await microtasksFinished();
+      assertFalse(testProxy.element.hasAttribute('has-context-row_'));
+
+      testProxy.element.addFileContextForTesting(createComposeboxFile(1, {
+        type: 'tab',
+        inputType: InputType.kBrowserTab,
+        tabId: 1,
+        url: 'https://example.com',
+      }));
+      await microtasksFinished();
+      assertTrue(testProxy.element.hasTabs());
+      assertTrue(testProxy.element.hasAttribute('has-context-row_'));
+    });
+
+    test(
+        'single line without suggestions keeps the searchbox height',
+        async () => {
+          await createWithAimButton(true, false, {showVoiceSearch: true});
+          testProxy.element.style.setProperty('--cr-searchbox-height', '56px');
+          await typeInput('test');
+          testProxy.element.queryAutocomplete(/*clearMatches=*/ false);
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: testProxy.element.activeQueryId,
+                matches: [createSearchMatchForTesting(
+                    {allowedToBeDefaultMatch: true, fillIntoEdit: 'test'})],
+              }));
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertFalse(testProxy.element.hasAttribute('should-remain-folded_'));
+          assertFalse(testProxy.element.showDropdown);
+          assertFalse(testProxy.element.hasAttribute('has-context-row_'));
+          const composebox = testProxy.element.$.composebox;
+          assertNear(56, composebox.getBoundingClientRect().height, 1);
+
+          const input =
+              testProxy.element.getInputElement()
+                  .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+          const voiceButton =
+              testProxy.element.shadowRoot.querySelector('#voiceSearchButton');
+          assertTrue(!!voiceButton);
+          assertCenterAligned(
+              testProxy.element, {
+                composebox: getCenter(composebox),
+                text: getTextCenter(input),
+                aimButton: getAimButton(),
+                voiceButton,
+              },
+              'y', 0.5);
+        });
+
+    test('divider stays above suggestions without the AIM button', async () => {
+      await createWithAimButton(false, false);
+      await typeInput('test');
+      await showSuggestions();
+      assertTrue(testProxy.element.showDropdown);
+      assertTrue(!!queryDivider());
     });
   });
 });

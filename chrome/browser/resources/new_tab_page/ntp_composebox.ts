@@ -81,6 +81,10 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      hasContextRow_: {
+        reflect: true,
+        type: Boolean,
+      },
       persistentAimButtonEnabled_: {
         type: Boolean,
         reflect: true,
@@ -101,6 +105,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
       getLoadTimeBoolean('composeboxRealboxOutsideClick', false);
   protected accessor expanding_: boolean = true;
   protected accessor shouldRemainFolded_: boolean = true;
+  protected accessor hasContextRow_: boolean = false;
   protected accessor persistentAimButtonEnabled_: boolean =
       getLoadTimeBoolean('composeboxPersistentAimButton', false);
   protected accessor showAimButtonExitIcon_: boolean =
@@ -171,6 +176,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
       this.showDropdown = this.computeShowDropdown();
     }
     this.shouldRemainFolded_ = this.computeShouldRemainFolded();
+    this.hasContextRow_ = this.computeHasContextRow();
   }
 
   private computeShouldRemainFolded(): boolean {
@@ -199,7 +205,14 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     return true;
   }
 
+  private computeHasContextRow(): boolean {
+    return this.showFileCarousel || this.inToolMode || this.hasTabs();
+  }
+
   override shouldShowDivider(): boolean {
+    if (this.persistentAimButtonEnabled_ && !this.hasContextRow_) {
+      return false;
+    }
     if (this.hasTabs() && !this.hasNonTabFiles()) {
       return this.showDropdown;
     }
