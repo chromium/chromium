@@ -158,8 +158,7 @@ constexpr CGFloat kTabletCenterOffset = 40;
         constraintEqualToAnchor:self.view.leadingAnchor],
     [_animationView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
-    [_animationView.topAnchor
-        constraintEqualToAnchor:self.contentView.topAnchor],
+    [_animationView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     _animationViewCenterYConstraint,
   ]];
 }
