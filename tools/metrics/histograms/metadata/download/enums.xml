@@ -37,11 +37,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DownloadWarningBypassDialog.java:DownloadWarningBypassDialogEvent) -->
 
-<enum name="BooleanOpenFromDuplicates">
-  <int value="0" label="Created New file"/>
-  <int value="1" label="Opened existing duplicate"/>
-</enum>
-
 <enum name="BooleanOpenInline">
   <int value="0" label="Open in external app"/>
   <int value="1" label="Open inline"/>

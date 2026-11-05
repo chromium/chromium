@@ -7,8 +7,6 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/download/database/download_db_entry.h"
@@ -40,10 +38,6 @@
 namespace download {
 
 namespace {
-#if BUILDFLAG(IS_ANDROID)
-// PDF MIME type.
-constexpr char kPdfMimeType[] = "application/pdf";
-#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
     DownloadItemImplDelegate* delegate,
@@ -609,13 +603,6 @@ void InProgressDownloadManager::StartDownloadWithItem(
 
   if (download_start_observer_)
     download_start_observer_->OnDownloadStarted(download);
-#if BUILDFLAG(IS_ANDROID)
-  if (info->transient && info->allow_auto_open_after_completion &&
-      base::EqualsCaseInsensitiveASCII(info->mime_type, kPdfMimeType)) {
-    base::UmaHistogramBoolean("Download.Android.OpenPdfFromDuplicates",
-                              !duplicate_download_file_path.empty());
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void InProgressDownloadManager::OnDBInitialized(
