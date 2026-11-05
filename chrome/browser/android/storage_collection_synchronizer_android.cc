@@ -27,16 +27,18 @@ StorageCollectionSynchronizerAndroid::~StorageCollectionSynchronizerAndroid() =
     default;
 
 void StorageCollectionSynchronizerAndroid::SaveStructureSnapshot(
+    JNIEnv* env,
     bool clear_unused_nodes,
     base::OnceClosure callback) {
   synchronizer_.SaveStructureSnapshot(clear_unused_nodes, std::move(callback));
 }
 
-void StorageCollectionSynchronizerAndroid::FlushPendingStructureSnapshot() {
+void StorageCollectionSynchronizerAndroid::FlushPendingStructureSnapshot(
+    JNIEnv* env) {
   synchronizer_.FlushPendingStructureSnapshot();
 }
 
-void StorageCollectionSynchronizerAndroid::CancelRestore() {
+void StorageCollectionSynchronizerAndroid::CancelRestore(JNIEnv* env) {
   synchronizer_.CancelRestore();
 }
 
@@ -54,11 +56,18 @@ void StorageCollectionSynchronizerAndroid::ConsumeCollectionObserverFactory(
       CollectionStorageObserverFactoryAndroid::Build(env, j_object));
 }
 
-static jni_zero::JniUniquePtr<StorageCollectionSynchronizerAndroid>
-JNI_StorageCollectionSynchronizer_Init(Profile* profile,
-                                       tabs::TabStripCollection* collection) {
-  return jni_zero::MakeUnique<StorageCollectionSynchronizerAndroid>(profile,
-                                                                    collection);
+static int64_t JNI_StorageCollectionSynchronizer_Init(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& j_object,
+    Profile* profile,
+    tabs::TabStripCollection* collection) {
+  StorageCollectionSynchronizerAndroid* tracker =
+      new StorageCollectionSynchronizerAndroid(profile, collection);
+  return reinterpret_cast<intptr_t>(tracker);
+}
+
+void StorageCollectionSynchronizerAndroid::Destroy(JNIEnv* env) {
+  delete this;
 }
 
 }  // namespace tabs

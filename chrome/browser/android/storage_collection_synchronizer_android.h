@@ -27,10 +27,11 @@ class StorageCollectionSynchronizerAndroid {
   StorageCollectionSynchronizerAndroid& operator=(
       const StorageCollectionSynchronizerAndroid&) = delete;
 
-  void SaveStructureSnapshot(bool clear_unused_nodes,
+  void SaveStructureSnapshot(JNIEnv* env,
+                             bool clear_unused_nodes,
                              base::OnceClosure callback);
-  void FlushPendingStructureSnapshot();
-  void CancelRestore();
+  void FlushPendingStructureSnapshot(JNIEnv* env);
+  void CancelRestore(JNIEnv* env);
 
   void ConsumeRestoreOrchestratorFactory(
       JNIEnv* env,
@@ -38,6 +39,9 @@ class StorageCollectionSynchronizerAndroid {
   void ConsumeCollectionObserverFactory(
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& j_object);
+
+  // Should only be destroyed through Java object.
+  void Destroy(JNIEnv* env);
 
  private:
   StorageCollectionSynchronizer synchronizer_;

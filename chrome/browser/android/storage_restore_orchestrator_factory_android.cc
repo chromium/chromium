@@ -21,6 +21,7 @@
 namespace tabs {
 
 static int64_t JNI_StorageRestoreOrchestratorFactory_Build(
+    JNIEnv* env,
     Profile* profile,
     tabs::TabStripCollection* collection,
     StorageLoadedData* loaded_data) {
