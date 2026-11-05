@@ -149,17 +149,12 @@ suite('GlicSelectionOverlay', () => {
     assertLE(chip0Rect.bottom, pillRect.top);
   });
 
-  test('SuggestionChipWidthAndTwoLineEllipsis', async () => {
+  test('SuggestionChipWidthAndSingleLineEllipsis', async () => {
     overlay.suggestedActions = [
       createSuggestedAction('1', 'Short'),
       createSuggestedAction(
           '2',
-          'A longer suggestion title that wraps onto a second line in the chip'),
-      createSuggestedAction(
-          '3',
-          'A very long suggestion title that definitely exceeds two lines ' +
-              'and therefore is ellipsised at the end of the second line ' +
-              'instead of growing to three or more lines in the floating prompt'),
+          'A longer suggestion title that is truncated with an ellipsis on a single line'),
     ];
     await overlay.updateComplete;
 
@@ -167,28 +162,23 @@ suite('GlicSelectionOverlay', () => {
         overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill')!;
     const chips = Array.from(
         overlay.shadowRoot.querySelectorAll<HTMLElement>('.action-chip'));
-    assertEquals(3, chips.length);
+    assertEquals(2, chips.length);
 
     const pillRect = pill.getBoundingClientRect();
     const chip0Rect = chips[0]!.getBoundingClientRect();
     const chip1Rect = chips[1]!.getBoundingClientRect();
-    const chip2Rect = chips[2]!.getBoundingClientRect();
 
     // No chip can exceed the width of the input box.
     assertLE(chip0Rect.width, pillRect.width);
-    assertLE(chip1Rect.width, pillRect.width);
-    assertLE(chip2Rect.width, pillRect.width);
     assertEquals(pillRect.width, chip1Rect.width);
-    assertEquals(pillRect.width, chip2Rect.width);
 
-    // Single-line chip is 32px tall; two-line chip is 52px tall; 3+ line text
-    // is clamped and ellipsised at the end of the second line (also 52px tall).
+    // Both chips remain a single line (32px tall), with long text ellipsised.
     assertEquals(32, Math.round(chip0Rect.height));
-    assertEquals(52, Math.round(chip1Rect.height));
-    assertEquals(52, Math.round(chip2Rect.height));
+    assertEquals(32, Math.round(chip1Rect.height));
 
-    const label2 = chips[2]!.querySelector<HTMLElement>('.chip-label')!;
-    assertEquals('2', getComputedStyle(label2).webkitLineClamp);
+    const label1 = chips[1]!.querySelector<HTMLElement>('.chip-label')!;
+    assertEquals('ellipsis', getComputedStyle(label1).textOverflow);
+    assertTrue(label1.scrollWidth > label1.clientWidth);
   });
 });
 
@@ -551,6 +541,17 @@ suite('GlicSelectionOverlayLayout', () => {
         region.width * overlayRect.width, region.height * overlayRect.height);
   }
 
+  // Converts viewport pixel bounds into a normalized center-based `RectF`.
+  function regionFromPx(
+      left: number, top: number, width: number, height: number): RectF {
+    return {
+      x: (left + width / 2) / window.innerWidth,
+      y: (top + height / 2) / window.innerHeight,
+      width: width / window.innerWidth,
+      height: height / window.innerHeight,
+    };
+  }
+
   function query(selector: string): HTMLElement {
     const element = overlay.shadowRoot.querySelector<HTMLElement>(selector);
     assertTrue(!!element, selector);
@@ -610,27 +611,40 @@ suite('GlicSelectionOverlayLayout', () => {
     assertNear(pillRect.left, chip1Rect!.left, 'chip 1 left');
   });
 
-  test('PromptBoxCenteredBelowSelection', async () => {
+  test('PromptBoxBelowSelectionLeftAligned', async () => {
     const region = {x: 0.3, y: 0.3, width: 0.1, height: 0.1};
     await showOverlay({promptBox: true});
     await select(region);
 
     const rect = promptRect();
     const selection = toViewport(region);
-    assertNear(
-        selection.left + selection.width / 2, rect.left + rect.width / 2,
-        'center');
+    assertNear(selection.left, rect.left, 'left');
+    assertNear(selection.bottom + MARGIN, rect.top, 'top');
+    assertFalse(overlay.promptAboveSelection);
+  });
+
+  test('PromptBoxBelowSelectionRightAlignedNearRightEdge', async () => {
+    await showOverlay({promptBox: true});
+    const region = regionFromPx(window.innerWidth - 120, 100, 80, 60);
+    await select(region);
+
+    const rect = promptRect();
+    const selection = toViewport(region);
+    assertNear(selection.right, rect.right, 'right');
     assertNear(selection.bottom + MARGIN, rect.top, 'top');
     assertFalse(overlay.promptAboveSelection);
   });
 
   test('PromptBoxMovesAboveSelectionNearBottom', async () => {
-    const region = {x: 0.5, y: 0.9, width: 0.1, height: 0.1};
+    const region = {x: 0.3, y: 0.9, width: 0.1, height: 0.1};
     await showOverlay({promptBox: true});
     await select(region, [chip('Summarize'), chip('Ask Gemini')]);
 
+    const rect = promptRect();
+    const selection = toViewport(region);
     assertTrue(overlay.promptAboveSelection);
-    assertNear(toViewport(region).top - MARGIN, promptRect().bottom, 'bottom');
+    assertNear(selection.left, rect.left, 'left');
+    assertNear(selection.top - MARGIN, rect.bottom, 'bottom');
     // The pill stays closest to the selection, with the first chip next to it.
     const pillRect = query('.searchbox-pill').getBoundingClientRect();
     const [chip0Rect, chip1Rect] = chips().map(c => c.getBoundingClientRect());
@@ -638,14 +652,152 @@ suite('GlicSelectionOverlayLayout', () => {
     assertTrue(chip1Rect!.bottom <= chip0Rect!.top);
   });
 
-  test('PromptBoxClampedToViewportRightEdge', async () => {
+  test('PromptBoxAboveSelectionRightAlignedNearBottomRight', async () => {
     await showOverlay({promptBox: true});
-    await select({x: 0.95, y: 0.4, width: 0.06, height: 0.1});
+    const region =
+        regionFromPx(window.innerWidth - 120, window.innerHeight - 120, 80, 60);
+    await select(region, [chip('Summarize'), chip('Ask Gemini')]);
 
     const rect = promptRect();
-    assertNear(window.innerWidth - MARGIN, rect.right, 'right');
-    assertTrue(rect.left >= 0 && rect.top >= 0);
-    assertTrue(rect.bottom <= window.innerHeight);
+    const selection = toViewport(region);
+    assertTrue(overlay.promptAboveSelection);
+    assertNear(selection.right, rect.right, 'right');
+    assertNear(selection.top - MARGIN, rect.bottom, 'bottom');
+  });
+
+  test('PromptBoxReservesSpaceForSuggestionsBeforeTheyArrive', async () => {
+    await showOverlay({promptBox: true});
+    // Leave 100px below the selection: enough for the 44px input box alone,
+    // but not enough for the 120px maximum height with two 1-line suggestions.
+    const region = regionFromPx(100, window.innerHeight - 160, 80, 60);
+    await select(region);
+
+    // Even before suggestions arrive, the input box is placed above the
+    // selection so it does not jump when suggestions stream in.
+    assertTrue(overlay.promptAboveSelection);
+    const selection = toViewport(region);
+    assertNear(selection.top - MARGIN, promptRect().bottom, 'bottom before');
+
+    const listener: SuggestedActionsListenerRemote =
+        await handler.whenCalled('getSuggestedActions');
+    listener.onSuggestedActionsAvailable(
+        [chip('Summarize'), chip('Ask Gemini')]);
+    await flushTasks();
+    await waitForPromptToSettle();
+
+    assertTrue(overlay.promptAboveSelection);
+    assertNear(selection.top - MARGIN, promptRect().bottom, 'bottom after');
+  });
+
+  test('PromptBoxToRightOfTallSelection', async () => {
+    await showOverlay({promptBox: true});
+    // Tall selection near the left edge leaving < 120px above and below.
+    const region = regionFromPx(40, 100, 80, window.innerHeight - 200);
+    await select(region);
+
+    const rect = promptRect();
+    const selection = toViewport(region);
+    assertFalse(overlay.promptAboveSelection);
+    assertNear(selection.right + MARGIN, rect.left, 'left');
+    assertNear(selection.top, rect.top, 'top');
+  });
+
+  test('PromptBoxToLeftOfTallSelectionNearRightEdge', async () => {
+    await showOverlay({promptBox: true});
+    // Tall selection near the right edge leaving < 120px above/below and
+    // < 320px to the right.
+    const region = regionFromPx(
+        window.innerWidth - 140, 100, 80, window.innerHeight - 200);
+    await select(region);
+
+    const rect = promptRect();
+    const selection = toViewport(region);
+    assertFalse(overlay.promptAboveSelection);
+    assertNear(selection.left - MARGIN, rect.right, 'right');
+    assertNear(selection.top, rect.top, 'top');
+  });
+
+  test('PromptBoxWithinLargeSelection', async () => {
+    await showOverlay({promptBox: true});
+    // Selection covering most of the viewport leaving insufficient space on all
+    // four outside edges.
+    const region =
+        regionFromPx(60, 60, window.innerWidth - 120, window.innerHeight - 120);
+    await select(region);
+
+    const rect = promptRect();
+    const selection = toViewport(region);
+    assertFalse(overlay.promptAboveSelection);
+    assertNear(selection.left + MARGIN, rect.left, 'left');
+    assertNear(selection.top + MARGIN, rect.top, 'top');
+  });
+
+  test('PromptBoxFallsBackToWindowTopLeft', async () => {
+    await showOverlay({promptBox: true});
+    // Selection where none of positions 1-7 has sufficient space.
+    const region = regionFromPx(4, window.innerHeight - 100, 80, 50);
+    await select(region);
+
+    const rect = promptRect();
+    assertFalse(overlay.promptAboveSelection);
+    assertNear(MARGIN, rect.left, 'left');
+    assertNear(MARGIN, rect.top, 'top');
+  });
+
+  test('PromptBoxPositioningRtl', async () => {
+    await showOverlay({promptBox: true});
+    overlay.dir = 'rtl';
+
+    // 1. Below selection, right edges aligned in RTL.
+    let region = {x: 0.7, y: 0.3, width: 0.1, height: 0.1};
+    await select(region);
+    let rect = promptRect();
+    let selection = toViewport(region);
+    assertNear(selection.right, rect.right, 'rtl below right-aligned');
+    assertNear(selection.bottom + MARGIN, rect.top, 'rtl below top');
+
+    // 2. Below selection, left edges aligned when near left viewport edge in
+    // RTL.
+    region = regionFromPx(40, 100, 80, 60);
+    await select(region);
+    rect = promptRect();
+    selection = toViewport(region);
+    assertNear(selection.left, rect.left, 'rtl below left-aligned');
+    assertNear(selection.bottom + MARGIN, rect.top, 'rtl below left top');
+
+    // 5. To the left of selection in RTL when tall on the right side.
+    region = regionFromPx(
+        window.innerWidth - 120, 100, 80, window.innerHeight - 200);
+    await select(region);
+    rect = promptRect();
+    selection = toViewport(region);
+    assertNear(selection.left - MARGIN, rect.right, 'rtl left of selection');
+    assertNear(selection.top, rect.top, 'rtl left top');
+
+    // 6. To the right of selection in RTL when tall on the left side.
+    region = regionFromPx(40, 100, 80, window.innerHeight - 200);
+    await select(region);
+    rect = promptRect();
+    selection = toViewport(region);
+    assertNear(selection.right + MARGIN, rect.left, 'rtl right of selection');
+    assertNear(selection.top, rect.top, 'rtl right top');
+
+    // 7. Within large selection, top-right corners aligned in RTL.
+    region =
+        regionFromPx(60, 60, window.innerWidth - 120, window.innerHeight - 120);
+    await select(region);
+    rect = promptRect();
+    selection = toViewport(region);
+    assertNear(selection.right - MARGIN, rect.right, 'rtl within right');
+    assertNear(selection.top + MARGIN, rect.top, 'rtl within top');
+
+    // 8. Top-right corner of the window fallback in RTL.
+    region =
+        regionFromPx(window.innerWidth - 84, window.innerHeight - 100, 80, 50);
+    await select(region);
+    rect = promptRect();
+    assertNear(window.innerWidth - MARGIN, rect.right, 'rtl fallback right');
+    assertNear(MARGIN, rect.top, 'rtl fallback top');
   });
 
   test('DogfoodFeedbackButtonBesidePill', async () => {
@@ -761,6 +913,45 @@ suite('GlicSelectionOverlayLayout', () => {
     const rect = promptRect();
     assertNear(MARGIN, rect.top, 'top');
     assertNear(window.innerHeight - MARGIN, rect.bottom, 'bottom');
+  });
+
+  test('PromptBoxInlineFulfillmentPrefers380AndShrinksToFit', async () => {
+    await showOverlay({promptBox: true});
+
+    // When >= 380px is available, the inline fulfillment host uses its
+    // preferred 380px width.
+    let region = regionFromPx(100, 100, 80, 60);
+    await select(region, [cardChip()]);
+    await clickCardChip(fakeCard(100));
+    let hostRect = query('#inlineFulfillmentHost').getBoundingClientRect();
+    let selection = toViewport(region);
+    assertNear(380, hostRect.width, 'preferred width');
+    assertNear(selection.left, promptRect().left, 'left with 380px');
+
+    // When between 320px and 380px (340px) is available from selection.left to
+    // the right viewport margin, the inline fulfillment host shrinks to 340px
+    // and stays left-aligned below the selection without jumping.
+    region = regionFromPx(window.innerWidth - MARGIN - 340, 100, 80, 60);
+    await select(region, [cardChip()]);
+    await clickCardChip(fakeCard(100));
+    hostRect = query('#inlineFulfillmentHost').getBoundingClientRect();
+    selection = toViewport(region);
+    assertNear(340, hostRect.width, 'shrunk width');
+    assertNear(selection.left, promptRect().left, 'left stays aligned');
+    assertNear(window.innerWidth - MARGIN, promptRect().right, 'right margin');
+
+    // When right-aligned below the selection near the right edge, both the
+    // pill and the 380px inline fulfillment host stay aligned to
+    // selection.right.
+    region = regionFromPx(window.innerWidth - 120, 100, 80, 60);
+    await select(region, [cardChip()]);
+    await clickCardChip(fakeCard(100));
+    hostRect = query('#inlineFulfillmentHost').getBoundingClientRect();
+    const pillRect = query('.searchbox-pill').getBoundingClientRect();
+    selection = toViewport(region);
+    assertNear(380, hostRect.width, 'right-aligned preferred width');
+    assertNear(selection.right, hostRect.right, 'host right-aligned');
+    assertNear(selection.right, pillRect.right, 'pill right-aligned');
   });
 
   test('HandlesStayHiddenWithCard', async () => {

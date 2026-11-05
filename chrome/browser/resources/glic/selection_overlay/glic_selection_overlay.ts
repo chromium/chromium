@@ -430,7 +430,6 @@ export class GlicSelectionOverlayElement extends
     const selHeight = bounds.height * overlayRect.height;
     const selBottom = selTop + selHeight;
     const selRight = selLeft + selWidth;
-    const selCenterX = selLeft + selWidth / 2;
 
     const margin = 16;
     const viewportWidth = window.innerWidth;
@@ -438,33 +437,153 @@ export class GlicSelectionOverlayElement extends
     const maxAvailableWidth = Math.max(0, viewportWidth - 2 * margin);
 
     const computeStyle = (width: number, height: number): string => {
-      const effectiveWidth = Math.min(width, maxAvailableWidth);
       if (this.enableSelectionOverlayPromptBox) {
-        let clampedCenterX: number;
-        if (effectiveWidth >= maxAvailableWidth) {
-          clampedCenterX = viewportWidth / 2;
-        } else {
-          const minCenter = effectiveWidth / 2 + margin;
-          const maxCenter = viewportWidth - effectiveWidth / 2 - margin;
-          clampedCenterX = Math.max(minCenter, Math.min(selCenterX, maxCenter));
-        }
+        const isRtl = getComputedStyle(this).direction === 'rtl';
+        // Sufficient space requires fitting the input box (320px wide, 44px
+        // tall) plus two 1-line contextual suggestions (32px tall each) with
+        // 6px gaps (44 + 6 + 32 + 6 + 32 = 120px). The inline fulfillment host
+        // prefers 380px width but can shrink down to 320px to fit the available
+        // space at the chosen position without moving.
+        const minWidth = 320;
+        const minHeight = 120;
 
-        let targetTop = selBottom + margin;
-        let aboveSelection = false;
-        if (targetTop + height > viewportHeight - margin) {
-          const topAbove = selTop - height - margin;
-          if (topAbove >= margin) {
-            targetTop = topAbove;
-            aboveSelection = true;
-          } else {
-            targetTop = Math.max(margin, viewportHeight - height - margin);
-          }
-        }
-        this.promptAboveSelection = aboveSelection;
-        return `left: ${clampedCenterX}px; top: ${
-            targetTop}px; transform: translateX(-50%);`;
+        const fitsVertically = (reqTop: number): boolean => {
+          return reqTop >= margin &&
+              reqTop + minHeight <= viewportHeight - margin;
+        };
+
+        const leftAligned =
+            (anchorLeft: number,
+             limitRight: number = viewportWidth - margin) => {
+              const availableWidth = limitRight - anchorLeft;
+              const maxWidth = Math.max(minWidth, availableWidth);
+              return {
+                left: anchorLeft,
+                maxWidth,
+                validX: anchorLeft >= margin && availableWidth >= minWidth,
+              };
+            };
+
+        const rightAligned =
+            (anchorRight: number, limitLeft: number = margin) => {
+              const availableWidth = anchorRight - limitLeft;
+              const maxWidth = Math.max(minWidth, availableWidth);
+              return {
+                left: anchorRight - Math.min(width, maxWidth),
+                maxWidth,
+                validX: anchorRight <= viewportWidth - margin &&
+                    availableWidth >= minWidth,
+              };
+            };
+
+        const alignStart = {
+          ...(isRtl ? rightAligned(selRight) : leftAligned(selLeft)),
+          alignItems: 'flex-start',
+        };
+        const alignEnd = {
+          ...(isRtl ? leftAligned(selLeft) : rightAligned(selRight)),
+          alignItems: 'flex-end',
+        };
+        const afterSelection = {
+          ...(isRtl ? rightAligned(selLeft - margin) :
+                      leftAligned(selRight + margin)),
+          alignItems: 'flex-start',
+        };
+        const beforeSelection = {
+          ...(isRtl ? leftAligned(selRight + margin) :
+                      rightAligned(selLeft - margin)),
+          alignItems: 'flex-end',
+        };
+        const insideSelection = {
+          ...(isRtl ?
+                  rightAligned(
+                      selRight - margin, Math.max(selLeft + margin, margin)) :
+                  leftAligned(
+                      selLeft + margin,
+                      Math.min(selRight - margin, viewportWidth - margin))),
+          alignItems: 'flex-start',
+        };
+        const windowCorner = {
+          ...(isRtl ? rightAligned(viewportWidth - margin) :
+                      leftAligned(margin)),
+          alignItems: 'flex-start',
+        };
+
+        const candidates = [
+          // 1. Below selected area, with both left edges aligned (right for
+          // RTL).
+          {
+            ...alignStart,
+            top: selBottom + margin,
+            above: false,
+            valid: alignStart.validX && fitsVertically(selBottom + margin),
+          },
+          // 2. Below selected area, with both right edges aligned (left for
+          // RTL).
+          {
+            ...alignEnd,
+            top: selBottom + margin,
+            above: false,
+            valid: alignEnd.validX && fitsVertically(selBottom + margin),
+          },
+          // 3. Above selected area, with both left edges aligned (right for
+          // RTL).
+          {
+            ...alignStart,
+            top: selTop - margin - height,
+            above: true,
+            valid: alignStart.validX &&
+                fitsVertically(selTop - margin - minHeight),
+          },
+          // 4. Above selected area, with both right edges aligned (left for
+          // RTL).
+          {
+            ...alignEnd,
+            top: selTop - margin - height,
+            above: true,
+            valid:
+                alignEnd.validX && fitsVertically(selTop - margin - minHeight),
+          },
+          // 5. To the right of selected area (left for RTL), with both top
+          // edges aligned.
+          {
+            ...afterSelection,
+            top: selTop,
+            above: false,
+            valid: afterSelection.validX && fitsVertically(selTop),
+          },
+          // 6. To the left of selected area (right for RTL), with both top
+          // edges aligned.
+          {
+            ...beforeSelection,
+            top: selTop,
+            above: false,
+            valid: beforeSelection.validX && fitsVertically(selTop),
+          },
+          // 7. Within the selected area, with top-left corners aligned
+          // (top-right for RTL).
+          {
+            ...insideSelection,
+            top: selTop + margin,
+            above: false,
+            valid: insideSelection.validX && fitsVertically(selTop + margin) &&
+                selTop + margin + minHeight <= selBottom - margin,
+          },
+        ];
+
+        const chosen = candidates.find(c => c.valid) ?? {
+          // 8. In the top-left corner of the window (top-right for RTL).
+          ...windowCorner,
+          top: margin,
+          above: false,
+        };
+
+        this.promptAboveSelection = chosen.above;
+        return `left: ${chosen.left}px; top: ${chosen.top}px; max-width: ${
+            chosen.maxWidth}px; align-items: ${chosen.alignItems};`;
       }
 
+      const effectiveWidth = Math.min(width, maxAvailableWidth);
       this.promptAboveSelection = false;
 
       // When the prompt box is not shown, anchor the bottom-left of the row at
@@ -484,8 +603,8 @@ export class GlicSelectionOverlayElement extends
 
     const container =
         this.shadowRoot.querySelector<HTMLElement>('#floatingPromptContainer');
-    let promptWidth = this.enableSelectionOverlayPromptBox ? 360 : 32;
-    let promptHeight = this.enableSelectionOverlayPromptBox ? 96 : 32;
+    let promptWidth = this.enableSelectionOverlayPromptBox ? 320 : 32;
+    let promptHeight = this.enableSelectionOverlayPromptBox ? 44 : 32;
 
     if (container) {
       const rect = container.getBoundingClientRect();
