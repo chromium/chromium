@@ -324,7 +324,9 @@ BASE_EXPORT void IncreaseFdLimitTo(unsigned int max_descriptors);
 // inactive_file/dirty/reclaimable/pswpin/pswpout/pgmajfault are available on
 // Linux/Android/Chrome OS. Shmem/slab are Chrome OS only.
 // Speculative/file_backed/purgeable/compressor/compressor_uncompressed/
-// compressor_swapped/wired are Mac and iOS only. Free is absent on Windows (see
+// compressor_swapped/wired and the cumulative activity counters
+// (reactivations/pageins/pageouts/purges/compressions/decompressions/
+// swapins/swapouts) are Mac and iOS only. Free is absent on Windows (see
 // "avail_phys" below).
 struct BASE_EXPORT SystemMemoryInfo {
   SystemMemoryInfo();
@@ -399,6 +401,15 @@ struct BASE_EXPORT SystemMemoryInfo {
   // Memory wired down by the kernel; it can neither be paged out nor compressed
   // (vm_statistics64::wire_count).
   ByteSize wired;
+  // Cumulative byte counts since boot, from vm_statistics64 page counters.
+  ByteSize reactivations;
+  ByteSize pageins;
+  ByteSize pageouts;
+  ByteSize purges;
+  ByteSize compressions;
+  ByteSize decompressions;
+  ByteSize swapins;
+  ByteSize swapouts;
 #endif  // BUILDFLAG(IS_APPLE)
 
   // Returns a cross-platform estimation of available physical memory.

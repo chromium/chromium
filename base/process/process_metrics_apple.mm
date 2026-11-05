@@ -329,6 +329,15 @@ bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
     meminfo->compressor_swapped = ByteSize(PAGE_SIZE * vm_info.swapped_count);
   }
 
+  meminfo->reactivations = ByteSize(PAGE_SIZE * vm_info.reactivations);
+  meminfo->pageins = ByteSize(PAGE_SIZE * vm_info.pageins);
+  meminfo->pageouts = ByteSize(PAGE_SIZE * vm_info.pageouts);
+  meminfo->purges = ByteSize(PAGE_SIZE * vm_info.purges);
+  meminfo->compressions = ByteSize(PAGE_SIZE * vm_info.compressions);
+  meminfo->decompressions = ByteSize(PAGE_SIZE * vm_info.decompressions);
+  meminfo->swapins = ByteSize(PAGE_SIZE * vm_info.swapins);
+  meminfo->swapouts = ByteSize(PAGE_SIZE * vm_info.swapouts);
+
   return true;
 }
 
