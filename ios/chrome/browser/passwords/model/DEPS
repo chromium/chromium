@@ -5,6 +5,7 @@ include_rules = [
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/device_reauth/model",
   "+ios/chrome/browser/enterprise/connectors/reporting",
+  "+ios/chrome/browser/first_run/public",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/actor/model",
   "+ios/chrome/browser/intelligence/actor/public",
