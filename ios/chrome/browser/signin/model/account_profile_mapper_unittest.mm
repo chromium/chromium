@@ -1907,6 +1907,23 @@ class AccountProfileMapperCleanupTest : public AccountProfileMapperTest {
                                       std::nullopt, location);
   }
 
+  // Removes `identity` from `system_identity_manager_` and waits for
+  // completion.
+  void ForgetIdentitySync(id<SystemIdentity> identity) {
+    base::test::TestFuture<NSError*> forget_future;
+    system_identity_manager_->ForgetIdentity(identity,
+                                             forget_future.GetCallback());
+    EXPECT_EQ(forget_future.Get(), nil);
+  }
+
+  // Returns whether `name` is recorded in `prefs::kAbandonedProfiles`.
+  bool IsProfileAbandoned(std::string_view name) const {
+    return GetApplicationContext()
+               ->GetLocalState()
+               ->GetDict(prefs::kAbandonedProfiles)
+               .FindDict(name) != nullptr;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       kCleanupCorruptedAccountProfileMappings};
@@ -1982,10 +1999,12 @@ TEST_F(AccountProfileMapperCleanupTest, CohortA1AndA2) {
   VerifyHealthyNextStartup();
 }
 
-// Tests that `MaybeCleanUpCorruptedProfileMappings` deletes the second
+// Tests that `MaybeCleanUpCorruptedProfileMappings` abandons the second
 // Managed profile (`"Default"`) in Cohort A3 when the first Managed profile
-// (`UUID_M`) has a more recent `LastActiveTime`, remapping scenes and
-// `kLastUsedProfile` to `UUID_M`.
+// (`UUID_M`) has a more recent `LastActiveTime`, archiving `"Default"` in
+// `prefs::kAbandonedProfiles` and remapping scenes / `kLastUsedProfile`, and
+// marks `"Default"` for deletion when the managed account is later removed from
+// the device.
 TEST_F(AccountProfileMapperCleanupTest, CohortA3_KeepsFirstWhenMoreRecent) {
   constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
 
@@ -2008,7 +2027,9 @@ TEST_F(AccountProfileMapperCleanupTest, CohortA3_KeepsFirstWhenMoreRecent) {
           kAbandonedSecondManagedProfileInitOlder);
 
   EXPECT_FALSE(profile_manager_->HasProfileWithName(kDefaultProfile));
-  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kDefaultProfile));
+  EXPECT_FALSE(profile_manager_->IsProfileMarkedForDeletion(kDefaultProfile));
+  EXPECT_FALSE(profile_manager_->CanCreateProfileWithName(kDefaultProfile));
+  EXPECT_TRUE(IsProfileAbandoned(kDefaultProfile));
   EXPECT_EQ(profile_attributes_storage()->GetProfileNameForSceneID("scene1"),
             kManagedProfile);
   EXPECT_EQ(profile_attributes_storage()->GetProfileNameForSceneID("scene2"),
@@ -2022,9 +2043,16 @@ TEST_F(AccountProfileMapperCleanupTest, CohortA3_KeepsFirstWhenMoreRecent) {
       kManagedProfile);
 
   VerifyHealthyNextStartup();
+
+  // Removing `google_identity` from the device at runtime should mark both the
+  // kept profile and the abandoned profile for deletion.
+  ForgetIdentitySync(google_identity);
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kDefaultProfile));
+  EXPECT_FALSE(IsProfileAbandoned(kDefaultProfile));
 }
 
-// Tests that `MaybeCleanUpCorruptedProfileMappings` deletes the first
+// Tests that `MaybeCleanUpCorruptedProfileMappings` abandons the first
 // Managed profile (`UUID_M`) in Cohort A3 when the second Managed profile
 // (`"Default"`) has a more recent `LastActiveTime`.
 TEST_F(AccountProfileMapperCleanupTest, CohortA3_KeepsSecondWhenMoreRecent) {
@@ -2043,13 +2071,31 @@ TEST_F(AccountProfileMapperCleanupTest, CohortA3_KeepsSecondWhenMoreRecent) {
           kAbandonedFirstManagedProfileInitOlder);
 
   EXPECT_FALSE(profile_manager_->HasProfileWithName(kManagedProfile));
-  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_FALSE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_FALSE(profile_manager_->CanCreateProfileWithName(kManagedProfile));
+  EXPECT_TRUE(IsProfileAbandoned(kManagedProfile));
   EXPECT_TRUE(profile_manager_->HasProfileWithName(kDefaultProfile));
   EXPECT_EQ(
       account_profile_mapper_->FindProfileNameForGaiaID(google_identity.gaiaId),
       kDefaultProfile);
 
   VerifyHealthyNextStartup();
+
+  // Simulate `google_identity` being removed while Chrome is not running, even
+  // if `kCleanupCorruptedAccountProfileMappings` has since been disabled: the
+  // next startup should still mark both the kept profile and the abandoned
+  // profile for deletion.
+  account_profile_mapper_.reset();
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(
+      kCleanupCorruptedAccountProfileMappings);
+  ForgetIdentitySync(google_identity);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kDefaultProfile));
+  EXPECT_TRUE(profile_manager_->IsProfileMarkedForDeletion(kManagedProfile));
+  EXPECT_FALSE(IsProfileAbandoned(kManagedProfile));
 }
 
 // Tests that `MaybeCleanUpCorruptedProfileMappings` deletes the uninitialized

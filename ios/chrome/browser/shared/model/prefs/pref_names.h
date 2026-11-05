@@ -79,6 +79,21 @@ inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 inline constexpr char kProfilesToRemove[] =
     "ios.multiprofile.profiles_marked_for_deletion";
 
+// Dictionary mapping abandoned profile names to their removed
+// `kProfileInfoCache` entries (which include PII such as `GaiaId` and email,
+// moved from `kProfileInfoCache`). These profiles were removed from
+// `kProfileInfoCache` during corrupted-mapping cleanup (crbug.com/577577657) so
+// they cannot be loaded, while keeping their directories on disk for potential
+// data recovery or later deletion. If the associated managed account is removed
+// from the device, the entry is removed from `kAbandonedProfiles` and added to
+// `kProfilesToRemove` so its directory on disk is purged.
+// Privacy review: crbug.com/577577657
+// TODO(crbug.com/581920319): Purge `kAbandonedProfiles` (moving any remaining
+// entries to `kProfilesToRemove`) once we decide whether to perform any data
+// recovery.
+inline constexpr char kAbandonedProfiles[] =
+    "ios.multiprofile.abandoned_profiles";
+
 // A string of NSUUID used to access the WebKit storage per Profile.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 

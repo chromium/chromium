@@ -68,6 +68,7 @@ constexpr char kTestSceneId2[] = "scene-id2";
 constexpr char kInvalidProfile[] = "InvalidProfile";
 constexpr char kUnknownProfile[] = "UnknownProfile";
 constexpr char kLegacyProfile[] = "LegacyProfile";
+constexpr char kAbandonedProfile[] = "AbandonedProfile";
 
 // Updates `attr` with information from `account`.
 void UpdateAttributesFromTestAccount(const TestAccount& account,
@@ -500,6 +501,9 @@ TEST_F(MutableProfileAttributesStorageIOSTest, CanCreateProfileWithName) {
   pref_service()->SetDict(
       prefs::kLegacyProfileMap,
       base::DictValue().Set(kLegacyProfile, base::DictValue()));
+  pref_service()->SetDict(
+      prefs::kAbandonedProfiles,
+      base::DictValue().Set(kAbandonedProfile, base::DictValue()));
 
   MutableProfileAttributesStorageIOS storage(pref_service());
 
@@ -507,10 +511,11 @@ TEST_F(MutableProfileAttributesStorageIOSTest, CanCreateProfileWithName) {
   ASSERT_FALSE(storage.HasProfileWithName(kTestProfile2));
 
   // Cannot create a profile with an empty name, an existing profile name,
-  // a legacy profile name.
+  // a legacy profile name, or an abandoned profile name.
   EXPECT_FALSE(storage.CanCreateProfileWithName(""));
   EXPECT_FALSE(storage.CanCreateProfileWithName(kTestProfile1));
   EXPECT_FALSE(storage.CanCreateProfileWithName(kLegacyProfile));
+  EXPECT_FALSE(storage.CanCreateProfileWithName(kAbandonedProfile));
 
   // Can create a profile with a new name.
   EXPECT_TRUE(storage.CanCreateProfileWithName(kTestProfile2));

@@ -258,4 +258,8 @@ void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
   registry->RegisterStringPref(prefs::kPersonalProfileName, std::string());
   registry->RegisterListPref(prefs::kProfilesToRemove);
+  // Stores `ProfileAttributesIOS` entries (including `GaiaId` and email) moved
+  // from `kProfileInfoCache`; cleared when the associated account is removed
+  // from the device. Privacy review: crbug.com/577577657.
+  registry->RegisterDictionaryPref(prefs::kAbandonedProfiles);
 }

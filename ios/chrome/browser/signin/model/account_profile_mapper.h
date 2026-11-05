@@ -113,13 +113,15 @@ enum class IOSAccountProfileMappingCleanupAction {
   // Cohorts A1, A2: Deleted `profiles[0]` (`UUID_M`, uninitialized) and kept
   // `profiles[1]` (`orig_profile`, initialized).
   kDeletedFirstManagedProfileUninit = 0,
-  // Cohort A3: Both Managed profiles were initialized; abandoned (deleted)
-  // `profiles[0]` (`UUID_M`, older `LastActiveTime`) and kept `profiles[1]`
-  // (`orig_profile`, more recent `LastActiveTime`).
+  // Cohort A3: Both Managed profiles were initialized; abandoned `profiles[0]`
+  // (`UUID_M`, older `LastActiveTime`, kept on disk in
+  // `prefs::kAbandonedProfiles`) and kept `profiles[1]` (`orig_profile`, more
+  // recent `LastActiveTime`).
   kAbandonedFirstManagedProfileInitOlder = 1,
-  // Cohort A3: Both Managed profiles were initialized; abandoned (deleted)
-  // `profiles[1]` (`orig_profile`, older `LastActiveTime`) and kept
-  // `profiles[0]` (`UUID_M`, more recent or tied `LastActiveTime`).
+  // Cohort A3: Both Managed profiles were initialized; abandoned `profiles[1]`
+  // (`orig_profile`, older `LastActiveTime`, kept on disk in
+  // `prefs::kAbandonedProfiles`) and kept `profiles[0]` (`UUID_M`, more recent
+  // or tied `LastActiveTime`).
   kAbandonedSecondManagedProfileInitOlder = 2,
   // Cohorts B1, B2: Deleted `profiles[1]` (`UUID_M`, uninitialized) and kept
   // `profiles[0]` (`orig_profile`, initialized).

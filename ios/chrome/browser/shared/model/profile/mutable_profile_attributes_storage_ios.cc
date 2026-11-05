@@ -121,6 +121,12 @@ bool MutableProfileAttributesStorageIOS::CanCreateProfileWithName(
     return false;
   }
 
+  // Cannot create a profile that has been abandoned (its directory still
+  // exists on disk).
+  if (prefs_->GetDict(prefs::kAbandonedProfiles).Find(name)) {
+    return false;
+  }
+
   return true;
 }
 
