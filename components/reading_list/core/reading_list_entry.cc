@@ -292,7 +292,10 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
     return nullptr;
   }
   GURL url(pb_entry.url());
-  if (url.is_empty() || !url.is_valid()) {
+  if (url.is_empty() || !url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return nullptr;
+  }
+  if (!base::IsStringUTF8AllowingNoncharacters(pb_entry.title())) {
     return nullptr;
   }
   std::string title;

@@ -10,6 +10,8 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/reading_list/core/proto/reading_list.pb.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
@@ -43,6 +45,31 @@ ReadingListModelStorage::LoadResultOrError LoadStorageAndWait(
           }));
   loop.Run();
   return load_result_or_error;
+}
+
+// Helper function to write a raw record directly to `store` and wait for
+// completion. Returns true on success.
+[[nodiscard]] bool WriteRawDataToStore(syncer::DataTypeStore* store,
+                                       const std::string& id,
+                                       const std::string& value) {
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store->CreateWriteBatch();
+  batch->WriteData(id, value);
+  base::test::TestFuture<const std::optional<syncer::ModelError>&> future;
+  store->CommitWriteBatch(std::move(batch), future.GetCallback());
+  return !future.Get().has_value();
+}
+
+// Helper function to serialize and write a `reading_list::ReadingListLocal`
+// entry directly to `store`. Returns true on success.
+[[nodiscard]] bool WriteReadingListLocalToStore(syncer::DataTypeStore* store,
+                                                const std::string& url,
+                                                const std::string& title) {
+  reading_list::ReadingListLocal proto;
+  proto.set_entry_id(url);
+  proto.set_url(url);
+  proto.set_title(title);
+  return WriteRawDataToStore(store, url, proto.SerializeAsString());
 }
 
 class ReadingListModelStorageImplTest : public testing::Test {
@@ -140,6 +167,30 @@ TEST_F(ReadingListModelStorageImplTest, DeleteAllEntriesAndSyncMetadata) {
   // in-memory leveldb.
   ReadingListModelStorageImpl third_storage(shared_store_factory_);
   EXPECT_THAT(LoadStorageAndWait(&third_storage, &clock_)->first, IsEmpty());
+}
+
+// Tests that `Load` skips corrupted or invalid entries persisted in the
+// underlying `DataTypeStore` (such as unparsable protos, non-HTTP/HTTPS URLs,
+// invalid URLs, or non-UTF8 titles) while still loading valid entries.
+TEST_F(ReadingListModelStorageImplTest, LoadSkipsInvalidEntries) {
+  const GURL kValidUrl1("https://example1.com/");
+  const GURL kValidUrl2("https://example2.com/");
+
+  ASSERT_TRUE(WriteRawDataToStore(in_memory_store_.get(), "corrupted",
+                                  "not a valid proto"));
+  ASSERT_TRUE(WriteReadingListLocalToStore(
+      in_memory_store_.get(), "mailto:user@example.com", "Mailto Title"));
+  ASSERT_TRUE(WriteReadingListLocalToStore(in_memory_store_.get(), "InvalidUrl",
+                                           "Invalid URL Title"));
+  ASSERT_TRUE(WriteReadingListLocalToStore(
+      in_memory_store_.get(), kValidUrl1.spec(), "\xFC\x9C\xBF\x80\xBF\x80"));
+  ASSERT_TRUE(WriteReadingListLocalToStore(in_memory_store_.get(),
+                                           kValidUrl2.spec(), "Valid Title"));
+
+  ReadingListModelStorageImpl storage(shared_store_factory_);
+  ASSERT_OK_AND_ASSIGN(const ReadingListModelStorage::LoadResult load_result,
+                       LoadStorageAndWait(&storage, &clock_));
+  EXPECT_THAT(load_result.first, ElementsAre(EntryHasUrl(kValidUrl2)));
 }
 
 }  // namespace

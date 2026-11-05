@@ -5,19 +5,34 @@
 #include "components/reading_list/core/reading_list_entry.h"
 
 #include <memory>
-#include "base/memory/scoped_refptr.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/reading_list/core/proto/reading_list.pb.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using testing::IsNull;
+using testing::NotNull;
+
 const int kFirstBackoff = 10;
 const int kSecondBackoff = 10;
 const int kThirdBackoff = 60;
 const int kFourthBackoff = 120;
 const int kFifthBackoff = 120;
+
+reading_list::ReadingListLocal CreateReadingListLocalProto(
+    const std::string& url,
+    const std::string& title = "example title") {
+  reading_list::ReadingListLocal pb_entry;
+  pb_entry.set_entry_id(url);
+  pb_entry.set_url(url);
+  pb_entry.set_title(title);
+  return pb_entry;
+}
 
 }  // namespace
 
@@ -461,6 +476,92 @@ TEST(ReadingListEntry, FromReadingListLocal) {
   double fuzzing = 2 * ReadingListEntry::kBackoffPolicy.jitter_factor;
   int nextTry = waiting_entry->TimeUntilNextTry().InMinutes();
   EXPECT_NEAR(kFirstBackoff, nextTry, kFirstBackoff * fuzzing);
+}
+
+// Tests that `FromReadingListLocal` returns `nullptr` when the `url` field is
+// missing, empty, or not a valid URL.
+TEST(ReadingListEntry, FromReadingListLocalWithMissingOrInvalidUrlReturnsNull) {
+  const base::Time kNow = base::Time::FromTimeT(20);
+
+  reading_list::ReadingListLocal missing_url_pb;
+  missing_url_pb.set_title("example title");
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(missing_url_pb, kNow),
+              IsNull());
+
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto(""), kNow),
+              IsNull());
+
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("InvalidUrl"), kNow),
+              IsNull());
+}
+
+// Tests that `FromReadingListLocal` only accepts HTTP and HTTPS URLs and
+// rejects other schemes such as `mailto:`, `javascript:`, `file:`, or `about:`.
+TEST(ReadingListEntry, FromReadingListLocalOnlyAllowsHttpOrHttps) {
+  const base::Time kNow = base::Time::FromTimeT(20);
+
+  scoped_refptr<ReadingListEntry> http_entry =
+      ReadingListEntry::FromReadingListLocal(
+          CreateReadingListLocalProto("http://example.com/"), kNow);
+  ASSERT_THAT(http_entry, NotNull());
+  EXPECT_TRUE(ReadingListEntry::IsSpecificsValid(
+      *http_entry->AsReadingListSpecifics()));
+
+  scoped_refptr<ReadingListEntry> https_entry =
+      ReadingListEntry::FromReadingListLocal(
+          CreateReadingListLocalProto("https://example.com/"), kNow);
+  ASSERT_THAT(https_entry, NotNull());
+  EXPECT_TRUE(ReadingListEntry::IsSpecificsValid(
+      *https_entry->AsReadingListSpecifics()));
+
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("mailto:user@example.com"), kNow),
+              IsNull());
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("javascript:void(0)"), kNow),
+              IsNull());
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("tel:+1234567890"), kNow),
+              IsNull());
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("file:///tmp/index.html"), kNow),
+              IsNull());
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("chrome://settings/"), kNow),
+              IsNull());
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("data:text/plain,hello"), kNow),
+              IsNull());
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("about:blank"), kNow),
+              IsNull());
+  EXPECT_THAT(ReadingListEntry::FromReadingListLocal(
+                  CreateReadingListLocalProto("about://example.com/"), kNow),
+              IsNull());
+}
+
+// Tests that `FromReadingListLocal` rejects entries with non-UTF8 titles while
+// allowing valid UTF-8 titles (including Unicode noncharacters).
+TEST(ReadingListEntry, FromReadingListLocalRejectsNonUtf8Title) {
+  const base::Time kNow = base::Time::FromTimeT(20);
+  constexpr char kValidUrl[] = "https://example.com/";
+
+  EXPECT_THAT(
+      ReadingListEntry::FromReadingListLocal(
+          CreateReadingListLocalProto(kValidUrl, "\xFC\x9C\xBF\x80\xBF\x80"),
+          kNow),
+      IsNull());
+
+  // `\xEF\xBF\xBE` (U+FFFE) is a Unicode noncharacter that is allowed by
+  // `base::IsStringUTF8AllowingNoncharacters`.
+  scoped_refptr<ReadingListEntry> entry =
+      ReadingListEntry::FromReadingListLocal(
+          CreateReadingListLocalProto(kValidUrl, "\xEF\xBF\xBE"), kNow);
+  ASSERT_THAT(entry, NotNull());
+  EXPECT_TRUE(
+      ReadingListEntry::IsSpecificsValid(*entry->AsReadingListSpecifics()));
 }
 
 // Tests the merging of two ReadingListEntry.
