@@ -16,57 +16,58 @@ and Web App Manifest processing in Chromium.
 
 ## Ecosystem Map (Directories & Spokes)
 
-- **Shared Components** (`components/webapps/`): [README](README.md) ·
-  [Security Notes](SECURITY.md) Cross-platform installability, promotion, and
+- **Shared Components** (`components/webapps/`): [README.md](README.md) ·
+  [SECURITY.md](SECURITY.md) Cross-platform installability, promotion, and
   identifiers shared by Desktop and Android (delegates via `WebappsClient`).
   `browser/installable/` · `browser/banners/` · `browser/android/` · `common/` ·
   `renderer/`
 - **Isolated Web Apps Component** (`components/webapps/isolated_web_apps/`):
-  [Rules](isolated_web_apps/AGENTS.md) · [README](isolated_web_apps/README.md)
-  Core browser-agnostic IWA runtime, bundle operations, reader registry, key
-  distribution, `isolated-app://` URL loading, and cryptographic identity
-  verification.
+  [AGENTS.md](isolated_web_apps/AGENTS.md) ·
+  [README.md](isolated_web_apps/README.md) Core browser-agnostic IWA runtime,
+  bundle operations, reader registry, key distribution, `isolated-app://` URL
+  loading, and cryptographic identity verification.
 - **Web Packaging & Signed Web Bundles** (`components/web_package/`):
-  [Rules](/components/web_package/AGENTS.md) ·
-  [Signed Web Bundles](/components/web_package/signed_web_bundles/AGENTS.md) ·
-  [README](/components/web_package/README.md) Memory-safe Rust/C++ Web Bundle
-  (`.wbn`) and Signed Web Bundle (`.swbn`) parsing, Integrity Block v2, and
-  signature verification.
+  [AGENTS.md](/components/web_package/AGENTS.md) ·
+  [`signed_web_bundles/AGENTS.md`](/components/web_package/signed_web_bundles/AGENTS.md)
+  · [README.md](/components/web_package/README.md) Memory-safe Rust/C++ Web
+  Bundle (`.wbn`) and Signed Web Bundle (`.swbn`) parsing, Integrity Block v2,
+  and signature verification.
 - **Desktop Engine** (`chrome/browser/web_applications/`):
-  [Rules](/chrome/browser/web_applications/AGENTS.md) ·
-  [README](/chrome/browser/web_applications/README.md) ·
-  [Security Notes](/chrome/browser/web_applications/SECURITY.md) Per-profile
+  [AGENTS.md](/chrome/browser/web_applications/AGENTS.md) ·
+  [README.md](/chrome/browser/web_applications/README.md) ·
+  [SECURITY.md](/chrome/browser/web_applications/SECURITY.md) Per-profile
   `WebAppProvider` engine (commands, locks, DB storage, sync, and OS
   integration).
 - **Desktop UI** (`chrome/browser/ui/web_applications/`):
-  [Rules](/chrome/browser/ui/web_applications/AGENTS.md) ·
-  [README](/chrome/browser/ui/web_applications/README.md) Desktop UI
+  [AGENTS.md](/chrome/browser/ui/web_applications/AGENTS.md) ·
+  [README.md](/chrome/browser/ui/web_applications/README.md) Desktop UI
   controllers, window management, omnibox actions, navigation capturing, and Mac
   App Shims.
 - **Desktop Views UI** (`chrome/browser/ui/views/web_apps/`):
-  [Rules](/chrome/browser/ui/views/web_apps/AGENTS.md) ·
-  [README](/chrome/browser/ui/views/web_apps/README.md) Views dialogs, bubbles,
-  custom frame toolbars, and integration test driver.
+  [AGENTS.md](/chrome/browser/ui/views/web_apps/AGENTS.md) ·
+  [README.md](/chrome/browser/ui/views/web_apps/README.md) Views dialogs,
+  bubbles, custom frame toolbars, and integration test driver.
 - **Android Java Webapps**
   (`chrome/android/java/src/org/chromium/chrome/browser/webapps/`):
-  [Rules](/chrome/android/java/src/org/chromium/chrome/browser/webapps/AGENTS.md)
+  [AGENTS.md](/chrome/android/java/src/org/chromium/chrome/browser/webapps/AGENTS.md)
   ·
-  [README](/chrome/android/java/src/org/chromium/chrome/browser/webapps/README.md)
+  [README.md](/chrome/android/java/src/org/chromium/chrome/browser/webapps/README.md)
   · [Architecture](docs/android_architecture.md) Java activity lifecycles and
   coordinators.
 - **Android Native WebAPK** (`chrome/browser/android/webapk/`):
-  [Rules](/chrome/browser/android/webapk/AGENTS.md) ·
-  [README](/chrome/browser/android/webapk/README.md) Browser-process native
+  [AGENTS.md](/chrome/browser/android/webapk/AGENTS.md) ·
+  [README.md](/chrome/browser/android/webapk/README.md) Browser-process native
   WebAPK services, minting, and update dispatch.
 - **Manifest Parsing** (`third_party/blink/renderer/modules/manifest/`):
-  [Rules](/third_party/blink/renderer/modules/manifest/AGENTS.md) ·
-  [Common](/third_party/blink/public/common/manifest/AGENTS.md) ·
-  [README](/third_party/blink/renderer/modules/manifest/README.md) JSON manifest
-  parsing in untrusted renderer and validating `blink::Manifest` Mojo typemap.
+  [AGENTS.md](/third_party/blink/renderer/modules/manifest/AGENTS.md) ·
+  [`public/common/manifest/AGENTS.md`](/third_party/blink/public/common/manifest/AGENTS.md)
+  · [README.md](/third_party/blink/renderer/modules/manifest/README.md) JSON
+  manifest parsing in untrusted renderer and validating `blink::Manifest` Mojo
+  typemap.
 - **Manifest Fetching** (`content/browser/manifest/`):
-  [Rules](/content/browser/manifest/AGENTS.md) ·
-  [README](/content/browser/manifest/README.md) Browser-side manifest fetching,
-  contextual validation, and icon downloading coordination.
+  [AGENTS.md](/content/browser/manifest/AGENTS.md) ·
+  [README.md](/content/browser/manifest/README.md) Browser-side manifest
+  fetching, contextual validation, and icon downloading coordination.
 
 ## Verification & Testing
 

@@ -25,7 +25,7 @@ The harness provides shared:
 - Templates for designs, plans, and reviews
 - Basic doc writing skill, and doc reviewing skill & agent.
 - Basic code reviewing agent.
-- Project harness updater skill.
+- Project harness bootstrap and updater skills.
 
 Finally, this provides a place to put all skills & agents a team member of this
 project should have included for agentic work in their area (in the
@@ -51,6 +51,7 @@ _harness/
 │   └── chromium_design_reviewer.md # Skeptical Architect reviewer
 ├── skills.json               # Manifest registering harness skills
 ├── skills/                   # Reusable harness skills
+│   ├── harness-bootstrap/    # Project harness skeleton scaffolder
 │   ├── harness-doc-writer/   # Design/Plan authoring & review loop
 │   └── harness-updater/      # Link audit & freshness maintenance
 ├── designs/                  # Harness's own design documentation
@@ -77,7 +78,9 @@ _harness/
 
 ## How to Use
 
-Initially, the harness for a project should be extremely minimal.
+Initially, the harness for a project should be extremely minimal (and can be
+scaffolded by pointing your agent at
+[`skills/harness-bootstrap/SKILL.md`](skills/harness-bootstrap/SKILL.md)).
 
 - AGENTS.md files:
   - No 'rules' or 'gotchas' yet.
@@ -226,5 +229,5 @@ directory will be promoted to the repository root:
    `_agents/`.
 2. Update project `AGENTS.md` and manifests (`agents.json`, `skills.json`) to
    inherit from `_agents/`.
-3. Introduce the `harness-bootstrap` scaffolder skill and central
-   `HARNESS_INDEX.md`.
+3. Update the `harness-bootstrap` scaffolder skill to inherit from `_agents/`
+   and introduce the central `HARNESS_INDEX.md`.
