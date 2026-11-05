@@ -133,6 +133,10 @@ BASE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation, DISABLED);
 BASE_FEATURE(kWebUIOmniboxFullPopupDoubleClick, ENABLED);
 // If enabled, enables OmniboxEverywhere popup triggered by shortcut.
 BASE_FEATURE(kOmniboxEverywhere, DISABLED);
+// If enabled, defers creating the Omnibox Everywhere status tray icon and
+// context menu during `Profile` initialization until browser startup is
+// complete.
+BASE_FEATURE(kOmniboxEverywhereDeferStatusIcon, ENABLED);
 // If enabled, submitting a query with screenshots attached in Omnibox
 // Everywhere opens the result in a new browser window aligned with the
 // Omnibox Everywhere popup.

@@ -23,6 +23,7 @@ source_set("omnibox_everywhere") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
+    "//chrome/browser:after_startup_task_utils",
     "//chrome/browser:browser_process",
     "//chrome/browser/lifetime",
     "//chrome/browser/profiles/keep_alive",
@@ -33,6 +34,7 @@ source_set("omnibox_everywhere") {
     "//chrome/common",
     "//components/keep_alive_registry",
     "//components/vector_icons",
+    "//content/public/browser",
     "//ui/base",
   ]
 }

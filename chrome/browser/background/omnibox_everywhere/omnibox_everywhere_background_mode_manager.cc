@@ -9,10 +9,12 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -31,6 +33,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -91,6 +94,7 @@ void OmniboxEverywhereBackgroundModeManager::SetProfile(Profile* profile) {
 }
 
 void OmniboxEverywhereBackgroundModeManager::Reset() {
+  deferred_status_icon_weak_factory_.InvalidateWeakPtrs();
   profile_keep_alive_.reset();
   keep_alive_.reset();
   HideStatusIcon();
@@ -127,7 +131,19 @@ void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
   }
 
   if (!status_icon_) {
-    ShowStatusIcon();
+    if (base::FeatureList::IsEnabled(
+            omnibox::kOmniboxEverywhereDeferStatusIcon) &&
+        !AfterStartupTaskUtils::IsBrowserStartupComplete()) {
+      if (!deferred_status_icon_weak_factory_.HasWeakPtrs()) {
+        AfterStartupTaskUtils::PostTask(
+            FROM_HERE, content::GetUIThreadTaskRunner({}),
+            base::BindOnce(
+                &OmniboxEverywhereBackgroundModeManager::ShowStatusIcon,
+                deferred_status_icon_weak_factory_.GetWeakPtr()));
+      }
+    } else {
+      ShowStatusIcon();
+    }
   }
 
   if (background_mode_enabled) {
@@ -162,6 +178,10 @@ void OmniboxEverywhereBackgroundModeManager::UpdateProfileKeepAlive() {
 }
 
 void OmniboxEverywhereBackgroundModeManager::ShowStatusIcon() {
+  deferred_status_icon_weak_factory_.InvalidateWeakPtrs();
+  if (status_icon_) {
+    return;
+  }
   StatusTray* status_tray =
       g_browser_process ? g_browser_process->status_tray() : nullptr;
   if (!status_tray) {

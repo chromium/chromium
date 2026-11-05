@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -17,6 +19,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,6 +92,7 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
     TestingBrowserProcess::GetGlobal()->SetStatusTray(
         std::make_unique<MockStatusTray>());
     if (PrefService* local_state =
@@ -100,6 +105,8 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
   void TearDown() override {
     profile_.reset();
     TestingBrowserProcess::GetGlobal()->SetStatusTray(nullptr);
+    AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+    AfterStartupTaskUtils::UnsafeResetForTesting();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -437,5 +444,107 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 }
 #endif
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       DeferStatusIconUntilBrowserStartupComplete) {
+  Profile* test_profile = profile();
+  AfterStartupTaskUtils::UnsafeResetForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kOmniboxEverywhere, omnibox::kOmniboxEverywhereDeferStatusIcon},
+      {});
+
+  OmniboxEverywhereBackgroundModeManager manager(base::DoNothing());
+
+  manager.SetProfile(test_profile);
+
+  // Keep-alive must be acquired synchronously during `SetProfile()`, while
+  // status icon and context menu creation are deferred until browser startup
+  // completes.
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+  EXPECT_EQ(manager.context_menu_for_testing(), nullptr);
+
+  // Running the UI thread until idle while browser startup is still incomplete
+  // must not create the status icon.
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+  EXPECT_EQ(manager.context_menu_for_testing(), nullptr);
+
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+  task_environment()->RunUntilIdle();
+  EXPECT_NE(manager.status_icon_for_testing(), nullptr);
+  EXPECT_NE(manager.context_menu_for_testing(), nullptr);
+}
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       StatusIconCreatedSynchronouslyWhenDeferFeatureDisabled) {
+  Profile* test_profile = profile();
+  AfterStartupTaskUtils::UnsafeResetForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kOmniboxEverywhere},
+      {omnibox::kOmniboxEverywhereDeferStatusIcon});
+
+  OmniboxEverywhereBackgroundModeManager manager(base::DoNothing());
+  manager.SetProfile(test_profile);
+
+  EXPECT_NE(manager.status_icon_for_testing(), nullptr);
+  EXPECT_NE(manager.context_menu_for_testing(), nullptr);
+}
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       DeferredStatusIconCancelledOnReset) {
+  Profile* test_profile = profile();
+  AfterStartupTaskUtils::UnsafeResetForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kOmniboxEverywhere, omnibox::kOmniboxEverywhereDeferStatusIcon},
+      {});
+
+  OmniboxEverywhereBackgroundModeManager manager(base::DoNothing());
+
+  manager.SetProfile(test_profile);
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+
+  // Clearing the profile before the deferred task runs must cancel status
+  // icon creation and release the keep-alive.
+  manager.SetProfile(nullptr);
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+}
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       DeferredStatusIconCancelledAndRearmedOnPrefToggle) {
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  ASSERT_NE(local_state, nullptr);
+  Profile* test_profile = profile();
+  AfterStartupTaskUtils::UnsafeResetForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kOmniboxEverywhere, omnibox::kOmniboxEverywhereDeferStatusIcon},
+      {});
+
+  OmniboxEverywhereBackgroundModeManager manager(base::DoNothing());
+  manager.SetProfile(test_profile);
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+
+  // Disabling and re-enabling before startup completes must cancel the prior
+  // task and schedule a fresh deferred task.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereEnabled, false);
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+  local_state->SetBoolean(prefs::kOmniboxEverywhereEnabled, true);
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+  task_environment()->RunUntilIdle();
+  EXPECT_NE(manager.status_icon_for_testing(), nullptr);
+  EXPECT_NE(manager.context_menu_for_testing(), nullptr);
+}
 
 }  // namespace omnibox_everywhere

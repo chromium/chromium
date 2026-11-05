@@ -84,6 +84,7 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopupDoubleClick);
 BASE_DECLARE_FEATURE(kOmniboxEverywhere);
+BASE_DECLARE_FEATURE(kOmniboxEverywhereDeferStatusIcon);
 BASE_DECLARE_FEATURE(kOmniboxEverywhereScreenshotNewWindow);
 extern const base::FeatureParam<int>
     kOmniboxEverywhereScreenshotNewWindowWidthParam;
