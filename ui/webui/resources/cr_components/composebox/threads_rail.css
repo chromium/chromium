@@ -22,9 +22,9 @@
   cursor: e-resize;
   display: inline-flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
   height: 100%;
-  padding: 24px 12px 20px 12px;
+  padding: 30px 12px 20px 12px;
 }
 
 :host-context([dir='rtl']) #rail {
@@ -37,7 +37,7 @@
 }
 
 cr-icon-button {
-  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-icon-size: 22px;
   --cr-icon-button-size: 40px;
   --cr-icon-button-focus-outline-color: var(--threads-rail-focus-outline-color);
   --cr-icon-button-fill-color:
@@ -74,11 +74,12 @@ cr-tooltip::part(tooltip) {
 
 #logoButton {
   --cr-icon-button-fill-color: transparent;
+  --cr-icon-button-icon-size: 26px;
   background-image:
       url('//resources/cr_components/searchbox/icons/google_g_gradient.svg');
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 24px;
+  background-size: 26px;
 }
 
 @media (forced-colors: active) {
