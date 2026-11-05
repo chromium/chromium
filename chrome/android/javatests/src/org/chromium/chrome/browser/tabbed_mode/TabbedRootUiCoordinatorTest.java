@@ -95,7 +95,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.policy.test.annotations.Policies.Add;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -199,7 +198,6 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
     @CommandLineFlags.Remove({ChromeSwitches.DISABLE_STARTUP_PROMOS})
     public void testForcedSignin() {
@@ -222,7 +220,6 @@ public class TabbedRootUiCoordinatorTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_STARTUP_PROMOS})
     public void testForcedSigninWhenStartupPromosDisabled() {
@@ -242,7 +239,6 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
     @CommandLineFlags.Remove({ChromeSwitches.DISABLE_STARTUP_PROMOS})
     public void testForcedSigninWhenSigninNotAllowed() {

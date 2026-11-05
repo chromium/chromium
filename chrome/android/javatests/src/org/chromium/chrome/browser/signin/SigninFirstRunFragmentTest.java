@@ -401,7 +401,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenSigninIsForcedByPolicy() {
         // TODO(crbug.com/481972235): Replace this by The {@link @Policies.Add} annotation.

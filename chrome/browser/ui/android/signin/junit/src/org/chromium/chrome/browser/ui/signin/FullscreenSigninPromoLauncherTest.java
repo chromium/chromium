@@ -72,7 +72,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @DisableFeatures({
     SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO,
-    SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY,
     ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
 })
 @EnableFeatures(
@@ -278,7 +277,6 @@ public class FullscreenSigninPromoLauncherTest {
 
     /** The policy driven prompt is launched by {@code launchForcedSigninFlow()} only. */
     @Test
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void promoNotForcedByFlagWhenSigninForcedByPolicy() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);

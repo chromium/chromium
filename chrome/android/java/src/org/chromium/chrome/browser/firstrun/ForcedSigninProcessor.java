@@ -4,13 +4,10 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninController;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 
@@ -31,10 +28,7 @@ public final class ForcedSigninProcessor {
     // TODO(bauerb): Once external dependencies reliably use policy to force sign-in,
     // consider removing the child account.
     public static void checkCanSignIn(final Activity activity) {
-        // TODO(crbug.com/467707243): Replace this with {@link
-        // ForcedSigninController.isForcedSigninPolicyEnabled()} once the feature flag is enabled by
-        // default.
-        if (assumeNonNull(LocalStatePrefs.get()).getBoolean(Pref.FORCE_BROWSER_SIGNIN)) {
+        if (ForcedSigninController.isForcedSigninPolicyEnabled()) {
             ExternalAuthUtils.getInstance()
                     .canUseGooglePlayServices(
                             new UserRecoverableErrorHandler.ModalDialog(activity, false));

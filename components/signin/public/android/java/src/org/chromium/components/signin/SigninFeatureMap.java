@@ -46,19 +46,12 @@ public final class SigninFeatureMap extends FeatureMap {
                     SigninFeatures.SIGNIN_LEVEL_UP_BUTTON,
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sSupportForcedSigninPolicy =
-            new CachedFlag(
-                    sInstance,
-                    SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final List<CachedFlag> sCachedFlags =
             List.of(
                     sFullscreenSigninMediatorStateMachine,
                     sMigrateAccountManagerDelegate,
                     sProfileDiscOnAllPages,
-                    sSigninLevelUpButton,
-                    sSupportForcedSigninPolicy);
+                    sSigninLevelUpButton);
 
     /**
      * Returns whether the activityless sign-in is enabled for all entry points.

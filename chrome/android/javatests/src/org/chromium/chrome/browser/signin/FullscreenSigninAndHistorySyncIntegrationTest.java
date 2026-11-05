@@ -331,7 +331,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288677
     public void testSigninFunnelHistogram_promoShownRecordedAgainOnBackFromHistorySync() {
         when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
@@ -769,7 +768,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288677
     public void testBackPress() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -800,7 +798,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add(@Item(key = "BrowserSignin", string = "2"))
     public void testBackPressWhenSigninIsForcedByPolicy() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -856,7 +853,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @LargeTest
     @Policies.Add({@Policies.Item(key = "BrowserSignin", string = "2")})
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSigninForcedByPolicy() {
         HistogramWatcher policyLoadedHistogram =

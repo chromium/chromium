@@ -8136,11 +8136,6 @@ inline constexpr char kSpectreVariant2MitigationDescription[] =
     "bootstrapping the Seccomp BPF sandbox. Can be overridden by "
     "#force-spectre-variant2-mitigation.";
 
-inline constexpr char kSupportForcedSigninPolicyName[] =
-    "Support Forced Sign-in";
-inline constexpr char kSupportForcedSigninPolicyDescription[] =
-    "Enables the SupportForcedSignin policy to require sign-in to Chrome.";
-
 inline constexpr char kTerminalDevName[] = "Terminal dev";
 inline constexpr char kTerminalDevDescription[] =
     "Enables Terminal System App to load from Downloads for developer testing. "

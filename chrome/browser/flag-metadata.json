@@ -9375,11 +9375,6 @@
     "expiry_milestone": 159
   },
   {
-    "name": "support-forced-signin-policy",
-    "owners": [ "samarchehade@google.com", "chrome-signin-mobile@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "support-google-one-deep-link",
     "owners": [ "olivierrobin@chromium.org", "qpubert@google.com" ],
     "expiry_milestone": 160

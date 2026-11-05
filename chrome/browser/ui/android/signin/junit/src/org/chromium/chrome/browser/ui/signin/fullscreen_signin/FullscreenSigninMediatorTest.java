@@ -789,7 +789,6 @@ public class FullscreenSigninMediatorTest {
      * before {@link #createMediator()}, because it replaces the policy load listener.
      */
     private void enableForcedSigninPolicy() {
-        FeatureOverrides.overrideFlag(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY, true);
         LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNativeMock);
         LocalStatePrefs.setNativePrefsLoadedForTesting(true);
         when(mLocalStatePrefsNativeMock.getPrefService()).thenReturn(mLocalPrefsServiceMock);

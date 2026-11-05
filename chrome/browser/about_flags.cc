@@ -8497,10 +8497,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
-    {"support-forced-signin-policy",
-     flag_descriptions::kSupportForcedSigninPolicyName,
-     flag_descriptions::kSupportForcedSigninPolicyDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kSupportForcedSigninPolicy)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"strict-origin-isolation", flag_descriptions::kStrictOriginIsolationName,

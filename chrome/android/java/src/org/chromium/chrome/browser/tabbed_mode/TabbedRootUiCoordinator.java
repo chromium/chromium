@@ -303,8 +303,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -3090,19 +3088,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
-        // The controller is created whenever the policy is supported, even if no prompt is
-        // displayed now, since it observes sign-out events for the lifetime of the activity.
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)) {
-            assert mForcedSigninController == null;
-            mForcedSigninController =
-                    new ForcedSigninController(
-                            mActivity,
-                            mProfileSupplier.asNonNull().get().getOriginalProfile(),
-                            SigninAndHistorySyncActivityLauncherImpl.get(),
-                            mActivityLifecycleDispatcher);
-            if (mForcedSigninController.showFullscreenSigninPromptIfRequired()) {
-                return true;
-            }
+        // The controller is always created, even if no prompt is displayed now, since it observes
+        // sign-out events for the lifetime of the activity.
+        assert mForcedSigninController == null;
+        mForcedSigninController =
+                new ForcedSigninController(
+                        mActivity,
+                        mProfileSupplier.asNonNull().get().getOriginalProfile(),
+                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        mActivityLifecycleDispatcher);
+        if (mForcedSigninController.showFullscreenSigninPromptIfRequired()) {
+            return true;
         }
 
         final Supplier<RationaleDelegate> rationaleUIDelegateSupplier =
