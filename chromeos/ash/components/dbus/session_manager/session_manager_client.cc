@@ -31,7 +31,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/unguessable_token.h"
-#include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
@@ -57,13 +56,6 @@ using RetrievePolicyResponseType =
     SessionManagerClient::RetrievePolicyResponseType;
 
 constexpr char kEmptyAccountId[] = "";
-// The timeout used when starting the android container is 90 seconds
-constexpr int kStartArcTimeout = 90 * 1000;
-
-// TODO(b/205032502): Because upgrading the container from mini to full often
-// takes more than 25 seconds, increasing it to 1 minute for now. Once we have
-// the update metrics, update the timeout to a tighter value.
-constexpr int kUpgradeTimeoutMs = 60 * 1000;  // 60 seconds
 
 // 10MB. It's the current restriction enforced by session manager.
 const size_t kSharedMemoryDataSizeLimit = 10 * 1024 * 1024;
@@ -571,55 +563,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void StartArcMiniContainer(
-      const arc::StartArcMiniInstanceRequest& request,
-      chromeos::VoidDBusMethodCallback callback) override {
-    DCHECK(!callback.is_null());
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerStartArcMiniContainer);
-    dbus::MessageWriter writer(&method_call);
-
-    writer.AppendProtoAsArrayOfBytes(request);
-
-    session_manager_proxy_->CallMethod(
-        &method_call, kStartArcTimeout,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void UpgradeArcContainer(const arc::UpgradeArcContainerRequest& request,
-                           chromeos::VoidDBusMethodCallback callback) override {
-    DCHECK(!callback.is_null());
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerUpgradeArcContainer);
-    dbus::MessageWriter writer(&method_call);
-
-    writer.AppendProtoAsArrayOfBytes(request);
-
-    session_manager_proxy_->CallMethod(
-        &method_call, kUpgradeTimeoutMs,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void StopArcInstance(const std::string& account_id,
-                       bool should_backup_log,
-                       chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(login_manager::kSessionManagerInterface,
-                                 login_manager::kSessionManagerStopArcInstance);
-
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(account_id);
-    writer.AppendBool(should_backup_log);
-
-    session_manager_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
   void SetArcCpuRestriction(
       login_manager::ContainerCpuRestrictionState restriction_state,
       chromeos::VoidDBusMethodCallback callback) override {
@@ -715,14 +658,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
         login_manager::kScreenIsUnlockedSignal,
         base::BindRepeating(&SessionManagerClientImpl::ScreenIsUnlockedReceived,
                             weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&SessionManagerClientImpl::SignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    session_manager_proxy_->ConnectToSignal(
-        login_manager::kSessionManagerInterface,
-        login_manager::kArcInstanceStopped,
-        base::BindRepeating(
-            &SessionManagerClientImpl::ArcInstanceStoppedReceived,
-            weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&SessionManagerClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
 
@@ -980,19 +915,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
     screen_is_locked_ = false;
     for (auto& observer : observers_)
       observer.ScreenLockedStateUpdated();
-  }
-
-  void ArcInstanceStoppedReceived(dbus::Signal* signal) {
-    dbus::MessageReader reader(signal);
-    uint32_t reason = 0;
-    if (!reader.PopUint32(&reason)) {
-      LOG(ERROR) << "Invalid signal: " << signal->ToString();
-      return;
-    }
-    for (auto& observer : observers_) {
-      observer.ArcInstanceStopped(
-          static_cast<login_manager::ArcContainerStopReason>(reason));
-    }
   }
 
   void SessionStateChanged(dbus::Signal* signal) {

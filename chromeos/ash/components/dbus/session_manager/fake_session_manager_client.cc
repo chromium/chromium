@@ -693,56 +693,6 @@ void FakeSessionManagerClient::GetPsmDeviceActiveSecret(
   PostReply(FROM_HERE, std::move(callback), psm_device_active_secret_);
 }
 
-void FakeSessionManagerClient::StartArcMiniContainer(
-    const arc::StartArcMiniInstanceRequest& request,
-    chromeos::VoidDBusMethodCallback callback) {
-  last_start_arc_mini_container_request_ = request;
-
-  if (!arc_available_) {
-    PostReply(FROM_HERE, std::move(callback), false);
-    return;
-  }
-  // This is starting a new container.
-  container_running_ = true;
-  PostReply(FROM_HERE, std::move(callback), true);
-}
-
-void FakeSessionManagerClient::UpgradeArcContainer(
-    const arc::UpgradeArcContainerRequest& request,
-    chromeos::VoidDBusMethodCallback callback) {
-  last_upgrade_arc_request_ = request;
-
-  PostReply(FROM_HERE, std::move(callback), !force_upgrade_failure_);
-  if (force_upgrade_failure_) {
-    // Emulate ArcInstanceStopped signal propagation.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FakeSessionManagerClient::NotifyArcInstanceStopped,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       login_manager::ArcContainerStopReason::UPGRADE_FAILURE));
-  }
-}
-
-void FakeSessionManagerClient::StopArcInstance(
-    const std::string& account_id,
-    bool should_backup_log,
-    chromeos::VoidDBusMethodCallback callback) {
-  if (!arc_available_ || !container_running_) {
-    PostReply(FROM_HERE, std::move(callback), false /* result */);
-    return;
-  }
-
-  PostReply(FROM_HERE, std::move(callback), true /* result */);
-  // Emulate ArcInstanceStopped signal propagation.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeSessionManagerClient::NotifyArcInstanceStopped,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     login_manager::ArcContainerStopReason::USER_REQUEST));
-
-  container_running_ = false;
-}
-
 void FakeSessionManagerClient::SetArcCpuRestriction(
     login_manager::ContainerCpuRestrictionState restriction_state,
     chromeos::VoidDBusMethodCallback callback) {
@@ -770,12 +720,6 @@ void FakeSessionManagerClient::QueryAdbSideload(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), adb_sideload_response_,
                                 adb_sideload_enabled_));
-}
-
-void FakeSessionManagerClient::NotifyArcInstanceStopped(
-    login_manager::ArcContainerStopReason reason) {
-  for (auto& observer : observers_)
-    observer.ArcInstanceStopped(reason);
 }
 
 bool FakeSessionManagerClient::GetFlagsForUser(

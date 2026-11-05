@@ -21,11 +21,6 @@
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
-namespace arc {
-class StartArcMiniInstanceRequest;
-class UpgradeArcContainerRequest;
-}  // namespace arc
-
 namespace cryptohome {
 class AccountIdentifier;
 }
@@ -114,10 +109,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
     // Called after StartSessionEx is called.
     virtual void StartSessionExCalled() {}
-
-    // Called when the ARC instance is stopped after it had already started.
-    virtual void ArcInstanceStopped(
-        login_manager::ArcContainerStopReason reason) {}
 
     // Called when screen lock state is updated.
     virtual void ScreenLockedStateUpdated() {}
@@ -411,30 +402,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // invoked with an empty string in case of errors.
   virtual void GetPsmDeviceActiveSecret(
       PsmDeviceActiveSecretCallback callback) = 0;
-
-  // StartArcMiniContainer starts a container with only a handful of ARC
-  // processes for Chrome OS login screen.
-  virtual void StartArcMiniContainer(
-      const arc::StartArcMiniInstanceRequest& request,
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  // UpgradeArcContainer upgrades a mini-container to a full ARC container. On
-  // upgrade failure, the container will be shutdown. The container shutdown
-  // will trigger the ArcInstanceStopped signal (as usual). There are no
-  // guarantees over whether this |callback| is invoked or the
-  // ArcInstanceStopped signal is received first.
-  virtual void UpgradeArcContainer(
-      const arc::UpgradeArcContainerRequest& request,
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  // Asynchronously stops the ARC instance. When |should_backup_log| is set to
-  // true it also initiates ARC log back up operation on debugd for the given
-  // |account_id|. Upon completion, invokes |callback| with the result;
-  // true on success, false on failure (either session manager failed to
-  // stop an instance or session manager can not be reached).
-  virtual void StopArcInstance(const std::string& account_id,
-                               bool should_backup_log,
-                               chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Adjusts the amount of CPU the ARC instance is allowed to use. When
   // |restriction_state| is CONTAINER_CPU_RESTRICTION_FOREGROUND the limit is
