@@ -33,7 +33,6 @@ class BASE_EXPORT MemoryConsumerAndroid : public base::MemoryConsumer {
   MemoryConsumerAndroid(const MemoryConsumerAndroid&) = delete;
   MemoryConsumerAndroid& operator=(const MemoryConsumerAndroid&) = delete;
 
-  void Destroy();
   void NotifyInitialLimitIfNonDefault();
 
   // base::MemoryConsumer:

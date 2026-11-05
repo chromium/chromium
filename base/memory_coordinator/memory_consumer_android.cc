@@ -95,10 +95,6 @@ MemoryConsumerAndroid::MemoryConsumerAndroid(
 
 MemoryConsumerAndroid::~MemoryConsumerAndroid() = default;
 
-void MemoryConsumerAndroid::Destroy() {
-  delete this;
-}
-
 void MemoryConsumerAndroid::NotifyInitialLimitIfNonDefault() {
   if (memory_limit() != base::MemoryLimit::Default()) {
     OnUpdateMemoryLimit();
@@ -120,17 +116,18 @@ bool MemoryConsumerAndroid::IsPassive() const {
   return is_passive_;
 }
 
-static int64_t JNI_MemoryConsumerRegistration_Register(
+static jni_zero::JniUniquePtr<MemoryConsumerAndroid>
+JNI_MemoryConsumerRegistration_Register(
     JNIEnv* env,
     const std::string& consumer_name,
     int32_t packed_traits,
     const jni_zero::JavaRef<jobject>& j_consumer) {
   base::MemoryConsumerTraits traits =
       base::android::TraitsFromJava(packed_traits);
-  auto* native_peer = new base::android::MemoryConsumerAndroid(
+  auto native_peer = jni_zero::MakeUnique<base::android::MemoryConsumerAndroid>(
       env, j_consumer, consumer_name, traits);
   native_peer->NotifyInitialLimitIfNonDefault();
-  return reinterpret_cast<intptr_t>(native_peer);
+  return native_peer;
 }
 
 void FlushPendingMemoryConsumerRegistrations() {
