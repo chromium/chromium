@@ -204,7 +204,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   const bool is_software_;
 
   mutable sk_sp<SkSurface> surface_;
-  uint32_t snapshot_sk_image_id_ = 0u;
+  uint64_t snapshot_sk_image_id_ = 0u;
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;

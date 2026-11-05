@@ -80,9 +80,9 @@ TEST(AnimatedWebPTests, uniqueGenerationIDs) {
   decoder->SetData(data.get(), true);
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  uint32_t generation_id0 = frame->Bitmap().getGenerationID();
+  uint64_t generation_id0 = frame->Bitmap().getGenerationID();
   frame = decoder->DecodeFrameBufferAtIndex(1);
-  uint32_t generation_id1 = frame->Bitmap().getGenerationID();
+  uint64_t generation_id1 = frame->Bitmap().getGenerationID();
 
   EXPECT_TRUE(generation_id0 != generation_id1);
 }

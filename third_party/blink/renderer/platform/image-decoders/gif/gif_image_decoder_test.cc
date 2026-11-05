@@ -46,13 +46,13 @@ TEST(GIFImageDecoderTest, decodeTwoFrames) {
   decoder->SetData(data.get(), true);
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  uint32_t generation_id0 = frame->Bitmap().getGenerationID();
+  uint64_t generation_id0 = frame->Bitmap().getGenerationID();
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
   EXPECT_EQ(16, frame->Bitmap().width());
   EXPECT_EQ(16, frame->Bitmap().height());
 
   frame = decoder->DecodeFrameBufferAtIndex(1);
-  uint32_t generation_id1 = frame->Bitmap().getGenerationID();
+  uint64_t generation_id1 = frame->Bitmap().getGenerationID();
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
   EXPECT_EQ(16, frame->Bitmap().width());
   EXPECT_EQ(16, frame->Bitmap().height());

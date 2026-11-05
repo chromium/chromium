@@ -476,7 +476,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   cc::PaintImage::Id sw_snapshot_paint_image_id_ = cc::PaintImage::kInvalidId;
   cc::PaintImage::ContentId sw_snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
-  uint32_t sw_snapshot_sk_image_id_ = 0u;
+  uint64_t sw_snapshot_sk_image_id_ = 0u;
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
