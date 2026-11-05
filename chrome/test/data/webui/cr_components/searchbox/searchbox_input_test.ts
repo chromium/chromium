@@ -8,7 +8,7 @@ import {createSearchMatchForTesting, SearchboxBrowserProxy} from 'chrome://resou
 import type {SearchboxInputElement} from 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, UrlDeemphasisMode} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertIconMaskImageUrl, createClipboardEvent, createUrlMatch} from './searchbox_test_utils.js';
@@ -243,6 +243,35 @@ suite('SearchboxInputTest', () => {
     // The selection should now highlight 'o'.
     assertEquals(4, input.inputElement.selectionStart);
     assertEquals(5, input.inputElement.selectionEnd);
+  });
+
+  test('Reports committed composition text unless blurred', async () => {
+    input = await createInput();
+    const updates: Array<{value: string, isComposing: boolean}> = [];
+    input.addEventListener('searchbox-input-text-updated', (e: Event) => {
+      const {value, isComposing} =
+          (e as CustomEvent<{value: string, isComposing: boolean}>).detail;
+      updates.push({value, isComposing});
+    });
+    function commit() {
+      input.inputElement.dispatchEvent(
+          new CompositionEvent('compositionend', {data: 'にほん'}));
+    }
+
+    // Committing a composition reports its text again, as typed.
+    input.inputElement.value = 'にほん';
+    commit();
+    assertDeepEquals([{value: 'にほん', isComposing: false}], updates);
+
+    // A composition that ends because the input loses focus isn't reported,
+    // e.g. when the window loses focus, which blurs the input first...
+    input.inputElement.dispatchEvent(new FocusEvent('blur'));
+    commit();
+    // ...or when the input is blurred, which ends the composition first.
+    input.inputElement.dispatchEvent(new FocusEvent('focus'));
+    input.blur();
+    commit();
+    assertEquals(1, updates.length);
   });
 
   test('allows empty string placeholder without fallback', async () => {
