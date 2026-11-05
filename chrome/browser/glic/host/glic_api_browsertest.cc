@@ -2842,6 +2842,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithNewTabDaisyChain,
   // 8. Open Glic in the new (third) tab.
   ASSERT_OK_AND_ASSIGN(auto* tab2_instance, WaitForGlicOpen(tab2));
 
+  // In GEiC, daisy-chained tabs are not auto-pinned, and attached mode only
+  // attributes focused-tab input metrics to pinned tabs.
+  if (IsGeic()) {
+    EXPECT_FALSE(
+        tab2_instance->GetSharingManager()->IsTabPinned(tab2->GetHandle()));
+    tab2_instance->GetSharingManager()->PinTabs({tab2->GetHandle()},
+                                                GlicPinTrigger::kContextMenu);
+  }
+
   // 9. Trigger "inputSubmitted" in the third tab's panel.
   ExecuteJsTest(
       {.params = base::Value("inputSubmitted"), .instance = tab2_instance});

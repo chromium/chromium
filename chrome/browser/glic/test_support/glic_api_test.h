@@ -17,7 +17,9 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -302,6 +304,11 @@ class GlicApiBrowserTestMixin : public T {
           "embeddedHttpsTestServerUrl",
           Base::embedded_https_test_server().GetURL("example.com", "/").spec());
     }
+    Profile* profile =
+        Profile::FromBrowserContext(glic_guest_frame->GetBrowserContext());
+    init_dict.Set("isGeic",
+                  profile && GlicProviderLatch::GetProvider(*profile) ==
+                                 GlicProvider::kGeminiEnterprise);
     std::string test_init_data = base::WriteJson(init_dict).value_or("");
     // Store `frame_id` early to avoid evaluation-order use-after-free if
     // `EvalJs` yields and the frame is destroyed.

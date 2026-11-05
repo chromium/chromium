@@ -46,6 +46,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_tab_group_utils.h"
@@ -183,6 +184,8 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
     side_panel_options.prefer_peek = true;
+    side_panel_options.pin_on_bind =
+        service_->provider_spec().PinOnBindEnabled();
 
     auto show_options = ShowOptions{side_panel_options};
     switch (source) {
@@ -734,15 +737,17 @@ void GlicInstanceImpl::CreateTab(
     return;
   }
 
+  const bool pin_on_bind = service_->provider_spec().PinOnBindEnabled();
+
   // If showing the side panel is not requested, we only bind the tab.
   if (!show_side_panel) {
-    BindTab(created_tab, GlicPinTrigger::kDaisyChain, /*pin_on_bind=*/true);
+    BindTab(created_tab, GlicPinTrigger::kDaisyChain, pin_on_bind);
   } else if (base::FeatureList::IsEnabled(
                  kGlicBindOnlyForDaisyChainingFromFloatingUi) &&
              IsDetached()) {
     // If the floating UI is active and the feature flag is enabled, bind the
     // tab and keep focus on the floating UI.
-    BindTab(created_tab, GlicPinTrigger::kDaisyChain, /*pin_on_bind=*/true);
+    BindTab(created_tab, GlicPinTrigger::kDaisyChain, pin_on_bind);
     if (embedder_has_focus) {
       GetActiveEmbedder()->Focus();
     }
@@ -750,6 +755,7 @@ void GlicInstanceImpl::CreateTab(
     SidePanelShowOptions side_panel_options{*created_tab};
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.prefer_peek = true;
+    side_panel_options.pin_on_bind = pin_on_bind;
     auto show_options = ShowOptions{side_panel_options};
     show_options.invocation_source =
         mojom::InvocationSource::kDaisyChainOnFollowLink;

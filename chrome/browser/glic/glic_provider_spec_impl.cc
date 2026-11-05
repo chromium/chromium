@@ -186,6 +186,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGlicSsr);
   }
+  bool PinOnBindEnabled() const override { return true; }
 
  private:
   const std::unique_ptr<GlicFreStore> fre_store_ = CreateGeminiFreStore();
@@ -252,6 +253,10 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGeicSsr);
   }
+  // GEiC uses explicit single-tab attachment; tabs created via CreateTab or
+  // link clicks (e.g. Send feedback, Help, citations) should not be auto-pinned
+  // as shared tab context.
+  bool PinOnBindEnabled() const override { return false; }
 
  private:
   const GURL guest_url_;

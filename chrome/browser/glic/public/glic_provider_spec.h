@@ -117,6 +117,9 @@ class GlicProviderSpec {
   virtual bool SupportsFeature(GlicFeature feature) const = 0;
   // Whether this provider's guest supports server-side rendering.
   virtual bool SupportsSsr() const = 0;
+  // Whether daisy-chained tabs (e.g. tabs opened via CreateTab or link clicks)
+  // are automatically pinned as shared context when bound to a Glic instance.
+  virtual bool PinOnBindEnabled() const = 0;
 };
 
 }  // namespace glic

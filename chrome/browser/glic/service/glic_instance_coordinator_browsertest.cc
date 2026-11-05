@@ -2011,4 +2011,68 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(instance->IsActiveEmbedder(SidePanelEmbedderKey(mock_tab)));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       CreateTabPinsNewTabDefault) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(GetInstanceForTab(original_tab));
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  instance->CreateTab(GetSimpleTestUrl(),
+                      /*open_in_background=*/false, std::nullopt,
+                      base::DoNothing(), /*show_side_panel=*/true);
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
+class GlicInstanceCoordinatorGeicBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorGeicBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kGeic, {}},
+        },
+        /*disabled_features=*/{});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicInstanceCoordinatorBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(::switches::kGeicGuestURL,
+                                    GetGuestURL().spec());
+    command_line->AppendSwitch(::switches::kGlicDev);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicBrowserTest,
+                       CreateTabDoesNotPinNewTabInGeic) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(GetInstanceForTab(original_tab));
+
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  instance->CreateTab(GetSimpleTestUrl(),
+                      /*open_in_background=*/false, std::nullopt,
+                      base::DoNothing(), /*show_side_panel=*/true);
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+  EXPECT_FALSE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
 }  // namespace glic
