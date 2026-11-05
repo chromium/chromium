@@ -5,7 +5,11 @@
 #include "chrome/browser/ui/webui/password_manager/notification_cards/passkey_unlock_promo.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
+#include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/password_manager/notification_card.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
@@ -17,6 +21,16 @@ namespace {
 
 using testing::Return;
 
+void InitFeatureList(base::test::ScopedFeatureList& scoped_feature_list,
+                     const std::string& enable_features = "",
+                     const std::string& disable_features = "") {
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine(enable_features, disable_features);
+  feature_list->EnableRuntimeMutability(
+      password_manager::features::kPasskeyUnlockPromo, base::DoNothing());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+}
+
 class MockPasskeyUnlockManager : public webauthn::PasskeyUnlockManager {
  public:
   MOCK_METHOD(bool, ShouldDisplayErrorUi, (), (const, override));
@@ -24,13 +38,18 @@ class MockPasskeyUnlockManager : public webauthn::PasskeyUnlockManager {
 
 class PasskeyUnlockPromoTest : public testing::Test {
  public:
+  PasskeyUnlockPromoTest() {
+    InitFeatureList(scoped_feature_list_,
+                    /*enable_features=*/password_manager::features::
+                        kPasskeyUnlockPromo.name);
+  }
+
   MockPasskeyUnlockManager* passkey_unlock_manager() {
     return &mock_passkey_unlock_manager_;
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kPasskeyUnlockPromo};
+  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockPasskeyUnlockManager> mock_passkey_unlock_manager_;
 };
 
@@ -92,15 +111,40 @@ TEST_F(PasskeyUnlockPromoTest, ShouldNotShowWhenNullManager) {
 }
 
 TEST_F(PasskeyUnlockPromoTest, ShouldNotShowWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kPasskeyUnlockPromo);
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureList(scoped_feature_list, /*enable_features=*/"",
+                  /*disable_features=*/password_manager::features::
+                      kPasskeyUnlockPromo.name);
 
-  auto promo =
-      std::make_unique<PasskeyUnlockPromo>(passkey_unlock_manager());
+  auto promo = std::make_unique<PasskeyUnlockPromo>(passkey_unlock_manager());
 
   EXPECT_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
       .WillRepeatedly(Return(true));
+  EXPECT_FALSE(
+      promo->ShouldShowCard(password_manager::NotificationCardPrefState{}));
+}
+
+TEST_F(PasskeyUnlockPromoTest, ShouldShowCardMutatedAtRuntime) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureList(scoped_feature_list);
+
+  auto promo = std::make_unique<PasskeyUnlockPromo>(passkey_unlock_manager());
+  EXPECT_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .WillRepeatedly(Return(true));
+
+  // 1. Initially disabled: card is not shown.
+  EXPECT_FALSE(
+      promo->ShouldShowCard(password_manager::NotificationCardPrefState{}));
+
+  // 2. Mutate disabled -> enabled at runtime: card is shown.
+  scoped_feature_list.MutateRuntimeMutableFeature(
+      password_manager::features::kPasskeyUnlockPromo, true);
+  EXPECT_TRUE(
+      promo->ShouldShowCard(password_manager::NotificationCardPrefState{}));
+
+  // 3. Mutate enabled -> disabled at runtime: card is hidden again.
+  scoped_feature_list.MutateRuntimeMutableFeature(
+      password_manager::features::kPasskeyUnlockPromo, false);
   EXPECT_FALSE(
       promo->ShouldShowCard(password_manager::NotificationCardPrefState{}));
 }

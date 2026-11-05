@@ -87,7 +87,8 @@ BASE_FEATURE(kDeviceReauthRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kEnablePasswordManagerMojoApiPhase2,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kPasskeyUnlockPromo, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kPasskeyUnlockPromo,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kFallbackNoPreviewForCrossDomainCredentials,
