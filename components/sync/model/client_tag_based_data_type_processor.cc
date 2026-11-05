@@ -1417,13 +1417,7 @@ void ClientTagBasedDataTypeProcessor::ExpireAllEntries(
   CHECK(metadata_changes);
   CHECK(entity_tracker_);
 
-  std::vector<std::string> storage_key_to_be_deleted;
-  for (const ProcessorEntity* entity :
-       entity_tracker_->GetAllEntitiesIncludingTombstones()) {
-    storage_key_to_be_deleted.push_back(entity->storage_key());
-  }
-
-  for (const std::string& key : storage_key_to_be_deleted) {
+  for (const std::string& key : entity_tracker_->GetAllStorageKeys()) {
     RemoveEntity(key, metadata_changes);
   }
 }
