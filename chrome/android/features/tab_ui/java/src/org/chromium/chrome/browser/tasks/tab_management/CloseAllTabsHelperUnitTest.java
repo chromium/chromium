@@ -277,12 +277,23 @@ public class CloseAllTabsHelperUnitTest {
     }
 
     @Test
-    public void testCloseAllTabsWithStubTabModel() {
+    public void testCloseAllTabsWithStubRegularModel() {
         StubTabModel stubRegularModel = new StubTabModel(/* isIncognito= */ false, mProfile);
         when(mTabModelSelector.getModel(false)).thenReturn(stubRegularModel);
 
         CloseAllTabsHelper.closeAllTabsHidingTabGroups(
                 mTabModelSelector, /* allowUndo= */ false, /* closePinnedTabs= */ false);
         verify(mIncognitoTabRemover).closeTabs(any(), eq(false));
+    }
+
+    @Test
+    public void testCloseAllTabsWithStubIncognitoModel() {
+        StubTabModel stubIncognitoModel =
+                new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
+        when(mTabModelSelector.getModel(true)).thenReturn(stubIncognitoModel);
+
+        CloseAllTabsHelper.closeAllTabsHidingTabGroups(
+                mTabModelSelector, /* allowUndo= */ false, /* closePinnedTabs= */ false);
+        verify(mRegularTabRemover).closeTabs(any(), eq(false));
     }
 }

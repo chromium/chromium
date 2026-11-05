@@ -679,6 +679,7 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testBottomSheetHiddenOnIncognito() {
         showBottomSheetAndBlockUntilReady();
 

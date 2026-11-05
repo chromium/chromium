@@ -57,18 +57,16 @@ public class CloseAllTabsHelper {
             boolean allowUndo,
             @TabClosingSource int closingSource,
             boolean closePinnedTabs) {
-        TabModel incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
-        if (!(incognitoModel instanceof StubTabModel)) {
-            incognitoModel
-                    .getTabRemover()
-                    .closeTabs(
-                            TabClosureParams.closeAllTabs()
-                                    .allowUndo(allowUndo)
-                                    .hideTabGroups(true)
-                                    .tabClosingSource(closingSource)
-                                    .build(),
-                            /* allowDialog= */ false);
-        }
+        tabModelSelector
+                .getModel(/* incognito= */ true)
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeAllTabs()
+                                .allowUndo(allowUndo)
+                                .hideTabGroups(true)
+                                .tabClosingSource(closingSource)
+                                .build(),
+                        /* allowDialog= */ false);
 
         TabModel regularTabModel = tabModelSelector.getModel(/* incognito= */ false);
         if (regularTabModel instanceof StubTabModel) {

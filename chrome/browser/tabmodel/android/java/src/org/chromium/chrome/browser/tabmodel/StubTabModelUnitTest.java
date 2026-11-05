@@ -5,16 +5,21 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -145,5 +150,57 @@ public class StubTabModelUnitTest {
         StubTabModel stubTabModel = new StubTabModel(/* isIncognito= */ false, /* profile= */ null);
         assertNull(stubTabModel.getCurrentTabSupplier().get());
         assertEquals(Integer.valueOf(0), stubTabModel.getTabCountSupplier().get());
+    }
+
+    @Test
+    public void testCloseAllTabsIsNoOp() {
+        StubTabModel stubTabModel = new StubTabModel(/* isIncognito= */ false, /* profile= */ null);
+        TabClosureParams closeAllParams = TabClosureParams.closeAllTabs().build();
+
+        assertFalse(stubTabModel.closeTabs(closeAllParams));
+        stubTabModel.getTabRemover().closeTabs(closeAllParams, /* allowDialog= */ false);
+        stubTabModel
+                .getTabRemover()
+                .prepareCloseTabs(
+                        closeAllParams,
+                        /* allowDialog= */ false,
+                        /* listener= */ null,
+                        params -> fail("onPreparedCallback should not be invoked on StubTabModel"));
+        stubTabModel.getTabRemover().forceCloseTabs(closeAllParams);
+    }
+
+    @Test
+    public void testCloseNonAllTabsThrows() {
+        StubTabModel stubTabModel = new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
+        Tab mockTab = mock(Tab.class);
+        TabClosureParams singleParams = TabClosureParams.closeTab(mockTab).build();
+        TabClosureParams multipleParams =
+                TabClosureParams.closeTabs(Collections.singletonList(mockTab)).build();
+
+        assertThrows(
+                UnsupportedOperationException.class, () -> stubTabModel.closeTabs(singleParams));
+        assertThrows(
+                UnsupportedOperationException.class, () -> stubTabModel.closeTabs(multipleParams));
+
+        TabRemover remover = stubTabModel.getTabRemover();
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> remover.closeTabs(singleParams, /* allowDialog= */ false));
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> remover.closeTabs(multipleParams, /* allowDialog= */ false));
+        assertThrows(
+                UnsupportedOperationException.class,
+                () ->
+                        remover.prepareCloseTabs(
+                                singleParams,
+                                /* allowDialog= */ false,
+                                /* listener= */ null,
+                                params -> {}));
+        assertThrows(
+                UnsupportedOperationException.class, () -> remover.forceCloseTabs(singleParams));
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> remover.removeTab(mockTab, /* allowDialog= */ false));
     }
 }
