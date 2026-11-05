@@ -2486,6 +2486,11 @@ void TabStripModel::ReleaseEphemeralGroupRemovalLock(
     const tab_groups::TabGroupId& group_id) {
   CHECK(locked_ephemeral_group_ == group_id);
   locked_ephemeral_group_.reset();
+  // Released during the `OnTabGroupFocusChanged()` notification; let
+  // `ExitFocusMode()` dissolve the group once the notification returns.
+  if (lockable_ephemeral_group_ == group_id) {
+    return;
+  }
   MaybeDissolveEphemeralGroup(group_id);
 }
 
