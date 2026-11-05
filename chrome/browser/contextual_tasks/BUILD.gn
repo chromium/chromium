@@ -289,10 +289,10 @@ source_set("ui") {
     ]
   } else {
     sources += [
-      "contextual_tasks_ghost_loader_view.h",
       "contextual_tasks_location_bar.h",
       "contextual_tasks_onboarding_tooltip_controller.h",
       "contextual_tasks_panel_host_desktop.h",
+      "contextual_tasks_scrim_view.h",
       "contextual_tasks_web_view.h",
       "location_bar_stub.h",
     ]
@@ -546,10 +546,10 @@ source_set("ui_impl") {
     ]
   } else {
     sources += [
-      "contextual_tasks_ghost_loader_view.cc",
       "contextual_tasks_location_bar.cc",
       "contextual_tasks_onboarding_tooltip_controller.cc",
       "contextual_tasks_panel_host_desktop.cc",
+      "contextual_tasks_scrim_view.cc",
       "contextual_tasks_web_view.cc",
       "location_bar_stub.cc",
     ]

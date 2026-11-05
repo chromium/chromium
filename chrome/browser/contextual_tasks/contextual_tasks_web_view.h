@@ -45,7 +45,7 @@ class WebContentsModalDialogHost;
 
 namespace contextual_tasks {
 
-class ContextualTasksGhostLoaderView;
+class ContextualTasksScrimView;
 class ContextualTasksUIBase;
 
 class ContextualTasksWebView
@@ -67,7 +67,7 @@ class ContextualTasksWebView
   explicit ContextualTasksWebView(
       BrowserWindowInterface* browser_window,
       content::WebContents* toolbar_web_contents = nullptr,
-      content::WebContents* ghost_loader_web_contents = nullptr);
+      content::WebContents* scrim_web_contents = nullptr);
   ~ContextualTasksWebView() override;
 
   base::WeakPtr<ContextualTasksWebView> GetWeakPtr();
@@ -133,10 +133,8 @@ class ContextualTasksWebView
   // Returns the main content WebView.
   views::WebView* content_web_view() { return content_web_view_; }
 
-  // Returns the ghost loader view overlaying the main content.
-  ContextualTasksGhostLoaderView* ghost_loader_view() {
-    return ghost_loader_view_;
-  }
+  // Returns the scrim view overlaying the main content.
+  ContextualTasksScrimView* scrim_view() { return scrim_view_; }
 
  private:
   // Attach a modal dialog manager to a WebContents so that dialogs can be
@@ -159,7 +157,7 @@ class ContextualTasksWebView
   void UpdateToolbarStateFromWebContents(content::WebContents* wc,
                                          bool use_last_committed_url = false);
 
-  // Synchronizes `ghost_loader_view_` mode and visibility with
+  // Synchronizes `scrim_view_` mode and visibility with
   // `is_ghost_loader_visible_` and `is_error_page_visible_`.
   void UpdateScrimVisibility();
 
@@ -176,26 +174,26 @@ class ContextualTasksWebView
   // rearchitecture feature is enabled).
   raw_ptr<views::WebView> toolbar_web_view_ = nullptr;
 
-  // Container view hosting `content_web_view_` and `ghost_loader_view_` under
+  // Container view hosting `content_web_view_` and `scrim_view_` under
   // the side panel rearchitecture.
   raw_ptr<views::View> content_container_ = nullptr;
 
   // The WebView used for the main content.
   raw_ptr<views::WebView> content_web_view_ = nullptr;
 
-  // The placeholder ghost loader view overlaying the content WebView.
-  raw_ptr<ContextualTasksGhostLoaderView> ghost_loader_view_ = nullptr;
+  // The placeholder scrim view overlaying the content WebView.
+  raw_ptr<ContextualTasksScrimView> scrim_view_ = nullptr;
 
-  // Whether this view created and owns the toolbar / ghost loader WebContents.
+  // Whether this view created and owns the toolbar / scrim `WebContents`.
   bool owns_toolbar_web_contents_ = false;
-  bool owns_ghost_loader_web_contents_ = false;
+  bool owns_scrim_web_contents_ = false;
 
   // Whether the next DidStopLoading() corresponds to an initial or aborted
   // about:blank navigation that should not dismiss the ghost loader.
   bool ignore_next_stop_loading_for_about_blank_ = false;
 
   // Desired visibility states for the ghost loader and protected page error
-  // scrims hosted in `ghost_loader_view_`.
+  // scrims hosted in `scrim_view_`.
   bool is_ghost_loader_visible_ = false;
   bool is_error_page_visible_ = false;
 

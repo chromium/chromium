@@ -5,8 +5,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
 
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_scrim_view.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -44,17 +44,17 @@ ContextualTasksPanelHostDesktop::~ContextualTasksPanelHostDesktop() {
     if (web_view_->toolbar_web_view()) {
       web_view_->toolbar_web_view()->SetWebContents(nullptr);
     }
-    if (web_view_->ghost_loader_view()) {
-      web_view_->ghost_loader_view()->SetWebContents(nullptr);
+    if (web_view_->scrim_view()) {
+      web_view_->scrim_view()->SetWebContents(nullptr);
     }
   }
   if (toolbar_web_contents_) {
     webui::SetBrowserWindowInterface(toolbar_web_contents_.get(), nullptr);
     toolbar_web_contents_.reset();
   }
-  if (ghost_loader_web_contents_) {
-    webui::SetBrowserWindowInterface(ghost_loader_web_contents_.get(), nullptr);
-    ghost_loader_web_contents_.reset();
+  if (scrim_web_contents_) {
+    webui::SetBrowserWindowInterface(scrim_web_contents_.get(), nullptr);
+    scrim_web_contents_.reset();
   }
 
   SidePanelRegistry* global_registry = SidePanelRegistry::From(browser_window_);
@@ -208,9 +208,9 @@ ContextualTasksPanelHostDesktop::CreateSidePanelView(
     SidePanelEntryScope& scope) {
   EnsureWebUiWebContentsCreated();
   std::unique_ptr<ContextualTasksWebView> web_view =
-      std::make_unique<ContextualTasksWebView>(
-          browser_window_, toolbar_web_contents_.get(),
-          ghost_loader_web_contents_.get());
+      std::make_unique<ContextualTasksWebView>(browser_window_,
+                                               toolbar_web_contents_.get(),
+                                               scrim_web_contents_.get());
   web_view->SetPaintToLayer();
   web_view->layer()->SetFillsBoundsOpaquely(false);
   web_view_ = web_view->GetWeakPtr();
@@ -291,16 +291,15 @@ void ContextualTasksPanelHostDesktop::EnsureWebUiWebContentsCreated() {
         GURL(chrome::kChromeUIContextualTasksToolbarURL), content::Referrer(),
         ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   }
-  if (!ghost_loader_web_contents_) {
-    content::WebContents::CreateParams ghost_loader_params(
+  if (!scrim_web_contents_) {
+    content::WebContents::CreateParams scrim_params(
         browser_window_->GetProfile());
-    ghost_loader_web_contents_ =
-        content::WebContents::Create(ghost_loader_params);
-    webui::SetBrowserWindowInterface(ghost_loader_web_contents_.get(),
+    scrim_web_contents_ = content::WebContents::Create(scrim_params);
+    webui::SetBrowserWindowInterface(scrim_web_contents_.get(),
                                      browser_window_);
     ContextualTasksWebView::ConfigureWebContentsBackground(
-        ghost_loader_web_contents_.get(), browser_window_->GetProfile());
-    ghost_loader_web_contents_->GetController().LoadURL(
+        scrim_web_contents_.get(), browser_window_->GetProfile());
+    scrim_web_contents_->GetController().LoadURL(
         GURL(chrome::kChromeUIContextualTasksGhostLoaderURL),
         content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   }

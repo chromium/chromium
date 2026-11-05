@@ -7,10 +7,11 @@
 
 #include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_scrim_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -87,7 +88,9 @@ class ContextualTasksGhostLoaderPixelTest
     widget_->Init(std::move(params));
 
     auto ghost_loader =
-        std::make_unique<ContextualTasksGhostLoaderView>(GetProfile());
+        std::make_unique<ContextualTasksScrimView>(GetProfile());
+    ghost_loader->LoadInitialURL(
+        GURL(chrome::kChromeUIContextualTasksGhostLoaderURL));
     auto* ghost_loader_ptr = widget_->SetContentsView(std::move(ghost_loader));
     widget_->Show();
 

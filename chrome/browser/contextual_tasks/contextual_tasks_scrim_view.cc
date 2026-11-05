@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_scrim_view.h"
 
 #include <string>
 
@@ -20,23 +20,22 @@
 
 namespace contextual_tasks {
 
-ContextualTasksGhostLoaderView::ContextualTasksGhostLoaderView(
-    content::BrowserContext* browser_context,
-    content::WebContents* web_contents)
+ContextualTasksScrimView::ContextualTasksScrimView(
+    content::BrowserContext* browser_context)
     : views::WebView(browser_context) {
-  SetProperty(views::kElementIdentifierKey,
-              kContextualTasksGhostLoaderViewElementId);
-  if (web_contents) {
-    is_showing_error_page_ = web_contents->GetVisibleURL().ref() == "error";
-    SetWebContents(web_contents);
-  } else {
-    LoadInitialURL(GURL(chrome::kChromeUIContextualTasksGhostLoaderURL));
-  }
+  SetProperty(views::kElementIdentifierKey, kContextualTasksScrimViewElementId);
 }
 
-ContextualTasksGhostLoaderView::~ContextualTasksGhostLoaderView() = default;
+ContextualTasksScrimView::~ContextualTasksScrimView() = default;
 
-void ContextualTasksGhostLoaderView::SetShowErrorPage(bool show_error_page) {
+void ContextualTasksScrimView::SetWebContents(
+    content::WebContents* web_contents) {
+  is_showing_error_page_ =
+      web_contents && web_contents->GetVisibleURL().ref() == "error";
+  views::WebView::SetWebContents(web_contents);
+}
+
+void ContextualTasksScrimView::SetShowErrorPage(bool show_error_page) {
   if (is_showing_error_page_ == show_error_page || !web_contents()) {
     return;
   }
@@ -49,7 +48,7 @@ void ContextualTasksGhostLoaderView::SetShowErrorPage(bool show_error_page) {
                                           std::string());
 }
 
-BEGIN_METADATA(ContextualTasksGhostLoaderView)
+BEGIN_METADATA(ContextualTasksScrimView)
 END_METADATA
 
 }  // namespace contextual_tasks

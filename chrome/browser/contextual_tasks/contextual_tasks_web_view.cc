@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_scrim_view.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -109,10 +109,10 @@ void ContextualTasksWebView::ConfigureWebContentsBackground(
 ContextualTasksWebView::ContextualTasksWebView(
     BrowserWindowInterface* browser_window,
     content::WebContents* toolbar_web_contents,
-    content::WebContents* ghost_loader_web_contents)
+    content::WebContents* scrim_web_contents)
     : browser_window_(browser_window),
       owns_toolbar_web_contents_(toolbar_web_contents == nullptr),
-      owns_ghost_loader_web_contents_(ghost_loader_web_contents == nullptr) {
+      owns_scrim_web_contents_(scrim_web_contents == nullptr) {
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksSidePanelWebViewElementId);
 
@@ -156,18 +156,22 @@ ContextualTasksWebView::ContextualTasksWebView(
     content_web_view_ = content_container->AddChildView(
         std::make_unique<views::WebView>(browser_window->GetProfile()));
 
-    if (ghost_loader_web_contents) {
-      ConfigureWebContentsBackground(ghost_loader_web_contents,
+    scrim_view_ = content_container->AddChildView(
+        std::make_unique<ContextualTasksScrimView>(
+            browser_window->GetProfile()));
+    if (scrim_web_contents) {
+      ConfigureWebContentsBackground(scrim_web_contents,
+                                     browser_window->GetProfile());
+      scrim_view_->SetWebContents(scrim_web_contents);
+    } else {
+      scrim_view_->LoadInitialURL(
+          GURL(chrome::kChromeUIContextualTasksGhostLoaderURL));
+      ConfigureWebContentsBackground(scrim_view_->GetWebContents(),
                                      browser_window->GetProfile());
     }
-    ghost_loader_view_ = content_container->AddChildView(
-        std::make_unique<ContextualTasksGhostLoaderView>(
-            browser_window->GetProfile(), ghost_loader_web_contents));
-    ConfigureWebContentsBackground(ghost_loader_view_->GetWebContents(),
-                                   browser_window->GetProfile());
-    is_error_page_visible_ = ghost_loader_view_->is_showing_error_page();
+    is_error_page_visible_ = scrim_view_->is_showing_error_page();
     UpdateScrimVisibility();
-    webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
+    webui::SetBrowserWindowInterface(scrim_view_->GetWebContents(),
                                      browser_window);
 
     content_container_ = AddChildView(std::move(content_container));
@@ -189,12 +193,11 @@ ContextualTasksWebView::~ContextualTasksWebView() {
       toolbar_web_view_->SetWebContents(nullptr);
     }
   }
-  if (ghost_loader_view_ && ghost_loader_view_->web_contents()) {
-    if (owns_ghost_loader_web_contents_) {
-      webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
-                                       nullptr);
+  if (scrim_view_ && scrim_view_->web_contents()) {
+    if (owns_scrim_web_contents_) {
+      webui::SetBrowserWindowInterface(scrim_view_->GetWebContents(), nullptr);
     } else {
-      ghost_loader_view_->SetWebContents(nullptr);
+      scrim_view_->SetWebContents(nullptr);
     }
   }
   SetWebContents(nullptr);
@@ -270,7 +273,7 @@ void ContextualTasksWebView::RequestContentViewFocus() {
 }
 
 void ContextualTasksWebView::SetGhostLoaderVisible(bool visible) {
-  if (!ghost_loader_view_) {
+  if (!scrim_view_) {
     return;
   }
   if (visible && !GetIsGhostLoaderEnabled()) {
@@ -281,12 +284,12 @@ void ContextualTasksWebView::SetGhostLoaderVisible(bool visible) {
 }
 
 bool ContextualTasksWebView::IsGhostLoaderVisible() const {
-  return ghost_loader_view_ && ghost_loader_view_->GetVisible() &&
-         !ghost_loader_view_->is_showing_error_page();
+  return scrim_view_ && scrim_view_->GetVisible() &&
+         !scrim_view_->is_showing_error_page();
 }
 
 void ContextualTasksWebView::SetErrorPageVisible(bool visible) {
-  if (!ghost_loader_view_) {
+  if (!scrim_view_) {
     return;
   }
   if (visible && !GetIsProtectedPageErrorEnabled()) {
@@ -297,8 +300,8 @@ void ContextualTasksWebView::SetErrorPageVisible(bool visible) {
 }
 
 bool ContextualTasksWebView::IsErrorPageVisible() const {
-  return ghost_loader_view_ && ghost_loader_view_->GetVisible() &&
-         ghost_loader_view_->is_showing_error_page();
+  return scrim_view_ && scrim_view_->GetVisible() &&
+         scrim_view_->is_showing_error_page();
 }
 
 void ContextualTasksWebView::OnThemeChanged() {
@@ -321,8 +324,8 @@ void ContextualTasksWebView::OnThemeChanged() {
   if (toolbar_web_view_) {
     ConfigureWebContentsBackground(toolbar_web_view_->web_contents(), profile);
   }
-  if (ghost_loader_view_) {
-    ConfigureWebContentsBackground(ghost_loader_view_->web_contents(), profile);
+  if (scrim_view_) {
+    ConfigureWebContentsBackground(scrim_view_->web_contents(), profile);
   }
   if (web_contents()) {
     ConfigureWebContentsBackground(web_contents(), profile);
@@ -734,16 +737,16 @@ void ContextualTasksWebView::UpdateToolbarStateFromWebContents(
 }
 
 void ContextualTasksWebView::UpdateScrimVisibility() {
-  if (!ghost_loader_view_) {
+  if (!scrim_view_) {
     return;
   }
   if (is_error_page_visible_) {
-    ghost_loader_view_->SetShowErrorPage(true);
-    ghost_loader_view_->SetVisible(true);
+    scrim_view_->SetShowErrorPage(true);
+    scrim_view_->SetVisible(true);
     return;
   }
-  ghost_loader_view_->SetShowErrorPage(false);
-  ghost_loader_view_->SetVisible(is_ghost_loader_visible_);
+  scrim_view_->SetShowErrorPage(false);
+  scrim_view_->SetVisible(is_ghost_loader_visible_);
 }
 
 bool ContextualTasksWebView::ConsumeUserActivation(
