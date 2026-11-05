@@ -9724,7 +9724,14 @@ def CheckBaseFeatureMacro(input_api, output_api):
         ):
             continue
 
-        if cpp_feature_parser is None:
+        # Test code may intentionally use non-literal default states (e.g. to
+        # test BASE_FEATURE itself) and doesn't ship, so only the naming
+        # checks below apply to it.
+        is_test_file = any(
+            input_api.re.match(p, f.LocalPath())
+            for p in _TEST_CODE_EXCLUDED_PATHS
+        )
+        if not is_test_file and cpp_feature_parser is None:
             metrics_common_path = input_api.os_path.join(
                 input_api.PresubmitLocalPath(), 'tools', 'metrics', 'common'
             )
@@ -9735,8 +9742,12 @@ def CheckBaseFeatureMacro(input_api, output_api):
             finally:
                 input_api.sys.path = old_sys_path
 
-        state_problems = cpp_feature_parser.ValidateCppFeatureMacros(
-            contents, changed_line_numbers
+        state_problems = (
+            []
+            if is_test_file
+            else cpp_feature_parser.ValidateCppFeatureMacros(
+                contents, changed_line_numbers
+            )
         )
         if state_problems:
             # Some existing definitions can't be parsed yet, so editing one of

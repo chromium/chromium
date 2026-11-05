@@ -7028,6 +7028,20 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
         self.assertIn('existing.cc:1:', results[1].items[0])
         self.assertIn('"OldToggle"', results[1].items[0])
 
+    def testBaseFeatureMacroInvalidStateInTestFileSkipped(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'base/feature_list_unittest.cc',
+                ['BASE_FEATURE(kMyToggle, GetDefaultState(vector<int>(1)));']),
+            MockAffectedFile(
+                'chrome/browser/foo/test/fake_features.cc',
+                ['BASE_FEATURE(kMyToggle, kTestDefaultState);']),
+        ]
+        results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
+                                                  MockOutputApi())
+        self.assertEqual([], results)
+
     def testNoBaseFeatureInContents(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
