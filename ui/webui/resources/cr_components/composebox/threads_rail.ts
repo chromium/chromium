@@ -6,9 +6,7 @@ import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
-import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './threads_rail.css.js';
@@ -58,52 +56,11 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
   static override get properties() {
     return {
       config_: {type: Object},
-      hidden: {
-        type: Boolean,
-        reflect: true,
-      },
-      suppressPointerHover_: {
-        type: Boolean,
-        reflect: true,
-      },
     };
   }
 
-  override accessor hidden: boolean = false;
   protected accessor config_: LhsRailConfig =
       loadTimeData.getValue('lhsRailConfig');
-  protected accessor suppressPointerHover_: boolean = false;
-  private eventTracker_: EventTracker = new EventTracker();
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.unsuppressPointerHover_();
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    if (!changedProperties.has('hidden')) {
-      return;
-    }
-
-    this.unsuppressPointerHover_();
-    // Suppress pointer hit-testing when un-hiding until the next real pointer
-    // event so Blink's post-layout hover recomputation at a stale pre-OOPIF
-    // mouse position does not re-trigger :hover or tooltips on collapse.
-    this.suppressPointerHover_ =
-        !this.hidden && changedProperties.get('hidden') === true;
-    if (this.suppressPointerHover_) {
-      this.eventTracker_.add(
-          window, 'pointermove', () => this.unsuppressPointerHover_());
-      this.eventTracker_.add(
-          window, 'pointerdown', () => this.unsuppressPointerHover_());
-    }
-  }
-
-  private unsuppressPointerHover_(): void {
-    this.eventTracker_.removeAll();
-    this.suppressPointerHover_ = false;
-  }
 
   protected getItems_(): LhsRailItem[] {
     return this.config_.items ?? [];
