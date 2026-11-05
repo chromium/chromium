@@ -21,8 +21,8 @@
             "full_remote_path": "perfetto-luci-artifacts/d64dfb7175a5e91d2d6308d4aefaf671da641cf3/mac-arm64/trace_processor_shell"
         },
         "linux": {
-            "hash": "a5e8a1c1ad7207b4296b431f8a59456ecaafb478",
-            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/linux/323613310bf362bc4656cd33ae35158470e854b3/trace_processor_shell"
+            "hash": "dcd2a3310149e12fb4cbeac943eacebf64cd9ed1",
+            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/linux/7fb54d56cb743a4dd72aed507bd1f23e859bc201/trace_processor_shell"
         }
     },
     "power_profile.sql": {
