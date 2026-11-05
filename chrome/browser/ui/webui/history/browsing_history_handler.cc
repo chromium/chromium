@@ -545,6 +545,7 @@ void BrowsingHistoryHandler::QueryHistory(
     const std::string& query,
     int max_count,
     std::optional<double> begin_timestamp,
+    std::optional<double> end_timestamp,
     bool include_user_visits,
     bool include_actor_visits,
     const std::vector<std::string>& client_ids,
@@ -561,14 +562,15 @@ void BrowsingHistoryHandler::QueryHistory(
 
   query_history_callback_ = std::move(callback);
 
-  SendHistoryQuery(max_count, query, begin_timestamp, include_user_visits,
-                   include_actor_visits, client_ids);
+  SendHistoryQuery(max_count, query, begin_timestamp, end_timestamp,
+                   include_user_visits, include_actor_visits, client_ids);
 }
 
 void BrowsingHistoryHandler::SendHistoryQuery(
     int max_count,
     const std::string& query,
     std::optional<double> begin_timestamp,
+    std::optional<double> end_timestamp,
     bool include_user_visits,
     bool include_actor_visits,
     const std::vector<std::string>& client_ids) {
@@ -615,6 +617,10 @@ void BrowsingHistoryHandler::SendHistoryQuery(
   if (begin_timestamp.has_value()) {
     options.begin_time =
         base::Time::FromMillisecondsSinceUnixEpoch(begin_timestamp.value());
+  }
+  if (end_timestamp.has_value()) {
+    options.end_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(end_timestamp.value());
   }
 
   options.client_ids = client_ids;

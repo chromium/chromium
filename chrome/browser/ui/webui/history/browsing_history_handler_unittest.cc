@@ -212,11 +212,12 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 
   mojom::QueryResultPtr RunQueryHistory(
       const std::string& query,
-      std::optional<double> begin_timestamp = std::nullopt) {
+      std::optional<double> begin_timestamp = std::nullopt,
+      std::optional<double> end_timestamp = std::nullopt) {
     mojom::QueryResultPtr history_query_results;
     base::RunLoop run_loop;
     handler_->QueryHistory(
-        query, 150, begin_timestamp, true, true, {},
+        query, 150, begin_timestamp, end_timestamp, true, true, {},
         base::BindLambdaForTesting([&](history::mojom::QueryResultPtr result) {
           history_query_results = std::move(result);
           run_loop.Quit();
@@ -362,6 +363,33 @@ TEST_F(BrowsingHistoryHandlerTest, BeginTimestamp) {
   }
 }
 
+TEST_F(BrowsingHistoryHandlerTest, BeginAndEndTimestamp) {
+  {
+    // Both bounds set, e.g. a selected time period option.
+    std::u16string query = u"query";
+    double begin_timestamp = 1713456000000L;
+    double end_timestamp = 1713542400000L;
+    QueryOptions options;
+    options.begin_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(begin_timestamp);
+    options.end_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(end_timestamp);
+    MockHistoryServiceCall(query, options);
+    RunQueryHistory("query", begin_timestamp, end_timestamp);
+  }
+
+  {
+    // Only the end bound set.
+    std::u16string query = u"query";
+    double end_timestamp = 1713542400000L;
+    QueryOptions options;
+    options.end_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(end_timestamp);
+    MockHistoryServiceCall(query, options);
+    RunQueryHistory("query", std::nullopt, end_timestamp);
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(BrowsingHistoryHandlerTest, MdTruncatesTitles) {
   std::vector<BrowsingHistoryService::HistoryEntry> results;
@@ -472,7 +500,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryMojoOptionMapping) {
           testing::Field(&history::QueryOptions::include_user_visits, false)))
       .Times(1);
 
-  handler()->QueryHistory("query", 150, std::nullopt,
+  handler()->QueryHistory("query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/false,
                           /*include_actor_visits=*/true,
                           /*client_ids=*/{}, base::DoNothing());
@@ -490,7 +518,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithActorOnly) {
                           &history::QueryOptions::include_actor_visits, true))))
       .Times(1);
 
-  handler()->QueryHistory("test_query", 150, std::nullopt,
+  handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/false,
                           /*include_actor_visits=*/true,
                           /*client_ids=*/{}, base::DoNothing());
@@ -507,7 +535,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
                              false))))
       .Times(1);
 
-  handler()->QueryHistory("test_query", 150, std::nullopt,
+  handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/false,
                           /*client_ids=*/{}, base::DoNothing());
@@ -524,7 +552,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithBothVisits) {
                              true))))
       .Times(1);
 
-  handler()->QueryHistory("test_query", 150, std::nullopt,
+  handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/true,
                           /*client_ids=*/{}, base::DoNothing());
@@ -540,7 +568,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithClientIds) {
                                  testing::ElementsAre("client_1", "client_2"))))
       .Times(1);
 
-  handler()->QueryHistory("test_query", 150, std::nullopt,
+  handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/true, kClientIds,
                           base::DoNothing());

@@ -47,6 +47,10 @@ struct QueryState {
 
   // Client IDs of selected device to filter visits by.
   array<string> client_ids;
+
+  // The selected predefined time period to filter visits by. kAllTime means
+  // no time period filtering is applied.
+  TimePeriodOptionId time_period_option_id;
 };
 
 
@@ -256,11 +260,14 @@ interface PageHandler {
   SetPage(pending_remote<Page> page);
 
   // Queries for entries matching the query term. Returns a promise of a
-  // result object.
+  // result object. `begin_time` (inclusive) and `end_time` (exclusive) are
+  // milliseconds since the Unix epoch and restrict the visit time; null means
+  // unbounded.
   QueryHistory(
       string query,
       int32 max_results,
       double? begin_time,
+      double? end_time,
       bool include_user_visits,
       bool include_actor_visits,
       array<string> client_ids) => (QueryResult results);

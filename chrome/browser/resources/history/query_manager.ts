@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {QueryResult, QueryState, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -15,6 +16,9 @@ export type ChangeQueryEvent = CustomEvent<{
   includeUserVisits?: boolean,
   includeActorVisits?: boolean,
   clientIds?: string[],
+  // The selected predefined time period. kAllTime means no time period
+  // filtering is applied.
+  timePeriodOptionId?: TimePeriodOptionId,
 }>;
 
 declare global {
@@ -42,6 +46,10 @@ export class HistoryQueryManagerElement extends CrLitElement {
       queryResult: {
         type: Object,
       },
+
+      timePeriodOptions: {
+        type: Array,
+      },
     };
   }
 
@@ -53,11 +61,15 @@ export class HistoryQueryManagerElement extends CrLitElement {
     includeUserVisits: true,
     includeActorVisits: true,
     clientIds: [],
+    timePeriodOptionId: TimePeriodOptionId.kAllTime,
   };
   accessor queryResult: QueryResult = {
     info: null,
     value: [],
   };
+  // The available predefined time periods, used to resolve
+  // `queryState.timePeriodOptionId` into concrete query bounds.
+  accessor timePeriodOptions: TimePeriodOption[] = [];
   private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
@@ -84,11 +96,18 @@ export class HistoryQueryManagerElement extends CrLitElement {
       incremental: incremental,
     };
 
+    // Resolve the selected time period into concrete bounds. An unknown id
+    // (e.g. options not loaded yet) is treated as "all time".
+    const timePeriodOption = this.timePeriodOptions.find(
+        option => option.id === this.queryState.timePeriodOptionId);
+    const beginTime: number|null = timePeriodOption?.beginTime ?? null;
+    const endTime: number|null = timePeriodOption?.endTime ?? null;
+
     const browserProxy = BrowserProxyImpl.getInstance();
     const promise = incremental ?
         browserProxy.handler.queryHistoryContinuation() :
         browserProxy.handler.queryHistory(
-            this.queryState.searchTerm, RESULTS_PER_PAGE, null,
+            this.queryState.searchTerm, RESULTS_PER_PAGE, beginTime, endTime,
             this.queryState.includeUserVisits,
             this.queryState.includeActorVisits, this.queryState.clientIds);
     // Ignore rejected (cancelled) queries.
@@ -136,6 +155,15 @@ export class HistoryQueryManagerElement extends CrLitElement {
         };
         needsUpdate = true;
       }
+    }
+
+    if (changes.timePeriodOptionId !== undefined &&
+        changes.timePeriodOptionId !== this.queryState.timePeriodOptionId) {
+      this.queryState = {
+        ...this.queryState,
+        timePeriodOptionId: changes.timePeriodOptionId,
+      };
+      needsUpdate = true;
     }
 
     if (needsUpdate) {

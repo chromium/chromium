@@ -26,6 +26,7 @@ import {HistoryResultType} from 'chrome://resources/cr_components/history/consta
 import type {ForeignSession, ForeignSessionPageCallbackRouter} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {browserProxyFactory as foreignSessionBrowserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import type {Device, PageCallbackRouter, QueryResult, QueryState, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -164,6 +165,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       isBrowsingHistoryFilterByDeviceEnabled_: {type: Boolean},
       isBrowsingHistoryFilterByTimePeriodEnabled_: {type: Boolean},
       timePeriodOptions_: {type: Array},
+      selectedTimePeriodOptionId_: {type: Number},
     };
   }
 
@@ -206,6 +208,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     includeUserVisits: true,
     includeActorVisits: true,
     clientIds: [],
+    timePeriodOptionId: TimePeriodOptionId.kAllTime,
   };
   protected accessor selectedPage_: string = Page.HISTORY;
   protected accessor selectedTab_: number =
@@ -236,6 +239,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor isBrowsingHistoryFilterByTimePeriodEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled');
   protected accessor timePeriodOptions_: TimePeriodOption[] = [];
+  protected accessor selectedTimePeriodOptionId_: TimePeriodOptionId =
+      TimePeriodOptionId.kAllTime;
 
   private callbackRouter_: PageCallbackRouter;
   private foreignSessionCallbackRouter_: ForeignSessionPageCallbackRouter;
@@ -819,16 +824,19 @@ export class HistoryAppElement extends HistoryAppElementBase {
     userVisits: boolean,
     actorVisits: boolean,
     clientIds: string[],
+    timePeriodOptionId: TimePeriodOptionId,
   }>) {
     this.includeUserVisits_ = e.detail.userVisits;
     this.includeActorVisits_ = e.detail.actorVisits;
     this.clientIds_ = e.detail.clientIds;
+    this.selectedTimePeriodOptionId_ = e.detail.timePeriodOptionId;
 
     this.fire('change-query', {
       search: this.queryState_.searchTerm,
       includeActorVisits: this.includeActorVisits_,
       includeUserVisits: this.includeUserVisits_,
       clientIds: this.clientIds_,
+      timePeriodOptionId: this.selectedTimePeriodOptionId_,
     });
   }
 

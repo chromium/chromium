@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './history_item.js';
 
 import type {HistoryEntry, HistoryQuery, PageCallbackRouter, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-import {OpenConversationResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {OpenConversationResult, TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -163,6 +163,7 @@ export class HistoryListElement extends HistoryListElementBase {
     includeUserVisits: true,
     includeActorVisits: true,
     clientIds: [],
+    timePeriodOptionId: TimePeriodOptionId.kAllTime,
   };
   accessor scrollTarget: HTMLElement = document.documentElement;
   accessor scrollOffset: number = 0;
@@ -874,7 +875,9 @@ export class HistoryListElement extends HistoryListElementBase {
         loadTimeData.getBoolean('isBrowsingHistoryFilterByActorEnabled') &&
         (!this.queryState.includeUserVisits ||
          !this.queryState.includeActorVisits);
-    return hasActiveActorDropdownFilter || this.queryState.clientIds.length > 0;
+    return hasActiveActorDropdownFilter ||
+        this.queryState.clientIds.length > 0 ||
+        this.queryState.timePeriodOptionId !== TimePeriodOptionId.kAllTime;
   }
 
   protected noResultsMessage_(): string {

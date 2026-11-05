@@ -2911,6 +2911,11 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
 
   result->SetURLResults(std::move(matching_results));
 
+  // TODO(crbug.com/580789349): This doesn't handle query continuation
+  // correctly for a bounded `begin_time`: `reached_beginning` is only set when
+  // `begin_time` precedes the oldest visit in the database, so callers paging
+  // through a bounded range are never told to stop. Consider replacing
+  // `reached_beginning` with `has_more_results`.
   if (!has_more_results && options.begin_time <= first_recorded_time_) {
     result->set_reached_beginning(true);
   }
@@ -3129,6 +3134,8 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
   }
   result->SetURLResults(std::move(matching_visits));
 
+  // TODO(crbug.com/580789349): See the corresponding TODO in
+  // QueryHistoryBasic().
   if (!has_more_results && options.begin_time <= first_recorded_time_) {
     result->set_reached_beginning(true);
   }

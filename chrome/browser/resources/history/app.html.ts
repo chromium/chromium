@@ -10,6 +10,7 @@ export function getHtml(this: HistoryAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <history-query-manager .queryResult="${this.queryResult_}"
+    .timePeriodOptions="${this.timePeriodOptions_}"
     @query-finished="${this.onQueryFinished_}"
     @query-state-changed="${this.onQueryStateChanged_}">
 </history-query-manager>
@@ -61,6 +62,7 @@ export function getHtml(this: HistoryAppElement) {
             .userVisits="${this.includeUserVisits_}"
             .actorVisits="${this.includeActorVisits_}"
             .clientIds="${this.clientIds_}"
+            .selectedTimePeriodOptionId="${this.selectedTimePeriodOptionId_}"
             @filter-changed="${this.onFilterChanged_}">
         </history-filter-chips>
       ` : ''}

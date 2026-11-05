@@ -6,6 +6,7 @@ import 'chrome://history/history.js';
 
 import {BrowserProxyImpl} from 'chrome://history/history.js';
 import type {HistoryFilterChipsElement} from 'chrome://history/history.js';
+import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -474,6 +475,164 @@ suite('HistoryFilterChipsTest', function() {
     });
   });
 
+  suite('TimePeriodFilter', function() {
+    interface TimePeriodEventDetail {
+      timePeriodOptionId: TimePeriodOptionId;
+    }
+    const options = [
+      {
+        id: TimePeriodOptionId.kAllTime,
+        label: 'All time',
+        beginTime: null,
+        endTime: null,
+      },
+      {
+        id: TimePeriodOptionId.kYesterday,
+        label: 'Yesterday',
+        beginTime: 1000,
+        endTime: 2000,
+      },
+      {
+        id: TimePeriodOptionId.kLastWeek,
+        label: 'Last week',
+        beginTime: 3000,
+        endTime: 4000,
+      },
+    ];
+
+    test('VisibilityAndInitialState', async () => {
+      // Hidden unless the parent passes `showTimePeriodFilter`.
+      assertFalse(!!element.shadowRoot.querySelector('#timePeriodSelect'));
+
+      element.showTimePeriodFilter = true;
+      element.timePeriodOptions = options;
+      await microtasksFinished();
+
+      const select = element.shadowRoot.querySelector<HTMLSelectElement>(
+          '#timePeriodSelect');
+      assertTrue(!!select);
+      assertEquals(3, select.options.length);
+      assertEquals('All time', select.options[0]!.textContent.trim());
+      assertEquals('Yesterday', select.options[1]!.textContent.trim());
+      assertEquals('Last week', select.options[2]!.textContent.trim());
+      assertEquals(
+          String(TimePeriodOptionId.kAllTime), select.options[0]!.value);
+      assertEquals(
+          String(TimePeriodOptionId.kYesterday), select.options[1]!.value);
+      assertEquals(
+          String(TimePeriodOptionId.kLastWeek), select.options[2]!.value);
+      // "All time" is selected by default and no filter is active.
+      assertTrue(select.options[0]!.selected);
+      assertEquals(
+          TimePeriodOptionId.kAllTime, element.selectedTimePeriodOptionId);
+      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+    });
+
+    test('ReflectsSelectionFromParent', async () => {
+      element.showTimePeriodFilter = true;
+      element.timePeriodOptions = options;
+      element.selectedTimePeriodOptionId = TimePeriodOptionId.kLastWeek;
+      await microtasksFinished();
+
+      const select = element.shadowRoot.querySelector<HTMLSelectElement>(
+          '#timePeriodSelect');
+      assertTrue(!!select);
+      assertFalse(select.options[0]!.selected);
+      assertFalse(select.options[1]!.selected);
+      assertTrue(select.options[2]!.selected);
+      assertTrue(!!element.shadowRoot.querySelector('#clearAllButton'));
+    });
+
+    test('SelectionFiresFilterChanged', async () => {
+      element.showTimePeriodFilter = true;
+      element.timePeriodOptions = options;
+      await microtasksFinished();
+
+      const select = element.shadowRoot.querySelector<HTMLSelectElement>(
+          '#timePeriodSelect');
+      assertTrue(!!select);
+      const icon = element.shadowRoot.querySelector<HTMLElement>(
+          '.filter-chips cr-icon');
+      assertTrue(!!icon);
+      assertFalse(isVisible(icon));
+
+      let eventDetail: TimePeriodEventDetail|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+
+      // Select 'Yesterday'.
+      select.value = String(TimePeriodOptionId.kYesterday);
+      select.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertEquals(
+          TimePeriodOptionId.kYesterday, eventDetail.timePeriodOptionId);
+      assertEquals(
+          TimePeriodOptionId.kYesterday, element.selectedTimePeriodOptionId);
+      assertFalse(select.options[0]!.selected);
+      assertTrue(select.options[1]!.selected);
+      assertTrue(isVisible(icon));
+      assertTrue(!!element.shadowRoot.querySelector('#clearAllButton'));
+      eventDetail = undefined as TimePeriodEventDetail | undefined;
+
+      // Select 'Last week'.
+      select.value = String(TimePeriodOptionId.kLastWeek);
+      select.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertEquals(
+          TimePeriodOptionId.kLastWeek, eventDetail.timePeriodOptionId);
+      assertTrue(select.options[2]!.selected);
+      assertTrue(isVisible(icon));
+      eventDetail = undefined as TimePeriodEventDetail | undefined;
+
+      // Select 'All time' again.
+      select.value = String(TimePeriodOptionId.kAllTime);
+      select.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertEquals(TimePeriodOptionId.kAllTime, eventDetail.timePeriodOptionId);
+      assertTrue(select.options[0]!.selected);
+      assertFalse(isVisible(icon));
+      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+    });
+
+    test('ClearAllResetsTimePeriod', async () => {
+      element.showTimePeriodFilter = true;
+      element.timePeriodOptions = options;
+      await microtasksFinished();
+
+      const select = element.shadowRoot.querySelector<HTMLSelectElement>(
+          '#timePeriodSelect');
+      assertTrue(!!select);
+      select.value = String(TimePeriodOptionId.kYesterday);
+      select.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+
+      const clearAllButton =
+          element.shadowRoot.querySelector<HTMLElement>('#clearAllButton');
+      assertTrue(!!clearAllButton);
+
+      let eventDetail: TimePeriodEventDetail|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+      clearAllButton.click();
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertEquals(TimePeriodOptionId.kAllTime, eventDetail.timePeriodOptionId);
+      assertEquals(
+          TimePeriodOptionId.kAllTime, element.selectedTimePeriodOptionId);
+      assertTrue(select.options[0]!.selected);
+      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+    });
+  });
+
   test('ClearAllButton', async () => {
     loadTimeData.overrideValues({
       isBrowsingHistoryFilterByActorEnabled: true,
@@ -537,6 +696,7 @@ suite('HistoryFilterChipsTest', function() {
       userVisits: boolean,
       actorVisits: boolean,
       clientIds: string[],
+      timePeriodOptionId: TimePeriodOptionId,
     }|undefined;
     element.addEventListener('filter-changed', ((e: CustomEvent) => {
                                                  eventDetail = e.detail;
@@ -559,6 +719,7 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(eventDetail.userVisits);
     assertTrue(eventDetail.actorVisits);
     assertDeepEquals([], eventDetail.clientIds);
+    assertEquals(TimePeriodOptionId.kAllTime, eventDetail.timePeriodOptionId);
   });
 
   test('ClearAllButtonFocusesFirstAvailableFilter', async () => {
