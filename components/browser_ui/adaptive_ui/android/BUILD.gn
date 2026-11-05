@@ -7,9 +7,12 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiContainer.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiController.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiControllerProvider.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinator.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogViewBinder.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntry.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiObserver.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiProperties.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiScope.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinator.java",
@@ -47,6 +50,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiControllerTest.java",
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinatorTest.java",
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntryTest.java",
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinatorTest.java",
@@ -66,6 +70,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]

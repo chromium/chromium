@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.adaptive_ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -40,6 +41,20 @@ public class AdaptiveUiEntryTest {
         int expectedMask = AdaptiveUiContainer.BOTTOM_SHEET | AdaptiveUiContainer.MODAL_DIALOG;
         assertEquals(expectedMask, entry.getAllowedContainers());
         assertSame(model, entry.getPropertyModel());
+        assertNull(entry.getObserver());
+    }
+
+    @Test
+    public void testBuilderSetsObserver() {
+        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
+        AdaptiveUiObserver observer = reason -> {};
+        AdaptiveUiEntry entry =
+                new AdaptiveUiEntry.Builder(model)
+                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                        .setObserver(observer)
+                        .build();
+
+        assertEquals(observer, entry.getObserver());
     }
 
     @Test
