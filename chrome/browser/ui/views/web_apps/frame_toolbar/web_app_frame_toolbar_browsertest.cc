@@ -377,11 +377,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/572905114): Re-enable after updating bubble auto-open
-// expectations.
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest,
-    DISABLED_NotificationIconLabelAnimationAndAutoOpenBubbleInPwaTitlebar) {
+    NotificationIconLabelAnimationAndAutoOpenBubbleInPwaTitlebar) {
   gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   WebAppToolbarButtonContainer::DisableAnimationForTesting(false);
@@ -467,9 +465,21 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(notification_view->GetVisible());
   EXPECT_FALSE(notification_view->ShouldShowLabel());
 
-  // Implicitly denying system notification permission again (e.g. after the
-  // permission status is reset to not determined) re-shows the icon and
-  // re-runs the label animation, this time without auto-opening the bubble.
+  // When notifications are used without requesting permission (e.g. when
+  // Chrome-level permission was already granted), implicitly denying system
+  // notification permission again re-shows the icon and re-runs the label
+  // animation, this time without auto-opening the bubble. Recreate
+  // `PageSpecificContentSettings` since it has no method to clear
+  // `SetNotificationsWasDeniedBecauseOfSystemPermission()` without navigating.
+  content_settings::PageSpecificContentSettings::DeleteForPage(
+      web_contents->GetPrimaryPage());
+  content_settings::PageSpecificContentSettings::CreateForPage(
+      web_contents->GetPrimaryPage(),
+      content_settings::PageSpecificContentSettings::GetDelegateForWebContents(
+          web_contents));
+  content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents->GetPrimaryMainFrame())
+      ->OnContentAllowed(ContentSettingsType::NOTIFICATIONS);
   app_shim_host->SetNotificationPermissionStatusForTesting(
       mac_notifications::mojom::PermissionStatus::kNotDetermined);
   app_shim_host->SetNotificationPermissionStatusForTesting(
