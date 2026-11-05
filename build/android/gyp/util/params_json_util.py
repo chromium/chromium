@@ -140,19 +140,20 @@ def _topological_walk(top, deps_func):
 
 def _filter_deps(deps, restrict_to_resource_types=False):
     """Filters dependencies based on their type."""
+    # Checks are inlined rather than using helper methods since this is called
+    # on hundreds of thousands of deps for large targets.
     if restrict_to_resource_types:
         # Consider groups that set input_jars_paths() as java targets. This
         # prevents such groups from contributing to the classpath when they are
         # depended on via resource deps. Admittedly, a bit of a hack...
-        keep_func = lambda x: (  # noqa: E731
-            x.is_resource_type()
-            or (x.is_group() and not x.get('input_jars_paths'))
-        )
+        return [
+            d
+            for d in deps
+            if d.type in _RESOURCE_TYPES
+            or (d.type == 'group' and not d.get('input_jars_paths'))
+        ]
 
-    else:
-        keep_func = lambda x: not x.is_root_type()  # noqa: E731
-
-    return [d for d in deps if keep_func(d)]
+    return [d for d in deps if d.type not in _ROOT_TYPES]
 
 
 def _collect_public_deps(deps):
@@ -369,10 +370,6 @@ class ParamsJson(dict):
         return get_build_config(
             self.build_config_path('.manifest.build_config.json')
         )
-
-    def is_root_type(self):
-        """Returns True if the target type is a "root" type (e.g., an APK)."""
-        return self.type in _ROOT_TYPES
 
     def collects_resources(self):
         """Returns True if the target type collects Android resources."""
