@@ -9,7 +9,6 @@
 
 #include "base/values.h"
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -35,10 +34,6 @@ void SyncPrefsPolicyHandler::OnSyncShutdown(SyncService* sync_service) {
 }
 
 void SyncPrefsPolicyHandler::EnforcePolicyOnDataTypes() {
-  if (!IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    return;
-  }
-
   SyncUserSettings* user_settings = sync_service_->GetUserSettings();
   for (UserSelectableType type :
        user_settings->GetRegisteredSelectableTypes()) {

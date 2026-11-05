@@ -238,10 +238,9 @@ class SyncPrefs {
   void SetPassphrasePromptMutedProductVersion(int major_version);
   void ClearPassphrasePromptMutedProductVersion();
 
-  // Migrates any user settings for pre-existing signed-in users, for the
-  // feature `kReplaceSyncPromosWithSignInPromos`. For signed-out users or
-  // syncing users, no migration is necessary - this also covers new users (or
-  // more precisely, new profiles).
+  // Migrates any user settings for pre-existing signed-in users. For signed-out
+  // users or syncing users, no migration is necessary - this also covers new
+  // users (or more precisely, new profiles).
   // This should be called early during browser startup.
   // Returns whether the migration ran, i.e. whether any user settings were set.
   bool MaybeMigratePrefsForSyncToSigninPart1(SyncAccountState account_state,

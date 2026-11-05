@@ -78,14 +78,10 @@ DecodeTrustedVaultAutoUpgradeExperimentGroupFromString(
 bool IsBookmarksSelectedByDefaultInTransportMode(PrefService& pref_service,
                                                  const GaiaId& gaia_id) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return IsReplaceSyncPromosWithSignInPromosEnabled();
+  return true;
 #else
-  // If `kReplaceSyncPromosWithSignInPromos` is enabled, bookmarks and reading
-  // list are enabled by default for new sign-ins (not pre-existing sessions).
-  // This pref is set if the above conditions are met.
-  // Note: If `kReplaceSyncPromosWithSignInPromos` gets disabled, the pref is
-  // not reset and users will keep their bookmarks because that reduces the
-  // risks of perceived dataloss.
+  // Bookmarks and reading list are enabled by default for new sign-ins (not
+  // pre-existing sessions). This pref is set if the above conditions are met.
   return SigninPrefs(pref_service).GetBookmarksExplicitBrowserSignin(gaia_id);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 }
@@ -93,14 +89,10 @@ bool IsBookmarksSelectedByDefaultInTransportMode(PrefService& pref_service,
 bool IsExtensionsSelectedByDefaultInTransportMode(PrefService& pref_service,
                                                   const GaiaId& gaia_id) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return IsReplaceSyncPromosWithSignInPromosEnabled();
+  return true;
 #else
-  // if `kReplaceSyncPromosWithSignInPromos` is enabled, extensions are enabled
-  // by default for new sign-ins (not pre-existing sessions). This pref is set
-  // if the above conditions are met.
-  // Note: If `kReplaceSyncPromosWithSignInPromos` gets disabled, the pref is
-  // not reset and users will keep their extensions because that reduces the
-  // risks of perceived dataloss.
+  // Extensions are enabled by default for new sign-ins (not pre-existing
+  // sessions). This pref is set if the above conditions are met.
   return SigninPrefs(pref_service).GetExtensionsExplicitBrowserSignin(gaia_id);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 }
@@ -713,15 +705,8 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return true;
     case UserSelectableType::kPreferences:
-      if (!base::FeatureList::IsEnabled(
-              switches::kEnablePreferencesAccountStorage)) {
-        return false;
-      }
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
-#else
-      return true;
-#endif
+      return base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage);
     case UserSelectableType::kPasswords:
       return true;
     case UserSelectableType::kAutofill:
@@ -731,19 +716,11 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       // transport mode everywhere.
       return true;
     case UserSelectableType::kHistory:
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kTabs:
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kProductComparison:
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kSavedTabGroups:
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kExtensions:
-#if BUILDFLAG(IS_CHROMEOS)
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-#else
       return true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
     case UserSelectableType::kThemes:
 #if BUILDFLAG(IS_ANDROID)
       return base::FeatureList::IsEnabled(
@@ -755,10 +732,10 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return true;
 #endif
     case UserSelectableType::kApps:
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
+      return true;
     case UserSelectableType::kCookies:
 #if BUILDFLAG(IS_CHROMEOS)
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+      return true;
 #else
       // ChromeOS-only type.
       return false;
@@ -818,12 +795,6 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
 bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     SyncAccountState account_state,
     const GaiaId& gaia_id) {
-  if (!IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // Ensure that the migration runs again when the feature gets enabled.
-    pref_service_->ClearPref(prefs::internal::kSyncToSigninMigrationState);
-    return false;
-  }
-
   // Don't migrate again if this profile was previously migrated.
   if (pref_service_->GetInteger(prefs::internal::kSyncToSigninMigrationState) !=
       kNotMigrated) {
@@ -861,8 +832,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       // Preserve the user's existing enabled state for Bookmarks, Reading List,
-      // and Preferences. Otherwise, use the default value, which will be true
-      // after `kReplaceSyncPromosWithSignInPromos`.
+      // and Preferences. Otherwise, use the default value, which is true.
       for (UserSelectableType type :
            {UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
             UserSelectableType::kPreferences}) {
@@ -881,9 +851,8 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
 
       // Bookmarks and reading list remain enabled only if the user previously
       // explicitly opted in, which is represented in the regular account-keyed
-      // prefs. However, the default value for new sign-ins may change with
-      // `kReplaceSyncPromosWithSignInPromos`, so it is important to grab a
-      // snapshot now during migration.
+      // prefs. However, the default value for new sign-ins is enabled, so it is
+      // important to grab a snapshot now during migration.
       for (UserSelectableType type :
            {UserSelectableType::kBookmarks, UserSelectableType::kReadingList}) {
         const char* pref_name = GetPrefNameForType(type);
@@ -893,8 +862,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
         const bool is_type_on = value && value->is_bool() && value->GetBool();
 
         // Setting the value explicitly is important to convert absence to
-        // false, so it doesn't use the default, which is enabled after
-        // `kReplaceSyncPromosWithSignInPromos`.
+        // false, so it doesn't use the default, which is enabled.
         account_settings->Set(pref_name, is_type_on);
       }
 #endif
@@ -906,14 +874,6 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
 bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
     const GaiaId& gaia_id,
     bool is_using_explicit_passphrase) {
-  // The migration pref shouldn't be set if the feature is disabled, but if it
-  // somehow happened, do *not* run the migration, and clear the pref so that
-  // the migration will get triggered again once the feature gets enabled again.
-  if (!IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    pref_service_->ClearPref(prefs::internal::kSyncToSigninMigrationState);
-    return false;
-  }
-
   // Only run part 2 of the migration if part 1 has run but part 2 hasn't yet.
   // This ensures that it only runs once.
   if (pref_service_->GetInteger(prefs::internal::kSyncToSigninMigrationState) !=
@@ -1084,7 +1044,7 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
     case UserSelectableType::kTabs:
     case UserSelectableType::kSavedTabGroups:
 #if BUILDFLAG(IS_CHROMEOS)
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
+      return true;
 #else
       // History and tabs require a separate opt in.
       return false;
@@ -1095,18 +1055,13 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
                                                          gaia_id);
     case UserSelectableType::kPreferences:
     case UserSelectableType::kThemes:
-      return IsReplaceSyncPromosWithSignInPromosEnabled() ||
-             pref_service_->GetBoolean(
-                 ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
-    case UserSelectableType::kExtensions:
-      return IsExtensionsSelectedByDefaultInTransportMode(*pref_service_,
-                                                          gaia_id);
     case UserSelectableType::kApps:
     case UserSelectableType::kProductComparison:
     case UserSelectableType::kCookies:
-      // All other types are always enabled by default with
-      // kReplaceSyncPromosWithSignInPromos.
-      return IsReplaceSyncPromosWithSignInPromosEnabled();
+      return true;
+    case UserSelectableType::kExtensions:
+      return IsExtensionsSelectedByDefaultInTransportMode(*pref_service_,
+                                                          gaia_id);
   }
   NOTREACHED();
 }

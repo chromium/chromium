@@ -526,12 +526,8 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(
-    SyncServiceImplTest,
-    DisabledByPolicyBeforeInit_DisablesOsTypesWhenFlagEnabledAndNoSyncConsent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
+TEST_F(SyncServiceImplTest,
+       DisabledByPolicyBeforeInit_DisablesOsTypesWithoutSyncConsent) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
 
@@ -554,9 +550,6 @@ TEST_F(
 
 TEST_F(SyncServiceImplTest,
        DisabledByPolicyBeforeInit_DoesNotDisableOsTypesWithSyncConsent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithSyncConsent();
 
@@ -803,16 +796,10 @@ TEST_F(SyncServiceImplTest,
 TEST_F(
     SyncServiceImplTest,
     AddressesSyncShouldBeDisabledForNewlySigninUsersWithAlreadyCustomPassphraseSet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          syncer::kReplaceSyncPromosWithSignInPromos,
 #if BUILDFLAG(IS_CHROMEOS)
-          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers};
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      },
-      /*disabled_features=*/{});
 
   // Sign-in.
   SignInWithoutSyncConsent();
@@ -866,9 +853,6 @@ TEST_F(
 TEST_F(
     SyncServiceImplTest,
     AddressesSyncValueShouldRemainUnchangedForCustomPassphraseUsersAfterTheirInitialSignin) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-
   // Sign-in.
   SignInWithoutSyncConsent();
   // Registering CONTACT_INFO which includes addresses.
@@ -928,9 +912,6 @@ TEST_F(
 TEST_F(
     SyncServiceImplTest,
     AddressesSyncShouldNotBeDisabledForSignedInUsersWithNewlyCustomPassphraseSet) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-
   // Sign-in.
   SignInWithoutSyncConsent();
 
@@ -3034,9 +3015,6 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncServiceImplTest, ShouldRecordHistoryOptInStateOnSignin) {
-  // Allow UserSelectableType::kHistory in transport mode.
-  base::test::ScopedFeatureList features{kReplaceSyncPromosWithSignInPromos};
-
   {
     base::HistogramTester histogram_tester;
 

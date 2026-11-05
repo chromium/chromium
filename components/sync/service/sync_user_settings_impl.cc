@@ -15,7 +15,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/model/crypto/nigori.h"
@@ -174,13 +173,11 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
       // TODO(crbug.com/524514663): This is for the possible migration of users
       // from kSignedInWithoutSyncConsent to kSyncing. Remove upon migrating all
       // users.
-      if (IsReplaceSyncPromosWithSignInPromosEnabled()) {
-        base::AutoReset<bool> auto_reset(&suppress_notifications_, true);
-        prefs_->SetSelectedTypesForSyncingUser(
-            /*keep_everything_synced=*/false, GetRegisteredSelectableTypes(),
-            is_type_on ? base::Union(GetSelectedTypes(), {type})
-                       : base::Difference(GetSelectedTypes(), {type}));
-      }
+      base::AutoReset<bool> auto_reset(&suppress_notifications_, true);
+      prefs_->SetSelectedTypesForSyncingUser(
+          /*keep_everything_synced=*/false, GetRegisteredSelectableTypes(),
+          is_type_on ? base::Union(GetSelectedTypes(), {type})
+                     : base::Difference(GetSelectedTypes(), {type}));
 #endif  // BUILDFLAG(IS_CHROMEOS)
       break;
     }
@@ -224,8 +221,7 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
 void SyncUserSettingsImpl::SetSyncFeatureDisabledViaDashboard() {
   prefs_->SetSyncFeatureDisabledViaDashboard();
   if (delegate_->GetSyncAccountStateForPrefs() ==
-          SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent &&
-      IsReplaceSyncPromosWithSignInPromosEnabled()) {
+      SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent) {
     SetSelectedOsTypes(/*sync_all_os_types=*/false, UserSelectableOsTypeSet());
   }
 }
@@ -371,9 +367,8 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsSyncFeatureDisabledViaDashboard() &&
-      (delegate_->GetSyncAccountStateForPrefs() ==
-           SyncPrefs::SyncAccountState::kSyncing ||
-       !IsReplaceSyncPromosWithSignInPromosEnabled())) {
+      delegate_->GetSyncAccountStateForPrefs() ==
+          SyncPrefs::SyncAccountState::kSyncing) {
     // If sync is disabled via dashboard, only a minimal set of datatypes should
     // sync. This prevents code changes from causing accidental behavioral
     // differences in this ChromeOS-specific edge case, as a side effect of
