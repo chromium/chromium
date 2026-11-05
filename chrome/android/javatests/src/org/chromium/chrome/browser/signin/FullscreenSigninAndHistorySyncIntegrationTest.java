@@ -1257,6 +1257,13 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         Intent intent =
                 SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
                         ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
+        HistogramWatcher accountAddedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SigninFunnel.FullscreenSigninPromo",
+                                SigninFunnelEvent.ACCOUNT_ADDED)
+                        .allowExtraRecords("Signin.SigninFunnel.FullscreenSigninPromo")
+                        .build();
         mActivity = mActivityTestRule.launchActivity(intent);
 
         // Brought directly to the add account flow.
@@ -1265,6 +1272,25 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
         onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
+        accountAddedHistogram.assertExpected();
+
+        // Continuing signs in with the added account and records SIGNED_IN_WITH_ADDED_ACCOUNT.
+        replaceProgressBars();
+        HistogramWatcher signedInHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction.SignedInWithAddedAccount",
+                                mSigninAccessPoint)
+                        .expectIntRecord("Signin.SignIn.Completed", mSigninAccessPoint)
+                        .build();
+        onView(withId(R.id.signin_fre_continue_button)).perform(scrollTo(), click());
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+        mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT2);
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        signedInHistogram.assertExpected();
     }
 
     @Test
@@ -1366,24 +1392,27 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         activityInflatedHistogram.assertExpected();
 
         if (shouldReplaceProgressBars) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        // Replace all the progress bars with placeholders. Currently the progress
-                        // bar cannot be stopped otherwise due to some espresso issues (see
-                        // crbug.com/40144184).
-                        ProgressBar nativeAndPolicyProgressSpinner =
-                                mActivity.findViewById(
-                                        R.id.fre_native_and_policy_load_progress_spinner);
-                        nativeAndPolicyProgressSpinner.setIndeterminateDrawable(
-                                new ColorDrawable(SemanticColorUtils.getDefaultBgColor(mActivity)));
-                        ProgressBar signinProgressSpinner =
-                                mActivity.findViewById(R.id.fre_signin_progress_spinner);
-                        signinProgressSpinner.setIndeterminateDrawable(
-                                new ColorDrawable(SemanticColorUtils.getDefaultBgColor(mActivity)));
-                    });
-
+            replaceProgressBars();
             ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_icon), isDisplayed()));
         }
+    }
+
+    private void replaceProgressBars() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Replace all the progress bars with placeholders. Currently the progress
+                    // bar cannot be stopped otherwise due to some espresso issues (see
+                    // crbug.com/40144184).
+                    ProgressBar nativeAndPolicyProgressSpinner =
+                            mActivity.findViewById(
+                                    R.id.fre_native_and_policy_load_progress_spinner);
+                    nativeAndPolicyProgressSpinner.setIndeterminateDrawable(
+                            new ColorDrawable(SemanticColorUtils.getDefaultBgColor(mActivity)));
+                    ProgressBar signinProgressSpinner =
+                            mActivity.findViewById(R.id.fre_signin_progress_spinner);
+                    signinProgressSpinner.setIndeterminateDrawable(
+                            new ColorDrawable(SemanticColorUtils.getDefaultBgColor(mActivity)));
+                });
     }
 
     private FullscreenSigninAndHistorySyncConfig.Builder getDefaultConfigBuilder() {

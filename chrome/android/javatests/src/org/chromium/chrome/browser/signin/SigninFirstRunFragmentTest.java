@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -451,6 +452,13 @@ public class SigninFirstRunFragmentTest {
         // TODO(crbug.com/40790332): For now we enable the buttons again to not block the users from
         // continuing to the next page. Should show a dialog with the signin error.
         checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1);
+
+        // Clicking continue again should retry sign-in and succeed once the error clears.
+        doCallback(/* index= */ 2, (SignInCallback callback) -> callback.onSignInComplete())
+                .when(mSigninManagerMock)
+                .signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
+        clickContinueButton(continueAsText);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -929,7 +937,7 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testContinueButtonWithTheSignedInAccount() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
 
         final String continueAsText =
@@ -940,6 +948,7 @@ public class SigninFirstRunFragmentTest {
                                 TestAccounts.ACCOUNT1.getGivenName());
         clickContinueButton(continueAsText);
 
+        onView(withId(R.id.fre_signin_progress_spinner)).check(matches(not(isDisplayed())));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
@@ -1383,6 +1392,27 @@ public class SigninFirstRunFragmentTest {
 
         checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    public void testFragmentWhenAddingDefaultAccountCanceled_allowsRetry() {
+        launchActivityWithFragment();
+
+        onScrollToView(withText(R.string.signin_add_account_to_device)).perform(click());
+        onViewWaiting(SigninTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+
+        // Canceling the add-account flow on the FRE welcome screen should keep the welcome screen
+        // interactive so the user can try again.
+        onScrollToView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+
+        checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
+        verify(mFirstRunPageDelegateMock, never()).exitFirstRun();
+        verify(mFirstRunPageDelegateMock, times(2))
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
     }
 
