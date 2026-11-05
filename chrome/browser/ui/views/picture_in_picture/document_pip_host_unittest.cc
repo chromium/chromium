@@ -1360,20 +1360,17 @@ TEST_F(DocumentPipExclusiveAccessTest, NotShownCallbackCanCloseWindow) {
   EXPECT_TRUE(base::test::RunUntil([this] { return !GetBubbleWidget(); }));
 }
 
-// TODO(crbug.com/579234210): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OnlyUserMouseInputReshowsBubble \
-  DISABLED_OnlyUserMouseInputReshowsBubble
-#else
-#define MAYBE_OnlyUserMouseInputReshowsBubble OnlyUserMouseInputReshowsBubble
-#endif
-TEST_F(DocumentPipExclusiveAccessTest, MAYBE_OnlyUserMouseInputReshowsBubble) {
+TEST_F(DocumentPipExclusiveAccessTest, OnlyUserMouseInputReshowsBubble) {
   auto* host = CreateHostAndOpenPipWindow();
   auto* context = host->GetExclusiveAccessManagerForTesting()->context();
   ShowBubble(host);
-  task_environment()->FastForwardBy(ExclusiveAccessBubble::kSnoozeTime +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
   ASSERT_FALSE(context->IsExclusiveAccessBubbleDisplayed());
+  // Advance past the snooze period after the bubble has finished hiding so any
+  // native WM_MOUSEMOVE events dispatched while showing/hiding the desktop
+  // widgets cannot push `snooze_until_` past `Now()`.
+  task_environment()->AdvanceClock(ExclusiveAccessBubble::kSnoozeTime +
+                                   base::Seconds(1));
 
   for (auto type : {ui::EventType::kMouseEntered, ui::EventType::kMouseExited,
                     ui::EventType::kMouseMoved}) {
