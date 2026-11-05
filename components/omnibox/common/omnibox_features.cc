@@ -667,6 +667,13 @@ const base::FeatureParam<bool> kVoiceSearchCoherenceRealboxHelperText{
     &kVoiceSearchCoherenceSearchbox, "VoiceSearchCoherenceRealboxHelperText",
     false};
 
+// Keeps the legacy NTP Realbox voice search UI, the one users get with
+// kVoiceSearchCoherenceSearchbox disabled. Voice search requests still carry
+// the NTP routing params, so only the speech service's recognizer changes.
+const base::FeatureParam<bool> kVoiceSearchCoherenceRealboxKeepLegacyUi{
+    &kVoiceSearchCoherenceSearchbox, "VoiceSearchCoherenceRealboxKeepLegacyUi",
+    false};
+
 #if BUILDFLAG(IS_ANDROID)
 // Prevents intermediate AutocompleteResult updates from being sent to Java on
 // low-end devices. This aims at eliminating time spent on constructing,

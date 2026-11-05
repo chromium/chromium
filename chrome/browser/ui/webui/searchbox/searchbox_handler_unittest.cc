@@ -247,6 +247,29 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsUnselectMatchOnTabExit) {
   }
 }
 
+TEST_F(SearchboxHandlerTest,
+       GetWebUIDataSourceDictVoiceSearchCoherenceKeepLegacyUi) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list(
+        omnibox::kVoiceSearchCoherenceSearchbox);
+    base::DictValue strings =
+        SearchboxHandler::GetWebUIDataSourceDict(profile());
+    EXPECT_TRUE(
+        *strings.FindBool("voiceSearchCoherenceAnySearchboxExperimentEnabled"));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kVoiceSearchCoherenceSearchbox,
+        {{"VoiceSearchCoherenceRealboxKeepLegacyUi", "true"}});
+    base::DictValue strings =
+        SearchboxHandler::GetWebUIDataSourceDict(profile());
+    EXPECT_FALSE(
+        *strings.FindBool("voiceSearchCoherenceAnySearchboxExperimentEnabled"));
+  }
+}
+
 TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictKeywordSpaceTriggering) {
   profile()->GetPrefs()->SetBoolean(omnibox::kKeywordSpaceTriggeringEnabled,
                                     false);
