@@ -287,6 +287,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // available only to adult users.
   static bool CanUseAdultFeatures(const AccountCapabilities& capabilities);
 
+  // Returns whether `profile` is eligible for the Android native FRE.
+  static bool IsProfileEligibleForNativeFre(Profile* profile);
+
   // Returns whether the OS version is supported.
   static bool IsOsVersionSupported();
   // Returns whether system requirements (like RAM and Chromebook hardware) are
