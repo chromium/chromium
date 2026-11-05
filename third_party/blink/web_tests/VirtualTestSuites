@@ -29,6 +29,19 @@
   "TODO(crbug.com/380755410): Find a way to do this systematically.",
 
   {
+    "prefix": "temporal-input-coarse-pointer",
+    "platforms": ["Android", "Linux"],
+    "bases": [
+      "external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change-on-blur.html"
+    ],
+    "args": [
+      "--enable-blink-features=InputMultipleFieldsUIWithPointerChecks",
+      "--blink-settings=availablePointerTypes=2,primaryPointerType=2"
+    ],
+    "owners": ["julio@gitstart.com"],
+    "expires": "never"
+  },
+  {
     "prefix": "ai_tool_use",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

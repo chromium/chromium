@@ -111,10 +111,7 @@ class FocusgroupControllerTest : public PageTestBase {
   }
 
  private:
-  void SetUp() override {
-    PageTestBase::SetUp(gfx::Size());
-    GetDocument().GetSettings()->SetDateTimeSubfieldsFocusableForTesting(true);
-  }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   ScopedFocusgroupForTest focusgroup_enabled{true};
 };

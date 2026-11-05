@@ -946,9 +946,6 @@ TEST_P(HTMLCanvasElementTest, SlotAssignmentDuringSetIsInCanvasSubtree) {
 
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   GetDocument().GetSettings()->SetScriptEnabled(true);
-  // This test relies on focus moving into the date input's shadow subfields,
-  // which are not focusable by default on non-desktop Android.
-  GetDocument().GetSettings()->SetDateTimeSubfieldsFocusableForTesting(true);
   GetPage().GetFocusController().SetActive(true);
   GetPage().GetFocusController().SetFocused(true);
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(

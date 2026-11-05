@@ -16,6 +16,7 @@ external/wpt/virtual-keyboard/
 external/wpt/visual-viewport/
 
 external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change-on-blur.html
+virtual/temporal-input-coarse-pointer/external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change-on-blur.html
 
 external/wpt/FileAPI/idlharness.any.html
 external/wpt/FileAPI/idlharness.any.worker.html
