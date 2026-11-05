@@ -14,23 +14,33 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -42,18 +52,30 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/mock_commit_queue.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/menu_model_delegate.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/menus/simple_menu_model.h"
 
 using ::testing::ElementsAre;
 
 namespace {
+
+class MockMenuModelDelegate : public ui::MenuModelDelegate {
+ public:
+  MOCK_METHOD(void, OnIconChanged, (int command_id), (override));
+};
 
 struct ModelData {
   ui::MenuModel::ItemType type;
@@ -147,22 +169,24 @@ class OtherDeviceTabsSubMenuModelTest : public InProcessBrowserTest {
     StartSessionSync();
   }
 
-  // Registers one session (device) per entry of `num_tabs_per_device`, each
-  // with one window holding that many tabs. Tab `t` of device `s` is titled
-  // `TabTitle(s, t)`. Timestamps are explicit so that *later* devices and
-  // lower tab indices are strictly more recent; the last registered device is
-  // therefore expected first in the menu.
+  // Registers one more session (device) per entry of `num_tabs_per_device`,
+  // each with one window holding that many tabs. Tab `t` of device `s` is
+  // titled `TabTitle(s, t)`. Timestamps are explicit so that, within a call,
+  // *later* devices and lower tab indices are strictly more recent; the last
+  // registered device is therefore expected first in the menu.
   void RegisterDevices(const std::vector<int>& num_tabs_per_device) {
     const base::Time now = base::Time::Now();
     const size_t num_devices = num_tabs_per_device.size();
+    const size_t first_device = recent_tabs_builder_.GetSessionCount();
     bool all_devices_have_tabs = true;
-    for (size_t s = 0; s < num_devices; ++s) {
+    for (size_t i = 0; i < num_devices; ++i) {
+      const size_t s = first_device + i;
       recent_tabs_builder_.AddSession();
       recent_tabs_builder_.AddWindow(s);
-      all_devices_have_tabs &= num_tabs_per_device[s] > 0;
-      for (int t = 0; t < num_tabs_per_device[s]; ++t) {
+      all_devices_have_tabs &= num_tabs_per_device[i] > 0;
+      for (int t = 0; t < num_tabs_per_device[i]; ++t) {
         recent_tabs_builder_.AddTabWithInfo(
-            s, 0, now - base::Minutes(100 * (num_devices - 1 - s) + t),
+            s, 0, now - base::Minutes(100 * (num_devices - 1 - i) + t),
             TabTitle(s, t));
       }
     }
@@ -351,6 +375,132 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, OpenTab) {
   EXPECT_EQ(expected_url, tab_strip->GetActiveWebContents()->GetVisibleURL());
   EXPECT_EQ(2, user_action_tester.GetActionCount(
                    "WrenchMenu_OpenRecentTabFromDevice"));
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, MoreTabsFlyout) {
+  SetUpSignedInWithTabSync();
+  constexpr size_t kNumTabs = 12;
+
+  // Expects each device to show `num_inline` tabs and a flyout with the rest.
+  auto expect_inline_tabs = [&](size_t num_devices, size_t num_inline) {
+    std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+    // Per device: title, inline tabs, flyout and a divider (except the last).
+    ASSERT_EQ(num_devices * (num_inline + 3) - 1, model->GetItemCount());
+    for (size_t i = num_inline + 1; i < model->GetItemCount();
+         i += num_inline + 3) {
+      EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model->GetTypeAt(i));
+      EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
+                    IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS,
+                    static_cast<int>(kNumTabs - num_inline)),
+                model->GetLabelAt(i));
+      EXPECT_EQ(remote_tabs_menu_util::GetDeviceFormFactorIcon(
+                    syncer::DeviceInfo::FormFactor::kDesktop),
+                model->GetIconAt(i));
+      EXPECT_EQ(kNumTabs - num_inline,
+                model->GetSubmenuModelAt(i)->GetItemCount());
+    }
+  };
+
+  RegisterDevices({kNumTabs});
+  expect_inline_tabs(1, 10);
+
+  // The flyout lists the remaining tabs, which open like inline ones.
+  base::MockCallback<OtherDeviceTabsSubMenuModel::LogMenuMetricsCallback>
+      log_menu_metrics;
+  auto model = std::make_unique<OtherDeviceTabsSubMenuModel>(
+      browser(), log_menu_metrics.Get());
+  ui::MenuModel* flyout = model->GetSubmenuModelAt(11);
+  ASSERT_NE(nullptr, flyout);
+  EXPECT_THAT(LabelsInRange(*flyout, 0, flyout->GetItemCount()),
+              ElementsAre(TabTitle(0, 10), TabTitle(0, 11)));
+  EXPECT_FALSE(flyout->GetIconAt(1).IsEmpty());
+  const GURL expected_url =
+      RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile())
+          .back()
+          .children()[1]
+          .url();
+  TabStripModel* const tab_strip = browser()->tab_strip_model();
+  const int tab_count = tab_strip->count();
+  content::WebContents* const initial_active_contents =
+      tab_strip->GetActiveWebContents();
+  EXPECT_CALL(log_menu_metrics, Run(IDC_OPEN_OTHER_DEVICE_TAB)).Times(2);
+  flyout->ActivatedAt(1, ui::EF_MIDDLE_MOUSE_BUTTON);
+  EXPECT_EQ(tab_count + 1, tab_strip->count());
+  EXPECT_EQ(initial_active_contents, tab_strip->GetActiveWebContents());
+  flyout->ActivatedAt(1);
+  EXPECT_EQ(tab_count + 2, tab_strip->count());
+  EXPECT_EQ(expected_url, tab_strip->GetActiveWebContents()->GetVisibleURL());
+
+  RegisterDevices({kNumTabs});
+  expect_inline_tabs(2, 5);
+
+  RegisterDevices({kNumTabs});
+  expect_inline_tabs(3, 5);
+
+  RegisterDevices({kNumTabs});
+  expect_inline_tabs(4, 3);
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       MoreTabsFlyoutOnlyAboveCap) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({10});
+  // Title and all 10 tabs inline.
+  EXPECT_EQ(11u, CreateModel()->GetItemCount());
+
+  recent_tabs_builder_.SetSessionFormFactor(
+      0, syncer::DeviceInfo::FormFactor::kPhone);
+  RegisterDevices({6});
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  // Per device: title, 5 tabs and a flyout, with a divider in between.
+  ASSERT_EQ(15u, model->GetItemCount());
+  EXPECT_EQ(u"See 1 more tab", model->GetLabelAt(6));
+  EXPECT_EQ(remote_tabs_menu_util::GetDeviceFormFactorIcon(
+                syncer::DeviceInfo::FormFactor::kDesktop),
+            model->GetIconAt(6));
+  ui::MenuModel* const singular_flyout = model->GetSubmenuModelAt(6);
+  EXPECT_THAT(
+      LabelsInRange(*singular_flyout, 0, singular_flyout->GetItemCount()),
+      ElementsAre(TabTitle(1, 5)));
+  EXPECT_EQ(u"See 5 more tabs", model->GetLabelAt(14));
+  EXPECT_EQ(remote_tabs_menu_util::GetDeviceFormFactorIcon(
+                syncer::DeviceInfo::FormFactor::kPhone),
+            model->GetIconAt(14));
+  EXPECT_EQ(5u, model->GetSubmenuModelAt(14)->GetItemCount());
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, MoreTabsFlyoutFavicon) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({11});
+  Profile* const profile = browser()->GetProfile();
+  const GURL url = RecentTabsBuilder::BuildOtherDeviceTabs(profile)
+                       .back()
+                       .children()[0]
+                       .url();
+  HistoryServiceFactory::GetForProfile(profile,
+                                       ServiceAccessType::EXPLICIT_ACCESS)
+      ->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(gfx::kFaviconSize, gfx::kFaviconSize);
+  bitmap.eraseColor(SK_ColorRED);
+  FaviconServiceFactory::GetForProfile(profile,
+                                       ServiceAccessType::EXPLICIT_ACCESS)
+      ->SetFavicons({url}, GURL("http://foo/favicon.ico"),
+                    favicon_base::IconType::kFavicon,
+                    gfx::Image::CreateFrom1xBitmap(bitmap));
+
+  // The root model's delegate is told which flyout row to refresh.
+  testing::StrictMock<MockMenuModelDelegate> delegate;
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  ui::MenuModel* const flyout = model->GetSubmenuModelAt(11);
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnIconChanged(flyout->GetCommandIdAt(0)))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  model->SetMenuModelDelegate(&delegate);
+  run_loop.Run();
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      bitmap, *flyout->GetIconAt(0).GetImage().ToSkBitmap()));
+  model->SetMenuModelDelegate(nullptr);
 }
 
 // --- App menu integration --------------------------------------------------

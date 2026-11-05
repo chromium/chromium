@@ -907,6 +907,7 @@ if (!is_android) {
     public_deps = [
       "//chrome/browser/ui/startup:startup_tab",
       "//components/sessions:session_id",
+      "//components/sync_device_info",
       "//components/ukm:test_support",
       "//ui/base",
     ]
@@ -967,6 +968,7 @@ if (!is_android) {
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/history",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/keep_alive",
@@ -994,7 +996,11 @@ if (!is_android) {
       "//components/commerce/core:feature_list",
       "//components/commerce/core:shopping_service",
       "//components/commerce/core:shopping_service_test_support",
+      "//components/favicon/core",
+      "//components/favicon_base",
+      "//components/history/core/browser",
       "//components/javascript_dialogs",
+      "//components/keyed_service/core",
       "//components/policy:generated",
       "//components/policy:policy_code_generate",
       "//components/policy/core/browser",
@@ -1008,8 +1014,11 @@ if (!is_android) {
       "//components/webapps/common",
       "//content/public/browser",
       "//content/test:test_support",
+      "//skia",
       "//ui/base:features",
       "//ui/base:types",
+      "//ui/gfx",
+      "//ui/gfx:test_support",
       "//url",
     ]
   }

@@ -15479,6 +15479,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_OTHER_DEVICE_TABS_MENU" desc="The text label of the 'Other device tabs' sub-menu in the wrench menu that lists the tabs currently open on the user's other devices.">
         Other device tabs
       </message>
+      <message name="IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS" desc="Label of the last row under a device in the 'Other device tabs' sub-menu of the wrench menu. It opens a sub-menu listing the remaining tabs open on that device. [ICU_Syntax]">
+        {COUNT, plural, =1 {See 1 more tab} other {See # more tabs}}
+      </message>
       <message name="IDS_DEFAULT_DOWNLOAD_FILENAME" desc="Default name for downloaded files when we have no idea what they could be.">
         download
       </message>

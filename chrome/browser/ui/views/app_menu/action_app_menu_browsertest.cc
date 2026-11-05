@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -50,6 +51,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/mock_commit_queue.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -657,6 +659,66 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
       "WrenchMenu.TimeToAction.OpenOtherDeviceTab", 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "WrenchMenu_OpenRecentTabFromDevice"));
+
+  menu_control->CloseMenu();
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenuMoreTabsFlyout) {
+  std::unique_ptr<syncer::DataTypeProcessor> sync_processor =
+      StartSessionSync();
+
+  const base::Time now = base::Time::Now();
+  RecentTabsBuilderTestHelper helper;
+  helper.AddSession();
+  helper.AddWindow(0);
+  for (int i = 0; i < 12; ++i) {
+    helper.AddTabWithInfo(0, 0, now - base::Minutes(i),
+                          u"Tab " + base::NumberToString16(i));
+  }
+  helper.ExportToSessionSync(sync_processor.get());
+  const GURL expected_url =
+      RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile())
+          .back()
+          .children()[1]
+          .url();
+
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+  views::MenuItemView* other_device_tabs_item =
+      action_menu->root_menu_item_for_testing()->GetMenuItemByID(
+          kActionOtherDeviceTabsSubmenu);
+  ASSERT_TRUE(other_device_tabs_item);
+  action_menu->WillShowMenu(other_device_tabs_item);
+
+  // A single device shows 10 tabs inline and the other 2 in a flyout.
+  EXPECT_TRUE(FindMenuItemByTitle(other_device_tabs_item, u"Tab 9"));
+  EXPECT_FALSE(FindMenuItemByTitle(other_device_tabs_item, u"Tab 10"));
+  views::MenuItemView* flyout_item = FindMenuItemByTitle(
+      other_device_tabs_item,
+      l10n_util::GetPluralStringFUTF16(IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS, 2));
+  ASSERT_TRUE(flyout_item);
+  EXPECT_EQ(remote_tabs_menu_util::GetDeviceFormFactorIcon(
+                syncer::DeviceInfo::FormFactor::kDesktop),
+            flyout_item->GetIcon());
+  ASSERT_TRUE(flyout_item->HasSubmenu());
+  EXPECT_EQ(2u, flyout_item->GetSubmenu()->GetMenuItems().size());
+  EXPECT_TRUE(FindMenuItemByTitle(flyout_item, u"Tab 10"));
+  views::MenuItemView* tab_item = FindMenuItemByTitle(flyout_item, u"Tab 11");
+  ASSERT_TRUE(tab_item);
+
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  base::HistogramTester histogram_tester;
+  action_menu->ExecuteCommand(tab_item->GetCommand(), 0);
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      expected_url,
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_OTHER_DEVICE_TAB, 1);
 
   menu_control->CloseMenu();
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/other_device_tabs_sub_menu_model.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -40,6 +41,21 @@ void OtherDeviceTabsSubMenuModel::ExecuteCommand(int command_id,
                                                  int event_flags) {}
 
 void OtherDeviceTabsSubMenuModel::Build() {
+  // Adds the tab row to `model`, binds its open callback, and fetches its
+  // favicon.
+  auto add_tab = [this](ui::SimpleMenuModel& model, const RecentTabItem& tab) {
+    const int command_id = GetAndIncrementNextMenuID();
+    model.AddItem(command_id, tab.title());
+    model.SetExecuteCallbackAt(
+        model.GetItemCount() - 1,
+        base::BindRepeating(&OtherDeviceTabsSubMenuModel::OpenTab,
+                            base::Unretained(this), tab.session_tag(),
+                            tab.session_id()));
+    remote_tabs_menu_util::AddRemoteTabFavicon(
+        browser_->GetProfile(), favicon_weak_ptr_factory_.GetWeakPtr(), &model,
+        command_id, tab.url());
+  };
+
   // Populates device headers, open tabs, and separators ordered by recency.
   for (const RecentTabItem& item :
        RecentTabsBuilder::BuildOtherDeviceTabs(browser_->GetProfile())) {
@@ -52,18 +68,18 @@ void OtherDeviceTabsSubMenuModel::Build() {
         // Non-interactive device name header.
         AddTitle(item.title());
         break;
-      case RecentTabItem::Type::kTab: {
-        // Add the tab row, bind its open callback, and fetch its favicon.
-        const int command_id = GetAndIncrementNextMenuID();
-        AddItem(command_id, item.title());
-        SetExecuteCallbackAt(
-            GetItemCount() - 1,
-            base::BindRepeating(&OtherDeviceTabsSubMenuModel::OpenTab,
-                                base::Unretained(this), item.session_tag(),
-                                item.session_id()));
-        remote_tabs_menu_util::AddRemoteTabFavicon(
-            browser_->GetProfile(), favicon_weak_ptr_factory_.GetWeakPtr(),
-            this, command_id, item.url());
+      case RecentTabItem::Type::kTab:
+        add_tab(*this, item);
+        break;
+      case RecentTabItem::Type::kMoreTabs: {
+        // Flyout with the device's tabs that don't fit inline.
+        ui::SimpleMenuModel& more_tabs = *more_tabs_sub_menus_.emplace_back(
+            std::make_unique<ui::SimpleMenuModel>(this));
+        for (const RecentTabItem& tab : item.children()) {
+          add_tab(more_tabs, tab);
+        }
+        AddSubMenuWithIcon(GetAndIncrementNextMenuID(), item.title(),
+                           &more_tabs, item.icon());
         break;
       }
       default:

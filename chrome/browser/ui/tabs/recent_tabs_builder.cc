@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -60,6 +61,11 @@ namespace {
 
 constexpr int kMaxLocalEntries = 8;
 constexpr size_t kMaxSessionsToShow = 8;
+// Tab caps per device in the "Other device tabs" menu depending on the number
+// of remote devices.
+constexpr size_t kMaxInlineTabsSingleDevice = 10;
+constexpr size_t kMaxInlineTabsFewDevices = 5;
+constexpr size_t kMaxInlineTabsManyDevices = 3;
 
 using TabIterator =
     std::vector<std::unique_ptr<sessions::tab_restore::Tab>>::const_iterator;
@@ -583,20 +589,47 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildOtherDeviceTabs(
   }
 
   // `sessions` is already ordered by recency.
+  std::vector<std::pair<const sync_sessions::SyncedSession*,
+                        std::vector<const sessions::SessionTab*>>>
+      devices;
   for (const sync_sessions::SyncedSession* session : sessions) {
-    const std::string& session_tag = session->GetSessionTag();
     std::vector<const sessions::SessionTab*> tabs;
-    if (!open_tabs->GetForeignSessionTabs(session_tag, &tabs) || tabs.empty()) {
-      continue;
+    if (open_tabs->GetForeignSessionTabs(session->GetSessionTag(), &tabs) &&
+        !tabs.empty()) {
+      devices.emplace_back(session, std::move(tabs));
     }
+  }
+
+  // The more devices are listed, the fewer tabs each shows inline.
+  const size_t max_inline_tabs =
+      devices.size() == 1 ? kMaxInlineTabsSingleDevice
+                          : (devices.size() <= 3 ? kMaxInlineTabsFewDevices
+                                                 : kMaxInlineTabsManyDevices);
+  for (const auto& [session, tabs] : devices) {
+    const std::string& session_tag = session->GetSessionTag();
     if (!items.empty()) {
       items.emplace_back(RecentTabItem::Type::kDivider, u"");
     }
     items.emplace_back(RecentTabItem::Type::kHeader,
                        base::UTF8ToUTF16(session->GetSessionName()));
-    for (const sessions::SessionTab* tab : tabs) {
+    const auto [inline_tabs, more_tabs] =
+        base::span(tabs).split_at(std::min(tabs.size(), max_inline_tabs));
+    for (const sessions::SessionTab* tab : inline_tabs) {
       items.push_back(BuildForeignTabItem(session_tag, *tab));
     }
+    if (more_tabs.empty()) {
+      continue;
+    }
+    RecentTabItem more_tabs_item(
+        RecentTabItem::Type::kMoreTabs,
+        l10n_util::GetPluralStringFUTF16(IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS,
+                                         static_cast<int>(more_tabs.size())));
+    more_tabs_item.set_icon(remote_tabs_menu_util::GetDeviceFormFactorIcon(
+        session->GetDeviceFormFactor()));
+    for (const sessions::SessionTab* tab : more_tabs) {
+      more_tabs_item.add_child(BuildForeignTabItem(session_tag, *tab));
+    }
+    items.push_back(std::move(more_tabs_item));
   }
   return items;
 }

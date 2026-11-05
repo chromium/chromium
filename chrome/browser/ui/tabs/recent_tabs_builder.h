@@ -31,6 +31,7 @@ class RecentTabItem {
     kSplit,    // Recently closed split view
     kDevice,   // Remote device session
     kDivider,  // Divider / separator
+    kMoreTabs,  // Submenu with the tabs of a device that don't fit inline
   };
 
   RecentTabItem(Type type, std::u16string title);
@@ -118,10 +119,11 @@ class RecentTabsBuilder {
   static std::vector<RecentTabItem> BuildLocalEntries(Profile* profile);
   static std::vector<RecentTabItem> BuildRemoteEntries(Profile* profile);
 
-  // Builds the items (`kHeader` device titles, `kTab` rows, and `kDivider`
-  // separators between devices) for the "Other device tabs" submenu, ordered by
-  // recency. Returns an empty vector if `profile` is ineligible or has no
-  // foreign sessions with open tabs.
+  // Builds the items (`kHeader` device titles, `kTab` rows, `kMoreTabs`
+  // submenus for the tabs beyond the per-device cap, and `kDivider` separators
+  // between devices) for the "Other device tabs" submenu, ordered by recency.
+  // Returns an empty vector if `profile` is ineligible or has no foreign
+  // sessions with open tabs.
   static std::vector<RecentTabItem> BuildOtherDeviceTabs(Profile* profile);
 };
 

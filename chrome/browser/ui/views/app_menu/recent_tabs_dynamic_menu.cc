@@ -183,6 +183,7 @@ RecentTabsDynamicMenu::GetInvokeCallback(RecentTabItem recent_item) {
     case RecentTabItem::Type::kHeader:
     case RecentTabItem::Type::kDevice:
     case RecentTabItem::Type::kDivider:
+    case RecentTabItem::Type::kMoreTabs:
       break;
   }
   return base::DoNothing();

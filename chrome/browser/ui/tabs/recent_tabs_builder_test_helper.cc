@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -23,6 +24,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,6 +74,7 @@ std::string ToTabUrl(SessionID session_id,
 struct RecentTabsBuilderTestHelper::TabInfo {
   TabInfo() : id(SessionID::InvalidValue()) {}
   SessionID id;
+  std::string name;
   base::Time timestamp;
   std::u16string title;
 };
@@ -79,12 +82,17 @@ struct RecentTabsBuilderTestHelper::WindowInfo {
   WindowInfo() : id(SessionID::InvalidValue()) {}
   ~WindowInfo() = default;
   SessionID id;
+  std::string name;
   std::vector<TabInfo> tabs;
 };
 struct RecentTabsBuilderTestHelper::SessionInfo {
   SessionInfo() : id(SessionID::InvalidValue()) {}
   ~SessionInfo() = default;
   SessionID id;
+  std::string name;
+  // `kUnknown` falls back to the form factor of the CrOS device type.
+  syncer::DeviceInfo::FormFactor form_factor =
+      syncer::DeviceInfo::FormFactor::kUnknown;
   std::vector<WindowInfo> windows;
 };
 
@@ -97,6 +105,7 @@ RecentTabsBuilderTestHelper::~RecentTabsBuilderTestHelper() = default;
 void RecentTabsBuilderTestHelper::AddSession() {
   SessionInfo info;
   info.id = SessionID::NewUnique();
+  info.name = ToSessionName(info.id);
   sessions_.push_back(info);
 }
 
@@ -122,6 +131,17 @@ base::Time RecentTabsBuilderTestHelper::GetSessionTimestamp(int session_index) {
 
   sort(timestamps.begin(), timestamps.end());
   return timestamps[0];
+}
+
+void RecentTabsBuilderTestHelper::SetSessionName(int session_index,
+                                                 std::string name) {
+  sessions_[session_index].name = std::move(name);
+}
+
+void RecentTabsBuilderTestHelper::SetSessionFormFactor(
+    int session_index,
+    syncer::DeviceInfo::FormFactor form_factor) {
+  sessions_[session_index].form_factor = form_factor;
 }
 
 void RecentTabsBuilderTestHelper::AddWindow(int session_index) {
@@ -264,7 +284,9 @@ sync_pb::SessionSpecifics RecentTabsBuilderTestHelper::BuildHeaderSpecifics(
   specifics.set_session_tag(ToSessionTag(session_id));
   sync_pb::SessionHeader* header = specifics.mutable_header();
   header->set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_CROS);
-  header->set_client_name(ToSessionName(session_id));
+  header->set_device_form_factor(
+      syncer::ToDeviceFormFactorProto(sessions_[session_index].form_factor));
+  header->set_client_name(sessions_[session_index].name);
   return specifics;
 }
 

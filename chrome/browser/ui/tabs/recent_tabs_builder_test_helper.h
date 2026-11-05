@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync_device_info/device_info.h"
 
 namespace sync_pb {
 class SessionSpecifics;
@@ -39,6 +40,11 @@ class RecentTabsBuilderTestHelper {
   int GetSessionCount();
   SessionID GetSessionID(int session_index);
   base::Time GetSessionTimestamp(int session_index);
+  // Overrides the default, ID-based, device name of the session.
+  void SetSessionName(int session_index, std::string name);
+  // Overrides the default, desktop, form factor of the session's device.
+  void SetSessionFormFactor(int session_index,
+                            syncer::DeviceInfo::FormFactor form_factor);
 
   void AddWindow(int session_index);
   int GetWindowCount(int session_index);

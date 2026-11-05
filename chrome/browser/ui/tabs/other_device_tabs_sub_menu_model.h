@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TABS_OTHER_DEVICE_TABS_SUB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_TABS_OTHER_DEVICE_TABS_SUB_MENU_MODEL_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -58,6 +60,9 @@ class OtherDeviceTabsSubMenuModel : public ui::SimpleMenuModel,
   const raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
 
   int next_menu_id_;
+
+  // Flyouts listing the tabs of a device that don't fit inline.
+  std::vector<std::unique_ptr<ui::SimpleMenuModel>> more_tabs_sub_menus_;
 
   base::WeakPtrFactory<OtherDeviceTabsSubMenuModel> favicon_weak_ptr_factory_{
       this};
