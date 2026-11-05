@@ -1242,23 +1242,9 @@ TEST_F(PrimaryAccountManagerTest, PerProfileMetricsSync) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class PrimaryAccountManagerExplicitSigninNewFeatureTest
-    : public PrimaryAccountManagerTest,
-      public testing::WithParamInterface<bool> {
- public:
-  PrimaryAccountManagerExplicitSigninNewFeatureTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSignInPromos, !GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test that the extensions explicit signin pref is set if the user signs in
 // through the extension install bubble.
-TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
-       ExplicitSigninExtensionPref) {
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionPref) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1299,10 +1285,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
-  const bool expected_other_opt_in =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
-  EXPECT_EQ(
-      expected_other_opt_in,
+  EXPECT_TRUE(
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(other_gaia_id));
 
   // Verify histograms as well that this was for a new opt-in.
@@ -1312,7 +1295,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
   histogram_tester_.ExpectUniqueSample(
       "Signin.Extensions.ExplicitSigninFromAnyAccessPoint",
       /*sample=*/true,
-      /*expected_bucket_count=*/expected_other_opt_in ? 2 : 1);
+      /*expected_bucket_count=*/2);
 
   // Sign out, then sign in again through the extensions install bubble.
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
@@ -1330,15 +1313,14 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       /*sample=*/false, /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
       "Signin.Extensions.ExplicitSigninFromAnyAccessPoint",
-      /*sample=*/true, /*expected_count=*/expected_other_opt_in ? 2 : 1);
+      /*sample=*/true, /*expected_count=*/2);
   histogram_tester_.ExpectBucketCount(
       "Signin.Extensions.ExplicitSigninFromAnyAccessPoint",
       /*sample=*/false, /*expected_count=*/1);
 }
 
 // Test that the bookmarks explicit signin pref is set for all new sign-ins.
-TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
-       ExplicitSigninBookmarksPref) {
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninBookmarksPref) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1367,15 +1349,14 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
-  EXPECT_EQ(
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled(),
+  EXPECT_TRUE(
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(other_gaia_id));
 
   // Quickly verify that the pref is still true for `gaia_id`.
   EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
 
-TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
+TEST_F(PrimaryAccountManagerTest,
        ExplicitSigninBookmarksPref_ResetWhenSyncTurnedOn) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
@@ -1405,9 +1386,9 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
-// Tests for users already signed in `ExplicitSigninExtensionsPref` is only set
-// to true if `kReplaceSyncPromosWithSignInPromos` is enabled.
-TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
+// Tests that for users already signed in `ExplicitSigninExtensionsPref` is not
+// set.
+TEST_F(PrimaryAccountManagerTest,
        ExplicitSigninExtensionsPref_AlreadySignedIn) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1419,14 +1400,13 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
 
   CreatePrimaryAccountManager();
 
-  EXPECT_NE(GetParam(),
-            SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
 }
 
-// Tests for users already signed in `ExplicitSigninBookmarksPref` is only set
-// to true if `kReplaceSyncPromosWithSignInPromos` is enabled.
-TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
-       ExplicitSigninBookmarksPref_AlreadySignedIn) {
+// Tests that for users already signed in `ExplicitSigninBookmarksPref` is not
+// set.
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninBookmarksPref_AlreadySignedIn) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
@@ -1437,8 +1417,8 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
 
   CreatePrimaryAccountManager();
 
-  EXPECT_NE(GetParam(),
-            SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 
   histogram_tester_.ExpectBucketCount(
       "Signin.ExplicitSigninDatatypeMigration",
@@ -1448,16 +1428,15 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       "Signin.ExplicitSigninDatatypeMigration",
       PrimaryAccountManager::ExplicitSigninDatatypeMigrationState::
           kSignedInWithExplicitBookmarks,
-      GetParam() ? 0 : 1);
+      0);
   histogram_tester_.ExpectBucketCount(
       "Signin.ExplicitSigninDatatypeMigration",
       PrimaryAccountManager::ExplicitSigninDatatypeMigrationState::
           kSignedInWithExplicitExtensions,
-      GetParam() ? 0 : 1);
+      0);
 }
 
-TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
-       ExplicitSigninExtensionsPref_AlreadySyncing) {
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionsPref_AlreadySyncing) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
@@ -1472,8 +1451,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
 }
 
-TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
-       ExplicitSigninBookmarksPref_AlreadySyncing) {
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninBookmarksPref_AlreadySyncing) {
   GaiaId gaia_id("gaia_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
@@ -1487,11 +1465,4 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrimaryAccountManagerExplicitSigninNewFeatureTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "NewSignins" : "ExistingUsers";
-                         });
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
