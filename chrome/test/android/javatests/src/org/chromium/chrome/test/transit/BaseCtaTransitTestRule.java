@@ -296,6 +296,14 @@ public abstract class BaseCtaTransitTestRule implements TestRule {
                                 // onPreCreate(), MultiInstanceManagerImpl#closeWindows is a no-op,
                                 // so close all tabs and overwrite persisted tab state with the
                                 // empty model before finishing the Activity (crbug.com/580067196).
+                                //
+                                // Finish the Activity first so that isFinishing() is true while
+                                // the tabs close. Otherwise LayoutManagerChrome#tabsAllClosing()
+                                // shows the hub, which inflates views that may not exist in tests
+                                // that replaced the content view.
+                                if (!cta.isFinishing()) {
+                                    cta.finishAndRemoveTask();
+                                }
                                 TabModelOrchestrator orchestrator =
                                         cta.getTabModelOrchestratorSupplier().get();
                                 if (orchestrator != null && orchestrator.areStoresInitialized()) {
