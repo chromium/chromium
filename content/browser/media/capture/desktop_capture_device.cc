@@ -503,7 +503,9 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
   CHECK_GT(params.requested_format.frame_size.GetArea(), 0,
            base::NotFatalUntil::M160);
-  CHECK_GT(params.requested_format.frame_rate, 0, base::NotFatalUntil::M160);
+  // TODO(crbug.com/578932753): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(params.requested_format.frame_rate, 0);
   CHECK(desktop_capturer_, base::NotFatalUntil::M160);
   CHECK(client, base::NotFatalUntil::M160);
   CHECK(!client_, base::NotFatalUntil::M160);
