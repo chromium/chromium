@@ -333,8 +333,11 @@ class ParamsJson(dict):
         self.path = path
         self.type = self['type']
 
-    def __hash__(self):
-        return id(self)
+    # Hash by identity. This cannot be omitted because dict sets __hash__ to
+    # None (as does defining __eq__). Uses object's C implementation rather than
+    # a Python method because this is called millions of times during graph
+    # traversal.
+    __hash__ = object.__hash__
 
     def __eq__(self, other):
         return self is other
