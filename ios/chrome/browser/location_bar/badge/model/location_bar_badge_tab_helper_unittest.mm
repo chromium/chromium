@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/fake_location_bar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
@@ -24,7 +25,7 @@ class LocationBarBadgeTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
 };
 
-// Verifies adding, duplicate checking, and removing badges updates observers.
+// Tests adding, duplicate checking, and removing badges updates observers.
 TEST_F(LocationBarBadgeTabHelperTest,
        UpdatesDisplayedBadgeAndNotifiesObserverWhenBadgeAddedAndRemoved) {
   FakeLocationBarBadgeTabHelperObserver observer;
@@ -37,7 +38,7 @@ TEST_F(LocationBarBadgeTabHelperTest,
             LocationBarBadgeType::kPasswordSave);
   EXPECT_EQ(observer.call_count(), 1);
 
-  // Redundant insertion does not notify.
+  // Redundant insertion at same priority does not notify.
   tab_helper()->SetBadge(LocationBarBadgeType::kPasswordSave);
   EXPECT_EQ(observer.call_count(), 1);
 
@@ -67,19 +68,20 @@ TEST_F(LocationBarBadgeTabHelperTest,
   FakeLocationBarBadgeTabHelperObserver observer;
   tab_helper()->AddObserver(&observer);
 
-  // Add the primary badge (kPasswordSave has lowest numerical enum value 1, so
-  // it takes precedence in active_badges_).
-  tab_helper()->SetBadge(LocationBarBadgeType::kPasswordSave);
+  // Add the incumbent badge at default priority.
+  tab_helper()->SetBadge(LocationBarBadgeType::kPasswordSave,
+                         LocationBarBadgePriority::kDefault);
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
             LocationBarBadgeType::kPasswordSave);
 
-  // Add a secondary badge (kSaveCard has enum value 5).
-  tab_helper()->SetBadge(LocationBarBadgeType::kSaveCard);
+  // Add a secondary badge sharing the same priority. Incumbent retains
+  // precedence.
+  tab_helper()->SetBadge(LocationBarBadgeType::kSaveCard,
+                         LocationBarBadgePriority::kDefault);
   EXPECT_TRUE(tab_helper()->HasBadge(LocationBarBadgeType::kSaveCard));
   EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
             LocationBarBadgeType::kPasswordSave);
-  // Observer is not notified because displayed badge is still kPasswordSave.
   EXPECT_EQ(observer.call_count(), 1);
 
   // Remove secondary badge while displayed badge remains kPasswordSave.
@@ -87,7 +89,6 @@ TEST_F(LocationBarBadgeTabHelperTest,
   EXPECT_FALSE(tab_helper()->HasBadge(LocationBarBadgeType::kSaveCard));
   EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
             LocationBarBadgeType::kPasswordSave);
-  // Observer is not notified because displayed badge is still kPasswordSave.
   EXPECT_EQ(observer.call_count(), 1);
 
   tab_helper()->RemoveObserver(&observer);
@@ -107,6 +108,67 @@ TEST_F(LocationBarBadgeTabHelperTest,
 
   web_state.reset();
   EXPECT_TRUE(local_observer.tab_helper_destroyed());
+}
+
+// Tests higher priority badges preempt lower priority badges.
+TEST_F(LocationBarBadgeTabHelperTest,
+       PreemptsLowerTierWhenHigherPriorityBadgeAdded) {
+  tab_helper()->SetBadge(LocationBarBadgeType::kTranslate,
+                         LocationBarBadgePriority::kDefault);
+  EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
+            LocationBarBadgeType::kTranslate);
+
+  tab_helper()->SetBadge(LocationBarBadgeType::kPasswordSave,
+                         LocationBarBadgePriority::kHigh);
+  EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
+            LocationBarBadgeType::kPasswordSave);
+
+  tab_helper()->RemoveBadge(LocationBarBadgeType::kPasswordSave);
+  EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
+            LocationBarBadgeType::kTranslate);
+}
+
+// Tests arrival order preserves the incumbent badge for equal priority tiers.
+TEST_F(LocationBarBadgeTabHelperTest,
+       PreservesIncumbentWhenBadgesShareSamePriority) {
+  tab_helper()->SetBadge(LocationBarBadgeType::kTranslate,
+                         LocationBarBadgePriority::kDefault);
+  tab_helper()->SetBadge(LocationBarBadgeType::kSaveCard,
+                         LocationBarBadgePriority::kDefault);
+  EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
+            LocationBarBadgeType::kTranslate);
+}
+
+// Tests non-persistent badges are preserved on same-document navigation.
+TEST_F(LocationBarBadgeTabHelperTest, PreservesBadgesOnSameDocumentNavigation) {
+  tab_helper()->SetBadge(LocationBarBadgeType::kTranslate,
+                         LocationBarBadgePriority::kDefault);
+
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetIsSameDocument(true);
+  web_state_.OnNavigationStarted(&navigation_context);
+
+  EXPECT_TRUE(tab_helper()->HasBadge(LocationBarBadgeType::kTranslate));
+  EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
+            LocationBarBadgeType::kTranslate);
+}
+
+// Tests non-persistent badges are cleared across cross-document navigation.
+TEST_F(LocationBarBadgeTabHelperTest,
+       ClearsNonPersistentBadgesOnCrossDocumentNavigation) {
+  tab_helper()->SetBadge(LocationBarBadgeType::kTranslate,
+                         LocationBarBadgePriority::kDefault);
+  tab_helper()->SetBadge(LocationBarBadgeType::kIncognito,
+                         LocationBarBadgePriority::kDefault);
+
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetIsSameDocument(false);
+  web_state_.OnNavigationStarted(&navigation_context);
+
+  EXPECT_FALSE(tab_helper()->HasBadge(LocationBarBadgeType::kTranslate));
+  EXPECT_TRUE(tab_helper()->HasBadge(LocationBarBadgeType::kIncognito));
+  EXPECT_EQ(tab_helper()->GetDisplayedBadge(),
+            LocationBarBadgeType::kIncognito);
 }
 
 // Test fixture with kLocationBarBadgeMigration feature disabled.

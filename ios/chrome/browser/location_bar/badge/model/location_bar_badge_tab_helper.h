@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_MODEL_LOCATION_BAR_BADGE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_MODEL_LOCATION_BAR_BADGE_TAB_HELPER_H_
 
+#import <map>
 #import <optional>
-#import <set>
 
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
@@ -15,11 +15,14 @@
 #import "ios/web/public/web_state_user_data.h"
 
 class LocationBarBadgeTabHelperObserver;
+
 namespace web {
+class NavigationContext;
 class WebState;
 }  // namespace web
 
-// Tracks active location bar badges for a `web::WebState`.
+// Tracks active location bar badges and arbitrates priority for a
+// `web::WebState`.
 class LocationBarBadgeTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<LocationBarBadgeTabHelper> {
@@ -36,9 +39,11 @@ class LocationBarBadgeTabHelper
   // Unregisters `observer`.
   void RemoveObserver(LocationBarBadgeTabHelperObserver* observer);
 
-  // Activates a badge of `type`. `type` must not be
+  // Activates a badge of `type` with `priority`. `type` must not be
   // `LocationBarBadgeType::kNone`.
-  void SetBadge(LocationBarBadgeType type);
+  void SetBadge(
+      LocationBarBadgeType type,
+      LocationBarBadgePriority priority = LocationBarBadgePriority::kDefault);
 
   // Removes an active badge of `type`, if present. `type` must not be
   // `LocationBarBadgeType::kNone`.
@@ -52,6 +57,13 @@ class LocationBarBadgeTabHelper
   // active.
   std::optional<LocationBarBadgeType> GetDisplayedBadge() const;
 
+  // Internal record tracking an active badge's priority tier and arrival
+  // sequence.
+  struct LocationBarBadgeRecord {
+    LocationBarBadgePriority priority;
+    uint64_t sequence_number = 0;
+  };
+
  private:
   friend class web::WebStateUserData<LocationBarBadgeTabHelper>;
 
@@ -63,14 +75,20 @@ class LocationBarBadgeTabHelper
   void NotifyDisplayedBadgeChangedIfNecessary();
 
   // web::WebStateObserver:
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // Scoped observation for the associated `web::WebState`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
 
-  // Currently active badges for this tab.
-  std::set<LocationBarBadgeType> active_badges_;
+  // Currently active badges for this tab, mapped to priority and arrival order.
+  std::map<LocationBarBadgeType, LocationBarBadgeRecord> active_badges_;
+
+  // Monotonically increasing sequence number for deterministic badge
+  // tie-breaking.
+  uint64_t next_sequence_number_ = 0;
 
   // Cached badge type that was last broadcast to observers.
   std::optional<LocationBarBadgeType> last_displayed_badge_;
