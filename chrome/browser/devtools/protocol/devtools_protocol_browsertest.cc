@@ -40,6 +40,7 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
@@ -47,6 +48,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -56,6 +58,9 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/btm_service.h"
@@ -2461,6 +2466,20 @@ class DevToolsProtocolTest_PrivateVerificationTokens
     pvt_service_ = PrivateVerificationTokensServiceFactory::GetForProfile(
         browser()->GetProfile());
     ASSERT_NE(pvt_service_, nullptr);
+
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+    TemplateURLData data;
+    data.SetShortName(u"Test DSE");
+    data.SetKeyword(u"testdse");
+    data.SetURL("https://issuer.example.com/search?q={searchTerms}");
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(template_url);
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
     if (!pvt_service_->is_initialized()) {
       base::test::TestFuture<void> init_future;
       class Waiter : public PrivateVerificationTokensService::Observer {

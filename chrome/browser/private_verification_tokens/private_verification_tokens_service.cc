@@ -31,6 +31,7 @@
 #include "components/private_verification_tokens/common/private_verification_tokens_metrics.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -133,14 +134,15 @@ PrivateVerificationTokensTokenParsingResult MapPrivacyPassErrorToParsingResult(
 std::unique_ptr<PrivateVerificationTokensService>
 PrivateVerificationTokensService::Create(
     const base::FilePath& data_directory,
-    HostContentSettingsMap* host_content_settings_map) {
+    HostContentSettingsMap* host_content_settings_map,
+    TemplateURLService* template_url_service) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (data_directory.empty()) {
     return nullptr;
   }
-  auto service = base::WrapUnique(
-      new PrivateVerificationTokensService(host_content_settings_map));
+  auto service = base::WrapUnique(new PrivateVerificationTokensService(
+      host_content_settings_map, template_url_service));
   base::FilePath db_path = data_directory.Append(kDatabaseName);
 
   auto store = PrivateVerificationTokensStore::Create(
@@ -157,8 +159,10 @@ PrivateVerificationTokensService::Create(
 }
 
 PrivateVerificationTokensService::PrivateVerificationTokensService(
-    HostContentSettingsMap* host_content_settings_map)
-    : host_content_settings_map_(host_content_settings_map) {
+    HostContentSettingsMap* host_content_settings_map,
+    TemplateURLService* template_url_service)
+    : host_content_settings_map_(host_content_settings_map),
+      template_url_service_(template_url_service) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
@@ -206,6 +210,21 @@ bool PrivateVerificationTokensService::IsAntiAbuseEnabled(
   return setting != CONTENT_SETTING_BLOCK;
 }
 
+bool PrivateVerificationTokensService::IsSearchEngineSameOrigin(
+    const url::Origin& issuer) const {
+  if (!template_url_service_) {
+    return false;
+  }
+  url::Origin dse_origin =
+      template_url_service_->GetDefaultSearchProviderOrigin();
+  return !dse_origin.opaque() && dse_origin == issuer;
+}
+
+bool PrivateVerificationTokensService::IsIssuerAllowed(
+    const url::Origin& issuer) const {
+  return IsAntiAbuseEnabled(issuer) && IsSearchEngineSameOrigin(issuer);
+}
+
 void PrivateVerificationTokensService::StoreTokens(
     std::vector<private_verification_tokens::PrivateVerificationTokensToken>
         tokens,
@@ -227,7 +246,7 @@ void PrivateVerificationTokensService::StoreTokens(
   std::erase_if(
       tokens,
       [this](const private_verification_tokens::PrivateVerificationTokensToken&
-                 token) { return !IsAntiAbuseEnabled(token.issuer()); });
+                 token) { return !IsIssuerAllowed(token.issuer()); });
 
   if (tokens.empty()) {
     std::move(callback).Run();
@@ -388,7 +407,7 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   }
 
   url::Origin issuer = url::Origin::Create(request_url);
-  if (!IsAntiAbuseEnabled(issuer)) {
+  if (!IsIssuerAllowed(issuer)) {
     return;
   }
 
@@ -553,7 +572,7 @@ PrivateVerificationTokensService::GetTokenForRedemption(
   }
 
   const url::Origin& matching_issuer = it_issuer->second;
-  if (!IsAntiAbuseEnabled(matching_issuer)) {
+  if (!IsIssuerAllowed(matching_issuer)) {
     return std::nullopt;
   }
 

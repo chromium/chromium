@@ -52,11 +52,14 @@ class GURL;
 class HostContentSettingsMap;
 class Profile;
 
+class TemplateURLService;
+
 class PrivateVerificationTokensService : public KeyedService {
  public:
   static std::unique_ptr<PrivateVerificationTokensService> Create(
       const base::FilePath& data_directory,
-      HostContentSettingsMap* host_content_settings_map = nullptr);
+      HostContentSettingsMap* host_content_settings_map = nullptr,
+      TemplateURLService* template_url_service = nullptr);
   ~PrivateVerificationTokensService() override;
   void Shutdown() override;
   class Observer : public base::CheckedObserver {
@@ -71,6 +74,8 @@ class PrivateVerificationTokensService : public KeyedService {
   void RemoveObserver(Observer* observer);
 
   bool is_initialized() const;
+  bool IsSearchEngineSameOrigin(const url::Origin& issuer) const;
+  bool IsIssuerAllowed(const url::Origin& issuer) const;
 
   // Retrieve all token issuer origins asynchronously.
   void GetTokenIssuers(
@@ -141,8 +146,9 @@ class PrivateVerificationTokensService : public KeyedService {
   void TrackerInsert(Profile* profile, const url::Origin& redeemer_origin);
 
  private:
-  explicit PrivateVerificationTokensService(
-      HostContentSettingsMap* host_content_settings_map);
+  PrivateVerificationTokensService(
+      HostContentSettingsMap* host_content_settings_map,
+      TemplateURLService* template_url_service);
 
   void OnStoreInitialized();
 
@@ -170,6 +176,7 @@ class PrivateVerificationTokensService : public KeyedService {
   base::flat_map<url::Origin, url::Origin> redeemer_to_issuer_;
 
   raw_ptr<HostContentSettingsMap> host_content_settings_map_ = nullptr;
+  raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   bool is_shutting_down_ = false;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;

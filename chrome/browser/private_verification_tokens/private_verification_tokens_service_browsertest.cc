@@ -22,11 +22,16 @@
 #include "base/time/time.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_test_util.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
@@ -163,6 +168,22 @@ class PrivateVerificationTokensEndToEndBrowserTest
         &PrivateVerificationTokensEndToEndBrowserTest::HandleRequest,
         base::Unretained(this)));
     ASSERT_TRUE(https_server_.Start());
+
+    // Configure default search engine to match the test issuer origin.
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(GetProfile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+    TemplateURLData data;
+    data.SetShortName(u"Test DSE");
+    data.SetKeyword(u"testdse");
+    data.SetURL(https_server()
+                    .GetURL("issuer.a.test", "/search?q={searchTerms}")
+                    .spec());
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(template_url);
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
   }
 
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }

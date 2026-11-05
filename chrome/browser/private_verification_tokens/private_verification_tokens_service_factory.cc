@@ -14,6 +14,7 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "net/base/features.h"
 
 namespace {
@@ -111,8 +112,8 @@ PrivateVerificationTokensServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(profile);
   auto service = PrivateVerificationTokensService::Create(
-      profile->GetPath(),
-      HostContentSettingsMapFactory::GetForProfile(profile));
+      profile->GetPath(), HostContentSettingsMapFactory::GetForProfile(profile),
+      TemplateURLServiceFactory::GetForProfile(profile));
   if (service) {
     if (auto config = GetGlobalIssuerConfig()) {
       service->SetIssuerConfig(std::move(config));
@@ -131,6 +132,7 @@ PrivateVerificationTokensServiceFactory::
     : ProfileKeyedServiceFactory("PrivateVerificationTokensServiceFactory",
                                  CreateProfileSelections()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
 PrivateVerificationTokensServiceFactory::
