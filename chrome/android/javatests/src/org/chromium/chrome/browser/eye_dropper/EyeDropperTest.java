@@ -60,15 +60,28 @@ public class EyeDropperTest {
         DOMUtils.waitForNonZeroNodeBounds(mWebContents, "open_eyedropper");
     }
 
-    /** Verifies that window.EyeDropper is defined on Android. */
+    /** Verifies that window.EyeDropper is defined on Android API 37+. */
     @Test
     @MediumTest
     @Feature({"EyeDropper"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     public void testEyeDropperDefined() throws TimeoutException {
         String result =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         mWebContents, "typeof window.EyeDropper");
         Assert.assertEquals("\"function\"", result);
+    }
+
+    /** Verifies that window.EyeDropper is not defined on Android versions below API 37. */
+    @Test
+    @MediumTest
+    @Feature({"EyeDropper"})
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    public void testEyeDropperNotDefinedBelowApi37() throws TimeoutException {
+        String result =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        mWebContents, "typeof window.EyeDropper");
+        Assert.assertEquals("\"undefined\"", result);
     }
 
     /**
@@ -101,26 +114,13 @@ public class EyeDropperTest {
     }
 
     /**
-     * Verifies that opening the eyedropper with a user gesture on Android versions below API 37
-     * rejects with AbortError because the system EyeDropper API is not supported.
-     */
-    @Test
-    @MediumTest
-    @Feature({"EyeDropper"})
-    @MaxAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    public void testEyeDropperOpenFailsBelowApi37() throws Throwable {
-        DOMUtils.clickNode(mWebContents, "open_eyedropper");
-
-        waitForLastResult(Matchers.startsWith("\"error: AbortError"));
-    }
-
-    /**
      * Verifies that EyeDropper.open() without transient user activation rejects with
      * NotAllowedError.
      */
     @Test
     @MediumTest
     @Feature({"EyeDropper"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     public void testEyeDropperRequiresUserGesture() throws TimeoutException {
         String result =
                 JavaScriptUtils.runJavascriptWithAsyncResult(

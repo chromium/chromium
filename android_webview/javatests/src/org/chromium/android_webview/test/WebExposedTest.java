@@ -49,6 +49,9 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
+// EyeDropperAPI is only enabled on Android 17+ by default; force-enable it here so expectations
+// remain consistent across all Android versions tested on bots.
+@CommandLineFlags.Add({"enable-blink-features=EyeDropperAPI"})
 public class WebExposedTest extends AwParameterizedTest {
     private static final String TAG = "WebExposedTest";
 
