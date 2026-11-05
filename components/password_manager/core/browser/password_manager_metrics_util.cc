@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -316,14 +318,10 @@ void LogPasswordDropdownShown(
   if (suggestions.size() > 0) {
     dropdown_state = PasswordDropdownState::kStandard;
   }
-  for (const auto& suggestion : suggestions) {
-    switch (suggestion.type) {
-      case SuggestionType::kGeneratePasswordEntry:
-        dropdown_state = PasswordDropdownState::kStandardGenerate;
-        break;
-      default:
-        break;
-    }
+  if (std::ranges::any_of(suggestions, [](const auto& suggestion) {
+        return suggestion.type == SuggestionType::kGeneratePasswordEntry;
+      })) {
+    dropdown_state = PasswordDropdownState::kStandardGenerate;
   }
   if (dropdown_state.has_value()) {
     base::UmaHistogramEnumeration("PasswordManager.PasswordDropdownShown",
