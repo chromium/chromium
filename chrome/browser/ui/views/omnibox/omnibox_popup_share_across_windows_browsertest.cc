@@ -13,16 +13,16 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -59,10 +59,8 @@ class OmniboxPopupShareAcrossWindowsBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  static LocationBarView* GetLocationBar(BrowserWindowInterface* browser) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar()
-        ->location_bar_view();
+  static LocationBar* GetLocationBar(BrowserWindowInterface* browser) {
+    return BrowserView::GetBrowserViewForBrowser(browser)->GetLocationBar();
   }
 
   static OmniboxPopupPresenterBase* GetPresenter(
@@ -77,7 +75,9 @@ class OmniboxPopupShareAcrossWindowsBrowserTest : public InProcessBrowserTest {
     // Leaves nothing focused, so that the window deactivation that follows
     // `CreateBrowser()` on some platforms cannot blur the omnibox and close
     // the popup.
-    GetLocationBar(browser)->GetFocusManager()->SetFocusedView(nullptr);
+    BrowserView::GetBrowserViewForBrowser(browser)
+        ->GetFocusManager()
+        ->SetFocusedView(nullptr);
     OmniboxController* controller =
         GetLocationBar(browser)->GetOmniboxController();
     controller->edit_model()->SetUserText(text);
@@ -321,6 +321,116 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
 }
 
+// A popup whose page is still loading stays in its window.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       DoesNotTakeLoadingPopup) {
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  StartAutocomplete(browser(), u"foo");
+  content::WebContents* contents = GetPopupContents(browser());
+  ASSERT_TRUE(contents);
+  ClosePopup(browser());
+  ASSERT_TRUE(contents->IsLoading());
+
+  StartAutocomplete(other_browser, u"bar");
+
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+  EXPECT_NE(GetPopupContents(other_browser), contents);
+}
+
+// A popup whose renderer crashed stays in its window; the other window loads a
+// new page.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       DoesNotTakeCrashedPopup) {
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  content::CrashTab(contents);
+  ASSERT_TRUE(contents->IsCrashed());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  StartAutocomplete(other_browser, u"bar");
+
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+  content::WebContents* other_contents = GetPopupContents(other_browser);
+  ASSERT_TRUE(other_contents);
+  EXPECT_NE(other_contents, contents);
+}
+
+// Closing the last window of an incognito profile destroys its pool cleanly,
+// and the regular profile keeps sharing.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       IncognitoPoolGoesAwayWithItsWindows) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  OpenLoadedPopup(incognito_browser);
+  ClosePopup(incognito_browser);
+  CloseBrowserSynchronously(incognito_browser);
+
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  StartAutocomplete(other_browser, u"bar");
+  EXPECT_EQ(GetPopupContents(other_browser), contents);
+}
+
+// Tests sharing with the WebUI location bar, which builds its own presenters.
+class OmniboxPopupShareAcrossWindowsWebUILocationBarBrowserTest
+    : public OmniboxPopupShareAcrossWindowsBrowserTest {
+ public:
+  OmniboxPopupShareAcrossWindowsWebUILocationBarBrowserTest() {
+    location_bar_feature_list_.InitAndEnableFeature(
+        features::kWebUILocationBar);
+  }
+
+ private:
+  base::test::ScopedFeatureList location_bar_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    OmniboxPopupShareAcrossWindowsWebUILocationBarBrowserTest,
+    ShowTakesIdlePopupFromOtherWindow) {
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  StartAutocomplete(other_browser, u"bar");
+
+  EXPECT_EQ(GetPopupContents(other_browser), contents);
+  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetPageResultInput(contents) == "bar"; }));
+}
+
+// Tests sharing with the full WebUI popup, which each window keeps for itself.
+class OmniboxPopupShareAcrossWindowsFullPopupBrowserTest
+    : public OmniboxPopupShareAcrossWindowsBrowserTest {
+ public:
+  OmniboxPopupShareAcrossWindowsFullPopupBrowserTest() {
+    full_popup_feature_list_.InitAndEnableFeature(
+        omnibox::internal::kWebUIOmniboxFullPopup);
+  }
+
+ private:
+  base::test::ScopedFeatureList full_popup_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsFullPopupBrowserTest,
+                       EachWindowKeepsItsFullPopup) {
+  EXPECT_EQ(GetPresenter(browser())->GetSharedPopupKind(),
+            OmniboxPopupState::kNone);
+  content::WebContents* contents = GetPopupContents(browser());
+  ASSERT_TRUE(contents);
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  content::WebContents* other_contents = GetPopupContents(other_browser);
+  ASSERT_TRUE(other_contents);
+  EXPECT_NE(other_contents, contents);
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+}
+
 // Tests sharing when windows prewarm their popup, as in
 // production.
 class OmniboxPopupShareAcrossWindowsEagerBrowserTest
@@ -357,6 +467,54 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
 
   EXPECT_EQ(GetPopupContents(other_browser), contents);
   EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+}
+
+// Restoring several windows prewarms one popup, not one per window.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
+                       SeveralWindowsPrewarmOnePopup) {
+  ASSERT_TRUE(GetPopupContents(browser()));
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* third_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  EXPECT_FALSE(GetPresenter(second_browser)->GetWebUIContent());
+  EXPECT_FALSE(GetPresenter(third_browser)->GetWebUIContent());
+}
+
+// Tests sharing when windows prewarm their popup after their first frame.
+class OmniboxPopupShareAcrossWindowsDeferredBrowserTest
+    : public OmniboxPopupShareAcrossWindowsBrowserTest {
+ public:
+  OmniboxPopupShareAcrossWindowsDeferredBrowserTest()
+      : create_popup_webui_on_demand_(
+            omnibox::SetCreatePopupWebUIOnDemandForTesting(false)) {
+    defer_feature_list_.InitAndEnableFeature(
+        omnibox::kOmniboxWebUIPopupDeferCreation);
+  }
+
+ private:
+  base::AutoReset<bool> create_popup_webui_on_demand_;
+  base::test::ScopedFeatureList defer_feature_list_;
+};
+
+// A window skips prewarming after its first frame when another window of the
+// profile already has a popup.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsDeferredBrowserTest,
+                       SkipsPrewarmAfterFirstFrame) {
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetPopupContents(browser()) != nullptr; }));
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  GetPresenter(other_browser)->OnBrowserWindowPresented();
+  // Runs after the creation task that the call above posts.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
 }
 
 // Tests that windows do not share popups with the feature disabled.
