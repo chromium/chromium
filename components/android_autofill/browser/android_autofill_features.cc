@@ -48,11 +48,6 @@ BASE_FEATURE(kAndroidAutofillImprovedVisibilityDetection,
 BASE_FEATURE(kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the native autofill provider is updated when the web contents
-// change.
-BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, fields are updated whenever a user interacts with a <select>.
 // TODO(crbug.com/502346855): Remove in M157 or later.
 BASE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect,

@@ -15,8 +15,6 @@ BASE_DECLARE_FEATURE(kAndroidAutofillImprovedVisibilityDetection);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
 
-BASE_DECLARE_FEATURE(kAndroidAutofillUpdateContextForWebContents);
-
 BASE_DECLARE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillSuppressOffscreenDatalist);
