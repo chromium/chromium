@@ -5159,23 +5159,13 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_eg2_cq_tests",
+            targets = [
+                "ios_eg2_tests_all",
+                "ios_web_shell_eg2tests_module",
+            ],
             mixins = [
                 "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_PRO_7TH_GEN_18_5",
-                "SIM_IPAD_PRO_7TH_GEN_26_5",
-                "SIM_IPAD_A16_27_0",
-                "SIM_IPHONE_15_18_5",
-                "SIM_IPHONE_16_26_5",
-                "SIM_IPHONE_16_27_0",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
@@ -5330,8 +5320,9 @@ targets.bundle(
 )
 
 # Please also change ios_code_coverage_tests for any change in this suite.
-# TODO(crbug.com/441038354): combine simulators for the same test target once
-# iOS26 performance issue is resolved on the VMs
+# CQ intentionally runs a diagonal slice across form factors and OS versions
+# (iPhone iOS 27 + iPad iOS 26); iOS 18.5, iPhone iOS 26, and iPad iOS 27
+# variants are ci_only.
 targets.bundle(
     name = "ios_simulator_full_configs_tests",
     targets = [
@@ -5356,7 +5347,10 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_eg2_cq_tests",
+            targets = [
+                "ios_eg2_tests_all",
+                "ios_web_shell_eg2tests_module",
+            ],
             mixins = [
                 "ci_only",
                 "xcodebuild_sim_runner",
@@ -5364,56 +5358,19 @@ targets.bundle(
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
-                "SIM_IPHONE_15_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "ci_only",
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
                 "SIM_IPAD_A16_27_0",
+                "SIM_IPHONE_15_18_5",
                 "SIM_IPHONE_16_26_5",
             ],
         ),
         targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
+            targets = [
+                "ios_eg2_tests_all",
+                "ios_web_shell_eg2tests_module",
             ],
-            variants = [
-                "SIM_IPAD_PRO_7TH_GEN_26_5",
-                "SIM_IPHONE_16_27_0",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
             mixins = [
-                "ci_only",
                 "xcodebuild_sim_runner",
                 "mac_26_vm_optional",
-            ],
-            variants = [
-                "SIM_IPHONE_15_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "ci_only",
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_A16_27_0",
-                "SIM_IPHONE_16_26_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_26_5",
