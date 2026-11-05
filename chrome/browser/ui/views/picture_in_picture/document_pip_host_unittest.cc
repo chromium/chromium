@@ -1360,7 +1360,14 @@ TEST_F(DocumentPipExclusiveAccessTest, NotShownCallbackCanCloseWindow) {
   EXPECT_TRUE(base::test::RunUntil([this] { return !GetBubbleWidget(); }));
 }
 
-TEST_F(DocumentPipExclusiveAccessTest, OnlyUserMouseInputReshowsBubble) {
+// TODO(crbug.com/579234210): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OnlyUserMouseInputReshowsBubble \
+  DISABLED_OnlyUserMouseInputReshowsBubble
+#else
+#define MAYBE_OnlyUserMouseInputReshowsBubble OnlyUserMouseInputReshowsBubble
+#endif
+TEST_F(DocumentPipExclusiveAccessTest, MAYBE_OnlyUserMouseInputReshowsBubble) {
   auto* host = CreateHostAndOpenPipWindow();
   auto* context = host->GetExclusiveAccessManagerForTesting()->context();
   ShowBubble(host);
