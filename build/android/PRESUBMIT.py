@@ -67,6 +67,7 @@ def GetScopedUnitTests(input_api, build_android_dir, *, is_upload):
             'json_results_generator_unittest.py',
         ),
         J('pylib', 'results', 'json_results_test.py'),
+        J('pylib', 'symbols', 'stack_symbolizer_test.py'),
         J('pylib', 'utils', 'code_coverage_utils_test.py'),
         J('pylib', 'utils', 'device_dependencies_test.py'),
         J('pylib', 'utils', 'dexdump_test.py'),

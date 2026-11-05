@@ -106,7 +106,7 @@ _VALUE_LINE = re.compile(
 #   03-25 00:51:05.530 I/DEBUG ( 65): 801cf40c ffffc4cc 00b2f2c5 00b2f1c7 00c1e1a8
 _CODE_LINE = re.compile(r'^(.*)[ \t]*[a-f0-9]{8,16}[ \t]+[a-f0-9]{8,16}' +
                         r'[ \t]+[a-f0-9]{8,16}[ \t]+[a-f0-9]{8,16}' +
-                        r'[ \t]+[a-f0-9]{8,16}[ \t]*[ \r\n]')
+                        r'[ \t]+[a-f0-9]{8,16}[ \t]*(?:[ \r\n]|$)')
 
 # This pattern is used to find shared library offset in APK.
 # Example:
@@ -114,6 +114,35 @@ _CODE_LINE = re.compile(r'^(.*)[ \t]*[a-f0-9]{8,16}[ \t]+[a-f0-9]{8,16}' +
 _SHARED_LIB_OFFSET_IN_APK = re.compile(r' \(offset 0x(?P<offset>[0-9a-f]{0,16})\)')
 
 # pylint: enable=line-too-long
+
+
+def IsTraceLine(line):
+  """Returns True if |line| is a native backtrace frame (#00 pc ...)."""
+  return bool(_TRACE_LINE.match(line) or _DEBUG_TRACE_LINE.search(line))
+
+
+def _IsHeaderOrDebugLine(line):
+  return bool(_PROCESS_INFO_LINE.search(line)
+              or _SIGNAL_LINE.search(line)
+              or _REGISTER_LINE.search(line)
+              or _THREAD_LINE.search(line)
+              or _DALVIK_JNI_THREAD_LINE.search(line)
+              or _DALVIK_NATIVE_THREAD_LINE.search(line)
+              or _LOG_FATAL_LINE.search(line)
+              or _DEBUG_TRACE_LINE.search(line)
+              or _ABI_LINE.search(line)
+              or _JAVA_STDERR_LINE.search(line)
+              or _MISC_HEADER.search(line)
+              or _GENERIC_USEFUL_LOG_HEADER.search(line))
+
+
+def IsStackContinuationLine(line):
+  """Returns True if |line| is kept by PreProcessLog during a stack dump."""
+  if _CODE_LINE.match(line):
+    return False
+  return bool(_IsHeaderOrDebugLine(line)
+              or _TRACE_LINE.match(line)
+              or _VALUE_LINE.match(line))
 
 def _BuildIdFromElf(elf_path):
   """Returns the Build ID for the given binary."""
@@ -221,8 +250,8 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
         useful_lines = []
         in_stack = False
     else:
-      if _TRACE_LINE.match(line) or _DEBUG_TRACE_LINE.match(line) or \
-          _VALUE_LINE.match(line) or _CODE_LINE.match(line):
+      if (IsTraceLine(line) or _VALUE_LINE.match(line)
+          or _CODE_LINE.match(line)):
         in_stack = True
     if pass_through:
       sys.stdout.write(line)
@@ -353,18 +382,7 @@ class PreProcessLog:
       else:
         line = ln.decode(encoding='utf8', errors='ignore')
 
-      if (_PROCESS_INFO_LINE.search(line)
-          or _SIGNAL_LINE.search(line)
-          or _REGISTER_LINE.search(line)
-          or _THREAD_LINE.search(line)
-          or _DALVIK_JNI_THREAD_LINE.search(line)
-          or _DALVIK_NATIVE_THREAD_LINE.search(line)
-          or _LOG_FATAL_LINE.search(line)
-          or _DEBUG_TRACE_LINE.search(line)
-          or _ABI_LINE.search(line)
-          or _JAVA_STDERR_LINE.search(line)
-          or _MISC_HEADER.search(line)
-          or _GENERIC_USEFUL_LOG_HEADER.search(line)):
+      if _IsHeaderOrDebugLine(line):
         useful_log.append(line)
         continue
 
