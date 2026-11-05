@@ -43,7 +43,6 @@ class TabModelJniBridge : public TabModel {
                     std::optional<chrome::android::CustomTabProfileType>
                         custom_tab_profile_type,
                     TabModelType tab_model_type);
-  void Destroy();
 
   TabModelJniBridge(const TabModelJniBridge&) = delete;
   TabModelJniBridge& operator=(const TabModelJniBridge&) = delete;

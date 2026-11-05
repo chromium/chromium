@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +47,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     private TabModelSelector mTabModelSelector;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
+    private long mNextNativePtr = FAKE_NATIVE_ADDRESS;
 
     @Before
     public void setUp() {
@@ -55,7 +58,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         anyInt(),
                         any(),
                         anyInt()))
-                .thenReturn(FAKE_NATIVE_ADDRESS);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(mNextNativePtr++));
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -64,6 +67,11 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
         mTabModelSelector = createTabModelSelector();
         mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
+    }
+
+    @After
+    public void tearDown() {
+        mTabModelSelector.destroy();
     }
 
     private TabRemover createTabRemover(MockTabModel tabModel) {

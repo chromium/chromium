@@ -16,6 +16,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -110,7 +111,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                         eq(ActivityType.TABBED),
                         eq(null),
                         eq(TabModelType.STANDARD)))
-                .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(TAB_MODEL_JNI_BRIDGE_PTR));
 
         TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
         when(mTabCollectionTabModelImplJni.init(eq(mProfile)))
@@ -272,7 +273,6 @@ public class TabCollectionsTabModelObserversUnitTest {
         UkmRecorderJni.setInstanceForTesting(null);
         TabGroupSyncFeaturesJni.setInstanceForTesting(null);
         mTabModel.destroy();
-        verify(mTabModelJniBridgeJni).destroy(eq(TAB_MODEL_JNI_BRIDGE_PTR));
         verify(mTabCollectionTabModelImplJni).destroy(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR));
     }
 

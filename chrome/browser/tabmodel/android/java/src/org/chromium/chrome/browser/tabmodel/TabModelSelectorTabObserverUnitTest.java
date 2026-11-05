@@ -12,6 +12,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +53,7 @@ public class TabModelSelectorTabObserverUnitTest {
     @Mock private Profile mIncognitoProfile;
 
     private TabModelSelector mTabModelSelector;
+    private long mNextNativePtr = FAKE_NATIVE_ADDRESS;
 
     @Before
     public void setUp() {
@@ -61,7 +64,7 @@ public class TabModelSelectorTabObserverUnitTest {
                         anyInt(),
                         any(),
                         anyInt()))
-                .thenReturn(FAKE_NATIVE_ADDRESS);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(mNextNativePtr++));
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
@@ -74,6 +77,11 @@ public class TabModelSelectorTabObserverUnitTest {
         incognitoTabModel.setTabRemoverForTesting(createTabRemover(incognitoTabModel));
         selector.initialize(normalTabModel, incognitoTabModel);
         mTabModelSelector = selector;
+    }
+
+    @After
+    public void tearDown() {
+        mTabModelSelector.destroy();
     }
 
     private static TabRemover createTabRemover(MockTabModel tabModel) {

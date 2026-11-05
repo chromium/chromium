@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.DataInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -110,6 +111,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
     private CipherFactory mCipherFactory;
+    private final List<TabModelJniBridge> mInitializedTabModels = new ArrayList<>();
+    private long mNextTabModelBridgePtr = 1L;
     private JniUniquePtr<RecentlyClosedBridge.NativeRecentlyClosedTabsBridge>
             mNativeRecentlyClosedBridge;
     private final SettableNonNullObservableSupplier<Boolean> mDeferredStartupPostedSupplier =
@@ -148,6 +151,12 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         when(mArchivedTabModelOrchestrator.acquireLease(anyInt())).thenReturn(mDeclutterLease);
         mCipherFactory = new CipherFactory();
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
+        when(mTabModelJniBridgeJni.init(any(), any(), anyInt(), any(), anyInt()))
+                .thenAnswer(
+                        inv -> {
+                            mInitializedTabModels.add(inv.getArgument(0));
+                            return JniUniquePtr.createForTesting(mNextTabModelBridgePtr++);
+                        });
         RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
         mNativeRecentlyClosedBridge = JniUniquePtr.createForTesting(1L);
         when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(mNativeRecentlyClosedBridge);
@@ -162,6 +171,11 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         // assignment slots.
         mNativeRecentlyClosedBridge.destroy();
         ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
+        for (TabModelJniBridge model : mInitializedTabModels) {
+            if (model.isNativeInitialized()) {
+                model.destroy();
+            }
+        }
         ArchivedTabModelOrchestrator.setInstanceForTesting(null);
         TabArchiveSettings.getInstance().resetSettingsForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();

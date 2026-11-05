@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -124,7 +125,7 @@ public class TabCollectionTabModelImplUnitTest {
                         eq(ActivityType.TABBED),
                         eq(null),
                         eq(TabModelType.STANDARD)))
-                .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(TAB_MODEL_JNI_BRIDGE_PTR));
 
         TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
         when(mTabCollectionTabModelImplJni.init(eq(mProfile)))
@@ -259,7 +260,6 @@ public class TabCollectionTabModelImplUnitTest {
     @After
     public void tearDown() {
         mTabModel.destroy();
-        verify(mTabModelJniBridgeJni).destroy(eq(TAB_MODEL_JNI_BRIDGE_PTR));
         verify(mTabCollectionTabModelImplJni).destroy(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR));
     }
 
@@ -282,7 +282,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         mTabModel.broadcastSessionRestoreComplete();
 
-        verify(mTabModelJniBridgeJni).broadcastSessionRestoreComplete(eq(TAB_MODEL_JNI_BRIDGE_PTR));
+        verify(mTabModelJniBridgeJni).broadcastSessionRestoreComplete(any());
     }
 
     @Test

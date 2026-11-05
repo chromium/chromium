@@ -136,10 +136,6 @@ TabModelJniBridge::TabModelJniBridge(
   }
 }
 
-void TabModelJniBridge::Destroy() {
-  delete this;
-}
-
 void TabModelJniBridge::AssociateWithBrowserWindow(
     int64_t native_android_browser_window) {
   BrowserWindowInterface* android_browser_window =
@@ -994,8 +990,7 @@ TabModel* TabModelJniBridge::FromJavaObject(const JavaRef<jobject>& obj) {
   if (!obj) {
     return nullptr;
   }
-  return reinterpret_cast<TabModel*>(
-      Java_TabModelJniBridge_getNativePtr(AttachCurrentThread(), obj));
+  return Java_TabModelJniBridge_getNativePtr(AttachCurrentThread(), obj);
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
@@ -1013,7 +1008,7 @@ TabModelJniBridge::~TabModelJniBridge() {
   }
 }
 
-static int64_t JNI_TabModelJniBridge_Init(
+static jni_zero::JniUniquePtr<TabModelJniBridge> JNI_TabModelJniBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     Profile* profile,
@@ -1026,11 +1021,10 @@ static int64_t JNI_TabModelJniBridge_Init(
                 static_cast<chrome::android::CustomTabProfileType>(
                     j_custom_tab_profile_type.value()))
           : std::nullopt;
-  TabModel* tab_model = new TabModelJniBridge(
+  return jni_zero::MakeUnique<TabModelJniBridge>(
       env, obj, profile, static_cast<ActivityType>(j_activity_type),
       custom_tab_profile_type,
       static_cast<TabModel::TabModelType>(j_tab_model_type));
-  return reinterpret_cast<intptr_t>(tab_model);
 }
 
 DEFINE_JNI(TabModelJniBridge)
