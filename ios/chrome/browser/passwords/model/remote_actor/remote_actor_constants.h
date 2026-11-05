@@ -20,9 +20,8 @@ inline constexpr char kRemoteActorGeminiCallbackBaseURL[] =
     "googlegemini://agent-auth-result";
 
 // Query parameter keys for the Remote Actor Gemini callback URL.
-// TODO(crbug.com/577153726): Support passing an optional failure/cancellation
-// `reason` query parameter in the callback URL.
 inline constexpr char kRemoteActorTaskIdQueryParam[] = "task_id";
 inline constexpr char kRemoteActorStatusQueryParam[] = "status";
+inline constexpr char kRemoteActorReasonQueryParam[] = "reason";
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_REMOTE_ACTOR_REMOTE_ACTOR_CONSTANTS_H_

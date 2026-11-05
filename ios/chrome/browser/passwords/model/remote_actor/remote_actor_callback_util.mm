@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <optional>
 #import <string_view>
 #import <utility>
 
@@ -33,13 +34,27 @@ std::string_view StatusToQueryValue(RemoteActorCallbackStatus status) {
   NOTREACHED();
 }
 
+std::string_view ReasonToQueryValue(RemoteActorCallbackReason reason) {
+  switch (reason) {
+    case RemoteActorCallbackReason::kNotSignedIn:
+      return "NOT_SIGNED_IN";
+    case RemoteActorCallbackReason::kProfileMismatch:
+      return "PROFILE_MISMATCH";
+    case RemoteActorCallbackReason::kUploadFailed:
+      return "UPLOAD_FAILED";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 void OpenGeminiCallbackURL(std::string_view task_id,
                            RemoteActorCallbackStatus status,
+                           std::optional<RemoteActorCallbackReason> reason,
                            base::OnceCallback<void(bool)> completion) {
   CHECK([NSThread isMainThread]);
   CHECK(completion);
+  CHECK(status != RemoteActorCallbackStatus::kSuccess || !reason.has_value());
 
   if (task_id.empty()) {
     std::move(completion).Run(false);
@@ -50,6 +65,10 @@ void OpenGeminiCallbackURL(std::string_view task_id,
                                        kRemoteActorTaskIdQueryParam, task_id);
   url = net::AppendQueryParameter(url, kRemoteActorStatusQueryParam,
                                   StatusToQueryValue(status));
+  if (reason.has_value()) {
+    url = net::AppendQueryParameter(url, kRemoteActorReasonQueryParam,
+                                    ReasonToQueryValue(*reason));
+  }
 
   NSURL* callback_url = net::NSURLWithGURL(url);
   if (!callback_url) {
