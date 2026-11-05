@@ -859,12 +859,44 @@ void GraphBuilderOrt::EmulateWithIdentityNode(base::cstring_view label,
   model_editor_.AddNode(kOpTypeIdentity, node_name, inputs, outputs);
 }
 
-std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
-                                          OperandDataType data_type,
-                                          uint32_t dim_size) {
+std::string GraphBuilderOrt::ShiftNegativeIndices(
+    base::cstring_view indices,
+    base::cstring_view zero,
+    base::cstring_view dim_sizes) {
+  const std::string less_node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeLesser}, kUnderscore));
+  const std::string less_output = GenerateOperandName();
+  std::array<const char*, 2> less_inputs = {indices.c_str(), zero.c_str()};
+  std::array<const char*, 1> less_outputs = {less_output.c_str()};
+  model_editor_.AddNode(kOpTypeLesser, less_node_name, less_inputs,
+                        less_outputs);
+
+  const std::string add_node_name =
+      GenerateNodeName(base::JoinString({kInserted, kOpTypeAdd}, kUnderscore));
+  const std::string add_output = GenerateOperandName();
+  std::array<const char*, 2> add_inputs = {indices.c_str(), dim_sizes.c_str()};
+  std::array<const char*, 1> add_outputs = {add_output.c_str()};
+  model_editor_.AddNode(kOpTypeAdd, add_node_name, add_inputs, add_outputs);
+
+  const std::string where_node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeWhere}, kUnderscore));
+  const std::string output = GenerateOperandName();
+  std::array<const char*, 3> where_inputs = {
+      less_output.c_str(), add_output.c_str(), indices.c_str()};
+  std::array<const char*, 1> where_outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeWhere, where_node_name, where_inputs,
+                        where_outputs);
+
+  return output;
+}
+
+std::string GraphBuilderOrt::NormalizeGatherScatterIndices(
+    base::cstring_view indices,
+    OperandDataType data_type,
+    uint32_t dim_size) {
   const std::string node_name = GenerateNodeName(
       base::JoinString({kInserted, kOpTypeClamp}, kUnderscore));
-  const std::string output = GenerateOperandName();
+  const std::string clamped_indices = GenerateOperandName();
 
   // The dimension size must be greater than 0.
   CHECK_GT(dim_size, 0u);
@@ -888,13 +920,27 @@ std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
       NOTREACHED() << "[WebNN] Indices can only be one of the int32 and int64 "
                       "data types.";
   }
-
+  // Clamp the indices to the valid range [-dim_size, dim_size - 1].
   std::array<const char*, 3> inputs = {indices.data(), min.c_str(),
                                        max.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
-
+  std::array<const char*, 1> outputs = {clamped_indices.c_str()};
   model_editor_.AddNode(kOpTypeClamp, node_name, inputs, outputs);
-  return output;
+
+  if (!ep_workarounds_.gather_scatter_indices_require_nonnegative) {
+    return clamped_indices;
+  }
+
+  std::string zero;
+  std::string boundary;
+  if (data_type == OperandDataType::kInt32) {
+    zero = CreateScalarInitializer<int32_t>(0);
+    boundary = CreateScalarInitializer(base::checked_cast<int32_t>(dim_size));
+  } else {
+    CHECK_EQ(data_type, OperandDataType::kInt64);
+    zero = CreateScalarInitializer<int64_t>(0);
+    boundary = CreateScalarInitializer(static_cast<int64_t>(dim_size));
+  }
+  return ShiftNegativeIndices(clamped_indices, zero, boundary);
 }
 
 std::string GraphBuilderOrt::NormalizeGatherScatterNDIndices(
@@ -936,47 +982,18 @@ std::string GraphBuilderOrt::NormalizeGatherScatterNDIndices(
   std::array<const char*, 1> min_outputs = {clamped_indices.c_str()};
   model_editor_.AddNode(kOpTypeMin, min_node_name, min_inputs, min_outputs);
 
-  if (!ep_workarounds_.gather_scatter_nd_indices_require_nonnegative) {
+  if (!ep_workarounds_.gather_scatter_indices_require_nonnegative) {
     return clamped_indices;
   }
 
-  // Shift any negative index to its equivalent non-negative value:
-  // where(indices < 0, indices + input_shape[axis], indices).
   base::FixedArray<int64_t> boundary_value(indices_last_dim_size);
   for (uint32_t axis = 0; axis < indices_last_dim_size; ++axis) {
     boundary_value[axis] = static_cast<int64_t>(input_shape[axis]);
   }
-
   const std::string zero = CreateScalarInitializer<int64_t>(0);
-  const std::string less_node_name = GenerateNodeName(
-      base::JoinString({kInserted, kOpTypeLesser}, kUnderscore));
-  const std::string less_output = GenerateOperandName();
-  std::array<const char*, 2> less_inputs = {clamped_indices.c_str(),
-                                            zero.c_str()};
-  std::array<const char*, 1> less_outputs = {less_output.c_str()};
-  model_editor_.AddNode(kOpTypeLesser, less_node_name, less_inputs,
-                        less_outputs);
-
-  std::string boundary =
+  const std::string boundary =
       CreateInitializer<int64_t>(per_axis_shape, boundary_value);
-  const std::string add_node_name =
-      GenerateNodeName(base::JoinString({kInserted, kOpTypeAdd}, kUnderscore));
-  const std::string add_output = GenerateOperandName();
-  std::array<const char*, 2> add_inputs = {clamped_indices.c_str(),
-                                           boundary.c_str()};
-  std::array<const char*, 1> add_outputs = {add_output.c_str()};
-  model_editor_.AddNode(kOpTypeAdd, add_node_name, add_inputs, add_outputs);
-
-  const std::string where_node_name = GenerateNodeName(
-      base::JoinString({kInserted, kOpTypeWhere}, kUnderscore));
-  const std::string output = GenerateOperandName();
-  std::array<const char*, 3> where_inputs = {
-      less_output.c_str(), add_output.c_str(), clamped_indices.c_str()};
-  std::array<const char*, 1> where_outputs = {output.c_str()};
-  model_editor_.AddNode(kOpTypeWhere, where_node_name, where_inputs,
-                        where_outputs);
-
-  return output;
+  return ShiftNegativeIndices(clamped_indices, zero, boundary);
 }
 
 template <typename T>
@@ -1731,15 +1748,14 @@ void GraphBuilderOrt::AddGatherOperation(const T& operation,
   const std::string indices = GetOperandNameById(operation.indices_operand_id);
   const std::string output = GetOperandNameById(operation.output_operand_id);
 
-  // Clamp the indices operand to prevent out-of-bounds reading which will cause
-  // ORT CPU EP to throw a runtime error.
-  std::string clamped_indices = ClampIndices(
+  std::string normalized_indices = NormalizeGatherScatterIndices(
       indices, GetOperand(operation.indices_operand_id).descriptor.data_type(),
       GetOperand(operation.input_operand_id)
           .descriptor.shape()
           .at(operation.axis));
 
-  std::array<const char*, 2> inputs = {input.c_str(), clamped_indices.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(),
+                                       normalized_indices.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
@@ -2944,14 +2960,12 @@ void GraphBuilderOrt::AddScatterElementsOperation(
   CHECK(context_properties_.data_type_limits.scatter_elements_indices.Supports(
       indices_descriptor));
 
-  // Clamp the indices operand to prevent out-of-bounds writing which will cause
-  // ORT CPU EP to throw a runtime error.
-  std::string clamped_indices =
-      ClampIndices(indices, indices_descriptor.data_type(),
-                   input_descriptor.shape().at(scatter_elements.axis));
+  std::string normalized_indices = NormalizeGatherScatterIndices(
+      indices, indices_descriptor.data_type(),
+      input_descriptor.shape().at(scatter_elements.axis));
 
-  std::array<const char*, 3> inputs = {input.c_str(), clamped_indices.c_str(),
-                                       updates.c_str()};
+  std::array<const char*, 3> inputs = {
+      input.c_str(), normalized_indices.c_str(), updates.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(

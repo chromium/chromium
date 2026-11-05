@@ -230,17 +230,26 @@ class GraphBuilderOrt {
                                base::cstring_view input,
                                base::cstring_view output);
 
-  // Clamp the indices to the range [-dim_size, dim_size), the given data type
-  // should be indices's data type.
-  std::string ClampIndices(base::cstring_view indices,
-                           OperandDataType data_type,
-                           uint32_t dim_size);
+  // Shifts negative indices to their equivalent non-negative value:
+  // where(indices < zero, indices + dim_sizes, indices). Both `zero` and
+  // `dim_sizes` must have the same data type as `indices` and be broadcastable
+  // to `indices`.
+  std::string ShiftNegativeIndices(base::cstring_view indices,
+                                   base::cstring_view zero,
+                                   base::cstring_view dim_sizes);
+
+  // Clamps `indices` to the range [-dim_size, dim_size). Then, if
+  // `ep_workarounds_` requires it, shifts negative indices to their equivalent
+  // non-negative value. The given data type should be int32 or int64, matching
+  // `indices`'s data type.
+  std::string NormalizeGatherScatterIndices(base::cstring_view indices,
+                                            OperandDataType data_type,
+                                            uint32_t dim_size);
 
   // Clamps `indices` so that all values are within bounds [-s, s) along axis
   // of size s, i.e. -input_shape[i] <= indices[..., i] <= input_shape[i] - 1.
   // Then, if `ep_workarounds_` requires it, shifts negative indices to their
-  // equivalent non-negative value: where(indices < 0, indices +
-  // input_shape[axis], indices). The data type of indices is assumed to be
+  // equivalent non-negative value. The data type of indices is assumed to be
   // int64.
   std::string NormalizeGatherScatterNDIndices(
       base::cstring_view indices,
