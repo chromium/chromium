@@ -19,6 +19,8 @@ import {describe, it, beforeEach} from 'node:test';
 import {assert} from 'chai';
 import sinon from 'sinon';
 
+import type {Protocol} from 'devtools-protocol';
+
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
   ChromiumBidi,
@@ -476,6 +478,26 @@ describe('NetworkStorage', () => {
       });
     });
 
+    it('should emit beforeRequestSent before a blocked responseStarted without request ExtraInfo', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
+        phases: [Network.InterceptPhase.ResponseStarted],
+      });
+
+      request.requestWillBeSent();
+      // The response is paused before `Network.requestWillBeSentExtraInfo`.
+      request.responsePaused();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert.deepEqual(
+        processedEvents.map(([method]) => method),
+        ['network.beforeRequestSent', 'network.responseStarted'],
+      );
+    });
+
     it('should work non blocking interception', async () => {
       networkStorage.addIntercept({
         urlPatterns: NetworkProcessor.parseUrlPatterns([
@@ -664,6 +686,35 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.responseCompleted');
       assert.exists(event);
     });
+
+    it('should emit response events if an intercept is added after beforeRequestSent', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSent();
+      request.requestWillBeSentExtraInfo();
+      assert.lengthOf(await getEvents('network.beforeRequestSent'), 1);
+
+      // The client enables interception while the request is in flight.
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      request.responseReceived();
+      request.loadingFinished();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert.deepEqual(
+        processedEvents.map(([method]) => method),
+        [
+          'network.beforeRequestSent',
+          'network.responseStarted',
+          'network.responseCompleted',
+        ],
+      );
+      assert.isUndefined(networkStorage.getRequestById(request.requestId));
+    });
   });
 
   describe('redirects', () => {
@@ -682,6 +733,891 @@ describe('NetworkStorage', () => {
       assert.deepNestedInclude(event, {
         'response.status': 200,
       });
+    });
+  });
+
+  describe('redirects with late ExtraInfo', () => {
+    const REQUEST_ID = 'REDIRECT_REQUEST_ID';
+    const LOADER_ID = 'REDIRECT_LOADER_ID';
+    const FETCH_ID = 'REDIRECT_FETCH_ID';
+    const URL_A = 'http://localhost/foo.html';
+    const URL_B = 'http://localhost/title.html';
+    const RELATIVE_LOCATION = '/title.html';
+    const URL_C = 'http://localhost/c.html';
+    const RELATIVE_LOCATION_C = '/c.html';
+    const URL_HOME = 'http://localhost/home';
+    const RELATIVE_LOCATION_HOME = '/home';
+    const HOP_HEADER = 'X-Hop';
+
+    function cdpResponse(
+      url: string,
+      status: number,
+      headers: Protocol.Network.Headers,
+    ): Protocol.Network.Response {
+      return {
+        url,
+        status,
+        statusText: status === 302 ? 'Found' : 'OK',
+        headers,
+        mimeType: 'text/html',
+        charset: '',
+        connectionReused: true,
+        connectionId: 1,
+        encodedDataLength: 100,
+        securityState: 'secure',
+      };
+    }
+
+    function requestWillBeSent(
+      url: string,
+      redirect?: {from: string; hasExtraInfo: boolean; location?: string},
+    ) {
+      cdpClient.emit('Network.requestWillBeSent', {
+        requestId: REQUEST_ID,
+        loaderId: LOADER_ID,
+        documentURL: url,
+        request: {
+          url,
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'other'},
+        redirectHasExtraInfo: redirect?.hasExtraInfo ?? false,
+        ...(redirect
+          ? {
+              redirectResponse: cdpResponse(redirect.from, 302, {
+                location: redirect.location ?? RELATIVE_LOCATION,
+              }),
+            }
+          : {}),
+        type: 'Document',
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+      });
+    }
+
+    function requestWillBeSentExtraInfo(hop: string, cookieValue?: string) {
+      cdpClient.emit('Network.requestWillBeSentExtraInfo', {
+        requestId: REQUEST_ID,
+        associatedCookies: cookieValue
+          ? [
+              {
+                blockedReasons: [],
+                cookie: {
+                  name: 'username',
+                  value: cookieValue,
+                  domain: 'localhost',
+                  path: '/',
+                  expires: -1,
+                  size: 8 + cookieValue.length,
+                  httpOnly: false,
+                  secure: false,
+                  session: true,
+                  priority: 'Medium',
+                  sourceScheme: 'NonSecure',
+                  sourcePort: 80,
+                },
+              },
+            ]
+          : [],
+        headers: {
+          [HOP_HEADER]: hop,
+          ...(cookieValue ? {Cookie: `username=${cookieValue}`} : {}),
+        },
+        connectTiming: {requestTime: 1},
+      });
+    }
+
+    function responseReceivedExtraInfo(
+      statusCode: number,
+      headers: Protocol.Network.Headers = {},
+    ) {
+      cdpClient.emit('Network.responseReceivedExtraInfo', {
+        requestId: REQUEST_ID,
+        blockedCookies: [],
+        headers,
+        resourceIPAddressSpace: 'Local',
+        statusCode,
+      });
+    }
+
+    function responseReceived(hasExtraInfo: boolean, url = URL_B) {
+      cdpClient.emit('Network.responseReceived', {
+        requestId: REQUEST_ID,
+        loaderId: LOADER_ID,
+        timestamp: 2,
+        type: 'Document',
+        response: cdpResponse(url, 200, {}),
+        hasExtraInfo,
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+      });
+    }
+
+    function loadingFinished() {
+      cdpClient.emit('Network.loadingFinished', {
+        requestId: REQUEST_ID,
+        timestamp: 3,
+        encodedDataLength: 100,
+      });
+    }
+
+    function loadingFailed() {
+      cdpClient.emit('Network.loadingFailed', {
+        requestId: REQUEST_ID,
+        timestamp: 3,
+        type: 'Document',
+        errorText: 'net::ERR_CONNECTION_RESET',
+        canceled: false,
+      });
+    }
+
+    function summarize(
+      events: Awaited<ReturnType<typeof getHopEvents>>,
+    ): unknown[][] {
+      return events.map(({method, redirectCount, hop, status}) => [
+        method,
+        redirectCount,
+        hop,
+        status,
+      ]);
+    }
+
+    function getHeader(
+      headers: Network.Header[],
+      name: string,
+    ): string | undefined {
+      return headers.find(
+        (header) => header.name.toLowerCase() === name.toLowerCase(),
+      )?.value.value;
+    }
+
+    /** Returns a summary of the emitted events in the emitted order. */
+    async function getHopEvents() {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      return processedEvents.map(([method, params]) => {
+        const eventParams = params as Network.BaseParameters & {
+          response?: Network.ResponseData;
+        };
+        return {
+          method,
+          redirectCount: eventParams.redirectCount,
+          url: eventParams.request.url,
+          hop: getHeader(eventParams.request.headers, HOP_HEADER),
+          status: eventParams.response?.status,
+        };
+      });
+    }
+
+    function getParams<T>(method: string, redirectCount: number): T {
+      const params = processedEvents.find(
+        ([eventMethod, eventParams]) =>
+          eventMethod === method &&
+          (eventParams as Network.BaseParameters).redirectCount ===
+            redirectCount,
+      )?.[1];
+      assert.exists(params);
+      return params as T;
+    }
+
+    it('should apply late request ExtraInfo to the redirected hop', async () => {
+      // The event order from a failing Puppeteer CI run, with an early
+      // response of the next hop.
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      responseReceived(true);
+
+      assert.deepEqual(await getHopEvents(), []);
+
+      requestWillBeSentExtraInfo('A', 'John Doe');
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION});
+      requestWillBeSentExtraInfo('B', 'John Doe');
+      responseReceivedExtraInfo(200);
+      loadingFinished();
+
+      assert.deepEqual(await getHopEvents(), [
+        {
+          method: 'network.beforeRequestSent',
+          redirectCount: 0,
+          url: URL_A,
+          hop: 'A',
+          status: undefined,
+        },
+        {
+          method: 'network.responseStarted',
+          redirectCount: 0,
+          url: URL_A,
+          hop: 'A',
+          status: 302,
+        },
+        {
+          method: 'network.responseCompleted',
+          redirectCount: 0,
+          url: URL_A,
+          hop: 'A',
+          status: 302,
+        },
+        {
+          method: 'network.beforeRequestSent',
+          redirectCount: 1,
+          url: URL_B,
+          hop: 'B',
+          status: undefined,
+        },
+        {
+          method: 'network.responseStarted',
+          redirectCount: 1,
+          url: URL_B,
+          hop: 'B',
+          status: 200,
+        },
+        {
+          method: 'network.responseCompleted',
+          redirectCount: 1,
+          url: URL_B,
+          hop: 'B',
+          status: 200,
+        },
+      ]);
+
+      for (const redirectCount of [0, 1]) {
+        const event = getParams<Network.BeforeRequestSentParameters>(
+          'network.beforeRequestSent',
+          redirectCount,
+        );
+        assert.strictEqual(
+          getHeader(event.request.headers, 'cookie'),
+          'username=John Doe',
+        );
+        assert.lengthOf(event.request.cookies, 1);
+        assert.strictEqual(event.request.cookies[0]!.name, 'username');
+      }
+    });
+
+    it('should not apply late response ExtraInfo of the redirected hop to the next hop', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSentExtraInfo('A');
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      requestWillBeSentExtraInfo('B');
+      responseReceived(true);
+      // The 302 response ExtraInfo of the first hop arrives late.
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION});
+      loadingFinished();
+      responseReceivedExtraInfo(200);
+
+      const events = await getHopEvents();
+      assert.deepEqual(
+        events.map(({method, redirectCount, hop, status}) => [
+          method,
+          redirectCount,
+          hop,
+          status,
+        ]),
+        [
+          ['network.beforeRequestSent', 0, 'A', undefined],
+          ['network.responseStarted', 0, 'A', 302],
+          ['network.responseCompleted', 0, 'A', 302],
+          ['network.beforeRequestSent', 1, 'B', undefined],
+          ['network.responseStarted', 1, 'B', 200],
+          ['network.responseCompleted', 1, 'B', 200],
+        ],
+      );
+      const completedA = getParams<Network.ResponseCompletedParameters>(
+        'network.responseCompleted',
+        0,
+      );
+      assert.strictEqual(
+        getHeader(completedA.response.headers, 'location'),
+        RELATIVE_LOCATION,
+      );
+    });
+
+    it('should emit redirected hop events at once without ExtraInfo', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: false});
+
+      const events = await getHopEvents();
+      assert.deepEqual(
+        events.map(({method, redirectCount}) => [method, redirectCount]),
+        [
+          ['network.beforeRequestSent', 0],
+          ['network.responseStarted', 0],
+          ['network.responseCompleted', 0],
+        ],
+      );
+    });
+
+    it('should stop waiting for missing ExtraInfo when the next hop finishes', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      responseReceived(false);
+
+      assert.deepEqual(await getHopEvents(), []);
+
+      loadingFinished();
+
+      const events = await getHopEvents();
+      assert.deepEqual(
+        events.map(({method, redirectCount, status}) => [
+          method,
+          redirectCount,
+          status,
+        ]),
+        [
+          ['network.beforeRequestSent', 0, undefined],
+          ['network.responseStarted', 0, 302],
+          ['network.responseCompleted', 0, 302],
+          ['network.beforeRequestSent', 1, undefined],
+          ['network.responseStarted', 1, 200],
+          ['network.responseCompleted', 1, 200],
+        ],
+      );
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should not delay an intercepted next hop', async () => {
+      const interception = networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: URL_B},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+
+      assert.deepEqual(await getHopEvents(), []);
+
+      cdpClient.emit('Fetch.requestPaused', {
+        requestId: FETCH_ID,
+        networkId: REQUEST_ID,
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+        resourceType: 'Document',
+        request: {
+          url: URL_B,
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+      });
+
+      const events = await getHopEvents();
+      assert.deepEqual(
+        events.map(({method, redirectCount}) => [method, redirectCount]),
+        [
+          ['network.beforeRequestSent', 0],
+          ['network.responseStarted', 0],
+          ['network.responseCompleted', 0],
+          ['network.beforeRequestSent', 1],
+        ],
+      );
+      assert.deepInclude(getParams('network.beforeRequestSent', 1) as object, {
+        isBlocked: true,
+        intercepts: [interception],
+      });
+    });
+
+    it('should apply late request ExtraInfo to the redirected hop when the next hop is auto-continued', async () => {
+      // The intercept does not match the hops. The mapper still gets
+      // `Fetch.requestPaused` for every request and continues it.
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: URL_C},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      sinon.stub(cdpClient, 'sendCommand').resolves({});
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      cdpClient.emit('Fetch.requestPaused', {
+        requestId: FETCH_ID,
+        networkId: REQUEST_ID,
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+        resourceType: 'Document',
+        request: {
+          url: URL_B,
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+      });
+      requestWillBeSentExtraInfo('A', 'John Doe');
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION});
+      requestWillBeSentExtraInfo('B', 'Jane Doe');
+      responseReceived(true);
+      responseReceivedExtraInfo(200);
+      loadingFinished();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 200],
+        ['network.responseCompleted', 1, 'B', 200],
+      ]);
+      const beforeRequestSentB = getParams<Network.BeforeRequestSentParameters>(
+        'network.beforeRequestSent',
+        1,
+      );
+      assert.strictEqual(
+        getHeader(beforeRequestSentB.request.headers, 'Cookie'),
+        'username=Jane Doe',
+      );
+    });
+
+    it('should apply late ExtraInfo of two redirects to the correct hops', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      requestWillBeSent(URL_C, {
+        from: URL_B,
+        hasExtraInfo: true,
+        location: RELATIVE_LOCATION_C,
+      });
+      responseReceived(true, URL_C);
+
+      assert.deepEqual(await getHopEvents(), []);
+
+      requestWillBeSentExtraInfo('A');
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION});
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+      ]);
+
+      requestWillBeSentExtraInfo('B');
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION_C});
+      requestWillBeSentExtraInfo('C');
+      responseReceivedExtraInfo(200);
+      loadingFinished();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 302],
+        ['network.responseCompleted', 1, 'B', 302],
+        ['network.beforeRequestSent', 2, 'C', undefined],
+        ['network.responseStarted', 2, 'C', 200],
+        ['network.responseCompleted', 2, 'C', 200],
+      ]);
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should emit redirected hop events without a missing response ExtraInfo', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSentExtraInfo('A');
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      // The response ExtraInfo of the first hop never arrives.
+      requestWillBeSentExtraInfo('B');
+      responseReceived(true);
+
+      // The first hop waits for its response ExtraInfo before
+      // `network.responseCompleted`. The next hop waits for the first hop.
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+      ]);
+
+      loadingFinished();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 200],
+      ]);
+
+      responseReceivedExtraInfo(200, {'X-Response': 'B'});
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 200],
+        ['network.responseCompleted', 1, 'B', 200],
+      ]);
+      const completedA = getParams<Network.ResponseCompletedParameters>(
+        'network.responseCompleted',
+        0,
+      );
+      assert.isUndefined(getHeader(completedA.response.headers, 'x-response'));
+      const completedB = getParams<Network.ResponseCompletedParameters>(
+        'network.responseCompleted',
+        1,
+      );
+      assert.strictEqual(
+        getHeader(completedB.response.headers, 'x-response'),
+        'B',
+      );
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should stop waiting for missing ExtraInfo when the next hop fails', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+
+      assert.deepEqual(await getHopEvents(), []);
+
+      loadingFailed();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, undefined, undefined],
+        ['network.responseStarted', 0, undefined, 302],
+        ['network.responseCompleted', 0, undefined, 302],
+        ['network.beforeRequestSent', 1, undefined, undefined],
+        ['network.fetchError', 1, undefined, undefined],
+      ]);
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should stop waiting for missing ExtraInfo when the next hop requires auth', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+
+      assert.deepEqual(await getHopEvents(), []);
+
+      // CDP routes `Fetch.authRequired` by the fetch ID, which the request
+      // gets from `Fetch.requestPaused`. `Fetch.requestPaused` also stops the
+      // wait, so call the handler directly.
+      networkStorage.getRequestById(REQUEST_ID)!.onAuthRequired({
+        requestId: FETCH_ID,
+        request: {
+          url: URL_B,
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+        resourceType: 'Document',
+        authChallenge: {
+          source: 'Server',
+          origin: 'http://localhost',
+          scheme: 'basic',
+          realm: 'realm',
+        },
+      });
+
+      const events = await getHopEvents();
+      assert.deepEqual(
+        events.map(({method, redirectCount}) => [method, redirectCount]),
+        [
+          ['network.beforeRequestSent', 0],
+          ['network.responseStarted', 0],
+          ['network.responseCompleted', 0],
+          ['network.authRequired', 1],
+        ],
+      );
+    });
+
+    for (const {name, lateExtraInfo} of [
+      {name: 'normal', lateExtraInfo: false},
+      {name: 'late', lateExtraInfo: true},
+    ]) {
+      it(`should handle a redirect to the same URL with ${name} ExtraInfo order`, async () => {
+        const redirectHeaders = {
+          location: RELATIVE_LOCATION_HOME,
+          'Set-Cookie': 'session=1',
+        };
+        requestWillBeSent(URL_HOME);
+        if (!lateExtraInfo) {
+          requestWillBeSentExtraInfo('A');
+          responseReceivedExtraInfo(302, redirectHeaders);
+        }
+        requestWillBeSent(URL_HOME, {
+          from: URL_HOME,
+          hasExtraInfo: true,
+          location: RELATIVE_LOCATION_HOME,
+        });
+        if (lateExtraInfo) {
+          requestWillBeSentExtraInfo('A');
+          responseReceivedExtraInfo(302, redirectHeaders);
+        }
+        requestWillBeSentExtraInfo('B');
+        responseReceived(true, URL_HOME);
+        responseReceivedExtraInfo(200, {'X-Response': 'B'});
+        loadingFinished();
+
+        assert.deepEqual(summarize(await getHopEvents()), [
+          ['network.beforeRequestSent', 0, 'A', undefined],
+          ['network.responseStarted', 0, 'A', 302],
+          ['network.responseCompleted', 0, 'A', 302],
+          ['network.beforeRequestSent', 1, 'B', undefined],
+          ['network.responseStarted', 1, 'B', 200],
+          ['network.responseCompleted', 1, 'B', 200],
+        ]);
+        const completedA = getParams<Network.ResponseCompletedParameters>(
+          'network.responseCompleted',
+          0,
+        );
+        assert.strictEqual(
+          getHeader(completedA.response.headers, 'set-cookie'),
+          'session=1',
+        );
+        const completedB = getParams<Network.ResponseCompletedParameters>(
+          'network.responseCompleted',
+          1,
+        );
+        assert.strictEqual(
+          getHeader(completedB.response.headers, 'x-response'),
+          'B',
+        );
+        assert.isUndefined(
+          getHeader(completedB.response.headers, 'set-cookie'),
+        );
+        assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+      });
+    }
+
+    it('should skip a late redirect response ExtraInfo with a URL fragment in the location', async () => {
+      const location = `${RELATIVE_LOCATION}#section`;
+      requestWillBeSent(URL_A);
+      requestWillBeSentExtraInfo('A');
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true, location});
+      requestWillBeSentExtraInfo('B');
+      responseReceived(true);
+      // The next hop finishes before the response ExtraInfo of the first hop.
+      loadingFinished();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 200],
+      ]);
+
+      // The late response ExtraInfo of the first hop must not change the
+      // status of the next hop.
+      responseReceivedExtraInfo(302, {location});
+      responseReceivedExtraInfo(200);
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 200],
+        ['network.responseCompleted', 1, 'B', 200],
+      ]);
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should wait for request ExtraInfo when loadingFinished arrives first without a redirect', async () => {
+      // The ExtraInfo events come from the network service. The other events
+      // come from the renderer. `loadingFinished` can arrive first.
+      requestWillBeSent(URL_A);
+      responseReceived(true, URL_A);
+      loadingFinished();
+
+      assert.deepEqual(await getHopEvents(), []);
+
+      requestWillBeSentExtraInfo('A', 'John Doe');
+      responseReceivedExtraInfo(200);
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 200],
+        ['network.responseCompleted', 0, 'A', 200],
+      ]);
+      const beforeRequestSent = getParams<Network.BeforeRequestSentParameters>(
+        'network.beforeRequestSent',
+        0,
+      );
+      assert.lengthOf(beforeRequestSent.request.cookies, 1);
+      assert.strictEqual(
+        getHeader(beforeRequestSent.request.headers, 'Cookie'),
+        'username=John Doe',
+      );
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should skip the late response ExtraInfo of two canceled hops', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSentExtraInfo('A');
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      requestWillBeSentExtraInfo('B');
+      requestWillBeSent(URL_C, {
+        from: URL_B,
+        hasExtraInfo: true,
+        location: RELATIVE_LOCATION_C,
+      });
+      requestWillBeSentExtraInfo('C');
+      responseReceived(true, URL_C);
+      // Both redirected hops stop waiting for their response ExtraInfo.
+      loadingFinished();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 302],
+        ['network.responseCompleted', 1, 'B', 302],
+        ['network.beforeRequestSent', 2, 'C', undefined],
+        ['network.responseStarted', 2, 'C', 200],
+      ]);
+
+      // The late ExtraInfo of hop A redirects to hop B, not to hop C.
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION});
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION_C});
+      responseReceivedExtraInfo(200);
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 302],
+        ['network.responseCompleted', 1, 'B', 302],
+        ['network.beforeRequestSent', 2, 'C', undefined],
+        ['network.responseStarted', 2, 'C', 200],
+        ['network.responseCompleted', 2, 'C', 200],
+      ]);
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should skip the late response ExtraInfo of a canceled hop before a hop that waits', async () => {
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: URL_B},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      sinon.stub(cdpClient, 'sendCommand').resolves({});
+      requestWillBeSent(URL_A);
+      requestWillBeSentExtraInfo('A');
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      // Hop B is blocked, so hop A stops waiting for its response ExtraInfo.
+      cdpClient.emit('Fetch.requestPaused', {
+        requestId: FETCH_ID,
+        networkId: REQUEST_ID,
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+        resourceType: 'Document',
+        request: {
+          url: URL_B,
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+      });
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, undefined, undefined],
+      ]);
+
+      await networkStorage.getRequestById(REQUEST_ID)!.continueRequest();
+      requestWillBeSentExtraInfo('B');
+      // Hop B redirects before the late response ExtraInfo of hop A arrives.
+      // Hop B now waits for its own response ExtraInfo.
+      requestWillBeSent(URL_C, {
+        from: URL_B,
+        hasExtraInfo: true,
+        location: RELATIVE_LOCATION_C,
+      });
+      // The late ExtraInfo of hop A must not go to hop B.
+      responseReceivedExtraInfo(302, {
+        location: RELATIVE_LOCATION,
+        'X-Response': 'A',
+      });
+      responseReceivedExtraInfo(302, {
+        location: RELATIVE_LOCATION_C,
+        'X-Response': 'B',
+      });
+      requestWillBeSentExtraInfo('C');
+      responseReceived(true, URL_C);
+      responseReceivedExtraInfo(200, {'X-Response': 'C'});
+      loadingFinished();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, undefined, undefined],
+        ['network.responseStarted', 1, 'B', 302],
+        ['network.responseCompleted', 1, 'B', 302],
+        ['network.beforeRequestSent', 2, 'C', undefined],
+        ['network.responseStarted', 2, 'C', 200],
+        ['network.responseCompleted', 2, 'C', 200],
+      ]);
+      const completedB = getParams<Network.ResponseCompletedParameters>(
+        'network.responseCompleted',
+        1,
+      );
+      assert.strictEqual(
+        getHeader(completedB.response.headers, 'x-response'),
+        'B',
+      );
+      const completedC = getParams<Network.ResponseCompletedParameters>(
+        'network.responseCompleted',
+        2,
+      );
+      assert.strictEqual(
+        getHeader(completedC.response.headers, 'x-response'),
+        'C',
+      );
+      assert.isUndefined(networkStorage.getRequestById(REQUEST_ID));
+    });
+
+    it('should use the Fetch.authRequired data in the events emitted when the wait stops', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSentExtraInfo('A');
+      requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: true});
+      requestWillBeSentExtraInfo('B');
+
+      // Hop A waits for its response ExtraInfo. Hop B waits for hop A.
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+      ]);
+
+      networkStorage.getRequestById(REQUEST_ID)!.onAuthRequired({
+        requestId: FETCH_ID,
+        request: {
+          url: URL_B,
+          method: 'GET',
+          headers: {'X-Auth': 'B'},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId: MockCdpNetworkEvents.defaultFrameId,
+        resourceType: 'Document',
+        authChallenge: {
+          source: 'Server',
+          origin: 'http://localhost',
+          scheme: 'basic',
+          realm: 'realm',
+        },
+      });
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.authRequired', 1, 'B', -1],
+      ]);
+      const beforeRequestSentB = getParams<Network.BeforeRequestSentParameters>(
+        'network.beforeRequestSent',
+        1,
+      );
+      assert.strictEqual(
+        getHeader(beforeRequestSentB.request.headers, 'X-Auth'),
+        'B',
+      );
     });
   });
 

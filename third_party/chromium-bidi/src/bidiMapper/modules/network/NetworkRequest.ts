@@ -76,6 +76,35 @@ export class NetworkRequest {
 
   #redirectCount: number;
 
+  /**
+   * True after a redirect response for this request hop is received. A new
+   * `NetworkRequest` with the same ID represents the next hop.
+   */
+  #redirected = false;
+
+  /**
+   * The previous redirect hop with the same request ID. It is set only while
+   * the previous hop waits for its ExtraInfo events. Events of this hop are
+   * delayed until the previous hop stops waiting.
+   */
+  #previousHop?: NetworkRequest;
+  /** The next redirect hop, which waits for this hop. */
+  #nextHop?: NetworkRequest;
+  /**
+   * True if this redirected hop must not wait anymore for the missing ExtraInfo
+   * events. For example, the next hop finished loading.
+   */
+  #extraInfoWaitCanceled = false;
+  /**
+   * The `Network.requestWillBeSent` events of the hops that follow the
+   * previous hops that stopped waiting before they got their redirect
+   * response ExtraInfo, in hop order. CDP can send these ExtraInfo events
+   * later. The latest hop skips them. Each entry gives the URL that the late
+   * ExtraInfo must redirect to.
+   */
+  #lateRedirectResponseExtraInfos: Protocol.Network.RequestWillBeSentEvent[] =
+    [];
+
   #bodySize = 0;
   // Total response bytes received, updated while the response is loading.
   #responseBytesReceived = 0;
@@ -139,6 +168,7 @@ export class NetworkRequest {
     cdpTarget: CdpTarget,
     redirectCount = 0,
     logger?: LoggerFn,
+    previousHop?: NetworkRequest,
   ) {
     this.#id = id;
     this.#eventManager = eventManager;
@@ -146,6 +176,16 @@ export class NetworkRequest {
     this.#cdpTarget = cdpTarget;
     this.#redirectCount = redirectCount;
     this.#logger = logger;
+    if (previousHop) {
+      // The late ExtraInfo events go to the latest hop.
+      this.#lateRedirectResponseExtraInfos =
+        previousHop.#lateRedirectResponseExtraInfos;
+      previousHop.#lateRedirectResponseExtraInfos = [];
+    }
+    if (previousHop?.delaysNextHop) {
+      this.#previousHop = previousHop;
+      previousHop.#nextHop = this;
+    }
   }
 
   // Tracks if the request has finished loading or failed, preventing premature
@@ -223,6 +263,150 @@ export class NetworkRequest {
 
   isRedirecting(): boolean {
     return Boolean(this.#request.info);
+  }
+
+  /**
+   * True if the next redirect hop must delay its events after the events of
+   * this hop. This occurs while this hop or a previous hop waits for ExtraInfo
+   * events.
+   */
+  get delaysNextHop(): boolean {
+    return (
+      this.#previousHop !== undefined ||
+      this.#waitsForExtraInfo('request') ||
+      this.#waitsForExtraInfo('response')
+    );
+  }
+
+  /**
+   * CDP can send the ExtraInfo events of a redirected hop after the
+   * `Network.requestWillBeSent` event of the next hop. All hops have the same
+   * request ID.
+   *
+   * CDP sends the ExtraInfo events of one request in hop order: request(A),
+   * response(A), request(B), response(B), and so on. All of them come from
+   * the same `URLLoader` in the network service through one
+   * `NetworkServiceDevToolsObserver` mojo pipe, and one pipe keeps the message
+   * order. `Network.requestWillBeSent` and `redirectResponse` use a different
+   * path, so they can arrive before the ExtraInfo events of previous hops.
+   * The lag can be longer than one hop.
+   *
+   * Thus, the oldest hop that waits for an ExtraInfo event of the given kind
+   * gets it. If no previous hop waits for it, this hop gets it.
+   */
+  getHopForExtraInfo(kind: 'request' | 'response'): NetworkRequest {
+    const previousHop = this.#previousHop;
+    return (previousHop && previousHop.#getOldestHopWaitingFor(kind)) ?? this;
+  }
+
+  #getOldestHopWaitingFor(
+    kind: 'request' | 'response',
+  ): NetworkRequest | undefined {
+    const previousHop = this.#previousHop;
+    return (
+      (previousHop && previousHop.#getOldestHopWaitingFor(kind)) ??
+      (this.#waitsForExtraInfo(kind) ? this : undefined)
+    );
+  }
+
+  /**
+   * True if this hop is redirected and an expected ExtraInfo event of the
+   * given kind is not received yet.
+   */
+  #waitsForExtraInfo(kind: 'request' | 'response'): boolean {
+    if (
+      !this.#redirected ||
+      this.#extraInfoWaitCanceled ||
+      // `redirectHasExtraInfo` of the next hop is false.
+      !this.#response.hasExtraInfo ||
+      this.#isDataUrl() ||
+      this.#servedFromCache
+    ) {
+      return false;
+    }
+    return kind === 'request'
+      ? !this.#request.extraInfo
+      : !this.#response.extraInfo;
+  }
+
+  /**
+   * Stops waiting for the missing ExtraInfo events of all previous hops and
+   * emits their events. Call this method before this hop emits events that
+   * do not wait for the previous hops.
+   */
+  #stopWaitingForPreviousHops() {
+    const lateExtraInfos = this.#cancelPreviousHops();
+    if (lateExtraInfos.length === 0) {
+      return;
+    }
+    // The late ExtraInfo events go to the latest hop.
+    this.#getLatestHop().#lateRedirectResponseExtraInfos.push(
+      ...lateExtraInfos,
+    );
+  }
+
+  /** Returns the latest linked hop of this redirect chain. */
+  #getLatestHop(): NetworkRequest {
+    const nextHop = this.#nextHop;
+    return nextHop ? nextHop.#getLatestHop() : this;
+  }
+
+  /**
+   * Cancels the ExtraInfo wait of all previous hops and emits their events.
+   * Returns the `Network.requestWillBeSent` events of the hops that follow
+   * the canceled hops that did not get their response ExtraInfo, in hop
+   * order. CDP can still send these ExtraInfo events later.
+   */
+  #cancelPreviousHops(): Protocol.Network.RequestWillBeSentEvent[] {
+    const previousHop = this.#previousHop;
+    if (!previousHop) {
+      return [];
+    }
+    const lateExtraInfos = previousHop.#cancelPreviousHops();
+    if (previousHop.#waitsForExtraInfo('response') && this.#request.info) {
+      // The late ExtraInfo of the previous hop redirects to this hop.
+      lateExtraInfos.push(this.#request.info);
+    }
+    previousHop.#extraInfoWaitCanceled = true;
+    // This call releases this hop and emits its pending events.
+    previousHop.#emitEventsIfReady();
+    return lateExtraInfos;
+  }
+
+  /**
+   * Returns true if the event is the late redirect response ExtraInfo of a
+   * previous hop that stopped waiting for it. Consumes the expected entry.
+   * CDP sends the ExtraInfo events in hop order, so the late events come
+   * before the ExtraInfo of the hops that still wait.
+   */
+  skipsLateRedirectResponseExtraInfo(
+    event: Protocol.Network.ResponseReceivedExtraInfoEvent,
+  ): boolean {
+    const expected = this.#lateRedirectResponseExtraInfos[0];
+    if (
+      !expected ||
+      event.statusCode < 300 ||
+      event.statusCode > 399 ||
+      !this.#isRedirectTo(event.headers, expected)
+    ) {
+      return false;
+    }
+    this.#lateRedirectResponseExtraInfos.shift();
+    return true;
+  }
+
+  /**
+   * Releases the next hop if this hop does not delay it anymore. Then emits
+   * the pending events of the next hop.
+   */
+  #releaseNextHopIfReady() {
+    const nextHop = this.#nextHop;
+    if (!nextHop || this.delaysNextHop) {
+      return;
+    }
+    this.#nextHop = undefined;
+    nextHop.#previousHop = undefined;
+    nextHop.#emitEventsIfReady();
   }
 
   #isDataUrl(): boolean {
@@ -514,30 +698,33 @@ export class NetworkRequest {
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
     this.#finished.resolve();
-    // TODO: use event.redirectResponse;
-    // Temporary workaround to emit ResponseCompleted event for redirects
-    this.#response.hasExtraInfo = false;
+    this.#redirected = true;
+    // `redirectHasExtraInfo` tells if CDP sends ExtraInfo events for the
+    // redirected hop. These events can arrive after this event.
+    this.#response.hasExtraInfo = event.redirectHasExtraInfo;
     this.#decodedResponseBodySize = 0;
     // Redirect response bodies are never read, so their encoded size is 0.
     this.#encodedResponseBodySize = 0;
     this.#responseBytesReceived = event.redirectResponse!.encodedDataLength;
     this.#response.info = event.redirectResponse!;
-    this.#emitEventsIfReady({
-      wasRedirected: true,
-    });
+    this.#emitEventsIfReady();
   }
 
-  #emitEventsIfReady(
-    options: {
-      wasRedirected?: boolean;
-    } = {},
-  ) {
+  #emitEventsIfReady() {
+    if (this.#previousHop) {
+      // Keep the BiDi event order. The previous hop emits its events first.
+      return;
+    }
+
     const requestExtraInfoCompleted =
-      // Flush redirects
-      options.wasRedirected ||
       Boolean(this.#response.loadingFailed) ||
+      // The response is paused in Fetch, so the request stage is over. Do not
+      // emit `network.responseStarted` before `network.beforeRequestSent`.
+      Boolean(this.#response.paused) ||
       this.#isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
+      // The next hop finished, but this redirected hop has no ExtraInfo.
+      this.#extraInfoWaitCanceled ||
       // If the request is intercepted during the `authRequired` phase, there
       // will be no `Network.requestWillBeSentExtraInfo` CDP events.
       this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired) ||
@@ -557,16 +744,28 @@ export class NetworkRequest {
       !requestInterceptionExpected ||
       (requestInterceptionExpected && Boolean(this.#request.paused));
 
-    if (
+    const beforeRequestSentReady =
       Boolean(this.#request.info) &&
       (requestInterceptionExpected
         ? requestInterceptionCompleted
-        : requestExtraInfoCompleted)
-    ) {
+        : requestExtraInfoCompleted);
+
+    if (beforeRequestSentReady) {
       this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
     }
+    // Do not emit response events before `network.beforeRequestSent`. Keep
+    // this value true after `network.beforeRequestSent` is emitted, because
+    // `beforeRequestSentReady` can change when the intercepts change.
+    const requestPhaseCompleted =
+      beforeRequestSentReady ||
+      this.#emittedEvents[ChromiumBidi.Network.EventNames.BeforeRequestSent] ||
+      !this.#request.info;
+
     const responseExtraInfoCompleted =
       Boolean(this.#response.extraInfo) ||
+      this.#isDataUrl() ||
+      // The next hop finished, but this redirected hop has no ExtraInfo.
+      this.#extraInfoWaitCanceled ||
       // Response from cache don't have extra info
       this.#servedFromCache ||
       // Don't expect extra info if the flag is false
@@ -577,7 +776,7 @@ export class NetworkRequest {
       this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted);
 
     if (
-      this.#response.info ||
+      (this.#response.info && requestPhaseCompleted) ||
       (responseInterceptionExpected && Boolean(this.#response.paused))
     ) {
       this.#emitEvent(this.#getResponseStartedEvent.bind(this));
@@ -593,9 +792,10 @@ export class NetworkRequest {
 
     if (
       Boolean(this.#response.info) &&
+      requestPhaseCompleted &&
       responseExtraInfoCompleted &&
       responseInterceptionCompleted &&
-      (loadingFinished || options.wasRedirected)
+      (loadingFinished || this.#redirected)
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
       if (!this.#response.loadingFailed) {
@@ -606,9 +806,15 @@ export class NetworkRequest {
         // so `getData` sees updated size-limit state and `disposeRequest` does
         // not wipe state before `ResponseCompleted` is emitted.
         this.#finished.resolve();
-        this.#networkStorage.disposeRequest(this.id);
+        if (!this.#redirected) {
+          // The storage disposes redirected hops. The next hop can have the
+          // same ID in the storage.
+          this.#networkStorage.disposeRequest(this.id);
+        }
       }
     }
+
+    this.#releaseNextHopIfReady();
   }
 
   onRequestWillBeSentEvent(
@@ -631,19 +837,37 @@ export class NetworkRequest {
   onResponseReceivedExtraInfoEvent(
     event: Protocol.Network.ResponseReceivedExtraInfoEvent,
   ): void {
-    if (
-      event.statusCode >= 300 &&
-      event.statusCode <= 399 &&
-      this.#request.info &&
-      event.headers['location'] === this.#request.info.request.url
-    ) {
-      // We received the Response Extra info for the redirect
-      // Too late so we need to skip it as it will
-      // fire wrongly for the last one
-      return;
-    }
     this.#response.extraInfo = event;
     this.#emitEventsIfReady();
+  }
+
+  /**
+   * Returns true if the `location` header points to the URL of this request.
+   * The header can contain a relative URL.
+   */
+  #isRedirectTo(
+    headers: Protocol.Network.Headers,
+    info: Protocol.Network.RequestWillBeSentEvent,
+  ): boolean {
+    const location = Object.entries(headers).find(
+      ([name]) => name.toLowerCase() === 'location',
+    )?.[1];
+    if (location === undefined) {
+      return false;
+    }
+    if (location === info.request.url) {
+      return true;
+    }
+    try {
+      // The redirect response URL is the URL of the previous hop.
+      const base = info.redirectResponse?.url ?? info.request.url;
+      const target = new URL(location, base);
+      // CDP sends the URL fragment separately in `request.urlFragment`.
+      target.hash = '';
+      return target.href === info.request.url;
+    } catch {
+      return false;
+    }
   }
 
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent): void {
@@ -662,6 +886,9 @@ export class NetworkRequest {
     this.#response.loadingFinished = event;
     this.#responseBytesReceived = event.encodedDataLength;
     this.#encodedResponseBodySize = event.encodedBodyLength ?? null;
+    // The missing ExtraInfo events of the previous hops do not arrive anymore.
+    // This call can emit the events of this hop, so set the fields first.
+    this.#stopWaitingForPreviousHops();
     this.#emitEventsIfReady();
   }
 
@@ -672,6 +899,9 @@ export class NetworkRequest {
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent): void {
     this.#response.loadingFailed = event;
+    // The missing ExtraInfo events of the previous hops do not arrive anymore.
+    // This call can emit the events of this hop, so set the field first.
+    this.#stopWaitingForPreviousHops();
     this.#emitEventsIfReady();
 
     this.#emitEvent(() => {
@@ -713,6 +943,12 @@ export class NetworkRequest {
         this.#fetchId !== this.id
       ) {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
+        // Do not delay the blocked request. An auto-continued request keeps
+        // waiting, so that the late ExtraInfo of the previous hops is not
+        // applied to this hop.
+        // TODO: Count the missing request ExtraInfo of the canceled hops and
+        // skip it on the latest hop, like the response ExtraInfo.
+        this.#stopWaitingForPreviousHops();
       } else {
         void this.#continueResponse().catch((error: unknown) => {
           this.#logger?.(LogType.debugError)?.(error);
@@ -730,6 +966,8 @@ export class NetworkRequest {
         this.#fetchId !== this.id
       ) {
         this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
+        // Do not delay the blocked request. See the comment above.
+        this.#stopWaitingForPreviousHops();
       } else {
         void this.#continueRequest().catch((error: unknown) => {
           this.#logger?.(LogType.debugError)?.(error);
@@ -743,6 +981,10 @@ export class NetworkRequest {
   onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent): void {
     this.#fetchId = event.requestId;
     this.#request.auth = event;
+    // Do not delay the request. This method always emits
+    // `network.authRequired`. This call can emit the events of this hop, so
+    // set the fields first.
+    this.#stopWaitingForPreviousHops();
 
     if (
       this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired) &&
@@ -1004,12 +1246,12 @@ export class NetworkRequest {
    * data, while preserving the event's position in the outgoing queue.
    */
   async #resolveEvent(event: NetworkEvent) {
-    if (!this.#request.extraInfo && this.#request.paused) {
+    const paused = this.#request.paused ?? this.#response.paused;
+    if (!this.#request.extraInfo && paused) {
       // Workaround for CDP omitting `Network.requestWillBeSentExtraInfo` (which
       // provides `associatedCookies`) while a request is paused in `Fetch`.
-      event.params.request.cookies = await this.#fetchPausedRequestCookies(
-        this.#request.paused,
-      );
+      event.params.request.cookies =
+        await this.#fetchPausedRequestCookies(paused);
     }
     return {
       kind: 'success' as const,

@@ -102,6 +102,7 @@ export class NetworkStorage {
     id: Network.Request,
     cdpTarget: CdpTarget,
     redirectCount?: number,
+    previousHop?: NetworkRequest,
   ): NetworkRequest {
     let request = this.getRequestById(id);
     if (redirectCount === undefined && request) {
@@ -116,11 +117,27 @@ export class NetworkStorage {
       cdpTarget,
       redirectCount,
       this.#logger,
+      previousHop,
     );
 
     this.addRequest(request);
 
     return request;
+  }
+
+  /**
+   * Gets the redirect hop that must get the ExtraInfo event of the given kind.
+   * CDP can send the ExtraInfo events of a redirected hop after the next hop
+   * starts.
+   */
+  #getHopForExtraInfo(
+    id: Network.Request,
+    cdpTarget: CdpTarget,
+    kind: 'request' | 'response',
+  ): NetworkRequest {
+    return this.#getOrCreateNetworkRequest(id, cdpTarget).getHopForExtraInfo(
+      kind,
+    );
   }
 
   onCdpTargetCreated(cdpTarget: CdpTarget): void {
@@ -135,11 +152,16 @@ export class NetworkStorage {
           request?.updateCdpTarget(cdpTarget);
           if (request && request.isRedirecting()) {
             request.handleRedirect(params);
-            this.disposeRequest(params.requestId);
+            // If the redirected hop waits for ExtraInfo events, the next hop
+            // delays its events and the redirected hop is not disposed yet.
+            if (!request.delaysNextHop) {
+              this.disposeRequest(params.requestId);
+            }
             this.#getOrCreateNetworkRequest(
               params.requestId,
               cdpTarget,
               request.redirectCount + 1,
+              request,
             ).onRequestWillBeSentEvent(params);
           } else {
             this.#getOrCreateNetworkRequest(
@@ -152,9 +174,10 @@ export class NetworkStorage {
       [
         'Network.requestWillBeSentExtraInfo',
         (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
-          const request = this.#getOrCreateNetworkRequest(
+          const request = this.#getHopForExtraInfo(
             params.requestId,
             cdpTarget,
+            'request',
           );
           request.updateCdpTarget(cdpTarget);
           request.onRequestWillBeSentExtraInfoEvent(params);
@@ -174,10 +197,16 @@ export class NetworkStorage {
       [
         'Network.responseReceivedExtraInfo',
         (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
-          const request = this.#getOrCreateNetworkRequest(
+          const latestHop = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
           );
+          if (latestHop.skipsLateRedirectResponseExtraInfo(params)) {
+            // A previous hop stopped waiting for this ExtraInfo. Do not
+            // apply it to a hop that waits for its own ExtraInfo.
+            return;
+          }
+          const request = latestHop.getHopForExtraInfo('response');
           request.updateCdpTarget(cdpTarget);
           request.onResponseReceivedExtraInfoEvent(params);
         },
