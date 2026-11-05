@@ -3128,7 +3128,7 @@ int WebContentsImpl::GetVirtualKeyboardResizeHeight() {
 bool WebContentsImpl::ShouldDoLearning() {
   // Use the off-the-record state of the user that this WebContents is shown
   // for, which can differ from that of its BrowserContext.
-  return !GetUserBrowserContext(*GetPrimaryMainFrame())->IsOffTheRecord();
+  return !GetUserBrowserContext(*this)->IsOffTheRecord();
 }
 
 void WebContentsImpl::OnAudioStateChanged() {

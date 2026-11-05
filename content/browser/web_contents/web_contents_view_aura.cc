@@ -383,8 +383,7 @@ aura::Window* GetHostWindow(aura::Window* window) {
 // Returns whether drag-and-drop data from or to `web_contents` is
 // off-the-record.
 bool IsOffTheRecordForDragAndDrop(WebContents& web_contents) {
-  return GetUserBrowserContext(*web_contents.GetPrimaryMainFrame())
-      ->IsOffTheRecord();
+  return GetUserBrowserContext(web_contents)->IsOffTheRecord();
 }
 
 }  // namespace

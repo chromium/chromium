@@ -2720,7 +2720,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // BrowserContext of `render_frame_host`. Chrome returns the user profile for
   // a Top Chrome WebUI in TopChromeWebUIProfile, which is shared by the windows
   // of all profiles. Storage and processes still use the BrowserContext of the
-  // frame.
+  // frame. It must be the same for all the frames in a WebContents.
   virtual BrowserContext* GetUserBrowserContext(
       RenderFrameHost& render_frame_host);
 

@@ -11,6 +11,7 @@ namespace content {
 
 class BrowserContext;
 class RenderFrameHost;
+class WebContents;
 
 // Returns the BrowserContext of the user that `render_frame_host` is shown
 // for. Its policies, permissions and off-the-record state apply to user data
@@ -19,6 +20,10 @@ class RenderFrameHost;
 // outside content, e.g. components, use the same decision.
 CONTENT_EXPORT BrowserContext* GetUserBrowserContext(
     RenderFrameHost& render_frame_host);
+
+// Same as above, for the frames in `web_contents`. The user doesn't differ
+// between the frames in a WebContents.
+CONTENT_EXPORT BrowserContext* GetUserBrowserContext(WebContents& web_contents);
 
 }  // namespace content
 

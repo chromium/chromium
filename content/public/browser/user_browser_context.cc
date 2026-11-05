@@ -5,6 +5,7 @@
 #include "content/public/browser/user_browser_context.h"
 
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
@@ -12,6 +13,10 @@ namespace content {
 BrowserContext* GetUserBrowserContext(RenderFrameHost& render_frame_host) {
   return GetContentClient()->browser()->GetUserBrowserContext(
       render_frame_host);
+}
+
+BrowserContext* GetUserBrowserContext(WebContents& web_contents) {
+  return GetUserBrowserContext(*web_contents.GetPrimaryMainFrame());
 }
 
 }  // namespace content
