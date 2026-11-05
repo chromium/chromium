@@ -7814,8 +7814,7 @@
     },
     {
       name: "WebTransportDatagramsWritable",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
       depends_on: ["WebTransportSendGroup"],
     },
     {
