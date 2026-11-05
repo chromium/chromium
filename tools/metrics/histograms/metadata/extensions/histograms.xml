@@ -1556,16 +1556,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.EsbAllowlistOmahaAttribute"
-    enum="ExtensionAllowlistOmahaAttributeValue" expires_after="2023-10-01">
-  <owner>jeffcyr@google.com</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Reports the value of the Safe Browsing CRX allowlist custom omaha attribute
-    when an update check occurs for an extension.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.EventPageActiveTime2" units="ms"
     expires_after="never">
 <!-- expires-never: Monitoring core extensions platform behavior. -->

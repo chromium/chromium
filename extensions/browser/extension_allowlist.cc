@@ -5,7 +5,6 @@
 #include "extensions/browser/extension_allowlist.h"
 
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -25,30 +24,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ExtensionAllowlistOmahaAttributeValue {
-  kUndefined = 0,
-  kAllowlisted = 1,
-  kNotAllowlisted = 2,
-  kMaxValue = kNotAllowlisted,
-};
-
-void ReportExtensionAllowlistOmahaAttribute(
-    const base::Value* allowlist_value) {
-  ExtensionAllowlistOmahaAttributeValue value;
-
-  if (!allowlist_value) {
-    value = ExtensionAllowlistOmahaAttributeValue::kUndefined;
-  } else if (allowlist_value->GetBool()) {
-    value = ExtensionAllowlistOmahaAttributeValue::kAllowlisted;
-  } else {
-    value = ExtensionAllowlistOmahaAttributeValue::kNotAllowlisted;
-  }
-
-  base::UmaHistogramEnumeration("Extensions.EsbAllowlistOmahaAttribute", value);
-}
 
 // Indicates whether an extension is included in the Safe Browsing allowlist.
 constexpr PrefMap kPrefAllowlist = {"allowlist", PrefType::kInteger,
@@ -166,8 +141,6 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
     const base::DictValue& attributes) {
   const base::Value* allowlist_value = attributes.Find("_esbAllowlist");
-
-  ReportExtensionAllowlistOmahaAttribute(allowlist_value);
 
   if (!allowlist_value) {
     // Ignore missing attribute. Omaha server should set the attribute to |true|

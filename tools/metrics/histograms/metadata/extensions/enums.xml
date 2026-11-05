@@ -109,12 +109,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Programmatic API Call"/>
 </enum>
 
-<enum name="ExtensionAllowlistOmahaAttributeValue">
-  <int value="0" label="Undefined"/>
-  <int value="1" label="Allowlisted"/>
-  <int value="2" label="Not allowlisted"/>
-</enum>
-
 <enum name="ExtensionBackgroundPageType">
   <int value="0" label="None"/>
   <int value="1" label="Persistent"/>
