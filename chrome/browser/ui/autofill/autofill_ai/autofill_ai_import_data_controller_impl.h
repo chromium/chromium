@@ -88,7 +88,6 @@ class AutofillAiImportDataControllerImpl
       const std::string& app_locale);
 
   // AutofillBubbleControllerBase::
-  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
 
  private:

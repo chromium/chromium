@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -216,7 +215,6 @@ bool AutofillAiImportDataControllerImpl::ShouldReshowOnTabVisible() const {
 void AutofillAiImportDataControllerImpl::OnBubbleClosed(
     AutofillClient::AutofillAiBubbleResult result) {
   ResetBubbleViewAndInformBubbleManager();
-  UpdatePageActionIcon();
 
   if (!bubble_hide_initiated_by_bubble_manager_) {
     MaybeRunSaveUpdateCallback(result);
@@ -232,11 +230,6 @@ bool AutofillAiImportDataControllerImpl::CanBeReshown() const {
 void AutofillAiImportDataControllerImpl::OnBubbleDiscarded() {
   using enum AutofillClient::AutofillAiBubbleResult;
   MaybeRunSaveUpdateCallback(was_bubble_shown_ ? kNotInteracted : kUnknown);
-}
-
-std::optional<PageActionIconType>
-AutofillAiImportDataControllerImpl::GetPageActionIconType() {
-  return std::nullopt;
 }
 
 void AutofillAiImportDataControllerImpl::DoShowBubble() {
