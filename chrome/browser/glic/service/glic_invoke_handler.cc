@@ -407,11 +407,9 @@ void GlicInvokeHandler::Invoke() {
 
   mojom::InvokeOptionsPtr mojo_options = CreateMojoOptions();
 
-  if (options_.fre_completion_wait_mode == FreCompletionWaitMode::kAlways ||
-      (options_.fre_completion_wait_mode == FreCompletionWaitMode::kDefault &&
-       requires_client_invoke_)) {
-    tasks.push_back(std::make_unique<WaitForFreCompletionTask>(
-        instance_->profile(), options_.fre_override));
+  if (NeedsFreCompletion()) {
+    tasks.push_back(
+        std::make_unique<WaitForFreCompletionTask>(instance_->profile()));
   }
 
   if (requires_client_invoke_) {
@@ -619,8 +617,12 @@ bool GlicInvokeHandler::NeedsFreCompletion() const {
   if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
     return false;
   }
+  // kNativeFre waits like kUnspecified: the native FRE card blocks the panel
+  // until the user accepts, so invocations that send a client invoke must not
+  // reach the web client before consent.
   if (options_.fre_override != mojom::FreOverride::kTrustFirstClick &&
-      options_.fre_override != mojom::FreOverride::kUnspecified) {
+      options_.fre_override != mojom::FreOverride::kUnspecified &&
+      options_.fre_override != mojom::FreOverride::kNativeFre) {
     return false;
   }
   return options_.fre_completion_wait_mode == FreCompletionWaitMode::kAlways ||

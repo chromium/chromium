@@ -305,16 +305,14 @@ class WaitForFreCompletionTask : public GlicInvokeTask {
  public:
   std::optional<GlicTaskType> GetType() const override;
 
-  WaitForFreCompletionTask(::Profile* profile, mojom::FreOverride fre_override);
+  explicit WaitForFreCompletionTask(::Profile* profile);
   ~WaitForFreCompletionTask() override;
   void Start(base::OnceClosure done_callback) override;
 
  private:
   void OnProfileReadyStateChanged();
-  bool ShouldWaitForFreCompletion() const;
 
   raw_ptr<::Profile> profile_;
-  mojom::FreOverride fre_override_;
   base::OnceClosure done_callback_;
   base::CallbackListSubscription subscription_;
 };

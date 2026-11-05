@@ -400,16 +400,14 @@ void StabilizationTask::OnStabilized() {
   std::move(done_callback_).Run();
 }
 
-WaitForFreCompletionTask::WaitForFreCompletionTask(
-    ::Profile* profile,
-    mojom::FreOverride fre_override)
-    : profile_(profile), fre_override_(fre_override) {}
+WaitForFreCompletionTask::WaitForFreCompletionTask(::Profile* profile)
+    : profile_(profile) {}
 
 WaitForFreCompletionTask::~WaitForFreCompletionTask() = default;
 
 void WaitForFreCompletionTask::Start(base::OnceClosure done_callback) {
   done_callback_ = std::move(done_callback);
-  if (!ShouldWaitForFreCompletion()) {
+  if (GlicEnabling::HasConsentedForProfile(profile_)) {
     std::move(done_callback_).Run();
     return;
   }
@@ -426,14 +424,6 @@ void WaitForFreCompletionTask::OnProfileReadyStateChanged() {
     subscription_ = {};
     std::move(done_callback_).Run();
   }
-}
-
-bool WaitForFreCompletionTask::ShouldWaitForFreCompletion() const {
-  if (GlicEnabling::HasConsentedForProfile(profile_)) {
-    return false;
-  }
-  return fre_override_ == mojom::FreOverride::kTrustFirstClick ||
-         fre_override_ == mojom::FreOverride::kUnspecified;
 }
 
 SendToClientTask::SendToClientTask(

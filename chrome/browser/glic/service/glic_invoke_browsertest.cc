@@ -2809,6 +2809,50 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(success_future.Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    GlicInvokeBrowserTest,
+    InvokeWaitsForFreCompletion_NativeFreDefaultWaitModeWithClientInvoke) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<void> success_future;
+  // kNativeFre blocks a client invoke on FRE completion, like kUnspecified.
+  GlicInvokeOptions options(Target(*tab),
+                            mojom::InvocationSource::kCaptureRegionHotkey);
+  options.fre_override = mojom::FreOverride::kNativeFre;
+  options.fre_completion_wait_mode = FreCompletionWaitMode::kDefault;
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
+  ASSERT_OK(WaitForClientLoadState(instance, ClientLoadState::kReady));
+
+  EXPECT_FALSE(success_future.IsReady());
+
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInvokeBrowserTest,
+    InvokeDoesNotWaitForFreCompletion_NativeFreNoClientInvoke) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<void> success_future;
+  // Without a client invoke, opening the panel in kNativeFre mode does not
+  // wait; the native FRE card is shown instead.
+  GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
+  options.fre_override = mojom::FreOverride::kNativeFre;
+  options.fre_completion_wait_mode = FreCompletionWaitMode::kDefault;
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        InvokeWaitingForFreCompletionEndsWithPanelClosed) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
@@ -2827,9 +2871,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
   // Wait for the client to finish loading so the invocation is blocked in
   // WaitForFreCompletionTask.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return instance->host().client_load_state() == ClientLoadState::kReady;
-  }));
+  ASSERT_OK(WaitForClientLoadState(instance, ClientLoadState::kReady));
   EXPECT_FALSE(error_future.IsReady());
 
   instance->CloseAllEmbedders();
@@ -2837,6 +2879,129 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
 }
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInvokeBrowserTest,
+    InvokeWaitingForFreCompletionEndsWithPanelClosed_NativeFre) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(Target(*tab),
+                            mojom::InvocationSource::kCaptureRegionHotkey);
+  options.fre_override = mojom::FreOverride::kNativeFre;
+  options.fre_completion_wait_mode = FreCompletionWaitMode::kDefault;
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
+
+  // Wait for the client to finish loading so the invocation is blocked in
+  // WaitForFreCompletionTask.
+  ASSERT_OK(WaitForClientLoadState(instance, ClientLoadState::kReady));
+  EXPECT_FALSE(error_future.IsReady());
+
+  instance->CloseAllEmbedders();
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
+  ASSERT_OK(WaitForInstanceDeletion(weak_instance));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+class GlicInvokeNativeFreAndroidBrowserTest : public GlicInvokeBrowserTest {
+ public:
+  GlicInvokeNativeFreAndroidBrowserTest() {
+    SetGlicPagePath("/glic/test_client/index.html");
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicNativeFreAndroid,
+                               {{"enabled_countries", "*"}}}},
+        /*disabled_features=*/{features::kGlicMessageFirstFre,
+                               features::kGlicActionFirstFRE});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
+                       EligibleUnconsentedInvokeResolvesToNativeFre) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+  ASSERT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(GetProfile()));
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForPanelWillOpenComplete(instance));
+
+  std::string invocation_log =
+      content::EvalJs(instance->host().web_client_contents(),
+                      "document.getElementById('invocationLog').textContent")
+          .ExtractString();
+  EXPECT_NE(invocation_log.find("\"freOverride\": 4"), std::string::npos)
+      << invocation_log;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
+                       ExplicitFreOverrideIsPreserved) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+  ASSERT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(GetProfile()));
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(Target(*tab),
+                            mojom::InvocationSource::kAnchoredContextualCue);
+  options.fre_override = mojom::FreOverride::kTrustFirstInline;
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForPanelWillOpenComplete(instance));
+
+  std::string invocation_log =
+      content::EvalJs(instance->host().web_client_contents(),
+                      "document.getElementById('invocationLog').textContent")
+          .ExtractString();
+  EXPECT_NE(invocation_log.find("\"freOverride\": 3"), std::string::npos)
+      << invocation_log;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
+                       SpecialCaseWebFreSourceStaysUnspecified) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+  ASSERT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(GetProfile()));
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(Target(*tab),
+                            mojom::InvocationSource::kNavigationCapture);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForPanelWillOpenComplete(instance));
+
+  std::string invocation_log =
+      content::EvalJs(instance->host().web_client_contents(),
+                      "document.getElementById('invocationLog').textContent")
+          .ExtractString();
+  EXPECT_NE(invocation_log.find("\"freOverride\": 0"), std::string::npos)
+      << invocation_log;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        InvokeDoesNotWaitForFreCompletion_TrustFirstInline) {

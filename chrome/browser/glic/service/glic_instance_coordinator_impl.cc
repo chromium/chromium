@@ -105,6 +105,43 @@ bool CanLiveModeBehaviorTakeEffect(const Target& target) {
   }
 }
 
+// TODO(b/571546684): Move all special-case FRE selection into Chrome as
+// explicit FreOverrides and remove this exclusion list. Until then, skip
+// native FRE for experiments and invocation sources where the web client
+// overrides the default FRE while Chrome leaves `fre_override` as
+// `kUnspecified`.
+bool HasSpecialCaseWebFre(const GlicInvokeOptions& options) {
+  if (options.feature_mode.value_or(mojom::FeatureMode::kUnspecified) !=
+      mojom::FeatureMode::kUnspecified) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicMessageFirstFre) ||
+      base::FeatureList::IsEnabled(features::kGlicActionFirstFRE)) {
+    return true;
+  }
+  switch (options.GetInvocationSource()) {
+    case mojom::InvocationSource::kNavigationCapture:
+    case mojom::InvocationSource::kUniversalCart:
+    case mojom::InvocationSource::kPasswordChange:
+    case mojom::InvocationSource::kIndigoPageAction:
+    case mojom::InvocationSource::kPromotionPage:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Returns whether an invocation should open in native FRE mode.
+// Eligible profiles get the Android native FRE when no entry point or
+// experiment asked for a specific web FRE. An explicit `fre_override` (for
+// example kTrustFirstInline or kTrustFirstClick) is kept, so those entry
+// points keep their web FRE.
+bool CanUseNativeFre(const GlicInvokeOptions& options, Profile* profile) {
+  return options.fre_override == mojom::FreOverride::kUnspecified &&
+         !HasSpecialCaseWebFre(options) &&
+         GlicEnabling::IsProfileEligibleForNativeFre(profile);
+}
+
 constexpr base::MemoryConsumerTraits kGlicInstanceCoordinatorTraits(
     // Each awake Glic instance can use up to a hundred megabytes.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
@@ -927,6 +964,11 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     if (!resolve_surface()) {
       return nullptr;
     }
+  }
+
+  // Route eligible profiles to Android native FRE.
+  if (CanUseNativeFre(options, profile_)) {
+    options.fre_override = mojom::FreOverride::kNativeFre;
   }
 
   // Only invocations that send an invoke message to the web client conflict
