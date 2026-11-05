@@ -174,6 +174,17 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
       }
     }
   }
+  LocationBarBadgesContainerView* badgesContainerView =
+      steadyView.badgesContainerView;
+  if (badgesContainerView.accessibilityElements.count > 0) {
+    CGRectEdge leadingEdge = self.effectiveUserInterfaceLayoutDirection ==
+                                     UIUserInterfaceLayoutDirectionRightToLeft
+                                 ? CGRectMaxXEdge
+                                 : CGRectMinXEdge;
+    CGRect slice;
+    CGRectDivide(selfFrame, &slice, &selfFrame,
+                 CGRectGetWidth(badgesContainerView.frame), leadingEdge);
+  }
   return UIAccessibilityConvertFrameToScreenCoordinates(selfFrame, steadyView);
 }
 
@@ -802,6 +813,9 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 #pragma mark - LocationBarContentSizeDelegate
 
 - (void)locationBarContentSizeDidChange {
+  [self updateAccessibility];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  nil);
   // Received from the badges container; re-publish it as a change of this
   // view, as the badges are part of its content.
   [self.contentSizeDelegate locationBarContentSizeDidChange];
@@ -826,6 +840,9 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
     [self.accessibleElements addObject:_customLeadingView];
   }
 
+  [self.accessibleElements
+      addObjectsFromArray:self.badgesContainerView.accessibilityElements];
+
   [_accessibleElements addObject:_locationButton];
 
   if ([self shouldShowIncognitoBadge]) {
@@ -840,9 +857,6 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
     self.locationButton.accessibilityValue =
         [NSString stringWithFormat:@"%@", self.locationLabel.text];
   }
-
-  [self.accessibleElements
-      addObjectsFromArray:self.badgesContainerView.accessibilityElements];
 
   if (self.trailingButton && self.trailingButton.enabled) {
     if (!IsChromeNextIaEnabled() || !self.trailingButton.hidden) {

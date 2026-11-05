@@ -580,11 +580,11 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 // Sets visibility for location bar badge in the omnibox.
 - (void)setLocationBarBadgeHidden:(BOOL)hidden {
   _locationBarBadgeShouldBeVisible = !hidden;
-  self.view.hidden = hidden;
   [self updateViewsVisibility];
   // TODO(crbug.com/429140788): Remove after migration and BadgesContainerView
   // is obsolete.
   [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
+  HideViewIfNecessary(self.view, hidden);
 }
 
 // Sets center positioning for location bar label.
