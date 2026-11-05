@@ -899,6 +899,9 @@ public class LocationBarMediatorUnitTest {
 
         mMediator.beginInput(input);
         verify(mUrlCoordinator, never()).requestFocus();
+        assertEquals(DisplayState.DRAFTING_NO_FOCUS, input.getDisplayState());
+        verify(mLocationBarLayout, never()).setShowFocusRing(true);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(false);
     }
 
     @Test
@@ -917,6 +920,18 @@ public class LocationBarMediatorUnitTest {
         assertAutocompleteState(AutocompleteState.ENABLED);
         assertEquals(OmniboxFocusReason.FAKE_BOX_TAP, input.getFocusReason());
         verify(mUrlCoordinator).requestFocus();
+    }
+
+    @Test
+    public void testBeginInput_StandbyNoFocus_focusGainedShowsFocusRing() {
+        var input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
+        mMediator.beginInput(input);
+        clearInvocations(mLocationBarLayout);
+
+        mMediator.onUrlFocusChange(true);
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
     }
 
     @Test

@@ -322,6 +322,11 @@ class FuseboxMediator implements BackPressHandler {
                 && mMetrics != null;
     }
 
+    /** Returns the current display state, or {@link DisplayState#WEBSITE} if no session. */
+    private @DisplayState int getDisplayState() {
+        return mInput == null ? DisplayState.WEBSITE : mInput.getDisplayState();
+    }
+
     private void setController(@Nullable ComposeboxQueryControllerBridge controller) {
         if (mComposeboxQueryControllerBridge != null) {
             mComposeboxQueryControllerBridge
@@ -1209,14 +1214,28 @@ class FuseboxMediator implements BackPressHandler {
         beginPickerInteraction(FuseboxAttachmentButtonType.DRIVE_FILES);
 
         Profile requestProfile = mProfile;
+        boolean wasUnfocusedWhenDriveTapped =
+                mInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS;
         DriveDisclaimerBridge.checkConsentStatus(
-                requestProfile, status -> onDriveConsentStatus(requestProfile, status));
+                requestProfile,
+                status -> {
+                    // The session that requested the check ended or was replaced, which clears
+                    // the pending picker. Leave the current session untouched.
+                    if (!mIsPickerPending) return;
+
+                    // The user unfocused the URL bar (e.g. pressed ESC) during the check.
+                    boolean lostFocusDuringConsentCheck =
+                            !wasUnfocusedWhenDriveTapped
+                                    && getDisplayState() == DisplayState.DRAFTING_NO_FOCUS;
+                    onDriveConsentStatus(requestProfile, lostFocusDuringConsentCheck, status);
+                });
     }
 
-    private void onDriveConsentStatus(Profile requestProfile, @DisclaimerStatus int status) {
-        if (!isInInputSession()
-                || mProfile != requestProfile
-                || mInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS) {
+    private void onDriveConsentStatus(
+            Profile requestProfile,
+            boolean lostFocusDuringConsentCheck,
+            @DisclaimerStatus int status) {
+        if (!isInInputSession() || mProfile != requestProfile || lostFocusDuringConsentCheck) {
             handlePickerCanceled();
             return;
         }

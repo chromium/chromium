@@ -295,6 +295,7 @@ public class FuseboxMediatorUnitTest {
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
     @Captor private ArgumentCaptor<PermissionCallback> mPermissionCallbackCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mScrimModelCaptor;
+    @Captor private ArgumentCaptor<Callback<Integer>> mConsentStatusCallbackCaptor;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -1796,6 +1797,48 @@ public class FuseboxMediatorUnitTest {
         setDriveConsentStatus(DisclaimerStatus.NOT_ACCEPTED);
 
         mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+
+        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    public void onDrivePickerClicked_alreadyUnfocused_launchesPicker() {
+        // Sessions begun without focus (e.g. the NTP Plus button) start in DRAFTING_NO_FOCUS.
+        mInput.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        setDriveConsentStatus(DisclaimerStatus.ACCEPTED);
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+
+        verify(mDriveFilePickerClient).launchPicker(any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    public void onDrivePickerClicked_focusLostDuringConsentCheck_cancelsWithoutPicker() {
+        mInput.setDisplayState(DisplayState.DRAFTING);
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+        verify(mDriveDisclaimerBridgeNatives)
+                .checkConsentStatus(any(), mConsentStatusCallbackCaptor.capture());
+
+        // The user presses ESC before the consent status arrives.
+        mInput.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mConsentStatusCallbackCaptor.getValue().onResult(DisclaimerStatus.ACCEPTED);
+
+        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    public void onDrivePickerClicked_sessionReplacedDuringConsentCheck_doesNotLaunchPicker() {
+        mInput.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+        verify(mDriveDisclaimerBridgeNatives)
+                .checkConsentStatus(any(), mConsentStatusCallbackCaptor.capture());
+
+        // The user dismisses the session and opens a new one in the same tab, which reuses the
+        // same AutocompleteInput, before the consent status arrives.
+        mMediator.endInput();
+        mMediator.beginInput(mSession);
+        mInput.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mConsentStatusCallbackCaptor.getValue().onResult(DisclaimerStatus.ACCEPTED);
 
         verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any(), anyBoolean());
     }

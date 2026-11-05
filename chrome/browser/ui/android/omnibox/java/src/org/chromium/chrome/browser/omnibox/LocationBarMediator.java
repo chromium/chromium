@@ -3111,7 +3111,10 @@ public class LocationBarMediator
         // session again, which also covers sessions begun without a request, e.g. on focus.
         FuseboxSessionState.applyPageMetadata(input, mLocationBarDataProvider);
         if (input.getDisplayState() == DisplayState.WEBSITE) {
-            input.setDisplayState(DisplayState.DRAFTING);
+            input.setDisplayState(
+                    input.getAutocompleteState() == AutocompleteState.STANDBY_NO_FOCUS
+                            ? DisplayState.DRAFTING_NO_FOCUS
+                            : DisplayState.DRAFTING);
         }
 
         var state = FuseboxSessionState.from(mLocationBarDataProvider);

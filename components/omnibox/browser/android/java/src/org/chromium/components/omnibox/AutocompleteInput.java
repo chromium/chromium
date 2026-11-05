@@ -104,8 +104,9 @@ public class AutocompleteInput implements UserData {
         /**
          * Active input session retaining draft text, but disengaged (no keyboard/focus ring, and
          * text selection is not drawn). Entered when focus is lost due to clicking on the content
-         * area while modifications to the url text are present. While a selection should be saved,
-         * it will not be drawn.
+         * area while modifications to the url text are present, or when an input session begins
+         * without focus ({@link AutocompleteState#STANDBY_NO_FOCUS}, e.g. the NTP Plus button or
+         * gallery chips). While a selection should be saved, it will not be drawn.
          */
         int DRAFTING_NO_FOCUS = 1;
 
