@@ -46,6 +46,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -566,6 +567,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, DataUpdates) {
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
                        PolicyUpdateWhileDownloadingDifferentHash) {
+  base::HistogramTester histogram_tester;
   EnableTestServer(
       {{kConfigurationUrl1, {kConfigurationData1, true /* post_task */}},
        {kConfigurationUrl2, {kConfigurationData2}}});
@@ -577,6 +579,50 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   WaitForUpdate();
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue12}, {kKey2, kValue22}}));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          ManagedConfigurationAPI::kDownloadOutcomeHistogram),
+      base::BucketsAre(
+          base::Bucket(
+              ManagedConfigurationAPI::DownloadOutcome::kAbortedByPolicyUpdate,
+              1),
+          base::Bucket(ManagedConfigurationAPI::DownloadOutcome::kSucceeded,
+                       1)));
+}
+
+// Verifies that removing an origin from policy while its download is hung
+// cancels the download and records it as aborted by a policy update.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       PolicyRemovalCancelsHungDownload) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop first_request_loop;
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](base::RepeatingClosure on_request,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != kConfigurationUrl1) {
+          return nullptr;
+        }
+        on_request.Run();
+        return std::make_unique<net::test_server::HungResponse>();
+      },
+      first_request_loop.QuitClosure()));
+  EnableTestServer({});
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  first_request_loop.Run();
+  ASSERT_TRUE(api()->IsFetchInProgressForTesting(origin()));
+
+  ClearConfiguration();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          ManagedConfigurationAPI::kDownloadOutcomeHistogram),
+      base::BucketsAre(base::Bucket(
+          ManagedConfigurationAPI::DownloadOutcome::kAbortedByPolicyUpdate,
+          1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
@@ -821,6 +867,7 @@ IN_PROC_BROWSER_TEST_F(
 // instead of waiting for `kDownloadAttemptTimeout` (60s).
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
                        NetworkReconnectionCancelsStalledDownload) {
+  base::HistogramTester histogram_tester;
   base::RunLoop first_request_loop;
   auto hang_requests =
       base::MakeRefCounted<base::RefCountedData<std::atomic<bool>>>(
@@ -851,6 +898,19 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   EXPECT_EQ(GetCommittedHash(), kConfigurationHash1);
   EXPECT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          ManagedConfigurationAPI::kDownloadOutcomeHistogram),
+      base::BucketsAre(
+          base::Bucket(
+              ManagedConfigurationAPI::DownloadOutcome::kAbortedOnNetworkChange,
+              1),
+          base::Bucket(ManagedConfigurationAPI::DownloadOutcome::kSucceeded,
+                       1)));
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryReasonHistogram, 0);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0, 1);
 }
 
 // Verifies that if an initial configuration download (url1, hash1) fails and
@@ -1284,6 +1344,13 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   WaitForUpdate();
   ASSERT_EQ(GetCommittedHash(), kConfigurationHash1);
 
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          ManagedConfigurationAPI::kDownloadOutcomeHistogram),
+      base::BucketsAre(
+          base::Bucket(ManagedConfigurationAPI::DownloadOutcome::kFailed, 2),
+          base::Bucket(ManagedConfigurationAPI::DownloadOutcome::kSucceeded,
+                       1)));
   histogram_tester.ExpectUniqueSample(
       ManagedConfigurationAPI::kRetryReasonHistogram,
       ManagedConfigurationAPI::RetryReason::kDownloadFailed, 2);
@@ -1539,6 +1606,8 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIRecoveryDisabledTest,
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue12}, {kKey2, kValue22}}));
   histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kDownloadOutcomeHistogram, 0);
+  histogram_tester.ExpectTotalCount(
       ManagedConfigurationAPI::kRetryReasonHistogram, 0);
   histogram_tester.ExpectTotalCount(
       ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0);
@@ -1597,6 +1666,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 // retries immediately without waiting for the 60s download timeout.
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
                        ReadyToOnlineCancelsStalledDownload) {
+  base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(DisconnectNonDefaultNetworks());
   ASSERT_NO_FATAL_FAILURE(SetDefaultNetworkState(shill::kStateReady));
 
@@ -1630,6 +1700,19 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   EXPECT_EQ(GetCommittedHash(), kConfigurationHash1);
   EXPECT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          ManagedConfigurationAPI::kDownloadOutcomeHistogram),
+      base::BucketsAre(
+          base::Bucket(
+              ManagedConfigurationAPI::DownloadOutcome::kAbortedOnNetworkChange,
+              1),
+          base::Bucket(ManagedConfigurationAPI::DownloadOutcome::kSucceeded,
+                       1)));
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryReasonHistogram, 0);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0, 1);
 }
 
 // Verifies that when a download is hung and the default network disconnects and

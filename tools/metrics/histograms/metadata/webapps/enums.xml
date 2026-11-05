@@ -388,6 +388,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(chrome/browser/ui/web_applications/web_app_launch_process.cc:LaunchUrlInScopeResult) -->
 
+<!-- LINT.IfChange(ManagedConfigurationDownloadOutcome) -->
+
+<enum name="ManagedConfigurationDownloadOutcome">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Aborted on network change"/>
+  <int value="3" label="Aborted by policy update"/>
+  <int value="4" label="Aborted on profile shutdown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/device_api/managed_configuration_api.h:ManagedConfigurationDownloadOutcome) -->
+
 <!-- LINT.IfChange(ManagedConfigurationRetryReason) -->
 
 <enum name="ManagedConfigurationRetryReason">

@@ -59,6 +59,21 @@ class ManagedConfigurationAPI
         const url::Origin& origin) = 0;
   };
 
+  // Outcome of a single managed configuration download attempt.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ManagedConfigurationDownloadOutcome)
+  enum class DownloadOutcome {
+    kSucceeded = 0,
+    kFailed = 1,
+    kAbortedOnNetworkChange = 2,
+    kAbortedByPolicyUpdate = 3,
+    kAbortedOnShutdown = 4,
+    kMaxValue = kAbortedOnShutdown,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:ManagedConfigurationDownloadOutcome)
+
   // Reasons why syncing an origin's managed configuration needed a retry.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -72,6 +87,8 @@ class ManagedConfigurationAPI
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:ManagedConfigurationRetryReason)
 
+  static constexpr char kDownloadOutcomeHistogram[] =
+      "WebApp.ManagedConfiguration.DownloadOutcome";
   static constexpr char kRetryReasonHistogram[] =
       "WebApp.ManagedConfiguration.RetryReason";
   static constexpr char kRetryCountUntilSuccessHistogram[] =

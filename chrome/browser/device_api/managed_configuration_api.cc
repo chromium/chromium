@@ -117,7 +117,11 @@ class ManagedConfigurationDownloader {
  public:
   explicit ManagedConfigurationDownloader(const std::string& data_hash)
       : data_hash_(data_hash) {}
-  ~ManagedConfigurationDownloader() = default;
+  ~ManagedConfigurationDownloader() {
+    // Completions and intentional cancellations record their outcome first, so
+    // reaching here without one means the owner is being destroyed.
+    RecordOutcome(ManagedConfigurationAPI::DownloadOutcome::kAbortedOnShutdown);
+  }
   ManagedConfigurationDownloader(const ManagedConfigurationDownloader&) =
       delete;
   ManagedConfigurationDownloader& operator=(
@@ -147,15 +151,44 @@ class ManagedConfigurationDownloader {
     network::mojom::URLLoaderFactory* loader_factory =
         system_network_context_manager->GetURLLoaderFactory();
 
-    simple_loader_->DownloadToString(loader_factory, std::move(callback),
-                                     kMaxConfigurationFileSize);
+    simple_loader_->DownloadToString(
+        loader_factory,
+        base::BindOnce(&ManagedConfigurationDownloader::OnDownloadCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        kMaxConfigurationFileSize);
+  }
+
+  // Records `reason` as the outcome of the in-flight download. The caller is
+  // expected to destroy the downloader right after.
+  void Cancel(ManagedConfigurationAPI::DownloadOutcome reason) {
+    RecordOutcome(reason);
   }
 
   const std::string& hash() const { return data_hash_; }
 
  private:
+  void OnDownloadCompleted(
+      base::OnceCallback<void(std::optional<std::string>)> callback,
+      std::optional<std::string> data) {
+    RecordOutcome(data.has_value()
+                      ? ManagedConfigurationAPI::DownloadOutcome::kSucceeded
+                      : ManagedConfigurationAPI::DownloadOutcome::kFailed);
+    std::move(callback).Run(std::move(data));
+  }
+
+  void RecordOutcome(ManagedConfigurationAPI::DownloadOutcome outcome) {
+    if (outcome_recorded_ || !IsRecoveryEnabled()) {
+      return;
+    }
+    outcome_recorded_ = true;
+    base::UmaHistogramEnumeration(
+        ManagedConfigurationAPI::kDownloadOutcomeHistogram, outcome);
+  }
+
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   const std::string data_hash_;
+  bool outcome_recorded_ = false;
+  base::WeakPtrFactory<ManagedConfigurationDownloader> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -236,7 +269,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
 
   void ClearConfiguration() {
     desired_.reset();
-    downloader_.reset();
+    CancelDownload(DownloadOutcome::kAbortedByPolicyUpdate);
     retry_timer_.Stop();
     retry_backoff_.Reset();
     ScopedDictPrefUpdate update(api_->profile_->GetPrefs(),
@@ -264,7 +297,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
     // pre-online socket) and stop any active backoff timer so `EnsureSynced()`
     // retries immediately, while keeping `retry_backoff_` intact so exponential
     // backoff continues growing if this retry also fails.
-    downloader_.reset();
+    CancelDownload(DownloadOutcome::kAbortedOnNetworkChange);
     retry_timer_.Stop();
     EnsureSynced();
   }
@@ -303,6 +336,14 @@ class ManagedConfigurationAPI::OriginConfiguration {
                                       weak_ptr_factory_.GetWeakPtr()));
   }
 
+  // Cancels the in-flight download, if any, recording `reason` as its outcome.
+  void CancelDownload(DownloadOutcome reason) {
+    if (downloader_) {
+      downloader_->Cancel(reason);
+      downloader_.reset();
+    }
+  }
+
   void EnsureStoreCreated() {
     if (store_) {
       return;
@@ -334,7 +375,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
     // Nothing to be stored here, the hash value is the same.
     if (last_hash_value && *last_hash_value == desired_->hash) {
       if (IsRecoveryEnabled()) {
-        downloader_.reset();
+        CancelDownload(DownloadOutcome::kAbortedByPolicyUpdate);
         retry_timer_.Stop();
         retry_backoff_.Reset();
       }
@@ -353,7 +394,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
         return;
       }
       // Cancel it otherwise.
-      downloader_.reset();
+      CancelDownload(DownloadOutcome::kAbortedByPolicyUpdate);
     }
 
     // A queued write will commit exactly the desired hash (or schedule a retry
