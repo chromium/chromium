@@ -94,9 +94,8 @@ constexpr auto kLocalCommandPollFrequencyMap =
 
 constexpr const char* kLocalLogSources[] = {
     kCfmAuditLogFile,      kCfmBiosInfoLogFile,     kCfmChromeLogFile,
-    kCfmChromeUserLogFile, kCfmCrosEcLogFile,       kCfmEventlogLogFile,
-    kCfmFwupdLogFile,      kCfmPowerdLogFile,       kCfmSyslogLogFile,
-    kCfmUiLogFile,         kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
+    kCfmChromeUserLogFile, kCfmCrosEcLogFile,       kCfmFwupdLogFile,
+    kCfmVariationsListLogFile,
 };
 
 // Define sane minimums and maximums for our Finch-controlled configs.
