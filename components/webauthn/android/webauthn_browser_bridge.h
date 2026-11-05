@@ -7,7 +7,20 @@
 
 #include <jni.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback_forward.h"
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
+namespace device {
+class DiscoverableCredentialMetadata;
+}  // namespace device
 
 namespace webauthn {
 
@@ -23,35 +36,28 @@ class WebauthnBrowserBridge {
 
   void OnCredentialsDetailsListReceived(
       JNIEnv* env,
-      const base::android::JavaRef<jobjectArray>& credentials,
-      const base::android::JavaRef<jobject>& jframe_host,
+      std::vector<device::DiscoverableCredentialMetadata>&& credentials,
+      content::RenderFrameHost* render_frame_host,
       int32_t mediation_type,
       const base::android::JavaRef<jobject>& jcredential_callback,
       const base::android::JavaRef<jobject>& jhybrid_callback,
       const base::android::JavaRef<jobject>& jnon_credential_callback) const;
 
-  void CleanupRequest(JNIEnv* env,
-                      const base::android::JavaRef<jobject>& jframe_host) const;
+  void CleanupRequest(content::RenderFrameHost* render_frame_host) const;
 
-  void CleanupCredManRequest(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jframe_host) const;
+  void CleanupCredManRequest(content::RenderFrameHost* render_frame_host) const;
 
   void OnCredManConditionalRequestPending(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jframe_host,
-      bool jhas_results,
-      const base::android::JavaRef<jobject>& jfull_request_runnable);
+      content::RenderFrameHost* render_frame_host,
+      bool has_results,
+      base::RepeatingCallback<void(bool)>&& full_request_callback);
 
-  void OnCredManUiClosed(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& jframe_host,
-                         bool jsuccess);
+  void OnCredManUiClosed(content::RenderFrameHost* render_frame_host,
+                         bool success);
 
-  void OnPasswordCredentialReceived(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jframe_host,
-      const base::android::JavaRef<jstring>& jusername,
-      const base::android::JavaRef<jstring>& jpassword);
+  void OnPasswordCredentialReceived(content::RenderFrameHost* render_frame_host,
+                                    std::u16string&& username,
+                                    std::u16string&& password);
 
  private:
   // Java object that owns this WebauthnBrowserBridge.

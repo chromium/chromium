@@ -6,18 +6,15 @@
 
 #include <jni.h>
 
-#include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -26,41 +23,39 @@
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webauthn/android/jni_headers/WebauthnBrowserBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
 
-namespace webauthn {
+namespace jni_zero {
 
-device::DiscoverableCredentialMetadata ConvertJavaCredentialDetailsToMetadata(
+// Converts a Java WebauthnCredentialDetails to its native counterpart. This is
+// used by @JniType for the credential list passed to
+// WebauthnBrowserBridge::OnCredentialsDetailsListReceived().
+template <>
+device::DiscoverableCredentialMetadata
+FromJniType<device::DiscoverableCredentialMetadata>(
     JNIEnv* env,
-    ScopedJavaLocalRef<jobject> j_credential) {
+    const JavaRef<jobject>& j_credential) {
   device::DiscoverableCredentialMetadata credential;
-  base::android::JavaByteArrayToByteVector(
-      env,
+  credential.cred_id = webauthn::
       Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsCredentialId(
-          env, j_credential),
-      &credential.cred_id);
-  base::android::JavaByteArrayToByteVector(
-      env,
-      Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsUserId(
-          env, j_credential),
-      &credential.user.id);
-  credential.user.name = ConvertJavaStringToUTF8(
-      env, Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsUserName(
-               env, j_credential));
-  credential.user.display_name = ConvertJavaStringToUTF8(
-      env,
+          env, j_credential);
+  credential.user.id =
+      webauthn::Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsUserId(
+          env, j_credential);
+  credential.user.name =
+      webauthn::Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsUserName(
+          env, j_credential);
+  credential.user.display_name = webauthn::
       Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsUserDisplayName(
-          env, j_credential));
-  int64_t last_used_time_ms =
+          env, j_credential);
+  int64_t last_used_time_ms = webauthn::
       Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsLastUsedTimeMs(
           env, j_credential);
   if (last_used_time_ms != 0) {
@@ -70,21 +65,9 @@ device::DiscoverableCredentialMetadata ConvertJavaCredentialDetailsToMetadata(
   return credential;
 }
 
-void ConvertJavaCredentialArrayToMetadataVector(
-    JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& array,
-    std::vector<device::DiscoverableCredentialMetadata>* out) {
-  jsize jlength = env->GetArrayLength(array.obj());
-  // GetArrayLength() returns -1 if |array| is not a valid Java array.
-  DCHECK_GE(jlength, 0) << "Invalid array length: " << jlength;
-  size_t length = static_cast<size_t>(std::max(0, jlength));
-  for (size_t i = 0; i < length; ++i) {
-    auto j_credential = jni_zero::AdoptRef(
-        env, static_cast<jobject>(env->GetObjectArrayElement(array.obj(), i)));
-    out->emplace_back(
-        ConvertJavaCredentialDetailsToMetadata(env, j_credential));
-  }
-}
+}  // namespace jni_zero
+
+namespace webauthn {
 
 void OnWebauthnCredentialSelected(
     const base::android::JavaRef<jobject>& jcallback,
@@ -92,7 +75,7 @@ void OnWebauthnCredentialSelected(
   JNIEnv* env = AttachCurrentThread();
   base::android::RunObjectCallbackAndroid(
       jcallback, Java_WebauthnBrowserBridge_createSelectedPasskeyCredential(
-                     env, base::android::ToJavaByteArray(env, credential_id)));
+                     env, credential_id));
 }
 
 void OnPasswordCredentialSelected(
@@ -102,8 +85,7 @@ void OnPasswordCredentialSelected(
   JNIEnv* env = AttachCurrentThread();
   base::android::RunObjectCallbackAndroid(
       jcallback, Java_WebauthnBrowserBridge_createSelectedPasswordCredential(
-                     env, ConvertUTF16ToJavaString(env, username),
-                     ConvertUTF16ToJavaString(env, password)));
+                     env, username, password));
 }
 
 void OnNonCredentialReturn(const base::android::JavaRef<jobject>& jcallback,
@@ -133,15 +115,13 @@ WebauthnBrowserBridge::~WebauthnBrowserBridge() = default;
 
 void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
     JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& credentials,
-    const base::android::JavaRef<jobject>& jframe_host,
+    std::vector<device::DiscoverableCredentialMetadata>&& credentials,
+    content::RenderFrameHost* render_frame_host,
     int32_t mediation_type,
     const base::android::JavaRef<jobject>& jcredential_callback,
     const base::android::JavaRef<jobject>& jhybrid_callback,
     const base::android::JavaRef<jobject>& jnon_credential_callback) const {
   auto* client = WebAuthnClientAndroid::GetClient();
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   // A null client indicates the embedder does not support Conditional UI.
   // Also, crash reports suggest that there can be null WebContents at this
   // point, presumably indicating that a tab is being closed while the
@@ -154,13 +134,9 @@ void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
     return;
   }
 
-  std::vector<device::DiscoverableCredentialMetadata> credentials_metadata;
-  ConvertJavaCredentialArrayToMetadataVector(env, credentials,
-                                             &credentials_metadata);
-
   CHECK(AssertionMediationType(mediation_type) !=
             AssertionMediationType::kImmediatePasskeysOnly ||
-        !credentials_metadata.empty());
+        !credentials.empty());
 
   base::RepeatingCallback<void(const std::vector<uint8_t>&)> passkey_callback =
       base::BindRepeating(
@@ -185,76 +161,52 @@ void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
           ScopedJavaGlobalRef<jobject>(env, jnon_credential_callback));
 
   client->OnWebAuthnRequestPending(
-      render_frame_host, std::move(credentials_metadata),
+      render_frame_host, std::move(credentials),
       AssertionMediationType(mediation_type), std::move(passkey_callback),
       std::move(password_callback), std::move(hybrid_closure),
       std::move(non_credential_callback));
 }
 
-void TriggerFullRequest(
-    const base::android::JavaRef<jobject>& jfull_request_runnable,
-    bool request_passwords) {
-  base::android::RunBooleanCallbackAndroid(jfull_request_runnable,
-                                           request_passwords);
-}
-
 void WebauthnBrowserBridge::OnCredManConditionalRequestPending(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jframe_host,
-    bool jhas_results,
-    const base::android::JavaRef<jobject>& jfull_request_runnable) {
+    content::RenderFrameHost* render_frame_host,
+    bool has_results,
+    base::RepeatingCallback<void(bool)>&& full_request_callback) {
   auto* client = WebAuthnClientAndroid::GetClient();
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   if (!client || !render_frame_host ||
       !content::WebContents::FromRenderFrameHost(render_frame_host)) {
     return;
   }
-  client->OnCredManConditionalRequestPending(
-      render_frame_host, jhas_results,
-      base::BindRepeating(
-          &TriggerFullRequest,
-          ScopedJavaGlobalRef<jobject>(env, jfull_request_runnable)));
+  client->OnCredManConditionalRequestPending(render_frame_host, has_results,
+                                             std::move(full_request_callback));
 }
 
 void WebauthnBrowserBridge::OnCredManUiClosed(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jframe_host,
-    bool jsuccess) {
+    content::RenderFrameHost* render_frame_host,
+    bool success) {
   auto* client = WebAuthnClientAndroid::GetClient();
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   if (!client || !render_frame_host ||
       !content::WebContents::FromRenderFrameHost(render_frame_host)) {
     return;
   }
-  client->OnCredManUiClosed(render_frame_host, jsuccess);
+  client->OnCredManUiClosed(render_frame_host, success);
 }
 
 void WebauthnBrowserBridge::OnPasswordCredentialReceived(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jframe_host,
-    const base::android::JavaRef<jstring>& jusername,
-    const base::android::JavaRef<jstring>& jpassword) {
+    content::RenderFrameHost* render_frame_host,
+    std::u16string&& username,
+    std::u16string&& password) {
   auto* client = WebAuthnClientAndroid::GetClient();
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   if (!client || !render_frame_host ||
       !content::WebContents::FromRenderFrameHost(render_frame_host)) {
     return;
   }
-  client->OnPasswordCredentialReceived(
-      render_frame_host,
-      base::android::ConvertJavaStringToUTF16(env, jusername),
-      base::android::ConvertJavaStringToUTF16(env, jpassword));
+  client->OnPasswordCredentialReceived(render_frame_host, std::move(username),
+                                       std::move(password));
 }
 
 void WebauthnBrowserBridge::CleanupRequest(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jframe_host) const {
+    content::RenderFrameHost* render_frame_host) const {
   auto* client = WebAuthnClientAndroid::GetClient();
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
 
   // Crash reports indicate that there can be null WebContents at this point,
   // although it isn't clear how, since the Cancel message was received from
@@ -269,11 +221,8 @@ void WebauthnBrowserBridge::CleanupRequest(
 }
 
 void WebauthnBrowserBridge::CleanupCredManRequest(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jframe_host) const {
+    content::RenderFrameHost* render_frame_host) const {
   auto* client = WebAuthnClientAndroid::GetClient();
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
 
   if (!client || !render_frame_host ||
       !content::WebContents::FromRenderFrameHost(render_frame_host)) {
@@ -283,10 +232,7 @@ void WebauthnBrowserBridge::CleanupCredManRequest(
 }
 
 static bool JNI_WebauthnBrowserBridge_ShouldDisallowCredentialRequest(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jframe_host) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+    content::RenderFrameHost* render_frame_host) {
   if (!render_frame_host) {
     return false;
   }

@@ -107,12 +107,10 @@ public class WebauthnBrowserBridge {
                 credentialList.size());
         prepareNativeBrowserBridgeIfRequired();
 
-        WebauthnCredentialDetails[] credentialArray =
-                credentialList.toArray(new WebauthnCredentialDetails[credentialList.size()]);
         WebauthnBrowserBridgeJni.get()
                 .onCredentialsDetailsListReceived(
                         assumeNonNull(mNativeWebauthnBrowserBridge),
-                        credentialArray,
+                        credentialList,
                         frameHost,
                         mediationType,
                         credentialCallback,
@@ -254,26 +252,26 @@ public class WebauthnBrowserBridge {
     }
 
     @CalledByNative
-    private static @Nullable String getWebauthnCredentialDetailsUserName(
+    private static @JniType("std::string") @Nullable String getWebauthnCredentialDetailsUserName(
             WebauthnCredentialDetails cred) {
         return cred.mUserName;
     }
 
     @CalledByNative
-    private static @Nullable String getWebauthnCredentialDetailsUserDisplayName(
-            WebauthnCredentialDetails cred) {
+    private static @JniType("std::string") @Nullable String
+            getWebauthnCredentialDetailsUserDisplayName(WebauthnCredentialDetails cred) {
         return cred.mUserDisplayName;
     }
 
     @CalledByNative
-    private static byte @Nullable [] getWebauthnCredentialDetailsUserId(
-            WebauthnCredentialDetails cred) {
+    private static @JniType("std::vector<uint8_t>") byte @Nullable []
+            getWebauthnCredentialDetailsUserId(WebauthnCredentialDetails cred) {
         return cred.mUserId;
     }
 
     @CalledByNative
-    private static byte @Nullable [] getWebauthnCredentialDetailsCredentialId(
-            WebauthnCredentialDetails cred) {
+    private static @JniType("std::vector<uint8_t>") byte @Nullable []
+            getWebauthnCredentialDetailsCredentialId(WebauthnCredentialDetails cred) {
         return cred.mCredentialId;
     }
 
@@ -284,14 +282,16 @@ public class WebauthnBrowserBridge {
 
     @CalledByNative
     private static SelectedCredential createSelectedPasswordCredential(
-            String username, String password) {
+            @JniType("std::u16string_view") String username,
+            @JniType("std::u16string_view") String password) {
         return new SelectedCredential(
                 buildPasswordCredentialInfo(
                         stringToMojoString16(username), stringToMojoString16(password)));
     }
 
     @CalledByNative
-    private static SelectedCredential createSelectedPasskeyCredential(byte[] credentialId) {
+    private static SelectedCredential createSelectedPasskeyCredential(
+            @JniType("std::vector<uint8_t>") byte[] credentialId) {
         return new SelectedCredential(credentialId);
     }
 
@@ -311,8 +311,9 @@ public class WebauthnBrowserBridge {
 
         void onCredentialsDetailsListReceived(
                 JniPtr<NativeWebauthnBrowserBridge> self,
-                WebauthnCredentialDetails[] credentialList,
-                @Nullable RenderFrameHost frameHost,
+                @JniType("std::vector<device::DiscoverableCredentialMetadata>")
+                        List<WebauthnCredentialDetails> credentialList,
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost frameHost,
                 @AssertionMediationType int mediationType,
                 Callback<SelectedCredential> credentialCallback,
                 @Nullable Runnable hybridCallback,
@@ -320,27 +321,30 @@ public class WebauthnBrowserBridge {
 
         void onCredManConditionalRequestPending(
                 JniPtr<NativeWebauthnBrowserBridge> self,
-                @Nullable RenderFrameHost frameHost,
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost frameHost,
                 boolean hasResults,
-                Callback<Boolean> fullAssertion);
+                @JniType("base::RepeatingCallback<void(bool)>") Callback<Boolean> fullAssertion);
 
         void onCredManUiClosed(
                 JniPtr<NativeWebauthnBrowserBridge> self,
-                @Nullable RenderFrameHost frameHost,
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost frameHost,
                 boolean success);
 
         void onPasswordCredentialReceived(
                 JniPtr<NativeWebauthnBrowserBridge> self,
-                @Nullable RenderFrameHost frameHost,
-                @Nullable String username,
-                @Nullable String password);
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost frameHost,
+                @JniType("std::u16string") @Nullable String username,
+                @JniType("std::u16string") @Nullable String password);
 
         void cleanupRequest(
-                JniPtr<NativeWebauthnBrowserBridge> self, @Nullable RenderFrameHost frameHost);
+                JniPtr<NativeWebauthnBrowserBridge> self,
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost frameHost);
 
         void cleanupCredManRequest(
-                JniPtr<NativeWebauthnBrowserBridge> self, @Nullable RenderFrameHost frameHost);
+                JniPtr<NativeWebauthnBrowserBridge> self,
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost frameHost);
 
-        boolean shouldDisallowCredentialRequest(@Nullable RenderFrameHost frameHost);
+        boolean shouldDisallowCredentialRequest(
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost frameHost);
     }
 }
