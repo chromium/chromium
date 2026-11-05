@@ -386,7 +386,9 @@ class Host : public GlicSharingManagerProvider {
   // `page_handler` is the current page handler: the glic window supports
   // right-click->Reload, during which two page handlers briefly coexist, and a
   // late report from the outgoing one must not overwrite the new load's state.
-  void SetClientLoadFailed(GlicPageHandler* page_handler, bool failed);
+  void SetClientLoadFailed(GlicPageHandler* page_handler,
+                           ClientLoadErrorReason error_reason);
+  void ClearClientLoadFailed(GlicPageHandler* page_handler);
 
   void NotifyInstanceActivationChanged(bool is_active);
   void OnActuatingChanged(bool actuating);
