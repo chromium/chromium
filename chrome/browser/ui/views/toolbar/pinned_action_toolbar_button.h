@@ -87,6 +87,7 @@ class PinnedActionToolbarButton : public ToolbarButton {
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  int GetIconSize() const override;
 
   void UpdateStatusIndicator();
   void HideStatusIndicator();

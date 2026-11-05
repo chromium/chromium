@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -30,14 +31,69 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
+
+// The Google G is visually denser than the Material toolbar icons, so the
+// toolbar draws it 2dp smaller than the other pinned buttons (see
+// PinnedActionToolbarButton::GetIconSize()). These mirror those sizes so the
+// icon keeps the same relative size in the Customize Chrome toolbar list.
+constexpr int kToolbarIconSize = 20;
+constexpr int kGoogleGIconSize = kToolbarIconSize - 2;
+
+// Returns true if `icon` is one of the Google G icons used by the contextual
+// tasks action.
+bool IsGoogleGIcon(const ui::ImageModel& icon) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The gradient Super G is a bitmap resource rather than a vector icon.
+  if (icon.IsImage()) {
+    return true;
+  }
+  return icon.IsVectorIcon() &&
+         (icon.GetVectorIcon().vector_icon() ==
+              &vector_icons::kGoogleGLogoIcon ||
+          icon.GetVectorIcon().vector_icon() ==
+              &vector_icons::kGoogleGLogoMonochromeIcon);
+#else
+  return icon.IsVectorIcon() &&
+         icon.GetVectorIcon().vector_icon() == &vector_icons::kGoogleColorIcon;
+#endif
+}
+
+// Draws `icon` at `kGoogleGIconSize` centered on a transparent canvas of
+// `kToolbarIconSize`. The WebUI scales every icon image to fit the same box,
+// so the padding is what keeps the G 2dp smaller than its siblings, matching
+// the toolbar.
+ui::ImageModel CreatePaddedGoogleGIcon(const ui::ImageModel& icon,
+                                       ui::ColorId color_id,
+                                       const ui::ColorProvider& provider) {
+  const gfx::ImageSkia g_image =
+      icon.IsVectorIcon()
+          ? ui::ImageModel::FromVectorIcon(*icon.GetVectorIcon().vector_icon(),
+                                           color_id, kGoogleGIconSize)
+                .Rasterize(&provider)
+          : gfx::ImageSkiaOperations::CreateResizedImage(
+                icon.GetImage().AsImageSkia(),
+                skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(kGoogleGIconSize, kGoogleGIconSize));
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+          gfx::SizeF(kToolbarIconSize, kToolbarIconSize), /*radius=*/0,
+          SK_ColorTRANSPARENT, g_image));
+}
+
 std::optional<side_panel::customize_chrome::mojom::ActionId>
 MojoActionForChromeAction(actions::ActionId action_id) {
   switch (action_id) {
@@ -297,16 +353,22 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
         }
 
         // If the icon is a vector icon, recolor it to match the spec.
-        // Non-vector icons cannot be recolored, but there aren't any of those
-        // currently anyways.
+        // Non-vector icons (e.g. the gradient Super G) cannot be recolored.
         const ui::ImageModel& original_icon = action_item->GetImage();
-        const ui::ImageModel recolored_icon =
+        ui::ImageModel recolored_icon =
             original_icon.IsVectorIcon()
                 ? ui::ImageModel::FromVectorIcon(
                       *(action_item->GetImage().GetVectorIcon().vector_icon()),
                       icon_color_id,
                       action_item->GetImage().GetVectorIcon().icon_size())
                 : original_icon;
+        // Keep the contextual tasks Google G 2dp smaller than the other
+        // icons, matching how the toolbar renders it.
+        if (id == kActionSidePanelShowContextualTasks &&
+            IsGoogleGIcon(original_icon)) {
+          recolored_icon =
+              CreatePaddedGoogleGIcon(original_icon, icon_color_id, provider);
+        }
 
         bool has_enterprise_controlled_pinned_state =
             action_item->GetProperty(actions::kActionItemPinnableKey) ==

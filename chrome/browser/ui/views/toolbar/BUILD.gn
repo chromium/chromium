@@ -344,6 +344,7 @@ source_set("impl") {
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//components/autofill/core/common:features",
+    "//components/contextual_tasks/public",
     "//components/feature_engagement/public",
     "//components/omnibox/browser",
     "//components/password_manager/content/common",
