@@ -2128,8 +2128,10 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   // AXPosition::SlowCompareTo in the < operator below.
   NormalizeAsUnignoredPosition(new_endpoint);
   NormalizeAsUnignoredPosition(other_endpoint);
-  CHECK(!new_endpoint->IsIgnored(), base::NotFatalUntil::M163);
-  CHECK(!other_endpoint->IsIgnored(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/580099108): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!new_endpoint->IsIgnored());
+  DCHECK(!other_endpoint->IsIgnored());
 
   // If after all the above operations we're still left with a new endpoint that
   // is a descendant of the subtree root being deleted, just point at a null
