@@ -158,7 +158,12 @@ def _filter_deps(deps, restrict_to_resource_types=False):
 def _collect_public_deps(deps):
     """Recursively collects all public_deps from a list of dependencies."""
     # public_deps() contains public_deps of public_deps, so no need to recurse.
-    return list(itertools.chain.from_iterable(x.public_deps() for x in deps))
+    # De-duplicate since the public_deps of different deps overlap heavily.
+    return list(
+        dict.fromkeys(
+            itertools.chain.from_iterable(x.public_deps() for x in deps)
+        )
+    )
 
 
 def _deps_for_traversal(dep):
