@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -38,10 +39,11 @@ class FormFieldData;
 class FormStructure;
 
 // This class triggers the fetching of SMS OTPs from the `SmsOtpService`
-// and of Gmail OTPs from the `GmailOtpService` as soon as
-// `OnFieldTypesDetermined()` is notified about the classification of OTP
-// fields. OTPs are fetched only once per instantiation. This is ok if the
-// `OtpManagerImpl` is recreated on each frame navigation.
+// and of Gmail OTPs from the `GmailOtpService` when `OnFieldTypesDetermined()`
+// is notified about OTP fields, when `GetOtpSuggestions()` is requested, or
+// when a Gmail OTP tickle arrives. Cached Gmail OTP state, in-flight Gmail
+// retrievals, and pending suggestion callbacks are cleared when an OTP form is
+// submitted or when no OTP forms remain in the frame.
 //
 // One instance per frame, owned by the BrowserAutofillManager.
 class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
@@ -69,6 +71,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
                                 FormGlobalId form,
                                 FieldGlobalId field) override;
   void OnBeforeFocusOnNonFormField(AutofillManager& manager) override;
+  void OnBeforeFormsSeen(AutofillManager& manager,
+                         base::span<const FormGlobalId> updated_forms,
+                         base::span<const FormGlobalId> removed_forms) override;
   void OnAfterFormsSeen(AutofillManager& manager,
                         base::span<const FormGlobalId> updated_forms,
                         base::span<const FormGlobalId> removed_forms) override;
@@ -101,9 +106,23 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // user has opted into Gmail OTP filling.
   void MaybeRetrieveGmailOtp();
 
-  // Stops any in-flight `gmail_otp_retriever_` and clears cached Gmail OTP and
-  // proactive trigger deduplication state.
+  // Stops any in-flight `gmail_otp_retriever_`, invalidates any pending Gmail
+  // PhishGuard check (asynchronously resolving
+  // `last_pending_get_suggestions_callback_` with empty suggestions if no SMS
+  // OTP subscription is active), and clears cached Gmail OTP and proactive
+  // trigger deduplication state.
   void ClearGmailOtpState();
+
+  // Clears Gmail OTP state, cancels any in-flight SMS PhishGuard check, and
+  // unconditionally resolves any pending `GetOtpSuggestions()` callback with
+  // empty suggestions, even if an SMS OTP subscription is active, when an OTP
+  // form is submitted or no OTP forms remain in the frame.
+  void ClearStateOnOtpFormExit();
+
+  // Resets `is_gmail_phish_guard_pending_` and asynchronously resolves
+  // `last_pending_get_suggestions_callback_` (if any) with empty suggestions to
+  // avoid `AutofillManager::Observer` re-entrancy.
+  void CancelPendingGetSuggestionsCallbackAsync();
 
   // Called when `prefs::kAutofillGmailOtpFillingEnabled` changes.
   void OnGmailOtpFillingEnabledPrefChanged();
@@ -202,6 +221,12 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // PhishGuard check completes.
   bool is_gmail_phish_guard_pending_ = false;
 
+  // Tracks cached forms that were detected as eligible OTP forms and still
+  // contain a non-password `ONE_TIME_CODE` field, so `OnAfterFormSubmitted()`
+  // still clears state if an auto-submit handler disabled or hid the OTP field
+  // before `XHR_SUCCEEDED` while another OTP form exists in the frame.
+  base::flat_set<FormGlobalId> otp_form_ids_;
+
   // Tracks the currently focused form and field, if any.
   std::optional<FormGlobalId> currently_focused_form_id_;
   std::optional<FieldGlobalId> currently_focused_field_id_;
@@ -218,6 +243,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};
 
+  // Invalidated by `ClearGmailOtpState()` and `ClearStateOnOtpFormExit()`
+  // respectively to cancel in-flight PhishGuard callbacks without invalidating
+  // subscriptions or general `OtpManagerImpl` callbacks bound to
+  // `weak_ptr_factory_`.
+  base::WeakPtrFactory<OtpManagerImpl> gmail_phish_guard_weak_ptr_factory_{
+      this};
+  base::WeakPtrFactory<OtpManagerImpl> sms_phish_guard_weak_ptr_factory_{this};
   base::WeakPtrFactory<OtpManagerImpl> weak_ptr_factory_{this};
 };
 

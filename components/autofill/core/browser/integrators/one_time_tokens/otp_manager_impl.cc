@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -232,6 +233,33 @@ void OtpManagerImpl::ClearGmailOtpState() {
   gmail_otp_retriever_.reset();
   last_retrieved_gmail_otp_.reset();
   last_triggered_otp_value_.clear();
+  gmail_phish_guard_weak_ptr_factory_.InvalidateWeakPtrs();
+  if (is_gmail_phish_guard_pending_) {
+    is_gmail_phish_guard_pending_ = false;
+    if (!sms_otp_subscription_.IsAlive()) {
+      CancelPendingGetSuggestionsCallbackAsync();
+    }
+  }
+}
+
+void OtpManagerImpl::ClearStateOnOtpFormExit() {
+  ClearGmailOtpState();
+  sms_phish_guard_weak_ptr_factory_.InvalidateWeakPtrs();
+  CancelPendingGetSuggestionsCallbackAsync();
+}
+
+void OtpManagerImpl::CancelPendingGetSuggestionsCallbackAsync() {
+  if (!last_pending_get_suggestions_callback_) {
+    return;
+  }
+  is_gmail_phish_guard_pending_ = false;
+  // Post the callback asynchronously to prevent re-entrancy when notifying
+  // `Observer::OnAfterAskForValuesToFill` from inside an
+  // `AutofillManager::Observer` notification loop.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(last_pending_get_suggestions_callback_),
+                     std::vector<OneTimeToken>{}));
 }
 
 void OtpManagerImpl::OnGmailOtpFillingEnabledPrefChanged() {
@@ -261,8 +289,21 @@ void OtpManagerImpl::OnFieldTypesDetermined(
 
   const FormStructure* form = owner_->FindCachedFormById(form_id);
   if (!form || !OtpFieldDetector::IsOtpForm(*form)) {
+    if (!form ||
+        std::ranges::none_of(
+            form->fields(), [](const std::unique_ptr<AutofillField>& f) {
+              return f->Type().GetTypes().contains(ONE_TIME_CODE) &&
+                     !f->IsPasswordInputElement();
+            })) {
+      otp_form_ids_.erase(form_id);
+    }
+    if (!HasOtpForm(manager)) {
+      ClearStateOnOtpFormExit();
+    }
     return;
   }
+
+  otp_form_ids_.insert(form_id);
 
   if (!GetMockOtpValue().empty()) {
     return;
@@ -302,16 +343,7 @@ void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
     last_triggered_otp_value_.clear();
   }
 
-  if (last_pending_get_suggestions_callback_) {
-    is_gmail_phish_guard_pending_ = false;
-    // Post the callback asynchronously to prevent re-entrancy when notifying
-    // `Observer::OnAfterAskForValuesToFill` from inside this
-    // `Observer::OnBeforeFocusOnFormField` notification loop.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(last_pending_get_suggestions_callback_),
-                       std::vector<OneTimeToken>{}));
-  }
+  CancelPendingGetSuggestionsCallbackAsync();
 }
 
 // This is a workaround to prevent the Keyboard Accessory from popping up when
@@ -323,15 +355,38 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
   currently_focused_field_id_.reset();
   last_triggered_otp_value_.clear();
 
-  if (last_pending_get_suggestions_callback_) {
-    is_gmail_phish_guard_pending_ = false;
-    // Post the callback asynchronously to prevent re-entrancy when notifying
-    // `Observer::OnAfterAskForValuesToFill` from inside this
-    // `Observer::OnBeforeFocusOnNonFormField` notification loop.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(last_pending_get_suggestions_callback_),
-                       std::vector<OneTimeToken>{}));
+  CancelPendingGetSuggestionsCallbackAsync();
+}
+
+void OtpManagerImpl::OnBeforeFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  if (removed_forms.empty()) {
+    return;
+  }
+  bool removed_otp_form = false;
+  for (FormGlobalId form_id : removed_forms) {
+    const bool was_tracked = otp_form_ids_.erase(form_id) > 0;
+    const FormStructure* cached_form = manager.FindCachedFormById(form_id);
+    if (was_tracked ||
+        (cached_form && OtpFieldDetector::IsOtpForm(*cached_form))) {
+      removed_otp_form = true;
+    }
+  }
+  if (!removed_otp_form) {
+    return;
+  }
+  bool has_remaining_otp_form = false;
+  manager.ForEachCachedForm([&](const FormStructure& form) {
+    if (!has_remaining_otp_form &&
+        !std::ranges::contains(removed_forms, form.global_id()) &&
+        OtpFieldDetector::IsOtpForm(form)) {
+      has_remaining_otp_form = true;
+    }
+  });
+  if (!has_remaining_otp_form) {
+    ClearStateOnOtpFormExit();
   }
 }
 
@@ -339,11 +394,11 @@ void OtpManagerImpl::OnAfterFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,
     base::span<const FormGlobalId> removed_forms) {
-  if (removed_forms.empty() && updated_forms.empty()) {
+  if (updated_forms.empty()) {
     return;
   }
   if (!HasOtpForm(manager)) {
-    ClearGmailOtpState();
+    ClearStateOnOtpFormExit();
   }
 }
 
@@ -351,8 +406,12 @@ void OtpManagerImpl::OnAfterFormSubmitted(AutofillManager& manager,
                                           const FormData& form) {
   const FormStructure* form_structure =
       manager.FindCachedFormById(form.global_id());
-  if (form_structure && OtpFieldDetector::IsOtpForm(*form_structure)) {
-    ClearGmailOtpState();
+  const bool was_otp_form = form_structure
+                                ? otp_form_ids_.contains(form.global_id())
+                                : otp_form_ids_.erase(form.global_id()) > 0;
+  if (was_otp_form ||
+      (form_structure && OtpFieldDetector::IsOtpForm(*form_structure))) {
+    ClearStateOnOtpFormExit();
   }
 }
 
@@ -521,14 +580,16 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)> show_suggestions;
   switch (token.type()) {
     case OneTimeTokenType::kGmail:
-      show_suggestions = base::BindOnce(
-          &OtpManagerImpl::MaybeShowOtpSuggestionsForGmail,
-          weak_ptr_factory_.GetWeakPtr(), std::move(token), frame_token);
+      show_suggestions =
+          base::BindOnce(&OtpManagerImpl::MaybeShowOtpSuggestionsForGmail,
+                         gmail_phish_guard_weak_ptr_factory_.GetWeakPtr(),
+                         std::move(token), frame_token);
       break;
     case OneTimeTokenType::kSmsOtp:
-      show_suggestions = base::BindOnce(
-          &OtpManagerImpl::MaybeShowOtpSuggestionsForSms,
-          weak_ptr_factory_.GetWeakPtr(), std::move(token), frame_token);
+      show_suggestions =
+          base::BindOnce(&OtpManagerImpl::MaybeShowOtpSuggestionsForSms,
+                         sms_phish_guard_weak_ptr_factory_.GetWeakPtr(),
+                         std::move(token), frame_token);
       break;
   }
 
@@ -548,11 +609,10 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
     delegate->StartOtpPhishGuardCheck(
         frame_token,
         base::BindOnce(
-            [](base::WeakPtr<OtpManagerImpl> self,
-               base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)>
+            [](base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)>
                    show_suggestions,
                base::TimeTicks start_time, bool is_phishing_site) {
-              if (!self) {
+              if (show_suggestions.IsCancelled()) {
                 return;
               }
               base::UmaHistogramTimes(
@@ -563,8 +623,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
                            ? OneTimeTokensPhishGuardVerdict::kPhishing
                            : OneTimeTokensPhishGuardVerdict::kNotPhishing);
             },
-            weak_ptr_factory_.GetWeakPtr(), std::move(show_suggestions),
-            start_time));
+            std::move(show_suggestions), start_time));
   } else {
     base::UmaHistogramBoolean(
         "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", false);
@@ -591,11 +650,13 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
     return;
   }
 
-  // If a new suggestion request was started for a different frame while this
-  // PhishGuard check was in flight, ignore this stale result so we neither
-  // deliver an OTP to an unverified frame nor cancel the new frame's pending
-  // callback.
-  if (last_pending_frame_token_ != frame_token) {
+  // If a new suggestion request was started for a different frame or a Gmail
+  // OTP PhishGuard check is now pending for
+  // `last_pending_get_suggestions_callback_`, ignore this result so we neither
+  // deliver an OTP to an unverified frame nor consume the callback while
+  // `is_gmail_phish_guard_pending_` is set.
+  if (last_pending_frame_token_ != frame_token ||
+      is_gmail_phish_guard_pending_) {
     return;
   }
 
@@ -641,17 +702,11 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
   base::UmaHistogramEnumeration("Autofill.OneTimeTokens.PhishGuard.Verdict",
                                 verdict);
 
-  if (!UserOptedIntoGmailOtpFilling()) {
-    last_retrieved_gmail_otp_.reset();
-    if (last_pending_get_suggestions_callback_ &&
-        last_pending_frame_token_ == frame_token) {
-      is_gmail_phish_guard_pending_ = false;
-      if (!sms_otp_subscription_.IsAlive()) {
-        std::move(last_pending_get_suggestions_callback_).Run({});
-      }
-    }
-    return;
-  }
+  // `OnOneTimeTokenReceived()` checks consent before binding this callback, and
+  // revoking consent while PhishGuard is in flight synchronously runs
+  // `OnGmailOtpFillingEnabledPrefChanged()` -> `ClearGmailOtpState()`, which
+  // invalidates `gmail_phish_guard_weak_ptr_factory_`.
+  CHECK(UserOptedIntoGmailOtpFilling());
 
   // Reactive path: a UI suggestion callback is currently pending.
   if (last_pending_get_suggestions_callback_) {
