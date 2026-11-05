@@ -45,7 +45,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -269,7 +268,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
-        final AtomicReference<@Nullable CoreAccountInfo> signedInAccount = new AtomicReference<>();
+        final AtomicReference<@Nullable AccountInfo> signedInAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
         Boolean nativePrefsRead =
@@ -501,7 +500,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
             return;
         }
 
-        @Nullable CoreAccountInfo signedInAccountInfo =
+        @Nullable AccountInfo signedInAccountInfo =
                 getDeviceAccountWithGaiaId(restoredSignedInUserID);
 
         // If the previously signed-in account not found on the device, then don't restore
@@ -641,12 +640,12 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         };
     }
 
-    private @Nullable CoreAccountInfo getDeviceAccountWithGaiaId(@Nullable GaiaId accountGaiaId) {
+    private @Nullable AccountInfo getDeviceAccountWithGaiaId(@Nullable GaiaId accountGaiaId) {
         if (accountGaiaId == null) {
             return null;
         }
 
-        return PostTask.<@Nullable CoreAccountInfo>runSynchronously(
+        return PostTask.<@Nullable AccountInfo>runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     return AccountUtils.findAccountByGaiaId(getAccounts(), accountGaiaId);
@@ -657,7 +656,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         return AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
     }
 
-    private static void signInAndWaitForResult(CoreAccountInfo accountInfo) {
+    private static void signInAndWaitForResult(AccountInfo accountInfo) {
         final CountDownLatch latch = new CountDownLatch(1);
         SigninManager.SignInCallback signInCallback =
                 new SigninManager.SignInCallback() {
@@ -696,7 +695,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         }
     }
 
-    private static void signIn(CoreAccountInfo accountInfo, SigninManager.SignInCallback callback) {
+    private static void signIn(AccountInfo accountInfo, SigninManager.SignInCallback callback) {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
