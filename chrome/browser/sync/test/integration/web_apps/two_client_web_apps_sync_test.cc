@@ -71,13 +71,7 @@ class TwoClientWebAppsSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientWebAppsSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    enabled_features.push_back(features::kWebAppInstallDialog);
-    feature_overrides_.InitWithFeatures(enabled_features, disabled_features);
+    feature_overrides_.InitAndEnableFeature(features::kWebAppInstallDialog);
   }
 
   TwoClientWebAppsSyncTest(const TwoClientWebAppsSyncTest&) = delete;

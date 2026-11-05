@@ -32,7 +32,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -65,12 +64,7 @@ class TwoClientWebAppsBMOSyncTest
   TwoClientWebAppsBMOSyncTest()
       : WebAppsSyncTestBase(TWO_CLIENT),
         fake_web_app_provider_creator_(
-            base::BindRepeating(&CreateFakeWebAppProvider)) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+            base::BindRepeating(&CreateFakeWebAppProvider)) {}
 
   TwoClientWebAppsBMOSyncTest(const TwoClientWebAppsBMOSyncTest&) = delete;
   TwoClientWebAppsBMOSyncTest& operator=(const TwoClientWebAppsBMOSyncTest&) =
@@ -182,7 +176,6 @@ class TwoClientWebAppsBMOSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   FakeWebAppProviderCreator fake_web_app_provider_creator_;
 };
 

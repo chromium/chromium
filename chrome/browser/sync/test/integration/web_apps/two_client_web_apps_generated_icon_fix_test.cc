@@ -82,12 +82,7 @@ class TwoClientGeneratedIconFixSyncTest
     return generated_icon_fix;
   }
 
-  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {}
   ~TwoClientGeneratedIconFixSyncTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -200,9 +195,6 @@ class TwoClientGeneratedIconFixSyncTest
       GeneratedIconFixManager::DisableAutoRetryForTesting();
 
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

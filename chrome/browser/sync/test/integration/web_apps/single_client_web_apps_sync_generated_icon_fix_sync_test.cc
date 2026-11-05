@@ -53,14 +53,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   SingleClientWebAppsSyncGeneratedIconFixSyncTest()
       : WebAppsSyncTestBase(SINGLE_CLIENT) {
     clock_ = std::make_unique<base::SimpleTestClock>();
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~SingleClientWebAppsSyncGeneratedIconFixSyncTest() override = default;
@@ -147,7 +139,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
 
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   std::unique_ptr<base::SimpleTestClock> clock_;
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<BrowserWindowInterface> app_browser_ = nullptr;
 };
 
