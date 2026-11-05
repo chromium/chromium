@@ -134,7 +134,6 @@ class TabGroupHeaderViewTest : public views::ViewsTestBase {
     }
   }
 
-#if BUILDFLAG(IS_MAC)
   void SetGroupTitleAndLayout(TabGroupHeaderView* header,
                               MockDelegate& delegate,
                               const std::u16string& title) {
@@ -150,7 +149,6 @@ class TabGroupHeaderViewTest : public views::ViewsTestBase {
   int CenteredTitleX(TabGroupHeaderView* header) {
     return (header->width() - header->title_label_for_testing()->width()) / 2;
   }
-#endif
 
   ~TabGroupHeaderViewTest() override = default;
 };
@@ -1628,4 +1626,60 @@ TEST_F(TabGroupHeaderViewTest, EphemeralHeaderFocusContentOpacity) {
   EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
             SK_AlphaOPAQUE);
   EXPECT_EQ(get_editor_icon_alpha(), SK_AlphaOPAQUE);
+}
+
+TEST_F(TabGroupHeaderViewTest, StandardHeaderTitleIsCentered) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data));
+  widget->Show();
+
+  EXPECT_CALL(delegate, IsGroupFocused())
+      .WillRepeatedly(testing::Return(false));
+
+  SetGroupTitleAndLayout(header, delegate, u"a");
+  EXPECT_EQ(CenteredTitleX(header), header->title_label_for_testing()->x());
+}
+
+TEST_F(TabGroupHeaderViewTest, HeaderAccessibilityProperties) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(u"Group Title",
+                                             tab_groups::TabGroupColorId::kBlue,
+                                             /*is_collapsed=*/false);
+
+  auto header = std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data);
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  delegate.default_tab_group_data_ = data;
+  header->OnDataChanged(data);
+
+  ui::AXNodeData node_data;
+  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kTabList);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kEditable));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  // Now collapse the group and verify accessibility state updates.
+  tab_groups::TabGroupVisualData collapsed_visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue,
+      /*is_collapsed=*/true);
+  tabs::TabGroupData collapsed_data;
+  collapsed_data.visual_data = collapsed_visual_data;
+  delegate.default_tab_group_data_ = collapsed_data;
+  header->OnDataChanged(collapsed_data);
+
+  ui::AXNodeData collapsed_node_data;
+  header->GetViewAccessibility().GetAccessibleNodeData(&collapsed_node_data);
+  EXPECT_EQ(collapsed_node_data.role, ax::mojom::Role::kTabList);
+  EXPECT_TRUE(collapsed_node_data.HasState(ax::mojom::State::kEditable));
+  EXPECT_TRUE(collapsed_node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(collapsed_node_data.HasState(ax::mojom::State::kExpanded));
 }

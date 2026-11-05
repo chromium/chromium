@@ -115,7 +115,9 @@ class TabGroupView : public TabCollectionZOrderManager,
   }
   bool is_ephemeral() const { return is_ephemeral_; }
 
-  TabGroupUnfocusButton* unfocus_header() { return unfocus_header_; }
+  TabGroupUnfocusButton* unfocus_header_for_testing() {
+    return unfocus_header_;
+  }
   const TabGroupUnfocusButton* unfocus_header() const {
     return unfocus_header_;
   }

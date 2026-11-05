@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
@@ -53,6 +54,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/focus/focus_search.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -472,6 +474,146 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupNext_AlreadyAtLast) {
   EXPECT_FALSE(model->GetTabGroupForTab(0).has_value());
   EXPECT_EQ(group, model->GetTabGroupForTab(1));
   EXPECT_EQ(group, model->GetTabGroupForTab(2));
+}
+
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest, FocusTraversalBetweenHeaderAndTabs) {
+  TabStripModel* model = browser()->GetTabStripModel();
+  AppendTab();
+  AppendTab();
+  tab_groups::TabGroupId group_id = model->AddToNewGroup({0, 1});
+
+  auto* group_node = root_node()->GetNodeForHandle(
+      model->group_model()->GetTabGroup(group_id)->GetCollectionHandle());
+  ASSERT_NE(group_node, nullptr);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_NE(group_view, nullptr);
+
+  auto* header_view = group_view->group_header();
+  ASSERT_NE(header_view, nullptr);
+
+  auto* first_tab_node = group_node->children()[0].get();
+  auto* first_tab_view = views::AsViewClass<TabView>(first_tab_node->view());
+  ASSERT_NE(first_tab_view, nullptr);
+
+  views::FocusSearch focus_search(group_view, /*cycle=*/false,
+                                  /*accessibility_mode=*/true);
+  views::FocusTraversable* dummy_focus_traversable = nullptr;
+  views::View* dummy_focus_traversable_view = nullptr;
+
+  views::View* next_from_header = focus_search.FindNextFocusableView(
+      header_view, views::FocusSearch::SearchDirection::kForwards,
+      views::FocusSearch::TraversalDirection::kDown,
+      views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+      views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+      &dummy_focus_traversable, &dummy_focus_traversable_view);
+  EXPECT_EQ(first_tab_view, next_from_header);
+
+  views::View* prev_from_tab = focus_search.FindNextFocusableView(
+      first_tab_view, views::FocusSearch::SearchDirection::kBackwards,
+      views::FocusSearch::TraversalDirection::kDown,
+      views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+      views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+      &dummy_focus_traversable, &dummy_focus_traversable_view);
+  EXPECT_EQ(header_view, prev_from_tab);
+}
+
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest, FocusTraversalInFocusMode) {
+  TabStripModel* model = browser()->GetTabStripModel();
+  AppendTab();
+  AppendTab();
+  tab_groups::TabGroupId group_id = model->AddToNewGroup({0, 1});
+
+  auto* group_node = root_node()->GetNodeForHandle(
+      model->group_model()->GetTabGroup(group_id)->GetCollectionHandle());
+  ASSERT_NE(group_node, nullptr);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_NE(group_view, nullptr);
+
+  auto* header_view = group_view->group_header();
+  ASSERT_NE(header_view, nullptr);
+
+  auto* first_tab_node = group_node->children()[0].get();
+  auto* first_tab_view = views::AsViewClass<TabView>(first_tab_node->view());
+  ASSERT_NE(first_tab_view, nullptr);
+
+  model->EnterFocusMode(group_id);
+  RunScheduledLayouts();
+
+  auto* unfocus_button = group_view->unfocus_header_for_testing();
+  ASSERT_NE(unfocus_button, nullptr);
+  EXPECT_TRUE(unfocus_button->GetVisible());
+
+  views::FocusSearch focus_search(group_view, /*cycle=*/false,
+                                  /*accessibility_mode=*/true);
+  views::FocusTraversable* dummy_focus_traversable = nullptr;
+  views::View* dummy_focus_traversable_view = nullptr;
+
+  views::View* next_from_unfocus = focus_search.FindNextFocusableView(
+      unfocus_button, views::FocusSearch::SearchDirection::kForwards,
+      views::FocusSearch::TraversalDirection::kDown,
+      views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+      views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+      &dummy_focus_traversable, &dummy_focus_traversable_view);
+  EXPECT_EQ(header_view, next_from_unfocus);
+
+  views::View* next_from_header = focus_search.FindNextFocusableView(
+      header_view, views::FocusSearch::SearchDirection::kForwards,
+      views::FocusSearch::TraversalDirection::kDown,
+      views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+      views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+      &dummy_focus_traversable, &dummy_focus_traversable_view);
+
+  if (GetParam() == TabStripOrientation::kVertical) {
+    ASSERT_NE(header_view->editor_bubble_button(), nullptr);
+    EXPECT_TRUE(header_view->editor_bubble_button()->GetVisible());
+    EXPECT_EQ(header_view->editor_bubble_button(), next_from_header);
+
+    views::View* next_from_editor = focus_search.FindNextFocusableView(
+        header_view->editor_bubble_button(),
+        views::FocusSearch::SearchDirection::kForwards,
+        views::FocusSearch::TraversalDirection::kDown,
+        views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+        views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+        &dummy_focus_traversable, &dummy_focus_traversable_view);
+    EXPECT_EQ(first_tab_view, next_from_editor);
+
+    views::View* prev_from_tab = focus_search.FindNextFocusableView(
+        first_tab_view, views::FocusSearch::SearchDirection::kBackwards,
+        views::FocusSearch::TraversalDirection::kDown,
+        views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+        views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+        &dummy_focus_traversable, &dummy_focus_traversable_view);
+    EXPECT_EQ(header_view->editor_bubble_button(), prev_from_tab);
+
+    views::View* prev_from_editor = focus_search.FindNextFocusableView(
+        header_view->editor_bubble_button(),
+        views::FocusSearch::SearchDirection::kBackwards,
+        views::FocusSearch::TraversalDirection::kDown,
+        views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+        views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+        &dummy_focus_traversable, &dummy_focus_traversable_view);
+    EXPECT_EQ(header_view, prev_from_editor);
+  } else {
+    EXPECT_EQ(first_tab_view, next_from_header);
+
+    views::View* prev_from_tab = focus_search.FindNextFocusableView(
+        first_tab_view, views::FocusSearch::SearchDirection::kBackwards,
+        views::FocusSearch::TraversalDirection::kDown,
+        views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+        views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+        &dummy_focus_traversable, &dummy_focus_traversable_view);
+    EXPECT_EQ(header_view, prev_from_tab);
+  }
+
+  views::View* prev_from_header = focus_search.FindNextFocusableView(
+      header_view, views::FocusSearch::SearchDirection::kBackwards,
+      views::FocusSearch::TraversalDirection::kDown,
+      views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+      views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+      &dummy_focus_traversable, &dummy_focus_traversable_view);
+  EXPECT_EQ(unfocus_button, prev_from_header);
+
+  model->ExitFocusMode();
 }
 
 INSTANTIATE_TEST_SUITE_P(
