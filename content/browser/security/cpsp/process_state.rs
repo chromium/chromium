@@ -582,17 +582,6 @@ impl ProcessState {
         // need to figure out how to deal with opaque origins, where nonces may
         // not match.
 
-        // Note: The C++ version of this code converts `url` directly to a
-        // `url::SchemeHostPort` for precursor comparisons. We create a
-        // `url::Origin` here instead for two reasons:
-        // 1. Avoid implicit `url::Origin::Create()` calls that the C++ code
-        //    makes on every iteration inside `IsSameOriginWith(GURL)`, instead
-        //    doing it once outside the loop.
-        // 2. Reduce FFI boilerplate. By creating the Origin once, we can use it
-        //    for both the non-opaque check and the opaque check (via
-        //    get_tuple_or_precursor_tuple_if_opaque()), avoiding the need to
-        //    bridge IsSameOriginWith(GURL) and the SchemeHostPort(GURL)
-        //    constructor.
         let url_origin = url_rust::origin::ffi::create_origin_from_gurl(url);
         let url_scheme_host_port = url_origin.get_tuple_or_precursor_tuple_if_opaque();
 

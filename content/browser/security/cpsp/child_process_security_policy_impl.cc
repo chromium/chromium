@@ -649,6 +649,9 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
 
   bool MatchesCommittedOrigin(const GURL& url,
                               bool url_is_for_precursor_origin) const {
+    const url::Origin url_origin = url::Origin::Create(url);
+    const url::SchemeHostPort& url_scheme_host_port =
+        url_origin.GetTupleOrPrecursorTupleIfOpaque();
     for (auto& origin : committed_origins_) {
       // If the committed origin is non-opaque, check that the `url` has the
       // same origin.
@@ -663,7 +666,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
       // script URL, resulting in an opaque origin with a precursor which needs
       // to pass the check here. This case should be fixed (e.g., by adding that
       // worker's origin to the list of committed origins).
-      if (!origin.opaque() && origin.IsSameOriginWith(url)) {
+      if (!origin.opaque() && origin.IsSameOriginWith(url_origin)) {
         return true;
       }
 
@@ -671,8 +674,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
       // a precursor of an opaque origin, and then check if it matches the
       // committed origin's precursor.
       if (origin.opaque() && url_is_for_precursor_origin &&
-          origin.GetTupleOrPrecursorTupleIfOpaque() ==
-              url::SchemeHostPort(url)) {
+          origin.GetTupleOrPrecursorTupleIfOpaque() == url_scheme_host_port) {
         return true;
       }
 
