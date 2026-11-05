@@ -1348,5 +1348,6 @@
   ],
   "processingInstructions": [],
   "comments": false,
-  "dataAttributes": false
+  "dataAttributes": false,
+  "javascriptURLs": false
 }

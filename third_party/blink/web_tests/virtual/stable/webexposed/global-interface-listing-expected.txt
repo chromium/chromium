@@ -9117,6 +9117,7 @@ interface Sanitizer
     method replaceElementWithChildren
     method setComments
     method setDataAttributes
+    method setJavascriptURLs
 interface Scheduler
     attribute @@toStringTag
     method constructor

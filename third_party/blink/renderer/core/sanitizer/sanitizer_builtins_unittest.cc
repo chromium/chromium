@@ -58,6 +58,7 @@ TEST(SanitizerBuiltinsTest, DefaultUnsafeIsReallyEmpty) {
   CHECK(sanitizer->RemoveAttrsPerElement().empty());
   CHECK(!sanitizer->AllowDataAttrs());
   CHECK(!sanitizer->AllowComments());
+  CHECK(!sanitizer->AllowJavascriptURLs());
 }
 
 TEST(SanitizerBuiltinsTest, DefaultSafeIsAllowList) {
@@ -70,6 +71,9 @@ TEST(SanitizerBuiltinsTest, DefaultSafeIsAllowList) {
   CHECK_EMPTY(sanitizer->RemoveAttrs());
   CHECK(!sanitizer->AllowAttrsPerElement().empty());
   CHECK(sanitizer->RemoveAttrsPerElement().empty());
+  CHECK(!sanitizer->AllowDataAttrs());
+  CHECK(!sanitizer->AllowComments());
+  CHECK(!sanitizer->AllowJavascriptURLs());
 }
 
 TEST(SanitizerBuiltinsTest, BaselineIsRemoveList) {

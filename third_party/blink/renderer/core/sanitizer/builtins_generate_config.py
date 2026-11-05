@@ -161,7 +161,11 @@ def generate_config(default_config, output):
         f"  /* comments */ {bool(default_config.get('comments'))},", file=output
     )
     print(
-        f"  /* dataAttributes */ {bool(default_config.get('dataAttributes'))}",
+        f"  /* dataAttributes */ {bool(default_config.get('dataAttributes'))},",
+        file=output,
+    )
+    print(
+        f"  /* javascriptURLs */ {bool(default_config.get('javascriptURLs'))}",
         file=output,
     )
 

@@ -93,6 +93,7 @@ Sanitizer* Sanitizer::CreateEmpty() {
       std::make_unique<HashSet<AtomicString>>();
   sanitizer->data_attrs_ = SanitizerBoolWithAbsence::kAbsent;
   sanitizer->comments_ = SanitizerBoolWithAbsence::kAbsent;
+  sanitizer->javascript_urls_ = SanitizerBoolWithAbsence::kAbsent;
   DCHECK(sanitizer->isValid());
   return sanitizer;
 }
@@ -123,7 +124,8 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
                      std::unique_ptr<HashSet<AtomicString>> allow_pi,
                      std::unique_ptr<HashSet<AtomicString>> remove_pi,
                      bool allow_data_attrs,
-                     bool allow_comments)
+                     bool allow_comments,
+                     bool allow_javascript_urls)
     : allow_elements_(allow_elements.release()),
       remove_elements_(remove_elements.release()),
       replace_elements_(replace_elements.release()),
@@ -136,7 +138,10 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
       data_attrs_(allow_data_attrs ? SanitizerBoolWithAbsence::kTrue
                                    : SanitizerBoolWithAbsence::kFalse),
       comments_(allow_comments ? SanitizerBoolWithAbsence::kTrue
-                               : SanitizerBoolWithAbsence::kFalse) {
+                               : SanitizerBoolWithAbsence::kFalse),
+      javascript_urls_(allow_javascript_urls
+                           ? SanitizerBoolWithAbsence::kTrue
+                           : SanitizerBoolWithAbsence::kFalse) {
   if (remove_attrs_) {
     data_attrs_ = SanitizerBoolWithAbsence::kAbsent;
   }
@@ -223,6 +228,13 @@ bool Sanitizer::setDataAttributes(bool data_attributes) {
   return data_attrs_ != old_data_attrs;
 }
 
+bool Sanitizer::setJavascriptURLs(bool javascript_urls) {
+  const SanitizerBoolWithAbsence old_javascript_urls = javascript_urls_;
+  javascript_urls_ = javascript_urls ? SanitizerBoolWithAbsence::kTrue
+                                     : SanitizerBoolWithAbsence::kFalse;
+  return javascript_urls_ != old_javascript_urls;
+}
+
 bool Sanitizer::removeUnsafe() {
   DCHECK(isValid());
   const Sanitizer* baseline = SanitizerBuiltins::GetBaseline();
@@ -251,6 +263,7 @@ bool Sanitizer::removeUnsafe() {
       changed = true;
     }
   }
+  javascript_urls_ = SanitizerBoolWithAbsence::kFalse;
   DCHECK(isValid());
   return changed;
 }
@@ -449,6 +462,10 @@ SanitizerConfig* Sanitizer::get() const {
   }
   if (comments_ != SanitizerBoolWithAbsence::kAbsent) {
     config->setComments(comments_ == SanitizerBoolWithAbsence::kTrue);
+  }
+  if (javascript_urls_ != SanitizerBoolWithAbsence::kAbsent) {
+    config->setJavascriptURLs(javascript_urls_ ==
+                              SanitizerBoolWithAbsence::kTrue);
   }
 
   return config;
@@ -939,7 +956,9 @@ void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
                                                        Mode safe) const {
   // Special treatment of javascript: URLs when used for navigation.
   // https://wicg.github.io/sanitizer-api/#sanitize-core, Steps 1.5.9.5
-  if (safe == Mode::kUnsafe) {
+  if (RuntimeEnabledFeatures::SanitizerJavascriptURLsEnabled()
+          ? AllowJavascriptURLs()
+          : (safe == Mode::kUnsafe)) {
     return;
   }
 
@@ -1055,7 +1074,7 @@ Sanitizer::Action Sanitizer::SanitizeSingleNode(Node* node, Mode safe) const {
 }
 
 bool Sanitizer::setFrom(const SanitizerConfig* config,
-                        bool allowCommentsPIsAndDataAttributes) {
+                        bool permissive_defaults) {
   // https://wicg.github.io/sanitizer-api/#configuration-set
   //
   // Since our internal representation is quite different from the external
@@ -1162,11 +1181,11 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
           remove_processing_instructions_->insert(target).is_new_entry;
     }
   }
-  setComments(config->getCommentsOr(allowCommentsPIsAndDataAttributes));
+  setComments(config->getCommentsOr(permissive_defaults));
   if (allow_attrs_ || config->hasDataAttributes()) {
-    setDataAttributes(
-        config->getDataAttributesOr(allowCommentsPIsAndDataAttributes));
+    setDataAttributes(config->getDataAttributesOr(permissive_defaults));
   }
+  setJavascriptURLs(config->getJavascriptURLsOr(permissive_defaults));
 
   // https://wicg.github.io/sanitizer-api/#sanitizer-canonicalize-the-configuration,
   // steps 1 + 2.
@@ -1178,7 +1197,7 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
   }
   // step 3:
   if (!allow_processing_instructions_ && !remove_processing_instructions_) {
-    if (allowCommentsPIsAndDataAttributes) {
+    if (permissive_defaults) {
       remove_processing_instructions_ =
           std::make_unique<HashSet<AtomicString>>();
     } else {
@@ -1215,6 +1234,7 @@ void Sanitizer::setFrom(const Sanitizer& other) {
   remove_attrs_per_element_ = other.remove_attrs_per_element_;
   data_attrs_ = other.data_attrs_;
   comments_ = other.comments_;
+  javascript_urls_ = other.javascript_urls_;
   allow_processing_instructions_ =
       other.allow_processing_instructions_
           ? std::make_unique<HashSet<AtomicString>>(

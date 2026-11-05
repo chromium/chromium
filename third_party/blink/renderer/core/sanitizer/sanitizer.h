@@ -70,6 +70,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
             std::unique_ptr<HashSet<AtomicString>>,
             std::unique_ptr<HashSet<AtomicString>>,
             bool,
+            bool,
             bool);
 
   // API methods:
@@ -86,6 +87,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   bool removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   bool setComments(bool);
   bool setDataAttributes(bool);
+  bool setJavascriptURLs(bool);
   bool removeUnsafe();
   SanitizerConfig* get() const;
 
@@ -124,6 +126,9 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   bool AllowComments() const {
     return comments_ == SanitizerBoolWithAbsence::kTrue;
   }
+  bool AllowJavascriptURLs() const {
+    return javascript_urls_ == SanitizerBoolWithAbsence::kTrue;
+  }
 
   Action ActionForNode(Node* node) const;
   // Sanitizes a node insertion operation. Can modify element attributes, change
@@ -136,7 +141,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   bool AllowIsAttribute(const QualifiedName& element_name) const;
 
   // Helper for Create: Convert from IDL representation to internal.
-  bool setFrom(const SanitizerConfig*, bool allowCommentsAndDataAttributes);
+  bool setFrom(const SanitizerConfig*, bool permissive_defaults);
   // Helper for constructors: Copy from other Sanitizer.
   void setFrom(const Sanitizer&);
 
@@ -183,6 +188,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   std::unique_ptr<HashSet<AtomicString>> remove_processing_instructions_;
   SanitizerBoolWithAbsence data_attrs_;
   SanitizerBoolWithAbsence comments_;
+  SanitizerBoolWithAbsence javascript_urls_;
 };
 
 class CORE_EXPORT StreamingSanitizer

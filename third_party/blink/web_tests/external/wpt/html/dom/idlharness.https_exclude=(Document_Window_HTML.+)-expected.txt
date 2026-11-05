@@ -16,12 +16,6 @@ Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: expected property "duration" missing
 [FAIL] Location interface: stringifier
   assert_own_property: interface prototype object missing non-static operation expected property "toString" missing
-[FAIL] Sanitizer interface: operation setJavascriptURLs(boolean)
-  assert_own_property: interface prototype object missing non-static operation expected property "setJavascriptURLs" missing
-[FAIL] Sanitizer interface: new Sanitizer({}) must inherit property "setJavascriptURLs(boolean)" with the proper type
-  assert_inherits: property "setJavascriptURLs" not found in prototype chain
-[FAIL] Sanitizer interface: calling setJavascriptURLs(boolean) on new Sanitizer({}) with too few arguments must throw TypeError
-  assert_inherits: property "setJavascriptURLs" not found in prototype chain
 [FAIL] Navigator interface: operation taintEnabled()
   assert_own_property: interface prototype object missing non-static operation expected property "taintEnabled" missing
 [FAIL] Navigator interface: attribute oscpu

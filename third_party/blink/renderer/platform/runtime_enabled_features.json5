@@ -5765,6 +5765,12 @@
       status: "stable",
     },
     {
+      // Spec: https://github.com/whatwg/html/pull/12898
+      // Tracking bug: crbug.com/567285527
+      name: "SanitizerJavascriptURLs",
+      status: "stable",
+    },
+    {
       name: "SanitizeWorkerErrorPropagation",
       status: "stable",
     },

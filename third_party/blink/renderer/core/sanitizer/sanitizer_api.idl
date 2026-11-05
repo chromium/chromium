@@ -26,6 +26,7 @@ interface Sanitizer {
   boolean removeAttribute(SanitizerAttribute attribute);
   boolean setComments(boolean allow);
   boolean setDataAttributes(boolean allow);
+  [RuntimeEnabled=SanitizerJavascriptURLs] boolean setJavascriptURLs(boolean allow);
 
   // Remove markup that executes script. May modify multiple lists:
   boolean removeUnsafe();
@@ -70,5 +71,6 @@ dictionary SanitizerConfig {
 
   boolean comments;
   boolean dataAttributes;
+  [RuntimeEnabled=SanitizerJavascriptURLs] boolean javascriptURLs;
 };
 
