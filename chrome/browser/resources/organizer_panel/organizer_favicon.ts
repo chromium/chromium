@@ -5,10 +5,10 @@
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './stacked_favicons.css.js';
-import {getHtml} from './stacked_favicons.html.js';
+import {getCss} from './organizer_favicon.css.js';
+import {getHtml} from './organizer_favicon.html.js';
 
-export interface StackedFaviconsElement {
+export interface OrganizerFaviconElement {
   $: {
     favicons: HTMLElement,
     firstFavicon: HTMLElement,
@@ -16,9 +16,9 @@ export interface StackedFaviconsElement {
   };
 }
 
-export class StackedFaviconsElement extends CrLitElement {
+export class OrganizerFaviconElement extends CrLitElement {
   static get is() {
-    return 'stacked-favicons';
+    return 'organizer-favicon';
   }
 
   static override get styles() {
@@ -51,8 +51,8 @@ export class StackedFaviconsElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'stacked-favicons': StackedFaviconsElement;
+    'organizer-favicon': OrganizerFaviconElement;
   }
 }
 
-customElements.define(StackedFaviconsElement.is, StackedFaviconsElement);
+customElements.define(OrganizerFaviconElement.is, OrganizerFaviconElement);

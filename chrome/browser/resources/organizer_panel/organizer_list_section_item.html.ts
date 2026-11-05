@@ -32,12 +32,12 @@ export function getHtml(this: OrganizerListSectionItemElement) {
     </div>
   ` : html`
     ${this.item.prefixIcon?.stackedFavicons ? html`
-      <stacked-favicons id="stackedFavicons" slot="customIcon"
+      <organizer-favicon id="favicon" slot="customIcon"
           .url="${this.item.prefixIcon.stackedFavicons.urls[0]}"
           .secondaryUrl="${this.item.prefixIcon.stackedFavicons.urls[1]}"
           ?stack-vertically="${
               this.item.prefixIcon.stackedFavicons.stackVertically}">
-      </stacked-favicons>
+      </organizer-favicon>
     ` : ''}
   `}
   ${this.item.trailingIcon ? html`

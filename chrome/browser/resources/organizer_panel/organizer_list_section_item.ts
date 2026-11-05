@@ -5,9 +5,9 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import './organizer_favicon.js';
 import './organizer_list_section_item_description.js';
 import './organizer_list_section_item_title.js';
-import './stacked_favicons.js';
 
 import type {CrUrlListItemElement, CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';

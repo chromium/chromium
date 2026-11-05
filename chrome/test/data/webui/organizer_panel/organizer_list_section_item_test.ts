@@ -4,7 +4,7 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import type {OrganizerListSectionItemElement, StackedFaviconsElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerFaviconElement, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -370,23 +370,21 @@ suite('OrganizerListSectionItemTest', () => {
         assertTrue(!!crUrlListItem);
         assertEquals(undefined, crUrlListItem.url);
 
-        const stackedFavicons =
-            listItem.shadowRoot.querySelector<StackedFaviconsElement>(
-                'stacked-favicons');
-        assertTrue(!!stackedFavicons);
-        assertEquals('customIcon', stackedFavicons.getAttribute('slot'));
-        assertEquals(TEST_URL_1, stackedFavicons.url);
-        assertEquals(TEST_URL_2, stackedFavicons.secondaryUrl);
+        const favicon =
+            listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+                'organizer-favicon');
+        assertTrue(!!favicon);
+        assertEquals('customIcon', favicon.getAttribute('slot'));
+        assertEquals(TEST_URL_1, favicon.url);
+        assertEquals(TEST_URL_2, favicon.secondaryUrl);
         assertEquals(
-            TEST_FAVICON_1,
-            stackedFavicons.$.firstFavicon.style.backgroundImage);
+            TEST_FAVICON_1, favicon.$.firstFavicon.style.backgroundImage);
         assertEquals(
-            TEST_FAVICON_2,
-            stackedFavicons.$.secondFavicon.style.backgroundImage);
-        assertFalse(stackedFavicons.stackVertically);
+            TEST_FAVICON_2, favicon.$.secondFavicon.style.backgroundImage);
+        assertFalse(favicon.stackVertically);
       });
 
-  test('forwards stacking orientation to stacked favicons', async () => {
+  test('forwards stacking orientation to organizer favicon', async () => {
     listItem.item = {
       title: ['Split view vertical'],
       prefixIcon: {
@@ -398,16 +396,15 @@ suite('OrganizerListSectionItemTest', () => {
     };
     await microtasksFinished();
 
-    const stackedFavicons =
-        listItem.shadowRoot.querySelector<StackedFaviconsElement>(
-            'stacked-favicons');
-    assertTrue(!!stackedFavicons);
-    assertTrue(stackedFavicons.stackVertically);
-    assertTrue(stackedFavicons.hasAttribute('stack-vertically'));
+    const favicon = listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+        'organizer-favicon');
+    assertTrue(!!favicon);
+    assertTrue(favicon.stackVertically);
+    assertTrue(favicon.hasAttribute('stack-vertically'));
   });
 
   test(
-      'does not render stacked favicons when single URL is provided',
+      'does not render organizer favicon when single URL is provided',
       async () => {
         listItem.item = {
           title: ['Single URL'],
@@ -417,9 +414,8 @@ suite('OrganizerListSectionItemTest', () => {
         };
         await microtasksFinished();
 
-        const stackedFavicons =
-            listItem.shadowRoot.querySelector('stacked-favicons');
-        assertEquals(null, stackedFavicons);
+        const favicon = listItem.shadowRoot.querySelector('organizer-favicon');
+        assertEquals(null, favicon);
         assertEquals(TEST_URL_1, listItem.$.crUrlListItem.url);
       });
 

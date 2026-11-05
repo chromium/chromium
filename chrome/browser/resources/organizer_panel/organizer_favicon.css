@@ -14,11 +14,11 @@
 .favicons {
   /* With 16px icons, a 4px layout overlap (-4px margin) and 4px gap require an
    * 8px clip on the first icon, yielding an 8px + 4px + 16px = 28px footprint. */
-  --stacked-favicons-clip_:
-      calc(var(--stacked-favicons-gap_) + var(--stacked-favicons-overlap_));
-  --stacked-favicons-gap_: 4px;
-  --stacked-favicons-overlap_: 4px;
-  --stacked-favicons-size_: 16px;
+  --organizer-favicon-clip_:
+      calc(var(--organizer-favicon-gap_) + var(--organizer-favicon-overlap_));
+  --organizer-favicon-gap_: 4px;
+  --organizer-favicon-overlap_: 4px;
+  --organizer-favicon-size_: 16px;
   align-items: center;
   display: flex;
   justify-content: center;
@@ -28,21 +28,21 @@
   background-position: center center;
   background-repeat: no-repeat;
   box-sizing: border-box;
-  height: var(--stacked-favicons-size_);
+  height: var(--organizer-favicon-size_);
   position: relative;
-  width: var(--stacked-favicons-size_);
+  width: var(--organizer-favicon-size_);
 }
 
 :host(:not([stack-vertically])) #firstFavicon {
-  clip-path: inset(0 var(--stacked-favicons-clip_) 0 0);
+  clip-path: inset(0 var(--organizer-favicon-clip_) 0 0);
 }
 
 :host-context([dir=rtl]):host(:not([stack-vertically])) #firstFavicon {
-  clip-path: inset(0 0 0 var(--stacked-favicons-clip_));
+  clip-path: inset(0 0 0 var(--organizer-favicon-clip_));
 }
 
 :host(:not([stack-vertically])) #secondFavicon {
-  margin-inline-start: calc(-1 * var(--stacked-favicons-overlap_));
+  margin-inline-start: calc(-1 * var(--organizer-favicon-overlap_));
 }
 
 :host([stack-vertically]) .favicons {
@@ -50,9 +50,9 @@
 }
 
 :host([stack-vertically]) #firstFavicon {
-  clip-path: inset(0 0 var(--stacked-favicons-clip_) 0);
+  clip-path: inset(0 0 var(--organizer-favicon-clip_) 0);
 }
 
 :host([stack-vertically]) #secondFavicon {
-  margin-block-start: calc(-1 * var(--stacked-favicons-overlap_));
+  margin-block-start: calc(-1 * var(--organizer-favicon-overlap_));
 }

@@ -25,6 +25,8 @@ build_webui("build") {
     "delegates/tab_delegate_utils.ts",
     "delegates/tab_groups_delegate.ts",
     "keyboard_arrow_navigation_service.ts",
+    "organizer_favicon.html.ts",
+    "organizer_favicon.ts",
     "organizer_list.html.ts",
     "organizer_list.ts",
     "organizer_list_section.html.ts",
@@ -42,11 +44,10 @@ build_webui("build") {
     "organizer_zero_state.html.ts",
     "organizer_zero_state.ts",
     "search_utils.ts",
-    "stacked_favicons.html.ts",
-    "stacked_favicons.ts",
   ]
   css_files = [
     "app.css",
+    "organizer_favicon.css",
     "organizer_list.css",
     "organizer_list_section.css",
     "organizer_list_section_header.css",
@@ -54,7 +55,6 @@ build_webui("build") {
     "organizer_list_section_item_description.css",
     "organizer_list_section_item_title.css",
     "organizer_zero_state.css",
-    "stacked_favicons.css",
   ]
 
   mojo_files_deps = [

@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {StackedFaviconsElement} from './stacked_favicons.js';
+import type {OrganizerFaviconElement} from './organizer_favicon.js';
 
-export function getHtml(this: StackedFaviconsElement) {
+export function getHtml(this: OrganizerFaviconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="favicons" class="favicons">

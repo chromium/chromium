@@ -4,7 +4,7 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import type {StackedFaviconsElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerFaviconElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -19,12 +19,12 @@ const TEST_FAVICON_2 = getFaviconForPageURL(TEST_URL_2, false);
 const TEST_FAVICON_3 = getFaviconForPageURL(TEST_URL_3, false);
 const TEST_FAVICON_4 = getFaviconForPageURL(TEST_URL_4, false);
 
-suite('StackedFaviconsTest', () => {
-  let element: StackedFaviconsElement;
+suite('OrganizerFaviconTest', () => {
+  let element: OrganizerFaviconElement;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    element = document.createElement('stacked-favicons');
+    element = document.createElement('organizer-favicon');
     document.body.appendChild(element);
     await microtasksFinished();
   });

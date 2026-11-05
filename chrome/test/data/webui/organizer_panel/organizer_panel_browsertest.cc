@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, SearchUtils) {
   RunTest("organizer_panel/search_utils_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, StackedFavicons) {
+IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, Favicon) {
   set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
-  RunTest("organizer_panel/stacked_favicons_test.js", "mocha.run()");
+  RunTest("organizer_panel/organizer_favicon_test.js", "mocha.run()");
 }
