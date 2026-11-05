@@ -12,10 +12,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** BottomSheetContent implementation for the Wallet Reminder Notice bottom sheet. */
 @NullMarked
 /*package*/ class AutofillWalletReminderNoticeBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
     private final View mContentView;
 
     AutofillWalletReminderNoticeBottomSheetContent(View contentView) {
@@ -44,6 +47,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     public boolean hasCustomLifecycle() {
         // Keeps the bottom sheet open during checkout page navigation.
         return true;
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return SHEET_TYPE;
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Unit tests for {@link AutofillWalletReminderNoticeBottomSheetContent} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -56,6 +57,11 @@ public class AutofillWalletReminderNoticeBottomSheetContentTest {
     @Test
     public void testHasCustomLifecycle() {
         assertTrue(mContent.hasCustomLifecycle());
+    }
+
+    @Test
+    public void testBottomSheetType() {
+        assertThat(mContent.getSheetType(), equalTo(new BottomSheetType.Builder().build()));
     }
 
     @Test
