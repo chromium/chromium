@@ -68,6 +68,7 @@ struct UsbMassStorageEndpoints {
   uint8_t interface_number = 0;
   uint8_t endpoint_in = 0;
   uint8_t endpoint_out = 0;
+  uint32_t max_packet_size = 0;
 };
 
 struct ParsedDeviceId {

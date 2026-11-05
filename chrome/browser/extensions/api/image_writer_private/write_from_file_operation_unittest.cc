@@ -157,7 +157,7 @@ TEST_F(ImageWriterFromFileTest, LocalFileMissingDeviceReportsDeviceOpenError) {
 TEST_F(ImageWriterFromFileTest, LocalFileCancelMidTransferStopsFurtherWrites) {
   base::FilePath large_image_path =
       test_utils_.GetTempDir().AppendASCII("large_image.bin");
-  std::vector<uint8_t> large_image(256 * 1024, 'A');
+  std::vector<uint8_t> large_image(3 * 512 * 1024, 'A');
   ASSERT_TRUE(base::WriteFile(large_image_path, large_image));
   // Truncate the pre-populated 32 KiB test device file to 0 bytes so the final
   // file size reflects only the bytes written before cancellation.
@@ -179,7 +179,7 @@ TEST_F(ImageWriterFromFileTest, LocalFileCancelMidTransferStopsFurtherWrites) {
   std::optional<int64_t> size_at_cancel;
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   // `Operation::Start` posts `Extract`, which posts `Write` (writing the first
-  // 64 KiB chunk and posting chunk 2). Enqueue `Operation::Cancel` at the same
+  // 512 KiB chunk and posting chunk 2). Enqueue `Operation::Cancel` at the same
   // task depth on `Operation::task_runner_` so it executes deterministically
   // right after chunk 1 and before chunk 2, capture the file size immediately
   // after `Cancel`, and then quit `run_loop` after chunk 2 observes
@@ -202,8 +202,7 @@ TEST_F(ImageWriterFromFileTest, LocalFileCancelMidTransferStopsFurtherWrites) {
   run_loop.Run();
 
   ASSERT_TRUE(size_at_cancel.has_value());
-  EXPECT_GT(*size_at_cancel, 0);
-  EXPECT_LT(*size_at_cancel, static_cast<int64_t>(large_image.size()));
+  EXPECT_EQ(*size_at_cancel, 512 * 1024);
 
   std::optional<int64_t> destination_size =
       base::GetFileSize(test_utils_.GetDevicePath());

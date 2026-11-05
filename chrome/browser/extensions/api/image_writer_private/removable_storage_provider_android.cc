@@ -891,6 +891,8 @@ std::optional<UsbMassStorageEndpoints> ExtractMassStorageEndpoints(
         }
         uint8_t found_endpoint_in = 0;
         uint8_t found_endpoint_out = 0;
+        uint32_t in_packet_size = 0;
+        uint32_t out_packet_size = 0;
         for (const auto& endpoint : alt->endpoints) {
           if (!endpoint ||
               endpoint->type != device::mojom::UsbTransferType::BULK) {
@@ -899,9 +901,11 @@ std::optional<UsbMassStorageEndpoints> ExtractMassStorageEndpoints(
           if (endpoint->direction ==
               device::mojom::UsbTransferDirection::INBOUND) {
             found_endpoint_in = endpoint->endpoint_number;
+            in_packet_size = endpoint->packet_size;
           } else if (endpoint->direction ==
                      device::mojom::UsbTransferDirection::OUTBOUND) {
             found_endpoint_out = endpoint->endpoint_number;
+            out_packet_size = endpoint->packet_size;
           }
         }
         if (found_endpoint_in != 0 && found_endpoint_out != 0) {
@@ -909,6 +913,7 @@ std::optional<UsbMassStorageEndpoints> ExtractMassStorageEndpoints(
               .interface_number = iface->interface_number,
               .endpoint_in = found_endpoint_in,
               .endpoint_out = found_endpoint_out,
+              .max_packet_size = std::min(in_packet_size, out_packet_size),
           };
         }
       }
