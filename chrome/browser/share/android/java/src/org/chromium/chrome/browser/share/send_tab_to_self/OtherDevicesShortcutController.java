@@ -411,9 +411,10 @@ public class OtherDevicesShortcutController implements Destroyable {
                     if (shortcutManager == null) return;
 
                     // Remove old STTS shortcuts that are no longer valid.
-                    List<ShortcutInfo> existingShortcuts = new ArrayList<>();
-                    existingShortcuts.addAll(shortcutManager.getDynamicShortcuts());
-                    existingShortcuts.addAll(shortcutManager.getPinnedShortcuts());
+                    List<ShortcutInfo> existingShortcuts =
+                            shortcutManager.getShortcuts(
+                                    ShortcutManager.FLAG_MATCH_DYNAMIC
+                                            | ShortcutManager.FLAG_MATCH_PINNED);
 
                     List<String> newShortcutIds = new ArrayList<>();
                     for (ShortcutInfo shortcut : newShortcuts) {

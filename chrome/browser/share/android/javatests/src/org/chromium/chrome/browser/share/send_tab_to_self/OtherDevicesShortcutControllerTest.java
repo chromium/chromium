@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -18,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -29,10 +32,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowShortcutManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -642,5 +648,82 @@ public class OtherDevicesShortcutControllerTest {
         // Verify observers were NOT registered.
         verify(mNativeMock, never()).addDeviceInfoObserver(any(), any());
         verify(mNativeMock, never()).addModelObserver(any(), any());
+    }
+
+    @Test
+    public void testUpdateShortcuts_RemovesStaleShortcuts() {
+        ShortcutManager shortcutManager = mContext.getSystemService(ShortcutManager.class);
+        ShadowShortcutManager shadowShortcutManager = Shadows.shadowOf(shortcutManager);
+        shadowShortcutManager.setIsRequestPinShortcutSupported(true);
+
+        String staleDynamicId = OtherDevicesShortcutController.SHORTCUT_ID_PREFIX + "stale_dynamic";
+        String otherShortcutId = "other-shortcut";
+        String stalePinnedId = OtherDevicesShortcutController.SHORTCUT_ID_PREFIX + "stale_pinned";
+
+        shortcutManager.addDynamicShortcuts(
+                List.of(
+                        new ShortcutInfo.Builder(mContext, staleDynamicId)
+                                .setShortLabel("Stale Dynamic")
+                                .setIntent(new Intent(Intent.ACTION_VIEW))
+                                .build(),
+                        new ShortcutInfo.Builder(mContext, otherShortcutId)
+                                .setShortLabel("Other")
+                                .setIntent(new Intent(Intent.ACTION_VIEW))
+                                .build()));
+        ShortcutInfo stalePinnedShortcut =
+                new ShortcutInfo.Builder(mContext, stalePinnedId)
+                        .setShortLabel("Stale Pinned")
+                        .setIntent(new Intent(Intent.ACTION_VIEW))
+                        .build();
+        shortcutManager.requestPinShortcut(stalePinnedShortcut, /* resultIntent= */ null);
+
+        ShortcutManager spyShortcutManager = Mockito.spy(shortcutManager);
+        ContextUtils.initApplicationContextForTests(
+                new ContextWrapper(mContext) {
+                    @Override
+                    public Object getSystemService(String name) {
+                        if (Context.SHORTCUT_SERVICE.equals(name)) {
+                            return spyShortcutManager;
+                        }
+                        return super.getSystemService(name);
+                    }
+                });
+
+        List<RemoteDeviceInfo> devices =
+                List.of(
+                        new RemoteDeviceInfo(
+                                DEVICE_NAME_1,
+                                DEVICE_GUID_1,
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Just now"));
+        when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
+
+        OtherDevicesShortcutController controller = new OtherDevicesShortcutController(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+        controller.destroy();
+
+        // Verify behavioral outcome on ShortcutManager / ShadowShortcutManager.
+        assertNotNull(findShortcut(SHORTCUT_ID_1));
+        assertNotNull(findShortcut(otherShortcutId));
+        assertNull(findShortcut(staleDynamicId));
+        ShortcutInfo pinnedShortcut =
+                shortcutManager.getPinnedShortcuts().stream()
+                        .filter(s -> s.getId().equals(stalePinnedId))
+                        .findFirst()
+                        .orElse(null);
+        assertNotNull(pinnedShortcut);
+        // ShadowShortcutManager moves disabled pinned shortcuts to an internal map (making
+        // createShortcutResultIntent throw IllegalArgumentException) without setting
+        // ShortcutInfo's disabled flag.
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> shortcutManager.createShortcutResultIntent(pinnedShortcut));
+
+        verify(spyShortcutManager)
+                .getShortcuts(
+                        ShortcutManager.FLAG_MATCH_DYNAMIC | ShortcutManager.FLAG_MATCH_PINNED);
+        verify(spyShortcutManager, never()).getDynamicShortcuts();
+        verify(spyShortcutManager, never()).getPinnedShortcuts();
     }
 }
