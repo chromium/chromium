@@ -62,11 +62,11 @@ and Web App Manifest processing in Chromium.
   [Rules](/third_party/blink/renderer/modules/manifest/AGENTS.md) ·
   [Common](/third_party/blink/public/common/manifest/AGENTS.md) ·
   [README](/third_party/blink/renderer/modules/manifest/README.md) JSON manifest
-  parsing in untrusted renderer.
+  parsing in untrusted renderer and validating `blink::Manifest` Mojo typemap.
 - **Manifest Fetching** (`content/browser/manifest/`):
   [Rules](/content/browser/manifest/AGENTS.md) ·
-  [README](/content/browser/manifest/README.md) Browser-side manifest fetching
-  and icon downloading coordination.
+  [README](/content/browser/manifest/README.md) Browser-side manifest fetching,
+  contextual validation, and icon downloading coordination.
 
 ## Verification & Testing
 

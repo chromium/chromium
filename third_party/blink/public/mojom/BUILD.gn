@@ -692,6 +692,17 @@ mojom("mojom_platform") {
         },
 
         {
+          mojom = "blink.mojom.Manifest"
+          cpp = "::blink::Manifest"
+          default_constructible = false
+        },
+
+        {
+          mojom = "blink.mojom.ManifestFileHandler"
+          cpp = "::blink::Manifest::FileHandler"
+        },
+
+        {
           mojom = "blink.mojom.ManifestImageResource"
           cpp = "::blink::Manifest::ImageResource"
         },
@@ -702,8 +713,43 @@ mojom("mojom_platform") {
         },
 
         {
+          mojom = "blink.mojom.ManifestLockScreen"
+          cpp = "::blink::Manifest::LockScreen"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestMigrateFrom"
+          cpp = "::blink::Manifest::MigrateFrom"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestMigrateTo"
+          cpp = "::blink::Manifest::MigrateTo"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestNoteTaking"
+          cpp = "::blink::Manifest::NoteTaking"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestProtocolHandler"
+          cpp = "::blink::Manifest::ProtocolHandler"
+        },
+
+        {
           mojom = "blink.mojom.ManifestRelatedApplication"
           cpp = "::blink::Manifest::RelatedApplication"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestScopeExtension"
+          cpp = "::blink::Manifest::ScopeExtension"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestScreenshot"
+          cpp = "::blink::Manifest::Screenshot"
         },
 
         {
@@ -737,6 +783,7 @@ mojom("mojom_platform") {
           [ "//third_party/blink/common/manifest/manifest_mojom_traits.cc" ]
       traits_deps = [
         "//net",
+        "//skia/public/mojom",
         "//third_party/icu",
         "//ui/gfx/geometry/mojom:mojom_traits",
         "//url",

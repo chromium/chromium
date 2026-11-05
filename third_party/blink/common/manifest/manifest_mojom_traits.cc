@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_invariants.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-data-view.h"
@@ -455,6 +457,144 @@ bool StructTraits<blink::mojom::ManifestMigrateToDataView,
     return false;
   }
   return data.ReadInstallUrl(&out->install_url);
+}
+
+base::expected<void, mojo::DeserializationError>
+StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
+    blink::mojom::ManifestDataView data,
+    ::blink::Manifest* out) {
+  // LINT.IfChange(ManifestStructTraitsRead)
+  if (!data.ReadManifestUrl(&out->manifest_url_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadDir(&out->dir_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadName(&out->name_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadShortName(&out->short_name_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadDescription(&out->description_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadId(&out->id_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  out->has_custom_id_ = data.has_custom_id();
+  if (!data.ReadStartUrl(&out->start_url_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  out->has_valid_specified_start_url_ = data.has_valid_specified_start_url();
+  if (!data.ReadDisplay(&out->display_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadDisplayOverride(&out->display_override_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadOrientation(&out->orientation_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadIcons(&out->icons_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadScreenshots(&out->screenshots_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadShortcuts(&out->shortcuts_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadShareTarget(&out->share_target_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadFileHandlers(&out->file_handlers_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadProtocolHandlers(&out->protocol_handlers_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadScopeExtensions(&out->scope_extensions_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadLockScreen(&out->lock_screen_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadNoteTaking(&out->note_taking_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadRelatedApplications(&out->related_applications_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  out->prefer_related_applications_ = data.prefer_related_applications();
+  if (!data.ReadMigrateFrom(&out->migrate_from_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadMigrateTo(&out->migrate_to_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadThemeColor(&out->theme_color_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadBackgroundColor(&out->background_color_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadGcmSenderId(&out->gcm_sender_id_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadScope(&out->scope_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadUpdateManifestUrl(&out->update_manifest_url_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadLaunchHandler(&out->launch_handler_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadTranslations(&out->translations_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadDarkThemeColor(&out->dark_theme_color_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadDarkBackgroundColor(&out->dark_background_color_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadTabStrip(&out->tab_strip_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadVersion(&out->version_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadNameLocalized(&out->name_localized_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadShortNameLocalized(&out->short_name_localized_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadDescriptionLocalized(&out->description_localized_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  if (!data.ReadIconsLocalized(&out->icons_localized_)) {
+    return base::unexpected(mojo::DeserializationError());
+  }
+  // LINT.ThenChange(
+  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
+  //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
+  //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild
+  // )
+
+  if (auto error = out->ValidateInvariants()) {
+    base::UmaHistogramEnumeration("WebApp.Manifest.InvariantViolation", *error);
+    return base::unexpected(
+        mojo::DeserializationError::CustomCode(static_cast<int>(*error)));
+  }
+
+  out->origin_ = url::Origin::Create(out->start_url_);
+  return base::ok();
 }
 
 }  // namespace mojo

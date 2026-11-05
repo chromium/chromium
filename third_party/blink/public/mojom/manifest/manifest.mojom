@@ -21,8 +21,12 @@ import "url/mojom/url.mojom";
 // The Manifest structure is an internal representation of the Manifest file
 // described in the "Manifest for Web Application" document:
 // http://w3c.github.io/manifest/
-// All fields will be their default constructed values (optional types nullopt)
-// if the manifest failed to parse.
+//
+// Typemapped in non-Blink C++ to `blink::Manifest`, which enforces at Mojo
+// deserialization that `start_url`, `id`, and `scope` are valid and
+// same-origin (with a non-opaque origin), along with intrinsic field
+// invariants. There is no "empty" state; IPCs use `Manifest?` when a manifest
+// cannot be produced.
 [JavaClassName="WebManifest"]
 struct Manifest {
   enum TextDirection {
@@ -47,7 +51,7 @@ struct Manifest {
 
   mojo_base.mojom.String16? description;
 
-  // This is empty or invalid iff the start_url is empty or invalid.
+  // Always valid, without ref, and same-origin with `start_url`.
   url.mojom.Url id;
 
   // Set to true if the json specified a specific value for the id.
@@ -169,7 +173,8 @@ struct Manifest {
   //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
   // )
 };
 

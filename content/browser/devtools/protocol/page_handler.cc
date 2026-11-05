@@ -252,7 +252,7 @@ bool CanExecuteGlobalCommands(
 void GotManifest(std::optional<std::string> manifest_id,
                  std::unique_ptr<PageHandler::GetAppManifestCallback> callback,
                  const GURL& manifest_url,
-                 base::optional_ref<const blink::Manifest> input_manifest,
+                 const std::optional<blink::Manifest>& input_manifest,
                  blink::mojom::ManifestDebugInfoPtr debug_info) {
   if (manifest_id &&
       (!input_manifest ||

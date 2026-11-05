@@ -12,22 +12,13 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
 
 class GURL;
 
 namespace blink {
 
-// Checks whether the manifest has no fields set.
-BLINK_COMMON_EXPORT bool IsEmptyManifest(const mojom::Manifest& manifest);
-BLINK_COMMON_EXPORT bool IsEmptyManifest(const mojom::ManifestPtr& manifest);
-
 // Returns if the given manifest matches the default manifest.
-BLINK_COMMON_EXPORT bool IsDefaultManifest(const mojom::Manifest& manifest,
-                                           const GURL& document_url);
-BLINK_COMMON_EXPORT bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
-                                           const GURL& document_url);
 BLINK_COMMON_EXPORT bool IsDefaultManifest(const Manifest& manifest,
                                            const GURL& document_url);
 

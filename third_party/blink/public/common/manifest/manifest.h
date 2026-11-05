@@ -545,7 +545,8 @@ class BLINK_COMMON_EXPORT Manifest {
   //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
   // )
 
   // Cached origin created from `start_url_`. Excluded from `operator==`.
@@ -684,19 +685,10 @@ class BLINK_COMMON_EXPORT Manifest::Builder {
   //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
   // )
 };
-
-// Temporary conversion bridges between `blink::Manifest` and
-// `blink::mojom::Manifest`, used while incrementally migrating consumers before
-// activating the `blink.mojom.Manifest` -> `blink::Manifest` Mojo `cpp_typemaps`
-// (https://crbug.com/485890278).
-BLINK_COMMON_EXPORT base::expected<Manifest, ManifestInvariantError>
-ManifestFromMojom(const mojom::Manifest& mojom_manifest);
-
-BLINK_COMMON_EXPORT mojom::ManifestPtr ManifestToMojom(
-    const Manifest& manifest);
 
 }  // namespace blink
 

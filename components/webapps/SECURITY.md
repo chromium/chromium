@@ -9,10 +9,14 @@ bug, review Security for Agents to double-check your findings.
 
 - Process & Sandbox: Runs in the unsandboxed browser process, except
   `renderer/`, which runs in the sandboxed Renderer to extract page metadata.
-- Compromised Renderer: Defended against by browser-process code.
-  `ManifestManagerHost` (`//content/browser/manifest/`) terminates the Renderer
-  via `mojo::ReportBadMessage()` if a parsed manifest's `start_url`, `id`, or
-  `scope` is not same-origin with the document.
+- Compromised Renderer: Defended against by browser-process code. Intrinsic
+  manifest invariants (`start_url`, `id`, and `scope` valid and same-origin with
+  a non-opaque origin, plus handler/icon/migration invariants) are enforced at
+  the Mojo deserialization boundary by `StructTraits::Read` in
+  `//third_party/blink/common/manifest/manifest_mojom_traits.cc`.
+  `ManifestManagerHost` (`//content/browser/manifest/`) additionally enforces
+  that `manifest.GetOrigin()` is same-origin with the committed document and
+  terminates the Renderer via `mojo::ReportBadMessage()` on violation.
 - Mojo IPC: Caller origins come from the browser-side `RenderFrameHost`, never
   message fields.
 - Rule of Two: Manifests are parsed and icons decoded in a Renderer; Signed Web

@@ -22,7 +22,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -275,7 +274,7 @@ WebContents* MockWebContentsDelegate::AddNewContents(
       user_gesture, was_blocked);
 }
 
-// If a page has no manifest, requesting a manifest should return the empty
+// If a page has no manifest, requesting a manifest should return the default
 // manifest. The URL should be empty.
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, NoManifest) {
   GURL test_url = embedded_test_server()->GetURL("/manifest/no-manifest.html");
@@ -293,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, NoManifest) {
 }
 
 // If a page manifest points to a 404 URL, requesting the manifest should return
-// the empty manifest. However, the manifest URL will be non-empty.
+// the default manifest. However, the manifest URL will be non-empty.
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, 404Manifest) {
   GURL test_url = embedded_test_server()->GetURL("/manifest/404-manifest.html");
 
@@ -330,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, EmptyManifest) {
 }
 
 // If a page's manifest can't be parsed correctly, requesting the manifest
-// should return an empty manifest. The manifest URL should be non-empty.
+// should return the default manifest. The manifest URL should be non-empty.
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ParseErrorManifest) {
   GURL test_url =
       embedded_test_server()->GetURL("/manifest/parse-error-manifest.html");
@@ -427,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
 }
 
 // This page has a manifest with only file handlers specified. Asking
-// for just the manifest should succeed with a non empty manifest.
+// for just the manifest should succeed with a valid manifest.
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, FileHandlerManifest) {
   GURL test_url =
       embedded_test_server()->GetURL("/manifest/file-handler-manifest.html");
@@ -443,9 +442,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, FileHandlerManifest) {
 }
 
 // If a page's manifest lives in a different origin, it should follow the CORS
-// rules and requesting the manifest should return an empty manifest (unless the
-// response contains CORS headers).
-// Flaky: crbug.com/1122546
+// rules and requesting the manifest should return the default manifest (unless
+// the response contains CORS headers). Flaky: crbug.com/1122546
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_CorsManifest) {
   ASSERT_TRUE(cors_embedded_test_server()->Start());
   ASSERT_NE(embedded_test_server()->port(),
@@ -515,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, CorsManifestWithAcessControls) {
 }
 
 // If a page's manifest is in an insecure origin while the page is in a secure
-// origin, requesting the manifest should return the empty manifest.
+// origin, requesting the manifest should return the default manifest.
 // TODO(crbug.com/40742592): Flaky test.
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_MixedContentManifest) {
   ASSERT_TRUE(cors_embedded_test_server()->Start());
@@ -1112,12 +1110,10 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_StartUrlCrossOrigin) {
   ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
       shell()->web_contents()->GetPrimaryPage());
 
-  // Test that a manifest with a cross-origin start_url triggers a bad message.
+  // Test that a manifest with cross-origin start_url triggers a C3 bad message.
   mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = GURL("https://evil.com/");
-  bad_manifest->id = GURL("https://evil.com/");
-  bad_manifest->scope = GURL("https://evil.com/");
+  blink::Manifest bad_manifest =
+      blink::Manifest::Builder(GURL("https://evil.com/")).BuildChecked();
 
   base::HistogramTester tester;
   mojo::test::BadMessageObserver bad_message_observer;
@@ -1126,683 +1122,6 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_StartUrlCrossOrigin) {
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Manifest origin must match the document origin.");
   tester.ExpectTotalCount("WebApp.Manifest.InvariantViolation", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_IdCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-origin id triggers a bad message and logs UMA.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = GURL("https://evil.com/");
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  base::HistogramTester tester;
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "Manifest id must be same-origin with the document.");
-  tester.ExpectUniqueSample("WebApp.Manifest.InvariantViolation",
-                            blink::ManifestInvariantError::kIdCrossOrigin, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_ScopeCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site start_url triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = GURL("https://evil.com");
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest scope must be same-origin with the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_ShareTargetActionCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site share_target action triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::Manifest::ShareTarget share_target;
-  share_target.action = GURL("https://evil.com");
-  bad_manifest->share_target = std::move(share_target);
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith(
-          "Manifest share_target must be same-origin with the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_FileHandlersActionCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site share_target action triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = GURL("https://evil.com");
-  bad_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith(
-          "Manifest file_handlers must be same-origin with the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ManifestBrowserTest,
-    BadMessage_FileHandlersAcceptExtensionInvalidFormatCharacter) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = test_url;
-
-  std::vector<std::u16string> extensions;
-  extensions.push_back(u".png\u202E");
-  file_handler->accept[u"image/png"] = std::move(extensions);
-
-  bad_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest file_handlers accept extension contains invalid "
-                  "control or format characters."));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ManifestBrowserTest,
-    BadMessage_FileHandlersAcceptExtensionInvalidControlCharacter) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = test_url;
-
-  std::vector<std::u16string> extensions;
-  extensions.push_back(u".png\u0001");
-  file_handler->accept[u"image/png"] = std::move(extensions);
-
-  bad_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest file_handlers accept extension contains invalid "
-                  "control or format characters."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_FileHandlersAcceptInvalidMimeType) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto invalid_manifest = blink::mojom::Manifest::New();
-  invalid_manifest->start_url = test_url;
-  invalid_manifest->id = test_url;
-  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = test_url;
-
-  std::vector<std::u16string> extensions;
-  extensions.push_back(u".eml");
-  file_handler->accept[u"x-scheme-handler/mailto"] = std::move(extensions);
-
-  invalid_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess,
-      std::move(invalid_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest file_handlers accept MIME type is invalid."));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ManifestBrowserTest,
-    BadMessage_FileHandlersAcceptExtensionMissingLeadingDot) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto invalid_manifest = blink::mojom::Manifest::New();
-  invalid_manifest->start_url = test_url;
-  invalid_manifest->id = test_url;
-  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = test_url;
-
-  std::vector<std::u16string> extensions;
-  extensions.push_back(u"png");
-  file_handler->accept[u"image/png"] = std::move(extensions);
-
-  invalid_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess,
-      std::move(invalid_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest file_handlers accept extension must start with a "
-                  "'.' and contain at least one extension character."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_FileHandlersAcceptExtensionOnlyDot) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto invalid_manifest = blink::mojom::Manifest::New();
-  invalid_manifest->start_url = test_url;
-  invalid_manifest->id = test_url;
-  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = test_url;
-
-  std::vector<std::u16string> extensions;
-  extensions.push_back(u".");
-  file_handler->accept[u"image/png"] = std::move(extensions);
-
-  invalid_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess,
-      std::move(invalid_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest file_handlers accept extension must start with a "
-                  "'.' and contain at least one extension character."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_FileHandlersAcceptEmptyExtensions) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto invalid_manifest = blink::mojom::Manifest::New();
-  invalid_manifest->start_url = test_url;
-  invalid_manifest->id = test_url;
-  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = test_url;
-
-  std::vector<std::u16string> extensions;
-  file_handler->accept[u"image/png"] = std::move(extensions);
-
-  invalid_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess,
-      std::move(invalid_manifest));
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith(
-          "Manifest file_handlers accept extensions list cannot be empty."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_ProtocolHandlersActionCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site share_target action triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestProtocolHandlerPtr protocol_handler =
-      blink::mojom::ManifestProtocolHandler::New();
-  protocol_handler->url = GURL("https://evil.com");
-  bad_manifest->protocol_handlers.push_back(std::move(protocol_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith(
-          "Manifest protocol_handlers must be same-origin with the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_NoteTakingNewNoteUrlCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site note_taking new_note_url triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestNoteTakingPtr note_taking =
-      blink::mojom::ManifestNoteTaking::New();
-  note_taking->new_note_url = GURL("https://evil.com");
-  bad_manifest->note_taking = std::move(note_taking);
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith("Manifest note_taking new_note_url must be "
-                                    "same-origin with the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_LockScreenStartUrlCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site lock_screen start_url triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestLockScreenPtr lock_screen =
-      blink::mojom::ManifestLockScreen::New();
-  lock_screen->start_url = GURL("https://evil.com");
-  bad_manifest->lock_screen = std::move(lock_screen);
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith("Manifest lock_screen start_url must be "
-                                    "same-origin with the document."));
-}
-
-// Tests that if a compromised renderer bypasses the manifest parser and sends
-// cross-site migration data directly, the browser correctly rejects it and
-// kills the renderer with a bad message.
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       MigrateCrossSiteBadMessage_MigrateToId) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site migrate_to.id triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  // Inject cross-origin ID to trigger bad message.
-  auto migrate_to = blink::mojom::ManifestMigrateTo::New();
-  migrate_to->id = GURL("https://www.other_example.com/manifest");
-  migrate_to->install_url = GURL("https://www.other_example.com/install");
-  bad_manifest->migrate_to = std::move(migrate_to);
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest migrate_to id must be the same site as the "
-                  "document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       MigrateCrossSiteBadMessage_MigrateToInstallUrl) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site migrate_to.install_url triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  // Inject cross-origin install_url to trigger bad message.
-  auto migrate_to = blink::mojom::ManifestMigrateTo::New();
-  migrate_to->id = embedded_test_server()->GetURL("/manifest/new");
-  migrate_to->install_url = GURL("https://www.other_example.com/install");
-  bad_manifest->migrate_to = std::move(migrate_to);
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest migrate_to install_url must be the same site as "
-                  "the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       MigrateCrossSiteBadMessage_MigrateFromId) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site migrate_from.id triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  // Inject cross-origin ID to trigger bad message.
-  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = GURL("https://www.other_example.com/manifest");
-  bad_manifest->migrate_from.push_back(std::move(migrate_from));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest migrate_from id must be the same site as the "
-                  "document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       MigrateCrossSiteBadMessage_MigrateFromInstallUrl) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a cross-site migrate_from.install_url triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  // Inject cross-origin install_url to trigger bad message.
-  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = embedded_test_server()->GetURL("/manifest/old");
-  migrate_from->install_url = GURL("https://www.other_example.com/install");
-  bad_manifest->migrate_from.push_back(std::move(migrate_from));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest migrate_from install_url must be the same site "
-                  "as the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       MigrateCrossOriginBadMessage_MigrateToInstallUrl) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  // Same site (127.0.0.1) but different port => cross-origin with id.
-  auto migrate_to = blink::mojom::ManifestMigrateTo::New();
-  migrate_to->id = embedded_test_server()->GetURL("/manifest/new");
-  migrate_to->install_url = GURL("http://127.0.0.1:9999/install");
-  bad_manifest->migrate_to = std::move(migrate_to);
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest migrate_to install_url must be the same origin "
-                  "as the id."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       MigrateCrossOriginBadMessage_MigrateFromInstallUrl) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  // Same site (127.0.0.1) but different port => cross-origin with id.
-  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = embedded_test_server()->GetURL("/manifest/old");
-  migrate_from->install_url = GURL("http://127.0.0.1:9999/install");
-  bad_manifest->migrate_from.push_back(std::move(migrate_from));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest migrate_from install_url must be the same origin "
-                  "as the id."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       ManifestShortcutUrlOutsideScopeBadMessage) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that a shortcut url outside the scope triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  // Inject out-of-scope shortcut to trigger bad message.
-  blink::Manifest::ShortcutItem shortcut;
-  shortcut.url = embedded_test_server()->GetURL("/out-of-scope/");
-  bad_manifest->shortcuts.push_back(std::move(shortcut));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith("Manifest shortcut urls must be within scope."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       ManifestIconInvalidSchemeBadMessage) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  // Test that an icon with invalid scheme triggers a bad message.
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::Manifest::ImageResource icon;
-  icon.src = GURL("ftp://evil.com/icon.png");
-  bad_manifest->icons.push_back(std::move(icon));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith("Manifest icon urls must be http, https, data, or "
-                            "match the document scheme."));
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ProtocolInvalidSchemeBadMessage) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  auto protocol_handler = blink::mojom::ManifestProtocolHandler::New();
-  protocol_handler->protocol = u"https";
-  protocol_handler->url =
-      embedded_test_server()->GetURL("/manifest/handler?q=%s");
-  bad_manifest->protocol_handlers.push_back(std::move(protocol_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  host->ValidateAndMaybeOverrideManifestForTesting(
-      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith(
-          "Manifest protocol_handlers protocol is invalid or restricted"));
 }
 
 // Local waiter to wait for WebContentsObserver::DidUpdateWebManifestURL.
@@ -2021,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(
                                       testing::_))
       .WillOnce([](const GURL&, const GURL&, const std::string&,
                    MockManifestManager::ParseManifestFromStringCallback cb) {
-        std::move(cb).Run(blink::mojom::Manifest::New());
+        std::move(cb).Run(std::nullopt);
       });
 
   base::test::TestFuture<std::optional<blink::Manifest>> valid_future;
@@ -2052,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
       .WillOnce([](MockManifestManager::RequestManifestCallback cb) {
         std::move(cb).Run(blink::mojom::ManifestRequestResult::kSuccess,
                           GURL("http://example.com/manifest.json"),
-                          /*manifest=*/nullptr);
+                          /*manifest=*/std::nullopt);
       });
 
   mojo::test::BadMessageObserver bad_message_observer;
@@ -2092,7 +1411,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
       .WillOnce([](MockManifestManager::RequestManifestCallback cb) {
         std::move(cb).Run(
             blink::mojom::ManifestRequestResult::kNoManifestAllowed, GURL(),
-            /*manifest=*/nullptr);
+            /*manifest=*/std::nullopt);
       });
 
   base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
@@ -2119,53 +1438,6 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
   auto [result, url, manifest] = manifest_future.Take();
   EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kNoManifestAllowed);
   EXPECT_FALSE(manifest.has_value());
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
-                       BadMessage_RequestManifestDebugInfo_InvariantViolation) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
-  MockManifestManager mock_manifest_manager;
-  service_manager::InterfaceProvider::TestApi test_api(
-      rfh->GetRemoteInterfaces());
-  test_api.SetBinderForName(
-      blink::mojom::ManifestManager::Name_,
-      base::BindRepeating(&MockManifestManager::Bind,
-                          base::Unretained(&mock_manifest_manager)));
-
-  EXPECT_CALL(mock_manifest_manager, RequestManifestDebugInfo)
-      .WillOnce([&test_url](
-                    MockManifestManager::RequestManifestDebugInfoCallback cb) {
-        auto bad_manifest = blink::mojom::Manifest::New();
-        bad_manifest->start_url = test_url;
-        bad_manifest->id = GURL("https://evil.com/");
-        bad_manifest->scope = test_url;
-        std::move(cb).Run(test_url, std::move(bad_manifest),
-                          blink::mojom::ManifestDebugInfo::New());
-      });
-
-  base::HistogramTester tester;
-  mojo::test::BadMessageObserver bad_message_observer;
-  base::test::TestFuture<const GURL&, base::optional_ref<const blink::Manifest>,
-                         blink::mojom::ManifestDebugInfoPtr>
-      debug_future;
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-  host->RequestManifestDebugInfo(debug_future.GetCallback());
-
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "Manifest id must be same-origin with the document.");
-  tester.ExpectUniqueSample("WebApp.Manifest.InvariantViolation",
-                            blink::ManifestInvariantError::kIdCrossOrigin, 1);
-
-  auto [url, manifest, debug_info] = debug_future.Take();
-  EXPECT_FALSE(manifest.has_value());
-
-  test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2233,41 +1505,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ManifestBrowserTest,
-    BadMessage_ParseManifestFromString_FileHandlersActionCrossOrigin) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  const GURL manifest_url =
-      embedded_test_server()->GetURL("/manifest/manifest.json");
-  bad_manifest->manifest_url = manifest_url;
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  blink::mojom::ManifestFileHandlerPtr file_handler =
-      blink::mojom::ManifestFileHandler::New();
-  file_handler->action = GURL("https://evil.com");
-  bad_manifest->file_handlers.push_back(std::move(file_handler));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  std::optional<blink::Manifest> result =
-      host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
-                                                       std::move(bad_manifest));
-  EXPECT_FALSE(result.has_value());
-  EXPECT_THAT(
-      bad_message_observer.WaitForBadMessage(),
-      ::testing::StartsWith(
-          "Manifest file_handlers must be same-origin with the document."));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ManifestBrowserTest,
     BadMessage_ParseManifestFromString_MismatchedManifestUrl) {
   const GURL test_url =
       embedded_test_server()->GetURL("/manifest/empty-manifest.html");
@@ -2277,11 +1514,11 @@ IN_PROC_BROWSER_TEST_F(
       shell()->web_contents()->GetPrimaryPage());
 
   mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  bad_manifest->manifest_url = GURL("https://evil.com/manifest.json");
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+  blink::Manifest bad_manifest =
+      blink::Manifest::Builder(test_url, test_url,
+                               embedded_test_server()->GetURL("/manifest/"))
+          .SetManifestUrl(GURL("https://evil.com/manifest.json"))
+          .BuildChecked();
 
   mojo::test::BadMessageObserver bad_message_observer;
   std::optional<blink::Manifest> result =
@@ -2291,71 +1528,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Returned manifest has incorrect manifest URL");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ManifestBrowserTest,
-    BadMessage_ParseManifestFromString_ScopeExtensionsOriginNotHttps) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  const GURL manifest_url =
-      embedded_test_server()->GetURL("/manifest/manifest.json");
-  bad_manifest->manifest_url = manifest_url;
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  auto scope_extension = blink::mojom::ManifestScopeExtension::New();
-  scope_extension->origin =
-      url::Origin::Create(GURL("http://insecure.example.com"));
-  bad_manifest->scope_extensions.push_back(std::move(scope_extension));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  std::optional<blink::Manifest> result =
-      host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
-                                                       std::move(bad_manifest));
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "Manifest scope_extensions origin must use the https scheme.");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ManifestBrowserTest,
-    BadMessage_ParseManifestFromString_ScopeExtensionsOriginOpaque) {
-  const GURL test_url =
-      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
-      shell()->web_contents()->GetPrimaryPage());
-
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto bad_manifest = blink::mojom::Manifest::New();
-  const GURL manifest_url =
-      embedded_test_server()->GetURL("/manifest/manifest.json");
-  bad_manifest->manifest_url = manifest_url;
-  bad_manifest->start_url = test_url;
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
-
-  auto scope_extension = blink::mojom::ManifestScopeExtension::New();
-  scope_extension->origin = url::Origin();
-  bad_manifest->scope_extensions.push_back(std::move(scope_extension));
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  std::optional<blink::Manifest> result =
-      host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
-                                                       std::move(bad_manifest));
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "Manifest scope_extensions origin must not be opaque.");
 }
 
 class OverrideManifestContentBrowserClient
@@ -2408,13 +1580,54 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
       shell()->web_contents()->GetPrimaryPage());
 
   mojo::FakeMessageDispatchContext fake_dispatch_context;
-  auto good_manifest = blink::mojom::Manifest::New();
-  good_manifest->start_url = test_url;
-  good_manifest->id = test_url;
-  good_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+  blink::Manifest good_manifest =
+      blink::Manifest::Builder(test_url, test_url,
+                               embedded_test_server()->GetURL("/manifest/"))
+          .BuildChecked();
 
   EXPECT_CHECK_DEATH(host->ValidateAndMaybeOverrideManifestForTesting(
       blink::mojom::ManifestRequestResult::kSuccess, std::move(good_manifest)));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_RequestManifestDebugInfo_InvariantViolation) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  MockManifestManager mock_manifest_manager;
+  service_manager::InterfaceProvider::TestApi test_api(
+      rfh->GetRemoteInterfaces());
+  test_api.SetBinderForName(
+      blink::mojom::ManifestManager::Name_,
+      base::BindRepeating(&MockManifestManager::Bind,
+                          base::Unretained(&mock_manifest_manager)));
+
+  // Close the receiver pipe and drop the callback to simulate Mojo rejecting a
+  // bad Manifest at deserialization due to an invariant violation from a
+  // compromised renderer.
+  EXPECT_CALL(mock_manifest_manager, RequestManifestDebugInfo)
+      .WillOnce([&mock_manifest_manager](
+                    MockManifestManager::RequestManifestDebugInfoCallback cb) {
+        mock_manifest_manager.receiver_.reset();
+        cb.Reset();
+      });
+
+  base::test::TestFuture<const GURL&, const std::optional<blink::Manifest>&,
+                         blink::mojom::ManifestDebugInfoPtr>
+      debug_future;
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+  host->RequestManifestDebugInfo(debug_future.GetCallback());
+
+  auto [url, manifest, debug_info] = debug_future.Take();
+  EXPECT_EQ(url, GURL());
+  EXPECT_FALSE(manifest.has_value());
+  EXPECT_FALSE(debug_info);
+
+  test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }
 
 }  // namespace

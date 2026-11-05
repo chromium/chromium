@@ -201,6 +201,40 @@ Manifest CreateFullManifest() {
                          std::move(en_name));
   builder.SetNameLocalized(std::move(name_localized));
 
+  // Localized short name
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      Manifest::ManifestLocalizedTextObject>
+      short_name_localized;
+  Manifest::ManifestLocalizedTextObject en_short_name;
+  en_short_name.value = u"App";
+  en_short_name.lang = u"en";
+  en_short_name.dir = mojom::Manifest_TextDirection::kLTR;
+  short_name_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
+                               std::move(en_short_name));
+  builder.SetShortNameLocalized(std::move(short_name_localized));
+
+  // Localized description
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      Manifest::ManifestLocalizedTextObject>
+      description_localized;
+  Manifest::ManifestLocalizedTextObject en_description;
+  en_description.value = u"A complete test app description.";
+  en_description.lang = u"en";
+  en_description.dir = mojom::Manifest_TextDirection::kLTR;
+  description_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
+                                std::move(en_description));
+  builder.SetDescriptionLocalized(std::move(description_localized));
+
+  // Localized icons
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      std::vector<Manifest::ImageResource>>
+      icons_localized;
+  std::vector<Manifest::ImageResource> en_icons;
+  en_icons.push_back(icons[0]);
+  icons_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
+                          std::move(en_icons));
+  builder.SetIconsLocalized(std::move(icons_localized));
+
   return std::move(builder).BuildChecked();
 }
 
@@ -755,16 +789,6 @@ TEST(ManifestTest, ToBuilderRoundTrip) {
   Manifest original = CreateFullManifest();
   Manifest round_tripped = original.ToBuilder().BuildChecked();
   EXPECT_EQ(original, round_tripped);
-}
-
-TEST(ManifestTest, BridgeRoundTrip) {
-  Manifest original = CreateFullManifest();
-  mojom::ManifestPtr mojom_manifest = ManifestToMojom(original);
-  ASSERT_TRUE(mojom_manifest);
-
-  auto round_tripped = ManifestFromMojom(*mojom_manifest);
-  ASSERT_TRUE(round_tripped.has_value());
-  EXPECT_EQ(original, *round_tripped);
 }
 
 }  // namespace blink

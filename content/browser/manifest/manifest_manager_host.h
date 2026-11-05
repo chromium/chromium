@@ -18,7 +18,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom.h"
 #include "url/gurl.h"
@@ -57,9 +56,7 @@ class CONTENT_EXPORT ManifestManagerHost
       AllManifestsCallbackList::CallbackType callback) override;
 
   using RequestManifestDebugInfoCallback =
-      base::OnceCallback<void(const GURL&,
-                              base::optional_ref<const blink::Manifest>,
-                              blink::mojom::ManifestDebugInfoPtr)>;
+      blink::mojom::ManifestManager::RequestManifestDebugInfoCallback;
 
   void RequestManifestDebugInfo(RequestManifestDebugInfoCallback callback);
 
@@ -74,7 +71,7 @@ class CONTENT_EXPORT ManifestManagerHost
   // mojo::FakeMessageDispatchContext before calling this method.
   void ValidateAndMaybeOverrideManifestForTesting(
       blink::mojom::ManifestRequestResult result,
-      blink::mojom::ManifestPtr manifest);
+      std::optional<blink::Manifest> manifest);
 
   void ParseManifestFromString(const GURL& document_url,
                                const GURL& manifest_url,
@@ -84,7 +81,7 @@ class CONTENT_EXPORT ManifestManagerHost
   std::optional<blink::Manifest> ValidateParsedManifestFromStringForTesting(
       const GURL& document_url,
       const GURL& manifest_url,
-      blink::mojom::ManifestPtr manifest);
+      std::optional<blink::Manifest> manifest);
 
  private:
   explicit ManifestManagerHost(Page& page);
@@ -103,30 +100,25 @@ class CONTENT_EXPORT ManifestManagerHost
   std::optional<blink::Manifest> ValidateParsedManifestFromString(
       const GURL& document_url,
       const GURL& manifest_url,
-      blink::mojom::ManifestPtr manifest);
+      std::optional<blink::Manifest> manifest);
 
-  void OnParseManifestFromStringResponse(const GURL& document_url,
-                                         const GURL& manifest_url,
-                                         ParseManifestCallback callback,
-                                         blink::mojom::ManifestPtr manifest);
-
-  void OnRequestManifestDebugInfoResponse(
-      RequestManifestDebugInfoCallback callback,
-      const GURL& url,
-      blink::mojom::ManifestPtr parsed_manifest,
-      blink::mojom::ManifestDebugInfoPtr debug_info);
+  void OnParseManifestFromStringResponse(
+      const GURL& document_url,
+      const GURL& manifest_url,
+      ParseManifestCallback callback,
+      const std::optional<blink::Manifest>& manifest);
 
   std::vector<GetManifestCallback> ExtractPendingCallbacks();
   void OnConnectionError();
 
-  void OnRequestManifestResponse(int request_id,
-                                 blink::mojom::ManifestRequestResult result,
-                                 const GURL& url,
-                                 blink::mojom::ManifestPtr manifest);
+  void OnRequestManifestResponse(
+      int request_id,
+      blink::mojom::ManifestRequestResult result,
+      const GURL& url,
+      const std::optional<blink::Manifest>& manifest);
   void OnRequestManifestAndErrors(
       const GURL& manifest_url_for_fetch,
-      base::expected<blink::mojom::ManifestPtr,
-                     blink::mojom::RequestManifestErrorPtr>);
+      base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>);
 
   // blink::mojom::ManifestUrlChangeObserver:
   void ManifestUrlChanged(const GURL& manifest_url) override;

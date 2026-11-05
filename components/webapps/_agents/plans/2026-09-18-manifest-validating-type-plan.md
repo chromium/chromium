@@ -3,7 +3,7 @@ id: 2026-09-18-manifest-validating-type
 title: 'Plan: Validating Web App Manifest Mojo Type'
 project: components/webapps
 author: dmurph@chromium.org, AI Assistant
-status: in-progress
+status: completed
 date: '2026-09-18'
 design_doc: ../designs/2026-09-18-manifest-validating-type-design.md
 bug: crbug.com/485890278
@@ -84,7 +84,7 @@ To keep each CL small and independently reviewable:
   `WebAppCommandScheduler`, UI, and Commands**
 - [x] **Milestone 12: Migrate `FakeWebContentsManager`, `IsolatedWebAppBuilder`,
   and WebApp Unit/Browser Tests**
-- [ ] **Milestone 13: Activate `blink.mojom.Manifest` Mojo Typemap, Remove
+- [x] **Milestone 13: Activate `blink.mojom.Manifest` Mojo Typemap, Remove
   Bridges, and Run Harness Freshness Audit**
 
 ______________________________________________________________________
@@ -488,4 +488,23 @@ ______________________________________________________________________
 
 ## 8. Outcomes & Retrospective
 
-_(To be filled upon completion of the final milestone)_
+- **Milestone 13 Completion:**
+  - Registered all 9 typemaps in `//third_party/blink/public/mojom/BUILD.gn`
+    (`blink.mojom.Manifest` and its 8 nested structs).
+  - Implemented
+    `StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>` in
+    `manifest_mojom_traits.h/.cc` with 40 field getters and `Read()` returning
+    `base::expected<void, mojo::DeserializationError>` verifying intrinsic
+    invariants `I1`–`I13` and recording `WebApp.Manifest.InvariantViolation`.
+  - Removed conversion bridges `ManifestFromMojom` and `ManifestToMojom`, as
+    well as `blink::IsEmptyManifest` and legacy `mojom::Manifest` overloads of
+    `IsDefaultManifest`.
+  - Migrated `ManifestManagerHost` and `manifest_browsertest.cc` to work
+    natively with `blink::Manifest` and `std::optional<blink::Manifest>`,
+    retaining only contextual checks (`C1`–`C5`) in the browser host and
+    deleting obsolete browser-level tests of intrinsic invariants.
+  - Added comprehensive round-trip and invalid-deserialization tests in
+    `manifest_mojom_traits_unittest.cc` and fixed dangling string view in
+    `ConvertAndTruncateOptionalString`.
+  - Verified harness and documentation freshness across `components/webapps` and
+    `content/browser/manifest`.

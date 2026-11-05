@@ -10,17 +10,241 @@
 
 #include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_invariants.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace blink {
+namespace {
 
-class ManifestMojomTraitsTest : public testing::Test {};
+Manifest CreateFullManifest() {
+  Manifest::Builder builder(GURL("https://example.com/app/index.html"),
+                            GURL("https://example.com/app/id"),
+                            GURL("https://example.com/"));
+
+  builder.SetManifestUrl(GURL("https://example.com/app/manifest.json"));
+  builder.SetDir(mojom::Manifest_TextDirection::kLTR);
+  builder.SetName(u"Test App Name");
+  builder.SetShortName(u"Test App");
+  builder.SetDescription(u"A complete test app description.");
+  builder.SetHasCustomId(true);
+  builder.SetHasValidSpecifiedStartUrl(true);
+  builder.SetDisplay(mojom::DisplayMode::kStandalone);
+
+  std::vector<Manifest::DisplayOverride> overrides;
+  overrides.push_back(
+      Manifest::DisplayOverride::Create(mojom::DisplayMode::kMinimalUi));
+  overrides.push_back(
+      Manifest::DisplayOverride::Create(mojom::DisplayMode::kStandalone));
+  builder.SetDisplayOverride(std::move(overrides));
+
+  builder.SetOrientation(
+      device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY);
+
+  // Icons
+  std::vector<Manifest::ImageResource> icons;
+  Manifest::ImageResource icon;
+  icon.src = GURL("https://example.com/app/icon.png");
+  icon.type = u"image/png";
+  icon.sizes.emplace_back(192, 192);
+  icon.purpose.push_back(mojom::ManifestImageResource_Purpose::ANY);
+  icons.push_back(std::move(icon));
+  builder.SetIcons(icons);
+
+  // Screenshots
+  std::vector<Manifest::Screenshot> screenshots;
+  Manifest::Screenshot screenshot;
+  screenshot.image.src = GURL("https://example.com/app/screenshot.png");
+  screenshot.image.type = u"image/png";
+  screenshot.image.sizes.emplace_back(800, 600);
+  screenshot.form_factor = mojom::ManifestScreenshot_FormFactor::kWide;
+  screenshot.label = u"Desktop Screenshot";
+  screenshots.push_back(std::move(screenshot));
+  builder.SetScreenshots(std::move(screenshots));
+
+  // Shortcuts
+  std::vector<Manifest::ShortcutItem> shortcuts;
+  Manifest::ShortcutItem shortcut;
+  shortcut.name = u"App Shortcut";
+  shortcut.url = GURL("https://example.com/app/shortcut");
+  shortcuts.push_back(std::move(shortcut));
+  builder.SetShortcuts(std::move(shortcuts));
+
+  // Share target
+  Manifest::ShareTarget share_target;
+  share_target.action = GURL("https://example.com/app/share");
+  share_target.method = mojom::ManifestShareTarget_Method::kPost;
+  share_target.enctype = mojom::ManifestShareTarget_Enctype::kMultipartFormData;
+  share_target.params.title = u"title";
+  share_target.params.text = u"text";
+  builder.SetShareTarget(std::move(share_target));
+
+  // File handlers
+  std::vector<Manifest::FileHandler> file_handlers;
+  Manifest::FileHandler file_handler;
+  file_handler.action = GURL("https://example.com/app/open-file");
+  file_handler.name = u"Text files";
+  file_handler.accept[u"text/plain"].push_back(u".txt");
+  file_handler.launch_type = Manifest::FileHandler::LaunchType::kSingleClient;
+  file_handlers.push_back(std::move(file_handler));
+  builder.SetFileHandlers(std::move(file_handlers));
+
+  // Protocol handlers
+  std::vector<Manifest::ProtocolHandler> protocol_handlers;
+  Manifest::ProtocolHandler protocol_handler;
+  protocol_handler.protocol = u"web+custom";
+  protocol_handler.url = GURL("https://example.com/app/handle?proto=%s");
+  protocol_handlers.push_back(std::move(protocol_handler));
+  builder.SetProtocolHandlers(std::move(protocol_handlers));
+
+  // Scope extensions
+  std::vector<Manifest::ScopeExtension> scope_extensions;
+  Manifest::ScopeExtension scope_extension;
+  scope_extension.origin = url::Origin::Create(GURL("https://example-sub.com"));
+  scope_extension.has_origin_wildcard = false;
+  scope_extensions.push_back(std::move(scope_extension));
+  builder.SetScopeExtensions(std::move(scope_extensions));
+
+  // Lock screen
+  Manifest::LockScreen lock_screen;
+  lock_screen.start_url = GURL("https://example.com/app/lock");
+  builder.SetLockScreen(std::move(lock_screen));
+
+  // Note taking
+  Manifest::NoteTaking note_taking;
+  note_taking.new_note_url = GURL("https://example.com/app/new-note");
+  builder.SetNoteTaking(std::move(note_taking));
+
+  // Related applications
+  std::vector<Manifest::RelatedApplication> related_applications;
+  Manifest::RelatedApplication app;
+  app.platform = u"play";
+  app.id = u"com.example.app";
+  app.url =
+      GURL("https://play.google.com/store/apps/details?id=com.example.app");
+  related_applications.push_back(std::move(app));
+  builder.SetRelatedApplications(std::move(related_applications));
+  builder.SetPreferRelatedApplications(true);
+
+  // Migrate from
+  std::vector<Manifest::MigrateFrom> migrate_from;
+  Manifest::MigrateFrom from;
+  from.id = GURL("https://example.com/old/id");
+  from.install_url = GURL("https://example.com/old/install");
+  migrate_from.push_back(std::move(from));
+  builder.SetMigrateFrom(std::move(migrate_from));
+
+  // Migrate to
+  Manifest::MigrateTo migrate_to;
+  migrate_to.id = GURL("https://example.com/new/id");
+  migrate_to.install_url = GURL("https://example.com/new/install");
+  builder.SetMigrateTo(std::move(migrate_to));
+
+  builder.SetThemeColor(0xFF00FF00);
+  builder.SetBackgroundColor(0xFFFFFFFF);
+  builder.SetGcmSenderId(u"1234567890");
+
+  builder.SetUpdateManifestUrl(
+      GURL("https://example.com/app/update_manifest.json"));
+
+  Manifest::LaunchHandler launch_handler(
+      Manifest::LaunchHandler::ClientMode::kNavigateExisting);
+  builder.SetLaunchHandler(launch_handler);
+
+  // Translations
+  base::flat_map<std::u16string, Manifest::TranslationItem> translations;
+  Manifest::TranslationItem item;
+  item.name = "Nom de l'application";
+  item.short_name = "App";
+  item.description = "Description en francais";
+  translations[u"fr"] = std::move(item);
+  builder.SetTranslations(std::move(translations));
+
+  builder.SetDarkThemeColor(0xFF003300);
+  builder.SetDarkBackgroundColor(0xFF111111);
+
+  // Tab strip
+  Manifest::TabStrip tab_strip;
+  Manifest::HomeTabParams home_tab;
+  home_tab.icons.push_back(icons[0]);
+  tab_strip.home_tab = std::move(home_tab);
+  Manifest::NewTabButtonParams new_tab_button;
+  new_tab_button.url = GURL("https://example.com/app/new-tab");
+  tab_strip.new_tab_button = std::move(new_tab_button);
+  builder.SetTabStrip(std::move(tab_strip));
+
+  builder.SetVersion(u"1.2.3");
+
+  // Localized name
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      Manifest::ManifestLocalizedTextObject>
+      name_localized;
+  Manifest::ManifestLocalizedTextObject en_name;
+  en_name.value = u"App (EN)";
+  en_name.lang = u"en";
+  en_name.dir = mojom::Manifest_TextDirection::kLTR;
+  name_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
+                         std::move(en_name));
+  builder.SetNameLocalized(std::move(name_localized));
+
+  // Localized short name
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      Manifest::ManifestLocalizedTextObject>
+      short_name_localized;
+  Manifest::ManifestLocalizedTextObject en_short_name;
+  en_short_name.value = u"App";
+  en_short_name.lang = u"en";
+  en_short_name.dir = mojom::Manifest_TextDirection::kLTR;
+  short_name_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
+                               std::move(en_short_name));
+  builder.SetShortNameLocalized(std::move(short_name_localized));
+
+  // Localized description
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      Manifest::ManifestLocalizedTextObject>
+      description_localized;
+  Manifest::ManifestLocalizedTextObject en_description;
+  en_description.value = u"A complete test app description.";
+  en_description.lang = u"en";
+  en_description.dir = mojom::Manifest_TextDirection::kLTR;
+  description_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
+                                std::move(en_description));
+  builder.SetDescriptionLocalized(std::move(description_localized));
+
+  // Localized icons
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      std::vector<Manifest::ImageResource>>
+      icons_localized;
+  std::vector<Manifest::ImageResource> en_icons;
+  en_icons.push_back(icons[0]);
+  icons_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
+                          std::move(en_icons));
+  builder.SetIconsLocalized(std::move(icons_localized));
+
+  return std::move(builder).BuildChecked();
+}
+
+Manifest CreateEmptyValidManifest() {
+  return Manifest::Builder(GURL("https://example.com/app/index.html"),
+                           GURL("https://example.com/app/id"),
+                           GURL("https://example.com/"))
+      .BuildChecked();
+}
+
+}  // namespace
+
+class ManifestMojomTraitsTest : public testing::Test {
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
 
 // Tests the StructTraits path for ShortcutItem with localized name field.
 // This exercises the absl::flat_hash_map<base::i18n::LanguageTag, ...>
@@ -247,6 +471,62 @@ TEST_F(ManifestMojomTraitsTest, NestedStructTraitsRoundTrip) {
         original, round_tripped));
     EXPECT_EQ(original, round_tripped);
   }
+}
+
+TEST_F(ManifestMojomTraitsTest, FullManifestRoundTrip) {
+  Manifest original = CreateFullManifest();
+  Manifest round_tripped = CreateEmptyValidManifest();
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Manifest>(
+      original, round_tripped));
+  EXPECT_EQ(original, round_tripped);
+}
+
+TEST_F(ManifestMojomTraitsTest, InvalidManifestFailsToDeserialize) {
+  base::HistogramTester histogram_tester;
+
+  mojo::Message message;
+  mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+  mojom::ManifestPtr bad_manifest = mojom::Manifest::New();
+  // start_url is empty, violating the start_url validity invariant.
+  mojo::Message serialized = mojom::Manifest::SerializeAsMessage(&bad_manifest);
+
+  Manifest out = CreateEmptyValidManifest();
+  EXPECT_FALSE(
+      mojom::Manifest::DeserializeFromMessage(std::move(serialized), &out));
+
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Manifest.InvariantViolation",
+      static_cast<int>(ManifestInvariantError::kStartUrlInvalid), 1);
+
+  ASSERT_EQ(1u, dispatch_context.error_trace().size());
+  EXPECT_EQ(static_cast<int32_t>(ManifestInvariantError::kStartUrlInvalid),
+            dispatch_context.error_trace()[0].custom_code());
+}
+
+TEST_F(ManifestMojomTraitsTest, CrossOriginIdFailsToDeserialize) {
+  base::HistogramTester histogram_tester;
+
+  mojo::Message message;
+  mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+  mojom::ManifestPtr bad_manifest = mojom::Manifest::New();
+  bad_manifest->start_url = GURL("https://example.com/start");
+  bad_manifest->id = GURL("https://evil.com/id");
+  bad_manifest->scope = GURL("https://example.com/");
+  mojo::Message serialized = mojom::Manifest::SerializeAsMessage(&bad_manifest);
+
+  Manifest out = CreateEmptyValidManifest();
+  EXPECT_FALSE(
+      mojom::Manifest::DeserializeFromMessage(std::move(serialized), &out));
+
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Manifest.InvariantViolation",
+      static_cast<int>(ManifestInvariantError::kIdCrossOrigin), 1);
+
+  ASSERT_EQ(1u, dispatch_context.error_trace().size());
+  EXPECT_EQ(static_cast<int32_t>(ManifestInvariantError::kIdCrossOrigin),
+            dispatch_context.error_trace()[0].custom_code());
 }
 
 }  // namespace blink
