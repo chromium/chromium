@@ -84,6 +84,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -7386,8 +7387,7 @@ class FullWebUIOmniboxOrganizerTrayInteractiveTest
         /*enabled_features=*/{organizer_panel::kOrganizerPanel,
                               omnibox::internal::kWebUIOmniboxPopup,
                               omnibox::internal::kWebUIOmniboxFullPopup},
-        /*disabled_features=*/{features::kWebUIToolbar,
-                               features::kWebUILocationBar});
+        /*disabled_features=*/{});
   }
   ~FullWebUIOmniboxOrganizerTrayInteractiveTest() override = default;
 
@@ -7574,6 +7574,135 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxOrganizerTrayInteractiveTest,
       CheckTrayOpenAndOmniboxUnfocused(), ClickTrayBelowTopContainer(),
       WaitForMousedownCount(kOrganizerWebView, 2),
       CheckTrayOpenAndOmniboxUnfocused());
+}
+
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxOrganizerTrayInteractiveTest,
+                       ClickingCollapsedPopupClosesOrganizerTray) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOrganizerWebView);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kOrganizerTrayClosedState);
+
+  RunTestSequence(
+      // Leave an uncommitted draft in the omnibox with the dropdown open.
+      FocusOmniboxOnInitialNtp(kTab1), InputWebUIText("draft query"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      CheckResult(
+          [this]() {
+            return GetOmniboxControllerForTest()->edit_model()->HasDraft();
+          },
+          true, "CheckHasDraft"),
+
+      // Opening the tray blurs the omnibox and collapses the popup to one row.
+      OpenOrganizerTray(kOrganizerWebView), WaitForVisibleOmniboxUnfocused(),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForCollapsedPopupClippedByTray(),
+
+      // Refocus the omnibox by clicking the visible part of the collapsed
+      // popup.
+      InAnyContext(MoveMouseTo(
+          kPopupWebView,
+          base::BindLambdaForTesting([this](ui::TrackedElement*) {
+            views::Widget* popup_widget = GetPopupWidget(browser());
+            const gfx::Rect popup_bounds =
+                popup_widget->GetWindowBoundsInScreen();
+            const gfx::Rect overlap = GetTrayPopupOverlapInScreen();
+            CHECK(!overlap.IsEmpty());
+            if (overlap.x() == popup_bounds.x()) {
+              int click_x = overlap.right() +
+                            (popup_bounds.right() - overlap.right()) / 2;
+              return gfx::Point(click_x, popup_bounds.CenterPoint().y());
+            } else {
+              int click_x =
+                  popup_bounds.x() + (overlap.x() - popup_bounds.x()) / 2;
+              return gfx::Point(click_x, popup_bounds.CenterPoint().y());
+            }
+          }))),
+      InAnyContext(ClickMouse()), WaitForOmniboxFocus(true),
+      PollState(kOrganizerTrayClosedState,
+                [this]() { return !IsOrganizerTrayOpen(); }),
+      WaitForState(kOrganizerTrayClosedState, true));
+}
+
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxOrganizerTrayInteractiveTest,
+                       FocusLocationAcceleratorClosesOrganizerTray) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOrganizerWebView);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kOrganizerTrayClosedState);
+
+  RunTestSequence(
+      // Leave an uncommitted draft in the omnibox with the dropdown open.
+      FocusOmniboxOnInitialNtp(kTab1), InputWebUIText("draft query"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      CheckResult(
+          [this]() {
+            return GetOmniboxControllerForTest()->edit_model()->HasDraft();
+          },
+          true, "CheckHasDraft"),
+
+      // Opening the tray blurs the omnibox and collapses the popup to one row.
+      OpenOrganizerTray(kOrganizerWebView), WaitForVisibleOmniboxUnfocused(),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForCollapsedPopupClippedByTray(),
+
+      // Refocus the omnibox using the focus-location accelerator.
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_FOCUS_LOCATION); }),
+      WaitForOmniboxFocus(true),
+      PollState(kOrganizerTrayClosedState,
+                [this]() { return !IsOrganizerTrayOpen(); }),
+      WaitForState(kOrganizerTrayClosedState, true));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxOrganizerTrayInteractiveTest,
+    FocusLocationAcceleratorClosesTrayOpenedBeforePopupShown) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOrganizerWebView);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kOrganizerTrayClosedState);
+
+  RunTestSequence(
+      // Open the Organizer Tray before the omnibox popup has ever shown.
+      InstrumentTab(kTab1), OpenOrganizerTray(kOrganizerWebView),
+
+      // Refocus the omnibox using the focus-location accelerator.
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_FOCUS_LOCATION); }),
+      WaitForPopupReady(),
+      PollState(kOrganizerTrayClosedState,
+                [this]() { return !IsOrganizerTrayOpen(); }),
+      WaitForState(kOrganizerTrayClosedState, true));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxOrganizerTrayInteractiveTest,
+    FocusLocationAcceleratorDoesNotCloseVerticalTabsOrganizerPanel) {
+  RunTestSequence(
+      Do([this]() {
+        tabs::VerticalTabStripStateController::From(browser())
+            ->SetVerticalTabsEnabled(true);
+        RunScheduledLayouts();
+      }),
+      WaitForShow(kVerticalTabStripCollapseButtonElementId),
+      Do([this]() { chrome::ShowTabSearch(browser()); }),
+      WaitForShow(kOrganizerPanelElementId),
+      CheckResult(
+          [this]() {
+            return OrganizerPanelController::From(browser())
+                ->GetCurrentOrganizerPanelLocation();
+          },
+          OrganizerPanelLocation::kVerticalTabStrip,
+          "CheckPanelInVerticalTabStrip"),
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_FOCUS_LOCATION); }),
+      WaitForPopupReady(),
+      CheckResult(
+          [this]() {
+            return OrganizerPanelController::From(browser())
+                ->IsOrganizerPanelVisible();
+          },
+          true, "CheckOrganizerPanelVisible"),
+      EnsurePresent(kOrganizerPanelElementId));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

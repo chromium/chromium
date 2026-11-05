@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
@@ -197,6 +199,25 @@ void OmniboxPopupFullPresenter::Hide() {
     // reshown. This prevents the popup from temporarily using a stale size
     // from its previous state.
     content_height_ = 1;
+  }
+}
+
+void OmniboxPopupFullPresenter::OnOmniboxFocused() {
+  OmniboxPopupPresenterBase::OnOmniboxFocused();
+
+  // The popup is its own widget, so its focus never reaches the tray's focus
+  // listener. The panel embedded in the vertical tab strip has no such
+  // listener and stays open, as it does for the Views omnibox.
+  if (views::Widget* browser_widget = GetBrowserWidget()) {
+    if (auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+            browser_widget->GetNativeWindow())) {
+      if (auto* controller =
+              OrganizerPanelController::From(browser_view->browser());
+          controller && controller->GetCurrentOrganizerPanelLocation() ==
+                            OrganizerPanelLocation::kOrganizerTray) {
+        controller->SetOrganizerVisible(false);
+      }
+    }
   }
 }
 

@@ -186,7 +186,7 @@ class OmniboxPopupPresenterBase
   // When the presenter's creation strategy is `kOnOmniboxFocus`, creates the
   // WebUI content once the browser window has presented its first frame, so
   // the page loads while the user types without delaying window presentation.
-  void OnOmniboxFocused();
+  virtual void OnOmniboxFocused();
 
   // Returns the timeout if showing should be deferred until the WebUI has
   // painted a new frame, or std::nullopt if it should not be deferred.

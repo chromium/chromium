@@ -53,6 +53,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // OmniboxPopupPresenterBase:
   void Show() override;
   void Hide() override;
+  void OnOmniboxFocused() override;
   void NotifyEscapeKeyPressed() override;
   // Requests activation of the popup widget and focuses the WebUI content,
   // while clearing stored focus on the container widget to prevent stealing
