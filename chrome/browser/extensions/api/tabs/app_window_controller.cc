@@ -5,18 +5,15 @@
 #include "chrome/browser/extensions/api/tabs/app_window_controller.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/values.h"
 #include "chrome/browser/extensions/api/tabs/app_base_window.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/extensions/api/tabs.h"
-#include "chrome/common/url_constants.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/common/extension.h"
 
 namespace extensions {
 
@@ -52,22 +49,23 @@ BrowserWindowInterface* AppWindowController::GetBrowser() const {
 }
 
 content::WebContents* AppWindowController::GetActiveTab() const {
-  return app_window_->web_contents();
+  return nullptr;
 }
 
 int AppWindowController::GetTabCount() const {
-  return 1;  // Only one "tab" in an app window.
+  return 0;
 }
 
 content::WebContents* AppWindowController::GetWebContentsAt(int i) const {
-  return i == 0 ? app_window_->web_contents() : nullptr;
+  return nullptr;
 }
 
 bool AppWindowController::IsVisibleToTabsAPIForExtension(
     const Extension* extension,
-    bool allow_dev_tools_windows) const {
-  CHECK(extension, base::NotFatalUntil::M161);
-  return extension->id() == app_window_->extension_id();
+    bool include_dev_tools_windows) const {
+  // Platform app windows are managed via chrome.app.window and are never
+  // exposed to the chrome.tabs or chrome.windows APIs.
+  return false;
 }
 
 base::DictValue AppWindowController::CreateWindowValueForExtension(

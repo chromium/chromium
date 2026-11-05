@@ -120,9 +120,10 @@ class WindowController {
   // end of the tab strip.
   virtual content::WebContents* GetWebContentsAt(int i) const = 0;
 
-  // Returns true if the window is visible to the tabs API, when used by the
-  // given `extension`.
-  // `allow_dev_tools_windows` indicates whether dev tools windows should be
+  // Returns true if the window is visible to the tabs and windows APIs when
+  // used by the given `extension` (`extension` may be null for non-extension
+  // contexts such as WebUI, or when checking general window visibility).
+  // `include_dev_tools_windows` indicates whether dev tools windows should be
   // treated as visible.
   // TODO(devlin): Remove include_dev_tools_windows.
   virtual bool IsVisibleToTabsAPIForExtension(

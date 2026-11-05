@@ -458,6 +458,51 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowsTestWithApps, GetAllWindowsAllTypes) {
   CloseAppWindow(app_window);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionWindowsTestWithApps,
+                       AppWindowControllerNotExposedToTabsOrWindowsApi) {
+  AppWindow* app_window = CreateTestAppWindow("{}");
+  ASSERT_TRUE(app_window);
+  const int app_window_id = app_window->session_id().id();
+
+  WindowController* app_window_controller =
+      ExtensionTabUtil::GetControllerInProfileWithId(
+          profile(), app_window_id, /*also_match_incognito_profile=*/false,
+          /*error_message=*/nullptr);
+  ASSERT_TRUE(app_window_controller);
+  EXPECT_EQ(0, app_window_controller->GetTabCount());
+  EXPECT_EQ(nullptr, app_window_controller->GetActiveTab());
+  EXPECT_EQ(nullptr, app_window_controller->GetWebContentsAt(0));
+
+  // Build a regular extension sharing the app's ID (modeling an allowlisted
+  // extension that owns an AppWindow).
+  scoped_refptr<const Extension> owning_extension =
+      ExtensionBuilder("OwningExtension")
+          .SetID(app_window->extension_id())
+          .Build();
+  EXPECT_FALSE(app_window_controller->IsVisibleToTabsAPIForExtension(
+      app_window->GetExtension(), /*include_dev_tools_windows=*/false));
+  EXPECT_FALSE(app_window_controller->IsVisibleToTabsAPIForExtension(
+      owning_extension.get(), /*include_dev_tools_windows=*/false));
+  EXPECT_FALSE(app_window_controller->IsVisibleToTabsAPIForExtension(
+      owning_extension.get(), /*include_dev_tools_windows=*/true));
+  EXPECT_FALSE(app_window_controller->IsVisibleToTabsAPIForExtension(
+      /*extension=*/nullptr, /*include_dev_tools_windows=*/true));
+
+  auto get_function = base::MakeRefCounted<WindowsGetFunction>();
+  get_function->set_extension(owning_extension.get());
+  EXPECT_TRUE(base::MatchPattern(
+      utils::RunFunctionAndReturnError(
+          get_function.get(),
+          base::StringPrintf(
+              R"([%d, {"windowTypes": ["app", "devtools", "normal", )"
+              R"("panel", "popup"]}])",
+              app_window_id),
+          profile()),
+      ExtensionTabUtil::kWindowNotFoundError));
+
+  CloseAppWindow(app_window);
+}
+
 #endif  // BUIDFLAG(ENABLE_PLATFORM_APPS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionWindowsTest,

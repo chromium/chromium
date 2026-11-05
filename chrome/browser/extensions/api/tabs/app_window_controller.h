@@ -44,7 +44,7 @@ class AppWindowController : public WindowController {
   content::WebContents* GetWebContentsAt(int i) const override;
   bool IsVisibleToTabsAPIForExtension(
       const Extension* extension,
-      bool allow_dev_tools_windows) const override;
+      bool include_dev_tools_windows) const override;
   base::DictValue CreateWindowValueForExtension(
       const Extension* extension,
       PopulateTabBehavior populate_tab_behavior,
