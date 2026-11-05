@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_context_menu_command.h"

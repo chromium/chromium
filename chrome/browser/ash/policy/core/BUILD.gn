@@ -341,8 +341,6 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
-    "//chrome/app:branded_strings",
-    "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",

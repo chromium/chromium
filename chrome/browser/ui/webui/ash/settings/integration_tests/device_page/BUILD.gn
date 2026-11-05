@@ -20,7 +20,6 @@ if (!is_chromeos_device) {
       "//ash/webui/settings/public/constants:mojom",
       "//base",
       "//base/test:test_support",
-      "//chrome/app:generated_resources",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support_ui",
       "//chrome/test/base/ash/interactive:test_support",

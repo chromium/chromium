@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"

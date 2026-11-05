@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"

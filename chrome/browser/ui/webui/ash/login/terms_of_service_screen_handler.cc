@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"

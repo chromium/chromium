@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 

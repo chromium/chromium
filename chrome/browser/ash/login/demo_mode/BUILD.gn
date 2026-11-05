@@ -169,7 +169,6 @@ source_set("browser_tests") {
     "//base:i18n",
     "//base/test:test_config",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
