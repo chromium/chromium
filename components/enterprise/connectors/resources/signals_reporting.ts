@@ -56,8 +56,18 @@ export class SignalsReportingElement extends CustomElement {
     this.setValueToElement('#signals-source', source);
   }
 
+  private signalsJsonString_: string = '';
   set signalsJsonString(jsonString: string) {
+    this.signalsJsonString_ = jsonString;
     this.setValueToElement('#signals-json', jsonString);
+  }
+
+  get signalsJsonString(): string {
+    return this.signalsJsonString_;
+  }
+
+  get copyButton(): HTMLButtonElement|null {
+    return this.$<HTMLButtonElement>('#copy-signals');
   }
 
   private get pageHandler(): PageHandlerInterface {
@@ -66,6 +76,11 @@ export class SignalsReportingElement extends CustomElement {
 
   constructor() {
     super();
+
+    const copyButton = this.copyButton;
+    if (copyButton) {
+      copyButton.addEventListener('click', () => this.copySignals(copyButton));
+    }
 
     this.fetchSignalsReportingState();
   }
@@ -94,9 +109,11 @@ export class SignalsReportingElement extends CustomElement {
       this.signalsSourceString =
           SignalsSourceStringMap[state.signals.source] || 'None';
       this.signalsJsonString = mojoDictionaryToJsonString(state.signals.values);
+      this.showCopyButton();
     } else {
       this.signalsSourceString = 'None';
       this.signalsJsonString = '{}';
+      this.hideCopyButton();
     }
   }
 
@@ -106,6 +123,20 @@ export class SignalsReportingElement extends CustomElement {
             this.updateState(response?.state),
         err => console.error(
             `fetchSignalsReportingState failed: ${JSON.stringify(err)}`));
+  }
+
+  private copySignals(copyButton: HTMLButtonElement) {
+    copyButton.disabled = true;
+    navigator.clipboard.writeText(this.signalsJsonString)
+        .finally(() => copyButton.disabled = false);
+  }
+
+  private showCopyButton() {
+    this.copyButton?.classList.remove('hidden');
+  }
+
+  private hideCopyButton() {
+    this.copyButton?.classList.add('hidden');
   }
 
   private showErrorElement() {
