@@ -1849,7 +1849,9 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
     return;
   }
 
-  CHECK(can_dock_ || !dock_requested, base::NotFatalUntil::M161);
+  // TODO(crbug.com/579584319): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(can_dock_ || !dock_requested);
   if (!can_dock_) {
     dock_requested = false;
   }
