@@ -28,9 +28,13 @@ function randomPathData(length) {
     while (d.length < length) {
         var command = commands[randomInt(commands.length)];
         d += command;
+        var isArc = command == 'A' || command == 'a';
         var count = arity[command.toUpperCase()] * (1 + randomInt(3));
         for (var i = 0; i < count; ++i) {
-            var number = randomNumber();
+            // The 4th and 5th arc arguments are the large-arc and sweep
+            // flags, which must be 0 or 1 for the path data to be valid.
+            var isFlag = isArc && (i % 7 == 3 || i % 7 == 4);
+            var number = isFlag ? String(randomInt(2)) : randomNumber();
             if (i > 0 && number[0] != '-')
                 d += ' ';
             d += number;
