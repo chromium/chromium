@@ -21,6 +21,8 @@
 
 namespace autofill {
 
+struct CustomFormControl;
+
 // Runs the custom form control script of the current document in an isolated
 // world, so that the script can access the frame's DOM without sharing globals
 // with the page or with other features.
@@ -69,6 +71,10 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
 
   // Returns whether a manager is loaded for the current document.
   bool has_manager() const { return !manager_.IsEmpty(); }
+
+  // Calls the manager's `detectCustomFormControls()` and returns the valid
+  // custom form controls it detected.
+  std::vector<CustomFormControl> DetectCustomFormControls();
 
  private:
   friend class CustomFormControlScriptExecutorTestApi;

@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/custom_form_control_script_executor.h"
 
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -14,18 +15,24 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/content/renderer/custom_form_control_util.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "url/origin.h"
+#include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-function.h"
@@ -104,6 +111,119 @@ void EnsureIsolatedWorldSetUp(int32_t world_id) {
   blink::SetIsolatedWorldInfo(world_id, info);
 }
 
+v8::MaybeLocal<v8::Value> GetProperty(v8::Isolate* isolate,
+                                      v8::Local<v8::Context> context,
+                                      v8::Local<v8::Object> obj,
+                                      std::string_view key) {
+  v8::Local<v8::String> v8_key;
+  if (!v8::String::NewFromUtf8(isolate, key.data(), v8::NewStringType::kNormal,
+                               base::checked_cast<int>(key.size()))
+           .ToLocal(&v8_key)) {
+    return {};
+  }
+  return obj->Get(context, v8_key);
+}
+
+std::optional<std::u16string> GetStringProperty(v8::Isolate* isolate,
+                                                v8::Local<v8::Context> context,
+                                                v8::Local<v8::Object> obj,
+                                                std::string_view key) {
+  v8::Local<v8::Value> val;
+  if (!GetProperty(isolate, context, obj, key).ToLocal(&val) ||
+      !val->IsString()) {
+    return std::nullopt;
+  }
+  v8::Local<v8::String> str = val.As<v8::String>();
+  std::u16string utf16(str->Length(), u'\0');
+  str->Write(isolate, 0, str->Length(),
+             reinterpret_cast<uint16_t*>(utf16.data()));
+  return utf16;
+}
+
+std::optional<bool> GetBoolProperty(v8::Isolate* isolate,
+                                    v8::Local<v8::Context> context,
+                                    v8::Local<v8::Object> obj,
+                                    std::string_view key) {
+  v8::Local<v8::Value> val;
+  if (!GetProperty(isolate, context, obj, key).ToLocal(&val) ||
+      !val->IsBoolean()) {
+    return std::nullopt;
+  }
+  return val->BooleanValue(isolate);
+}
+
+v8::MaybeLocal<v8::Object> GetObjectProperty(v8::Isolate* isolate,
+                                             v8::Local<v8::Context> context,
+                                             v8::Local<v8::Object> obj,
+                                             std::string_view key) {
+  v8::Local<v8::Value> val;
+  if (!GetProperty(isolate, context, obj, key).ToLocal(&val) ||
+      !val->IsObject()) {
+    return {};
+  }
+  return val.As<v8::Object>();
+}
+
+blink::WebElement GetElementProperty(v8::Isolate* isolate,
+                                     v8::Local<v8::Context> context,
+                                     v8::Local<v8::Object> obj,
+                                     std::string_view key) {
+  v8::Local<v8::Value> val;
+  if (!GetProperty(isolate, context, obj, key).ToLocal(&val)) {
+    return blink::WebElement();
+  }
+  return blink::WebElement::FromV8Value(isolate, val);
+}
+
+// Transforms `item` into a `CustomFormControl`, if it is valid.
+// `item` follows the schema at http://shortn/_gxfEg4OfoT.
+std::optional<CustomFormControl> ParseCustomFormControl(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> item) {
+  if (!item->IsObject()) {
+    return std::nullopt;
+  }
+  v8::Local<v8::Object> obj = item.As<v8::Object>();
+
+  // TODO(crbug.com/581337039): Extract and validate "controlType".
+  blink::WebElement canonical_dom_node =
+      GetElementProperty(isolate, context, obj, "canonicalDomNode");
+  std::optional<std::u16string> field_type =
+      GetStringProperty(isolate, context, obj, "fieldType");
+  std::optional<bool> is_active =
+      GetBoolProperty(isolate, context, obj, "isActive");
+  if (!canonical_dom_node || !field_type || !is_active) {
+    return std::nullopt;
+  }
+
+  std::optional<SelectOption> current_option;
+  v8::Local<v8::Object> current_value_obj;
+  if (GetObjectProperty(isolate, context, obj, "currentValue")
+          .ToLocal(&current_value_obj)) {
+    std::optional<std::u16string> text =
+        GetStringProperty(isolate, context, current_value_obj, "text");
+    if (!text) {
+      return std::nullopt;
+    }
+    std::optional<std::u16string> value =
+        GetStringProperty(isolate, context, current_value_obj, "value");
+    current_option = SelectOption{
+        // Like for standard form controls, default the value to the text.
+        .value = std::move(value).value_or(*text),
+        .text = *std::move(text),
+    };
+  }
+
+  return CustomFormControl{
+      .canonical_dom_node = std::move(canonical_dom_node),
+      .field_type = *std::move(field_type),
+      .is_active = *is_active,
+      .label = GetStringProperty(isolate, context, obj, "label"),
+      .current_option = std::move(current_option),
+  };
+}
+
 }  // namespace
 
 CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
@@ -161,6 +281,44 @@ bool CustomFormControlScriptExecutor::LoadScript(std::string_view script) {
   }
   manager_.Reset(isolate, manager.As<v8::Object>());
   return true;
+}
+
+std::vector<CustomFormControl>
+CustomFormControlScriptExecutor::DetectCustomFormControls() {
+  std::vector<CustomFormControl> controls;
+  // TODO(crbug.com/581337039): Limit the number of custom form controls.
+  CallFunction("detectCustomFormControls", {},
+               base::BindOnce(
+                   [](std::vector<CustomFormControl>& controls,
+                      v8::Isolate* isolate, v8::Local<v8::Context> context,
+                      v8::MaybeLocal<v8::Value> maybe_result) {
+                     v8::Local<v8::Value> result;
+                     if (!maybe_result.ToLocal(&result) || !result->IsArray()) {
+                       return;
+                     }
+                     v8::Local<v8::Array> array = result.As<v8::Array>();
+                     const uint32_t length = array->Length();
+                     for (uint32_t i = 0; i < length; ++i) {
+                       v8::TryCatch try_catch(isolate);
+                       v8::Local<v8::Value> item;
+                       if (!array->Get(context, i).ToLocal(&item)) {
+                         continue;
+                       }
+                       std::optional<CustomFormControl> control =
+                           ParseCustomFormControl(isolate, context, item);
+                       if (control && !try_catch.HasCaught()) {
+                         controls.push_back(*std::move(control));
+                       }
+                     }
+                   },
+                   std::ref(controls)));
+  // Check accessibility after all V8 property accesses finish, as reading
+  // properties on subsequent objects in the V8 array could execute JS getters
+  // that mutate the DOM and detach earlier nodes.
+  std::erase_if(controls, [](const CustomFormControl& control) {
+    return !form_util::IsAccessible(control.canonical_dom_node);
+  });
+  return controls;
 }
 
 // static

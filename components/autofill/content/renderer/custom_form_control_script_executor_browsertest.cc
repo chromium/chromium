@@ -16,10 +16,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "components/autofill/content/renderer/custom_form_control_util.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/render_view_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -532,6 +535,107 @@ TEST_F(CustomFormControlScriptExecutorTest, FailedCallPassesIsolate) {
             EXPECT_TRUE(value.IsEmpty());
           }));
   EXPECT_TRUE(called);
+}
+
+// Tests that `DetectCustomFormControls()` extracts valid custom form controls.
+TEST_F(CustomFormControlScriptExecutorTest, DetectCustomFormControls) {
+  LoadHTML("<div id=c1></div><div id=c2></div><div id=c3></div>");
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        detectCustomFormControls() {
+          return [
+            {
+              canonicalDomNode: document.getElementById("c1"),
+              controlType: "select",
+              fieldType: "ADDRESS_HOME_COUNTRY",
+              isActive: true,
+            },
+            {
+              canonicalDomNode: document.getElementById("c2"),
+              controlType: "select",
+              fieldType: "ADDRESS_HOME_STATE",
+              isActive: false,
+              label: "State",
+              currentValue: { text: "Bavaria", value: "BY" },
+            },
+            {
+              canonicalDomNode: document.getElementById("c3"),
+              controlType: "select",
+              fieldType: "ADDRESS_HOME_CITY",
+              isActive: true,
+              currentValue: { text: "Munich" },
+            },
+          ];
+        },
+      };
+    }
+  )"));
+
+  blink::WebDocument doc = GetMainFrame()->GetDocument();
+  EXPECT_THAT(executor_->DetectCustomFormControls(),
+              testing::ElementsAre(
+                  CustomFormControl{
+                      .canonical_dom_node = doc.GetElementById("c1"),
+                      .field_type = u"ADDRESS_HOME_COUNTRY",
+                      .is_active = true,
+                  },
+                  CustomFormControl{
+                      .canonical_dom_node = doc.GetElementById("c2"),
+                      .field_type = u"ADDRESS_HOME_STATE",
+                      .is_active = false,
+                      .label = u"State",
+                      .current_option =
+                          SelectOption{.value = u"BY", .text = u"Bavaria"},
+                  },
+                  CustomFormControl{
+                      .canonical_dom_node = doc.GetElementById("c3"),
+                      .field_type = u"ADDRESS_HOME_CITY",
+                      .is_active = true,
+                      .current_option =
+                          SelectOption{.value = u"Munich", .text = u"Munich"},
+                  }));
+}
+
+// Tests that `DetectCustomFormControls()` skips invalid controls and returns
+// empty when no script is loaded.
+TEST_F(CustomFormControlScriptExecutorTest,
+       DetectCustomFormControlsSkipsInvalidControls) {
+  EXPECT_TRUE(executor_->DetectCustomFormControls().empty());
+
+  LoadHTML("<div id=custom-select></div>");
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        detectCustomFormControls() {
+          const base = {
+            canonicalDomNode: document.getElementById("custom-select"),
+            controlType: "select",
+            fieldType: "ADDRESS_HOME_COUNTRY",
+            isActive: true,
+          };
+          return [
+            // Not an object.
+            null,
+            // Missing `canonicalDomNode`.
+            { ...base, canonicalDomNode: null },
+            // Detached `canonicalDomNode`.
+            { ...base, canonicalDomNode: document.createElement("div") },
+            // Non-string `fieldType`.
+            { ...base, fieldType: 123 },
+            // Non-boolean `isActive`.
+            { ...base, isActive: "true" },
+            // `currentValue` missing `text`.
+            { ...base, currentValue: {} },
+            // Throwing property getter.
+            { ...base, get label() { throw new Error("boom"); } },
+          ];
+        },
+      };
+    }
+  )"));
+
+  EXPECT_TRUE(executor_->DetectCustomFormControls().empty());
 }
 
 }  // namespace
