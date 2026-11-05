@@ -155,7 +155,7 @@ public class WebappAuthenticator {
         File file = context.getFileStreamPath(basename);
         try {
             if (file.length() != MAC_KEY_BYTE_COUNT) {
-                Log.w(TAG, "Could not read key from '" + file + "': invalid file contents");
+                Log.w(TAG, "Could not read key from '%s': invalid file contents", file);
                 return null;
             }
 
@@ -171,7 +171,7 @@ public class WebappAuthenticator {
                 return null;
             }
         } catch (Exception e) {
-            Log.w(TAG, "Could not read key from '" + file + "': " + e);
+            Log.w(TAG, "Could not read key from '%s'", file, e);
             return null;
         } finally {
             try {
@@ -179,7 +179,7 @@ public class WebappAuthenticator {
                     input.close();
                 }
             } catch (IOException e) {
-                Log.e(TAG, "Could not close key input stream '" + file + "': " + e);
+                Log.e(TAG, "Could not close key input stream '%s'", file, e);
             }
         }
     }
@@ -191,10 +191,9 @@ public class WebappAuthenticator {
         if (MAC_KEY_BYTE_COUNT != keyBytes.length) {
             Log.e(
                     TAG,
-                    "writeKeyToFile got key encoded bytes length "
-                            + keyBytes.length
-                            + "; expected "
-                            + MAC_KEY_BYTE_COUNT);
+                    "writeKeyToFile got key encoded bytes length %d; expected %d",
+                    keyBytes.length,
+                    MAC_KEY_BYTE_COUNT);
             return false;
         }
 
@@ -203,7 +202,7 @@ public class WebappAuthenticator {
             output.write(keyBytes);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Could not write key to '" + file + "': " + e);
+            Log.e(TAG, "Could not write key to '%s'", file, e);
             return false;
         } finally {
             try {
@@ -211,7 +210,7 @@ public class WebappAuthenticator {
                     output.close();
                 }
             } catch (IOException e) {
-                Log.e(TAG, "Could not close key output stream '" + file + "': " + e);
+                Log.e(TAG, "Could not close key output stream '%s'", file, e);
             }
         }
     }

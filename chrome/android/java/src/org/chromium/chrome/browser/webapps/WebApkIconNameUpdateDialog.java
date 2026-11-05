@@ -185,7 +185,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                 reportAbuseDialog.show();
                 break;
             default:
-                Log.i(TAG, "Unexpected button pressed in dialog: " + buttonType);
+                Log.i(TAG, "Unexpected button pressed in dialog: %d", buttonType);
         }
     }
 

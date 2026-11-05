@@ -507,7 +507,7 @@ public class WebApkIntentDataProviderFactory {
             int webApkVersionCode,
             long lastUpdateTime) {
         if (manifestStartUrl == null || webApkPackageName == null) {
-            Log.e(TAG, "Incomplete data provided: " + manifestStartUrl + ", " + webApkPackageName);
+            Log.e(TAG, "Incomplete data provided: %s, %s", manifestStartUrl, webApkPackageName);
             return null;
         }
 

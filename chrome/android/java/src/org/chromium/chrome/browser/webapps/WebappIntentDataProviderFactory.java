@@ -66,7 +66,7 @@ public class WebappIntentDataProviderFactory {
         String id = WebappIntentUtils.getIdForHomescreenShortcut(intent);
         String url = IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_URL);
         if (id == null || url == null) {
-            Log.e(TAG, "Incomplete data provided: " + id + ", " + url);
+            Log.e(TAG, "Incomplete data provided: %s, %s", id, url);
             return null;
         }
 

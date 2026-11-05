@@ -125,7 +125,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
                         model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 break;
             default:
-                Log.i(TAG, "Unexpected button pressed in dialog: " + buttonType);
+                Log.i(TAG, "Unexpected button pressed in dialog: %d", buttonType);
         }
     }
 
@@ -147,7 +147,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
         assert mAppPackageName != null;
 
         if (!PackageUtils.isPackageInstalled(mAppPackageName)) {
-            Log.i(TAG, "WebApk not found: " + mAppPackageName);
+            Log.i(TAG, "WebApk not found: %s", mAppPackageName);
             return;
         }
 
