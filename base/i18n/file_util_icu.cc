@@ -167,14 +167,17 @@ UChar32 GetNextCodePoint(const FilePath::StringType* const file_name,
   UChar32 code_point;
 #if BUILDFLAG(IS_WIN)
   // Windows uses UTF-16 encoding for filenames.
-  UNSAFE_TODO(U16_NEXT(file_name->data(), cursor,
-                       static_cast<int>(file_name->length()), code_point));
+  U16_NEXT(*file_name, cursor, static_cast<int>(file_name->size()), code_point);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Mac and Chrome OS use UTF-8 encoding for filenames.
   // Linux doesn't actually define file system encoding. Try to parse as
   // UTF-8.
-  UNSAFE_TODO(U8_NEXT(file_name->data(), cursor,
-                      static_cast<int>(file_name->length()), code_point));
+  //
+  // SAFETY: Passing `*file_name` indexes via std::string::operator[], and
+  // U8_NEXT() internally indexes 16-byte string literals (U8_LEAD3_T1_BITS and
+  // U8_LEAD4_T1_BITS) using 4-bit masked indices, which are always in bounds.
+  UNSAFE_BUFFERS(U8_NEXT(*file_name, cursor,
+                         static_cast<int>(file_name->size()), code_point));
 #else
 #error Unsupported platform
 #endif
@@ -233,7 +236,7 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
         (could_be_short_name &&
          illegal->IsDisallowedIfMayBeShortName(code_point)) ||
 #endif
-        ((char_begin == 0 || cursor == static_cast<int>(file_name->length())) &&
+        ((char_begin == 0 || cursor == static_cast<int>(file_name->size())) &&
          is_illegal_at_ends && !is_replace_char_illegal_at_ends)) {
       file_name->replace(char_begin, cursor - char_begin, 1, replace_char);
       // We just made the potentially multi-byte/word char into one that only
