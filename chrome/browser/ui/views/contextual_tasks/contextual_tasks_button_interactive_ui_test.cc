@@ -59,6 +59,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -4149,7 +4150,10 @@ class ContextualTasksEphemeralPinButtonRefactorInteractiveTest
   void SetUpOnMainThread() override {
     ContextualTasksEphemeralButtonPinningV2InteractiveTest::
         SetUpOnMainThread();
-    browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 800));
+    ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1280, 800));
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
     if (auto* pinned_actions =
             ToolbarButtonProvider::From(browser())->GetPinnedToolbarActions()) {
       if (auto* container = views::AsViewClass<PinnedToolbarActionsContainer>(
