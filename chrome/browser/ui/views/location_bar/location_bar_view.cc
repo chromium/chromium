@@ -106,6 +106,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -490,6 +491,13 @@ void LocationBarView::Init() {
       AddChildView(std::make_unique<page_actions::PageActionContainerView>(
           page_action_items, page_actions::PageActionPropertiesProvider(),
           page_action_params));
+  if (base::FeatureList::IsEnabled(
+          omnibox::kComposeboxPersistentAimButtonOmnibox)) {
+    if (auto* ai_mode_page_action_view =
+            page_action_container_->GetPageActionView(kActionAiMode)) {
+      ai_mode_page_action_view->SetFontList(omnibox_chip_font_list);
+    }
+  }
 
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const std::u16string&)>(

@@ -153,6 +153,10 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      persistentAimButtonEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
       multiLineEnabled: {
         type: Boolean,
         reflect: true,
@@ -260,6 +264,8 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('searchboxMultiline');
   protected accessor webuiShadowEnabled_: boolean =
       loadTimeData.getBoolean('omniboxFullWebUIShadowEnabled');
+  protected accessor persistentAimButtonEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxPersistentAimButton');
   protected accessor searchboxDynamicColorScheme_: boolean =
       loadTimeData.getBoolean('searchboxDynamicColorScheme');
   protected accessor searchboxDynamicAnimation_: boolean =
