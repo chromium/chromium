@@ -200,6 +200,22 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.Gmail.OptIn.State" enum="GmailOtpOptInState"
+    expires_after="2027-08-01">
+  <owner>trangm@google.com</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the user's Gmail OTP opt-in state when a tab sees both a Gmail
+    tickle and an OTP field detection within 3 minutes of each other, in either
+    order. Recorded in each such tab, so one tickle can be recorded more than
+    once. If several states apply, records the first one in this order: bubble
+    already showing, opted in, declined cool-off, session cool-off. Not decided
+    means the opt-in bubble will be shown;
+    OneTimeTokens.Gmail.OptIn.BubbleResult records its outcome.
+  </summary>
+</histogram>
+
 <histogram
     name="OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">

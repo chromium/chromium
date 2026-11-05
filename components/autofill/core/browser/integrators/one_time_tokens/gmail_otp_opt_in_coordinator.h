@@ -21,9 +21,34 @@ namespace one_time_tokens {
 class GmailOtpBackend;
 }
 
+class PrefService;
+
 namespace autofill {
 
 class AutofillClient;
+
+// Opt-in state of the user when a Gmail tickle arrives while an OTP field is
+// present. Each value maps to the first check in
+// `GmailOtpOptInCoordinator::GetOptInState()` that applies.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(GmailOtpOptInState)
+enum class GmailOtpOptInState {
+  // Gmail OTP filling is already enabled.
+  kOptedIn = 0,
+  // The user has not decided yet, so the opt-in bubble is shown.
+  kNotDecided = 1,
+  // The user closed the opt-in bubble earlier in this browser session.
+  kSessionCoolOff = 2,
+  // The user declined the opt-in bubble within the last 90 days.
+  kDeclinedCoolOff = 3,
+  // An opt-in bubble request is already in flight.
+  kBubbleAlreadyShowing = 4,
+  kMaxValue = kBubbleAlreadyShowing,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpOptInState)
 
 // Tab-scoped coordinator that correlates OTP field detections with incoming
 // Gmail push notifications (tickles) across frame navigations, evaluates gating
@@ -55,6 +80,7 @@ class GmailOtpOptInCoordinator {
  private:
   void OnOtpFieldsDetected();
   void OnTickleReceived();
+  GmailOtpOptInState GetOptInState(const PrefService& prefs) const;
   void OnOptInBubbleClosed(GmailOtpOptInResult result);
 
   const raw_ref<AutofillClient> client_;

@@ -5,9 +5,13 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_coordinator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
@@ -28,6 +32,17 @@ namespace {
 // as the unique `const void*` key) to record whether the Gmail OTP opt-in
 // bubble was dismissed during the current browser session.
 constexpr int kGmailOtpOptInDismissedInSessionKey = 0;
+
+std::optional<std::string> GetPrimaryAccountEmail(
+    const signin::IdentityManager* identity_manager) {
+  if (!identity_manager) {
+    return std::nullopt;
+  }
+  std::string email =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+  return email.empty() ? std::nullopt : std::make_optional(std::move(email));
+}
 
 }  // namespace
 
@@ -67,43 +82,45 @@ void GmailOtpOptInCoordinator::OnOtpFieldsDetected() {
 }
 
 void GmailOtpOptInCoordinator::OnTickleReceived() {
-  if (is_bubble_showing_) {
-    return;
-  }
-
   const PrefService* prefs = client_->GetPrefs();
-  if (!prefs || prefs::IsAutofillGmailOtpFillingEnabled(prefs)) {
+  CHECK(prefs);
+  const std::optional<std::string> email =
+      GetPrimaryAccountEmail(client_->GetIdentityManager());
+  // Tickles require a signed-in primary account, so this is only a precaution.
+  if (!email) {
     return;
   }
-
-  const base::Time dismissal_time =
-      prefs::GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs);
-  if (!dismissal_time.is_null() &&
-      base::Time::Now() - dismissal_time < kDeclinedCooldownDuration) {
-    return;
-  }
-
-  if (session_user_data_->GetUserData(&kGmailOtpOptInDismissedInSessionKey)) {
-    return;
-  }
-
-  const signin::IdentityManager* identity_manager =
-      client_->GetIdentityManager();
-  if (!identity_manager) {
-    return;
-  }
-  const std::string email =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email;
-  if (email.empty()) {
+  const GmailOtpOptInState state = GetOptInState(*prefs);
+  base::UmaHistogramEnumeration("OneTimeTokens.Gmail.OptIn.State", state);
+  if (state != GmailOtpOptInState::kNotDecided) {
     return;
   }
 
   is_bubble_showing_ = true;
   client_->ShowGmailOtpOptInBubble(
-      base::UTF8ToUTF16(email),
+      base::UTF8ToUTF16(*email),
       base::BindOnce(&GmailOtpOptInCoordinator::OnOptInBubbleClosed,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+GmailOtpOptInState GmailOtpOptInCoordinator::GetOptInState(
+    const PrefService& prefs) const {
+  if (is_bubble_showing_) {
+    return GmailOtpOptInState::kBubbleAlreadyShowing;
+  }
+  if (prefs::IsAutofillGmailOtpFillingEnabled(&prefs)) {
+    return GmailOtpOptInState::kOptedIn;
+  }
+  const base::Time dismissal_time =
+      prefs::GetAutofillGmailOtpFillingActivationDismissalTimestamp(&prefs);
+  if (!dismissal_time.is_null() &&
+      base::Time::Now() - dismissal_time < kDeclinedCooldownDuration) {
+    return GmailOtpOptInState::kDeclinedCoolOff;
+  }
+  if (session_user_data_->GetUserData(&kGmailOtpOptInDismissedInSessionKey)) {
+    return GmailOtpOptInState::kSessionCoolOff;
+  }
+  return GmailOtpOptInState::kNotDecided;
 }
 
 void GmailOtpOptInCoordinator::OnOptInBubbleClosed(GmailOtpOptInResult result) {

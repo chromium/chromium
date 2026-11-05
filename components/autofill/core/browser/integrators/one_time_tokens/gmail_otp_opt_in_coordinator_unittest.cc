@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/supports_user_data.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -30,6 +31,8 @@ using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Test;
+
+constexpr char kOptInStateHistogram[] = "OneTimeTokens.Gmail.OptIn.State";
 
 class TestOtpFieldDetector : public OtpFieldDetector {
  public:
@@ -140,9 +143,12 @@ TEST_F(GmailOtpOptInCoordinatorTest,
   SimulateOtpFieldDetected();
   task_environment_.FastForwardBy(base::Minutes(1));
 
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(client_,
               ShowGmailOtpOptInBubble(std::u16string(u"alice@gmail.com"), _));
   SimulateTickleReceived();
+  histogram_tester.ExpectUniqueSample(kOptInStateHistogram,
+                                      GmailOtpOptInState::kNotDecided, 1);
 }
 
 // Scenario B: A Gmail tickle arrived and was cached in `GmailOtpBackendImpl`
@@ -226,9 +232,12 @@ TEST_F(GmailOtpOptInCoordinatorTest,
   GmailOtpOptInCoordinator coordinator(client_, &gmail_otp_backend_,
                                        session_user_data_);
 
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, ShowGmailOtpOptInBubble).Times(0);
   SimulateOtpFieldDetected();
   SimulateTickleReceived();
+  histogram_tester.ExpectUniqueSample(kOptInStateHistogram,
+                                      GmailOtpOptInState::kOptedIn, 1);
 }
 
 // Gating check: Do not show if there is no signed-in primary account.
@@ -236,9 +245,11 @@ TEST_F(GmailOtpOptInCoordinatorTest, DoesNotTriggerWhenNotSignedIn) {
   GmailOtpOptInCoordinator coordinator(client_, &gmail_otp_backend_,
                                        session_user_data_);
 
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, ShowGmailOtpOptInBubble).Times(0);
   SimulateOtpFieldDetected();
   SimulateTickleReceived();
+  histogram_tester.ExpectTotalCount(kOptInStateHistogram, 0);
 }
 
 // Verifies that subsequent tickles arriving while the opt-in bubble is already
@@ -260,9 +271,12 @@ TEST_F(GmailOtpOptInCoordinatorTest, DoesNotTriggerWhileBubbleAlreadyShowing) {
   Mock::VerifyAndClearExpectations(&client_);
 
   // A second tickle while the bubble is still open is ignored.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, ShowGmailOtpOptInBubble).Times(0);
   SimulateTickleReceived();
   Mock::VerifyAndClearExpectations(&client_);
+  histogram_tester.ExpectUniqueSample(
+      kOptInStateHistogram, GmailOtpOptInState::kBubbleAlreadyShowing, 1);
 
   // Once the bubble closes without opting out (e.g. lost focus), a new tickle
   // can trigger the bubble again.
@@ -283,8 +297,11 @@ TEST_F(GmailOtpOptInCoordinatorTest,
 
   task_environment_.FastForwardBy(base::Days(89));
   SimulateOtpFieldDetected();
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, ShowGmailOtpOptInBubble).Times(0);
   SimulateTickleReceived();
+  histogram_tester.ExpectUniqueSample(kOptInStateHistogram,
+                                      GmailOtpOptInState::kDeclinedCoolOff, 1);
 }
 
 // Gating check: Allow showing the opt-in bubble again once the 90-day cool-off
@@ -400,8 +417,13 @@ TEST_F(GmailOtpOptInCoordinatorTest,
   // in the same browser session do not trigger the bubble.
   GmailOtpOptInCoordinator second_tab_coordinator(client_, &gmail_otp_backend_,
                                                   session_user_data_);
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, ShowGmailOtpOptInBubble).Times(0);
   SimulateTickleReceived();
+  // Both coordinators receive the new tickle. The cached tickle that the second
+  // coordinator replayed on construction is recorded before `histogram_tester`.
+  histogram_tester.ExpectUniqueSample(kOptInStateHistogram,
+                                      GmailOtpOptInState::kSessionCoolOff, 2);
 }
 
 // Outcome 4 (`kLostFocus` / `kDiscarded` / `kUnknown`): Does not modify prefs

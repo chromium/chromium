@@ -203,6 +203,18 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h:GmailOtpOptInResult) -->
 
+<!-- LINT.IfChange(GmailOtpOptInState) -->
+
+<enum name="GmailOtpOptInState">
+  <int value="0" label="Opted in"/>
+  <int value="1" label="Not decided"/>
+  <int value="2" label="Session cool-off"/>
+  <int value="3" label="Declined cool-off"/>
+  <int value="4" label="Bubble already showing"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_coordinator.h:GmailOtpOptInState) -->
+
 <!-- LINT.IfChange(GmailOtpSenderDomainMatchType) -->
 
 <enum name="GmailOtpSenderDomainMatchType">
