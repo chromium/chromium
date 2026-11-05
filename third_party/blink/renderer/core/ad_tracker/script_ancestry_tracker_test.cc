@@ -25,8 +25,11 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
+
+static_assert(sizeof(MonkeyPatchableApiSet) == 1);
 
 class TestScriptAncestryTracker final : public ScriptAncestryTracker {
  public:
@@ -149,6 +152,10 @@ class ScriptAncestryTrackerTest : public SimTest {
     test_observer_ = MakeGarbageCollected<TestScriptAncestryTracker>(
         frame, frame->GetScriptInitiationMonitor());
     tracker_ = test_observer_.Get();
+  }
+
+  MonkeyPatchableApiSet monkey_patch_calls_in_scope() const {
+    return tracker_->monkey_patch_calls_in_scope_;
   }
 
   std::unique_ptr<SimRequest> main_resource_;
@@ -963,6 +970,65 @@ TEST_F(ScriptAncestryTrackerTest, DynamicImportFromUnmarkedScript_NotMarked) {
   const auto* metadata = test_observer_->GetScriptMetadata(sub_id);
   ASSERT_TRUE(metadata);
   EXPECT_EQ(V8ScriptId(), metadata->marked_script_id);
+}
+
+TEST_F(ScriptAncestryTrackerTest,
+       MonkeyPatchCallsInScope_LimitsOncePerSyncTaskAndClearsAfterTask) {
+  SimSubresourceRequest marked_script("https://example.com/marked_script.js",
+                                      "text/javascript");
+  SimSubresourceRequest vanilla_script("https://example.com/vanilla_script.js",
+                                       "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="marked_script.js"></script>
+      <script src="vanilla_script.js"></script>
+    </body>
+  )HTML");
+  test::RunPendingTasks();
+
+  // The marked script monkeypatches Node.prototype.appendChild.
+  marked_script.Complete(R"SCRIPT(
+    const originalAppendChild = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(child) {
+      return originalAppendChild.call(this, child);
+    };
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  // In a single synchronous task, the unmarked script appends two iframes
+  // through the monkeypatched appendChild. Only the first call is ignored.
+  vanilla_script.Complete(R"SCRIPT(
+    const first = document.createElement("iframe");
+    const second = document.createElement("iframe");
+    document.body.appendChild(first);
+    document.body.appendChild(second);
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(monkey_patch_calls_in_scope().empty());
+
+  LocalFrame* main_frame = GetDocument().GetFrame();
+  LocalFrame* first_frame = To<LocalFrame>(main_frame->Tree().FirstChild());
+  ASSERT_TRUE(first_frame);
+  LocalFrame* second_frame = To<LocalFrame>(first_frame->Tree().NextSibling());
+  ASSERT_TRUE(second_frame);
+
+  EXPECT_FALSE(tracker_->IsMarkedFrame(first_frame));
+  EXPECT_TRUE(tracker_->IsMarkedFrame(second_frame));
+
+  // Once the synchronous task finishes, monkey_patch_calls_in_scope_ is
+  // cleared, so a subsequent synchronous task gets a fresh allow-once budget.
+  MainFrame().ExecuteScript(WebScriptSource(R"SCRIPT(
+    const third = document.createElement("iframe");
+    document.body.appendChild(third);
+  )SCRIPT"));
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(monkey_patch_calls_in_scope().empty());
+  LocalFrame* third_frame = To<LocalFrame>(second_frame->Tree().NextSibling());
+  ASSERT_TRUE(third_frame);
+  EXPECT_FALSE(tracker_->IsMarkedFrame(third_frame));
 }
 
 }  // namespace blink

@@ -3834,6 +3834,70 @@ TEST_F(AdTrackerSimTest,
   EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 
+// Tests that different MonkeyPatchableApi values are tracked independently in
+// the per-task EnumSet, so calling one monkeypatched API does not consume the
+// allow-once budget of other monkeypatched APIs in the same synchronous task.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_DifferentApisTrackedIndependentlyInSameTask) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  String second_vanilla_script_url = "https://example.com/script2.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest second_vanilla_script(second_vanilla_script_url,
+                                              "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script>
+          <script src="script2.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches pushState, replaceState, and appendChild.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+    const originalReplaceState = window.history.replaceState;
+    window.history.replaceState = function(...args) {
+      originalReplaceState.apply(window.history, args);
+    };
+    const originalAppendChild = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(child) {
+      return originalAppendChild.call(this, child);
+    };
+  )SCRIPT");
+
+  // The non-ad script calls all three monkeypatched APIs once within a single
+  // synchronous task. Each distinct API should be ignored on its first call.
+  vanilla_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    window.history.pushState({}, '', '/pushed-url');
+    window.history.replaceState({}, '', '/replaced-url');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+  LocalFrame* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
+
+  // Repeating one of those APIs a second time within a single synchronous task
+  // still flags the duplicate call as ad-related.
+  second_vanilla_script.Complete(R"SCRIPT(
+    window.history.pushState({}, '', '/pushed-url-2');
+    window.history.replaceState({}, '', '/replaced-url-2');
+    window.history.replaceState({}, '', '/replaced-url-3');
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
 // Tests that the bottom-of-stack check takes precedence over the monkeypatching
 // heuristic. When an ad script initiates the execution (and is thus at the
 // bottom of the stack), any calls it makes are flagged as ads, even if it also
