@@ -44,16 +44,19 @@ namespace {
 
 // Size of the "variations" crash key (kExperimentListKey) in bytes.
 // 1024*7 bytes should be able to hold about 398 entries, given each entry is
-// 18 bytes long (due to being of the form "8e7abfb0-c16397b7,").
+// 18 bytes long (due to being of the form "8e7abfb0-c16397b7,"). Cast builds
+// use a larger key, since Cast creates a field trial for every server-side
+// feature.
+// Note: `kVariationsKeySize` uses plural "Variations", whereas the histogram
+// name (`Variations.Limits.VariationKeySize.Default`) and
+// `kVariationKeySizeHistogram` use singular "Variation".
 #if BUILDFLAG(LARGE_VARIATION_KEY_SIZE)
 constexpr size_t kVariationsKeySize = 1024 * 8;
-constexpr char kVariationKeySizeHistogram[] =
-    "Variations.Limits.VariationKeySize.Large";
 #else
 constexpr size_t kVariationsKeySize = 1024 * 7;
+#endif
 constexpr char kVariationKeySizeHistogram[] =
     "Variations.Limits.VariationKeySize.Default";
-#endif
 constexpr size_t kVariationsKeySizeNumBuckets = 16;
 
 // Crash key reporting the number of experiments. 8 is the size of the crash key
