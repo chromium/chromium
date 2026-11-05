@@ -2435,6 +2435,18 @@ export const ComposeboxEmbedderMixin =
               /*shouldBlockAutoSuggestedTabs=*/ false);
           this.resetToolsAndModels();
           this.suggestInventory = null;
+          // <if expr="not is_android">
+          if (this.smartTabSharingVisible && !afterSubmit && !this.submitting) {
+            this.smartTabSharingActive = false;
+            const generation = ++this.smartTabSharingUpdateGeneration_;
+            ComposeboxProxyImpl.getInstance().resetSmartTabSharing().then(
+                ({active}) => {
+                  if (generation === this.smartTabSharingUpdateGeneration_) {
+                    this.smartTabSharingActive = active;
+                  }
+                });
+          }
+          // </if>
           this.fire(
               'close-composebox', {composeboxText: this.input, afterSubmit});
         }
