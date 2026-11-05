@@ -469,14 +469,36 @@ class LicenseError(Exception):
   pass
 
 
+def _IsPathInsideRoot(root, candidate):
+  """Returns True if |candidate| is |root| or a path below it.
+
+  Only the lexical path is considered (no symlink resolution), matching the
+  rest of this script, which operates on checkout-relative paths.
+  """
+  abs_root = os.path.abspath(root)
+  abs_candidate = os.path.abspath(candidate)
+  try:
+    return os.path.commonpath([abs_root, abs_candidate]) == abs_root
+  except ValueError:
+    # Raised on Windows for paths on different drives.
+    return False
+
+
 def _ResolvePath(path, filename, root):
-  """Convert a path in README.chromium to be relative to |root|."""
+  """Convert a path in README.chromium to be relative to |root|.
+
+  Returns None if the file does not exist or if the resolved path escapes
+  |root| (via '../' segments or, on Windows, a drive-absolute path): metadata
+  files must only be able to reference files inside the checkout.
+  """
   if filename.startswith('/'):
     # Absolute-looking paths are relative to the source root
     # (which is the directory we're run from).
     absolute_path = os.path.join(root, os.path.normpath(filename.lstrip('/')))
   else:
     absolute_path = os.path.join(root, path, os.path.normpath(filename))
+  if not _IsPathInsideRoot(root, absolute_path):
+    return None
   if os.path.exists(absolute_path):
     return os.path.relpath(absolute_path, root)
   return None
@@ -786,6 +808,11 @@ def _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs):
   additional_paths = json.loads(_read_file(additional_paths_file))
   for p in additional_paths:
     subpath = os.path.normpath(os.path.join(dirpath, p))
+    # Entries must stay inside the checkout.
+    if os.path.isabs(subpath) or not _IsPathInsideRoot(
+      root, os.path.join(root, subpath)
+    ):
+      continue
     _MaybeAddThirdPartyPath(root, subpath, third_party_dirs)
 
 
@@ -1316,7 +1343,9 @@ def _GetLicenseUrls(scan_root: str, license_files: List[str]) -> List[str]:
   fully qualified web link to the exact file path on the main branch.
   Falls back to the main Chromium Gitiles repository if unresolved.
   """
-  return [_CalculateLicenseUrl(scan_root, lic_path) for lic_path in license_files]
+  return [
+    _CalculateLicenseUrl(scan_root, lic_path) for lic_path in license_files
+  ]
 
 
 def GenerateLicenseFileCsv(
