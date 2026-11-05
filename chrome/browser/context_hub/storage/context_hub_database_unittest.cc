@@ -369,6 +369,11 @@ TEST_F(ContextHubDatabaseTest, CallMemoryBankMethodsBeforeInit) {
   EXPECT_FALSE(db_->DeleteMemoryBankEntries({1}));
   EXPECT_FALSE(db_->AddOrUpdateMemoryBankEmbeddings(
       1, {passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f})}));
+  EXPECT_TRUE(
+      db_->SearchMemoryBankEntriesByEmbedding(
+             passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f}),
+             /*min_score=*/0.0f, /*max_results=*/10)
+          .empty());
   EXPECT_TRUE(db_->GetMemoryBankEntryIdsWithoutEmbeddings().empty());
   EXPECT_FALSE(db_->SetMemoryBankEmbeddingsVersion(1));
 }
@@ -665,6 +670,34 @@ TEST_F(ContextHubDatabaseTest, MemoryBankEmbeddingsVersionPersistsAndResets) {
   EXPECT_TRUE(db_->SetMemoryBankEmbeddingsVersion(2));
   EXPECT_THAT(db_->GetMemoryBankEntryIdsWithoutEmbeddings(),
               testing::ElementsAre(entry_id));
+}
+
+// Tests that searching by embedding returns entries ranked by similarity.
+TEST_F(ContextHubDatabaseTest, SearchMemoryBankEntriesByEmbedding) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  MemoryBankEntry entry1 = CreateTestData();
+  entry1.url = GURL("https://example.com/1");
+  MemoryBankEntry entry2 = CreateTestData();
+  entry2.url = GURL("https://example.com/2");
+  std::optional<int64_t> id1 = db_->AddOrUpdateMemoryBankEntry(entry1);
+  std::optional<int64_t> id2 = db_->AddOrUpdateMemoryBankEntry(entry2);
+  ASSERT_TRUE(id1.has_value());
+  ASSERT_TRUE(id2.has_value());
+
+  ASSERT_TRUE(db_->AddOrUpdateMemoryBankEmbeddings(
+      *id1, {passage_embeddings::Embedding(std::vector<float>{0.6f, 0.8f})}));
+  ASSERT_TRUE(db_->AddOrUpdateMemoryBankEmbeddings(
+      *id2, {passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f})}));
+
+  const passage_embeddings::Embedding query(std::vector<float>{1.0f, 0.0f});
+  EXPECT_THAT(db_->SearchMemoryBankEntriesByEmbedding(query, /*min_score=*/0.5f,
+                                                      /*max_results=*/10),
+              testing::ElementsAre(testing::Field(&MemoryBankEntry::id, *id2),
+                                   testing::Field(&MemoryBankEntry::id, *id1)));
+  EXPECT_THAT(db_->SearchMemoryBankEntriesByEmbedding(query, /*min_score=*/0.9f,
+                                                      /*max_results=*/10),
+              testing::ElementsAre(testing::Field(&MemoryBankEntry::id, *id2)));
 }
 
 }  // namespace context_hub

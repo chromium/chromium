@@ -4,10 +4,12 @@
 
 #include "chrome/browser/context_hub/storage/context_hub_backend_impl.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -269,6 +271,49 @@ TEST_F(ContextHubBackendImplTest, AddMemoryBankEmbeddings) {
   backend_->GetMemoryBankEntryIdsWithoutEmbeddings(
       missing_embeddings_future3.GetCallback());
   EXPECT_THAT(missing_embeddings_future3.Get(), testing::ElementsAre(entry_id));
+}
+
+TEST_F(ContextHubBackendImplTest, SearchMemoryBankEntriesByEmbedding) {
+  std::vector<int64_t> ids;
+  for (int i = 0; i < 2; ++i) {
+    MemoryBankEntry entry;
+    entry.type = MemoryBankType::kTextSelection;
+    entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000 + i);
+    entry.url = GURL("https://example.com/" + base::NumberToString(i));
+    entry.tab_title = "Example";
+    base::test::TestFuture<std::optional<int64_t>> save_future;
+    backend_->AddOrUpdateMemoryBankEntry(entry, save_future.GetCallback());
+    std::optional<int64_t> id = save_future.Get();
+    ASSERT_TRUE(id.has_value());
+    ids.push_back(*id);
+  }
+
+  base::test::TestFuture<bool> add_future1;
+  backend_->AddOrUpdateMemoryBankEmbeddings(
+      ids[0], {passage_embeddings::Embedding(std::vector<float>{0.6f, 0.8f})},
+      add_future1.GetCallback());
+  ASSERT_TRUE(add_future1.Get());
+  base::test::TestFuture<bool> add_future2;
+  backend_->AddOrUpdateMemoryBankEmbeddings(
+      ids[1], {passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f})},
+      add_future2.GetCallback());
+  ASSERT_TRUE(add_future2.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> search_future;
+  backend_->SearchMemoryBankEntriesByEmbedding(
+      passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f}),
+      /*min_score=*/0.5f, /*max_results=*/10, search_future.GetCallback());
+  EXPECT_THAT(
+      search_future.Get(),
+      testing::ElementsAre(testing::Field(&MemoryBankEntry::id, ids[1]),
+                           testing::Field(&MemoryBankEntry::id, ids[0])));
+
+  // `max_results` == 0 returns an empty result set.
+  base::test::TestFuture<std::vector<MemoryBankEntry>> zero_max_future;
+  backend_->SearchMemoryBankEntriesByEmbedding(
+      passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f}),
+      /*min_score=*/0.5f, /*max_results=*/0, zero_max_future.GetCallback());
+  EXPECT_TRUE(zero_max_future.Get().empty());
 }
 
 }  // namespace context_hub

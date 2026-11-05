@@ -5,16 +5,19 @@
 #include "chrome/browser/context_hub/storage/memory_bank_table.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/byte_conversions.h"
@@ -54,6 +57,66 @@ constexpr char kMemoryBankEmbeddingsMetaTable[] = "memory_bank_embeddings_meta";
 constexpr char kMetaNameColumn[] = "name";
 constexpr char kMetaValueColumn[] = "value";
 constexpr char kEmbeddingsVersionName[] = "embeddings_version";
+
+// Returns true if the Euclidean norm of the vector is within 0.0001 of 1.0.
+// Keeping the `<` comparison ensures NaN and Inf evaluate to false.
+bool HasUnitMagnitude(base::span<const float> floats) {
+  float sum_of_squares = 0.0f;
+  for (float s : floats) {
+    sum_of_squares += s * s;
+  }
+  return std::abs(std::sqrt(sum_of_squares) - 1.0f) < 0.0001f;
+}
+
+// Computes the maximum similarity score of any passage vector in `blob` against
+// `query_data`. Returns `std::nullopt` if `blob` is malformed, contains
+// non-unit vectors, or its dimension does not match `query_data`.
+// `passage_buffer` is a reusable scratch buffer of size `query_data.size()`
+// used to copy floats without per-row heap allocations.
+std::optional<float> ScoreEmbeddingsBlob(base::span<const uint8_t> blob,
+                                         base::span<const float> query_data,
+                                         base::span<float> passage_buffer) {
+  if (blob.size() < sizeof(uint32_t)) {
+    return std::nullopt;
+  }
+  auto [header, payload] = blob.split_at<sizeof(uint32_t)>();
+  const size_t dimension = base::U32FromNativeEndian(header);
+  const size_t query_dim = query_data.size();
+  if (dimension == 0 || dimension != query_dim || payload.empty() ||
+      payload.size() % sizeof(float) != 0) {
+    return std::nullopt;
+  }
+  const size_t total_floats = payload.size() / sizeof(float);
+  if (total_floats % dimension != 0) {
+    return std::nullopt;
+  }
+
+  const size_t vector_bytes = dimension * sizeof(float);
+  base::span<uint8_t> buffer_bytes =
+      base::as_writable_bytes(base::allow_nonunique_obj, passage_buffer);
+
+  float best_score = 0.0f;
+  bool has_score = false;
+  while (!payload.empty()) {
+    buffer_bytes.copy_from(payload.take_first(vector_bytes));
+    if (!HasUnitMagnitude(passage_buffer)) {
+      return std::nullopt;
+    }
+
+    // Both `query_data` and `passage_buffer` are unit vectors, so their dot
+    // product equals their cosine similarity score (same as
+    // `passage_embeddings::Embedding::ScoreWith()`).
+    float score = 0.0f;
+    for (size_t i = 0; i < dimension; ++i) {
+      score += query_data[i] * passage_buffer[i];
+    }
+    if (!has_score || score > best_score) {
+      best_score = score;
+      has_score = true;
+    }
+  }
+  return has_score ? std::make_optional(best_score) : std::nullopt;
+}
 
 MemoryBankEntry ToMemoryBankEntry(sql::Statement& statement) {
   MemoryBankEntry entry;
@@ -316,6 +379,46 @@ bool MemoryBankTable::AddOrUpdateEmbeddings(
   statement.BindInt64(1, entry_id);
 
   return statement.Run() && db_->GetLastChangeCount() > 0;
+}
+
+std::vector<MemoryBankEntry> MemoryBankTable::SearchEntriesByEmbedding(
+    const passage_embeddings::Embedding& query_embedding,
+    float min_score,
+    size_t max_results) {
+  const base::span<const float> query_data = query_embedding.GetData();
+  if (!db_ || max_results == 0 || query_data.empty()) {
+    return {};
+  }
+
+  const size_t query_dim = query_data.size();
+  std::vector<float> passage_buffer(query_dim);
+
+  sql::Statement statement;
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db_, statement,
+                           kMemoryBankEmbeddingsTable,
+                           /*columns=*/{kEntryIdColumn, kEmbeddingBlobColumn});
+
+  struct ScoredEntry {
+    int64_t entry_id = 0;
+    float score = 0.0f;
+  };
+  std::vector<ScoredEntry> matches;
+  while (statement.Step()) {
+    std::optional<float> best_score = ScoreEmbeddingsBlob(
+        statement.ColumnBlob(1), query_data, base::span(passage_buffer));
+    if (best_score.has_value() && *best_score >= min_score) {
+      matches.push_back({statement.ColumnInt64(0), *best_score});
+    }
+  }
+
+  // Highest score first; ties go to the higher entry ID for determinism.
+  std::ranges::sort(matches, [](const ScoredEntry& a, const ScoredEntry& b) {
+    return std::tie(a.score, a.entry_id) > std::tie(b.score, b.entry_id);
+  });
+  if (matches.size() > max_results) {
+    matches.resize(max_results);
+  }
+  return GetEntriesByIds(base::ToVector(matches, &ScoredEntry::entry_id));
 }
 
 std::vector<int64_t> MemoryBankTable::GetEntryIdsWithoutEmbeddings() {

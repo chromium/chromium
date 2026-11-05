@@ -112,6 +112,15 @@ class MemoryBankTable {
       int64_t entry_id,
       base::span<const passage_embeddings::Embedding> embeddings);
 
+  // Searches stored embeddings for entries whose best-matching passage
+  // embedding has a similarity score with `query_embedding` of at least
+  // `min_score`. Returns at most `max_results` entries ordered by descending
+  // similarity score.
+  std::vector<MemoryBankEntry> SearchEntriesByEmbedding(
+      const passage_embeddings::Embedding& query_embedding,
+      float min_score,
+      size_t max_results);
+
   // Retrieves the IDs of all memory_bank_entries rows that do not yet have a
   // corresponding memory_bank_embeddings row.
   std::vector<int64_t> GetEntryIdsWithoutEmbeddings();

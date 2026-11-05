@@ -49,6 +49,10 @@ class ContextHubDatabase {
   bool AddOrUpdateMemoryBankEmbeddings(
       int64_t entry_id,
       base::span<const passage_embeddings::Embedding> embeddings);
+  std::vector<MemoryBankEntry> SearchMemoryBankEntriesByEmbedding(
+      const passage_embeddings::Embedding& query_embedding,
+      float min_score,
+      size_t max_results);
   std::vector<int64_t> GetMemoryBankEntryIdsWithoutEmbeddings();
   bool SetMemoryBankEmbeddingsVersion(int64_t version);
   std::optional<MemoryBankEntry> GetMemoryBankEntry(int64_t id);

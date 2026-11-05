@@ -5,11 +5,14 @@
 #include "chrome/browser/context_hub/storage/memory_bank_table.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -63,7 +66,7 @@ class MemoryBankTableTest : public testing::Test {
     std::vector<std::vector<float>> result;
     while (!payload.empty()) {
       std::vector<float> floats(dimension);
-      base::as_writable_byte_span(base::allow_nonunique_obj, floats)
+      base::as_writable_bytes(base::allow_nonunique_obj, base::span(floats))
           .copy_from(payload.take_first(vector_bytes));
       result.push_back(std::move(floats));
     }
@@ -680,6 +683,166 @@ TEST_F(MemoryBankTableTest, SetEmbeddingsVersion) {
   EXPECT_TRUE(table_.GetEntry(entry_id).has_value());
   EXPECT_THAT(table_.GetEntryIdsWithoutEmbeddings(),
               testing::ElementsAre(entry_id));
+}
+
+TEST_F(MemoryBankTableTest, SearchEntriesByEmbeddingSkipsMalformedBlob) {
+  MemoryBankEntry valid_entry;
+  valid_entry.type = MemoryBankType::kTab;
+  valid_entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  valid_entry.url = GURL("https://example1.com");
+  valid_entry.tab_title = "Title 1";
+  std::optional<int64_t> valid_id = table_.AddOrUpdateEntry(valid_entry);
+  ASSERT_TRUE(valid_id.has_value());
+  ASSERT_TRUE(table_.AddOrUpdateEmbeddings(
+      *valid_id, {passage_embeddings::Embedding({1.0f, 0.0f})}));
+
+  MemoryBankEntry malformed_entry;
+  malformed_entry.type = MemoryBankType::kTab;
+  malformed_entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  malformed_entry.url = GURL("https://example2.com");
+  malformed_entry.tab_title = "Title 2";
+  std::optional<int64_t> malformed_id =
+      table_.AddOrUpdateEntry(malformed_entry);
+  ASSERT_TRUE(malformed_id.has_value());
+
+  sql::Statement statement(
+      db_.GetUniqueStatement("INSERT OR REPLACE INTO memory_bank_embeddings "
+                             "(entry_id, embedding_blob) VALUES (?, ?)"));
+
+  // 1. Corrupted raw bytes.
+  statement.BindInt64(0, *malformed_id);
+  statement.BindBlob(
+      1, base::byte_span_from_cstring("invalid corrupted embedding bytes"));
+  ASSERT_TRUE(statement.Run());
+  EXPECT_THAT(
+      table_.SearchEntriesByEmbedding(
+          passage_embeddings::Embedding({1.0f, 0.0f}),
+          /*min_score=*/0.5f, /*max_results=*/10),
+      testing::ElementsAre(testing::Field(&MemoryBankEntry::id, *valid_id)));
+
+  // 2. Valid header and byte length, but a non-unit vector ({0.0f, 0.0f}).
+  std::vector<uint8_t> non_unit_blob;
+  const std::vector<float> zero_floats = {0.0f, 0.0f};
+  base::Extend(non_unit_blob, base::U32ToNativeEndian(2u));
+  base::Extend(non_unit_blob,
+               base::as_byte_span(base::allow_nonunique_obj, zero_floats));
+  statement.Reset(/*clear_bound_vars=*/true);
+  statement.BindInt64(0, *malformed_id);
+  statement.BindBlob(1, non_unit_blob);
+  ASSERT_TRUE(statement.Run());
+  EXPECT_THAT(
+      table_.SearchEntriesByEmbedding(
+          passage_embeddings::Embedding({1.0f, 0.0f}),
+          /*min_score=*/0.5f, /*max_results=*/10),
+      testing::ElementsAre(testing::Field(&MemoryBankEntry::id, *valid_id)));
+}
+
+TEST_F(MemoryBankTableTest, SearchEntriesByEmbedding) {
+  std::vector<int64_t> ids;
+  for (int i = 0; i < 4; ++i) {
+    MemoryBankEntry entry;
+    entry.type = MemoryBankType::kTextSelection;
+    entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000 + i);
+    entry.url = GURL("https://example.com/" + base::NumberToString(i));
+    entry.tab_title = "Title " + base::NumberToString(i);
+    std::optional<int64_t> id = table_.AddOrUpdateEntry(entry);
+    ASSERT_TRUE(id.has_value());
+    ids.push_back(*id);
+  }
+
+  // Entry 0 has a weak and a strong passage; its best passage (0.8) is used.
+  ASSERT_TRUE(table_.AddOrUpdateEmbeddings(
+      ids[0], {passage_embeddings::Embedding({0.0f, 1.0f}),
+               passage_embeddings::Embedding({0.8f, 0.6f})}));
+  // Entry 1 is an exact match (1.0).
+  ASSERT_TRUE(table_.AddOrUpdateEmbeddings(
+      ids[1], {passage_embeddings::Embedding({1.0f, 0.0f})}));
+  // Entry 2 scores 0.6.
+  ASSERT_TRUE(table_.AddOrUpdateEmbeddings(
+      ids[2], {passage_embeddings::Embedding({0.6f, 0.8f})}));
+  // Entry 3 has no embeddings and is never returned.
+
+  const passage_embeddings::Embedding query({1.0f, 0.0f});
+
+  // Results are ordered by descending best passage score.
+  EXPECT_THAT(
+      table_.SearchEntriesByEmbedding(query, /*min_score=*/0.5f,
+                                      /*max_results=*/10),
+      testing::ElementsAre(testing::Field(&MemoryBankEntry::id, ids[1]),
+                           testing::Field(&MemoryBankEntry::id, ids[0]),
+                           testing::Field(&MemoryBankEntry::id, ids[2])));
+
+  // Entries below `min_score` are filtered out.
+  EXPECT_THAT(
+      table_.SearchEntriesByEmbedding(query, /*min_score=*/0.7f,
+                                      /*max_results=*/10),
+      testing::ElementsAre(testing::Field(&MemoryBankEntry::id, ids[1]),
+                           testing::Field(&MemoryBankEntry::id, ids[0])));
+
+  // Only the top `max_results` entries are returned.
+  EXPECT_THAT(
+      table_.SearchEntriesByEmbedding(query, /*min_score=*/0.5f,
+                                      /*max_results=*/1),
+      testing::ElementsAre(testing::Field(&MemoryBankEntry::id, ids[1])));
+
+  EXPECT_TRUE(table_
+                  .SearchEntriesByEmbedding(query, /*min_score=*/0.5f,
+                                            /*max_results=*/0)
+                  .empty());
+}
+
+TEST_F(MemoryBankTableTest, SearchEntriesByEmbeddingSkipsMismatchedDimensions) {
+  MemoryBankEntry entry;
+  entry.type = MemoryBankType::kTextSelection;
+  entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry.url = GURL("https://example.com");
+  entry.tab_title = "Title";
+  std::optional<int64_t> id = table_.AddOrUpdateEntry(entry);
+  ASSERT_TRUE(id.has_value());
+  ASSERT_TRUE(table_.AddOrUpdateEmbeddings(
+      *id, {passage_embeddings::Embedding({0.0f, 0.0f, 1.0f})}));
+
+  EXPECT_TRUE(
+      table_
+          .SearchEntriesByEmbedding(passage_embeddings::Embedding({1.0f, 0.0f}),
+                                    /*min_score=*/0.5f, /*max_results=*/10)
+          .empty());
+}
+
+TEST_F(MemoryBankTableTest, SearchEntriesByEmbeddingTieBreaksByEntryId) {
+  MemoryBankEntry entry1;
+  entry1.type = MemoryBankType::kTab;
+  entry1.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry1.url = GURL("https://example1.com");
+  entry1.tab_title = "Title 1";
+  std::optional<int64_t> id1 = table_.AddOrUpdateEntry(entry1);
+  ASSERT_TRUE(id1.has_value());
+
+  MemoryBankEntry entry2;
+  entry2.type = MemoryBankType::kTab;
+  entry2.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  entry2.url = GURL("https://example2.com");
+  entry2.tab_title = "Title 2";
+  std::optional<int64_t> id2 = table_.AddOrUpdateEntry(entry2);
+  ASSERT_TRUE(id2.has_value());
+
+  // Both entries have identical embeddings so their scores tie.
+  ASSERT_TRUE(table_.AddOrUpdateEmbeddings(
+      *id1, {passage_embeddings::Embedding({1.0f, 0.0f})}));
+  ASSERT_TRUE(table_.AddOrUpdateEmbeddings(
+      *id2, {passage_embeddings::Embedding({1.0f, 0.0f})}));
+
+  const passage_embeddings::Embedding query({1.0f, 0.0f});
+  // Higher `entry_id` (`id2`) should rank first in a score tie.
+  EXPECT_THAT(table_.SearchEntriesByEmbedding(query, /*min_score=*/0.5f,
+                                              /*max_results=*/10),
+              testing::ElementsAre(testing::Field(&MemoryBankEntry::id, *id2),
+                                   testing::Field(&MemoryBankEntry::id, *id1)));
+
+  // Truncating to `max_results` keeps the tie-break winner.
+  EXPECT_THAT(table_.SearchEntriesByEmbedding(query, /*min_score=*/0.5f,
+                                              /*max_results=*/1),
+              testing::ElementsAre(testing::Field(&MemoryBankEntry::id, *id2)));
 }
 
 }  // namespace context_hub

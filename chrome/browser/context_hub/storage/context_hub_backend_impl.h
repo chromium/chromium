@@ -46,6 +46,11 @@ class ContextHubBackendImpl : public ContextHubBackend {
       int64_t entry_id,
       std::vector<passage_embeddings::Embedding> embeddings,
       OperationCompleteCallback callback) override;
+  void SearchMemoryBankEntriesByEmbedding(
+      passage_embeddings::Embedding query_embedding,
+      float min_score,
+      size_t max_results,
+      GetEntriesCallback callback) override;
   void GetMemoryBankEntryIdsWithoutEmbeddings(GetIdsCallback callback) override;
   void SetMemoryBankEmbeddingsVersion(
       int64_t version,

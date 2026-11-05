@@ -227,6 +227,30 @@ void ContextHubBackendImpl::AddOrUpdateMemoryBankEmbeddings(
   }
 }
 
+void ContextHubBackendImpl::SearchMemoryBankEntriesByEmbedding(
+    passage_embeddings::Embedding query_embedding,
+    float min_score,
+    size_t max_results,
+    GetEntriesCallback callback) {
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &ContextHubBackendImpl::SearchMemoryBankEntriesByEmbedding,
+          weak_ptr_factory_.GetWeakPtr(), std::move(query_embedding), min_score,
+          max_results, std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::SearchMemoryBankEntriesByEmbedding)
+          .WithArgs(std::move(query_embedding), min_score, max_results)
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run({});
+      break;
+  }
+}
+
 void ContextHubBackendImpl::GetMemoryBankEntryIdsWithoutEmbeddings(
     GetIdsCallback callback) {
   switch (db_state_) {

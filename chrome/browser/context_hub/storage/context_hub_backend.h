@@ -66,6 +66,14 @@ class ContextHubBackend {
       int64_t entry_id,
       std::vector<passage_embeddings::Embedding> embeddings,
       OperationCompleteCallback callback) = 0;
+  // Returns up to `max_results` entries whose best-matching passage embedding
+  // scores at least `min_score` against `query_embedding`, ordered by
+  // descending similarity score. Scoring runs on the database sequence.
+  virtual void SearchMemoryBankEntriesByEmbedding(
+      passage_embeddings::Embedding query_embedding,
+      float min_score,
+      size_t max_results,
+      GetEntriesCallback callback) = 0;
   using GetIdsCallback = base::OnceCallback<void(std::vector<int64_t>)>;
   // Returns the IDs of all entries that do not yet have embeddings.
   virtual void GetMemoryBankEntryIdsWithoutEmbeddings(

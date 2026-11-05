@@ -135,6 +135,19 @@ bool ContextHubDatabase::AddOrUpdateMemoryBankEmbeddings(
   return memory_bank_table_.AddOrUpdateEmbeddings(entry_id, embeddings);
 }
 
+std::vector<MemoryBankEntry>
+ContextHubDatabase::SearchMemoryBankEntriesByEmbedding(
+    const passage_embeddings::Embedding& query_embedding,
+    float min_score,
+    size_t max_results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open()) {
+    return {};
+  }
+  return memory_bank_table_.SearchEntriesByEmbedding(query_embedding, min_score,
+                                                     max_results);
+}
+
 std::vector<int64_t>
 ContextHubDatabase::GetMemoryBankEntryIdsWithoutEmbeddings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
