@@ -303,8 +303,7 @@ class UserBrowserContextBrowserClient : public TestContentBrowserClient {
       : browser_context_(browser_context) {}
 
   // ContentBrowserClient:
-  BrowserContext* GetUserBrowserContext(
-      RenderFrameHost& render_frame_host) override {
+  BrowserContext* GetUserBrowserContext(WebContents& web_contents) override {
     return browser_context_;
   }
 

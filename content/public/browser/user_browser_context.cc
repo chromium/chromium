@@ -11,12 +11,12 @@
 namespace content {
 
 BrowserContext* GetUserBrowserContext(RenderFrameHost& render_frame_host) {
-  return GetContentClient()->browser()->GetUserBrowserContext(
-      render_frame_host);
+  return GetUserBrowserContext(
+      *WebContents::FromRenderFrameHost(&render_frame_host));
 }
 
 BrowserContext* GetUserBrowserContext(WebContents& web_contents) {
-  return GetUserBrowserContext(*web_contents.GetPrimaryMainFrame());
+  return GetContentClient()->browser()->GetUserBrowserContext(web_contents);
 }
 
 }  // namespace content

@@ -1590,8 +1590,8 @@ ContentBrowserClient::MaybeOverrideSourceURLForClipboardAccess(
 }
 
 BrowserContext* ContentBrowserClient::GetUserBrowserContext(
-    RenderFrameHost& render_frame_host) {
-  return render_frame_host.GetBrowserContext();
+    WebContents& web_contents) {
+  return web_contents.GetBrowserContext();
 }
 
 bool ContentBrowserClient::IsClipboardPasteAllowed(

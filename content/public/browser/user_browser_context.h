@@ -21,8 +21,8 @@ class WebContents;
 CONTENT_EXPORT BrowserContext* GetUserBrowserContext(
     RenderFrameHost& render_frame_host);
 
-// Same as above, for the frames in `web_contents`. The user doesn't differ
-// between the frames in a WebContents.
+// Same as above, for the frames in `web_contents`. The user is the same for
+// all the frames in a WebContents.
 CONTENT_EXPORT BrowserContext* GetUserBrowserContext(WebContents& web_contents);
 
 }  // namespace content

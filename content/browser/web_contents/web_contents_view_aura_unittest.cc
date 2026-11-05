@@ -1273,8 +1273,7 @@ class OffTheRecordUserContentBrowserClient : public ContentBrowserClient {
   }
 
   // ContentBrowserClient:
-  BrowserContext* GetUserBrowserContext(
-      RenderFrameHost& render_frame_host) override {
+  BrowserContext* GetUserBrowserContext(WebContents& web_contents) override {
     return &browser_context_;
   }
 
