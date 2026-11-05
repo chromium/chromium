@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "components/prefs/pref_member_language_tag.h"
 #include "components/prefs/pref_service.h"
 
 using base::SequencedTaskRunner;

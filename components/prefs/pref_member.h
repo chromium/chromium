@@ -31,7 +31,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
@@ -353,19 +352,6 @@ PrefMember<base::FilePath>::Internal::UpdateValueInternal(
     const base::Value& value) const;
 
 template <>
-COMPONENTS_PREFS_EXPORT
-PrefMember<base::i18n::LanguageTag>::Internal::Internal();
-
-template <>
-COMPONENTS_PREFS_EXPORT void PrefMember<base::i18n::LanguageTag>::UpdatePref(
-    const base::i18n::LanguageTag& value);
-
-template <>
-COMPONENTS_PREFS_EXPORT bool
-PrefMember<base::i18n::LanguageTag>::Internal::UpdateValueInternal(
-    const base::Value& value) const;
-
-template <>
 COMPONENTS_PREFS_EXPORT void PrefMember<std::vector<std::string>>::UpdatePref(
     const std::vector<std::string>& value);
 
@@ -379,7 +365,10 @@ typedef PrefMember<int> IntegerPrefMember;
 typedef PrefMember<double> DoublePrefMember;
 typedef PrefMember<std::string> StringPrefMember;
 typedef PrefMember<base::FilePath> FilePathPrefMember;
-typedef PrefMember<base::i18n::LanguageTag> LanguageTagPrefMember;
+
+// This typedef is in pref_member_language_tag.h to keep pref_member.h smaller.
+// typedef PrefMember<base::i18n::LanguageTag> LanguageTagPrefMember;
+
 // This preference member is expensive for large string arrays.
 typedef PrefMember<std::vector<std::string>> StringListPrefMember;
 

@@ -21,6 +21,7 @@ component("prefs") {
     "pref_filter.h",
     "pref_member.cc",
     "pref_member.h",
+    "pref_member_language_tag.h",
     "pref_name_set.h",
     "pref_notifier.h",
     "pref_notifier_impl.cc",
