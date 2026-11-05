@@ -35,7 +35,9 @@
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -586,10 +588,14 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
         QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow);
     metrics_->RecordScreenOpened(ScreenNameFromOobeScreenId(current_screen));
 
-    // Detect when the user leaves the Gaia screen during the fallback flow.
-    if (controller_state_ ==
-            ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN &&
-        previous_screen_ == GaiaScreenHandler::kScreenId) {
+    // Detect when the user leaves the Gaia screen during the fallback flow, or
+    // when pre-login authentication fails after QuickStart handed off sign-in.
+    if (current_screen_ == UserAllowlistCheckScreenView::kScreenId ||
+        current_screen_ == SignInFatalErrorView::kScreenId) {
+      AbortFlow(AbortFlowReason::ERROR);
+    } else if (controller_state_ ==
+                   ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN &&
+               previous_screen_ == GaiaScreenHandler::kScreenId) {
       QS_LOG(INFO) << "Gaia screen dismissed while handling fallback URL flow.";
       if (current_screen_ == ErrorScreenHandler::kScreenId) {
         AbortFlow(AbortFlowReason::ERROR);

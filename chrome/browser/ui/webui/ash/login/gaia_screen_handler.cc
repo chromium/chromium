@@ -972,17 +972,6 @@ void GaiaScreenHandler::CompleteAuthentication(
     return;
   }
 
-  // In case of QuickStart, notify the controller of a successful attempt.
-  const auto* ctx = LoginDisplayHost::default_host()->GetWizardContext();
-  if (ctx->quick_start_setup_ongoing &&
-      ctx->gaia_config.gaia_path ==
-          WizardContext::GaiaPath::kQuickStartFallback) {
-    LoginDisplayHost::default_host()
-        ->GetWizardController()
-        ->quick_start_controller()
-        ->OnFallbackUrlFlowSuccess();
-  }
-
   const AccountId account_id = login::GetAccountId(
       local_state_.get(), signin_artifacts.email,
       signin_artifacts.gaia_id.ToString(), AccountType::GOOGLE);
@@ -999,6 +988,17 @@ void GaiaScreenHandler::CompleteAuthentication(
                                                            user_type)) {
     LoginDisplayHost::default_host()->ShowAllowlistCheckFailedError();
     return;
+  }
+
+  // In case of QuickStart, notify the controller of a successful attempt.
+  const auto* ctx = LoginDisplayHost::default_host()->GetWizardContext();
+  if (ctx->quick_start_setup_ongoing &&
+      ctx->gaia_config.gaia_path ==
+          WizardContext::GaiaPath::kQuickStartFallback) {
+    LoginDisplayHost::default_host()
+        ->GetWizardController()
+        ->quick_start_controller()
+        ->OnFallbackUrlFlowSuccess();
   }
 
   // ------ Set user's email on the UI

@@ -1759,6 +1759,7 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
                SamlConfirmPasswordScreen::GetResultString(result));
   switch (result) {
     case SamlConfirmPasswordScreen::Result::kSuccess:
+    case SamlConfirmPasswordScreen::Result::kNotApplicable:
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
           // `user_context` is only set on the wizard context for pre-cryptohome
@@ -1796,10 +1797,6 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
       ShowSignInFatalErrorScreen(
           SignInFatalErrorScreen::Error::kScrapedPasswordVerificationFailure,
           base::DictValue());
-      break;
-    case ash::SamlConfirmPasswordScreen::Result::kNotApplicable:
-      // Continue initial setup by showing other auth factors flows.
-      ShowPinSetupScreenAsMainFactor();
       break;
   }
 }
@@ -2670,8 +2667,19 @@ void WizardController::OnPasswordSelectionScreenExit(
     // TODO(b/291808449): add an edge case for Enterprise users
     // without GAIA/SAML password.
     case PasswordSelectionScreen::Result::NOT_APPLICABLE:
-      ShowFingerprintSetupScreen();
-      return;
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          ShowFingerprintSetupScreen();
+          return;
+        case WizardContext::AuthChangeFlow::kRecovery:
+          if (ash::features::IsRecoveryFlowReorderEnabled()) {
+            ObtainContextAndFinalizeAuth();
+            return;
+          }
+          ObtainContextAndLoginAuthenticated();
+          return;
+      }
     case PasswordSelectionScreen::Result::BACK: {
       // The back button is only shown for going back to main PIN setup.
       CHECK_EQ(wizard_context_->knowledge_factor_setup.pin_setup_mode,
