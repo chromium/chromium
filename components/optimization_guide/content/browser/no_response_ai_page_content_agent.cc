@@ -17,6 +17,20 @@
 
 namespace optimization_guide {
 
+NoResponseAIPageContentAgent::SavedRequest::SavedRequest(
+    blink::mojom::AIPageContentOptionsPtr options,
+    GetAIPageContentCallback callback)
+    : options(std::move(options)), callback(std::move(callback)) {}
+
+NoResponseAIPageContentAgent::SavedRequest::SavedRequest(
+    SavedRequest&&) noexcept = default;
+
+NoResponseAIPageContentAgent::SavedRequest&
+NoResponseAIPageContentAgent::SavedRequest::operator=(SavedRequest&&) noexcept =
+    default;
+
+NoResponseAIPageContentAgent::SavedRequest::~SavedRequest() = default;
+
 NoResponseAIPageContentAgent::NoResponseAIPageContentAgent(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_(render_frame_host) {
@@ -34,8 +48,7 @@ void NoResponseAIPageContentAgent::GetAIPageContent(
     GetAIPageContentCallback callback) {
   // Do nothing, simulating a non-responsive renderer, but save the arguments
   // to allow later processing.
-  saved_options_ = std::move(options);
-  saved_callback_ = std::move(callback);
+  saved_requests_.emplace_back(std::move(options), std::move(callback));
 
   // Let the test disconnect only after the request is actually outstanding.
   if (!on_request_.is_null()) {
@@ -49,15 +62,12 @@ NoResponseAIPageContentAgent::GetForwardingInterface() {
 }
 
 void NoResponseAIPageContentAgent::Bind(mojo::ScopedMessagePipeHandle handle) {
-  if (receiver_.is_bound()) {
-    receiver_.reset();
-  }
-  receiver_.Bind(mojo::PendingReceiver<blink::mojom::AIPageContentAgent>(
-      std::move(handle)));
+  receivers_.Add(this, mojo::PendingReceiver<blink::mojom::AIPageContentAgent>(
+                           std::move(handle)));
 }
 
 void NoResponseAIPageContentAgent::WaitForRequest() {
-  if (!saved_callback_.is_null()) {
+  if (!saved_requests_.empty()) {
     return;
   }
 
@@ -75,21 +85,23 @@ void NoResponseAIPageContentAgent::Respond() {
 
   render_frame_host_->GetRemoteInterfaces()->GetInterface(
       agent_.BindNewPipeAndPassReceiver());
-  agent_->GetAIPageContent(std::move(saved_options_),
-                           std::move(saved_callback_));
+  for (SavedRequest& request : std::exchange(saved_requests_, {})) {
+    agent_->GetAIPageContent(std::move(request.options),
+                             std::move(request.callback));
+  }
 }
 
 void NoResponseAIPageContentAgent::Disconnect() {
-  CHECK(receiver_.is_bound());
+  CHECK(!receivers_.empty());
 
   service_manager::InterfaceProvider::TestApi test_api(
       render_frame_host_->GetRemoteInterfaces());
   CHECK(test_api.HasBinderForName(blink::mojom::AIPageContentAgent::Name_));
   test_api.ClearBinderForName(blink::mojom::AIPageContentAgent::Name_);
 
-  // Closing the receiver without running `saved_callback_` exercises the
+  // Closing the receivers without running the saved callbacks exercises the
   // browser-side default callback path for a dropped Mojo response.
-  receiver_.reset();
+  receivers_.Clear();
 }
 
 }  // namespace optimization_guide

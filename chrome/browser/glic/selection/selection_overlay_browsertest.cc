@@ -37,6 +37,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/mojom/echo.test-mojom.h"
+#include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -919,15 +920,14 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                                 ::selection::EntryPoint::kContextMenuText);
 
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->HasPageContextForTesting(); }));
 
   static_cast<selection::SelectionOverlayPageHandler*>(controller)
       ->SubmitPrompt("Explain this selection");
 
-  // The browser started this session, so it dismisses the overlay itself once
-  // the prompt goes out.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return controller->state() == SelectionOverlayController::State::kOff;
-  }));
+  // The browser started this session, so it dismisses the overlay itself.
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
   histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
                                       ::selection::EntryPoint::kContextMenuText,
@@ -941,6 +941,48 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "SmartSelection.Submission.Outcome",
       ::selection::SubmissionOutcome::kPromptSubmitted, 1);
+}
+
+// The overlay doesn't allow a prompt before the page context is in. One that
+// comes anyway is a bad message, and nothing is sent.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       SubmitPromptBeforePageContextIsBadMessage) {
+  base::HistogramTester histogram_tester;
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  // Holds back the page content, so the overlay shows without it.
+  optimization_guide::NoResponseAIPageContentAgent apc_agent(
+      web_contents->GetPrimaryMainFrame());
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuImage);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+  apc_agent.WaitForRequest();
+  ASSERT_FALSE(controller->HasPageContextForTesting());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->SubmitPrompt("Explain this selection");
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Prompt submitted before the page context.");
+
+  controller->Close();
+  ASSERT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  histogram_tester.ExpectBucketCount(
+      "SmartSelection.Submission.Outcome",
+      ::selection::SubmissionOutcome::kPromptSubmitted, 0);
 }
 
 class SelectionOverlayTextSelectionBrowserTest : public GlicBrowserTest {

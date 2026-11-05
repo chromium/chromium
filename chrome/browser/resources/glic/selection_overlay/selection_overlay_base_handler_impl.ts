@@ -80,6 +80,11 @@ export class SelectionOverlayBaseHandlerImpl extends
         .callbackRouter.setSidePanelOpen.addListener(callback);
   }
 
+  addPageContextReceivedListener(callback: () => void): number {
+    return browserProxyFactory.getInstance()
+        .callbackRouter.pageContextReceived.addListener(callback);
+  }
+
   addClearRegionSelectionListener(callback: () => void): number {
     return browserProxyFactory.getInstance()
         .callbackRouter.setPostRegionSelections.addListener(

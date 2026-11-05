@@ -105,6 +105,7 @@ source_set("interactive_ui_tests") {
   sources = [ "selection_overlay_interactive_uitests.cc" ]
   deps = [
     ":selection",
+    "//chrome/app:generated_resources",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic",
@@ -119,6 +120,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/frame:multi_contents_view",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/optimization_guide/content/browser:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
@@ -151,6 +153,7 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_interfaces",
     "//chrome/test:test_support",
+    "//components/optimization_guide/content/browser:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",

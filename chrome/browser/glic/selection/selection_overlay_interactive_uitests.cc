@@ -5,6 +5,7 @@
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/string_escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -51,8 +52,10 @@
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -70,6 +73,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
@@ -367,6 +371,14 @@ class SelectionOverlayInteractiveTestWithPrompt
     }
     fake_tool_.reset();
     SelectionOverlayInteractiveTest::TearDownOnMainThread();
+  }
+
+ protected:
+  // The overlay only submits a prompt once the browser has the page context.
+  auto WaitForPageContext(ui::ElementIdentifier overlay_contents) {
+    return WaitForJsResultAt(
+        overlay_contents, {"selection-overlay-app", "glic-selection-overlay"},
+        "el => el.pageContextReceived");
   }
 
  private:
@@ -2261,6 +2273,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
             return instance && instance->HasFocus();
           },
           false),
+      WaitForPageContext(kOverlayWebContentsId),
       ExecuteJsAt(
           kOverlayWebContentsId, kSelectionOverlay,
           "el => {"
@@ -2296,7 +2309,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
       WaitForJsResultAt(
           kOverlayWebContentsId, kSelectionOverlay,
           "el => el.shadowRoot.querySelector('#promptInput') !== null"),
-      Do([this]() {
+      WaitForPageContext(kOverlayWebContentsId), Do([this]() {
         static_cast<selection::SelectionOverlayPageHandler*>(GetController())
             ->SubmitPrompt("Explain this region");
       }),
@@ -2399,7 +2412,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
-      Do([this]() {
+      WaitForPageContext(kOverlayWebContentsId), Do([this]() {
         static_cast<selection::SelectionOverlayPageHandler*>(GetController())
             ->SubmitPrompt("Explain this region");
       }),
@@ -2421,55 +2434,68 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
       WaitForShow(OverlayBaseController::kOverlayId));
 }
 
-// A prompt submitted before the page context is here still goes out with the
-// region. ShowWithImageSelection() starts the fetch, which is async, so
-// submitting in the same step guarantees the context isn't here yet.
+// The submit button stays disabled, with a tooltip, until the page context is
+// in. The page's content is held back so the overlay shows without it.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
-                       SubmitPromptBeforePageContextSendsRegion) {
+                       SubmitDisabledUntilPageContext) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+  std::unique_ptr<optimization_guide::NoResponseAIPageContentAgent> apc_agent;
+  auto check_submit_button = [](bool disabled, int title_id) {
+    return base::StrCat(
+        {"el => { const button = "
+         "el.shadowRoot.querySelector('#submitPromptButton'); "
+         "return !button.hidden && button.disabled === ",
+         disabled ? "true" : "false", " && button.title === ",
+         base::GetQuotedJSONString(l10n_util::GetStringUTF8(title_id)), "; }"});
+  };
 
   RunTestSequence(
-      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+      LoadPageAndWaitForPaint(kActiveTab), Do([this, &apc_agent]() {
+        apc_agent =
+            std::make_unique<optimization_guide::NoResponseAIPageContentAgent>(
+                browser()
+                    ->tab_strip_model()
+                    ->GetActiveWebContents()
+                    ->GetPrimaryMainFrame());
         ShowWithImageSelection(selection::InteractionOptions::New(
             /*hide_handles=*/true, /*disable_multi_select=*/true,
             /*skip_intro_animation=*/true));
-        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
-            ->SubmitPrompt("Explain this region");
       }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      Do([&apc_agent]() { apc_agent->WaitForRequest(); }),
+      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay,
+                  "el => {"
+                  "  const input = el.shadowRoot.querySelector('#promptInput');"
+                  "  input.value = 'Explain this region';"
+                  "  input.dispatchEvent(new Event('input'));"
+                  "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          check_submit_button(true, IDS_GLIC_SELECTION_FETCHING_PAGE_CONTENT)),
+      Do([&apc_agent]() { apc_agent->Respond(); }),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          check_submit_button(false, IDS_GLIC_SELECTION_SUBMIT_PROMPT)),
+      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay,
+                  "el => el.shadowRoot.querySelector('#submitPromptButton')"
+                  "    .click()",
+                  ExecuteJsMode::kFireAndForget),
+      WaitForHide(OverlayBaseController::kOverlayId),
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
       WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
                         "el => el.textContent.includes('Explain this region')"),
       CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
-                      "el => el.textContent.includes('pendingRegion')"),
-      CheckResult([this]() { return GetController()->state(); },
-                  OverlayBaseController::State::kOff));
-}
-
-// With the panel already open, a page session is handed to the panel, but not
-// once a prompt is waiting for the page context: the prompt goes out with the
-// region and closes the overlay, and the panel doesn't take over.
-IN_PROC_BROWSER_TEST_F(
-    SelectionOverlayInteractiveTestWithPrompt,
-    SubmitPromptBeforePageContextWithPanelOpenDoesNotHandOff) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
-
-  RunTestSequence(
-      LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
-        ShowWithImageSelection(selection::InteractionOptions::New(
-            /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
-        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
-            ->SubmitPrompt("Explain this region");
-      }),
-      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
-                        "el => el.textContent.includes('Explain this region')"),
-      CheckJsResultAt(kGlicContentsElementId, DeepQuery{"#invocationLog"},
-                      "el => el.textContent.includes('pendingRegion')"),
-      CheckResult([this]() { return GetController()->state(); },
-                  OverlayBaseController::State::kOff),
-      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
-                      "el => !el.hasAttribute('pressed')"));
+                      "el => el.textContent.includes('pendingRegion')"));
 }
 
 // A session that started on a text selection sends its prompt without the
@@ -2494,7 +2520,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
-      Do([this]() {
+      WaitForPageContext(kOverlayWebContentsId), Do([this]() {
         static_cast<selection::SelectionOverlayPageHandler*>(GetController())
             ->SubmitPrompt("Explain this region");
       }),
@@ -2527,7 +2553,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
-      Do([this]() {
+      WaitForPageContext(kOverlayWebContentsId), Do([this]() {
         static_cast<selection::SelectionOverlayPageHandler*>(GetController())
             ->AdjustRegion(selection::SelectedRegion::New(
                                base::UnguessableToken::Create(),
@@ -2583,7 +2609,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptNoRegion,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
-      Do([this]() {
+      WaitForPageContext(kOverlayWebContentsId), Do([this]() {
         static_cast<selection::SelectionOverlayPageHandler*>(GetController())
             ->SubmitPrompt("Explain this region");
       }),

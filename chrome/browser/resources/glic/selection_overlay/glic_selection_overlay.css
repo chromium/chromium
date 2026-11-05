@@ -347,6 +347,12 @@
   display: none;
 }
 
+/* cr-icon-button turns off pointer events when disabled, which would hide
+   the tooltip. */
+#submitPromptButton[disabled] {
+  pointer-events: auto;
+}
+
 .action-chips-row {
   box-sizing: border-box;
   display: flex;

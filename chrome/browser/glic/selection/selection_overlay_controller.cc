@@ -360,11 +360,11 @@ void SelectionOverlayController::OnSidePanelStateChanged(
 void SelectionOverlayController::PostHandSessionToPanel() {
   // Don't hand off a text selection: `GlicSelectionObserver` already sends the
   // text to the panel, and adopting the session would add a duplicate
-  // screenshot chip. A pending prompt closes the session once it's sent.
+  // screenshot chip.
   // TODO(b:579078690): Clean this up once text and region selections use one
   // path.
   if (session_->owner != Session::Owner::kDirect ||
-      session_->region_is_text_selection || session_->pending_prompt) {
+      session_->region_is_text_selection) {
     return;
   }
   // Not right away: the panel may be opening for this session's own
@@ -376,7 +376,7 @@ void SelectionOverlayController::PostHandSessionToPanel() {
 }
 
 void SelectionOverlayController::HandSessionToPanel() {
-  if (session_->owner != Session::Owner::kDirect || session_->pending_prompt ||
+  if (session_->owner != Session::Owner::kDirect ||
       !GlicSidePanelCoordinator::IsShowing(tab_)) {
     return;
   }
@@ -545,11 +545,9 @@ void SelectionOverlayController::CaptureRegion(
     return;
   }
   if (selection_overlay_controller->state() != State::kOff) {
-    // The web client already has this session, or a prompt is about to close
-    // it.
     if (selection_overlay_controller->session_->capture_region_observer
-            .is_bound() ||
-        selection_overlay_controller->session_->pending_prompt) {
+            .is_bound()) {
+      // The web client already has this session.
       mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
       remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                        mojom::CaptureRegionErrorReason::kUnknown);
@@ -851,6 +849,7 @@ void SelectionOverlayController::InitializeOverlay() {
     }
     session_->page->SetPostRegionSelections(std::move(regions));
   }
+  SendPageContextReceivedIfReady();
 }
 
 void SelectionOverlayController::StartScreenshotFlow() {
@@ -895,7 +894,7 @@ void SelectionOverlayController::OnScreenshotTaken(const SkBitmap& bitmap) {
 void SelectionOverlayController::OnScreenshotRedacted(const SkBitmap& bitmap) {
   session_->redacted_screenshot = bitmap;
   SyncRegionsToPanelIfPending();
-  SendPendingPromptIfReady();
+  SendPageContextReceivedIfReady();
   MaybeRequestSuggestions();
 }
 
@@ -934,7 +933,7 @@ void SelectionOverlayController::PageContextReady(
   }
 
   SyncRegionsToPanelIfPending();
-  SendPendingPromptIfReady();
+  SendPageContextReceivedIfReady();
   MaybeRequestSuggestions();
 }
 
@@ -1104,11 +1103,20 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   if (!GlicKeyedService::Get(tab_->GetProfile())) {
     return;
   }
-  if (ShouldSendRegionsWithPrompt() && !IsPageContextReady()) {
-    session_->pending_prompt = prompt;
+  if (!IsPageContextReady()) {
+    // The overlay doesn't allow submitting until `PageContextReceived()`.
+    session_->receiver.ReportBadMessage(
+        "Prompt submitted before the page context.");
     return;
   }
-  SendPrompt(prompt);
+  CapturedRegions regions;
+  if (ShouldSendRegionsWithPrompt()) {
+    regions = GetCapturedRegions();
+  }
+  InvokeWithPrompt(prompt, std::move(regions));
+  if (session_->owner == Session::Owner::kDirect) {
+    Close();
+  }
 }
 
 bool SelectionOverlayController::ShouldSendRegionsWithPrompt() const {
@@ -1129,20 +1137,10 @@ bool SelectionOverlayController::IsPageContextReady() const {
   return session_->tab_context && !session_->redacted_screenshot.empty();
 }
 
-void SelectionOverlayController::SendPrompt(const std::string& prompt) {
-  CapturedRegions regions;
-  if (ShouldSendRegionsWithPrompt() && IsPageContextReady()) {
-    regions = GetCapturedRegions();
-  }
-  InvokeWithPrompt(prompt, std::move(regions));
-  if (session_->owner == Session::Owner::kDirect) {
-    Close();
-  }
-}
-
-void SelectionOverlayController::SendPendingPromptIfReady() {
-  if (session_->pending_prompt && IsPageContextReady()) {
-    SendPrompt(*std::exchange(session_->pending_prompt, std::nullopt));
+void SelectionOverlayController::SendPageContextReceivedIfReady() {
+  if (session_->page && session_->screenshot_available &&
+      IsPageContextReady()) {
+    session_->page->PageContextReceived();
   }
 }
 

@@ -93,6 +93,7 @@ export class GlicSelectionOverlayElement extends
       skipIntroAnimation: {type: Boolean, reflect: true},
       hasPromptText: {type: Boolean},
       sidePanelOpen: {type: Boolean, reflect: true},
+      pageContextReceived: {type: Boolean},
     };
   }
 
@@ -123,6 +124,9 @@ export class GlicSelectionOverlayElement extends
   // `sidePanelOpened`, which applies the Lens side panel margins; the Glic
   // overlay is tab-scoped and never applies them.
   accessor sidePanelOpen: boolean = false;
+  // Whether the browser has the page content. Until then a prompt can't be
+  // submitted.
+  accessor pageContextReceived: boolean = false;
   // Whether the current gesture started with the right button.
   private isRightButtonGesture_: boolean = false;
   // Number of selected regions, as last sent by the browser.
@@ -141,6 +145,9 @@ export class GlicSelectionOverlayElement extends
         handlerImpl.addSetSidePanelOpenListener((open: boolean) => {
           this.sidePanelOpen = open;
         }));
+    this.listenerIds.push(handlerImpl.addPageContextReceivedListener(() => {
+      this.pageContextReceived = true;
+    }));
     this.listenerIds.push(this.baseHandler.addMultiRegionSelectionListener(
         (regions) => this.onRegionCountChanged_(regions.length)));
   }
@@ -791,7 +798,15 @@ export class GlicSelectionOverlayElement extends
     this.shadowRoot.querySelector<HTMLInputElement>('#promptInput')?.focus();
   }
 
+  protected getSubmitPromptTitle(): string {
+    return loadTimeData.getString(
+        this.pageContextReceived ? 'submitPrompt' : 'fetchingPageContent');
+  }
+
   private submitPromptInput_() {
+    if (!this.pageContextReceived) {
+      return;
+    }
     const input =
         this.shadowRoot.querySelector<HTMLInputElement>('#promptInput');
     const prompt = input?.value.trim() ?? '';

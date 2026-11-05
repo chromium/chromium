@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_NO_RESPONSE_AI_PAGE_CONTENT_AGENT_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_NO_RESPONSE_AI_PAGE_CONTENT_AGENT_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -39,18 +41,31 @@ class NoResponseAIPageContentAgent
   // Blocks until this fake agent receives an APC request from the browser.
   void WaitForRequest();
 
-  // Forwards the saved request to the real renderer agent.
+  // Forwards the saved requests to the real renderer agent.
   void Respond();
 
-  // Closes the fake pipe without replying to the saved request.
+  // Closes the fake pipes without replying to the saved requests.
   void Disconnect();
 
  private:
-  blink::mojom::AIPageContentOptionsPtr saved_options_;
-  GetAIPageContentCallback saved_callback_;
+  struct SavedRequest {
+    SavedRequest(blink::mojom::AIPageContentOptionsPtr options,
+                 GetAIPageContentCallback callback);
+    SavedRequest(SavedRequest&&) noexcept;
+    SavedRequest& operator=(SavedRequest&&) noexcept;
+    ~SavedRequest();
+
+    blink::mojom::AIPageContentOptionsPtr options;
+    GetAIPageContentCallback callback;
+  };
+
+  // Other features may request the page content while a test holds a request
+  // back, each on its own pipe. All are held, so a new pipe never drops an
+  // earlier request.
+  std::vector<SavedRequest> saved_requests_;
   base::OnceClosure on_request_;
   raw_ptr<content::RenderFrameHost> render_frame_host_;
-  mojo::Receiver<blink::mojom::AIPageContentAgent> receiver_{this};
+  mojo::ReceiverSet<blink::mojom::AIPageContentAgent> receivers_;
   mojo::Remote<blink::mojom::AIPageContentAgent> agent_;
 };
 

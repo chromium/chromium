@@ -107,7 +107,7 @@ interface SelectionOverlayPageHandler {
 
   // The user submits a prompt (e.g. from the input box). This prompt will be
   // sent to the Glic side panel to be submitted to gemini.google.com and
-  // processed server-side.
+  // processed server-side. Only valid after `PageContextReceived()`.
   SubmitPrompt(string prompt);
 
   // Requests suggested actions from the browser for the current selection.
@@ -151,4 +151,8 @@ interface SelectionOverlayPage {
   // before the screenshot is sent, and again whenever that changes during the
   // session.
   SetSidePanelOpen(bool open);
+
+  // Called once per session when the page content is in. Until then the
+  // overlay must not submit a prompt.
+  PageContextReceived();
 };
