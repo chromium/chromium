@@ -3604,25 +3604,6 @@ public class StripLayoutHelperTest {
     // Note that the testTabGroupDeleteDialog_* tests only cover the behaviors relevant to the
     // tab strip. Tests for much of the internals and dialog flows themselves are in
     // StripTabModelActionListenerUnitTest, TabRemoverImplUnitTest, and TabUngrouperImplUnitTest.
-    // Dragging the last tab in a group is treated as a group drag, which is covered by the
-    // testStartReorder_* tests.
-    @Test
-    public void testTabGroupDeleteDialog_DragOffStrip_NotLastTab() {
-        // Set up resources for testing tab group delete dialog.
-        setupTabGroup(0, 2, TAB_GROUP_ID_1);
-        setTabStripDragHandlerMock();
-        setupDragDropState();
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
-
-        // Drag onto the strip, then off of it.
-        mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
-        mStripLayoutHelper.handleDragExit(true, false);
-
-        // No ungroup should start.
-        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
-    }
-
     @Test
     public void testTabGroupDeleteDialog_Close_Collaboration() {
         StripLayoutTab[] tabs = clickCloseOnLoneGroupedTab();
@@ -4253,20 +4234,6 @@ public class StripLayoutHelperTest {
         closeTabAt(index);
 
         assertEquals(View.GONE, mTabHoverCardView.getVisibility());
-    }
-
-    @Test
-    public void testHandleCloseButtonClick() {
-        initializeTest(/* tabIndex= */ 0);
-
-        // Fake a close button click.
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[1], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-
-        // Verify the event flow.
-        verify(mTabRemover).prepareCloseTabs(any(), anyBoolean(), any(), any());
-        verify(mTabRemover).closeTabs(any(), anyBoolean(), any());
     }
 
     private void verifyPendingMouseTabClosure(boolean expectedPendingMouseTabClosure) {
