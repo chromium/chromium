@@ -230,6 +230,12 @@ void DocumentAnimations::UpdateAnimationTimingIfNeeded() {
     UpdateAnimationTiming(*document_, timelines_, kTimingUpdateOnDemand);
 }
 
+void DocumentAnimations::ExecutePendingCompositorTriggerNotifications() {
+  for (AnimationTrigger* trigger : triggers_) {
+    trigger->ExecutePendingCompositorNotifications();
+  }
+}
+
 void DocumentAnimations::UpdateAnimations(
     DocumentLifecycle::LifecycleState required_lifecycle_state,
     const PaintArtifactCompositor* paint_artifact_compositor,

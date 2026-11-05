@@ -529,10 +529,12 @@ TEST_F(TimelineTriggerTest, ScrollAndTimeDrivenAnimationReplay) {
   EXPECT_EQ(tda->CurrentTimeInternal().value(),
             ANIMATION_TIME_DELTA_FROM_SECONDS(1));
 
-  // Manually trigger the "activate" behavior (replay).
+  // Manually trigger the "activate" behavior (replay). It takes effect in the
+  // next animation frame.
   cc::AnimationTriggerDelegate* delegate =
       static_cast<cc::AnimationTriggerDelegate*>(trigger);
   delegate->NotifyActivated(platform()->NowTicks());
+  GetPage().Animator().ServiceScriptedAnimations(platform()->NowTicks());
 
   // Verify:
   // - Scroll-driven animation did NOT rewind (still 50%).

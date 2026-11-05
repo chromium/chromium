@@ -321,6 +321,20 @@ void PageAnimator::ServiceScriptedAnimations(
     });
   }
 
+  // Sync the compositor triggers' activations and deactivations, after the
+  // finish event listeners and finished promise callbacks ran in the step
+  // above.
+  run_for_all_controllers_with_timing([&](wtf_size_t i) {
+    const auto& [controller, can_throttle] = controllers[i];
+    LocalDOMWindow* window = controller->GetWindow();
+    if (!can_throttle && window && !window->IsContextFrozenOrPaused() &&
+        window->document()->Loader()) {
+      window->document()
+          ->GetDocumentAnimations()
+          .ExecutePendingCompositorTriggerNotifications();
+    }
+  });
+
   // 12. For each doc of docs, run the fullscreen steps for doc.
   run_for_all_active_controllers_with_timing(
       [&](wtf_size_t i) { active_controllers[i]->RunTasks(); });

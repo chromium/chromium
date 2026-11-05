@@ -84,6 +84,11 @@ class CORE_EXPORT DocumentAnimations final
   void UpdateAnimationTimingForAnimationFrame();
   bool NeedsAnimationTimingUpdate();
   void UpdateAnimationTimingIfNeeded();
+
+  // Syncs the activations and deactivations observed by compositor triggers,
+  // see AnimationTrigger::ExecutePendingCompositorNotifications(). Called by
+  // PageAnimator after "update animations and send events".
+  void ExecutePendingCompositorTriggerNotifications();
   void GetAnimationsTargetingTreeScope(HeapVector<Member<Animation>>&,
                                        const TreeScope&);
 

@@ -90,6 +90,8 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   State GetState() { return state_; }
   bool Update();
 
+  void ExecutePendingCompositorNotifications() override;
+
   void Trace(Visitor* visitor) const override;
 
   void CreateCompositorTrigger() override;
@@ -117,8 +119,17 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
 
   // These functions are called when the cc::AnimationTrigger associated with
   // this trigger observes the related conditions on the compositor thread.
+  // ExecutePendingCompositorNotifications() syncs them later.
   void NotifyActivated(base::TimeTicks activate_time) override;
   void NotifyDeactivated(base::TimeTicks deactivate_time) override;
+
+  // An activation or deactivation observed by the compositor at |time|.
+  struct CompositorNotification {
+    State state;
+    base::TimeDelta time;
+  };
+  void ExecuteCompositorNotification(
+      const CompositorNotification& notification);
 
   void HandlePostTripAdd(Animation* animation,
                          Behavior activate_behavior,
@@ -134,6 +145,10 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   Member<TimelineTriggerRangeList> ranges_;
 
   State state_;
+
+  // Activations and deactivations observed on the impl thread that haven't
+  // been synced yet, see ExecutePendingCompositorNotifications().
+  Vector<CompositorNotification> pending_compositor_notifications_;
 };
 
 template <>

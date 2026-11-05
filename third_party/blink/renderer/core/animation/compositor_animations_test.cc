@@ -51,6 +51,7 @@
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
@@ -84,6 +85,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
@@ -6082,6 +6084,134 @@ TEST_F(CompositorAnimationTriggerTest,
   EXPECT_FALSE(source->HasActiveAnimationsOnCompositor());
   EXPECT_EQ(source->GetCompositingDecisionState().disposition,
             CompositorAnimations::kUnsupportedInheritance);
+}
+
+// The main thread receives a compositor trigger event at the start of its next
+// main frame, before "update animations and send events". The event takes
+// effect after that step, so that if the animation reached its end by then, its
+// finish event listeners and finished promise callbacks run first.
+class CompositorTimelineTriggerFinishRaceTest
+    : public CompositorTimelineTriggerBehaviorTest {
+ public:
+  // The finish event listener cancels the animation, so that the animation's
+  // state shows whether the listener ran before the trigger acted.
+  void ObserveFinish() {
+    ClassicScript::CreateUnspecifiedScript(R"JS(
+      window.finishEventCount = 0;
+      window.finishedPromiseFulfilled = false;
+      window.currentTimeOnFinish = -1;
+      const anim = document.getElementById('target').getAnimations()[0];
+      anim.finished.then(() => { window.finishedPromiseFulfilled = true; });
+      anim.addEventListener('finish', () => {
+        window.finishEventCount++;
+        window.currentTimeOnFinish = anim.currentTime;
+        anim.cancel();
+      });
+    )JS")
+        ->RunScript(&Window());
+  }
+
+  double EvaluateNumber(const char* expression) {
+    ScriptState* script_state =
+        ToScriptStateForMainWorld(GetDocument().GetFrame());
+    ScriptState::Scope scope(script_state);
+    return ClassicScript::CreateUnspecifiedScript(expression)
+        ->RunScriptAndReturnValue(&Window())
+        .GetSuccessValue()
+        ->ToNumber(script_state->GetContext())
+        .ToLocalChecked()
+        ->Value();
+  }
+
+  // Scrolls the source into or out of view, and runs a frame in which the
+  // compositor trigger observes the scroll. The main thread receives the
+  // trigger's activation or deactivation at the start of the next frame.
+  void ScrollToActivate() {
+    source_->scrollIntoView(nullptr);
+    Compositor().BeginFrame(0.016);
+  }
+  void ScrollToDeactivate() {
+    scroller_->scrollTo(nullptr, 0, 0);
+    Compositor().BeginFrame(0.016);
+  }
+};
+
+// The main thread receives a replay in the frame in which it observes that the
+// animation finished. The finish event listeners and finished promise callbacks
+// run first.
+TEST_F(CompositorTimelineTriggerFinishRaceTest,
+       ReplayAfterEndRunsFinishNotificationFirst) {
+  Initialize("play", "replay");
+  ObserveFinish();
+
+  // The compositor starts the 500ms animation.
+  ScrollToActivate();
+
+  // The main thread receives the activation. The current time is now ~450ms.
+  Compositor().BeginFrame(0.45);
+
+  // Scroll out of the trigger range. The current time is now ~466ms, before the
+  // animation's end.
+  ScrollToDeactivate();
+
+  // The current time is now ~530ms (450ms + 16ms + 64ms). In this frame, the
+  // main thread receives the deactivation and sees that the animation finished.
+  // The finish listener runs before the replay.
+  Compositor().BeginFrame(0.064);
+
+  EXPECT_EQ(EvaluateNumber("window.finishEventCount"), 1);
+  EXPECT_EQ(EvaluateNumber("window.finishedPromiseFulfilled"), 1);
+  EXPECT_NEAR(EvaluateNumber("window.currentTimeOnFinish"), 500, 0.001);
+  // The finish listener cancelled the animation before the replay.
+  EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kIdle);
+}
+
+// A style update forced before "update animations and send events" doesn't run
+// the trigger's behavior before the finish event listeners and finished promise
+// callbacks.
+TEST_F(CompositorTimelineTriggerFinishRaceTest,
+       ReplayAfterEndWaitsForFinishDespiteForcedStyleUpdate) {
+  Initialize("play", "replay");
+  ObserveFinish();
+
+  // The compositor starts the 500ms animation.
+  ScrollToActivate();
+
+  // The main thread receives the activation. The current time is now ~450ms.
+  Compositor().BeginFrame(0.45);
+
+  // Scroll out of the trigger range. The current time is now ~466ms, before the
+  // animation's end.
+  ScrollToDeactivate();
+
+  // A scroll event listener forces a style update. Scroll events are dispatched
+  // before "update animations and send events".
+  ClassicScript::CreateUnspecifiedScript(R"JS(
+    window.scrollEventCount = 0;
+    document.getElementById('scroller').addEventListener('scroll', () => {
+      window.scrollEventCount++;
+      document.getElementById('target').getBoundingClientRect();
+    });
+  )JS")
+      ->RunScript(&Window());
+
+  // Scroll by a pixel, staying out of the trigger range, so that the next frame
+  // dispatches a scroll event.
+  scroller_->setScrollTop(scroller_->scrollTop() + 1);
+
+  // The current time is now ~530ms (450ms + 16ms + 64ms). In this frame, the
+  // main thread receives the deactivation, the scroll event listener forces a
+  // style update, and then the main thread sees that the animation finished.
+  // The forced style update doesn't run the replay, so the finish listener
+  // still runs before the replay.
+  Compositor().BeginFrame(0.064);
+
+  EXPECT_EQ(EvaluateNumber("window.scrollEventCount"), 1);
+  EXPECT_EQ(EvaluateNumber("window.finishEventCount"), 1);
+  EXPECT_EQ(EvaluateNumber("window.finishedPromiseFulfilled"), 1);
+  EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kIdle);
 }
 
 // Cancelling a CSS animation detaches it from its trigger, and the next trigger

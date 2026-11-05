@@ -74,6 +74,13 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
     return compositor_trigger_.get();
   }
 
+  // Syncs the activations and deactivations that the compositor trigger
+  // observed on the impl thread since the previous main frame. PageAnimator
+  // calls this after "update animations and send events", so that finish event
+  // listeners and finished promise callbacks, which run in that step, run
+  // before the trigger acts.
+  virtual void ExecutePendingCompositorNotifications() {}
+
   void Dispose();
 
   void Trace(Visitor* visitor) const override;
