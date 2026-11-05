@@ -28,7 +28,7 @@ def PrintOwners(root):
     if node.tag == 'histograms':
       histograms = node
       break
-  assert histograms
+  assert histograms is not None
 
   for histogram in histograms:
     if histogram.tag != 'histogram':

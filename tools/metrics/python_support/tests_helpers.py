@@ -89,6 +89,9 @@ _TESTABLE_SCRIPTS: List[TestableScript] = [
     file_path=pathlib.Path('tools/metrics/actions/print_action_names.py')
   ),
   TestableScript.CreatePythonScript(
+    file_path=pathlib.Path('tools/metrics/histograms/histogram_ownership.py')
+  ),
+  TestableScript.CreatePythonScript(
     file_path=pathlib.Path('tools/metrics/histograms/merge_xml.py'),
     flags=['--output', _get_temp_path('merge_xml_test')],
   ),
@@ -134,10 +137,6 @@ _TESTABLE_SCRIPTS: List[TestableScript] = [
   TestableScript.CreatePythonScript(
     file_path=pathlib.Path('tools/metrics/ukm/validate_format.py')
   ),
-  # TODO(crbug.com/488367077): Fix this script.
-  # TestableScript.CreatePythonScript(
-  #   file_path='tools/metrics/histograms/histogram_ownership.py'
-  # ),
   # TODO(crbug.com/488362727): Fix the unmapped histograms.
   # TestableScript.CreatePythonScript(file_path=pathlib.Path(
   #      'tools/metrics/histograms/find_unmapped_histograms.py')),
