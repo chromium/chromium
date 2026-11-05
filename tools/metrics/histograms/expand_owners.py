@@ -23,6 +23,7 @@ _OWNERS = 'OWNERS'
 # may not be src depending on the machine running the code, is up three
 # directory levels from the histograms directory.
 SRC = 'src/'
+_DEPOT_TOOLS_PATH = path_util.CHROMIUM_SRC_PATH / 'third_party' / 'depot_tools'
 
 
 class Error(Exception):
@@ -311,9 +312,7 @@ def ExtractComponentViaDirmd(path):
   dirmd_exe = 'dirmd'
   if sys.platform == 'win32':
     dirmd_exe = 'dirmd.bat'
-  dirmd_path = str(
-    path_util.CHROMIUM_SRC_PATH / 'third_party' / 'depot_tools' / dirmd_exe
-  )
+  dirmd_path = str(_DEPOT_TOOLS_PATH / dirmd_exe)
   dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
   # Use subprocess.run() so stdout and stderr are drained while dirmd runs.
   # Waiting for dirmd to exit before reading its output deadlocks once the
