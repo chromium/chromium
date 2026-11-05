@@ -20,7 +20,11 @@ if (enable_devtools_frontend) {
     # on this target to grit action.
     public = []
 
-    deps = [ ":devtools_resources" ]
+    deps = [
+      ":devtools_resources",
+      "//base",
+      "//ui/base",
+    ]
   }
 
   grit("devtools_resources") {

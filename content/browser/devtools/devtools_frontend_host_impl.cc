@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -17,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/devtools/grit/devtools_resources_map.h"
 #include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -84,10 +84,12 @@ void DevToolsFrontendHost::SetupExtensionsAPI(
   frontend->SetupDevToolsExtensionAPI(extension_api);
 }
 
+base::span<const webui::ResourcePath> GetDevToolsResources();
+
 // static
 scoped_refptr<base::RefCountedMemory>
 DevToolsFrontendHost::GetFrontendResourceBytes(std::string_view path) {
-  for (const auto& [resource_path, id, filepath] : kDevtoolsResources) {
+  for (const auto& [resource_path, id, filepath] : GetDevToolsResources()) {
     if (path == resource_path) {
       return GetContentClient()->GetDataResourceBytes(id);
     }

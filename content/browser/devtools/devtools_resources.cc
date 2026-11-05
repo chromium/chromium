@@ -4,4 +4,16 @@
 
 #include "content/browser/devtools/grit/devtools_resources.h"
 
+#include "base/containers/span.h"
+#include "content/browser/devtools/grit/devtools_resources_map.h"
+#include "ui/base/webui/resource_path.h"
+
 extern const int kCcompressedProtocolJSON = COMPRESSED_PROTOCOL_JSON;
+
+namespace content {
+
+base::span<const webui::ResourcePath> GetDevToolsResources() {
+  return kDevtoolsResources;
+}
+
+}  // namespace content

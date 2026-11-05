@@ -3487,10 +3487,7 @@ source_set("browser") {
       "devtools/devtools_frontend_host_impl.h",
     ]
 
-    deps += [
-      "//content/browser/devtools:devtools_resources",
-      "//content/browser/devtools:devtools_resources_extern",
-    ]
+    deps += [ "//content/browser/devtools:devtools_resources_extern" ]
   }
 
   if (!is_android && !is_ios && !is_fuchsia) {
