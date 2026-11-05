@@ -6,14 +6,9 @@
 #define CHROME_BROWSER_UI_BROWSER_ACTIVE_STATE_MANAGER_BROWSER_ACTIVE_STATE_MANAGER_H_
 
 #include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-
-namespace web_app {
-class AppBrowserController;
-}
 
 // Feature controller responsible for managing the active state of a browser
 // window and notifying registered observers when active state changes.
@@ -21,9 +16,7 @@ class BrowserActiveStateManager {
  public:
   DECLARE_USER_DATA(BrowserActiveStateManager);
 
-  explicit BrowserActiveStateManager(
-      BrowserWindowInterface& browser,
-      web_app::AppBrowserController* app_browser_controller = nullptr);
+  explicit BrowserActiveStateManager(BrowserWindowInterface& browser);
   BrowserActiveStateManager(const BrowserActiveStateManager&) = delete;
   BrowserActiveStateManager& operator=(const BrowserActiveStateManager&) =
       delete;
@@ -48,7 +41,6 @@ class BrowserActiveStateManager {
 
  private:
   const raw_ref<BrowserWindowInterface> browser_;
-  const raw_ptr<web_app::AppBrowserController> app_browser_controller_;
 
   // The active state of this browser window.
   bool is_active_ = false;

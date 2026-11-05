@@ -4,12 +4,16 @@
 
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
@@ -30,7 +34,10 @@ namespace {
 // is significantly larger than test timeout.
 class SamplingMetricsProviderInteractiveUiTest : public WebAppBrowserTestBase {
  public:
-  void CheckWebAppCount(int web_app_count, bool is_active) {
+  void CheckWebAppCount(
+      int web_app_count,
+      bool is_active,
+      std::optional<bool> is_standalone_active = std::nullopt) {
     ukm::TestAutoSetUkmRecorder ukm_recorder;
     base::HistogramTester tester;
     web_app::SamplingMetricsProvider::EmitMetrics();
@@ -44,6 +51,14 @@ class SamplingMetricsProviderInteractiveUiTest : public WebAppBrowserTestBase {
                            base::Bucket(/*min=*/1, /*count=*/bucket1_count)));
     EXPECT_THAT(tester.GetAllSamples("WebApp.Engagement2.Count"),
                 BucketsAre(base::Bucket(/*min=*/web_app_count, /*count=*/1)));
+    if (is_standalone_active.has_value()) {
+      int standalone_bucket0 = *is_standalone_active ? 0 : 1;
+      int standalone_bucket1 = *is_standalone_active ? 1 : 0;
+      EXPECT_THAT(
+          tester.GetAllSamples("WebApp.Engagement2.Standalone.Active"),
+          BucketsAre(base::Bucket(/*min=*/0, /*count=*/standalone_bucket0),
+                     base::Bucket(/*min=*/1, /*count=*/standalone_bucket1)));
+    }
 
     if (web_app_count == 0) {
       return;
@@ -140,6 +155,31 @@ IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest,
   chrome::CloseWindow(app_browser);
   observer.Wait();
   CheckWebAppCount(/*web_app_count=*/0, /*is_active=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest,
+                       DeactivateAppBrowser) {
+  webapps::AppId app_id = InstallPWA(GetInstallableAppURL());
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  CheckWebAppCount(/*web_app_count=*/1, /*is_active=*/true,
+                   /*is_standalone_active=*/true);
+
+  // Deactivating the app window without activating another Chrome browser
+  // window leaves `app_browser` as the last active browser, yet it must still
+  // report inactive (https://crbug.com/376306245). Notify
+  // `BrowserActiveStateManager` directly because `LaunchWebAppBrowserAndWait()`
+  // does not wait for async macOS AppShim / RemoteCocoa connection and OS
+  // focus loss to a non-Chrome app cannot be reliably triggered across bots.
+  auto* active_state_manager = BrowserActiveStateManager::From(app_browser);
+  active_state_manager->DidBecomeInactive();
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
+            app_browser);
+  CheckWebAppCount(/*web_app_count=*/1, /*is_active=*/false,
+                   /*is_standalone_active=*/false);
+
+  active_state_manager->DidBecomeActive();
+  CheckWebAppCount(/*web_app_count=*/1, /*is_active=*/true,
+                   /*is_standalone_active=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest, Tab) {

@@ -222,8 +222,6 @@ void SamplingMetricsProvider::EmitMetrics() {
 
       ++standalone_pwas_count;
 
-      // TODO(https://crbug.com/358404364): This function does not work on macOS
-      // for app windows.
       if (browser->IsActive()) {
         standalone_pwas_in_active_use = true;
       }

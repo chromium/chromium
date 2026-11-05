@@ -283,8 +283,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           *browser, &web_app::MaybeCreateAppBrowserController, browser);
 
   browser_active_state_manager_ =
-      GetUserDataFactory().CreateInstance<BrowserActiveStateManager>(
-          *browser, *browser, app_browser_controller_.get());
+      GetUserDataFactory().CreateInstance<BrowserActiveStateManager>(*browser,
+                                                                     *browser);
 
   {
     auto* merged_bookmarks_service =
