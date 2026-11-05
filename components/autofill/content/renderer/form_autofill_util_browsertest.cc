@@ -1714,18 +1714,14 @@ TEST_F(FormAutofillUtilsTest, GetOutermostAncestorFormElement) {
   content::RunAllTasksUntilIdle();
 
   WebDocument doc = GetDocument();
-  EXPECT_EQ(
-      GetOutermostAncestorFormElementForTesting(GetElementById(doc, "unowned")),
-      WebFormElement());
-  EXPECT_EQ(
-      GetOutermostAncestorFormElementForTesting(GetElementById(doc, "owned1")),
-      GetFormElementById(doc, "outer_form"));
-  EXPECT_EQ(
-      GetOutermostAncestorFormElementForTesting(GetElementById(doc, "owned2")),
-      GetFormElementById(doc, "outer_form"));
-  EXPECT_EQ(
-      GetOutermostAncestorFormElementForTesting(GetElementById(doc, "owned3")),
-      GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "unowned")),
+            WebFormElement());
+  EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "owned1")),
+            GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "owned2")),
+            GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "owned3")),
+            GetFormElementById(doc, "outer_form"));
   EXPECT_EQ(WebFormControlElement(),
             GetFormElementById(doc, "non_existent_form", AllowNull(true)));
 }

@@ -1595,24 +1595,6 @@ bool IsWebElementVisible(const WebElement& element) {
           HasMinSize(element.GetScrollSize()));
 }
 
-// Returns the outermost <form> ancestor of |node|, or an IsNull() pointer.
-// See README.md for the relevant terminology.
-WebFormElement GetOutermostAncestorFormElement(WebNode n) {
-  const bool should_return_closest_ancestor =
-      !base::FeatureList::IsEnabled(features::kAutofillFixIframeOwnership);
-  WebFormElement form;
-  while (n) {
-    if (HasTagName<kForm>(n)) {
-      form = n.To<WebFormElement>();
-      if (should_return_closest_ancestor) {
-        return form;
-      }
-    }
-    n = n.ParentOrShadowHostNode();
-  }
-  return form;
-}
-
 // Returns true if a DOM traversal (pre-order, depth-first) visits `x` before
 // `y`.
 // As a performance improvement, `ancestor_hint` can be set to a suspected
@@ -2426,6 +2408,22 @@ std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
   return elements;
 }
 
+WebFormElement GetOutermostAncestorFormElement(WebNode n) {
+  const bool should_return_closest_ancestor =
+      !base::FeatureList::IsEnabled(features::kAutofillFixIframeOwnership);
+  WebFormElement form;
+  while (n) {
+    if (HasTagName<kForm>(n)) {
+      form = n.To<WebFormElement>();
+      if (should_return_closest_ancestor) {
+        return form;
+      }
+    }
+    n = n.ParentOrShadowHostNode();
+  }
+  return form;
+}
+
 std::optional<FormAndField> FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
@@ -3101,11 +3099,6 @@ bool IsWebElementVisibleForTesting(const WebElement& element) {  // IN-TEST
 bool IsVisibleIframeForTesting(  // IN-TEST
     const WebElement& iframe_element) {
   return IsVisibleIframe(iframe_element);
-}
-
-WebFormElement GetOutermostAncestorFormElementForTesting(  // IN-TEST
-    WebNode n) {
-  return GetOutermostAncestorFormElement(n);
 }
 
 bool IsDOMPredecessorForTesting(const WebNode& x,  // IN-TEST

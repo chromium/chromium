@@ -147,6 +147,10 @@ std::vector<blink::WebFormControlElement> GetOwnedAutofillableFormControls(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element);
 
+// Returns the outermost <form> ancestor of `n`, or a null `WebFormElement`.
+// See README.md for the relevant terminology.
+blink::WebFormElement GetOutermostAncestorFormElement(blink::WebNode n);
+
 struct FormAndField {
   STACK_ALLOCATED();
 
@@ -364,8 +368,6 @@ std::u16string FindChildTextWithIgnoreListForTesting(
     const std::set<blink::WebNode>& divs_to_skip);
 std::vector<SelectOption> GetDataListOptionsForTesting(
     const blink::WebInputElement& element);
-blink::WebFormElement GetOutermostAncestorFormElementForTesting(
-    blink::WebNode n);
 bool IsDOMPredecessorForTesting(const blink::WebNode& x,
                                 const blink::WebNode& y,
                                 const blink::WebNode& ancestor_hint);

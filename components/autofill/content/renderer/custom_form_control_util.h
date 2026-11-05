@@ -7,9 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_form_element.h"
 
 namespace autofill {
 
@@ -31,6 +34,13 @@ struct CustomFormControl {
   // The currently selected option, if any.
   std::optional<SelectOption> current_option;
 };
+
+// Groups `controls` by their outermost ancestor `<form>` element. Unowned
+// controls are grouped under a null `blink::WebFormElement()`.
+// Assumes `controls` are in DOM order and preserves their relative order
+// within each form.
+base::flat_map<blink::WebFormElement, std::vector<CustomFormControl>>
+GroupCustomFormControlsByForm(std::vector<CustomFormControl> controls);
 
 }  // namespace autofill
 
