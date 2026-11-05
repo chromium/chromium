@@ -243,6 +243,10 @@ public class DisplayCutoutTabHelper implements UserData {
     }
 
     public static void initForTesting(Tab tab, DisplayCutoutController controller) {
+        // Destroy any helper installed earlier so its observers don't outlive it.
+        DisplayCutoutTabHelper oldHelper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
+        if (oldHelper != null) oldHelper.destroy();
+
         DisplayCutoutTabHelper tabHelper = new DisplayCutoutTabHelper(tab);
         tabHelper.mCutoutController = controller;
         tab.getUserDataHost().setUserData(USER_DATA_KEY, tabHelper);

@@ -835,7 +835,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.display_cutout") {
     "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTest.java",
     "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTestRule.java",
     "src/org/chromium/chrome/browser/display_cutout/WebappDisplayCutoutTest.java",
-    "src/org/chromium/chrome/browser/display_cutout/WebappDisplayCutoutTestRule.java",
   ]
 
   deps = [ ":chrome_test_java_helper" ]

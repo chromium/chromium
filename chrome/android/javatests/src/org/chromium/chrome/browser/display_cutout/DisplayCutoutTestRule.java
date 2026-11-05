@@ -7,12 +7,11 @@ package org.chromium.chrome.browser.display_cutout;
 import android.graphics.Rect;
 import android.view.WindowManager.LayoutParams;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.rules.ExternalResource;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -24,23 +23,18 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
 /**
  * Custom test rule for simulating a Display Cutout. This allows us to test display cutout
  * functionality without having a test device with a cutout.
- *
- * @param <T> The type of {@link ChromeActivity} to use for the test.
  */
-public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActivityTestRule<T> {
+public class DisplayCutoutTestRule extends ExternalResource {
     /** These are the two test safe areas with and without the test cutout. */
     public static final Rect TEST_SAFE_AREA_WITH_CUTOUT = new Rect(10, 20, 30, 40);
 
@@ -134,14 +128,14 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
     }
 
     /** The test page with the display cutout harness. */
-    private static final String DEFAULT_TEST_PAGE =
+    public static final String TEST_PAGE =
             "/chrome/test/data/android/display_cutout/test_page.html";
 
     /** The default test timeout. */
     private static final int TEST_TIMEOUT = 5000;
 
-    /** The embedded test HTTP server that serves the test page. */
-    private EmbeddedTestServer mTestServer;
+    /** The {@link ChromeActivity} running the test. */
+    private ChromeActivity mActivity;
 
     /** The {@link DisplayCutoutController} to test. */
     private TestDisplayCutoutController mTestController;
@@ -155,54 +149,27 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
     /** The {@link FullscreenManager.Observer} observing fullscreen mode. */
     private FullscreenManager.Observer mListener;
 
-    private final Class<T> mActivityClass;
-
-    public DisplayCutoutTestRule(Class<T> activityClass) {
-        super(activityClass);
-        mActivityClass = activityClass;
-    }
-
-    @Override
-    protected void before() throws Throwable {
-        super.before();
-
-        startActivity();
-        mTab = getActivityTab();
-
+    /**
+     * Attaches a {@link TestDisplayCutoutController} to {@code tab} and starts tracking fullscreen
+     * state in {@code activity}.
+     */
+    public void attach(ChromeActivity activity, Tab tab) {
+        assert mListener == null : "attach() should be called once per test";
+        mActivity = activity;
+        mTab = tab;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setDisplayCutoutController(createDisplayCutoutController(mTab));
+                    setDisplayCutoutController(TestDisplayCutoutController.create(tab, null));
                     mListener = new FullscreenToggleObserver();
-                    getActivity().getFullscreenManager().addObserver(mListener);
+                    mActivity.getFullscreenManager().addObserver(mListener);
                 });
-        loadUrl(getTestURL());
-    }
-
-    protected void startActivity() {
-        ChromeTabbedActivityTestRule rule = new ChromeTabbedActivityTestRule();
-        rule.startMainActivityOnBlankPage();
-        setActivity(mActivityClass.cast(rule.getActivity()));
-    }
-
-    /** Creates the {@link TestDisplayCutoutController} used by this test. */
-    protected TestDisplayCutoutController createDisplayCutoutController(Tab tab) {
-        return TestDisplayCutoutController.create(tab, null);
     }
 
     @Override
     protected void after() {
+        if (mListener == null) return;
         ThreadUtils.runOnUiThreadBlocking(
-                () -> getActivity().getFullscreenManager().removeObserver(mListener));
-        super.after();
-    }
-
-    protected String getTestURL() {
-        if (mTestServer == null) {
-            mTestServer =
-                    EmbeddedTestServer.createAndStartServer(
-                            InstrumentationRegistry.getInstrumentation().getContext());
-        }
-        return mTestServer.getURL(DEFAULT_TEST_PAGE);
+                () -> mActivity.getFullscreenManager().removeObserver(mListener));
     }
 
     protected void setDisplayCutoutController(TestDisplayCutoutController controller) {
