@@ -111,7 +111,7 @@ BASE_FEATURE(kDeferredDownloadHistoryLoading,
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableDownloadOpenWithContextMenu,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 BASE_FEATURE(kPreserveDownloadLastModified,

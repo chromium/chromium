@@ -107,26 +107,26 @@ TEST_F(DownloadUiContextMenuTest, OpenWith) {
   EXPECT_CALL(*item, CanOpenDownload()).WillRepeatedly(Return(true));
   EXPECT_CALL(*item, CanShowInFolder()).WillRepeatedly(Return(true));
 
-  // Disabled by default.
   MakeContextMenu(download_ui_model.get());
   ui::SimpleMenuModel* model = menu()->GetMenuModel();
   ASSERT_NE(model, nullptr);
-  EXPECT_FALSE(
-      model->GetIndexOfCommandId(DownloadCommands::OPEN_WITH).has_value());
-  EXPECT_FALSE(menu()->IsCommandIdEnabled(DownloadCommands::OPEN_WITH));
-
 #if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList scoped_feature_list(
-      download::features::kEnableDownloadOpenWithContextMenu);
-  MakeContextMenu(download_ui_model.get());
-  model = menu()->GetMenuModel();
-  ASSERT_NE(model, nullptr);
   const std::optional<size_t> index =
       model->GetIndexOfCommandId(DownloadCommands::OPEN_WITH);
   ASSERT_TRUE(index.has_value());
   EXPECT_EQ(model->GetLabelAt(*index),
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_MENU_OPEN_WITH));
   EXPECT_TRUE(menu()->IsCommandIdEnabled(DownloadCommands::OPEN_WITH));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      download::features::kEnableDownloadOpenWithContextMenu);
+  MakeContextMenu(download_ui_model.get());
+  model = menu()->GetMenuModel();
+  ASSERT_NE(model, nullptr);
 #endif
+  EXPECT_FALSE(
+      model->GetIndexOfCommandId(DownloadCommands::OPEN_WITH).has_value());
+  EXPECT_FALSE(menu()->IsCommandIdEnabled(DownloadCommands::OPEN_WITH));
   EXPECT_FALSE(menu()->IsCommandIdChecked(DownloadCommands::OPEN_WITH));
 }

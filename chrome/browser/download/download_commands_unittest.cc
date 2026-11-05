@@ -121,11 +121,14 @@ TEST_F(DownloadCommandsTest, OpenWith) {
   // complete and can be shown in the folder.
   EXPECT_FALSE(IsCommandEnabled(DownloadCommands::OPEN_WITH));
   ON_CALL(item(), IsDone()).WillByDefault(Return(true));
-  EXPECT_FALSE(IsCommandEnabled(DownloadCommands::OPEN_WITH));
 #if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList scoped_feature_list(
-      download::features::kEnableDownloadOpenWithContextMenu);
   EXPECT_TRUE(IsCommandEnabled(DownloadCommands::OPEN_WITH));
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        download::features::kEnableDownloadOpenWithContextMenu);
+    EXPECT_FALSE(IsCommandEnabled(DownloadCommands::OPEN_WITH));
+  }
   ON_CALL(item(), CanShowInFolder()).WillByDefault(Return(false));
 #endif
   EXPECT_FALSE(IsCommandEnabled(DownloadCommands::OPEN_WITH));
