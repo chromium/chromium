@@ -359,16 +359,6 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="ContextMenuAndroidTypes"/>
 </histogram>
 
-<histogram name="ContextMenu.TimeToSelectShare" units="ms"
-    expires_after="2023-02-19">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Records how long it takes to press on &quot;Share&quot; from the time
-    context menu is shown. Android only.
-  </summary>
-</histogram>
-
 <histogram name="ContextMenu.ViewsTextServices.Emoji" enum="Boolean"
     expires_after="2023-10-08">
   <owner>yyushkina@chromium.org</owner>

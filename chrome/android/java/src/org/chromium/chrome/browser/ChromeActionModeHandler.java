@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -150,9 +149,6 @@ public class ChromeActionModeHandler {
         private final BrowserControlsStateProvider mControlsState;
         private final GlicSelectionMenuTracker mGlicSelectionMenuTracker;
 
-        // Used for recording UMA histograms.
-        private long mContextMenuStartTime;
-
         ChromeActionModeCallback(
                 Tab tab,
                 WebContents webContents,
@@ -180,8 +176,6 @@ public class ChromeActionModeHandler {
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mContextMenuStartTime = System.currentTimeMillis();
-
             int allowedActionModes =
                     ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
                             | ActionModeCallbackHelper.MENU_ITEM_SHARE;
@@ -286,9 +280,6 @@ public class ChromeActionModeHandler {
             } else if (mShareDelegateSupplier.get() != null
                     && id == R.id.select_action_menu_share) {
                 RecordUserAction.record(SelectionPopupController.UMA_MOBILE_ACTION_MODE_SHARE);
-                RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                        "ContextMenu.TimeToSelectShare",
-                        System.currentTimeMillis() - mContextMenuStartTime);
                 mHelper.dismissMenu();
                 mShareDelegateSupplier
                         .get()
