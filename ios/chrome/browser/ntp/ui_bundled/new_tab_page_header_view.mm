@@ -116,13 +116,18 @@ constexpr CGFloat kFakeboxImageLeadingSpace = 13.0;
 constexpr CGFloat kFakeboxLeadingSpaceUICleanup = 20.0;
 constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
 constexpr CGFloat kOmniboxImageLeadingSpace = 22.0;
+constexpr CGFloat kOmniboxImageLeadingSpaceUICleanup = 21.0;
 constexpr CGFloat kOmniboxPlusLeadingSpace = 26.0;
 constexpr CGFloat kFakeboxImageSize = 20.0;
 // TODO(crbug.com/542594099): Remove the "UICleanup" suffix once
 // `kNewTabPageUICleanup` launches.
-constexpr CGFloat kFakeboxPlusIconSizeUICleanup = 24.0;
+constexpr CGFloat kFakeboxImageSizeUICleanup = 24.0;
 constexpr CGFloat kFakeboxLogoSizeUICleanup = 22.0;
 constexpr CGFloat kSymbolActionPointSizeUICleanup = 19.0;
+// Vertical offset for the fakebox leading view to compensate for
+// `searchHintLabel`'s -1.0pt centerY offset and keep the leading view centered
+// in the fakebox.
+constexpr CGFloat kLeadingViewYOffset = 1.0;
 
 // The spacing between the items in the button stack.
 constexpr CGFloat kButtonSpacing = 9.0;
@@ -131,6 +136,9 @@ constexpr CGFloat kButtonSpacingUICleanup = 16.0;
 // `kNewTabPageUICleanup` is enabled, sized so the voice search and lens touch
 // targets meet at the midpoint without overlapping.
 constexpr CGFloat kFakeboxButtonMinimumTouchTargetUICleanup = 38.0;
+// Top content inset for the trailing fakebox buttons to optically center the
+// baseline-aligned symbol glyphs with the search engine logo.
+constexpr CGFloat kFakeboxButtonTopContentInsetUICleanup = 2.0;
 
 // The height of the divider between the mic and lens icons.
 constexpr CGFloat kIconDividerHeight = 13.0;
@@ -306,6 +314,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIView* _customizationNewFeatureBadge;
   // A view to contain all the buttons on the trailing side of the fakebox.
   UIStackView* _buttonStack;
+  // The leading view in the fakebox (either `_plusButton` or the logo view
+  // container).
+  UIView* _leadingView;
   // Default search engine logo view.
   UIImageView* _logoView;
   // Default search engine logo image.
@@ -704,6 +715,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (CGFloat)omniboxLeadingSpace {
   if ([self shouldShowPlusButton]) {
     return kOmniboxPlusLeadingSpace;
+  } else if (IsNewTabPageUICleanupEnabled()) {
+    return kOmniboxImageLeadingSpaceUICleanup;
   } else {
     return kOmniboxImageLeadingSpace;
   }
@@ -726,31 +739,43 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // Adds the appropriate leading view on the given search field.
 - (void)addLeadingViewToSearchField:(UIView*)searchField {
+  const BOOL uiCleanupEnabled = IsNewTabPageUICleanupEnabled();
   UIView* leadingView;
   CGFloat leadingViewYOffset = 0;
   if ([self shouldShowPlusButton]) {
     [self createPlusButton];
     leadingView = self.plusButton;
+    if (uiCleanupEnabled) {
+      leadingViewYOffset = kLeadingViewYOffset;
+    }
   } else {
     _logoView = [[UIImageView alloc] init];
     _logoView.contentMode = UIViewContentModeScaleAspectFit;
     _logoView.image = _dseLogo;
-    leadingView = _logoView;
-    leadingViewYOffset = 1.0;
+    if (uiCleanupEnabled) {
+      _logoView.translatesAutoresizingMaskIntoConstraints = NO;
+      AddSquareConstraints(_logoView, kFakeboxLogoSizeUICleanup);
+      UIView* logoContainerView = [[UIView alloc] init];
+      logoContainerView.userInteractionEnabled = NO;
+      [logoContainerView addSubview:_logoView];
+      AddSameCenterConstraints(_logoView, logoContainerView);
+      leadingView = logoContainerView;
+    } else {
+      leadingView = _logoView;
+    }
+    leadingViewYOffset = kLeadingViewYOffset;
   }
 
   if (!leadingView) {
     return;
   }
 
+  _leadingView = leadingView;
   leadingView.translatesAutoresizingMaskIntoConstraints = NO;
   [searchField addSubview:leadingView];
 
-  CGFloat imageSize = kFakeboxImageSize;
-  if (IsNewTabPageUICleanupEnabled()) {
-    imageSize = [self shouldShowPlusButton] ? kFakeboxPlusIconSizeUICleanup
-                                            : kFakeboxLogoSizeUICleanup;
-  }
+  CGFloat imageSize =
+      uiCleanupEnabled ? kFakeboxImageSizeUICleanup : kFakeboxImageSize;
   AddSquareConstraints(leadingView, imageSize);
 
   self.leadingViewConstraint = [leadingView.leadingAnchor
@@ -776,9 +801,16 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       [self.traitCollection objectForNewTabPageTrait];
   const BOOL useColorIcon =
       !darkUIStyle && !forceDisableColors && !ntpHasCustomBackground;
+  const BOOL uiCleanupEnabled = IsNewTabPageUICleanupEnabled();
 
   content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
                                                   useColorIcon);
+  if (uiCleanupEnabled) {
+    UIButtonConfiguration* buttonConfig = self.voiceSearchButton.configuration;
+    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(
+        kFakeboxButtonTopContentInsetUICleanup, 0, 0, 0);
+    self.voiceSearchButton.configuration = buttonConfig;
+  }
   if (self.lensButton) {
     // Only color the badge if there's no image background.
     UIColor* newBadgeColor =
@@ -788,6 +820,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     content_suggestions::ConfigureLensButtonAppearance(
         self.lensButton, _useNewBadgeForLensButton, useColorIcon,
         newBadgeColor);
+    if (uiCleanupEnabled && !_useNewBadgeForLensButton) {
+      UIButtonConfiguration* buttonConfig = self.lensButton.configuration;
+      buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(
+          kFakeboxButtonTopContentInsetUICleanup, 0, 0, 0);
+      self.lensButton.configuration = buttonConfig;
+    }
     if (_useNewBadgeForLensButton) {
       content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
           self.lensButton, 1 - _lastAnimationPercent);
@@ -1503,20 +1541,27 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // Clears the leading views.
 - (void)removeLeadingView {
+  [_leadingView removeFromSuperview];
   [_plusButton removeFromSuperview];
   [_logoView removeFromSuperview];
+  _leadingView = nil;
   _plusButton = nil;
   _logoView = nil;
 }
 
 // Adds the necessary buttons to the fakebox stack.
 - (void)addFakeboxButtonsToStack {
+  const BOOL uiCleanupEnabled = IsNewTabPageUICleanupEnabled();
+
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   [self configureTouchTargetForFakeboxButton:self.voiceSearchButton];
   self.voiceSearchButton.enabled = _voiceSearchIsEnabled;
   self.voiceSearchButton.isAccessibilityElement = _voiceSearchIsEnabled;
+  if (uiCleanupEnabled) {
+    AddSquareConstraints(self.voiceSearchButton, kFakeboxImageSizeUICleanup);
+  }
   [_buttonStack addArrangedSubview:self.voiceSearchButton];
 
   // Lens.
@@ -1524,7 +1569,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::NewTabPage, _isGoogleDefaultSearchEngine);
   if (useLens) {
-    if (IsNewTabPageUICleanupEnabled()) {
+    if (uiCleanupEnabled) {
       self.voiceAndLensDivider = nil;
     } else {
       [self addVoiceAndLensDivider];
@@ -1532,6 +1577,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     [self configureTouchTargetForFakeboxButton:self.lensButton];
+    if (uiCleanupEnabled && !_useNewBadgeForLensButton) {
+      AddSquareConstraints(self.lensButton, kFakeboxImageSizeUICleanup);
+    }
     [_buttonStack addArrangedSubview:self.lensButton];
     [self.layoutGuideCenter referenceView:self.lensButton
                                 underName:kFakeboxLensIconGuide];
@@ -1955,7 +2003,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                   blockedByView:innerElementBlockingView];
   [self applyInvertedMaskToView:self.searchHintLabel
                   blockedByView:innerElementBlockingView];
-  [self applyInvertedMaskToView:(self.plusButton ? self.plusButton : _logoView)
+  [self applyInvertedMaskToView:_leadingView
                   blockedByView:innerElementBlockingView];
 
   // When the omnibox is pinned to the bottom, the full fakebox can overlap with
