@@ -196,6 +196,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool HasActiveEmbedder() const override;
   bool IsDetached();
   bool IsActuating() const override;
+  bool HasLiveSurface() const override;
   bool IsInvoking() const override;
   bool IsLiveMode() const override;
 

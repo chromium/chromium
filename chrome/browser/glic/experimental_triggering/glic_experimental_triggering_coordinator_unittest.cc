@@ -515,6 +515,141 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest, NoBrowserWindow) {
             "No browser window found for current profile.");
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       ContinueActuationWithoutBrowserWindow_LiveSurface) {
+  auto* glic_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false));
+  ASSERT_TRUE(glic_service);
+  EXPECT_CALL(glic_service->mock_coordinator(),
+              GetInstanceForConversationId("conv_123"))
+      .WillOnce(testing::Return(&mock_glic_instance_));
+  EXPECT_CALL(mock_glic_instance_, HasLiveSurface())
+      .WillOnce(testing::Return(true));
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = ContinueActuationRequest{.continuation_prompt = "continue"};
+
+  auto response = SendRequest(request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+}
+
+// The conversation is still loaded but its last surface is gone (e.g. its
+// tab was destroyed while the process stayed alive). The request must fail
+// synchronously instead of returning kStarting and failing later with
+// kTabClosed.
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       ContinueActuationWithoutBrowserWindow_NoLiveSurface) {
+  auto* glic_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false));
+  ASSERT_TRUE(glic_service);
+  EXPECT_CALL(glic_service->mock_coordinator(),
+              GetInstanceForConversationId("conv_123"))
+      .WillOnce(testing::Return(&mock_glic_instance_));
+  EXPECT_CALL(mock_glic_instance_, HasLiveSurface())
+      .WillOnce(testing::Return(false));
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = ContinueActuationRequest{.continuation_prompt = "continue"};
+
+  auto response = SendRequest(request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data_type,
+            TaskUpdate::DataType::kErrorMessage);
+  EXPECT_EQ(response->task_update->data,
+            "No browser window found for current profile.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       ContinueActuationWithoutBrowserWindow_ConversationNotPresent) {
+  auto* glic_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false));
+  ASSERT_TRUE(glic_service);
+  EXPECT_CALL(glic_service->mock_coordinator(),
+              GetInstanceForConversationId("conv_123"))
+      .WillOnce(testing::Return(nullptr));
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = ContinueActuationRequest{.continuation_prompt = "continue"};
+
+  auto response = SendRequest(request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data_type,
+            TaskUpdate::DataType::kErrorMessage);
+  EXPECT_EQ(response->task_update->data,
+            "No browser window found for current profile.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       ContinueActuationWithoutBrowserWindow_EmptyConversationId) {
+  auto* glic_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false));
+  ASSERT_TRUE(glic_service);
+  EXPECT_CALL(glic_service->mock_coordinator(),
+              GetInstanceForConversationId(testing::_))
+      .Times(0);
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = ""};
+  request.payload = ContinueActuationRequest{.continuation_prompt = "continue"};
+
+  auto response = SendRequest(request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data_type,
+            TaskUpdate::DataType::kErrorMessage);
+  EXPECT_EQ(response->task_update->data,
+            "No browser window found for current profile.");
+}
+#else
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       ContinueActuationWithoutBrowserWindow_Rejected) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringOpenWindowIfNone);
+  auto* glic_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false));
+  ASSERT_TRUE(glic_service);
+  // Desktop doesn't check for an open conversation.
+  EXPECT_CALL(glic_service->mock_coordinator(),
+              GetInstanceForConversationId(testing::_))
+      .Times(0);
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = ContinueActuationRequest{.continuation_prompt = "continue"};
+
+  auto response = SendRequest(request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data_type,
+            TaskUpdate::DataType::kErrorMessage);
+  EXPECT_EQ(response->task_update->data,
+            "No browser window found for current profile.");
+}
+#endif
+
 TEST_F(GlicExperimentalTriggeringCoordinatorTest, SameVersionNoBrowserWindow) {
   ExperimentalTriggeringRequest request;
   request.version = 1;
@@ -3084,6 +3219,68 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future2.GetRepeatingCallback(), &mock_tab_);
   ASSERT_TRUE(response2.has_value());
+  EXPECT_EQ(captured_show_panel, true);
+
+  // Continuations without a prepared tab follow the same rule.
+  request.payload = ContinueActuationRequest{.continuation_prompt = "continue"};
+
+  // Background with a browser window: show_panel should be false.
+  coordinator_->set_is_chrome_in_background(true);
+  captured_show_panel.reset();
+  request.context_id = "context_5";
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_5"};
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future5;
+  auto response5 = coordinator_->OnRequest(
+      "context_5", request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future5.GetRepeatingCallback(), /*prepared_tab=*/nullptr);
+  ASSERT_TRUE(response5.has_value());
+  ASSERT_TRUE(response5->task_update.has_value());
+  EXPECT_EQ(response5->task_update->state, TaskUpdate::State::kStarting);
+  EXPECT_EQ(captured_show_panel, false);
+
+  // Without a browser window, for a conversation that still has a surface.
+  coordinator_->set_browser_window(nullptr);
+  EXPECT_CALL(glic_service->mock_coordinator(),
+              GetInstanceForConversationId(testing::_))
+      .WillRepeatedly(testing::Return(&mock_glic_instance_));
+  EXPECT_CALL(mock_glic_instance_, HasLiveSurface())
+      .WillRepeatedly(testing::Return(true));
+
+  // Background: show_panel should be false for a continuation.
+  coordinator_->set_is_chrome_in_background(true);
+  captured_show_panel.reset();
+  request.context_id = "context_3";
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_3"};
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future3;
+  auto response3 = coordinator_->OnRequest(
+      "context_3", request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future3.GetRepeatingCallback(), /*prepared_tab=*/nullptr);
+  ASSERT_TRUE(response3.has_value());
+  ASSERT_TRUE(response3->task_update.has_value());
+  EXPECT_EQ(response3->task_update->state, TaskUpdate::State::kStarting);
+  EXPECT_EQ(captured_show_panel, false);
+
+  // Foreground: show_panel should be true for a continuation.
+  coordinator_->set_is_chrome_in_background(false);
+  captured_show_panel.reset();
+  request.context_id = "context_4";
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_4"};
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future4;
+  auto response4 = coordinator_->OnRequest(
+      "context_4", request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future4.GetRepeatingCallback(), /*prepared_tab=*/nullptr);
+  ASSERT_TRUE(response4.has_value());
+  ASSERT_TRUE(response4->task_update.has_value());
+  EXPECT_EQ(response4->task_update->state, TaskUpdate::State::kStarting);
   EXPECT_EQ(captured_show_panel, true);
 }
 

@@ -638,6 +638,29 @@ class ExperimentalTriggeringUpdatesHandler
     return true;
   }
 
+  // On Android, a continuation can run without a browser window when its
+  // conversation still has a live surface (e.g. the offscreen tab of a
+  // background task): LastActiveOrNew resolves to that surface. Without one,
+  // LastActiveOrNew falls back to NewTab{nullptr}, which fails asynchronously
+  // with kTabClosed on Android, so the request is rejected up front instead.
+  bool CanContinueWithoutBrowserWindow(
+      const ExperimentalTriggeringRequest& request,
+      const GlicKeyedService& glic_service) const {
+#if BUILDFLAG(IS_ANDROID)
+    if (!std::holds_alternative<ContinueActuationRequest>(request.payload) ||
+        !request.task_metadata.has_value() ||
+        request.task_metadata->conversation_id.empty()) {
+      return false;
+    }
+    const GlicInstance* instance =
+        glic_service.instance_coordinator().GetInstanceForConversationId(
+            request.task_metadata->conversation_id);
+    return instance && instance->HasLiveSurface();
+#else
+    return false;
+#endif
+  }
+
  private:
   void SubscribeForTriggeringUpdates(base::WeakPtr<GlicInstance> instance) {
     instance_ = std::move(instance);
@@ -860,10 +883,13 @@ class ExperimentalTriggeringUpdatesHandler
           sequence_generator_.GetNext());
     }
 
+    const bool is_continuation =
+        std::holds_alternative<ContinueActuationRequest>(request.payload);
     BrowserWindowInterface* browser_window = nullptr;
     if (!prepared_tab) {
       browser_window = coordinator_->GetBrowserWindow();
-      if (!browser_window) {
+      if (!browser_window &&
+          !CanContinueWithoutBrowserWindow(request, *glic_service)) {
         if (base::FeatureList::IsEnabled(
                 features::kGlicExperimentalTriggeringOpenWindowIfNone)) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -892,8 +918,6 @@ class ExperimentalTriggeringUpdatesHandler
 
     GlicInvokeOptions options =
         CreateInvokeOptions(request, browser_window, prepared_tab);
-    bool is_continuation =
-        std::holds_alternative<ContinueActuationRequest>(request.payload);
     if (!is_continuation || task_start_time_.is_null()) {
       task_start_time_ = base::TimeTicks::Now();
     }
@@ -932,7 +956,7 @@ class ExperimentalTriggeringUpdatesHandler
     // moving from foreground to background mid-task would require observing
     // ApplicationStatusListener and dynamically updating offscreen rendering.
     const bool is_chrome_in_background = coordinator_->IsChromeInBackground();
-    if (prepared_tab && is_chrome_in_background) {
+    if ((prepared_tab || is_continuation) && is_chrome_in_background) {
       auto_submit_options.show_panel = false;
     }
 #endif
