@@ -175,6 +175,9 @@ void GmailOtpOptInBubbleView::OnLearnMoreLinkClicked() {
   if (!web_contents()) {
     return;
   }
+  if (controller_) {
+    controller_->OnLearnMoreLinkClicked();
+  }
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           chrome::GetSettingsUrl(chrome::kContactInfoSubPage),

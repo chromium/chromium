@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
@@ -214,6 +215,7 @@ IN_PROC_BROWSER_TEST_F(GmailOtpOptInBubbleInteractiveUiTest,
   auto is_showing_bubble = [initial_controller = controller()]() {
     return initial_controller->IsShowingBubble();
   };
+  base::HistogramTester histogram_tester;
 
   RunTestSequence(
       ShowBubble(), WaitForShow(GmailOtpOptInBubbleView::kDescriptionLabelId),
@@ -229,7 +231,12 @@ IN_PROC_BROWSER_TEST_F(GmailOtpOptInBubbleInteractiveUiTest,
       SelectTab(kTabStripElementId, 0),
       WaitForShow(GmailOtpOptInBubbleView::kTurnOnButtonId),
       CheckResult(is_showing_bubble, true),
-      CheckState(kOptInResultState, std::nullopt));
+      CheckState(kOptInResultState, std::nullopt), Do([&histogram_tester]() {
+        histogram_tester.ExpectUniqueSample(
+            "OneTimeTokens.Gmail.OptIn.LearnMoreClicked", true, 1);
+        histogram_tester.ExpectTotalCount(
+            "OneTimeTokens.Gmail.OptIn.BubbleResult", 0);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(GmailOtpOptInBubbleInteractiveUiTest,

@@ -345,6 +345,29 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
+       OnLearnMoreLinkClicked_RecordsClickWithoutAffectingResult) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<GmailOtpOptInResult> future;
+  controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  controller()->OnLearnMoreLinkClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.Gmail.OptIn.LearnMoreClicked", true, 1);
+  histogram_tester.ExpectTotalCount("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                    0);
+  EXPECT_FALSE(future.IsReady());
+
+  controller()->OnBubbleClosed(GmailOtpOptInResult::kDeclined);
+  EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDeclined);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDeclined, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.Gmail.OptIn.LearnMoreClicked", 1);
+}
+
+TEST_F(GmailOtpOptInBubbleControllerTest,
        Destructor_WhenQueued_RunsCallbackWithDiscarded) {
   base::HistogramTester histogram_tester;
   // Show a higher-priority password bubble so the Gmail OTP opt-in bubble is

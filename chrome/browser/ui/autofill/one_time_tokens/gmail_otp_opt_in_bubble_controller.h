@@ -59,6 +59,10 @@ class GmailOtpOptInBubbleController : public AutofillBubbleControllerBase {
   // Called by the bubble view when its widget is closing.
   void OnBubbleClosed(GmailOtpOptInResult result);
 
+  // Called by the bubble view each time the user clicks the "Learn more" link.
+  // Only records metrics; the view itself opens settings in a new tab.
+  void OnLearnMoreLinkClicked();
+
   const std::u16string& account_email() const { return account_email_; }
   tabs::TabInterface& tab() const { return *tab_; }
   using AutofillBubbleControllerBase::bubble_view;

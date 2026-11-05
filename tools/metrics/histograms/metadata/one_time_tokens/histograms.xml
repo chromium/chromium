@@ -188,6 +188,18 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.Gmail.OptIn.LearnMoreClicked"
+    enum="BooleanClicked" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records a click on the Learn more link in the Gmail OTP opt-in bubble, which
+    opens settings in a new tab. Only true is recorded. Recorded each time the
+    link is clicked, so there can be several samples per bubble.
+  </summary>
+</histogram>
+
 <histogram
     name="OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">

@@ -114,6 +114,10 @@ void GmailOtpOptInBubbleController::OnBubbleClosed(GmailOtpOptInResult result) {
   FinishWithResult(std::move(callback_), result);
 }
 
+void GmailOtpOptInBubbleController::OnLearnMoreLinkClicked() {
+  base::UmaHistogramBoolean("OneTimeTokens.Gmail.OptIn.LearnMoreClicked", true);
+}
+
 void GmailOtpOptInBubbleController::SetBubbleViewFactoryForTesting(
     BubbleViewFactory factory) {
   bubble_view_factory_ = std::move(factory);
