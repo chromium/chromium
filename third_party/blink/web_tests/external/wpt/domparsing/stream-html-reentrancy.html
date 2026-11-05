@@ -34,7 +34,7 @@
   }
 
   function parser_blocking_script(name) {
-    return `<script src='resources/slow.js?pipe=trickle(d0.2)&${name}=1'></` + "script>";
+    return `<script src='resources/slow.sub.js?pipe=trickle(d0.2)&${name}=1'></` + "script>";
   }
 
   function after_task(t) {
@@ -121,7 +121,7 @@
     // There is no write in progress then, so the stream invokes the sink's
     // algorithms synchronously while the parser is running: an abort is
     // deferred until the parser returns ("fragment parser abort requested"),
-    // and written input is consumed by the ongoing run. slow.js calls
+    // and written input is consumed by the ongoing run. slow.sub.js calls
     // window.on_slow(); the parser then resumes synchronously in the same task,
     // so the rest of the chunk has been parsed by the time a timeout fires.
     promise_test(async (t) => {
