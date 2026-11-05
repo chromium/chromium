@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.webid;
 
 import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 @NullMarked
@@ -21,11 +20,6 @@ public class IdentityCredentialsDelegate {
             this.mProtocol = protocol;
             this.mData = data;
         }
-    }
-
-    public @Nullable Promise<String> get(String origin, String request) {
-        // TODO(crbug.com/40257092): implement this.
-        return null;
     }
 
     public Promise<DigitalCredential> get(WindowAndroid window, String origin, String request) {
