@@ -1677,7 +1677,7 @@ class TabImpl implements Tab, TabInternal {
 
         mObservers.clear();
         mTabViewManager.destroy();
-        hideNativePage(false, null);
+        hideNativePage(/* notify= */ false);
         if (mWebContentsState != null) {
             mWebContentsState.destroy();
             mWebContentsState = null;
@@ -1941,7 +1941,7 @@ class TabImpl implements Tab, TabInternal {
     private void showRenderedPage() {
         // During title update, we prioritize titles in NativePage instead of those from
         // WebContents. Thus we should remove the obsolete NativePage before title update.
-        if (mNativePage != null) hideNativePage(true, null);
+        if (mNativePage != null) hideNativePage(/* notify= */ true);
         updateTitle();
     }
 
@@ -2629,7 +2629,7 @@ class TabImpl implements Tab, TabInternal {
                 setupContentView(webContents);
             }
 
-            hideNativePage(/* notify= */ false, /* postHideTask= */ null);
+            hideNativePage(/* notify= */ false);
 
             ContentUtils.setUserAgentOverride(
                     mWebContents,
@@ -2724,34 +2724,44 @@ class TabImpl implements Tab, TabInternal {
     void showNativePage(NativePage nativePage) {
         assert nativePage != null;
         if (mNativePage == nativePage) return;
-        hideNativePage(
-                /* notify= */ true,
-                () -> {
-                    mNativePage = nativePage;
-                    if (hasLiveNativePage()) {
-                        View view = mNativePage.getView();
-                        assumeNonNull(view);
-                        view.addOnAttachStateChangeListener(mAttachStateChangeListener);
-                    }
-                    if (isDisplayingBackForwardAnimation()) {
-                        mNativePageSmoothTransitionDelegate = mNativePage.enableSmoothTransition();
-                        assumeNonNull(mNativePageSmoothTransitionDelegate);
-                        mNativePageSmoothTransitionDelegate.prepare();
-                    }
-                    pushNativePageStateToNavigationEntry();
-                    onBackgroundColorChanged();
-                    updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
-                });
+        // The new page must be installed after the old one is detached but before observers are
+        // notified and the old page is destroyed.
+        NativePage previousNativePage = detachCurrentNativePage();
+        mNativePage = nativePage;
+        if (hasLiveNativePage()) {
+            View view = mNativePage.getView();
+            assumeNonNull(view);
+            view.addOnAttachStateChangeListener(mAttachStateChangeListener);
+        }
+        if (isDisplayingBackForwardAnimation()) {
+            mNativePageSmoothTransitionDelegate = mNativePage.enableSmoothTransition();
+            assumeNonNull(mNativePageSmoothTransitionDelegate);
+            mNativePageSmoothTransitionDelegate.prepare();
+        }
+        pushNativePageStateToNavigationEntry();
+        onBackgroundColorChanged();
+        updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
+        notifyContentChanged();
+        destroyNativePageInternal(previousNativePage);
     }
 
     /**
      * Hide and destroy the native page if it was being shown.
      *
      * @param notify {@code true} to trigger {@link #onContentChanged} event.
-     * @param postHideTask {@link Runnable} task to run before actually destroying the native page.
-     *     This is necessary to keep the tasks to perform in order.
      */
-    private void hideNativePage(boolean notify, @Nullable Runnable postHideTask) {
+    private void hideNativePage(boolean notify) {
+        NativePage previousNativePage = detachCurrentNativePage();
+        if (notify) notifyContentChanged();
+        destroyNativePageInternal(previousNativePage);
+    }
+
+    /**
+     * Detaches the current native page, if any, from this tab without destroying it.
+     *
+     * @return The previously shown native page, which the caller is responsible for destroying.
+     */
+    private @Nullable NativePage detachCurrentNativePage() {
         if (mNativePageSmoothTransitionDelegate != null) {
             mNativePageSmoothTransitionDelegate.cancel();
             mNativePageSmoothTransitionDelegate = null;
@@ -2768,9 +2778,7 @@ class TabImpl implements Tab, TabInternal {
             mNativePage = null;
             mWaitingOnBgColorAfterHidingNativePage = true;
         }
-        if (postHideTask != null) postHideTask.run();
-        if (notify) notifyContentChanged();
-        destroyNativePageInternal(previousNativePage);
+        return previousNativePage;
     }
 
     /**
