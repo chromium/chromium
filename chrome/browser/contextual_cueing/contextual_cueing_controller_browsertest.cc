@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -62,6 +63,7 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/sync/history_backend_for_sync.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -1469,6 +1471,57 @@ class ContextualCueingControllerMockOptGuideBrowserTest
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             browser()->GetProfile()));
   }
+
+  void AddLocalVisit(history::HistoryService* history_service,
+                     const GURL& url,
+                     const std::u16string& title,
+                     base::Time visit_time,
+                     bool is_known_to_sync = true) {
+    class AddLocalVisitTask : public history::HistoryDBTask {
+     public:
+      AddLocalVisitTask(const GURL& url,
+                        const std::u16string& title,
+                        base::Time visit_time,
+                        bool is_known_to_sync)
+          : url_(url),
+            title_(title),
+            visit_time_(visit_time),
+            is_known_to_sync_(is_known_to_sync) {}
+
+      bool RunOnDBThread(history::HistoryBackend* backend,
+                         history::HistoryDatabase* db) override {
+        history::URLRow url_row(url_);
+        url_row.set_title(title_);
+        url_row.set_visit_count(1);
+        url_row.set_last_visit(visit_time_);
+        backend->AddPagesWithDetails({url_row}, history::SOURCE_BROWSED);
+        if (is_known_to_sync_) {
+          history::VisitRow visit_row;
+          if (backend->GetLastVisitByTime(visit_time_, &visit_row)) {
+            static_cast<history::HistoryBackendForSync*>(backend)
+                ->MarkVisitAsKnownToSync(visit_row.visit_id);
+          }
+        }
+        return true;
+      }
+
+      void DoneRunOnMainThread() override {}
+
+     private:
+      GURL url_;
+      std::u16string title_;
+      base::Time visit_time_;
+      bool is_known_to_sync_;
+    };
+    history_service->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<AddLocalVisitTask>(url, title, visit_time,
+                                            is_known_to_sync),
+        &history_task_tracker_);
+  }
+
+ protected:
+  base::CancelableTaskTracker history_task_tracker_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
@@ -3820,11 +3873,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
       HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   ASSERT_TRUE(history_service);
-  history_service->AddPageWithDetails(
-      GURL("https://www.history1.com/article"), u"History 1",
-      /*visit_count=*/1, /*typed_count=*/0,
-      base::Time::Now() - base::Minutes(5),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("https://www.history1.com/article"),
+                u"History 1", base::Time::Now() - base::Minutes(5));
 
   std::optional<optimization_guide::proto::ContextualCueingRequest>
       captured_request;
@@ -3888,25 +3938,16 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerHistoricalTabsBrowserTest,
   const base::Time now = base::Time::Now();
   // Active and background tab URLs (including with #ref) should be
   // deduplicated.
-  history_service->AddPageWithDetails(
-      GURL("https://www.activetab.com/abc#section"), u"Active Tab With Ref",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(1),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://www.backgroundtab.com/page#top"),
-      u"Background Tab With Ref",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(2),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("https://www.activetab.com/abc#section"),
+                u"Active Tab With Ref", now - base::Minutes(1));
+  AddLocalVisit(history_service, GURL("https://www.backgroundtab.com/page#top"),
+                u"Background Tab With Ref", now - base::Minutes(2));
   // Non-HTTP(S) URLs should be excluded.
-  history_service->AddPageWithDetails(
-      GURL("file:///tmp/local.html"), u"Local File",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(3),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("file:///tmp/local.html"), u"Local File",
+                now - base::Minutes(3));
   // Visits older than kHistoricalTabsTimeWindow (24h) should be excluded.
-  history_service->AddPageWithDetails(
-      GURL("https://www.oldvisit.com/page"), u"Old Visit",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Hours(25),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("https://www.oldvisit.com/page"),
+                u"Old Visit", now - base::Hours(25));
   // Visits from a foreign device (non-empty `originator_cache_guid`) should
   // be excluded.
   class AddForeignVisitTask : public history::HistoryDBTask {
@@ -3932,29 +3973,25 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerHistoricalTabsBrowserTest,
    private:
     base::Time visit_time_;
   };
-  base::CancelableTaskTracker foreign_visit_tracker;
   history_service->ScheduleDBTask(
       FROM_HERE, std::make_unique<AddForeignVisitTask>(now - base::Minutes(4)),
-      &foreign_visit_tracker);
+      &history_task_tracker_);
+  // Local visits not known to sync should be excluded.
+  AddLocalVisit(history_service, GURL("https://www.unsyncedvisit.com/page"),
+                u"Unsynced Visit", now - base::Minutes(5),
+                /*is_known_to_sync=*/false);
 
   // Eligible visits (including search URLs and #ref deduplication within
   // history).
-  history_service->AddPageWithDetails(
-      GURL("https://www.history1.com/article"), u"History 1",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(30),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://www.google.com/search?q=test+query"), u"Google Search",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(20),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://www.history2.com/doc#part1"), u"History 2 Old",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(15),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://www.history2.com/doc#part2"), u"History 2 New",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(10),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("https://www.history1.com/article"),
+                u"History 1", now - base::Minutes(30));
+  AddLocalVisit(history_service,
+                GURL("https://www.google.com/search?q=test+query"),
+                u"Google Search", now - base::Minutes(20));
+  AddLocalVisit(history_service, GURL("https://www.history2.com/doc#part1"),
+                u"History 2 Old", now - base::Minutes(15));
+  AddLocalVisit(history_service, GURL("https://www.history2.com/doc#part2"),
+                u"History 2 New", now - base::Minutes(10));
 
   std::optional<optimization_guide::proto::ContextualCueingRequest>
       captured_request;
@@ -4014,11 +4051,10 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerHistoricalTabsBrowserTest,
   const base::Time now = base::Time::Now();
   const int total_visits = kMaxNumHistoricalTabs.Get() + 5;
   for (int i = 0; i < total_visits; ++i) {
-    history_service->AddPageWithDetails(
-        GURL(base::StringPrintf("https://www.history.com/%d", i)),
-        base::UTF8ToUTF16(base::StringPrintf("History %d", i)),
-        /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(i + 1),
-        /*hidden=*/false, history::SOURCE_BROWSED);
+    AddLocalVisit(history_service,
+                  GURL(base::StringPrintf("https://www.history.com/%d", i)),
+                  base::UTF8ToUTF16(base::StringPrintf("History %d", i)),
+                  now - base::Minutes(i + 1));
   }
 
   std::optional<optimization_guide::proto::ContextualCueingRequest>

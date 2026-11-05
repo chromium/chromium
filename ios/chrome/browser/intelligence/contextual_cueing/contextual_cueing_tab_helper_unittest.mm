@@ -16,6 +16,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/cancelable_task_tracker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
@@ -32,6 +33,7 @@
 #import "components/history/core/browser/history_db_task.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
+#import "components/history/core/browser/sync/history_backend_for_sync.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -441,6 +443,7 @@ class ContextualCueingTabHelperTest : public PlatformTest {
   }
 
   void TearDown() override {
+    history_task_tracker_.TryCancelAll();
     web_state_.reset();
     fake_page_classification_vertical_service_ = nullptr;
     fake_page_classification_service_ = nullptr;
@@ -512,9 +515,58 @@ class ContextualCueingTabHelperTest : public PlatformTest {
         {});
   }
 
+  void AddLocalVisit(history::HistoryService* history_service,
+                     const GURL& url,
+                     const std::u16string& title,
+                     base::Time visit_time,
+                     bool is_known_to_sync = true) {
+    class AddLocalVisitTask : public history::HistoryDBTask {
+     public:
+      AddLocalVisitTask(const GURL& url,
+                        const std::u16string& title,
+                        base::Time visit_time,
+                        bool is_known_to_sync)
+          : url_(url),
+            title_(title),
+            visit_time_(visit_time),
+            is_known_to_sync_(is_known_to_sync) {}
+
+      bool RunOnDBThread(history::HistoryBackend* backend,
+                         history::HistoryDatabase* db) override {
+        history::URLRow url_row(url_);
+        url_row.set_title(title_);
+        url_row.set_visit_count(1);
+        url_row.set_last_visit(visit_time_);
+        backend->AddPagesWithDetails({url_row}, history::SOURCE_BROWSED);
+        if (is_known_to_sync_) {
+          history::VisitRow visit_row;
+          if (backend->GetLastVisitByTime(visit_time_, &visit_row)) {
+            static_cast<history::HistoryBackendForSync*>(backend)
+                ->MarkVisitAsKnownToSync(visit_row.visit_id);
+          }
+        }
+        return true;
+      }
+
+      void DoneRunOnMainThread() override {}
+
+     private:
+      GURL url_;
+      std::u16string title_;
+      base::Time visit_time_;
+      bool is_known_to_sync_;
+    };
+    history_service->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<AddLocalVisitTask>(url, title, visit_time,
+                                            is_known_to_sync),
+        &history_task_tracker_);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  base::CancelableTaskTracker history_task_tracker_;
   raw_ptr<TestOptimizationGuideService> fake_opt_guide_service_ = nullptr;
   raw_ptr<FakeOnDevicePageClassificationService>
       fake_page_classification_service_ = nullptr;
@@ -1021,11 +1073,8 @@ TEST_F(ContextualCueingTabHelperTest, HistoricalTabsDisabledByDefault) {
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(history_service);
-  history_service->AddPageWithDetails(
-      GURL("https://example.com/history1"), u"History 1",
-      /*visit_count=*/1, /*typed_count=*/0,
-      base::Time::Now() - base::Minutes(5),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("https://example.com/history1"),
+                u"History 1", base::Time::Now() - base::Minutes(5));
 
   auto response = CreateTestCueResponse("Buy now", "Explore deals");
   fake_opt_guide_service_->SetResponse(
@@ -1047,9 +1096,9 @@ TEST_F(ContextualCueingTabHelperTest, HistoricalTabsDisabledByDefault) {
 
 // Tests that historical tabs are populated from `HistoryService` in
 // reverse-chronological order, including search URLs, while excluding
-// non-HTTP(S) URLs, visits from foreign devices, visits outside
-// `kHistoricalTabsTimeWindow`, and deduplicating against the active tab,
-// background tabs, and prior historical tabs via `GetWithoutRef()`.
+// non-HTTP(S) URLs, visits from foreign devices, visits not known to sync,
+// visits outside `kHistoricalTabsTimeWindow`, and deduplicating against the
+// active tab, background tabs, and prior historical tabs via `GetWithoutRef()`.
 TEST_F(ContextualCueingTabHelperTest, HistoricalTabsPopulatedAndDeduplicated) {
   base::test::ScopedFeatureList scoped_feature_list;
   InitFeatureListWithExtraParams(scoped_feature_list,
@@ -1070,24 +1119,17 @@ TEST_F(ContextualCueingTabHelperTest, HistoricalTabsPopulatedAndDeduplicated) {
   const base::Time now = base::Time::Now();
   // Active and background tab URLs (including with #ref) should be
   // deduplicated.
-  history_service->AddPageWithDetails(
-      GURL("https://example.com/store/item123#reviews"), u"Active Tab With Ref",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(1),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://example.com/bg1#section"), u"Background Tab With Ref",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(2),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service,
+                GURL("https://example.com/store/item123#reviews"),
+                u"Active Tab With Ref", now - base::Minutes(1));
+  AddLocalVisit(history_service, GURL("https://example.com/bg1#section"),
+                u"Background Tab With Ref", now - base::Minutes(2));
   // Non-HTTP(S) URLs should be excluded.
-  history_service->AddPageWithDetails(
-      GURL("file:///tmp/local.html"), u"Local File",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(3),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("file:///tmp/local.html"), u"Local File",
+                now - base::Minutes(3));
   // Visits older than `kHistoricalTabsTimeWindow` (24h) should be excluded.
-  history_service->AddPageWithDetails(
-      GURL("https://example.com/old_visit"), u"Old Visit",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Hours(25),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("https://example.com/old_visit"),
+                u"Old Visit", now - base::Hours(25));
   // Visits from a foreign device (non-empty `originator_cache_guid`) should be
   // excluded.
   class AddForeignVisitTask : public history::HistoryDBTask {
@@ -1113,29 +1155,25 @@ TEST_F(ContextualCueingTabHelperTest, HistoricalTabsPopulatedAndDeduplicated) {
    private:
     base::Time visit_time_;
   };
-  base::CancelableTaskTracker foreign_visit_tracker;
   history_service->ScheduleDBTask(
       FROM_HERE, std::make_unique<AddForeignVisitTask>(now - base::Minutes(4)),
-      &foreign_visit_tracker);
+      &history_task_tracker_);
+  // Local visits not known to sync should be excluded.
+  AddLocalVisit(history_service, GURL("https://example.com/unsynced_visit"),
+                u"Unsynced Visit", now - base::Minutes(5),
+                /*is_known_to_sync=*/false);
 
   // Eligible visits (including search URLs and #ref deduplication within
   // history).
-  history_service->AddPageWithDetails(
-      GURL("https://example.com/history1"), u"History 1",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(30),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://www.google.com/search?q=test+query"), u"Google Search",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(20),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://example.com/history2#part1"), u"History 2 Old",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(15),
-      /*hidden=*/false, history::SOURCE_BROWSED);
-  history_service->AddPageWithDetails(
-      GURL("https://example.com/history2#part2"), u"History 2 New",
-      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(10),
-      /*hidden=*/false, history::SOURCE_BROWSED);
+  AddLocalVisit(history_service, GURL("https://example.com/history1"),
+                u"History 1", now - base::Minutes(30));
+  AddLocalVisit(history_service,
+                GURL("https://www.google.com/search?q=test+query"),
+                u"Google Search", now - base::Minutes(20));
+  AddLocalVisit(history_service, GURL("https://example.com/history2#part1"),
+                u"History 2 Old", now - base::Minutes(15));
+  AddLocalVisit(history_service, GURL("https://example.com/history2#part2"),
+                u"History 2 New", now - base::Minutes(10));
 
   auto response = CreateTestCueResponse("Buy now", "Explore deals");
   fake_opt_guide_service_->SetResponse(
@@ -1188,11 +1226,11 @@ TEST_F(ContextualCueingTabHelperTest, MaxHistoricalTabsRespected) {
   const size_t max_historical_tabs = kMaxHistoricalTabs.Get();
   const size_t total_visits = max_historical_tabs + 5;
   for (size_t i = 0; i < total_visits; ++i) {
-    history_service->AddPageWithDetails(
+    AddLocalVisit(
+        history_service,
         GURL(base::StringPrintf("https://example.com/history/%zu", i)),
         base::UTF8ToUTF16(base::StringPrintf("History %zu", i)),
-        /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(i + 1),
-        /*hidden=*/false, history::SOURCE_BROWSED);
+        now - base::Minutes(i + 1));
   }
 
   auto response = CreateTestCueResponse("Buy now", "Explore deals");

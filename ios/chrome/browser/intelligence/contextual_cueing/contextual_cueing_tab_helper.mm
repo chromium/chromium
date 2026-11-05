@@ -707,7 +707,8 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
       options.policy_for_404_visits =
           history::VisitQuery404sPolicy::kExclude404s;
       // Only include visits originating from the local device (stored with an
-      // empty `originator_cache_guid`).
+      // empty `originator_cache_guid`) that are known to sync.
+      options.restrict_to_synced_urls = true;
       options.client_ids = {""};
       // Buffer the query limit to account for deduplication against the active
       // tab, background tabs, and duplicate URL visits.
