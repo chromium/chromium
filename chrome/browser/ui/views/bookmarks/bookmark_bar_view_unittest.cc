@@ -1297,7 +1297,20 @@ class BookmarkBarViewAreaKeyboardNavigationTest
     return widget()->GetFocusManager()->GetFocusedView();
   }
 
+ protected:
+  // ViewsTestBase:
+  std::unique_ptr<views::Widget> AllocateTestWidget() override {
+    return std::make_unique<FocusWithoutActivationWidget>();
+  }
+
  private:
+  // Some platforms (e.g. Wayland on Weston) never activate test windows, and
+  // FocusManager defers focus requests on inactive widgets.
+  class FocusWithoutActivationWidget : public views::Widget {
+   public:
+    bool CanFocusViewsWithoutActivation() const override { return true; }
+  };
+
   base::test::ScopedFeatureList area_nav_feature_list_;
 };
 
