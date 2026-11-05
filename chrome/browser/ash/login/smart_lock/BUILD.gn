@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/device_sync/proto",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
     "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/dbus/power",

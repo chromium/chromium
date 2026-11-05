@@ -15,6 +15,7 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -676,8 +677,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                                  callback);
   touchpad_haptic_click_sensitivity_.Init(
       prefs::kTouchpadHapticClickSensitivity, prefs, callback);
-  download_default_directory_.Init(::prefs::kDownloadDefaultDirectory, prefs,
-                                   callback);
+  download_default_directory_.Init(ash::chrome_prefs::kDownloadDefaultDirectory,
+                                   prefs, callback);
   preload_engines_.Init(ash::prefs::kLanguagePreloadEngines, prefs, callback);
   enabled_imes_.Init(ash::prefs::kLanguageEnabledImes, prefs, callback);
   current_input_method_.Init(ash::prefs::kLanguageCurrentInputMethod, prefs,
@@ -1082,7 +1083,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kDownloadDefaultDirectory) {
+      pref_name == ash::chrome_prefs::kDownloadDefaultDirectory) {
     const bool default_download_to_drive = drive::util::IsUnderDriveMountPoint(
         download_default_directory_.GetValue());
     ReportBooleanPrefApplication(

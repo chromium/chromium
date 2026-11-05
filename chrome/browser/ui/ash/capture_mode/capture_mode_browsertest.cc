@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
@@ -832,10 +832,10 @@ IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
             test_api.GetEffectiveAudioRecordingMode());
 
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetBoolean(prefs::kAudioCaptureAllowed, false);
+  prefs->SetBoolean(ash::chrome_prefs::kAudioCaptureAllowed, false);
   EXPECT_EQ(ash::AudioRecordingMode::kOff,
             test_api.GetEffectiveAudioRecordingMode());
-  prefs->SetBoolean(prefs::kAudioCaptureAllowed, true);
+  prefs->SetBoolean(ash::chrome_prefs::kAudioCaptureAllowed, true);
   EXPECT_EQ(ash::AudioRecordingMode::kMicrophone,
             test_api.GetEffectiveAudioRecordingMode());
 }

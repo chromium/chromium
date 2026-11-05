@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -311,7 +311,7 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
     content::BrowserContext* context = result->context;
     EXPECT_FALSE(context->IsOffTheRecord());
     EXPECT_TRUE(Profile::FromBrowserContext(context)->GetPrefs()->GetBoolean(
-        prefs::kForceEphemeralProfiles));
+        ash::chrome_prefs::kForceEphemeralProfiles));
     EXPECT_TRUE(
         DiagnosticsAppProfileHelperDelegate::GetInstalledDiagnosticsAppOrigin()
             .has_value());

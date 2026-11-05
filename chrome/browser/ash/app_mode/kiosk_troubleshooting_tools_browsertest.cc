@@ -6,6 +6,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -81,7 +81,7 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
 
   void EnableDevTools() const {
     CurrentProfile().GetPrefs()->SetInteger(
-        ::prefs::kDevToolsAvailability,
+        ash::chrome_prefs::kDevToolsAvailability,
         static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
   }
 

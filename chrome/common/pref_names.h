@@ -1052,9 +1052,6 @@ inline constexpr char kPushMessagingUnsubscribedEntriesList[] =
 inline constexpr char kGCMProductCategoryForSubtypes[] =
     "gcm.product_category_for_subtypes";
 
-// Whether a user is allowed to use Easy Unlock.
-inline constexpr char kEasyUnlockAllowed[] = "easy_unlock.allowed";
-
 // Define the IP handling policy override that WebRTC should follow. When not
 // set, it defaults to "default".
 inline constexpr char kWebRTCIPHandlingPolicy[] = "webrtc.ip_handling_policy";
