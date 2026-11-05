@@ -10,6 +10,8 @@ source_set("model") {
     "location_bar_badge_tab_helper.h",
     "location_bar_badge_tab_helper.mm",
     "location_bar_badge_tab_helper_observer.h",
+    "location_bar_badge_tab_helper_observer_bridge.h",
+    "location_bar_badge_tab_helper_observer_bridge.mm",
   ]
   deps = [
     "//base",
@@ -22,8 +24,11 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "fake_location_bar_badge_observer.h",
+    "fake_location_bar_badge_observer.mm",
     "fake_location_bar_badge_tab_helper_observer.h",
     "fake_location_bar_badge_tab_helper_observer.mm",
+    "location_bar_badge_tab_helper_observer_bridge_unittest.mm",
     "location_bar_badge_tab_helper_unittest.mm",
   ]
   deps = [
