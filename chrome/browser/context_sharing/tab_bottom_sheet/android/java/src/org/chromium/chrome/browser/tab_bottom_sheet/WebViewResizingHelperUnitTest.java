@@ -30,6 +30,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -51,6 +54,7 @@ import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.WebViewResizingHelper.ResizeLock;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -63,6 +67,8 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
+
+import java.util.List;
 
 /** Unit tests for {@link WebViewResizingHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -894,6 +900,7 @@ public class WebViewResizingHelperUnitTest {
 
         // Disable resizing mode (mIsViewportSizeFixed = false).
         lock.unlock();
+        verify(mMockThinWebView).resizeWebContents(300, 400);
 
         // Subsequent layout changes on the container should trigger updateBounds.
         clearInvocations(mMockThinWebView);
@@ -1292,5 +1299,176 @@ public class WebViewResizingHelperUnitTest {
         verify(sidePanelCoordinator, never()).updateBottomInset(anyInt());
         sideLock.unlock();
         sidePanelHelper.destroy();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testBottomSheetObserver_SheetContentOrMarginChanged_UpdatesBounds() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 2000);
+
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mMockBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        clearInvocations(mMockThinWebView);
+        observer.onSheetContentChanged(mock(BottomSheetContent.class));
+        verify(mMockThinWebView).resizeWebContents(1080, 2000);
+
+        clearInvocations(mMockThinWebView);
+        observer.onContainerBottomMarginChanged(40);
+        verify(mMockThinWebView).resizeWebContents(1080, 2000);
+    }
+
+    @Test
+    public void testImeAnimation_KeyboardOpens_ResizesOnEnd() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 2000);
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 1080));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 2000));
+
+        verify(mMockInsetObserver)
+                .addWindowInsetsAnimationListener(mAnimationListenerCaptor.capture());
+        WindowInsetsAnimationListener listener = mAnimationListenerCaptor.getValue();
+
+        var animation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
+        var bounds =
+                new WindowInsetsAnimationCompat.BoundsCompat(
+                        Insets.of(0, 0, 0, 0), Insets.of(0, 0, 0, 800));
+
+        clearInvocations(mMockThinWebView);
+        listener.onPrepare(animation);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        listener.onStart(animation, bounds);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1200, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 1200);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        listener.onProgress(mock(WindowInsetsCompat.class), List.of(animation));
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        listener.onEnd(animation);
+        verify(mMockThinWebView).resizeWebContents(1080, 1200);
+    }
+
+    @Test
+    public void testImeAnimation_KeyboardCloses_ResizesOnEnd() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1200, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 1200);
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 1080));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 1200));
+
+        verify(mMockInsetObserver)
+                .addWindowInsetsAnimationListener(mAnimationListenerCaptor.capture());
+        WindowInsetsAnimationListener listener = mAnimationListenerCaptor.getValue();
+
+        var animation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
+        var bounds =
+                new WindowInsetsAnimationCompat.BoundsCompat(
+                        Insets.of(0, 0, 0, 0), Insets.of(0, 0, 0, 800));
+
+        clearInvocations(mMockThinWebView);
+        listener.onPrepare(animation);
+        listener.onStart(animation, bounds);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 2000);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        listener.onEnd(animation);
+        verify(mMockThinWebView).resizeWebContents(1080, 2000);
+    }
+
+    @Test
+    public void testImeAnimation_MidSessionHeightChange_ResizesOnEnd() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1200, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 1200);
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 1080));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 1200));
+
+        verify(mMockInsetObserver)
+                .addWindowInsetsAnimationListener(mAnimationListenerCaptor.capture());
+        WindowInsetsAnimationListener listener = mAnimationListenerCaptor.getValue();
+
+        var animation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
+        var bounds =
+                new WindowInsetsAnimationCompat.BoundsCompat(
+                        Insets.of(0, 0, 0, 800), Insets.of(0, 0, 0, 950));
+
+        clearInvocations(mMockThinWebView);
+        listener.onPrepare(animation);
+        listener.onStart(animation, bounds);
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1050, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 1050);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        listener.onEnd(animation);
+        verify(mMockThinWebView).resizeWebContents(1080, 1050);
+    }
+
+    @Test
+    public void testImeAnimation_OverlappingAnimations_ResizesOnEnd() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 2000);
+
+        verify(mMockInsetObserver)
+                .addWindowInsetsAnimationListener(mAnimationListenerCaptor.capture());
+        WindowInsetsAnimationListener listener = mAnimationListenerCaptor.getValue();
+
+        var anim1 = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
+        var anim2 = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
+        var bounds =
+                new WindowInsetsAnimationCompat.BoundsCompat(
+                        Insets.of(0, 0, 0, 0), Insets.of(0, 0, 0, 800));
+
+        listener.onPrepare(anim1);
+        listener.onStart(anim1, bounds);
+        listener.onPrepare(anim2);
+        listener.onStart(anim2, bounds);
+
+        clearInvocations(mMockThinWebView);
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1200, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 1080, 1200);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        listener.onEnd(anim1);
+        verify(mMockThinWebView).resizeWebContents(1080, 1200);
     }
 }
