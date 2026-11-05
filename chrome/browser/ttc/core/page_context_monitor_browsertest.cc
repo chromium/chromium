@@ -375,17 +375,28 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
           GetForProfile(profile());
   ASSERT_TRUE(extraction_service);
 
-  // Starts a session, which fetches context for the current page, and waits
-  // for the initial notification. The conversation is left expecting no
-  // context updates.
-  auto start_session_expecting_no_context = [&]() {
+  // Starts a session on `url` and waits for the initial invalidation (and, if
+  // `wait_for_context_update` is true, for the origin-only context update).
+  auto start_session_expecting_no_context = [&](const GURL& url,
+                                                bool wait_for_context_update) {
     ttc_service().StartSession();
     ASSERT_TRUE(conversation());
+    base::test::TestFuture<void> context_updated;
     // Only the page's origin may be sent, without its title or content.
-    EXPECT_CALL(*conversation(), SendContextUpdate(testing::_, std::string(),
-                                                   IsEmptyPageContent()))
-        .Times(testing::AnyNumber());
+    auto& expectation =
+        EXPECT_CALL(*conversation(),
+                    SendContextUpdate(url::Origin::Create(url).GetURL(),
+                                      std::string(), IsEmptyPageContent()));
+    if (wait_for_context_update) {
+      expectation.WillOnce(
+          base::test::RunOnceClosure(context_updated.GetCallback()));
+    } else {
+      expectation.Times(testing::AnyNumber());
+    }
     EXPECT_TRUE(ExpectPageChange().Wait());
+    if (wait_for_context_update) {
+      EXPECT_TRUE(context_updated.Wait());
+    }
   };
 
   for (const GURL& url :
@@ -396,7 +407,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
     // Starting a session must not send anything for the page.
-    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context(
+        url, /*wait_for_context_update=*/false));
 
     // Having an active session makes PCES extract every page in the profile.
     // Wait for that extraction (triggering it if it has not started), to make
@@ -416,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 
     // Neither must a new session, which finds the extracted content cached.
     ttc_service().EndSession();
-    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context(
+        url, /*wait_for_context_update=*/false));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
@@ -425,9 +438,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 
   // Navigating from an unsupported page to a supported one during a session
   // must invalidate the context and send context for the new page.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents(), GURL("chrome://version/")));
-  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+  const GURL unsupported_url("chrome://version/");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), unsupported_url));
+  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context(
+      unsupported_url, /*wait_for_context_update=*/true));
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   const GURL supported_url = embedded_test_server()->GetURL("/simple.html");
