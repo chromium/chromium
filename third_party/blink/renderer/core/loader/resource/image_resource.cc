@@ -437,6 +437,12 @@ scoped_refptr<const SharedBuffer> ImageResource::ResourceBuffer() const {
   return GetContent()->ResourceBuffer();
 }
 
+bool ImageResource::HasResourceBuffer() const {
+  // Avoids ResourceBuffer(), which can unpark and copy the encoded image.
+  return Data() ||
+         (GetContent()->HasImage() && GetContent()->GetImage()->HasData());
+}
+
 void ImageResource::AppendData(
     std::variant<SegmentedBuffer, base::span<const char>> data) {
   // We don't have a BackgroundResponseProcessor for ImageResources. So this

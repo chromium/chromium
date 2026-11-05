@@ -58,6 +58,31 @@ class FontResourceTest : public testing::Test {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
+ protected:
+  // Fetches and loads Ahem.woff2, without decoding it.
+  FontResource* LoadAhemFont() {
+    auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+    MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+        properties->MakeDetachable(), context,
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+        MakeGarbageCollected<TestLoaderFactory>(),
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
+
+    KURL url("http://127.0.0.1:8000/font.woff2");
+    url_test_helpers::RegisterMockedURLLoad(
+        url, test::CoreTestDataPath("Ahem.woff2"));
+    FetchParameters fetch_params =
+        FetchParameters::CreateForTest(ResourceRequest(url));
+    FontResource* resource =
+        FontResource::Fetch(fetch_params, fetcher, nullptr);
+    fetcher->StartLoad(resource);
+    url_test_helpers::ServeAsynchronousRequests();
+    return resource;
+  }
+
  private:
   test::TaskEnvironment task_environment_;
 };
@@ -383,26 +408,11 @@ TEST_F(FontResourceStrongReferenceTest, FollowCacheControl) {
 // decoded data as its decoded size, and MemoryCache::size() grows by that
 // amount.
 TEST_F(FontResourceTest, MemoryAccountingAfterDecode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kFontResourceDecodedMemoryAccounting);
-  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
-  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(properties->MakeDetachable(), context,
-                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                          MakeGarbageCollected<TestLoaderFactory>(),
-                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
-                          nullptr /* back_forward_cache_loader_helper */));
-
-  KURL url("http://127.0.0.1:8000/font.woff2");
-  url_test_helpers::RegisterMockedURLLoad(url,
-                                          test::CoreTestDataPath("Ahem.woff2"));
-  FetchParameters fetch_params =
-      FetchParameters::CreateForTest(ResourceRequest(url));
-  FontResource* resource = FontResource::Fetch(fetch_params, fetcher, nullptr);
-  fetcher->StartLoad(resource);
-  url_test_helpers::ServeAsynchronousRequests();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFontResourceDecodedMemoryAccounting},
+      /*disabled_features=*/{features::kResourceEncodedMemoryAccounting});
+  FontResource* resource = LoadAhemFont();
   ASSERT_TRUE(MemoryCache::Get()->Contains(resource));
 
   const size_t encoded_size = resource->EncodedSize();
@@ -416,6 +426,48 @@ TEST_F(FontResourceTest, MemoryAccountingAfterDecode) {
   EXPECT_EQ(resource->DecodedSize(), font_data->DataSize());
   EXPECT_EQ(resource->EncodedSize(), encoded_size);
   EXPECT_EQ(MemoryCache::Get()->size(), cache_size + font_data->DataSize());
+}
+
+// With kResourceEncodedMemoryAccounting also on, the compressed bytes released
+// after decoding stop counting, while EncodedSize() keeps the response size.
+TEST_F(FontResourceTest, EncodedMemoryAccountingAfterDecode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFontResourceDecodedMemoryAccounting,
+                            features::kResourceEncodedMemoryAccounting},
+      /*disabled_features=*/{});
+  FontResource* resource = LoadAhemFont();
+  ASSERT_TRUE(MemoryCache::Get()->Contains(resource));
+
+  const size_t encoded_size = resource->EncodedSize();
+  const size_t cache_size = MemoryCache::Get()->size();
+  ASSERT_GT(encoded_size, 0u);
+  EXPECT_EQ(resource->DecodedSize(), 0u);
+
+  const FontCustomPlatformData* font_data = resource->GetCustomFontData();
+  ASSERT_TRUE(font_data);
+  ASSERT_GT(font_data->DataSize(), 0u);
+  EXPECT_EQ(resource->EncodedSize(), encoded_size);
+  EXPECT_EQ(resource->size(),
+            resource->DecodedSize() + resource->OverheadSize());
+  EXPECT_EQ(MemoryCache::Get()->size(),
+            cache_size - encoded_size + font_data->DataSize());
+}
+
+// Without kFontResourceDecodedMemoryAccounting, a decoded font keeps counting
+// its encoded size, since its decoded size isn't reported.
+TEST_F(FontResourceTest, EncodedMemoryAccountingNeedsDecodedAccounting) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kResourceEncodedMemoryAccounting},
+      /*disabled_features=*/{features::kFontResourceDecodedMemoryAccounting});
+  FontResource* resource = LoadAhemFont();
+  ASSERT_GT(resource->EncodedSize(), 0u);
+
+  ASSERT_TRUE(resource->GetCustomFontData());
+  EXPECT_EQ(resource->DecodedSize(), 0u);
+  EXPECT_EQ(resource->size(),
+            resource->EncodedSize() + resource->OverheadSize());
 }
 
 namespace {

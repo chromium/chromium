@@ -657,6 +657,46 @@ TEST_F(ImageResourceTest, DecodedDataRemainsWhileHasClients) {
   // data.
 }
 
+// ImageResource keeps its encoded data in ImageResourceContent after
+// ClearData(), so it still counts towards its memory usage.
+TEST_F(ImageResourceTest, EncodedMemoryUsageKeptAfterFinish) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kResourceEncodedMemoryAccounting);
+  ImageResource* image_resource = ImageResource::CreateForTest(NullUrl());
+  ReceiveResponse(image_resource, NullUrl(), "image/jpeg",
+                  base::as_chars(base::span(kJpegImage)));
+  ASSERT_TRUE(image_resource->HasResourceBuffer());
+
+  EXPECT_EQ(image_resource->EncodedSize(), sizeof(kJpegImage));
+  EXPECT_EQ(image_resource->size(), image_resource->EncodedSize() +
+                                        image_resource->DecodedSize() +
+                                        image_resource->OverheadSize());
+}
+
+// A failed revalidation drops the old image, so its encoded data stops counting
+// even though ImageResourceContent held it until then.
+TEST_F(ImageResourceTest, FailedRevalidationStopsCountingEncodedData) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kResourceEncodedMemoryAccounting);
+  KURL url("http://127.0.0.1:8000/foo");
+  ImageResource* image_resource = ImageResource::CreateForTest(url);
+  ReceiveResponse(image_resource, url, "image/jpeg",
+                  base::as_chars(base::span(kJpegImage)));
+  ASSERT_TRUE(image_resource->HasResourceBuffer());
+
+  image_resource->SetRevalidatingRequest(ResourceRequest(url));
+  ResourceResponse resource_response(url);
+  resource_response.SetMimeType(AtomicString("image/jpeg"));
+  resource_response.SetHttpStatusCode(200);
+  image_resource->NotifyStartLoad();
+  image_resource->ResponseReceived(resource_response);
+  ASSERT_FALSE(image_resource->HasResourceBuffer());
+
+  EXPECT_EQ(image_resource->EncodedSize(), sizeof(kJpegImage));
+  EXPECT_EQ(image_resource->size(),
+            image_resource->DecodedSize() + image_resource->OverheadSize());
+}
+
 TEST_F(ImageResourceTest, UpdateBitmapImages) {
   ImageResource* image_resource = ImageResource::CreateForTest(NullUrl());
   image_resource->NotifyStartLoad();

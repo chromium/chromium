@@ -526,6 +526,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFontAccessCheckFrameIsActive);
 // fonts use more of the MemoryCache strong reference budget.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFontResourceDecodedMemoryAccounting);
 
+// When enabled, `Resource::size()` stops counting encoded data released by
+// `Resource::ClearData()`, so resources use less of the `MemoryCache` strong
+// reference budget.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResourceEncodedMemoryAccounting);
+
 // Block partial responses (206, 416) for requests without a Range header.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockPartialResponseWithoutRange);
 

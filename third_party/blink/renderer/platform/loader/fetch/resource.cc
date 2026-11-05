@@ -398,6 +398,29 @@ void Resource::SetResourceBuffer(scoped_refptr<SharedBuffer> resource_buffer) {
 
 void Resource::ClearData() {
   data_ = nullptr;
+  if (!base::FeatureList::IsEnabled(
+          features::kResourceEncodedMemoryAccounting)) {
+    return;
+  }
+  // ImageResource hands its buffer to ImageResourceContent before calling
+  // ClearData(), so only stop counting once no encoded buffer is reachable.
+  if (encoded_data_released_ || encoded_size_ == 0 || HasResourceBuffer()) {
+    return;
+  }
+  // FontResource only reports its decoded size with
+  // kFontResourceDecodedMemoryAccounting. Without it, a decoded font would
+  // count as almost nothing.
+  if (GetType() == ResourceType::kFont &&
+      !base::FeatureList::IsEnabled(
+          features::kFontResourceDecodedMemoryAccounting)) {
+    return;
+  }
+
+  size_t old_size = size();
+  encoded_data_released_ = true;
+  if (IsMainThread()) {
+    MemoryCache::Get()->Update(this, old_size, size());
+  }
 }
 
 void Resource::TriggerNotificationForFinishObservers(
@@ -815,13 +838,16 @@ void Resource::SetDecodedSize(size_t decoded_size) {
 }
 
 void Resource::SetEncodedSize(size_t encoded_size) {
-  if (encoded_size == encoded_size_) {
+  // New encoded data counts again, even if it has the same size.
+  if (encoded_size == encoded_size_ && !encoded_data_released_) {
     return;
   }
   size_t old_size = size();
   encoded_size_ = encoded_size;
-  if (IsMainThread())
+  encoded_data_released_ = false;
+  if (IsMainThread() && old_size != size()) {
     MemoryCache::Get()->Update(this, old_size, size());
+  }
 }
 
 void Resource::FinishPendingClients() {
@@ -1127,10 +1153,10 @@ void Resource::RevalidationSucceeded(
 
 void Resource::RevalidationFailed() {
   SECURITY_CHECK(redirect_chain_.empty());
-  ClearData();
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
   integrity_report_.Clear();
   DestroyDecodedDataForFailedRevalidation();
+  ClearData();
   revalidation_status_ = RevalidationStatus::kNoRevalidatingOrFailed;
   memory_cache_hit_count_ = 0;
 }

@@ -6,7 +6,9 @@
 
 #include <string_view>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -147,6 +149,40 @@ TEST_F(ResourceTest, RevalidationFailed) {
 
   resource->RemoveClient(client);
   EXPECT_FALSE(resource->IsAlive());
+}
+
+// A failed revalidation releases the old body with ClearData(). EncodedSize()
+// keeps the response size, but the released bytes stop counting in size().
+TEST_F(ResourceTest, ClearDataDropsEncodedMemoryUsage) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kResourceEncodedMemoryAccounting);
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+  const KURL url("http://test.example.com/");
+  auto* resource = MakeGarbageCollected<MockResource>(url);
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  resource->ResponseReceived(response);
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
+  resource->FinishForTest();
+  MemoryCache::Get()->Add(resource);
+  const size_t cache_size = MemoryCache::Get()->size();
+
+  resource->SetRevalidatingRequest(ResourceRequest(url));
+  ResourceResponse revalidating_response(url);
+  revalidating_response.SetHttpStatusCode(200);
+  resource->ResponseReceived(revalidating_response);
+  ASSERT_FALSE(resource->ResourceBuffer());
+
+  EXPECT_EQ(resource->EncodedSize(), kData.size());
+  EXPECT_EQ(resource->size(), resource->OverheadSize());
+  EXPECT_EQ(MemoryCache::Get()->size(), cache_size - kData.size());
+
+  // A new body counts again, even with the same size as the released one.
+  resource->AppendData(kData);
+  EXPECT_EQ(resource->size(), kData.size() + resource->OverheadSize());
+  EXPECT_EQ(MemoryCache::Get()->size(), cache_size);
+  MemoryCache::Get()->Remove(resource);
 }
 
 TEST_F(ResourceTest, RevalidationSucceeded) {
