@@ -206,12 +206,12 @@ void Notification::SetGroupParent() {
 }
 
 void Notification::ClearGroupChild() {
-  DCHECK(!group_parent_);
+  CHECK(!group_parent_, base::NotFatalUntil::M163);
   group_child_ = false;
 }
 
 void Notification::ClearGroupParent() {
-  DCHECK(!group_child_);
+  CHECK(!group_child_, base::NotFatalUntil::M163);
   group_parent_ = false;
 }
 

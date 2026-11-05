@@ -367,7 +367,7 @@ bool QtUi::Initialize() {
     return false;
   }
   void* create_qt_interface = dlsym(libqt_shim, "CreateQtInterface");
-  DCHECK(create_qt_interface);
+  CHECK(create_qt_interface, base::NotFatalUntil::M163);
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
       create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
 

@@ -122,7 +122,7 @@ struct DeviceInfo {
       } else if (device_class.touch.has_value()) {
         // A device can have at most one XITouchClassInfo. Ref:
         // http://manpages.ubuntu.com/manpages/saucy/man3/XIQueryDevice.3.html
-        DCHECK(!touch_class_info.num_touches);
+        CHECK(!touch_class_info.num_touches, base::NotFatalUntil::M163);
         touch_class_info = TouchClassInfo(*device_class.touch);
       }
     }

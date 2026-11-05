@@ -58,7 +58,7 @@ void EventTarget::RemovePreTargetHandler(EventHandler* handler) {
 }
 
 void EventTarget::AddPostTargetHandler(EventHandler* handler) {
-  DCHECK(handler);
+  CHECK(handler, base::NotFatalUntil::M163);
   post_target_list_.push_back(handler);
 }
 

@@ -39,7 +39,7 @@ TextServicesContextMenu::TextServicesContextMenu(Delegate* delegate)
     : speech_submenu_model_(this),
       bidi_submenu_model_(this),
       delegate_(delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
 
   speech_submenu_model_.AddItemWithStringId(kSpeechStartSpeaking,
                                             IDS_SPEECH_START_SPEAKING_MAC);

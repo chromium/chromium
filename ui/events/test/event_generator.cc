@@ -57,7 +57,7 @@ class TestTickClock : public base::TickClock {
 
   // Advances the clock by `delta`. `delta` should be non-negative.
   void Advance(const base::TimeDelta& delta) {
-    DCHECK(delta >= base::TimeDelta());
+    CHECK(delta >= base::TimeDelta(), base::NotFatalUntil::M163);
     ticks_ += delta;
   }
 
@@ -257,7 +257,7 @@ void EventGenerator::MoveMouseToInHost(const gfx::Point& point_in_host) {
 
 void EventGenerator::MoveMouseTo(const gfx::Point& point_in_screen,
                                  int count) {
-  DCHECK_GT(count, 0);
+  CHECK_GT(count, 0, base::NotFatalUntil::M163);
   const ui::EventType event_type = (flags_ & ui::EF_LEFT_MOUSE_BUTTON)
                                        ? ui::EventType::kMouseDragged
                                        : ui::EventType::kMouseMoved;
@@ -535,7 +535,7 @@ void EventGenerator::GestureMultiFingerScrollWithDelays(
         press_time_first + base::Milliseconds(delay_adding_finger_ms[i]);
     release_time[i] =
         press_time_first + base::Milliseconds(delay_releasing_finger_ms[i]);
-    DCHECK_LE(press_time[i], release_time[i]);
+    CHECK_LE(press_time[i], release_time[i], base::NotFatalUntil::M163);
   }
 
   for (int step = 0; step < steps; ++step) {
@@ -772,7 +772,7 @@ void EventGenerator::Init(gfx::NativeWindow root_window,
   tick_clock_ = std::make_unique<TestTickClock>();
   ui::SetEventTickClockForTesting(tick_clock_.get());
   if (!delegate_) {
-    DCHECK(GetEventGeneratorDelegateFactory());
+    CHECK(GetEventGeneratorDelegateFactory(), base::NotFatalUntil::M163);
     delegate_ = GetEventGeneratorDelegateFactory().Run(this, root_window,
                                                        target_window);
   }

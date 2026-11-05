@@ -81,7 +81,7 @@ void HandleNotificationClickDelegate::SetCallback(
     callback_ = base::BindRepeating(
         [](const base::RepeatingClosure& closure,
            std::optional<int> button_index) {
-          DCHECK(!button_index);
+          CHECK(!button_index, base::NotFatalUntil::M163);
           closure.Run();
         },
         closure);

@@ -18,8 +18,8 @@ void FakeLockScreenController::DismissLockScreenThenExecute(
   DCHECK(pending_callback) << "pending_callback must not be null";
 
   if (!is_screen_locked_) {
-    DCHECK(!pending_callback_);
-    DCHECK(!cancel_callback_);
+    CHECK(!pending_callback_, base::NotFatalUntil::M163);
+    CHECK(!cancel_callback_, base::NotFatalUntil::M163);
 
     if (pending_callback)
       std::move(pending_callback).Run();
@@ -34,7 +34,7 @@ bool FakeLockScreenController::HasPendingCallback() {
 }
 
 void FakeLockScreenController::SimulateUnlock() {
-  DCHECK(is_screen_locked_);
+  CHECK(is_screen_locked_, base::NotFatalUntil::M163);
 
   is_screen_locked_ = false;
 
@@ -44,7 +44,7 @@ void FakeLockScreenController::SimulateUnlock() {
 }
 
 void FakeLockScreenController::CancelClick() {
-  DCHECK(is_screen_locked_);
+  CHECK(is_screen_locked_, base::NotFatalUntil::M163);
 
   pending_callback_.Reset();
   if (cancel_callback_)

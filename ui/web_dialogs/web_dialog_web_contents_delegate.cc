@@ -27,7 +27,7 @@ WebDialogWebContentsDelegate::WebDialogWebContentsDelegate(
     content::BrowserContext* browser_context,
     std::unique_ptr<WebContentsHandler> handler)
     : browser_context_(browser_context), handler_(std::move(handler)) {
-  DCHECK(handler_);
+  CHECK(handler_, base::NotFatalUntil::M163);
 }
 
 WebDialogWebContentsDelegate::~WebDialogWebContentsDelegate() {

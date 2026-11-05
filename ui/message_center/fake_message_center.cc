@@ -141,7 +141,7 @@ void FakeMessageCenter::RemoveNotificationsForNotifierId(
 
 void FakeMessageCenter::RemoveAllNotifications(bool by_user, RemoveType type) {
   // Only removing all is supported.
-  DCHECK_EQ(type, RemoveType::ALL);
+  CHECK_EQ(type, RemoveType::ALL, base::NotFatalUntil::M163);
   for (const Notification* notification : notifications_.GetNotifications()) {
     // This is safe to remove since GetNotifications() returned a copy.
     RemoveNotification(notification->id(), by_user);

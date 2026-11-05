@@ -28,9 +28,9 @@ bool KeyboardHookWinBase::Register(HOOKPROC hook_proc) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If the hook was created for testing, |Register()| should not be called.
-  DCHECK(enable_hook_registration_);
+  CHECK(enable_hook_registration_, base::NotFatalUntil::M163);
 
-  DCHECK(!hook_);
+  CHECK(!hook_, base::NotFatalUntil::M163);
 
   // Don't register hooks when there is a debugger to avoid painful user input
   // delays.

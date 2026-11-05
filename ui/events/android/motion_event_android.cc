@@ -135,7 +135,7 @@ int ToEventFlags(int meta_state, int button_state) {
 
 size_t ToValidHistorySize(int32_t history_size,
                           ui::MotionEvent::Action action) {
-  DCHECK_GE(history_size, 0);
+  CHECK_GE(history_size, 0, base::NotFatalUntil::M163);
   // While the spec states that only Action::MOVE events should contain
   // historical entries, it's possible that an embedder could repurpose an
   // Action::MOVE event into a different kind of event. In that case, the
@@ -213,8 +213,8 @@ MotionEventAndroid::MotionEventAndroid(
                                   ToDips(raw_offset_y_pixels)),
       unique_event_id_(ui::GetNextTouchEventId()),
       source_(std::move(source)) {
-  DCHECK_GT(cached_pointer_count_, 0U);
-  DCHECK(cached_pointer_count_ == 1 || pointer1);
+  CHECK_GT(cached_pointer_count_, 0U, base::NotFatalUntil::M163);
+  CHECK(cached_pointer_count_ == 1 || pointer1, base::NotFatalUntil::M163);
 
   cached_pointers_.push_back(FromAndroidPointer(*pointer0));
   if (cached_pointer_count_ > 1) {
@@ -295,7 +295,7 @@ float MotionEventAndroid::GetRawXPix(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetXPix(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).x() / pix_to_dip();
   }
@@ -303,7 +303,7 @@ float MotionEventAndroid::GetXPix(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetYPix(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).y() / pix_to_dip();
   }
@@ -319,8 +319,9 @@ int MotionEventAndroid::GetActionIndex() const {
   DCHECK(cached_action_ == MotionEvent::Action::POINTER_UP ||
          cached_action_ == MotionEvent::Action::POINTER_DOWN)
       << "Invalid action for GetActionIndex(): " << cached_action_;
-  DCHECK_GE(cached_action_index_, 0);
-  DCHECK_LT(cached_action_index_, static_cast<int>(cached_pointer_count_));
+  CHECK_GE(cached_action_index_, 0, base::NotFatalUntil::M163);
+  CHECK_LT(cached_action_index_, static_cast<int>(cached_pointer_count_),
+           base::NotFatalUntil::M163);
   return cached_action_index_;
 }
 
@@ -329,7 +330,7 @@ size_t MotionEventAndroid::GetPointerCount() const {
 }
 
 int MotionEventAndroid::GetPointerId(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerId(pointer_index);
   }
@@ -337,7 +338,7 @@ int MotionEventAndroid::GetPointerId(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetX(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).x();
   }
@@ -345,7 +346,7 @@ float MotionEventAndroid::GetX(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetY(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).y();
   }
@@ -361,7 +362,7 @@ float MotionEventAndroid::GetRawY(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetTouchMajor(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTouchMajor(pointer_index);
   }
@@ -369,7 +370,7 @@ float MotionEventAndroid::GetTouchMajor(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetTouchMinor(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTouchMinor(pointer_index);
   }
@@ -377,12 +378,12 @@ float MotionEventAndroid::GetTouchMinor(size_t pointer_index) const {
 }
 
 bool MotionEventAndroid::HasNativeTouchMajor(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   return true;
 }
 
 float MotionEventAndroid::GetOrientation(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerOrientation(pointer_index);
   }
@@ -390,12 +391,12 @@ float MotionEventAndroid::GetOrientation(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetTwist(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, cached_pointer_count_);
+  CHECK_LT(pointer_index, cached_pointer_count_, base::NotFatalUntil::M163);
   return 0.f;
 }
 
 float MotionEventAndroid::GetTiltX(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTiltX(pointer_index);
   }
@@ -408,7 +409,7 @@ float MotionEventAndroid::GetTiltX(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetTiltY(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTiltY(pointer_index);
   }
@@ -426,7 +427,7 @@ base::TimeTicks MotionEventAndroid::GetRawDownTime() const {
 }
 
 float MotionEventAndroid::GetPressure(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPressure(pointer_index);
   }
@@ -434,7 +435,7 @@ float MotionEventAndroid::GetPressure(size_t pointer_index) const {
 }
 
 float MotionEventAndroid::GetTangentialPressure(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, cached_pointer_count_);
+  CHECK_LT(pointer_index, cached_pointer_count_, base::NotFatalUntil::M163);
   return 0.f;
 }
 
@@ -479,7 +480,7 @@ int MotionEventAndroid::GetSourceDeviceId(size_t pointer_index) const {
 
 ui::MotionEvent::ToolType MotionEventAndroid::GetToolType(
     size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerToolType(pointer_index);
   }

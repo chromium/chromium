@@ -64,13 +64,13 @@ MediaKeyboardHookWinImpl::~MediaKeyboardHookWinImpl() {
   if (!enable_hook_registration())
     return;
 
-  DCHECK_EQ(instance_, this);
+  CHECK_EQ(instance_, this, base::NotFatalUntil::M163);
   instance_ = nullptr;
 }
 
 bool MediaKeyboardHookWinImpl::Register() {
   // Only one instance of this class can be registered at a time.
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = this;
 
   return KeyboardHookWinBase::Register(
@@ -100,7 +100,7 @@ bool MediaKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
     is_repeat = (last_key_down_ == vk);
     last_key_down_ = vk;
   } else {
-    DCHECK_EQ(event_type, EventType::kKeyReleased);
+    CHECK_EQ(event_type, EventType::kKeyReleased, base::NotFatalUntil::M163);
     last_key_down_ = 0;
   }
 

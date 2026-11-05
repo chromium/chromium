@@ -29,8 +29,8 @@ namespace ui {
 
 gfx::Vector2dF FlingBooster::GetVelocityForFlingStart(
     const blink::WebGestureEvent& fling_start) {
-  DCHECK_EQ(blink::WebInputEvent::Type::kGestureFlingStart,
-            fling_start.GetType());
+  CHECK_EQ(blink::WebInputEvent::Type::kGestureFlingStart,
+           fling_start.GetType(), base::NotFatalUntil::M163);
   gfx::Vector2dF velocity(fling_start.data.fling_start.velocity_x,
                           fling_start.data.fling_start.velocity_y);
 
@@ -155,8 +155,8 @@ void FlingBooster::ObserveProgressFling(
 }
 
 bool FlingBooster::ShouldBoostFling(const WebGestureEvent& fling_start_event) {
-  DCHECK_EQ(WebInputEvent::Type::kGestureFlingStart,
-            fling_start_event.GetType());
+  CHECK_EQ(WebInputEvent::Type::kGestureFlingStart, fling_start_event.GetType(),
+           base::NotFatalUntil::M163);
   if (previous_fling_starting_velocity_.IsZero()) {
     TRACE_EVENT_INSTANT("input", "No Boost - NoActiveFling");
     return false;

@@ -45,7 +45,7 @@ void LargeImageView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void LargeImageView::SetImage(const gfx::ImageSkia& image) {
-  DCHECK(!image.isNull());
+  CHECK(!image.isNull(), base::NotFatalUntil::M163);
   original_image_ = image;
   drawn_image_ = CalculateDrawnImage();
 
@@ -57,7 +57,7 @@ void LargeImageView::SetImage(const gfx::ImageSkia& image) {
 }
 
 gfx::Size LargeImageView::CalculateResizedImageSizeForWidth() const {
-  DCHECK(!original_image_.isNull());
+  CHECK(!original_image_.isNull(), base::NotFatalUntil::M163);
 
   gfx::Size original_size = original_image_.size();
   if (original_size.width() <= max_size_.width()) {
@@ -72,7 +72,7 @@ gfx::Size LargeImageView::CalculateResizedImageSizeForWidth() const {
 }
 
 gfx::ImageSkia LargeImageView::CalculateDrawnImage() const {
-  DCHECK(!original_image_.isNull());
+  CHECK(!original_image_.isNull(), base::NotFatalUntil::M163);
 
   // Resize `image` so that the image width does not exceed the restriction.
   const gfx::ImageSkia resized_image =

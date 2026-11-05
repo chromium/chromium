@@ -29,7 +29,7 @@ bool KeyboardHookMonitorImpl::IsActive() {
 
 void KeyboardHookMonitorImpl::NotifyHookRegistered() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!is_hook_active_);
+  CHECK(!is_hook_active_, base::NotFatalUntil::M163);
 
   is_hook_active_ = true;
   observers_.Notify(&KeyboardHookObserver::OnHookRegistered);
@@ -37,7 +37,7 @@ void KeyboardHookMonitorImpl::NotifyHookRegistered() {
 
 void KeyboardHookMonitorImpl::NotifyHookUnregistered() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(is_hook_active_);
+  CHECK(is_hook_active_, base::NotFatalUntil::M163);
 
   is_hook_active_ = false;
   observers_.Notify(&KeyboardHookObserver::OnHookUnregistered);

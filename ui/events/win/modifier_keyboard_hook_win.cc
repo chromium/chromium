@@ -168,7 +168,7 @@ ModifierKeyboardHookWinImpl::~ModifierKeyboardHookWinImpl() {
   if (!enable_hook_registration())
     return;
 
-  DCHECK_EQ(instance_, this);
+  CHECK_EQ(instance_, this, base::NotFatalUntil::M163);
   instance_ = nullptr;
 
   KeyboardHookMonitorImpl::GetInstance()->NotifyHookUnregistered();
@@ -176,7 +176,7 @@ ModifierKeyboardHookWinImpl::~ModifierKeyboardHookWinImpl() {
 
 bool ModifierKeyboardHookWinImpl::Register() {
   // Only one instance of this class can be registered at a time.
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = this;
 
   KeyboardHookMonitorImpl::GetInstance()->NotifyHookRegistered();
@@ -214,8 +214,8 @@ bool ModifierKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
   // needed to track individual keystates such as when both left and right
   // control keys are pressed.  Make sure that location information was retained
   // when the vkey was passed into this method.
-  DCHECK_NE(vk, static_cast<DWORD>(VK_CONTROL));
-  DCHECK_NE(vk, static_cast<DWORD>(VK_MENU));
+  CHECK_NE(vk, static_cast<DWORD>(VK_CONTROL), base::NotFatalUntil::M163);
+  CHECK_NE(vk, static_cast<DWORD>(VK_MENU), base::NotFatalUntil::M163);
 
   if (!IsModifierKey(vk))
     return false;
@@ -263,7 +263,7 @@ bool ModifierKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
     is_repeat = (last_key_down_ == non_located_vk) || altgr_sequence_count_ > 1;
     last_key_down_ = non_located_vk;
   } else {
-    DCHECK_EQ(event_type, EventType::kKeyReleased);
+    CHECK_EQ(event_type, EventType::kKeyReleased, base::NotFatalUntil::M163);
     UpdateModifierState(vk, /*key_down=*/false);
     altgr_sequence_count_ = 0;
     last_key_down_ = 0;

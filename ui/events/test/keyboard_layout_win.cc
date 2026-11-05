@@ -46,9 +46,9 @@ PlatformKeyboardLayout ScopedKeyboardLayout::GetActiveLayout() {
 }
 
 void ScopedKeyboardLayout::ActivateLayout(PlatformKeyboardLayout layout) {
-  DCHECK(layout);
+  CHECK(layout, base::NotFatalUntil::M163);
   HKL result = ActivateKeyboardLayout(layout, 0);
-  DCHECK(!!result);
+  CHECK(!!result, base::NotFatalUntil::M163);
 }
 
 }  // namespace ui

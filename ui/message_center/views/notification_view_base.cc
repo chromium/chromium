@@ -146,7 +146,7 @@ gfx::Size CompactTitleMessageView::CalculatePreferredSize(
 views::ProposedLayout CompactTitleMessageView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
-  DCHECK(size_bounds.is_fully_bounded());
+  CHECK(size_bounds.is_fully_bounded(), base::NotFatalUntil::M163);
   layout.host_size =
       gfx::Size(size_bounds.width().value(), size_bounds.height().value());
   // Elides title and message.
@@ -250,7 +250,7 @@ void NotificationViewBase::OnMouseReleased(const ui::MouseEvent& event) {
 
   // Ignore click of actions row outside action buttons.
   if (expanded_) {
-    DCHECK(actions_row_);
+    CHECK(actions_row_, base::NotFatalUntil::M163);
     gfx::Point point_in_child = event.location();
     ConvertPointToTarget(this, actions_row_, &point_in_child);
     if (actions_row_->HitTestPoint(point_in_child))
@@ -295,7 +295,7 @@ bool NotificationViewBase::IsIconViewShown() const {
 
 views::Builder<NotificationControlButtonsView>
 NotificationViewBase::CreateControlButtonsBuilder() {
-  DCHECK(!control_buttons_view_);
+  CHECK(!control_buttons_view_, base::NotFatalUntil::M163);
   return views::Builder<NotificationControlButtonsView>()
       .CopyAddressTo(&control_buttons_view_)
       .SetMessageView(this);
@@ -303,7 +303,7 @@ NotificationViewBase::CreateControlButtonsBuilder() {
 
 views::Builder<NotificationHeaderView>
 NotificationViewBase::CreateHeaderRowBuilder() {
-  DCHECK(!header_row_);
+  CHECK(!header_row_, base::NotFatalUntil::M163);
   auto header_row_builder = views::Builder<NotificationHeaderView>()
                                 .SetID(kHeaderRow)
                                 .CopyAddressTo(&header_row_);
@@ -312,7 +312,7 @@ NotificationViewBase::CreateHeaderRowBuilder() {
 
 views::Builder<views::BoxLayoutView>
 NotificationViewBase::CreateLeftContentBuilder() {
-  DCHECK(!left_content_);
+  CHECK(!left_content_, base::NotFatalUntil::M163);
   return views::Builder<views::BoxLayoutView>()
       .SetID(ViewId::kLeftContent)
       .CopyAddressTo(&left_content_)
@@ -320,14 +320,14 @@ NotificationViewBase::CreateLeftContentBuilder() {
 }
 
 views::Builder<views::View> NotificationViewBase::CreateRightContentBuilder() {
-  DCHECK(!right_content_);
+  CHECK(!right_content_, base::NotFatalUntil::M163);
   return views::Builder<views::View>()
       .CopyAddressTo(&right_content_)
       .SetUseDefaultFillLayout(true);
 }
 
 views::Builder<views::View> NotificationViewBase::CreateContentRowBuilder() {
-  DCHECK(!content_row_);
+  CHECK(!content_row_, base::NotFatalUntil::M163);
   return views::Builder<views::View>()
       .SetID(kContentRow)
       .CopyAddressTo(&content_row_);
@@ -335,7 +335,7 @@ views::Builder<views::View> NotificationViewBase::CreateContentRowBuilder() {
 
 views::Builder<views::BoxLayoutView>
 NotificationViewBase::CreateInlineSettingsBuilder() {
-  DCHECK(!settings_row_);
+  CHECK(!settings_row_, base::NotFatalUntil::M163);
   return views::Builder<views::BoxLayoutView>()
       .SetID(ViewId::kInlineSettingsRow)
       .CopyAddressTo(&settings_row_)
@@ -352,7 +352,7 @@ NotificationViewBase::CreateSnoozeSettingsBuilder() {
 
 views::Builder<views::View>
 NotificationViewBase::CreateImageContainerBuilder() {
-  DCHECK(!image_container_view_);
+  CHECK(!image_container_view_, base::NotFatalUntil::M163);
   return views::Builder<views::View>()
       .SetID(ViewId::kImageContainerView)
       .CopyAddressTo(&image_container_view_)
@@ -361,13 +361,13 @@ NotificationViewBase::CreateImageContainerBuilder() {
 
 std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow(
     std::unique_ptr<views::LayoutManager> layout_manager) {
-  DCHECK(!actions_row_);
+  CHECK(!actions_row_, base::NotFatalUntil::M163);
   auto actions_row = std::make_unique<views::View>();
   actions_row->SetVisible(false);
   actions_row->SetLayoutManager(std::move(layout_manager));
 
   // |action_buttons_row_| contains inline action buttons.
-  DCHECK(!action_buttons_row_);
+  CHECK(!action_buttons_row_, base::NotFatalUntil::M163);
   auto action_buttons_row = std::make_unique<views::View>();
   action_buttons_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kActionsRowPadding,
@@ -378,7 +378,7 @@ std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow(
       actions_row->AddChildView(std::move(action_buttons_row));
 
   // |inline_reply_| is a container for an inline textfield.
-  DCHECK(!inline_reply_);
+  CHECK(!inline_reply_, base::NotFatalUntil::M163);
   auto inline_reply = GenerateNotificationInputContainer();
   inline_reply->Init();
   inline_reply->SetVisible(false);
@@ -432,8 +432,9 @@ void NotificationViewBase::CreateOrUpdateHeaderView(
 void NotificationViewBase::CreateOrUpdateCompactTitleMessageView(
     const Notification& notification) {
   if (notification.type() != NOTIFICATION_TYPE_PROGRESS) {
-    DCHECK(!compact_title_message_view_ ||
-           left_content_->Contains(compact_title_message_view_));
+    CHECK(!compact_title_message_view_ ||
+              left_content_->Contains(compact_title_message_view_),
+          base::NotFatalUntil::M163);
     delete compact_title_message_view_;
     compact_title_message_view_ = nullptr;
     return;
@@ -456,13 +457,14 @@ void NotificationViewBase::CreateOrUpdateCompactTitleMessageView(
 void NotificationViewBase::CreateOrUpdateProgressBarView(
     const Notification& notification) {
   if (notification.type() != NOTIFICATION_TYPE_PROGRESS) {
-    DCHECK(!progress_bar_view_ || left_content_->Contains(progress_bar_view_));
+    CHECK(!progress_bar_view_ || left_content_->Contains(progress_bar_view_),
+          base::NotFatalUntil::M163);
     delete progress_bar_view_;
     progress_bar_view_ = nullptr;
     return;
   }
 
-  DCHECK(left_content_);
+  CHECK(left_content_, base::NotFatalUntil::M163);
 
   if (!progress_bar_view_) {
     auto progress_bar_view = std::make_unique<views::ProgressBar>();
@@ -488,7 +490,7 @@ void NotificationViewBase::CreateOrUpdateProgressStatusView(
       notification.progress_status().empty()) {
     if (!status_view_)
       return;
-    DCHECK(left_content_->Contains(status_view_));
+    CHECK(left_content_->Contains(status_view_), base::NotFatalUntil::M163);
     delete status_view_;
     status_view_ = nullptr;
     return;
@@ -576,7 +578,8 @@ void NotificationViewBase::CreateOrUpdateIconView(
 
   if (notification.type() == NOTIFICATION_TYPE_PROGRESS ||
       notification.type() == NOTIFICATION_TYPE_MULTIPLE || icon.IsEmpty()) {
-    DCHECK(!icon_view_ || right_content_->Contains(icon_view_));
+    CHECK(!icon_view_ || right_content_->Contains(icon_view_),
+          base::NotFatalUntil::M163);
     delete icon_view_;
     icon_view_ = nullptr;
     return;

@@ -464,8 +464,9 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
   webkit_event.delta_x = event.x_offset();
   webkit_event.delta_y = event.y_offset();
 
-  DCHECK(!(event.flags() & ui::EF_PRECISION_SCROLLING_DELTA &&
-           event.flags() & ui::EF_SCROLL_BY_PAGE));
+  CHECK(!(event.flags() & ui::EF_PRECISION_SCROLLING_DELTA &&
+          event.flags() & ui::EF_SCROLL_BY_PAGE),
+        base::NotFatalUntil::M163);
 
   if (event.flags() & ui::EF_PRECISION_SCROLLING_DELTA) {
     webkit_event.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;

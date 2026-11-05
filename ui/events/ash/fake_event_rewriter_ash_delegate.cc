@@ -14,7 +14,8 @@ FakeEventRewriterAshDelegate::~FakeEventRewriterAshDelegate() = default;
 void FakeEventRewriterAshDelegate::SetModifierRemapping(
     std::string_view pref_name,
     ui::mojom::ModifierKey value) {
-  DCHECK_NE(ui::mojom::ModifierKey::kIsoLevel5ShiftMod3, value);
+  CHECK_NE(ui::mojom::ModifierKey::kIsoLevel5ShiftMod3, value,
+           base::NotFatalUntil::M163);
   modifier_remapping_.insert_or_assign(std::string(pref_name), value);
 }
 

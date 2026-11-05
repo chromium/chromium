@@ -180,7 +180,8 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   app_icon_view_->SetBorder(views::CreateEmptyBorder(kAppIconPadding));
   app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   app_icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize({}).height());
+  CHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize({}).height(),
+           base::NotFatalUntil::M163);
   AddChildViewRaw(app_icon_view_.get());
 
   // App name view
@@ -231,7 +232,8 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   expand_button_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
-  DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize({}).height());
+  CHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize({}).height(),
+           base::NotFatalUntil::M163);
   detail_views_->AddChildViewRaw(expand_button_.get());
 
   // Spacer between left-aligned views and right-aligned views
@@ -363,14 +365,14 @@ void NotificationHeaderView::SetDetailViewsVisible(bool visible) {
 
 void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
   // We shouldn't execute this method if the expand button is not here.
-  DCHECK(expand_button_);
+  CHECK(expand_button_, base::NotFatalUntil::M163);
   expand_button_->SetVisible(enabled);
   UpdateExpandedCollapsedAccessibleState();
 }
 
 void NotificationHeaderView::SetExpanded(bool expanded) {
   // We shouldn't execute this method if the expand button is not here.
-  DCHECK(expand_button_);
+  CHECK(expand_button_, base::NotFatalUntil::M163);
   is_expanded_ = expanded;
   UpdateColors();
   expand_button_->SetTooltipText(l10n_util::GetStringUTF16(

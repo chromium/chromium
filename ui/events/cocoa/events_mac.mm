@@ -247,24 +247,28 @@ bool GetScrollOffsets(const PlatformEvent& platform_event,
   // assumes AppKit will not combine them, so momentum phase should only be set
   // once. If one of these DCHECKs fails it could mean some new hardware that
   // needs tests in events_mac_unittest.mm.
-  DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
+  CHECK_EQ(EventMomentumPhase::NONE, *momentum_phase,
+           base::NotFatalUntil::M163);
 
   if (event.phase & kBeginPhaseMask) {
     *momentum_phase = EventMomentumPhase::MAY_BEGIN;
   }
 
   if ((event.phase | event.momentumPhase) & kEndPhaseMask) {
-    DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
+    CHECK_EQ(EventMomentumPhase::NONE, *momentum_phase,
+             base::NotFatalUntil::M163);
     *momentum_phase = EventMomentumPhase::END;
   } else if (event.momentumPhase != NSEventPhaseNone) {
-    DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
+    CHECK_EQ(EventMomentumPhase::NONE, *momentum_phase,
+             base::NotFatalUntil::M163);
     *momentum_phase = EventMomentumPhase::INERTIAL_UPDATE;
   }
 
   // If the event completely lacks phase information, there won't be further
   // updates, so they must be treated as an end.
   if ((event.phase | event.momentumPhase) == NSEventPhaseNone) {
-    DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
+    CHECK_EQ(EventMomentumPhase::NONE, *momentum_phase,
+             base::NotFatalUntil::M163);
     *momentum_phase = EventMomentumPhase::END;
   }
 

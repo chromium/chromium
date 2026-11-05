@@ -21,7 +21,7 @@ void KeyboardEventCounter::OnKeyboardEvent(EventType event,
     pressed_keys_.insert(key_code);
     ++total_key_presses_;
   } else {
-    DCHECK_EQ(EventType::kKeyReleased, event);
+    CHECK_EQ(EventType::kKeyReleased, event, base::NotFatalUntil::M163);
     pressed_keys_.erase(key_code);
   }
 }

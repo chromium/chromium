@@ -640,8 +640,8 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
 
 void RecordFunctionKeyFromKeyCode(ui::KeyboardCode key_code,
                                   ui::InputKeyEventToFunctionKey event_enum) {
-  DCHECK(key_code >= VKEY_F1);
-  DCHECK(key_code <= VKEY_F15);
+  CHECK(key_code >= VKEY_F1, base::NotFatalUntil::M163);
+  CHECK(key_code <= VKEY_F15, base::NotFatalUntil::M163);
 
   switch (key_code) {
     case VKEY_F1:
@@ -1039,7 +1039,7 @@ EventDispatchDetails EventRewriterAsh::RewriteEvent(
       (event.type() == EventType::kKeyReleased)) {
     std::unique_ptr<Event> rewritten_event;
     const base::Time key_rewrite_start_time = base::Time::Now();
-    DCHECK((&event)->AsKeyEvent());
+    CHECK((&event)->AsKeyEvent(), base::NotFatalUntil::M163);
     const EventRewriteStatus status =
         RewriteKeyEvent(*((&event)->AsKeyEvent()), &rewritten_event);
     RecordAutoRepeatUsageMetric(*((&event)->AsKeyEvent()), rewritten_event);
@@ -1111,8 +1111,9 @@ bool EventRewriterAsh::HasAssistantKeyOnKeyboard(
 bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
                                            int device_id,
                                            MutableKeyState* state) {
-  DCHECK(key_event.type() == EventType::kKeyPressed ||
-         key_event.type() == EventType::kKeyReleased);
+  CHECK(key_event.type() == EventType::kKeyPressed ||
+            key_event.type() == EventType::kKeyReleased,
+        base::NotFatalUntil::M163);
 
   if (!delegate_ || !delegate_->RewriteModifierKeys()) {
     return false;
@@ -1461,7 +1462,8 @@ bool EventRewriterAsh::ShouldRemapToRightClick(
 
   // If the event rewrite matched (ie. matched_mask != 0) then
   // |matched_alt_deprecation| must be false.
-  DCHECK(*matched_mask == 0 || !*matched_alt_deprecation);
+  CHECK(*matched_mask == 0 || !*matched_alt_deprecation,
+        base::NotFatalUntil::M163);
 
   return (*matched_mask != 0) &&
          ((mouse_event.type() == EventType::kMousePressed) ||
@@ -1646,8 +1648,9 @@ EventDispatchDetails EventRewriterAsh::RewriteScrollEvent(
 
 void EventRewriterAsh::RewriteNumPadKeys(const KeyEvent& key_event,
                                          MutableKeyState* state) {
-  DCHECK(key_event.type() == EventType::kKeyPressed ||
-         key_event.type() == EventType::kKeyReleased);
+  CHECK(key_event.type() == EventType::kKeyPressed ||
+            key_event.type() == EventType::kKeyReleased,
+        base::NotFatalUntil::M163);
   static const struct NumPadRemapping {
     KeyboardCode input_key_code;
     MutableKeyState result;
@@ -1687,8 +1690,9 @@ void EventRewriterAsh::RewriteNumPadKeys(const KeyEvent& key_event,
 
 void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
                                            MutableKeyState* state) {
-  DCHECK(key_event.type() == EventType::kKeyPressed ||
-         key_event.type() == EventType::kKeyReleased);
+  CHECK(key_event.type() == EventType::kKeyPressed ||
+            key_event.type() == EventType::kKeyReleased,
+        base::NotFatalUntil::M163);
   MutableKeyState incoming = *state;
 
   // TODO(crbug.com/1179893): This workaround isn't needed once Alt rewrites
@@ -1848,7 +1852,7 @@ int EventRewriterAsh::RewriteModifierClick(const MouseEvent& mouse_event,
   if (ShouldRemapToRightClick(mouse_event, *flags, &matched_mask,
                               &matched_alt_deprecation)) {
     // If the rewrite matched the deprecation message should also not occur.
-    DCHECK(!matched_alt_deprecation);
+    CHECK(!matched_alt_deprecation, base::NotFatalUntil::M163);
 
     *flags &= ~matched_mask;
     *flags |= EF_RIGHT_MOUSE_BUTTON;
@@ -1861,7 +1865,7 @@ int EventRewriterAsh::RewriteModifierClick(const MouseEvent& mouse_event,
         delegate_->RecordEventRemappedToRightClick(
             /*alt_based_right_click=*/false);
       } else {
-        DCHECK(matched_mask == kAltLeftButton);
+        CHECK(matched_mask == kAltLeftButton, base::NotFatalUntil::M163);
         base::RecordAction(
             base::UserMetricsAction("AltClickMappedToRightClick"));
         delegate_->RecordEventRemappedToRightClick(

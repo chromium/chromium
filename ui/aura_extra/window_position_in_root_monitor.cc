@@ -12,7 +12,7 @@ WindowPositionInRootMonitor::WindowPositionInRootMonitor(
     aura::Window* window,
     base::RepeatingClosure callback)
     : callback_(std::move(callback)) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   AddAncestors(window);
 }
 
@@ -32,8 +32,8 @@ void WindowPositionInRootMonitor::AddAncestors(aura::Window* window) {
 void WindowPositionInRootMonitor::OnWindowDestroyed(aura::Window* window) {
   // This should only be hit when window has no ancestors (because destroying
   // a window implicitly removes children).
-  DCHECK_EQ(1u, ancestors_.size());
-  DCHECK_EQ(window, ancestors_[0]);
+  CHECK_EQ(1u, ancestors_.size(), base::NotFatalUntil::M163);
+  CHECK_EQ(window, ancestors_[0], base::NotFatalUntil::M163);
   window->RemoveObserver(this);
   ancestors_.clear();
 }

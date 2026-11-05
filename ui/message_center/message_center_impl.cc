@@ -179,7 +179,7 @@ ExpandState MessageCenterImpl::GetNotificationExpandState(
 void MessageCenterImpl::SetNotificationExpandState(
     const std::string& id,
     const ExpandState expand_state) {
-  DCHECK(FindVisibleNotificationById(id));
+  CHECK(FindVisibleNotificationById(id), base::NotFatalUntil::M163);
 
   notification_list_->SetNotificationExpandState(id, expand_state);
 }
@@ -339,7 +339,7 @@ MessageCenterImpl::GetPopupNotificationsWithoutBlocker(
 void MessageCenterImpl::AddNotification(
     std::unique_ptr<Notification> notification) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(notification);
+  CHECK(notification, base::NotFatalUntil::M163);
 
   notification->set_allow_group(notifications_grouping_enabled_);
 
@@ -585,8 +585,9 @@ void MessageCenterImpl::ClickOnNotificationUnlocked(
 
   // This method must be called under unlocked screen or if the notification is
   // allowed on the lock screen.
-  DCHECK(lock_screen_controller_->IsNotificationAllowedOnLockScreen(id) ||
-         !lock_screen_controller_->IsScreenLocked());
+  CHECK(lock_screen_controller_->IsNotificationAllowedOnLockScreen(id) ||
+            !lock_screen_controller_->IsScreenLocked(),
+        base::NotFatalUntil::M163);
 
   // Ensure the notification is still visible.
   if (!FindVisibleNotificationById(id)) {
@@ -699,7 +700,7 @@ void MessageCenterImpl::MarkSinglePopupAsShown(const std::string& id,
 }
 
 void MessageCenterImpl::ResetPopupTimer(const std::string& id) {
-  DCHECK(FindPopupNotificationById(id));
+  CHECK(FindPopupNotificationById(id), base::NotFatalUntil::M163);
 
   popup_timers_controller_->CancelTimer(id);
   popup_timers_controller_->StartTimer(

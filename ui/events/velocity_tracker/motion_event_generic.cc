@@ -263,18 +263,20 @@ bool MotionEventGeneric::GetHistoricalHasNativeTouchMajor(
 
 float MotionEventGeneric::GetHistoricalX(size_t pointer_index,
                                          size_t historical_index) const {
-  DCHECK_LT(historical_index, historical_events_.size());
+  CHECK_LT(historical_index, historical_events_.size(),
+           base::NotFatalUntil::M163);
   return historical_events_[historical_index]->GetX(pointer_index);
 }
 
 float MotionEventGeneric::GetHistoricalY(size_t pointer_index,
                                          size_t historical_index) const {
-  DCHECK_LT(historical_index, historical_events_.size());
+  CHECK_LT(historical_index, historical_events_.size(),
+           base::NotFatalUntil::M163);
   return historical_events_[historical_index]->GetY(pointer_index);
 }
 
 int32_t MotionEventGeneric::GetSourceDeviceId(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, pointers_.size());
+  CHECK_LT(pointer_index, pointers_.size(), base::NotFatalUntil::M163);
   return pointers_[pointer_index].source_device_id;
 }
 
@@ -302,7 +304,7 @@ std::unique_ptr<MotionEventGeneric> MotionEventGeneric::CancelEvent(
 }
 
 size_t MotionEventGeneric::PushPointer(const PointerProperties& pointer) {
-  DCHECK_EQ(0U, GetHistorySize());
+  CHECK_EQ(0U, GetHistorySize(), base::NotFatalUntil::M163);
   pointers_.push_back(pointer);
   return pointers_.size() - 1;
 }
@@ -315,11 +317,12 @@ void MotionEventGeneric::RemovePointerAt(size_t index) {
 
 void MotionEventGeneric::PushHistoricalEvent(
     std::unique_ptr<MotionEvent> event) {
-  DCHECK(event);
-  DCHECK_EQ(event->GetAction(), Action::MOVE);
-  DCHECK_EQ(event->GetPointerCount(), GetPointerCount());
-  DCHECK_EQ(event->GetAction(), GetAction());
-  DCHECK_LE(event->GetEventTime(), GetEventTime());
+  CHECK(event, base::NotFatalUntil::M163);
+  CHECK_EQ(event->GetAction(), Action::MOVE, base::NotFatalUntil::M163);
+  CHECK_EQ(event->GetPointerCount(), GetPointerCount(),
+           base::NotFatalUntil::M163);
+  CHECK_EQ(event->GetAction(), GetAction(), base::NotFatalUntil::M163);
+  CHECK_LE(event->GetEventTime(), GetEventTime(), base::NotFatalUntil::M163);
   historical_events_.push_back(std::move(event));
 }
 
@@ -379,7 +382,7 @@ MotionEventGeneric& MotionEventGeneric::operator=(
 }
 
 void MotionEventGeneric::PopPointer() {
-  DCHECK_GT(pointers_.size(), 0U);
+  CHECK_GT(pointers_.size(), 0U, base::NotFatalUntil::M163);
   pointers_.pop_back();
 }
 

@@ -23,16 +23,16 @@ void MessageCenter::Initialize() {
 // static
 void MessageCenter::Initialize(
     std::unique_ptr<LockScreenController> lock_screen_controller) {
-  DCHECK(!g_message_center);
-  DCHECK(lock_screen_controller);
+  CHECK(!g_message_center, base::NotFatalUntil::M163);
+  CHECK(lock_screen_controller, base::NotFatalUntil::M163);
   g_message_center = new MessageCenterImpl(std::move(lock_screen_controller));
 }
 
 // static
 void MessageCenter::InitializeForTesting(
     std::unique_ptr<MessageCenter> message_center) {
-  DCHECK(!g_message_center);
-  DCHECK(message_center);
+  CHECK(!g_message_center, base::NotFatalUntil::M163);
+  CHECK(message_center, base::NotFatalUntil::M163);
   g_message_center = message_center.release();
 }
 

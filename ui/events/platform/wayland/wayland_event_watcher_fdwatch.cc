@@ -21,14 +21,14 @@ WaylandEventWatcherFdWatch::~WaylandEventWatcherFdWatch() {
 }
 
 bool WaylandEventWatcherFdWatch::StartWatchingFD(int fd) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
   WlDisplayPrepareToRead();
   return base::CurrentUIThread::Get()->WatchFileDescriptor(
       fd, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);
 }
 
 void WaylandEventWatcherFdWatch::StopWatchingFD() {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
   CHECK(controller_.StopWatchingFileDescriptor())
       << "Unable to stop watching the Wayland display fd.";
 }

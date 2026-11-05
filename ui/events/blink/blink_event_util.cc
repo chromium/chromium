@@ -202,9 +202,9 @@ WebTouchPoint CreateWebTouchPoint(const MotionEvent& event,
   float minor_radius = event.GetTouchMinor(pointer_index) / 2.f;
   float orientation_deg = base::RadToDeg(event.GetOrientation(pointer_index));
 
-  DCHECK_GE(major_radius, 0);
-  DCHECK_GE(minor_radius, 0);
-  DCHECK_GE(major_radius, minor_radius);
+  CHECK_GE(major_radius, 0, base::NotFatalUntil::M163);
+  CHECK_GE(minor_radius, 0, base::NotFatalUntil::M163);
+  CHECK_GE(major_radius, minor_radius, base::NotFatalUntil::M163);
   // Orientation lies in [-180, 180] for a stylus, and [-90, 90] for other
   // touchscreen inputs. There are exceptions on Android when a device is
   // rotated, yielding touch orientations in the range of [-180, 180].
@@ -212,8 +212,8 @@ WebTouchPoint CreateWebTouchPoint(const MotionEvent& event,
   // for floating point conversion.
   // TODO(e_hakkinen): Also pass unaltered stylus orientation, avoiding loss of
   // quadrant information, see crbug.com/493728.
-  DCHECK_GT(orientation_deg, -180.01f);
-  DCHECK_LT(orientation_deg, 180.01f);
+  CHECK_GT(orientation_deg, -180.01f, base::NotFatalUntil::M163);
+  CHECK_LT(orientation_deg, 180.01f, base::NotFatalUntil::M163);
   if (orientation_deg >= 90.f)
     orientation_deg -= 180.f;
   else if (orientation_deg < -90.f)
@@ -257,12 +257,12 @@ blink::WebTouchEvent CreateWebTouchEventFromMotionEvent(
   // TODO(mustaq): MotionEvent flags seems unrelated, should use
   // metaState instead?
 
-  DCHECK_NE(event.GetUniqueEventId(), 0U);
+  CHECK_NE(event.GetUniqueEventId(), 0U, base::NotFatalUntil::M163);
   result.unique_touch_event_id = event.GetUniqueEventId();
   result.touches_length =
       std::min(static_cast<unsigned>(event.GetPointerCount()),
                static_cast<unsigned>(WebTouchEvent::kTouchesLengthCap));
-  DCHECK_GT(result.touches_length, 0U);
+  CHECK_GT(result.touches_length, 0U, base::NotFatalUntil::M163);
 
   for (size_t i = 0; i < result.touches_length; ++i)
     result.touches[i] = CreateWebTouchPoint(event, i);
@@ -373,7 +373,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       break;
     case EventType::kGestureDoubleTap:
       gesture.SetType(WebInputEvent::Type::kGestureDoubleTap);
-      DCHECK_EQ(1, details.tap_count());
+      CHECK_EQ(1, details.tap_count(), base::NotFatalUntil::M163);
       gesture.data.tap.tap_count = details.tap_count();
       gesture.data.tap.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
@@ -383,7 +383,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       break;
     case EventType::kGestureTap:
       gesture.SetType(WebInputEvent::Type::kGestureTap);
-      DCHECK_GE(details.tap_count(), 1);
+      CHECK_GE(details.tap_count(), 1, base::NotFatalUntil::M163);
       gesture.data.tap.tap_count = details.tap_count();
       gesture.data.tap.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
@@ -392,7 +392,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       break;
     case EventType::kGestureTapUnconfirmed:
       gesture.SetType(WebInputEvent::Type::kGestureTapUnconfirmed);
-      DCHECK_EQ(1, details.tap_count());
+      CHECK_EQ(1, details.tap_count(), base::NotFatalUntil::M163);
       gesture.data.tap.tap_count = details.tap_count();
       gesture.data.tap.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
@@ -842,7 +842,8 @@ EventPointerType WebPointerTypeToEventPointerType(
 
 blink::WebGestureEvent ScrollBeginFromScrollUpdate(
     const blink::WebGestureEvent& gesture_update) {
-  DCHECK(gesture_update.GetType() == WebInputEvent::Type::kGestureScrollUpdate);
+  CHECK(gesture_update.GetType() == WebInputEvent::Type::kGestureScrollUpdate,
+        base::NotFatalUntil::M163);
 
   WebGestureEvent scroll_begin(gesture_update);
   scroll_begin.SetType(WebInputEvent::Type::kGestureScrollBegin);

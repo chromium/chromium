@@ -12,7 +12,7 @@ namespace ui::test {
 ScopedEventWaiter::ScopedEventWaiter(EventTarget* target,
                                      EventType target_event_type)
     : target_(target), target_event_type_(target_event_type) {
-  DCHECK(target);
+  CHECK(target, base::NotFatalUntil::M163);
   target->AddPreTargetHandler(this);
 }
 

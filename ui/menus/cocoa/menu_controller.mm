@@ -385,8 +385,8 @@ void CreateSharedIndentsForMenu(NSMenu* menu) {
     item.submenu = submenu;
     // [item setSubmenu:] updates target and action which means clicking on a
     // submenu entry will not call [self validateUserInterfaceItem:].
-    DCHECK_EQ(item.action, @selector(submenuAction:));
-    DCHECK_EQ(item.target, submenu);
+    CHECK_EQ(item.action, @selector(submenuAction:), base::NotFatalUntil::M163);
+    CHECK_EQ(item.target, submenu, base::NotFatalUntil::M163);
     // Set the enabled state here as submenu entries do not call into
     // validateUserInterfaceItem. See https://crbug.com/40634897 and
     // https://crbug.com/41474827.
@@ -468,7 +468,7 @@ void CreateSharedIndentsForMenu(NSMenu* menu) {
 
   ui::MenuModel* model =
       [WeakPtrToMenuModelAsNSObject menuModelForNSMenuItem:menuItem];
-  DCHECK(model);
+  CHECK(model, base::NotFatalUntil::M163);
   const size_t modelIndex = base::checked_cast<size_t>(menuItem.tag);
   const ui::ElementIdentifier identifier =
       model->GetElementIdentifierAt(modelIndex);

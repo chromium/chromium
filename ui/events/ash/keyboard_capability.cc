@@ -1240,7 +1240,8 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
   std::ranges::transform(keyboard_info_map_,
                          std::back_inserter(cached_keyboard_info_ids),
                          [](const auto& pair) { return pair.first; });
-  DCHECK(std::ranges::is_sorted(cached_keyboard_info_ids));
+  CHECK(std::ranges::is_sorted(cached_keyboard_info_ids),
+        base::NotFatalUntil::M163);
 
   // Compares the `cached_keyboard_info_ids` to `sorted_keyboard_ids`. Ids that
   // are in `cached_keyboard_info_ids` but not in `sorted_keyboard_ids` are

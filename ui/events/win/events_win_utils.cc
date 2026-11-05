@@ -307,7 +307,7 @@ base::TimeTicks EventLatencyTimeFromTickClock(DWORD event_time,
 }
 
 base::TimeTicks EventLatencyTimeFromPerformanceCounter(UINT64 event_time) {
-  DCHECK(base::TimeTicks::IsHighResolution());
+  CHECK(base::TimeTicks::IsHighResolution(), base::NotFatalUntil::M163);
   base::TimeTicks time_stamp = base::TimeTicks::FromQPCValue(event_time);
   ValidateEventTimeClock(&time_stamp);
   return time_stamp;
@@ -338,8 +338,9 @@ gfx::Point EventLocationFromMSG(const CHROME_MSG& native_event) {
     // Client message. The position is contained in the LPARAM.
     event_location = gfx::Point(static_cast<DWORD>(native_event.lParam));
   } else {
-    DCHECK(IsNonClientMouseEvent(native_event) ||
-           IsMouseWheelEvent(native_event) || IsScrollEvent(native_event));
+    CHECK(IsNonClientMouseEvent(native_event) ||
+              IsMouseWheelEvent(native_event) || IsScrollEvent(native_event),
+          base::NotFatalUntil::M163);
     // Non-client message. The position is contained in a POINTS structure in
     // LPARAM, and is in screen coordinates so we have to convert to client.
     POINT native_point;
@@ -400,8 +401,9 @@ PointerDetails GetMousePointerDetailsFromMSG(const CHROME_MSG& native_event) {
 }
 
 gfx::Vector2d GetMouseWheelOffsetFromMSG(const CHROME_MSG& native_event) {
-  DCHECK(native_event.message == WM_MOUSEWHEEL ||
-         native_event.message == WM_MOUSEHWHEEL);
+  CHECK(native_event.message == WM_MOUSEWHEEL ||
+            native_event.message == WM_MOUSEHWHEEL,
+        base::NotFatalUntil::M163);
   if (native_event.message == WM_MOUSEWHEEL)
     return gfx::Vector2d(0, GET_WHEEL_DELTA_WPARAM(native_event.wParam));
   return gfx::Vector2d(GET_WHEEL_DELTA_WPARAM(native_event.wParam), 0);
@@ -502,7 +504,7 @@ LPARAM GetLParamFromScanCode(uint16_t scan_code) {
 }
 
 KeyEvent KeyEventFromMSG(const CHROME_MSG& msg) {
-  DCHECK(IsKeyEvent(msg));
+  CHECK(IsKeyEvent(msg), base::NotFatalUntil::M163);
   EventType type = EventTypeFromMSG(msg);
   KeyboardCode key_code = KeyboardCodeFromMSG(msg);
   DomCode code = CodeFromMSG(msg);

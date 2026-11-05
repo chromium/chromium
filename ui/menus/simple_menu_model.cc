@@ -93,7 +93,7 @@ void SimpleMenuModel::AddItemWithStringId(int command_id, int string_id) {
   // matching IDC constant or the matching IDC constant is not available.
   // Using IDS constants for command IDs can cause confusion elsewhere, since
   // command IDs are usually either IDC values or strictly local constants.
-  DCHECK_NE(command_id, string_id);
+  CHECK_NE(command_id, string_id, base::NotFatalUntil::M163);
   AddItem(command_id, l10n_util::GetStringUTF16(string_id));
 }
 
@@ -158,7 +158,7 @@ void SimpleMenuModel::AddSeparator(MenuSeparatorType separator_type) {
     if (separator_type == NORMAL_SEPARATOR) {
       return;
     }
-    DCHECK_EQ(SPACING_SEPARATOR, separator_type);
+    CHECK_EQ(SPACING_SEPARATOR, separator_type, base::NotFatalUntil::M163);
   } else {
     size_t last_visible_item = items_.size();
     for (auto i = items_.size(); i > 0; i--) {
@@ -174,8 +174,9 @@ void SimpleMenuModel::AddSeparator(MenuSeparatorType separator_type) {
     }
 
     if (items_.at(last_visible_item).type == TYPE_SEPARATOR) {
-      DCHECK_EQ(NORMAL_SEPARATOR, separator_type);
-      DCHECK_EQ(NORMAL_SEPARATOR, items_.at(last_visible_item).separator_type);
+      CHECK_EQ(NORMAL_SEPARATOR, separator_type, base::NotFatalUntil::M163);
+      CHECK_EQ(NORMAL_SEPARATOR, items_.at(last_visible_item).separator_type,
+               base::NotFatalUntil::M163);
       // The last item is already a separator. Don't add another.
       return;
     }
@@ -699,15 +700,13 @@ void SimpleMenuModel::InsertItemAtIndex(Item item, size_t index) {
 }
 
 void SimpleMenuModel::ValidateItem(const Item& item) {
-#if DCHECK_IS_ON()
   if (item.type == TYPE_SEPARATOR) {
-    DCHECK_EQ(item.command_id, kSeparatorId);
+    CHECK_EQ(item.command_id, kSeparatorId, base::NotFatalUntil::M163);
   } else if (item.type == TYPE_TITLE) {
-    DCHECK_EQ(item.command_id, kTitleId);
+    CHECK_EQ(item.command_id, kTitleId, base::NotFatalUntil::M163);
   } else {
-    DCHECK_GE(item.command_id, 0);
+    CHECK_GE(item.command_id, 0, base::NotFatalUntil::M163);
   }
-#endif  // DCHECK_IS_ON()
 }
 
 }  // namespace ui

@@ -106,7 +106,7 @@ std::vector<std::string_view> EventResultsNames(int event_results) {
 #if BUILDFLAG(IS_OZONE)
 uint32_t ScanCodeFromNative(const PlatformEvent& native_event) {
   const KeyEvent* event = static_cast<const KeyEvent*>(native_event);
-  DCHECK(event->IsKeyEvent());
+  CHECK(event->IsKeyEvent(), base::NotFatalUntil::M163);
   return event->scan_code();
 }
 #endif  // BUILDFLAG(IS_OZONE)
@@ -428,9 +428,10 @@ MouseEvent::MouseEvent(EventType type,
     : LocatedEvent(type, location, root_location, time_stamp, flags),
       changed_button_flags_(changed_button_flags),
       pointer_details_(pointer_details) {
-  DCHECK_NE(EventType::kMousewheel, type);
-  DCHECK_EQ(changed_button_flags_,
-            changed_button_flags_ & kChangedButtonFlagMask);
+  CHECK_NE(EventType::kMousewheel, type, base::NotFatalUntil::M163);
+  CHECK_EQ(changed_button_flags_,
+           changed_button_flags_ & kChangedButtonFlagMask,
+           base::NotFatalUntil::M163);
   latency()->AddLatencyNumber(INPUT_EVENT_LATENCY_UI_COMPONENT);
   if (this->type() == EventType::kMouseMoved && IsAnyButton()) {
     SetType(EventType::kMouseDragged);
@@ -552,8 +553,8 @@ void MouseEvent::SetClickCount(int click_count) {
     return;
   }
 
-  DCHECK_LT(0, click_count);
-  DCHECK_GE(3, click_count);
+  CHECK_LT(0, click_count, base::NotFatalUntil::M163);
+  CHECK_GE(3, click_count, base::NotFatalUntil::M163);
 
   int f = flags();
   switch (click_count) {
@@ -612,7 +613,7 @@ MouseWheelEvent::MouseWheelEvent(const MouseWheelEvent& mouse_wheel_event)
     : MouseEvent(mouse_wheel_event),
       offset_(mouse_wheel_event.offset()),
       tick_120ths_(mouse_wheel_event.tick_120ths()) {
-  DCHECK_EQ(EventType::kMousewheel, type());
+  CHECK_EQ(EventType::kMousewheel, type(), base::NotFatalUntil::M163);
 }
 
 MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
@@ -786,7 +787,7 @@ void TouchEvent::ForceProcessGesture() {
 
 void TouchEvent::SetPointerDetailsForTest(
     const PointerDetails& pointer_details) {
-  DCHECK_EQ(pointer_details_.id, pointer_details.id);
+  CHECK_EQ(pointer_details_.id, pointer_details.id, base::NotFatalUntil::M163);
   pointer_details_ = pointer_details;
 }
 
@@ -824,7 +825,7 @@ KeyEvent::KeyEvent(const PlatformEvent& native_event, int event_flags)
       code_(CodeFromNative(native_event)),
       is_char_(IsCharFromNative(native_event)) {
 #if BUILDFLAG(IS_OZONE)
-  DCHECK(native_event->IsKeyEvent());
+  CHECK(native_event->IsKeyEvent(), base::NotFatalUntil::M163);
   key_ = native_event->AsKeyEvent()->key_;
 #endif
   InitializeNative();
@@ -972,8 +973,9 @@ void KeyEvent::ApplyLayout() const {
   // so this is a synthetic or native keystroke event.
   // Therefore, perform only the fallback action.
   if (IsPlatformEventValid(native_event())) {
-    DCHECK(EventTypeFromNative(native_event()) == EventType::kKeyPressed ||
-           EventTypeFromNative(native_event()) == EventType::kKeyReleased);
+    CHECK(EventTypeFromNative(native_event()) == EventType::kKeyPressed ||
+              EventTypeFromNative(native_event()) == EventType::kKeyReleased,
+          base::NotFatalUntil::M163);
   }
 #endif
 
@@ -982,7 +984,7 @@ void KeyEvent::ApplyLayout() const {
 }
 
 bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
-  DCHECK(last_key_event);
+  CHECK(last_key_event, base::NotFatalUntil::M163);
 
   // A safe guard in case if there were continuous key pressed events that are
   // not auto repeat.
@@ -1007,7 +1009,7 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
     return (last->flags() & EF_IS_REPEAT) != 0;
   }
 
-  DCHECK(last);
+  CHECK(last, base::NotFatalUntil::M163);
   bool is_repeat = false;
 
 #if BUILDFLAG(IS_WIN)
@@ -1075,7 +1077,8 @@ char16_t KeyEvent::GetCharacter() const {
     // Until this explicitly changes, require |key_| to hold a BMP character.
     DomKey::Base utf32_character = key_.ToCharacter();
     char16_t ucs2_character = static_cast<char16_t>(utf32_character);
-    DCHECK_EQ(static_cast<DomKey::Base>(ucs2_character), utf32_character);
+    CHECK_EQ(static_cast<DomKey::Base>(ucs2_character), utf32_character,
+             base::NotFatalUntil::M163);
     // Check if the control character is down. Note that ALTGR is represented
     // on Windows as CTRL|ALT, so we need to make sure that is not set.
     if ((flags() & (EF_ALTGR_DOWN | EF_CONTROL_DOWN)) == EF_CONTROL_DOWN) {

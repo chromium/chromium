@@ -152,7 +152,7 @@ X11EventSource::X11EventSource(x11::Connection* connection)
     : watcher_(std::make_unique<X11EventWatcherImpl>(this)),
       connection_(connection),
       dummy_initialized_(false) {
-  DCHECK(connection_);
+  CHECK(connection_, base::NotFatalUntil::M163);
   connection_->AddEventObserver(this);
 
   DeviceDataManagerX11::CreateInstance();
@@ -182,7 +182,7 @@ X11EventSource* X11EventSource::GetInstance() {
 // X11EventSource, public
 
 x11::Time X11EventSource::GetCurrentServerTime() {
-  DCHECK(connection_);
+  CHECK(connection_, base::NotFatalUntil::M163);
 
   if (!dummy_initialized_) {
     // Create a new Window and Atom that will be used for the property change.

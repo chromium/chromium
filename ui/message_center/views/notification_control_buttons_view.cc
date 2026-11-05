@@ -84,7 +84,7 @@ void NotificationControlButtonsView::ShowCloseButton(bool show) {
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     DeprecatedLayoutImmediately();
   } else if (!show && close_button_) {
-    DCHECK(Contains(close_button_));
+    CHECK(Contains(close_button_), base::NotFatalUntil::M163);
     RemoveChildViewT(close_button_.get());
     close_button_ = nullptr;
   }
@@ -115,7 +115,7 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     DeprecatedLayoutImmediately();
   } else if (!show && settings_button_) {
-    DCHECK(Contains(settings_button_));
+    CHECK(Contains(settings_button_), base::NotFatalUntil::M163);
     RemoveChildViewT(settings_button_.get());
     settings_button_ = nullptr;
   }
@@ -145,14 +145,14 @@ void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     DeprecatedLayoutImmediately();
   } else if (!show && snooze_button_) {
-    DCHECK(Contains(snooze_button_));
+    CHECK(Contains(snooze_button_), base::NotFatalUntil::M163);
     RemoveChildViewT(snooze_button_.get());
     snooze_button_ = nullptr;
   }
 }
 
 void NotificationControlButtonsView::ShowButtons(bool show) {
-  DCHECK(layer());
+  CHECK(layer(), base::NotFatalUntil::M163);
   // Manipulate the opacity instead of changing the visibility to keep the tab
   // order even when the view is invisible.
   layer()->SetOpacity(show ? 1. : 0.);

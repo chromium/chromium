@@ -157,8 +157,9 @@ bool WebInputEventTraits::ShouldBlockEventStream(const WebInputEvent& event) {
     // TouchCancel and TouchScrollStarted should always be non-blocking.
     case WebInputEvent::Type::kTouchCancel:
     case WebInputEvent::Type::kTouchScrollStarted:
-      DCHECK_NE(WebInputEvent::DispatchType::kBlocking,
-                static_cast<const WebTouchEvent&>(event).dispatch_type);
+      CHECK_NE(WebInputEvent::DispatchType::kBlocking,
+               static_cast<const WebTouchEvent&>(event).dispatch_type,
+               base::NotFatalUntil::M163);
       return false;
 
     // Touch start and touch end indicate whether they are non-blocking

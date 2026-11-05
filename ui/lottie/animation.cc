@@ -44,7 +44,7 @@ bool IsInCycleBoundaries(base::TimeDelta offset,
 Animation::CycleBoundaries GetCycleAtIndex(
     const std::vector<Animation::CycleBoundaries>& scheduled_cycles,
     int cycle_idx) {
-  DCHECK(!scheduled_cycles.empty());
+  CHECK(!scheduled_cycles.empty(), base::NotFatalUntil::M163);
   return scheduled_cycles[std::min(
       cycle_idx, static_cast<int>(scheduled_cycles.size()) - 1)];
 }
@@ -72,7 +72,7 @@ Animation::TimerControl::TimerControl(
 Animation::TimerControl::~TimerControl() = default;
 
 void Animation::TimerControl::SetPlaybackSpeed(float playback_speed) {
-  DCHECK_GT(playback_speed, 0.f);
+  CHECK_GT(playback_speed, 0.f, base::NotFatalUntil::M163);
   playback_speed_ = playback_speed;
 }
 
@@ -179,7 +179,7 @@ Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
     : skottie_(skottie),
       color_map_(std::move(color_map)),
       text_map_(skottie_->GetCurrentTextPropertyValues()) {
-  DCHECK(skottie_);
+  CHECK(skottie_, base::NotFatalUntil::M163);
   bool animation_has_external_image_assets =
       !skottie_->GetImageAssetMetadata().asset_storage().empty();
   // Embedded image assets would not be added to `asset_storage()` and not reach
@@ -195,7 +195,7 @@ Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
       scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset> new_asset =
           frame_data_provider->LoadImageAsset(
               asset_id, asset_metadata.resource_path, asset_metadata.size);
-      DCHECK(new_asset);
+      CHECK(new_asset, base::NotFatalUntil::M163);
       image_assets_.emplace(cc::HashSkottieResourceId(asset_id),
                             std::move(new_asset));
     }
@@ -227,14 +227,17 @@ gfx::Size Animation::GetOriginalSize() const {
   float height_diff = std::abs(float_size.height() - rounded_size.height());
   float width_diff = std::abs(float_size.width() - rounded_size.width());
 
-  DCHECK_LE(height_diff, std::numeric_limits<float>::epsilon());
-  DCHECK_LE(width_diff, std::numeric_limits<float>::epsilon());
+  CHECK_LE(height_diff, std::numeric_limits<float>::epsilon(),
+           base::NotFatalUntil::M163);
+  CHECK_LE(width_diff, std::numeric_limits<float>::epsilon(),
+           base::NotFatalUntil::M163);
 #endif
   return gfx::ToRoundedSize(gfx::SkSizeToSizeF(skottie_->size()));
 }
 
 void Animation::Start(std::optional<PlaybackConfig> playback_config) {
-  DCHECK(state_ == PlayState::kStopped || state_ == PlayState::kEnded);
+  CHECK(state_ == PlayState::kStopped || state_ == PlayState::kEnded,
+        base::NotFatalUntil::M163);
   if (!playback_config)
     playback_config = PlaybackConfig::CreateDefault(*this);
   VerifyPlaybackConfigIsValid(*playback_config);
@@ -256,12 +259,13 @@ void Animation::Start(std::optional<PlaybackConfig> playback_config) {
 }
 
 void Animation::Pause() {
-  DCHECK(state_ == PlayState::kPlaying || state_ == PlayState::kSchedulePlay);
+  CHECK(state_ == PlayState::kPlaying || state_ == PlayState::kSchedulePlay,
+        base::NotFatalUntil::M163);
   state_ = PlayState::kPaused;
 }
 
 void Animation::ResumePlaying() {
-  DCHECK(state_ == PlayState::kPaused);
+  CHECK(state_ == PlayState::kPaused, base::NotFatalUntil::M163);
   state_ = PlayState::kScheduleResume;
 }
 
@@ -276,7 +280,7 @@ std::optional<float> Animation::GetCurrentProgress() const {
     case PlayState::kStopped:
       return std::nullopt;
     case PlayState::kEnded:
-      DCHECK(timer_control_);
+      CHECK(timer_control_, base::NotFatalUntil::M163);
       return timer_control_->GetNormalizedEndOffset();
     case PlayState::kPaused:
     case PlayState::kSchedulePlay:
@@ -303,7 +307,7 @@ std::optional<int> Animation::GetNumCompletedCycles() const {
     return playback_config_.initial_completed_cycles;
 
   if (state_ == PlayState::kEnded) {
-    DCHECK_EQ(playback_config_.style, Style::kLinear);
+    CHECK_EQ(playback_config_.style, Style::kLinear, base::NotFatalUntil::M163);
     return 1;
   }
 
@@ -340,7 +344,7 @@ void Animation::Paint(gfx::Canvas* canvas,
       observers_.Notify(&AnimationObserver::AnimationWillStartPlaying, this);
       break;
     case PlayState::kPlaying: {
-      DCHECK(timer_control_);
+      CHECK(timer_control_, base::NotFatalUntil::M163);
       int previous_num_cycles = timer_control_->completed_cycles();
       timer_control_->Step(timestamp);
       int new_num_cycles = timer_control_->completed_cycles();
@@ -370,7 +374,7 @@ void Animation::Paint(gfx::Canvas* canvas,
       break;
   }
   std::optional<float> current_progress = GetCurrentProgress();
-  DCHECK(current_progress);
+  CHECK(current_progress, base::NotFatalUntil::M163);
   PaintFrame(canvas, *current_progress, size);
 
   // Notify animation cycle ended after everything is done in case an observer
@@ -383,8 +387,8 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                            float t,
                            const gfx::Size& size) {
   TRACE_EVENT1("ui", "Animation::PaintFrame", "timestamp", t);
-  DCHECK_GE(t, 0.f);
-  DCHECK_LE(t, 1.f);
+  CHECK_GE(t, 0.f, base::NotFatalUntil::M163);
+  CHECK_LE(t, 1.f, base::NotFatalUntil::M163);
   // Not all of the image assets necessarily appear in the frame at time |t|. To
   // determine which assets are actually needed, Seek() and capture the set of
   // images in the frame. Seek() without rendering is a cheap operation.
@@ -423,7 +427,7 @@ cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
 }
 
 void Animation::InitTimer(const base::TimeTicks& timestamp) {
-  DCHECK(!timer_control_);
+  CHECK(!timer_control_, base::NotFatalUntil::M163);
   timer_control_ = std::make_unique<TimerControl>(
       playback_config_.scheduled_cycles, playback_config_.initial_offset,
       playback_config_.initial_completed_cycles, GetAnimationDuration(),
@@ -431,7 +435,7 @@ void Animation::InitTimer(const base::TimeTicks& timestamp) {
 }
 
 void Animation::TryNotifyAnimationCycleEnded() {
-  DCHECK(timer_control_);
+  CHECK(timer_control_, base::NotFatalUntil::M163);
   bool inform_observer = true;
   switch (playback_config_.style) {
     case Style::kLoop:
@@ -455,18 +459,21 @@ void Animation::TryNotifyAnimationCycleEnded() {
 
 void Animation::VerifyPlaybackConfigIsValid(
     const PlaybackConfig& playback_config) const {
-  DCHECK(!playback_config.scheduled_cycles.empty());
+  CHECK(!playback_config.scheduled_cycles.empty(), base::NotFatalUntil::M163);
   for (const CycleBoundaries& cycle : playback_config.scheduled_cycles) {
-    DCHECK(IsCycleValid(cycle, *this));
+    CHECK(IsCycleValid(cycle, *this), base::NotFatalUntil::M163);
   }
   if (playback_config.style == Style::kLinear) {
-    DCHECK_EQ(playback_config.scheduled_cycles.size(), 1u);
+    CHECK_EQ(playback_config.scheduled_cycles.size(), 1u,
+             base::NotFatalUntil::M163);
   }
-  DCHECK_GE(playback_config.initial_completed_cycles, 0);
-  DCHECK(IsInCycleBoundaries(
-      playback_config.initial_offset,
-      GetCycleAtIndex(playback_config.scheduled_cycles,
-                      playback_config.initial_completed_cycles)));
+  CHECK_GE(playback_config.initial_completed_cycles, 0,
+           base::NotFatalUntil::M163);
+  CHECK(IsInCycleBoundaries(
+            playback_config.initial_offset,
+            GetCycleAtIndex(playback_config.scheduled_cycles,
+                            playback_config.initial_completed_cycles)),
+        base::NotFatalUntil::M163);
 }
 
 }  // namespace lottie

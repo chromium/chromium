@@ -25,10 +25,10 @@ int GetKeyboardDeviceIdProperty(const Event& event) {
       if (bytes.size() == sizeof(int32_t)) {
         return base::I32FromNativeEndian(bytes.first<sizeof(int32_t)>());
       }
-      DCHECK_EQ(bytes.size(), sizeof(int32_t));
+      CHECK_EQ(bytes.size(), sizeof(int32_t), base::NotFatalUntil::M163);
     }
   }
-  DCHECK(event.IsKeyEvent());
+  CHECK(event.IsKeyEvent(), base::NotFatalUntil::M163);
   return event.source_device_id();
 }
 

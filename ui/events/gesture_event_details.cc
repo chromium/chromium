@@ -32,8 +32,8 @@ GestureEventDetails::GestureEventDetails(ui::EventType type)
     : type_(type),
       device_type_(GestureDeviceType::DEVICE_UNKNOWN),
       touch_points_(1) {
-  DCHECK_GE(type, EventType::kGestureTypeStart);
-  DCHECK_LE(type, EventType::kGestureTypeEnd);
+  CHECK_GE(type, EventType::kGestureTypeStart, base::NotFatalUntil::M163);
+  CHECK_LE(type, EventType::kGestureTypeEnd, base::NotFatalUntil::M163);
 }
 
 GestureEventDetails::GestureEventDetails(ui::EventType type,
@@ -43,8 +43,8 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
     : type_(type),
       device_type_(GestureDeviceType::DEVICE_UNKNOWN),
       touch_points_(1) {
-  DCHECK_GE(type, EventType::kGestureTypeStart);
-  DCHECK_LE(type, EventType::kGestureTypeEnd);
+  CHECK_GE(type, EventType::kGestureTypeStart, base::NotFatalUntil::M163);
+  CHECK_LE(type, EventType::kGestureTypeEnd, base::NotFatalUntil::M163);
   switch (type_) {
     case ui::EventType::kGestureScrollBegin:
       data_.scroll_begin.x_hint = delta_x;
@@ -107,8 +107,8 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
       primary_unique_touch_event_id_(other.primary_unique_touch_event_id_),
       touch_points_(other.touch_points_),
       bounding_box_(other.bounding_box_) {
-  DCHECK_GE(type, EventType::kGestureTypeStart);
-  DCHECK_LE(type, EventType::kGestureTypeEnd);
+  CHECK_GE(type, EventType::kGestureTypeStart, base::NotFatalUntil::M163);
+  CHECK_LE(type, EventType::kGestureTypeEnd, base::NotFatalUntil::M163);
   switch (type) {
     case ui::EventType::kGestureScrollBegin:
       // Synthetic creation of SCROLL_BEGIN from PINCH_BEGIN is explicitly

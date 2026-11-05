@@ -48,7 +48,7 @@ PlatformKeyboardLayout ScopedKeyboardLayout::GetActiveLayout() {
 }
 
 void ScopedKeyboardLayout::ActivateLayout(PlatformKeyboardLayout layout) {
-  DCHECK(layout);
+  CHECK(layout, base::NotFatalUntil::M163);
   // According to the documentation in HIToolbox's TextInputSources.h
   // (recommended reading), TISSelectInputSource() can fail if the input source
   // isn't "selectable" or "enabled".
@@ -58,9 +58,9 @@ void ScopedKeyboardLayout::ActivateLayout(PlatformKeyboardLayout layout) {
   // perhaps if input sources have never been switched on this bot before? In
   // any case, it's harmless to re-enable it here if it's already enabled.
   OSStatus result = TISEnableInputSource(layout.get());
-  DCHECK_EQ(noErr, result);
+  CHECK_EQ(noErr, result, base::NotFatalUntil::M163);
   result = TISSelectInputSource(layout.get());
-  DCHECK_EQ(noErr, result);
+  CHECK_EQ(noErr, result, base::NotFatalUntil::M163);
 }
 
 }  // namespace ui

@@ -166,7 +166,8 @@ void NotificationList::UpdateNotificationMessage(
   notifications_.erase(iter);
 
   // We really don't want duplicate IDs.
-  DCHECK(GetNotification(new_notification->id()) == notifications_.end());
+  CHECK(GetNotification(new_notification->id()) == notifications_.end(),
+        base::NotFatalUntil::M163);
   notifications_.emplace(std::move(new_notification), state);
 }
 

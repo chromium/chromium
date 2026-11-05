@@ -97,7 +97,7 @@ class WaylandEventWatcherThread : public base::Thread {
   ~WaylandEventWatcherThread() override { Stop(); }
 
   void Init() override {
-    DCHECK(!start_processing_events_cb_.is_null());
+    CHECK(!start_processing_events_cb_.is_null(), base::NotFatalUntil::M163);
     std::move(start_processing_events_cb_).Run();
   }
 
@@ -111,16 +111,16 @@ WaylandEventWatcher::WaylandEventWatcher(wl_display* display,
     : display_(display),
       event_queue_(event_queue),
       use_threaded_polling_(use_threaded_polling) {
-  DCHECK(display_);
+  CHECK(display_, base::NotFatalUntil::M163);
 }
 
 WaylandEventWatcher::~WaylandEventWatcher() {
-  DCHECK(!watching_);
+  CHECK(!watching_, base::NotFatalUntil::M163);
 }
 
 void WaylandEventWatcher::SetShutdownCb(
     base::OnceCallback<void()> shutdown_cb) {
-  DCHECK(shutdown_cb_.is_null());
+  CHECK(shutdown_cb_.is_null(), base::NotFatalUntil::M163);
   shutdown_cb_ = std::move(shutdown_cb);
 }
 
@@ -167,7 +167,7 @@ void WaylandEventWatcher::StartProcessingEventsInternal() {
   // is able to send us nicely formatted error messages.
   wl_log_set_handler_client(wayland_log);
 
-  DCHECK(display_);
+  CHECK(display_, base::NotFatalUntil::M163);
   watching_ = StartWatchingFD(wl_display_get_fd(display_));
   CHECK(watching_) << "Unable to start watching the wl_display's file "
                       "descriptor.";

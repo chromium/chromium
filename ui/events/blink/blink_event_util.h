@@ -91,7 +91,8 @@ EventPointerType WebPointerTypeToEventPointerType(
 
 inline const blink::WebGestureEvent& ToWebGestureEvent(
     const blink::WebInputEvent& event) {
-  DCHECK(blink::WebInputEvent::IsGestureEventType(event.GetType()));
+  CHECK(blink::WebInputEvent::IsGestureEventType(event.GetType()),
+        base::NotFatalUntil::M163);
   return static_cast<const blink::WebGestureEvent&>(event);
 }
 

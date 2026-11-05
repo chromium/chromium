@@ -577,7 +577,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   }
 
   void set_delegate(scoped_refptr<NotificationDelegate> delegate) {
-    DCHECK(!delegate_);
+    CHECK(!delegate_, base::NotFatalUntil::M163);
     delegate_ = delegate;
   }
 
@@ -615,7 +615,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 
   const std::string& custom_view_type() const { return custom_view_type_; }
   void set_custom_view_type(const std::string& custom_view_type) {
-    DCHECK_EQ(type(), NotificationType::NOTIFICATION_TYPE_CUSTOM);
+    CHECK_EQ(type(), NotificationType::NOTIFICATION_TYPE_CUSTOM,
+             base::NotFatalUntil::M163);
     custom_view_type_ = custom_view_type;
   }
 

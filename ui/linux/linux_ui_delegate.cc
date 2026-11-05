@@ -18,12 +18,12 @@ LinuxUiDelegate* LinuxUiDelegate::GetInstance() {
 }
 
 LinuxUiDelegate::LinuxUiDelegate() {
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = this;
 }
 
 LinuxUiDelegate::~LinuxUiDelegate() {
-  DCHECK_EQ(instance_, this);
+  CHECK_EQ(instance_, this, base::NotFatalUntil::M163);
   instance_ = nullptr;
 }
 

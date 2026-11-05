@@ -119,7 +119,7 @@ void NotificationInputContainer::AnimateBackground(const ui::Event& event) {
   std::unique_ptr<ui::Event> located_event =
       notification_view_util::ConvertToBoundedLocatedEvent(event, this);
   auto* ink_drop = views::InkDrop::Get(this);
-  DCHECK(ink_drop);
+  CHECK(ink_drop, base::NotFatalUntil::M163);
   ink_drop->AnimateToState(views::InkDropState::ACTION_PENDING,
                            ui::LocatedEvent::FromIfValid(located_event.get()));
 }
@@ -152,7 +152,7 @@ void NotificationInputContainer::RemoveLayerFromRegions(ui::Layer* layer) {
 views::ProposedLayout NotificationInputContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
-  DCHECK(size_bounds.is_fully_bounded());
+  CHECK(size_bounds.is_fully_bounded(), base::NotFatalUntil::M163);
   layout.host_size =
       gfx::Size(size_bounds.width().value(), size_bounds.height().value());
   if (!ink_drop_container_) {
@@ -180,7 +180,7 @@ bool NotificationInputContainer::HandleKeyEvent(views::Textfield* sender,
 }
 
 void NotificationInputContainer::OnAfterUserAction(views::Textfield* sender) {
-  DCHECK_EQ(sender, textfield_);
+  CHECK_EQ(sender, textfield_, base::NotFatalUntil::M163);
   UpdateButtonImage();
 }
 

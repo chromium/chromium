@@ -168,7 +168,7 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
     CHECK(!began_);
     began_ = true;
     // We should have a trace ID assigned by now.
-    DCHECK(trace_id_ != -1);
+    CHECK(trace_id_ != -1, base::NotFatalUntil::M163);
 
     if (TRACE_EVENT_CATEGORY_ENABLED(kTraceCategoriesForAsyncEvents)) {
       // The timestamp for ASYNC_BEGIN trace event is used for drawing the
@@ -192,7 +192,7 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
   }
 
   auto it = latency_components_.find(component);
-  DCHECK(it == latency_components_.end());
+  CHECK(it == latency_components_.end(), base::NotFatalUntil::M163);
   latency_components_[component] = time;
 
   if (component == INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT)

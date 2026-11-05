@@ -26,14 +26,14 @@ NotifierId::NotifierId(NotifierType type,
     DCHECK_NE(catalog_name, ash::NotificationCatalogName::kNone)
         << " System Notifications must include a `catalog_name`.";
   }
-  DCHECK_NE(type, NotifierType::WEB_PAGE);
-  DCHECK(!id.empty());
+  CHECK_NE(type, NotifierType::WEB_PAGE, base::NotFatalUntil::M163);
+  CHECK(!id.empty(), base::NotFatalUntil::M163);
 }
 #else
 NotifierId::NotifierId(NotifierType type, const std::string& id)
     : type(type), id(id) {
-  DCHECK_NE(type, NotifierType::WEB_PAGE);
-  DCHECK(!id.empty());
+  CHECK_NE(type, NotifierType::WEB_PAGE, base::NotFatalUntil::M163);
+  CHECK(!id.empty(), base::NotFatalUntil::M163);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

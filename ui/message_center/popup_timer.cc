@@ -14,7 +14,7 @@ PopupTimer::PopupTimer(const std::string& id,
       timeout_(timeout),
       timer_delegate_(delegate),
       timer_(new base::OneShotTimer) {
-  DCHECK(timer_delegate_);
+  CHECK(timer_delegate_, base::NotFatalUntil::M163);
 }
 
 PopupTimer::~PopupTimer() {

@@ -30,9 +30,10 @@ class EventSource::EventRewriterContinuationImpl
   // Constructs an EventRewriterContinuationImpl at the end of the source's
   // rewriter list.
   static void Create(EventSource* const source, EventRewriter* rewriter) {
-    DCHECK(source);
-    DCHECK(rewriter);
-    DCHECK(source->FindContinuation(rewriter) == source->rewriter_list_.end());
+    CHECK(source, base::NotFatalUntil::M163);
+    CHECK(rewriter, base::NotFatalUntil::M163);
+    CHECK(source->FindContinuation(rewriter) == source->rewriter_list_.end(),
+          base::NotFatalUntil::M163);
     source->rewriter_list_.push_back(
         std::make_unique<EventRewriterContinuationImpl>(source, rewriter));
     EventRewriterList::iterator it = source->rewriter_list_.end();
