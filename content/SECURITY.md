@@ -54,13 +54,44 @@ Note that it does not make sense to use a compromised higher-privilege process
 to compromise a lower-privilege process (e.g., escaping from the GPU process to
 compromise a renderer process).
 
+### Hypothetical Observers, Delegates, and Re-entrancy {#hypothetical-observers}
+
 Do not assume the existence of hypothetical, flawed observers in the browser
 process. A report describing how a `content/public` API (e.g.,
 `WebContentsObserver`) could be misused (e.g., "what if an observer deletes
 `this` or makes a re-entrant call into the navigation logic") should be filed as
 a Feature Request for hardening security, not as a vulnerability, unless you can
 point to a specific, reachable instance of that misuse currently existing in the
-Chromium codebase.
+Chromium codebase. For an example of such a Feature Request, see
+[issue 575343800](https://crbug.com/575343800).
+
+This applies to all observer and delegate interfaces that `//content` calls
+into, such as `WebContentsObserver`, `WebContentsDelegate`, and
+`ContentBrowserClient`. In particular:
+
+* **Patched browser code is not evidence.** A crash or ASan report that only
+  reproduces after modifying browser process code does not show that a bug is
+  reachable. This includes injected deletions or calls (e.g., gated by an
+  environment variable), test-only observers that destroy objects during a
+  notification, and custom unit tests or browser tests that do the same.
+  Patches are only acceptable for simulating a compromised renderer (see the
+  [reporting guidelines](https://chromium.googlesource.com/chromium/src/+/main/docs/security/vrp-faq.md#Best-Practices-for-Security-Bug-Reporting)).
+* **Name the real code path.** A vulnerability report must identify the
+  existing observer, delegate, or embedder code in Chromium that destroys the
+  object (or re-enters `//content`), and show how a web page or a compromised
+  renderer can reach it. Being in the same class as a previously fixed bug is
+  not enough: each call site needs its own reachable trigger.
+* **Some cases are already safe crashes.** For example, destroying a
+  `WebContents` while it is notifying its observers hits a `CHECK` in
+  `~WebContentsImpl`, which is a safe crash rather than a use-after-free.
+* **Nested message loops.** Native OS nested message loops (e.g., inside COM,
+  Win32, or IME calls) do not run Chromium tasks or Mojo messages unless the
+  code explicitly allows it (e.g., with
+  `base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop`).
+  Simulating such a loop with a `base::RunLoop` that runs posted tasks does not
+  show that the destruction can happen in production. See
+  [content/browser/SECURITY.md](https://chromium.googlesource.com/chromium/src/+/main/content/browser/SECURITY.md)
+  for more details.
 
 ### High-Priority Vulnerabilities
 
@@ -256,7 +287,8 @@ implementation mistakes in these patterns in the code base:
   general, observers and delegates should not synchronously destroy these
   objects, and doing so is usually a bug in the observer or delegate. A report
   about a hypothetical observer that does this is not a vulnerability (see
-  [Threat Model](#threat-model) and https://crbug.com/575343800). Some calls do
+  [Hypothetical Observers, Delegates, and Re-entrancy](#hypothetical-observers)
+  and https://crbug.com/575343800). Some calls do
   allow it, though. Code that makes such calls must handle this. Only add
   handling where a call is actually known to allow deletion. Do not add
   `WeakPtr` checks speculatively after every external call. Common options:
