@@ -229,11 +229,11 @@ NSString* DetailTextForSetting(ContentSetting setting) {
       [[TableViewDetailIconItem alloc] initWithType:type];
   item.text = text;
   item.detailText = detailText;
-  item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
   item.iconImage =
       SymbolWithPointSize(symbol, kSettingsRootSymbolImagePointSize);
   item.iconTintColor = [UIColor colorNamed:kGrey600Color];
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.accessibilityIdentifier = accessibilityIdentifier;
   return item;
 }

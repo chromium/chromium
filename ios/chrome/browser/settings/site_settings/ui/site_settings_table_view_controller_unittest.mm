@@ -8,7 +8,9 @@
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "ios/chrome/browser/settings/site_settings/public/site_settings_constants.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -41,8 +43,8 @@ class SiteSettingsTableViewControllerTest
   id delegate_;
 };
 
-// Tests categories setup, dynamic location insertion, and subtitle updates.
-TEST_F(SiteSettingsTableViewControllerTest, TestCategoriesAndSubtitles) {
+// Tests categories setup, dynamic location insertion, and detail text updates.
+TEST_F(SiteSettingsTableViewControllerTest, TestCategoriesAndDetailText) {
   CreateController();
   CheckController();
 
@@ -80,7 +82,7 @@ TEST_F(SiteSettingsTableViewControllerTest, TestCategoriesAndSubtitles) {
   EXPECT_NSEQ(kSiteSettingsLocationCellId,
               locationItem.accessibilityIdentifier);
 
-  // Update default settings and verify subtitles.
+  // Update default settings and verify detail text.
   [controller setDefaultSetting:CONTENT_SETTING_ASK
                         forType:ContentSettingsType::MEDIASTREAM_MIC];
   [controller setDefaultSetting:CONTENT_SETTING_BLOCK
@@ -94,6 +96,20 @@ TEST_F(SiteSettingsTableViewControllerTest, TestCategoriesAndSubtitles) {
               cameraItem.detailText);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ASK_FIRST),
               locationItem.detailText);
+
+  // Verify rows are buttons that show the setting as trailing text rather than
+  // as a subtitle, matching other Settings rows.
+  for (TableViewDetailIconItem* item in
+       @[ micItem, cameraItem, locationItem ]) {
+    EXPECT_TRUE(item.accessibilityTraits & UIAccessibilityTraitButton);
+    LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+    [item configureCell:cell];
+    TableViewCellContentConfiguration* configuration =
+        base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+            cell.contentConfiguration);
+    EXPECT_NSEQ(item.detailText, configuration.trailingText);
+    EXPECT_NSEQ(nil, configuration.subtitle);
+  }
 
   // Disable location and verify it is removed.
   [controller setLocationCategoryEnabled:NO];
