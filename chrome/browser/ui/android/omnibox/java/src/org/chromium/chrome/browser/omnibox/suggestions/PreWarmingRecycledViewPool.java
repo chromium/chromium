@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TimeUtils;
+import org.chromium.base.TimeUtils.CurrentThreadTimeMillisTimer;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -65,9 +66,8 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
             OmniboxMetrics.recordPreWarmingThreadMatchesExpectedThread(
                     !ThreadUtils.runningOnUiThread());
 
-            TimeUtils.UptimeMillisTimer wallTimer = new TimeUtils.UptimeMillisTimer();
-            TimeUtils.CurrentThreadTimeMillisTimer threadTimer =
-                    new TimeUtils.CurrentThreadTimeMillisTimer();
+            UptimeMillisTimer wallTimer = new UptimeMillisTimer();
+            CurrentThreadTimeMillisTimer threadTimer = new CurrentThreadTimeMillisTimer();
 
             FrameLayout parent = new FrameLayout(context);
             preWarmViewType(

@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.search_engines.StarterPackId;
 
@@ -38,7 +38,7 @@ public class OmniboxActionFactoryUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                1,
+                                ActionType.DIRECTIONS,
                                 "url",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP)));
@@ -52,7 +52,7 @@ public class OmniboxActionFactoryUnitTest {
                         0,
                         "hint",
                         "accessibility",
-                        SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
+                        ActionType.CALL,
                         "url",
                         /* tabId= */ 0,
                         ActionPresentationMode.CHIP));
@@ -66,7 +66,7 @@ public class OmniboxActionFactoryUnitTest {
                         0,
                         "hint",
                         "accessibility",
-                        SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
+                        ActionType.CALL,
                         "url",
                         /* tabId= */ 0,
                         ActionPresentationMode.CHIP));

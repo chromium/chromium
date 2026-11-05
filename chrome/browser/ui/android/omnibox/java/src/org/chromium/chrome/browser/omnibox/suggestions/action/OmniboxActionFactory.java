@@ -9,7 +9,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
@@ -65,12 +65,11 @@ public class OmniboxActionFactory {
             long nativeInstance,
             String hint,
             String accessibilityHint,
-            /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
+            @ActionType int actionType,
             String actionUri,
             int tabId,
             @ActionPresentationMode int presentationMode) {
-        if (actionType == SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE
-                && !sDialerAvailable) {
+        if (actionType == ActionType.CALL && !sDialerAvailable) {
             return null;
         }
 

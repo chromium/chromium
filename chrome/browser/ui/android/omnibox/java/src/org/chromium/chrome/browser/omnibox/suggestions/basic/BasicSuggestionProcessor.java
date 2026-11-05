@@ -26,11 +26,12 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.components.omnibox.DocumentType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxSuggestionKind;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.IconType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -81,64 +82,64 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @VisibleForTesting
     @DrawableRes
-    int getFallbackIconFromIconType(/* SuggestTemplateInfo.IconType */ int iconType) {
+    int getFallbackIconFromIconType(@IconType int iconType) {
         switch (iconType) {
-            case SuggestTemplateInfo.IconType.ICON_TYPE_UNSPECIFIED_VALUE:
+            case IconType.ICON_TYPE_UNSPECIFIED:
                 return 0;
 
-            case SuggestTemplateInfo.IconType.HISTORY_VALUE:
+            case IconType.HISTORY:
                 return R.drawable.ic_history_24dp;
 
-            case SuggestTemplateInfo.IconType.SEARCH_LOOP_VALUE:
+            case IconType.SEARCH_LOOP:
                 return R.drawable.ic_suggestion_magnifier;
 
-            case SuggestTemplateInfo.IconType.SEARCH_LOOP_WITH_SPARKLE_VALUE:
+            case IconType.SEARCH_LOOP_WITH_SPARKLE:
                 return R.drawable.search_spark_black_24dp;
 
-            case SuggestTemplateInfo.IconType.TRENDING_VALUE:
+            case IconType.TRENDING:
                 return R.drawable.trending_up_black_24dp;
 
-            case SuggestTemplateInfo.IconType.SUB_ARROW_RIGHT_VALUE:
+            case IconType.SUB_ARROW_RIGHT:
                 // TODO(crbug.com/437177158): Replace with the correct symbol when it's available.
                 return R.drawable.ic_suggestion_magnifier;
 
-            case SuggestTemplateInfo.IconType.GLOBE_WITH_SEARCH_LOOP_VALUE:
+            case IconType.GLOBE_WITH_SEARCH_LOOP:
                 return R.drawable.travel_explore_24dp;
 
-            case SuggestTemplateInfo.IconType.BANANA_VALUE:
+            case IconType.BANANA:
                 return R.drawable.create_image_24dp;
 
-            case SuggestTemplateInfo.IconType.FAVICON_VALUE:
+            case IconType.FAVICON:
                 return R.drawable.ic_globe_24dp;
 
-            case SuggestTemplateInfo.IconType.NOTES_SPARK_VALUE:
+            case IconType.NOTES_SPARK:
                 return R.drawable.notes_spark;
 
-            case SuggestTemplateInfo.IconType.DRAFT_SPARK_VALUE:
+            case IconType.DRAFT_SPARK:
                 return R.drawable.draft_spark_24dp;
 
-            case SuggestTemplateInfo.IconType.LIGHTBULB_VALUE:
+            case IconType.LIGHTBULB:
                 return R.drawable.ic_lightbulb_24dp;
 
-            case SuggestTemplateInfo.IconType.ATTACH_FILE_VALUE:
+            case IconType.ATTACH_FILE:
                 return R.drawable.ic_attach_file_24dp;
 
-            case SuggestTemplateInfo.IconType.SCHOOL_VALUE:
+            case IconType.SCHOOL:
                 return R.drawable.ic_school_24dp;
 
-            case SuggestTemplateInfo.IconType.INK_PEN_VALUE:
+            case IconType.INK_PEN:
                 return R.drawable.ic_ink_pen_24dp;
 
-            case SuggestTemplateInfo.IconType.TAB_VALUE:
+            case IconType.TAB:
                 return R.drawable.tab;
 
-            case SuggestTemplateInfo.IconType.PHOTO_SPARK_VALUE:
+            case IconType.PHOTO_SPARK:
                 return R.drawable.ic_photo_spark_24dp;
 
-            case SuggestTemplateInfo.IconType.BOLT_VALUE:
+            case IconType.BOLT:
                 return R.drawable.bolt_24dp;
 
-            case SuggestTemplateInfo.IconType.IMAGE_CREATE_VALUE:
+            case IconType.IMAGE_CREATE:
                 return R.drawable.image_create_24dp;
 
             default: // Icon type is specified, but not recognized
@@ -396,7 +397,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         String suggestedQuery = null;
-        List<AutocompleteMatch.MatchClassification> classifications;
+        List<MatchClassification> classifications;
         if (showDescriptionIfPresent
                 && !suggestion.getUrl().isEmpty()
                 && !TextUtils.isEmpty(suggestion.getDescription())) {
@@ -409,9 +410,8 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (suggestedQuery == null) {
             assert false : "Invalid suggestion sent with no displayable text";
             suggestedQuery = "";
-            classifications = new ArrayList<AutocompleteMatch.MatchClassification>();
-            classifications.add(
-                    new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
+            classifications = new ArrayList<MatchClassification>();
+            classifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
         }
 
         SuggestionSpannable str = new SuggestionSpannable(suggestedQuery);

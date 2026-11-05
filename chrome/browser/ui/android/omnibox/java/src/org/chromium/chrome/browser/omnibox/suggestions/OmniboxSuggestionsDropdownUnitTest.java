@@ -84,7 +84,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mContext = new ContextThemeWrapper(mActivity, R.style.Theme_BrowserUI_DayNight);
         mView = new View(mContext);
         mView.setFocusable(true);
-        mListener = spy(new OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener(mContext));
+        mListener = spy(new SuggestionLayoutScrollListener(mContext));
         lenient().doReturn(3).when(mListener).getItemCount();
         lenient().doReturn(mView).when(mListener).findViewByPosition(anyInt());
         mDropdown = new OmniboxSuggestionsDropdown(mContext, null, mListener);

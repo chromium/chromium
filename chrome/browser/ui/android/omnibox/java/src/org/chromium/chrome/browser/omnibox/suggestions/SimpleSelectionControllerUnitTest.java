@@ -20,6 +20,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
+import org.chromium.chrome.browser.omnibox.suggestions.SimpleSelectionController.OnSelectionChangedListener;
 
 /** Robolectric unit tests for {@link SimpleSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -29,7 +30,7 @@ public class SimpleSelectionControllerUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private SimpleSelectionController.OnSelectionChangedListener mListener;
+    @Mock private OnSelectionChangedListener mListener;
 
     private void verifyPositionSet(SelectionController c, int position) {
         verify(mListener).onSelectionChanged(position, /* isSelected= */ true);

@@ -8,9 +8,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
@@ -26,6 +28,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.ActivatableSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SimpleSelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.base.KeyNavigationUtil;
 
@@ -87,15 +90,12 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
         decorationIcon = new ImageView(getContext());
         decorationIcon.setOutlineProvider(decorationIconOutline);
         decorationIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        addView(
-                decorationIcon,
-                LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
+        addView(decorationIcon, LayoutParams.forViewType(SuggestionViewType.DECORATION));
 
         mActionButtons = new ArrayList<>();
 
         contentView = view;
-        contentView.setLayoutParams(
-                LayoutParams.forViewType(LayoutParams.SuggestionViewType.CONTENT));
+        contentView.setLayoutParams(LayoutParams.forViewType(SuggestionViewType.CONTENT));
         addView(contentView);
 
         mActionButtonsHighlighter =
@@ -131,9 +131,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
             actionChipsView.setVisibility(GONE);
             actionChipsView.setLeadInSpacing(mActionChipLeadInSpacing);
             actionChipsView.setHorizontalFadingEdgeEnabled(mActionChipsHorizontalFadingEdgeEnabled);
-            addView(
-                    actionChipsView,
-                    LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+            addView(actionChipsView, LayoutParams.forViewType(SuggestionViewType.FOOTER));
         }
         return actionChipsView;
     }
@@ -211,8 +209,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
                     });
             actionView.setOnTouchListener(mActionButtonTouchListener);
 
-            actionView.setLayoutParams(
-                    LayoutParams.forViewType(LayoutParams.SuggestionViewType.ACTION_BUTTON));
+            actionView.setLayoutParams(LayoutParams.forViewType(SuggestionViewType.ACTION_BUTTON));
             mActionButtons.add(actionView);
             addView(actionView);
         }
@@ -320,7 +317,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
         // We temporarily force the buttons to be VISIBLE so they can receive the click event.
         boolean isDown = event.getActionMasked() == MotionEvent.ACTION_DOWN;
         List<ActionButtonView> temporarilyVisibleButtons = new ArrayList<>();
-        if (isDown && event.getSource() == android.view.InputDevice.SOURCE_MOUSE) {
+        if (isDown && event.getSource() == InputDevice.SOURCE_MOUSE) {
             for (ActionButtonView button : mActionButtons) {
                 if (button.getVisibility() == View.INVISIBLE) {
                     temporarilyVisibleButtons.add(button);
@@ -381,7 +378,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
     public boolean activate(int modifiers) {
         if (mOnActivateListener != null) {
             mOnActivateListener.onResult(modifiers);
-            playSoundEffect(android.view.SoundEffectConstants.CLICK);
+            playSoundEffect(SoundEffectConstants.CLICK);
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
             return true;
         }
@@ -415,8 +412,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
         if (useLargeDecorationIcon) {
             decorationIcon.setLayoutParams(SuggestionLayout.LayoutParams.forLargeDecorationIcon());
         } else {
-            decorationIcon.setLayoutParams(
-                    LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
+            decorationIcon.setLayoutParams(LayoutParams.forViewType(SuggestionViewType.DECORATION));
         }
 
         decorationIcon.getLayoutParams().width = oldParams.width;

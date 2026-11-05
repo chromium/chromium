@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Build;
 import android.view.WindowManager;
 import android.window.InputTransferToken;
@@ -45,7 +46,7 @@ public class SuggestionsOmtInputAnchorUnitTest {
     public void setUp() {
         Context context = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(
-                new android.content.ContextWrapper(context) {
+                new ContextWrapper(context) {
                     @Override
                     public Object getSystemService(String name) {
                         if (Context.WINDOW_SERVICE.equals(name)) {
@@ -126,7 +127,7 @@ public class SuggestionsOmtInputAnchorUnitTest {
     public void transferTouch_nullWindowManagerOnBaklava() {
         Context context = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(
-                new android.content.ContextWrapper(context) {
+                new ContextWrapper(context) {
                     @Override
                     public Object getSystemService(String name) {
                         return null;

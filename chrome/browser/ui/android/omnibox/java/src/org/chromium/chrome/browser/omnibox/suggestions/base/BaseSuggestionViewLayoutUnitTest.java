@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Layout unit tests for {@link BaseSuggestionView}. */
@@ -456,7 +457,7 @@ public class BaseSuggestionViewLayoutUnitTest {
 
         var footer = new View(mActivity);
         footer.setMinimumHeight(footerHeightPx);
-        mView.addView(footer, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+        mView.addView(footer, LayoutParams.forViewType(SuggestionViewType.FOOTER));
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
         mView.setActionButtonsCount(1);
 
@@ -519,7 +520,7 @@ public class BaseSuggestionViewLayoutUnitTest {
 
         var footer = new View(mActivity);
         footer.setMinimumHeight(footerHeightPx);
-        mView.addView(footer, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+        mView.addView(footer, LayoutParams.forViewType(SuggestionViewType.FOOTER));
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
         mView.setActionButtonsCount(1);
@@ -559,7 +560,7 @@ public class BaseSuggestionViewLayoutUnitTest {
     @Test(expected = AssertionError.class)
     public void layout_multipleContentViews() {
         var content = new View(mActivity);
-        mView.addView(content, LayoutParams.forViewType(LayoutParams.SuggestionViewType.CONTENT));
+        mView.addView(content, LayoutParams.forViewType(SuggestionViewType.CONTENT));
         executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
     }
 
@@ -579,7 +580,7 @@ public class BaseSuggestionViewLayoutUnitTest {
     @Test
     public void layout_minimumHeightWithFooterIsCompact() {
         var content = new View(mActivity);
-        mView.addView(content, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+        mView.addView(content, LayoutParams.forViewType(SuggestionViewType.FOOTER));
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
         assertEquals(mCompactSuggestionViewHeight, mView.getMeasuredHeight());

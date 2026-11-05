@@ -385,7 +385,7 @@ class SuggestionLayout extends ViewGroup {
             if (view.getVisibility() == GONE) continue;
 
             var params = (LayoutParams) view.getLayoutParams();
-            if (params.getViewType() == LayoutParams.SuggestionViewType.ACTION_BUTTON) {
+            if (params.getViewType() == SuggestionViewType.ACTION_BUTTON) {
                 contentWidthPx -= mActionButtonWidthPx;
                 additionalPaddingEnd = 0;
             }
@@ -412,7 +412,7 @@ class SuggestionLayout extends ViewGroup {
             if (view.getVisibility() == GONE) continue;
 
             var params = (LayoutParams) view.getLayoutParams();
-            if (params.getViewType() == LayoutParams.SuggestionViewType.CONTENT) {
+            if (params.getViewType() == SuggestionViewType.CONTENT) {
                 assert contentHeightPx == 0 : "Content view already defined";
                 // Content views' width is constrained by how much space the decoration views
                 // allocate. These views may, as a result, wrap around to one or more extra lines of
@@ -422,7 +422,7 @@ class SuggestionLayout extends ViewGroup {
                         MeasureSpec.makeMeasureSpec(contentWidthPx, MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
                 contentHeightPx = view.getMeasuredHeight();
-            } else if (params.getViewType() == LayoutParams.SuggestionViewType.FOOTER) {
+            } else if (params.getViewType() == SuggestionViewType.FOOTER) {
                 hasFooter = true;
             }
         }
@@ -468,7 +468,7 @@ class SuggestionLayout extends ViewGroup {
             if (view.getVisibility() == GONE) continue;
 
             var params = (LayoutParams) view.getLayoutParams();
-            if (params.getViewType() == LayoutParams.SuggestionViewType.FOOTER) {
+            if (params.getViewType() == SuggestionViewType.FOOTER) {
                 // FOOTER views stretch from one end of the Suggestion view to the other.
                 // Unlike CONTENT views, FOOTERs are not surrounded by DECORATION or ACTION_BUTTON
                 // views.
@@ -502,14 +502,14 @@ class SuggestionLayout extends ViewGroup {
             // Note that at this stage everything else has already been measured.
             var viewWidthSpec = 0;
             var params = (LayoutParams) view.getLayoutParams();
-            if (params.getViewType() == LayoutParams.SuggestionViewType.DECORATION) {
+            if (params.getViewType() == SuggestionViewType.DECORATION) {
                 viewWidthSpec =
                         getChildMeasureSpec(
                                 MeasureSpec.makeMeasureSpec(
                                         getDecorationIconWidthPx(), MeasureSpec.AT_MOST),
                                 0,
                                 params.width);
-            } else if (params.getViewType() == LayoutParams.SuggestionViewType.ACTION_BUTTON) {
+            } else if (params.getViewType() == SuggestionViewType.ACTION_BUTTON) {
                 viewWidthSpec =
                         MeasureSpec.makeMeasureSpec(mActionButtonWidthPx, MeasureSpec.EXACTLY);
             } else {
@@ -548,7 +548,7 @@ class SuggestionLayout extends ViewGroup {
 
             var params = (LayoutParams) view.getLayoutParams();
             switch (params.getViewType()) {
-                case LayoutParams.SuggestionViewType.DECORATION:
+                case SuggestionViewType.DECORATION:
                     // DECORATION space is square, but the image inside does not have to be.
                     // Retrieve the information about target image height and center it with the
                     // CONTENT.
@@ -560,18 +560,18 @@ class SuggestionLayout extends ViewGroup {
                             decorationLeft, decorationTop, decorationWidth, decorationHeight);
                     break;
 
-                case LayoutParams.SuggestionViewType.CONTENT:
+                case SuggestionViewType.CONTENT:
                     params.setPlacement(contentStart, 0, contentViewsWidth, contentViewHeight);
                     break;
 
-                case LayoutParams.SuggestionViewType.ACTION_BUTTON:
+                case SuggestionViewType.ACTION_BUTTON:
                     params.setPlacement(
                             nextActionButtonStartPx, 0, mActionButtonWidthPx, contentViewHeight);
                     // Horizontally line up ACTION_BUTTONs.
                     nextActionButtonStartPx += mActionButtonWidthPx;
                     break;
 
-                case LayoutParams.SuggestionViewType.FOOTER:
+                case SuggestionViewType.FOOTER:
                     var footerViewHeight = view.getMeasuredHeight();
                     params.setPlacement(
                             0, nextFooterViewTopPx, suggestionWidthPx, footerViewHeight);

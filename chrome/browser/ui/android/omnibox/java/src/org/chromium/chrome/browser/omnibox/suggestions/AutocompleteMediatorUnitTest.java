@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics.PrefetchResult;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -80,6 +81,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.NavigationTarget;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
@@ -94,6 +96,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.TabLoadStatus;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUiBackend;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -130,6 +133,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -1634,7 +1638,7 @@ public class AutocompleteMediatorUnitTest {
                 .callback
                 .onLoadUrl(
                         null,
-                        new LoadUrlResult(Tab.TabLoadStatus.DEFAULT_PAGE_LOAD, mNavigationHandle));
+                        new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, mNavigationHandle));
         verify(mAutocompleteController)
                 .createNavigationObserver(mNavigationHandle, mSuggestionsList.get(0));
     }
@@ -1698,7 +1702,7 @@ public class AutocompleteMediatorUnitTest {
                 .callback
                 .onLoadUrl(
                         null,
-                        new LoadUrlResult(Tab.TabLoadStatus.DEFAULT_PAGE_LOAD, mNavigationHandle));
+                        new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, mNavigationHandle));
         verify(mAutocompleteController).createNavigationObserver(mNavigationHandle, match);
     }
 
@@ -2014,7 +2018,7 @@ public class AutocompleteMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 OmniboxMetrics.HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT,
-                                OmniboxMetrics.PrefetchResult.HIT)
+                                PrefetchResult.HIT)
                         .expectIntRecord(
                                 OmniboxMetrics
                                         .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
@@ -2052,7 +2056,7 @@ public class AutocompleteMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 OmniboxMetrics.HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT,
-                                OmniboxMetrics.PrefetchResult.MISS)
+                                PrefetchResult.MISS)
                         .expectIntRecord(
                                 OmniboxMetrics
                                         .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
@@ -2090,7 +2094,7 @@ public class AutocompleteMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 OmniboxMetrics.HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT,
-                                OmniboxMetrics.PrefetchResult.NO_PREFETCH)
+                                PrefetchResult.NO_PREFETCH)
                         .expectIntRecord(
                                 OmniboxMetrics
                                         .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
@@ -2519,7 +2523,7 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.add(0, defaultMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
-        mMediator.loadTypedOmniboxText(123L, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+        mMediator.loadTypedOmniboxText(123L, NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
@@ -2549,8 +2553,7 @@ public class AutocompleteMediatorUnitTest {
                 .getAimUrlFromInputState(any(), any());
 
         mMediator.beginInput(session);
-        mMediator.loadTypedOmniboxText(
-                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+        mMediator.loadTypedOmniboxText(TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, JUnitTestGURLs.BLUE_2.getSpec());
@@ -2591,8 +2594,7 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.add(0, defaultMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
-        mMediator.loadTypedOmniboxText(
-                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+        mMediator.loadTypedOmniboxText(TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url2.getSpec());
@@ -2608,8 +2610,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("query");
         mMediator.beginInput(session);
 
-        mMediator.loadTypedOmniboxText(
-                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+        mMediator.loadTypedOmniboxText(TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate, never()).loadUrl(any());
         verify(mAutocompleteDelegate, never()).clearOmniboxFocus();
@@ -2635,8 +2636,7 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.add(0, tabMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
-        mMediator.loadTypedOmniboxText(
-                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+        mMediator.loadTypedOmniboxText(TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(JUnitTestGURLs.URL_1.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
@@ -2922,8 +2922,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     public void testUnsyncedAnimation_doesNotShowKeyboardInStandbyNoFocus() {
         var session = createSession(AutocompleteRequestType.SEARCH);
-        session.getAutocompleteInput()
-                .setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS);
+        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
         mMediator.beginInput(session);
 
         clearInvocations(mAutocompleteDelegate);
@@ -2937,8 +2936,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     public void testUnsyncedAnimation_showsKeyboardInEnabledState() {
         var session = createSession(AutocompleteRequestType.SEARCH);
-        session.getAutocompleteInput()
-                .setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);
+        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
         mMediator.beginInput(session);
 
         clearInvocations(mAutocompleteDelegate);
@@ -2957,8 +2955,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
         assertTrue(mMediator.shouldAnimateFuseboxPopover());
 
-        session.getAutocompleteInput()
-                .setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY);
+        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY);
         assertFalse(mMediator.shouldAnimateFuseboxPopover());
 
         clearInvocations(mAutocompleteDelegate);
@@ -3047,7 +3044,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.showDeleteDialog(mAutocompleteMatch, "Title", () -> {});
 
         // Verify dialog is shown.
-        verify(mModalDialogManager).showDialog(any(), eq(ModalDialogManager.ModalDialogType.APP));
+        verify(mModalDialogManager).showDialog(any(), eq(ModalDialogType.APP));
 
         // Deactivate: should dismiss the dialog.
         mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ false);
@@ -3065,8 +3062,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.confirmDeleteMatch(mAutocompleteMatch, "Title");
 
-        verify(mModalDialogManager)
-                .showDialog(mDialogCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        verify(mModalDialogManager).showDialog(mDialogCaptor.capture(), eq(ModalDialogType.APP));
         var dialog = mDialogCaptor.getValue();
         dialog.get(ModalDialogProperties.CONTROLLER)
                 .onClick(dialog, ModalDialogProperties.ButtonType.POSITIVE);
@@ -3086,8 +3082,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.confirmDeleteMatch(mAutocompleteMatch, "Title");
 
-        verify(mModalDialogManager)
-                .showDialog(mDialogCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        verify(mModalDialogManager).showDialog(mDialogCaptor.capture(), eq(ModalDialogType.APP));
         var dialog = mDialogCaptor.getValue();
         dialog.get(ModalDialogProperties.CONTROLLER)
                 .onClick(dialog, ModalDialogProperties.ButtonType.NEGATIVE);
@@ -3369,8 +3364,7 @@ public class AutocompleteMediatorUnitTest {
                 .getAimUrlFromInputState(any(), any());
         mMediator.beginInput(session);
 
-        mMediator.loadTypedOmniboxText(
-                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+        mMediator.loadTypedOmniboxText(TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
@@ -3412,10 +3406,7 @@ public class AutocompleteMediatorUnitTest {
                 .when(mComposeboxQueryControllerBridge)
                 .getAimUrlFromInputState(any(), any());
 
-        mMediator.loadPastedText(
-                "pasted query",
-                TEST_EVENT_TIME,
-                AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+        mMediator.loadPastedText("pasted query", TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);

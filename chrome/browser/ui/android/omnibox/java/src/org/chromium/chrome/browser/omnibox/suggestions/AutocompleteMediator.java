@@ -24,7 +24,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.TimeUtils;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -104,6 +104,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -862,7 +863,7 @@ class AutocompleteMediator
         mNumTouchDownEventForwardedInOmniboxSession++;
 
         OmniboxMetrics.recordSuggestionTouchDownDelay(
-                new TimeUtils.UptimeMillisTimer(eventTime).getElapsedMillis());
+                new UptimeMillisTimer(eventTime).getElapsedMillis());
 
         boolean wasPrefetchStarted =
                 mAutocomplete.onSuggestionTouchDown(
@@ -1067,7 +1068,7 @@ class AutocompleteMediator
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
 
-        manager.showDialog(mDeleteDialogModel, ModalDialogManager.ModalDialogType.APP);
+        manager.showDialog(mDeleteDialogModel, ModalDialogType.APP);
     }
 
     /**
@@ -1559,8 +1560,7 @@ class AutocompleteMediator
      * @param eventTime The timestamp when the navigation was triggered (e.g., uptimeMillis).
      * @param target The target destination for the navigation (current tab, new tab, new window).
      */
-    void loadTypedOmniboxText(
-            long eventTime, @AutocompleteCoordinator.NavigationTarget int target) {
+    void loadTypedOmniboxText(long eventTime, @NavigationTarget int target) {
         // TODO(crbug.com/478783240): investigate what flows lead to <enter> key triggering
         // navigation while the Omnibox input session is not active.
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadTypedOmniboxText")) {
@@ -1600,17 +1600,16 @@ class AutocompleteMediator
      * @param eventTime The timestamp when the navigation was triggered (e.g., uptimeMillis).
      * @param target The target destination for the navigation (current tab, new tab, new window).
      */
-    void loadPastedText(
-            String text, long eventTime, @AutocompleteCoordinator.NavigationTarget int target) {
+    void loadPastedText(String text, long eventTime, @NavigationTarget int target) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadPastedText")) {
             if (!isInInputSession() || TextUtils.isEmpty(text)) return;
             boolean openInBackground = target == NavigationTarget.NEW_BACKGROUND_TAB;
             boolean openInNewTab =
-                    target == AutocompleteCoordinator.NavigationTarget.NEW_TAB
+                    target == NavigationTarget.NEW_TAB
                             || target == NavigationTarget.NEW_BACKGROUND_TAB
                             || (target == NavigationTarget.CURRENT_TAB
                                     && shouldOpenAimRequestInNewTab());
-            boolean openInNewWindow = target == AutocompleteCoordinator.NavigationTarget.NEW_WINDOW;
+            boolean openInNewWindow = target == NavigationTarget.NEW_WINDOW;
 
             cancelAutocompleteRequests();
 

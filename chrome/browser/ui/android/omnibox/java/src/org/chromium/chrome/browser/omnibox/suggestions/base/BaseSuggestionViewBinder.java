@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
@@ -94,8 +95,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
             bindContent(model, view.contentView, propertyKey);
         } else if (SuggestionCommonProperties.DEVICE_FORM_FACTOR == propertyKey) {
             view.setActionChipsHorizontalFadingEdgeEnabled(
-                    model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR)
-                            == SuggestionCommonProperties.FormFactor.TABLET);
+                    model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR) == FormFactor.TABLET);
         } else if (SuggestionCommonProperties.FUSEBOX_LAYOUT_MODE == propertyKey
                 || SuggestionCommonProperties.GROUP_SEPARATOR_TYPE == propertyKey
                 || SuggestionCommonProperties.HEADER_TITLE == propertyKey

@@ -31,10 +31,10 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics.ActionInSuggestIntentResult;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo.TemplateAction.ActionType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -48,11 +48,11 @@ import java.util.List;
 public class OmniboxActionInSuggestUnitTest {
     private static final List<Integer> sKnownActionTypes =
             List.of(
-                    ActionType.CALL_VALUE,
-                    ActionType.DIRECTIONS_VALUE,
-                    ActionType.REVIEWS_VALUE,
-                    ActionType.CHROME_AIM_VALUE,
-                    ActionType.CHROME_TAB_SWITCH_VALUE);
+                    ActionType.CALL,
+                    ActionType.DIRECTIONS,
+                    ActionType.REVIEWS,
+                    ActionType.CHROME_AIM,
+                    ActionType.CHROME_TAB_SWITCH);
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -79,14 +79,14 @@ public class OmniboxActionInSuggestUnitTest {
 
     @Test
     public void creation_usesFallbackIconForUnknownActionTypes() {
-        for (var entitySuggestionActionType : ActionType.values()) {
-            if (sKnownActionTypes.contains(entitySuggestionActionType.getNumber())) continue;
+        for (@ActionType int entitySuggestionActionType : ActionType.ALL_VALUES) {
+            if (sKnownActionTypes.contains(entitySuggestionActionType)) continue;
             var action =
                     new OmniboxActionInSuggest(
                             0,
                             "hint",
                             "accessibility",
-                            entitySuggestionActionType.getNumber(),
+                            entitySuggestionActionType,
                             "",
                             /* tabId= */ 0,
                             ActionPresentationMode.CHIP);
@@ -103,7 +103,7 @@ public class OmniboxActionInSuggestUnitTest {
                                 0,
                                 null,
                                 "",
-                                ActionType.CALL_VALUE,
+                                ActionType.CALL,
                                 "",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP));
@@ -118,7 +118,7 @@ public class OmniboxActionInSuggestUnitTest {
                                 0,
                                 "",
                                 "",
-                                ActionType.CALL_VALUE,
+                                ActionType.CALL,
                                 "",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP));
@@ -156,23 +156,17 @@ public class OmniboxActionInSuggestUnitTest {
                         0,
                         "hint",
                         "accessibility",
-                        ActionType.REVIEWS_VALUE,
+                        ActionType.REVIEWS,
                         "",
                         /* tabId= */ 0,
                         ActionPresentationMode.CHIP));
     }
 
     /** Create Action in Suggest with a supplied definition. */
-    private OmniboxAction buildActionInSuggest(ActionType type, Intent intent) {
+    private OmniboxAction buildActionInSuggest(@ActionType int type, Intent intent) {
         var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
         return new OmniboxActionInSuggest(
-                0,
-                "wink",
-                "accessibility",
-                type.getNumber(),
-                uri,
-                /* tabId= */ 0,
-                ActionPresentationMode.CHIP);
+                0, "wink", "accessibility", type, uri, /* tabId= */ 0, ActionPresentationMode.CHIP);
     }
 
     @Test
@@ -193,7 +187,7 @@ public class OmniboxActionInSuggestUnitTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
+                        ActionInSuggestIntentResult.SUCCESS));
         verifyNoMoreInteractions(mDelegate);
     }
 
@@ -238,7 +232,7 @@ public class OmniboxActionInSuggestUnitTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+                        ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
 
         verify(mDelegate).loadPageInCurrentTab(mUrlCaptor.capture());
         verify(mDelegate).startActivity(any());
@@ -268,7 +262,7 @@ public class OmniboxActionInSuggestUnitTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
+                        ActionInSuggestIntentResult.SUCCESS));
         verifyNoMoreInteractions(mDelegate);
     }
 
@@ -289,7 +283,7 @@ public class OmniboxActionInSuggestUnitTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+                        ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
         verifyNoMoreInteractions(mDelegate);
     }
 
@@ -310,7 +304,7 @@ public class OmniboxActionInSuggestUnitTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
+                        ActionInSuggestIntentResult.SUCCESS));
 
         verify(mDelegate).loadPageInCurrentTab(mUrlCaptor.capture());
 
@@ -328,7 +322,7 @@ public class OmniboxActionInSuggestUnitTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
-                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS);
+                        ActionInSuggestIntentResult.SUCCESS);
 
         buildActionInSuggest(ActionType.CHROME_AIM, intent).execute(mDelegate);
 
@@ -387,7 +381,7 @@ public class OmniboxActionInSuggestUnitTest {
                             /* tabId= */ 0,
                             ActionPresentationMode.CHIP);
             assertEquals(
-                    actionType == ActionType.CHROME_TAB_SWITCH_VALUE
+                    actionType == ActionType.CHROME_TAB_SWITCH
                             ? WindowOpenDisposition.SWITCH_TO_TAB
                             : WindowOpenDisposition.CURRENT_TAB,
                     action.disposition);

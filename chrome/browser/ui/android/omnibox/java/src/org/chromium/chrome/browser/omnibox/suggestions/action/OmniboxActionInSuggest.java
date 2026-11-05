@@ -10,9 +10,10 @@ import android.util.SparseArray;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics.ActionInSuggestIntentResult;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -25,11 +26,11 @@ import java.net.URISyntaxException;
 /** Omnibox action for showing the Action in Suggest UI. */
 @NullMarked
 public class OmniboxActionInSuggest extends OmniboxAction {
-    /** Map of {@link SuggestTemplateInfo.TemplateAction.ActionType} to {@link ActionIcon}. */
+    /** Map of {@link ActionType} to {@link ActionIcon}. */
     private static final SparseArray<ActionIcon> ICON_MAP = createIconMap();
 
     /** The details about the underlying action. */
-    public final /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType;
+    public final @ActionType int actionType;
 
     public final int tabId;
 
@@ -39,7 +40,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
             long nativeInstance,
             String hint,
             String accessibilityHint,
-            /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
+            @ActionType int actionType,
             String actionUri,
             int tabId,
             @ActionPresentationMode int presentationMode) {
@@ -51,7 +52,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 ICON_MAP.get(actionType, DEFAULT_ICON),
                 R.style.TextAppearance_ChipText,
                 presentationMode,
-                actionType == SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE
+                actionType == ActionType.CHROME_TAB_SWITCH
                         ? WindowOpenDisposition.SWITCH_TO_TAB
                         : WindowOpenDisposition.CURRENT_TAB);
         this.actionType = actionType;
@@ -73,24 +74,18 @@ public class OmniboxActionInSuggest extends OmniboxAction {
     /** Returns a map of ActionType to ActionIcon. */
     private static SparseArray<ActionIcon> createIconMap() {
         var map = new SparseArray<ActionIcon>();
+        map.put(ActionType.CALL, new ActionIcon(R.drawable.action_call, true));
+        map.put(ActionType.DIRECTIONS, new ActionIcon(R.drawable.action_directions, true));
+        map.put(ActionType.REVIEWS, new ActionIcon(R.drawable.action_reviews, true));
         map.put(
-                SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
-                new ActionIcon(R.drawable.action_call, true));
-        map.put(
-                SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE,
-                new ActionIcon(R.drawable.action_directions, true));
-        map.put(
-                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
-                new ActionIcon(R.drawable.action_reviews, true));
-        map.put(
-                SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                ActionType.CHROME_AIM,
                 new ActionIcon(
                         R.drawable.search_spark_rainbow,
                         R.drawable.search_spark_rainbow,
                         R.drawable.search_spark_rainbow_incognito,
                         false));
         map.put(
-                SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE,
+                ActionType.CHROME_TAB_SWITCH,
                 new ActionIcon(
                         R.drawable.tab, R.drawable.switch_to_tab, R.drawable.switch_to_tab, true));
         return map;
@@ -111,13 +106,13 @@ public class OmniboxActionInSuggest extends OmniboxAction {
         }
 
         switch (actionType) {
-            case SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE:
-            case SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE:
+            case ActionType.REVIEWS:
+            case ActionType.CHROME_AIM:
                 loadPageInCurrentTab(delegate, intent.getDataString());
                 actionStarted = true;
                 break;
 
-            case SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE:
+            case ActionType.CALL:
                 // Don't call directly. Use `DIAL` instead to let the user decide.
                 // Note also that ACTION_CALL requires a dedicated permission.
                 intent.setAction(Intent.ACTION_DIAL);
@@ -127,7 +122,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 actionStarted = delegate.startActivity(intent);
                 break;
 
-            case SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE:
+            case ActionType.DIRECTIONS:
                 // Open directions in maps only if maps are installed and the incognito mode is
                 // not engaged. In all other cases, redirect the action to Browser.
                 if (!isIncognito) {
@@ -135,7 +130,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 }
                 break;
 
-            case SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE:
+            case ActionType.CHROME_TAB_SWITCH:
                 if (!delegate.switchToTab(tabId, new GURL(mActionUri))) {
                     loadPageInCurrentTab(delegate, intent.getDataString());
                 }
@@ -147,18 +142,17 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
         // Record intent started only if it was sent.
         if (actionStarted) {
-            OmniboxMetrics.recordActionInSuggestIntentResult(
-                    OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS);
+            OmniboxMetrics.recordActionInSuggestIntentResult(ActionInSuggestIntentResult.SUCCESS);
         } else {
             // At this point we know that we were either unable to launch the target activity
             // or the user is browsing incognito, where we suppress some actions.
             // We may still be able to handle the corresponding action inside the browser.
             if (!isIncognito) {
                 OmniboxMetrics.recordActionInSuggestIntentResult(
-                        OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
+                        ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
             }
 
-            if (actionType == SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE) {
+            if (actionType == ActionType.DIRECTIONS) {
                 loadPageInCurrentTab(delegate, intent.getDataString());
             }
         }

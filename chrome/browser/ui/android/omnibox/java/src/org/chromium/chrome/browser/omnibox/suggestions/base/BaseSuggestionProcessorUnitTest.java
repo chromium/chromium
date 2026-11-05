@@ -62,7 +62,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -497,7 +497,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     0,
                                     "hint",
                                     "accessibility",
-                                    SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                    ActionType.REVIEWS,
                                     "https://google.com",
                                     /* tabId= */ 0,
                                     ActionPresentationMode.CHIP)));
@@ -517,7 +517,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     0,
                                     "hint",
                                     "accessibility",
-                                    SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                    ActionType.REVIEWS,
                                     "https://google.com",
                                     /* tabId= */ 0,
                                     ActionPresentationMode.CHIP),
@@ -525,7 +525,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     0,
                                     "hint2",
                                     "accessibility2",
-                                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                                    ActionType.CHROME_AIM,
                                     "https://google.com",
                                     /* tabId= */ 0,
                                     ActionPresentationMode.BUTTON),
@@ -533,7 +533,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     0,
                                     "hint3",
                                     "accessibility3",
-                                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                                    ActionType.CHROME_AIM,
                                     "https://google.com",
                                     /* tabId= */ 0,
                                     ActionPresentationMode.BUTTON)));
@@ -565,7 +565,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                ActionType.REVIEWS,
                                 "https://google.com",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.BUTTON)));
@@ -589,7 +589,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                ActionType.REVIEWS,
                                 "https://google.com",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.BUTTON)));
@@ -612,7 +612,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                ActionType.REVIEWS,
                                 "https://google.com",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP)));
@@ -635,7 +635,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                ActionType.REVIEWS,
                                 "https://google.com",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP)));
@@ -655,8 +655,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                SuggestTemplateInfo.TemplateAction.ActionType
-                                        .CHROME_TAB_SWITCH_VALUE,
+                                ActionType.CHROME_TAB_SWITCH,
                                 "https://google.com",
                                 /* tabId= */ 0,
                                 ActionPresentationMode.BUTTON)));

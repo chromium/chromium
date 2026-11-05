@@ -35,6 +35,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupConfig.RenderType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeUtils;
@@ -237,7 +238,7 @@ class DropdownItemViewInfoListBuilder {
         if (!TextUtils.isEmpty(groupDetails.getHeaderText())) {
             headerText = groupDetails.getHeaderText();
         } else if (previousDetails != null
-                && previousDetails.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
+                && previousDetails.getRenderType() == RenderType.DEFAULT_VERTICAL) {
             groupSeparatorType = GroupSeparatorType.GAP;
         }
 
@@ -381,7 +382,7 @@ class DropdownItemViewInfoListBuilder {
             // Append this suggestions group/section to resulting model, following the render type
             // dictated by GroupConfig.
             // The default instance holds safe values, applicable to non-Google DSE.
-            if (currentGroupConfig.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
+            if (currentGroupConfig.getRenderType() == RenderType.DEFAULT_VERTICAL) {
                 viewInfoList.addAll(
                         buildVerticalSuggestionsGroup(
                                 input,
@@ -390,7 +391,7 @@ class DropdownItemViewInfoListBuilder {
                                 currentGroupMatches,
                                 nextSuggestionLogicalIndex));
                 nextSuggestionLogicalIndex += currentGroupMatches.size();
-            } else if (currentGroupConfig.getRenderType() == GroupConfig.RenderType.HORIZONTAL) {
+            } else if (currentGroupConfig.getRenderType() == RenderType.HORIZONTAL) {
                 viewInfoList.addAll(
                         buildHorizontalSuggestionsGroup(
                                 input,

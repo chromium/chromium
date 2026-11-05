@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
@@ -60,6 +61,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -563,7 +565,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void bindContent_onlyCalledForContentAndColorSchemeKeys() {
-        List<PropertyKey> boundContentKeys = new java.util.ArrayList<>();
+        List<PropertyKey> boundContentKeys = new ArrayList<>();
         BaseSuggestionViewBinder<View> binder =
                 new TestBaseSuggestionViewBinder<>(
                         (m, v, p) -> {
@@ -631,9 +633,7 @@ public class BaseSuggestionViewBinderUnitTest {
         assertNull(mBaseView.actionChipsView);
 
         mModel.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, 24);
-        mModel.set(
-                SuggestionCommonProperties.DEVICE_FORM_FACTOR,
-                SuggestionCommonProperties.FormFactor.TABLET);
+        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
         mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, null);
         assertNull(mBaseView.actionChipsView);
 
@@ -667,14 +667,10 @@ public class BaseSuggestionViewBinderUnitTest {
         assertNotNull(chipsView);
         assertFalse(chipsView.isHorizontalFadingEdgeEnabled());
 
-        mModel.set(
-                SuggestionCommonProperties.DEVICE_FORM_FACTOR,
-                SuggestionCommonProperties.FormFactor.TABLET);
+        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
         assertTrue(chipsView.isHorizontalFadingEdgeEnabled());
 
-        mModel.set(
-                SuggestionCommonProperties.DEVICE_FORM_FACTOR,
-                SuggestionCommonProperties.FormFactor.PHONE);
+        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.PHONE);
         assertFalse(chipsView.isHorizontalFadingEdgeEnabled());
     }
 
