@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
@@ -185,6 +186,17 @@ ContextualTasksEphemeralButtonController::
                 .SetVisible(false)
                 .SetEnabled(false)
                 .Build());
+      }
+      if (contextual_tasks::
+              IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
+        // Under the refactor, the unpinned button is a popped-out pinned
+        // toolbar button. Use a Contextual Tasks subclass so that its context
+        // menu records the ephemeral button metrics.
+        action_item->SetProperty(
+            kCustomPinnedActionToolbarButtonFactoryKey,
+            std::make_unique<CreateCustomPinnedActionToolbarButtonCallback>(
+                base::BindRepeating(
+                    &ContextualTasksPinnedActionToolbarButton::Create)));
       }
     }
   }

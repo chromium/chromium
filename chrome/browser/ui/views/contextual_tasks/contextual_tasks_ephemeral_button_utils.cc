@@ -102,6 +102,41 @@ void RecordEphemeralButtonShown(bool is_panel_open) {
   }
 }
 
+void RecordEphemeralButtonContextMenuShown(
+    bool close_side_panel_option_visible) {
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu"));
+  base::UmaHistogramBoolean(
+      "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu",
+      true);
+
+  if (close_side_panel_option_visible) {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionVisible"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionVisible",
+        true);
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionHidden"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionHidden",
+        true);
+  }
+}
+
+void RecordEphemeralButtonPinByContextMenu() {
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.EphemeralToolbarButton.UserAction.PinByContextMenu"));
+  base::UmaHistogramBoolean(
+      "ContextualTasks.EphemeralToolbarButton.UserAction.PinByContextMenu",
+      true);
+}
+
 void HandleEphemeralButtonPressed(BrowserWindowInterface* browser,
                                   base::OnceClosure on_ephemeral_open) {
   if (auto* const user_ed = BrowserUserEducationInterface::From(browser);

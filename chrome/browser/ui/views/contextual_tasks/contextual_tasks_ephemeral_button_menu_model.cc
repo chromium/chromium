@@ -7,9 +7,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
@@ -165,13 +162,7 @@ void ContextualTasksEphemeralButtonMenuModel::ExecuteCommand(int command_id,
           pinned_action_menu_model_.get(), command_id);
       index.has_value() && IsPinningEligible() && pinned_action_menu_model_) {
     if (command_id == kCommandPinToToolbar) {
-      base::RecordAction(base::UserMetricsAction(
-          "ContextualTasks.EphemeralToolbarButton.UserAction."
-          "PinByContextMenu"));
-      base::UmaHistogramBoolean(
-          "ContextualTasks.EphemeralToolbarButton.UserAction."
-          "PinByContextMenu",
-          true);
+      contextual_tasks::RecordEphemeralButtonPinByContextMenu();
     }
     pinned_action_menu_model_->ActivatedAt(*index, event_flags);
   }
@@ -179,29 +170,8 @@ void ContextualTasksEphemeralButtonMenuModel::ExecuteCommand(int command_id,
 
 void ContextualTasksEphemeralButtonMenuModel::OnMenuWillShow(
     ui::SimpleMenuModel* source) {
-  base::RecordAction(base::UserMetricsAction(
-      "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu"));
-  base::UmaHistogramBoolean(
-      "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu",
-      true);
-
-  if (ShouldShowCloseSidePanel()) {
-    base::RecordAction(base::UserMetricsAction(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "OpenContextMenu.CloseSidePanelOptionVisible"));
-    base::UmaHistogramBoolean(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "OpenContextMenu.CloseSidePanelOptionVisible",
-        true);
-  } else {
-    base::RecordAction(base::UserMetricsAction(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "OpenContextMenu.CloseSidePanelOptionHidden"));
-    base::UmaHistogramBoolean(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "OpenContextMenu.CloseSidePanelOptionHidden",
-        true);
-  }
+  contextual_tasks::RecordEphemeralButtonContextMenuShown(
+      ShouldShowCloseSidePanel());
 }
 
 bool ContextualTasksEphemeralButtonMenuModel::ShouldShowCloseSidePanel() const {

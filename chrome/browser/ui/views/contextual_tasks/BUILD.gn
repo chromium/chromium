@@ -38,6 +38,7 @@ source_set("contextual_tasks") {
     "contextual_tasks_ephemeral_button_controller.h",
     "contextual_tasks_ephemeral_button_menu_model.h",
     "contextual_tasks_ephemeral_button_utils.h",
+    "contextual_tasks_pinned_action_toolbar_button.h",
   ]
 
   public_deps = [
@@ -61,6 +62,7 @@ source_set("impl") {
     "contextual_tasks_ephemeral_button_controller.cc",
     "contextual_tasks_ephemeral_button_menu_model.cc",
     "contextual_tasks_ephemeral_button_utils.cc",
+    "contextual_tasks_pinned_action_toolbar_button.cc",
   ]
 
   deps = [

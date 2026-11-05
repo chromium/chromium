@@ -43,6 +43,15 @@ EphemeralButtonShape GetEphemeralButtonShape(BrowserWindowInterface* browser);
 // (`is_panel_open` = false).
 void RecordEphemeralButtonShown(bool is_panel_open = false);
 
+// Records metrics for the ephemeral button's context menu being opened.
+// `close_side_panel_option_visible` is whether the menu includes the
+// "Close/Remove" item for the current task.
+void RecordEphemeralButtonContextMenuShown(
+    bool close_side_panel_option_visible);
+
+// Records metrics for the ephemeral button being pinned from its context menu.
+void RecordEphemeralButtonPinByContextMenu();
+
 // Handles a press of the ephemeral button: toggles the contextual tasks side
 // panel and records the corresponding metrics. `browser` must be non-null and
 // have a `ContextualTasksPanelController`. `on_ephemeral_open`, if not null, is
