@@ -35,6 +35,9 @@ class ScopedPageFocusOverride : public DevToolsAgentHostClient {
   void SetFocusEmulationEnabled(bool enabled);
 
   int last_sent_id_ = 0;
+  // Whether the agent host closed the session, e.g. because
+  // DevToolsAgentHost::DetachAllClients() was called.
+  bool agent_host_closed_ = false;
   base::OnceClosure run_loop_quit_closure_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
 };
