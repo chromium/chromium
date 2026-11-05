@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
@@ -26,6 +27,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -503,6 +505,16 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
   WaitForTestExtensionLoaded();
   EXPECT_EQ(GetTestExtensionVersion(),
             base::Version(kNoImmediateUpdateExtensionOlderVersion));
+
+  // Wait until the running extension's background page has registered its
+  // `runtime.onUpdateAvailable` listener in the browser process; otherwise
+  // `UpdateInstallGate` may see no listener and install the update immediately
+  // without dispatching `onUpdateAvailable`.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return extensions::EventRouter::Get(GetInitialProfile())
+        ->ExtensionHasEventListener(kNoImmediateUpdateExtensionId,
+                                    "runtime.onUpdateAvailable");
+  }));
 
   // Start serving the newer version. The extensions system should eventually
   // fetch this version due to the retry mechanism when the fetch request to the
