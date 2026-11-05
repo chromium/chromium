@@ -16,6 +16,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ActionInvocationSource,
                              kActionInvocationSourceKey,
                              ActionInvocationSource::kUnknown)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kActionItemIconSizeDeltaKey, 0)
+
 }  // namespace chrome
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::mojom::WindowOpenDisposition)

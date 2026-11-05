@@ -15,7 +15,6 @@ source_set("customize_toolbar") {
     "//mojo/public/cpp/bindings",
   ]
   deps = [
-    "//build:branding_buildflags",
     "//chrome/app/vector_icons",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_actions",
@@ -75,8 +74,12 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
     "//content/test:test_support",
+    "//net",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/actions",
+    "//ui/display",
+    "//ui/gfx/codec",
   ]
 }

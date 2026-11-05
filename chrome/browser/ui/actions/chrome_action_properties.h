@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_PROPERTIES_H_
 #define CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_PROPERTIES_H_
 
+#include "ui/base/class_properties.h"
 #include "ui/base/class_property.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
@@ -26,6 +27,13 @@ extern const ui::ClassProperty<ui::mojom::WindowOpenDisposition>* const
 // The invocation source (e.g., keyboard shortcut, view button).
 extern const ui::ClassProperty<ActionInvocationSource>* const
     kActionInvocationSourceKey;
+
+// Delta (in dp) applied to the default icon size when rendering an ActionItem's
+// icon in pinned toolbar buttons and the Customize Chrome toolbar list. Must be
+// non-positive: the Customize Chrome toolbar list scales every icon to fit the
+// same box, so an icon can only be rendered smaller than its siblings, never
+// larger.
+extern const ui::ClassProperty<int>* const kActionItemIconSizeDeltaKey;
 
 }  // namespace chrome
 

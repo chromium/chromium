@@ -757,6 +757,7 @@ void BrowserActions::InitializeSidePanelActions() {
         features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                           : omnibox::kSearchSparkOldIcon,
         ui::kColorIcon);
+    int contextual_tasks_icon_size_delta = 0;
     if (contextual_tasks::ShouldUseSuperGIconForPinButtons()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       contextual_tasks_image = ui::ImageModel::FromImageSkia(
@@ -768,6 +769,7 @@ void BrowserActions::InitializeSidePanelActions() {
       contextual_tasks_image = ui::ImageModel::FromVectorIcon(
           vector_icons::kGoogleColorIcon, ui::kColorIcon);
 #endif
+      contextual_tasks_icon_size_delta = -2;
     } else if (contextual_tasks::ShouldUseGraySuperGIconForPinButtons()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       contextual_tasks_image = ui::ImageModel::FromVectorIcon(
@@ -776,6 +778,7 @@ void BrowserActions::InitializeSidePanelActions() {
       contextual_tasks_image = ui::ImageModel::FromVectorIcon(
           vector_icons::kGoogleColorIcon, ui::kColorIcon);
 #endif
+      contextual_tasks_icon_size_delta = -2;
     }
     const std::u16string contextual_tasks_label = l10n_util::GetStringUTF16(
         contextual_tasks::GetContextualTasksPinningStringId(
@@ -891,6 +894,8 @@ void BrowserActions::InitializeSidePanelActions() {
             .SetText(contextual_tasks_label)
             .SetTooltipText(contextual_tasks_label)
             .SetImage(contextual_tasks_image)
+            .SetProperty(chrome::kActionItemIconSizeDeltaKey,
+                         contextual_tasks_icon_size_delta)
             .SetProperty(
                 actions::kActionItemPinnableKey,
                 static_cast<

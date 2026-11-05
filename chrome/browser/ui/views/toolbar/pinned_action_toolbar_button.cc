@@ -8,13 +8,14 @@
 #include <type_traits>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -35,8 +36,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/contextual_tasks/public/features.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -247,25 +246,20 @@ void PinnedActionToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 int PinnedActionToolbarButton::GetIconSize() const {
-  const std::optional<VectorIcons>& icons = GetVectorIcons();
-  if (icons.has_value()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (&icons->icon == &vector_icons::kGoogleGLogoIcon ||
-        &icons->icon == &vector_icons::kGoogleGLogoMonochromeIcon) {
-      return ToolbarButton::GetIconSize() - 2;
+  // The icon size delta is read from the action item so that it always
+  // reflects the latest value of `chrome::kActionItemIconSizeDeltaKey`.
+  int icon_size_delta = 0;
+  if (const BrowserActions* const browser_actions =
+          BrowserActions::From(browser_.get())) {
+    if (const actions::ActionItem* const action_item =
+            actions::ActionManager::Get().FindAction(
+                action_id_, browser_actions->root_action_item())) {
+      icon_size_delta =
+          action_item->GetProperty(chrome::kActionItemIconSizeDeltaKey);
+      CHECK_LE(icon_size_delta, 0);
     }
-#else
-    if (&icons->icon == &vector_icons::kGoogleColorIcon) {
-      return ToolbarButton::GetIconSize() - 2;
-    }
-#endif
   }
-  if (action_id_ == kActionSidePanelShowContextualTasks &&
-      (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
-       contextual_tasks::ShouldUseGraySuperGIconForPinButtons())) {
-    return ToolbarButton::GetIconSize() - 2;
-  }
-  return ToolbarButton::GetIconSize();
+  return ToolbarButton::GetIconSize() + icon_size_delta;
 }
 
 void PinnedActionToolbarButton::UpdateIcon() {
@@ -281,8 +275,7 @@ void PinnedActionToolbarButton::UpdateIcon() {
                                     : icons->icon;
 
   if (is_icon_visible_ && action_engaged_ &&
-      engaged_indicator_style_ ==
-          ActionItemEngagedIndicatorStyle::kUnderline) {
+      engaged_indicator_style_ == ActionItemEngagedIndicatorStyle::kUnderline) {
     UpdateIconsWithColors(
         icon, GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
         GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +17,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -25,9 +29,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/base/data_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace {
 
@@ -189,4 +198,78 @@ IN_PROC_BROWSER_TEST_F(CustomizeToolbarHandlerBrowserTest,
   handler().ListActions(callback.Get());
   EXPECT_FALSE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kDevTools));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeToolbarHandlerBrowserTest,
+                       IconSizeDeltaPadsListedIcon) {
+  constexpr auto kMojoActionId =
+      side_panel::customize_chrome::mojom::ActionId::kPrint;
+  constexpr int kToolbarIconSize = 20;
+  constexpr int kIconSizeDelta = -4;
+
+  const auto list_icon_bitmap = [this, kMojoActionId]() -> SkBitmap {
+    std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
+    base::MockCallback<CustomizeToolbarHandler::ListActionsCallback> callback;
+    EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&actions));
+    handler().ListActions(callback.Get());
+    const auto it =
+        std::ranges::find(actions, kMojoActionId,
+                          &side_panel::customize_chrome::mojom::Action::id);
+    if (it == actions.end()) {
+      ADD_FAILURE() << "Action not listed";
+      return SkBitmap();
+    }
+    std::string mime_type;
+    std::string charset;
+    std::string data;
+    if (!net::DataURL::Parse((*it)->icon_url, &mime_type, &charset, &data)) {
+      ADD_FAILURE() << "Invalid icon data URL";
+      return SkBitmap();
+    }
+    return gfx::PNGCodec::Decode(base::as_byte_span(data));
+  };
+
+  // Returns true if every pixel in the outer `border` ring of `bitmap` is fully
+  // transparent.
+  const auto has_transparent_border = [](const SkBitmap& bitmap, int border) {
+    for (int y = 0; y < bitmap.height(); ++y) {
+      for (int x = 0; x < bitmap.width(); ++x) {
+        const bool in_border = x < border || y < border ||
+                               x >= bitmap.width() - border ||
+                               y >= bitmap.height() - border;
+        if (in_border && SkColorGetA(bitmap.getColor(x, y)) != 0) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  // The test runs at a 1x scale factor, so bitmap dimensions are in dp.
+  ASSERT_EQ(display::Screen::Get()->GetPrimaryDisplay().device_scale_factor(),
+            1.0f);
+
+  // Without a delta, the icon is rasterized at its intrinsic vector icon size
+  // rather than padded out to the toolbar icon size.
+  const SkBitmap default_bitmap = list_icon_bitmap();
+  ASSERT_FALSE(default_bitmap.isNull());
+  EXPECT_LT(default_bitmap.width(), kToolbarIconSize);
+  EXPECT_LT(default_bitmap.height(), kToolbarIconSize);
+
+  // With a negative delta, the icon is drawn smaller and centered on a
+  // transparent canvas of the full toolbar icon size, so the WebUI (which
+  // scales every icon to the same box) shows it at the same relative size as
+  // the toolbar.
+  actions::ActionItem* const print_action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionPrint, BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(print_action_item);
+  print_action_item->SetProperty(chrome::kActionItemIconSizeDeltaKey,
+                                 kIconSizeDelta);
+
+  const SkBitmap padded_bitmap = list_icon_bitmap();
+  ASSERT_FALSE(padded_bitmap.isNull());
+  EXPECT_EQ(padded_bitmap.width(), kToolbarIconSize);
+  EXPECT_EQ(padded_bitmap.height(), kToolbarIconSize);
+  EXPECT_TRUE(has_transparent_border(padded_bitmap, -kIconSizeDelta / 2));
 }
