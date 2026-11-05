@@ -1040,28 +1040,26 @@ void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
     return;
   }
 
-  // Skip the grace period if:
-  // 1. the database is in memory (it either can't be deleted or can't be opened
-  //    again),
-  // 2. the database isn't finished initializing, or
-  // 3. the database had an error.
-  if (db->in_memory() || db->IsZygotic() || db->sql_error_) {
-    MaybeSelfDestruct(std::move(db), /*was_delayed=*/false);
+  // Just destruct immediately if:
+  // 1. the database isn't finished initializing, or
+  // 2. the database had an error
+  if (db->IsZygotic() || db->sql_error_) {
+    MaybeSelfDestruct(std::move(db));
     return;
   }
 
   // Delay destruction by a short period in case the page reopens the same
-  // database soon.
+  // database soon. This is effectively equivalent to the 2 second "grace
+  // period" before backing store shutdown in `BucketContext`.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DatabaseConnection::MaybeSelfDestruct, std::move(db),
-                     /*was_delayed=*/true),
+      base::BindOnce(&DatabaseConnection::MaybeSelfDestruct, std::move(db)),
       kDestructionGracePeriod);
 }
 
 // static
-void DatabaseConnection::MaybeSelfDestruct(base::WeakPtr<DatabaseConnection> db,
-                                           bool was_delayed) {
+void DatabaseConnection::MaybeSelfDestruct(
+    base::WeakPtr<DatabaseConnection> db) {
   if (!db) {
     return;
   }
@@ -1069,17 +1067,7 @@ void DatabaseConnection::MaybeSelfDestruct(base::WeakPtr<DatabaseConnection> db,
   DatabaseConnection* db_ptr = db.get();
   db.reset();
 
-  const bool can_self_destruct = db_ptr->CanSelfDestruct();
-  if (was_delayed) {
-    base::UmaHistogramBoolean(
-        "IndexedDB.SQLite.ConnectionDestructionGracePeriodWasUseful",
-        !can_self_destruct);
-  }
-  if (can_self_destruct) {
-    if (was_delayed) {
-      db_ptr->backing_store_->DestructionGracePeriodElapsed(
-          db_ptr->metadata_.name);
-    }
+  if (db_ptr->CanSelfDestruct()) {
     db_ptr->backing_store_->DestroyConnection(db_ptr->metadata_.name);
   }
 }

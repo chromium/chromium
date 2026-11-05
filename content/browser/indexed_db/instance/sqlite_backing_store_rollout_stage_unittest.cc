@@ -270,8 +270,7 @@ class SqliteBackingStoreRolloutStageTest
     task_environment_.FastForwardBy(
         sqlite::DatabaseConnection::GetDestructionGracePeriodForTesting());
     task_environment_.FastForwardBy(
-        BucketContext::GetBackingStoreGracePeriodForTesting(
-            /*use_sqlite=*/true));
+        BucketContext::GetBackingStoreGracePeriodForTesting());
   }
 
   std::tuple<mojo::Remote<blink::mojom::IDBFactory>, BucketContext*>
