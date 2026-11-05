@@ -31,8 +31,10 @@ import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationFactory;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationService;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +51,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     // Delay to ensure start/stop foreground doesn't happen too quickly.
     private static long sWaitTimeMs = TimeUnit.SECONDS.toMillis(30);
 
-    @Nullable private static ActorForegroundServiceManager sInstance;
+    private static @Nullable ActorForegroundServiceManager sInstance;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Runnable mMaybeStopServiceRunnable =
@@ -61,6 +63,10 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                         if (mNotificationService != null
                                 && mNotificationService.hasPendingDemotions()) {
                             postMaybeStopServiceRunnable();
+                            return;
+                        }
+                        if (hasOptInNotification()) {
+                            processTaskUpdateQueue();
                             return;
                         }
                         stopAndUnbindService();
@@ -76,11 +82,13 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     // Whether startForeground() is called. Must be called shortly after service start.
     private boolean mStartForegroundCalled;
 
-    @Nullable private ActorKeyedService mKeyedService;
-    @Nullable private ActorNotificationService mNotificationService;
-    @Nullable private ActorTaskTimeoutManager mTimeoutManager;
+    private @Nullable ActorKeyedService mKeyedService;
+    private @Nullable ActorNotificationService mNotificationService;
+    private @Nullable ActorTaskTimeoutManager mTimeoutManager;
     private int mPinnedNotificationId = INVALID_NOTIFICATION_ID;
-    @Nullable private Notification mPinnedNotification;
+    private @Nullable Notification mPinnedNotification;
+    private boolean mHasOptInNotification;
+    private @Nullable Runnable mOptInCancelCallback;
 
     private @Nullable Runnable mStopCallbackForTesting;
 
@@ -134,6 +142,9 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             // If we are switching or clearing, clear state.
             mActiveTaskIds.clear();
             mPendingTaskCount = 0;
+            if (hasOptInNotification()) {
+                cancelOptInNotification();
+            }
             if (mNotificationService != null) {
                 mNotificationService.clearAll();
             }
@@ -169,6 +180,9 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     /** Called forcefully when the Profile is destroyed. */
     public void shutDown() {
         ProfileManager.removeObserver(mProfileObserver);
+        if (hasOptInNotification()) {
+            cancelOptInNotification();
+        }
         setKeyedService(null);
         mHandler.removeCallbacks(mMaybeStopServiceRunnable);
         if (mIsServiceBound) {
@@ -269,13 +283,98 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         return hasActiveTasks() || hasPendingTasks();
     }
 
+    /** Returns true if an opt-in notification is currently registered to keep the service alive. */
+    public boolean hasOptInNotification() {
+        return mHasOptInNotification;
+    }
+
+    /**
+     * Pins the opt-in notification to the foreground service so the service stays alive while
+     * Chrome waits for the user to tap the notification and complete opt-in.
+     *
+     * @param cancelCallback Callback invoked if the opt-in notification is cancelled (e.g. via the
+     *     "No thanks" action or foreground service destruction).
+     */
+    public void pinOptInNotification(@Nullable Runnable cancelCallback) {
+        mHasOptInNotification = true;
+        mOptInCancelCallback = cancelCallback;
+        processTaskUpdateQueue();
+    }
+
+    /**
+     * Unpins the opt-in notification, dismisses it, and stops the foreground service if no other
+     * tasks or pending demotions remain.
+     */
+    public void unpinOptInNotification() {
+        if (!mHasOptInNotification) return;
+        clearOptInState();
+        BaseNotificationManagerProxyFactory.create()
+                .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        maybeStopServiceNow();
+    }
+
+    /**
+     * Cancels the opt-in notification, dismissing it from the status bar, stopping the foreground
+     * service if idle, and invoking the registered cancel callback.
+     */
+    public void cancelOptInNotification() {
+        boolean hadOptIn = mHasOptInNotification;
+        Runnable cancelCallback = clearOptInState();
+        BaseNotificationManagerProxyFactory.create()
+                .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        if (!hadOptIn) return;
+        maybeStopServiceNow();
+        if (cancelCallback != null) {
+            cancelCallback.run();
+        }
+    }
+
+    /**
+     * Cleans up any active opt-in notification when the foreground service is being destroyed,
+     * without re-entrantly stopping the service.
+     */
+    public void onServiceDestroyed() {
+        if (!mHasOptInNotification) return;
+        Runnable cancelCallback = clearOptInState();
+        BaseNotificationManagerProxyFactory.create()
+                .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        if (cancelCallback != null) {
+            cancelCallback.run();
+        }
+    }
+
+    private @Nullable Runnable clearOptInState() {
+        mHasOptInNotification = false;
+        Runnable callback = mOptInCancelCallback;
+        mOptInCancelCallback = null;
+        return callback;
+    }
+
+    private void maybeClearPreemptedOptInNotification(
+            int notificationId, int unpinnedNotificationId) {
+        if (unpinnedNotificationId == ActorNotificationFactory.OPT_IN_NOTIFICATION_ID
+                || (notificationId != ActorNotificationFactory.OPT_IN_NOTIFICATION_ID
+                        && hasOptInNotification()
+                        && hasActiveOrPendingTasks())) {
+            clearOptInState();
+            BaseNotificationManagerProxyFactory.create()
+                    .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        }
+    }
+
+    private boolean isTaskNotificationId(int notificationId) {
+        return notificationId != INVALID_NOTIFICATION_ID
+                && notificationId != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID
+                && notificationId != ActorNotificationFactory.OPT_IN_NOTIFICATION_ID;
+    }
+
     /** Process the current task state and initiate any needed service actions. */
     @VisibleForTesting
     void processTaskUpdateQueue() {
         if (mKeyedService == null || mNotificationService == null) return;
 
         if (!mIsServiceBound) {
-            if (!hasActiveOrPendingTasks()) return;
+            if (!hasActiveOrPendingTasks() && !hasOptInNotification()) return;
             startAndBindService();
             return;
         }
@@ -331,12 +430,31 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 startOrUpdateForegroundService(
                         ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID, placeholder);
             }
+        } else if (hasOptInNotification() && !mNotificationService.hasPendingDemotions()) {
+            if (!mStartForegroundCalled && !canStartForeground()) {
+                return;
+            }
+            mHandler.removeCallbacks(mMaybeStopServiceRunnable);
+            mStopServiceDelayed = false;
+
+            if (mPinnedNotificationId != ActorNotificationFactory.OPT_IN_NOTIFICATION_ID) {
+                Notification notification =
+                        ActorNotificationFactory.buildOptInNotification().getNotification();
+                startOrUpdateForegroundService(
+                        ActorNotificationFactory.OPT_IN_NOTIFICATION_ID, notification);
+                if (mPinnedNotificationId == ActorNotificationFactory.OPT_IN_NOTIFICATION_ID) {
+                    NotificationUmaTracker.getInstance()
+                            .onNotificationShown(
+                                    NotificationUmaTracker.SystemNotificationType.ACTOR,
+                                    notification);
+                }
+            }
         } else {
             // No active or pending tasks. Update the foreground service with the latest
             // notification (e.g. Success/Failed status), or transfer the pin to the next task
             // awaiting demotion, before we wait to stop it.
             int notificationIdToPin = mPinnedNotificationId;
-            if (notificationIdToPin == ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
+            if (!isTaskNotificationId(notificationIdToPin)) {
                 notificationIdToPin = INVALID_NOTIFICATION_ID;
             }
             Set<Integer> pendingDemotionIds = mNotificationService.getPendingDemotionTaskIds();
@@ -353,6 +471,10 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 if (notification != null) {
                     startOrUpdateForegroundService(notificationIdToPin, notification);
                 }
+            } else if (!mStartForegroundCalled && !hasOptInNotification()) {
+                mHandler.removeCallbacks(mMaybeStopServiceRunnable);
+                stopAndUnbindService();
+                return;
             }
 
             if (!mStopServiceDelayed || mNotificationService.hasPendingDemotions()) {
@@ -365,8 +487,14 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     void startAndBindService() {
         mIsServiceBound = true;
         mStartForegroundCalled = false;
-        getServiceController()
-                .startAndBindService(() -> mHandler.post(this::processTaskUpdateQueue));
+        try {
+            getServiceController()
+                    .startAndBindService(() -> mHandler.post(this::processTaskUpdateQueue));
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to start and bind foreground service.", e);
+            mIsServiceBound = false;
+            cancelOptInNotification();
+        }
     }
 
     @VisibleForTesting
@@ -378,6 +506,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         }
 
         if (mPinnedNotificationId == notificationId && mPinnedNotification == notification) {
+            maybeClearPreemptedOptInNotification(notificationId, INVALID_NOTIFICATION_ID);
             return;
         }
 
@@ -387,19 +516,30 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         int unpinnedNotificationId =
                 killOldNotification ? mPinnedNotificationId : INVALID_NOTIFICATION_ID;
 
-        getServiceController()
-                .startOrUpdateForegroundService(
-                        notificationId, notification, mPinnedNotificationId, killOldNotification);
+        try {
+            getServiceController()
+                    .startOrUpdateForegroundService(
+                            notificationId,
+                            notification,
+                            mPinnedNotificationId,
+                            killOldNotification);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to start or update foreground service.", e);
+            cancelOptInNotification();
+            return;
+        }
 
         mStartForegroundCalled = true;
         mPinnedNotificationId = notificationId;
         mPinnedNotification = notification;
 
+        maybeClearPreemptedOptInNotification(notificationId, unpinnedNotificationId);
+
         if (mNotificationService == null) return;
-        mNotificationService.onNotificationPinned(notificationId);
-        if (unpinnedNotificationId != INVALID_NOTIFICATION_ID
-                && unpinnedNotificationId
-                        != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
+        if (isTaskNotificationId(notificationId)) {
+            mNotificationService.onNotificationPinned(notificationId);
+        }
+        if (isTaskNotificationId(unpinnedNotificationId)) {
             // The swap removes the old notification, so it is reposted under the unpinned tag.
             mNotificationService.onNotificationUnpinned(unpinnedNotificationId);
             mNotificationService.repostNotification(
@@ -424,9 +564,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
         mPinnedNotification = null;
 
-        if (pinnedNotificationId != INVALID_NOTIFICATION_ID
-                && pinnedNotificationId != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID
-                && mNotificationService != null) {
+        if (isTaskNotificationId(pinnedNotificationId) && mNotificationService != null) {
             mNotificationService.onNotificationUnpinned(pinnedNotificationId);
             mNotificationService.repostNotification(
                     pinnedNotificationId, isWarningMode(pinnedNotificationId));
@@ -461,6 +599,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
      */
     public void maybeStopServiceNow() {
         if (!hasActiveOrPendingTasks()
+                && !hasOptInNotification()
                 && (mNotificationService == null || !mNotificationService.hasPendingDemotions())) {
             mHandler.removeCallbacks(mMaybeStopServiceRunnable);
             stopAndUnbindService();
@@ -561,6 +700,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mStartForegroundCalled = false;
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
         mPinnedNotification = null;
+        mHasOptInNotification = false;
+        mOptInCancelCallback = null;
         mHandler.removeCallbacks(mMaybeStopServiceRunnable);
     }
 

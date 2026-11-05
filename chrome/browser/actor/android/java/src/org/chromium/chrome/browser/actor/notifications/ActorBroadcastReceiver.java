@@ -8,15 +8,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorMetrics;
 import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceManager;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
 /** Handles broadcast intents for Actor tasks from notifications. */
 @NullMarked
@@ -26,6 +29,21 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (action == null) return;
+        if (NotificationConstants.ACTION_ACTOR_CANCEL.equals(action)
+                && IntentUtils.safeGetIntExtra(
+                                intent,
+                                NotificationConstants.EXTRA_ACTOR_TASK_ID,
+                                ActorTask.INVALID_TASK_ID)
+                        == ActorTask.INVALID_TASK_ID) {
+            ActorForegroundServiceManager fgsManager = ActorForegroundServiceManager.getInstance();
+            if (fgsManager != null) {
+                fgsManager.cancelOptInNotification();
+            } else {
+                BaseNotificationManagerProxyFactory.create()
+                        .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+            }
+            return;
+        }
         final PendingResult pendingResult = goAsync();
 
         ProfileIntentUtils.retrieveProfileFromIntent(
@@ -33,10 +51,15 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
                 (profile) -> {
                     try {
                         int taskId =
-                                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1);
+                                IntentUtils.safeGetIntExtra(
+                                        intent,
+                                        NotificationConstants.EXTRA_ACTOR_TASK_ID,
+                                        ActorTask.INVALID_TASK_ID);
                         int source =
-                                intent.getIntExtra(
-                                        NotificationConstants.EXTRA_ACTOR_PAUSE_RESUME_SOURCE, -1);
+                                IntentUtils.safeGetIntExtra(
+                                        intent,
+                                        NotificationConstants.EXTRA_ACTOR_PAUSE_RESUME_SOURCE,
+                                        -1);
                         updateActorTaskForProfile(profile, action, taskId, source);
                     } finally {
                         pendingResult.finish();

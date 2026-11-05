@@ -22,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.ForegroundLifecycle;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.StopReason;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceController;
+import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
@@ -120,6 +121,10 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
             recordStopReason(StopReason.DESTROYED);
         }
 
+        ActorForegroundServiceManager fgsManager = ActorForegroundServiceManager.getInstance();
+        if (fgsManager != null) {
+            fgsManager.onServiceDestroyed();
+        }
         ActorForegroundServiceController.get().destroyBackgroundActuationManager();
 
         // TODO(ritkagup) : Notify observers so they can perform cleanup or pause active tasks.
