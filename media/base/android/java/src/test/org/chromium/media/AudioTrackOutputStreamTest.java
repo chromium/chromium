@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -176,7 +177,7 @@ public class AudioTrackOutputStreamTest {
 
         AudioTrackOutputStream stream = AudioTrackOutputStream.create(provider);
         stream.open(2, 44100, AudioFormat.ENCODING_E_AC3);
-        stream.start(0x888);
+        stream.start(JniRawPtr.createForTesting(0x888L));
 
         provider.waitForOutOfData();
         List<Byte> generatedData = provider.getGeneratedData();
@@ -195,7 +196,7 @@ public class AudioTrackOutputStreamTest {
 
         AudioTrackOutputStream stream = AudioTrackOutputStream.create(provider);
         stream.open(2, 44100, AudioFormat.ENCODING_E_AC3);
-        stream.start(0x888);
+        stream.start(JniRawPtr.createForTesting(0x888L));
 
         provider.waitForOutOfData();
 

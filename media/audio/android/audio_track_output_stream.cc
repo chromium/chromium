@@ -19,6 +19,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/AudioTrackOutputStream_jni.h"
@@ -93,9 +94,8 @@ bool AudioTrackOutputStream::Open() {
 void AudioTrackOutputStream::Start(AudioSourceCallback* callback) {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   callback_ = callback;
-  Java_AudioTrackOutputStream_start(AttachCurrentThread(),
-                                    j_audio_output_stream_,
-                                    reinterpret_cast<intptr_t>(this));
+  Java_AudioTrackOutputStream_start(
+      AttachCurrentThread(), j_audio_output_stream_, jni_zero::MakeRaw(this));
 }
 
 void AudioTrackOutputStream::Stop() {
