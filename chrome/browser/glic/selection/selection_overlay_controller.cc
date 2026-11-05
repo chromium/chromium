@@ -104,10 +104,10 @@ namespace {
 BASE_FEATURE(kGlicSelectionOverlayFullSizeScreenshot,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Loads the overlay WebUI while the selection chip is hovered, so a click can
-// show it without waiting for the WebUI to boot.
+// Kill switch for loading the overlay WebUI while the selection chip is
+// hovered, so a click can show it without waiting for the WebUI to boot.
 BASE_FEATURE(kGlicSelectionOverlayHoverPrewarm,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
 
 BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -496,6 +496,10 @@ void SelectionOverlayController::MaybePrewarmOverlay(
   }
   prewarmer_.Start(CreateOverlayWebContents(), *host_view->GetWidget(),
                    std::move(interaction_options));
+}
+
+void SelectionOverlayController::CancelPrewarm() {
+  prewarmer_.Cancel();
 }
 
 selection::InteractionOptionsPtr

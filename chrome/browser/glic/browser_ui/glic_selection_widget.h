@@ -27,6 +27,7 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   class ActionDelegate {
    public:
     virtual void OnAskGemini() = 0;
+    virtual void OnHovered() = 0;
     virtual void OnCopy() = 0;
     virtual void OnHide() = 0;
     virtual void OnSettings() = 0;

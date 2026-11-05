@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/string_escape.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -2653,10 +2655,8 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
                 std::move(any), nullptr));
   }
 
-  auto OpenOverlayFromSmallChip(ui::ElementIdentifier tab,
-                                ui::ElementIdentifier overlay) {
-    const DeepQuery kOverlayApp = {"selection-overlay-app"};
-
+  // Selects text on a new page and waits for the small chip to show on it.
+  auto ShowSmallChip(ui::ElementIdentifier tab) {
     // Text for the user to select. `width/height: fit-content` on `html`,
     // `body`, and `p` ensures `SelectAll()`'s range bounding box wraps the
     // paragraph rather than the full quirks-mode viewport.
@@ -2695,10 +2695,17 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
           browser()->tab_strip_model()->GetActiveWebContents()->SelectAll();
         }),
         // The chip is its own widget, outside the browser's context.
-        InAnyContext(
-            WaitForShow(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId),
-            PressButton(
-                GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
+        InAnyContext(WaitForShow(
+            GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)));
+  }
+
+  auto OpenOverlayFromSmallChip(ui::ElementIdentifier tab,
+                                ui::ElementIdentifier overlay) {
+    const DeepQuery kOverlayApp = {"selection-overlay-app"};
+    return Steps(
+        ShowSmallChip(tab),
+        InAnyContext(PressButton(
+            GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
         // The overlay opens on the selected text.
         WaitForShow(OverlayBaseController::kOverlayId),
         InstrumentNonTabWebView(overlay, OverlayBaseController::kOverlayId),
@@ -2967,6 +2974,112 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithDogfoodFeedback,
           },
           true));
 }
+
+namespace {
+
+class SelectionOverlayInteractiveTestWithHoverPrewarm
+    : public SelectionOverlayInteractiveTestWithInlineFulfillment {
+ public:
+  SelectionOverlayInteractiveTestWithHoverPrewarm() {
+    // The feature is only declared in selection_overlay_controller.cc.
+    feature_list_.InitFromCommandLine(
+        /*enable_features=*/"GlicSelectionOverlayHoverPrewarm",
+        /*disable_features=*/"");
+  }
+
+  void SetUpOnMainThread() override {
+    SelectionOverlayInteractiveTestWithInlineFulfillment::SetUpOnMainThread();
+    creation_subscription_ = content::RegisterWebContentsCreationCallback(
+        base::BindLambdaForTesting([this](content::WebContents* contents) {
+          created_contents_.push_back(contents->GetWeakPtr());
+        }));
+  }
+
+  void TearDownOnMainThread() override {
+    creation_subscription_ = {};
+    SelectionOverlayInteractiveTestWithInlineFulfillment::
+        TearDownOnMainThread();
+  }
+
+ protected:
+  content::WebContents* GetPrewarmedContents() {
+    for (const auto& contents : created_contents_) {
+      if (contents && GetController()->IsPrewarmedOverlay(contents.get())) {
+        return contents.get();
+      }
+    }
+    return nullptr;
+  }
+
+  bool HasPrewarm() { return GetPrewarmedContents() != nullptr; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription creation_subscription_;
+  std::vector<base::WeakPtr<content::WebContents>> created_contents_;
+};
+
+// Hovering the chip prewarms the overlay, and Ask Gemini shows the prewarmed
+// overlay instead of loading a new one.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHoverPrewarm,
+                       HoverPrewarmsAndAskGeminiAdoptsIt) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kHasPrewarm);
+  base::WeakPtr<content::WebContents> prewarmed;
+
+  RunTestSequence(
+      ShowSmallChip(kActiveTab),
+      InAnyContext(
+          MoveMouseTo(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
+      PollState(kHasPrewarm, [this]() { return HasPrewarm(); }),
+      WaitForState(kHasPrewarm, true), Do([this, &prewarmed]() {
+        prewarmed = GetPrewarmedContents()->GetWeakPtr();
+      }),
+      InAnyContext(
+          PressButton(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      CheckResult(
+          [this, &prewarmed]() {
+            return prewarmed && GetController()
+                                        ->GetOverlayWebViewForTesting()
+                                        ->GetWebContents() == prewarmed.get();
+          },
+          true),
+      // The adopted overlay still gets its screenshot.
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => Boolean(el.screenshot_)"));
+}
+
+// Dismissing the chip, here with Esc on the page, drops the prewarm.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHoverPrewarm,
+                       DismissingChipDropsPrewarm) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kHasPrewarm);
+  base::WeakPtr<content::WebContents> prewarmed;
+
+  RunTestSequence(
+      ShowSmallChip(kActiveTab),
+      InAnyContext(
+          MoveMouseTo(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
+      PollState(kHasPrewarm, [this]() { return HasPrewarm(); }),
+      WaitForState(kHasPrewarm, true), Do([this, &prewarmed]() {
+        prewarmed = GetPrewarmedContents()->GetWeakPtr();
+      }),
+      SendKeyPress(kActiveTab, ui::VKEY_ESCAPE),
+      InAnyContext(
+          WaitForHide(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
+      // Dropped and destroyed with the chip, not later by the prewarm's own
+      // timeout.
+      CheckResult([this, &prewarmed]() { return !prewarmed && !HasPrewarm(); },
+                  true));
+}
+
+}  // namespace
 
 class SelectionOverlayInteractiveTestWithPromptBoxAndDogfoodFeedback
     : public SelectionOverlayInteractiveTestWithPrompt {

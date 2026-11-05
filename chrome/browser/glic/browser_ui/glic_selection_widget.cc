@@ -268,6 +268,9 @@ class GlicSelectionContentsView : public views::View {
 
   void OnMouseEntered(const ui::MouseEvent& event) override {
     RefreshAskGeminiState();
+    if (widget_delegate_) {
+      widget_delegate_->action_delegate().OnHovered();
+    }
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {

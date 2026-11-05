@@ -2151,7 +2151,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   ASSERT_TRUE(controller);
   controller->Show(/*options=*/nullptr,
                    ::selection::EntryPoint::kKeyboardShortcut);
-  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
                           SelectionOverlayController::State::kOverlay,
                           "Timeout waiting for kOverlay"));
   auto* untrusted_ui = controller->GetOverlayWebViewForTesting()
@@ -2183,7 +2183,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   ASSERT_TRUE(controller);
   controller->Show(/*options=*/nullptr,
                    ::selection::EntryPoint::kKeyboardShortcut);
-  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
                           SelectionOverlayController::State::kOverlay,
                           "Timeout waiting for kOverlay"));
 
@@ -2214,8 +2214,8 @@ class SelectionOverlayPrewarmBrowserTest : public GlicBrowserTest {
       const selection::InteractionOptionsPtr& options) {
     base::WeakPtr<content::WebContents> prewarmed;
     base::CallbackListSubscription subscription =
-        content::RegisterWebContentsCreationCallback(
-            base::BindLambdaForTesting([&](content::WebContents* contents) {
+        content::RegisterWebContentsCreationCallback(base::BindLambdaForTesting(
+            [&prewarmed](content::WebContents* contents) {
               prewarmed = contents->GetWeakPtr();
             }));
     controller->MaybePrewarmOverlay(options.Clone());
@@ -2262,8 +2262,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
                            ->GetController()
                            ->GetAs<SelectionOverlayUntrustedUI>();
   ASSERT_TRUE(untrusted_ui);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return untrusted_ui->HasPendingPageHandlerForTesting(); }));
+  ASSERT_TRUE(base::test::RunUntil([untrusted_ui]() {
+    return untrusted_ui->HasPendingPageHandlerForTesting();
+  }));
 
   gfx::Rect bounds = tab->GetContents()->GetViewBounds();
   bounds.Inset(20);
@@ -2280,13 +2281,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
   // is here. They must wait for it instead of being requested early.
   TestSuggestedActionsListener listener;
   controller->GetSuggestedActionsForTesting(listener.GetCallback());
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !listener.actions().empty(); }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&listener]() { return !listener.actions().empty(); }));
   EXPECT_EQ(listener.actions()[0]->title, "Ask Gemini");
 
   // The adopted page binds its waiting handler and the overlay initializes.
   ASSERT_OK(
-      RunUntilEqual([&]() { return controller->state(); },
+      RunUntilEqual([controller]() { return controller->state(); },
                     SelectionOverlayController::State::kOverlay,
                     "Timeout waiting for adopted overlay to reach kOverlay"));
   EXPECT_FALSE(untrusted_ui->HasPendingPageHandlerForTesting());
@@ -2321,7 +2322,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
             SelectionOverlayController::State::kBackground);
 
   GetTabListInterface()->ActivateTab(tab->GetHandle());
-  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
                           SelectionOverlayController::State::kOverlay,
                           "Timeout waiting for overlay to return to kOverlay"));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
@@ -2346,7 +2347,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
   std::optional<SelectionOverlayController::CloseReason> close_reason;
   base::CallbackListSubscription closed_subscription =
       controller->RegisterOverlayClosedCallback(base::BindLambdaForTesting(
-          [&](SelectionOverlayController::CloseReason reason) {
+          [&close_reason](SelectionOverlayController::CloseReason reason) {
             close_reason = reason;
           }));
 
@@ -2411,7 +2412,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
   EXPECT_FALSE(prewarmed);
   EXPECT_FALSE(controller->GetPrewarmInteractionOptions());
 
-  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
                           SelectionOverlayController::State::kOverlay,
                           "Timeout waiting for overlay to reach kOverlay"));
   EXPECT_TRUE(controller->GetOverlayWebViewForTesting()->GetWebContents());
@@ -2442,7 +2443,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
             prewarmed.get());
 
   ASSERT_OK(
-      RunUntilEqual([&]() { return controller->state(); },
+      RunUntilEqual([controller]() { return controller->state(); },
                     SelectionOverlayController::State::kOverlay,
                     "Timeout waiting for adopted overlay to reach kOverlay"));
   auto* untrusted_ui = prewarmed->GetWebUI()

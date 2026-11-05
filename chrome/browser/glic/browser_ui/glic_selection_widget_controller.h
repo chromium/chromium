@@ -52,6 +52,7 @@ class GlicSelectionWidgetController
 
   // `GlicSelectionWidgetDelegate::ActionDelegate`:
   void OnAskGemini() override;
+  void OnHovered() override;
   void OnCopy() override;
   void OnHide() override;
   void OnSettings() override;
@@ -89,6 +90,8 @@ class GlicSelectionWidgetController
 
  private:
   void UpdatePageBlockedState();
+  bool ShouldPanelStartSession() const;
+  void CancelOverlayPrewarm();
 
   content::WebContents* web_contents() const { return web_contents_.get(); }
 

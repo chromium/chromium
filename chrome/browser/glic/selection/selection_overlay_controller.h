@@ -128,6 +128,7 @@ class SelectionOverlayController
   // for the WebUI to boot.
   void MaybePrewarmOverlay(
       selection::InteractionOptionsPtr interaction_options);
+  void CancelPrewarm();
   selection::InteractionOptionsPtr GetPrewarmInteractionOptions() const;
   bool CanBindOverlay(content::WebContents* overlay_contents);
   // Whether `overlay_contents` is the prewarmed overlay's, whose page handler

@@ -75,6 +75,7 @@ class TestWidgetActionDelegate
     : public GlicSelectionWidgetDelegate::ActionDelegate {
  public:
   void OnAskGemini() override { ask_gemini_called = true; }
+  void OnHovered() override {}
   gfx::Rect GetContainerBounds() override { return container_bounds; }
   void OnCopy() override { copy_called = true; }
   void OnHide() override { hide_called = true; }

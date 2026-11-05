@@ -168,6 +168,20 @@ void GlicSelectionWidgetController::OnAskGemini() {
       InvokeWithAutoSubmitPasskeyProvider::GetPassKey());
 }
 
+void GlicSelectionWidgetController::OnHovered() {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip) ||
+      ShouldPanelStartSession()) {
+    return;
+  }
+  if (auto* controller =
+          SelectionOverlayController::FromTabWebContents(web_contents())) {
+    // Same options as `ShowSelectionOverlay()` uses for the session.
+    controller->MaybePrewarmOverlay(selection::InteractionOptions::New(
+        /*hide_handles=*/true, /*disable_multi_select=*/true,
+        /*skip_intro_animation=*/true));
+  }
+}
+
 void GlicSelectionWidgetController::OnCopy() {
   if (!web_contents()) {
     return;
@@ -216,6 +230,9 @@ gfx::Rect GlicSelectionWidgetController::GetContainerBounds() {
 
 void GlicSelectionWidgetController::Dismiss(DismissReason reason) {
   if (widget_delegate_) {
+    if (reason != DismissReason::kActionTaken) {
+      CancelOverlayPrewarm();
+    }
     if (!dismissal_recorded_ && reason != DismissReason::kActionTaken) {
       bool is_post_fre = false;
       if (web_contents()) {
@@ -291,6 +308,7 @@ GlicSelectionWidgetController::ShowResult GlicSelectionWidgetController::Show(
 
 void GlicSelectionWidgetController::Close() {
   if (widget_delegate_) {
+    CancelOverlayPrewarm();
     widget_delegate_->CloseWidget();
   }
 }
@@ -312,6 +330,22 @@ void GlicSelectionWidgetController::OnContentSettingChanged(
   }
 }
 
+bool GlicSelectionWidgetController::ShouldPanelStartSession() const {
+  if (!web_contents() || !glic_keyed_service_) {
+    return false;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return tab && GlicSidePanelCoordinator::IsShowing(tab);
+}
+
+void GlicSelectionWidgetController::CancelOverlayPrewarm() {
+  if (auto* controller =
+          SelectionOverlayController::FromTabWebContents(web_contents())) {
+    controller->CancelPrewarm();
+  }
+}
+
 void GlicSelectionWidgetController::ShowSelectionOverlay() {
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
@@ -325,8 +359,7 @@ void GlicSelectionWidgetController::ShowSelectionOverlay() {
   }
 
   // When the side panel is open, let the web client start the capture session.
-  if (glic_keyed_service_ &&
-      GlicSidePanelCoordinator::IsShowing(tab_interface) &&
+  if (ShouldPanelStartSession() &&
       controller->state() == OverlayBaseController::State::kOff) {
     GlicInvokeOptions options(
         Target(*tab_interface),
