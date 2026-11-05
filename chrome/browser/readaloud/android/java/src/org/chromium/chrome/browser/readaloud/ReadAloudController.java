@@ -1028,16 +1028,20 @@ public class ReadAloudController
     /** Returns true if the web contents within current Tab is readable. */
     @Contract("null -> false")
     public boolean isReadable(@Nullable Tab tab) {
-        if (ReadAloudFeatures.isNativeEnabled()) {
-            // TODO: Verify tab language support or handle unsupported language playback gracefully
-            // under native mode.
-            ReadabilityInfo info = getReadabilityInfoForTab(tab);
-            return info != null && info.isReadable();
-        }
         if (isTabUnavailableForReadAloud(tab)) {
             return false;
         }
         Tab nonNullTab = assumeNonNull(tab);
+        if (ReadAloudFeatures.isNativeEnabled()) {
+            ReadabilityInfo info = getReadabilityInfoForTab(nonNullTab);
+            if (info == null || !info.isReadable()) {
+                return false;
+            }
+            // Hide entry points for languages with no available voices.
+            List<PlaybackVoice> voices =
+                    getVoicesForLanguage(getLanguageForNewPlayback(nonNullTab));
+            return voices != null && !voices.isEmpty();
+        }
         TabLanguageStatus tabLanguageStatus = isTabLanguageSupported(nonNullTab);
         if (tabLanguageStatus.mSupported) {
             ReadabilityInfo info = getReadabilityInfoForTab(nonNullTab);
@@ -1350,7 +1354,8 @@ public class ReadAloudController
 
         boolean isTranslated = isTranslated(tab);
         var voices = getVoicesForLanguage(playbackLanguage);
-        // TODO: Don't show entrypoints for unsupported languages
+        // Entry points are hidden for unsupported languages, but playback can still be requested
+        // through other paths (e.g. restoring playback), so fail gracefully here.
         if (voices == null || voices.isEmpty()) {
             onCreatePlaybackFailed(entrypoint);
             var promise = new Promise<Playback>();
@@ -2508,6 +2513,8 @@ public class ReadAloudController
                                     voicePitches[i],
                                     voiceTones[i]));
         }
+        // Supported languages may have changed, so entry points need to re-check readability.
+        notifyReadabilityMayHaveChanged();
     }
 
     // Called when the active word highlight boundary shifts in the text.

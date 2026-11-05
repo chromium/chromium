@@ -1073,6 +1073,113 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testIsReadable_nativeEnabled_languageUnsupported() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        mController.onReadabilityResult(sTestGURL, true);
+        assertFalse(mController.isReadable(null));
+
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        assertTrue(mController.isReadable(mTab));
+
+        // No voices are available for "ko", so entry points should be hidden.
+        mFakeTranslateBridge.setCurrentLanguage("ko");
+        assertFalse(mController.isReadable(mTab));
+        assertEquals(PlaybackMode.UNSPECIFIED, mController.getModeToPlay(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testIsReadable_nativeEnabled_unsupportedLanguageTranslatedToSupported() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        mController.onReadabilityResult(sTestGURL, true);
+
+        mFakeTranslateBridge.setCurrentLanguage("ko");
+        assertFalse(mController.isReadable(mTab));
+
+        // Translating the page to a supported language should show entry points.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        assertTrue(mController.isReadable(mTab));
+        assertEquals(PlaybackMode.CLASSIC, mController.getModeToPlay(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testOnVoicesAvailable_nativeEnabled_notifiesReadabilityListeners() {
+        Runnable listener = Mockito.mock(Runnable.class);
+        mController.addReadabilityUpdateListener(listener);
+
+        mController.onVoicesAvailable(
+                new String[] {"voiceA"},
+                new String[] {"Ruby"},
+                new String[] {"en"},
+                new String[] {"US"},
+                new int[] {PlaybackVoice.Pitch.MID},
+                new int[] {PlaybackVoice.Tone.WARM});
+
+        verify(listener).run();
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testIsReadable_nativeEnabled_hebrewMappedToVoiceCatalogCode() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        mController.onVoicesAvailable(
+                new String[] {"voiceA"},
+                new String[] {"Ruby"},
+                new String[] {"iw"},
+                new String[] {"IL"},
+                new int[] {PlaybackVoice.Pitch.MID},
+                new int[] {PlaybackVoice.Tone.WARM});
+        mController.onReadabilityResult(sTestGURL, true);
+
+        // TranslateBridge reports "he", but the voice catalog uses "iw".
+        mFakeTranslateBridge.setCurrentLanguage("he");
+        assertTrue(mController.isReadable(mTab));
+
+        mFakeTranslateBridge.setCurrentLanguage("he-IL");
+        assertTrue(mController.isReadable(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testIsReadable_nativeEnabled_voicesArriveAfterReadability() {
+        when(mNativeBridgeNatives.init(any(), any()))
+                .thenAnswer(invocation -> JniRawPtr.createForTesting(12345L));
+        mController.onProfileAvailable(mMockProfile);
+        // Start with an empty voice catalog.
+        mController.onVoicesAvailable(
+                new String[] {},
+                new String[] {},
+                new String[] {},
+                new String[] {},
+                new int[] {},
+                new int[] {});
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mController.onReadabilityResult(sTestGURL, true);
+        assertFalse(mController.isReadable(mTab));
+
+        Runnable listener = Mockito.mock(Runnable.class);
+        mController.addReadabilityUpdateListener(listener);
+        mController.onVoicesAvailable(
+                new String[] {"voiceA"},
+                new String[] {"Ruby"},
+                new String[] {"en"},
+                new String[] {"US"},
+                new int[] {PlaybackVoice.Pitch.MID},
+                new int[] {PlaybackVoice.Tone.WARM});
+
+        verify(listener).run();
+        assertTrue(mController.isReadable(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testIsAllowed_nativeEnabled() {
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
         assertTrue(ReadAloudFeatures.isAllowed(mMockProfile));
