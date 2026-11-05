@@ -380,8 +380,12 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
     ASSERT_FLOAT_EQ(kTestDeviceScaleFactor, device_scale_factor);
 #endif
 
-    *out_scaled_bounds =
-        gfx::ScaleToRoundedRect(embed_bounds, device_scale_factor);
+    const double page_scale_factor =
+        content::EvalJs(web_contents(), "window.visualViewport.scale")
+            .ExtractDouble();
+    ASSERT_NE(page_scale_factor, 0.0);
+    *out_scaled_bounds = gfx::ScaleToRoundedRect(
+        embed_bounds, device_scale_factor * page_scale_factor);
   }
 
   void VerifyRedPixelInBounds(const gfx::Rect embed_bounds,
