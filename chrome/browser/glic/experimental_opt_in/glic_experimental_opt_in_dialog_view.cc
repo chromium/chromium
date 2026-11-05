@@ -16,7 +16,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
@@ -59,9 +58,7 @@ class GlicWebView : public views::WebView {
 
     views::WebView::ResizeDueToAutoResize(source, new_size);
     if (GetWidget()) {
-      tab_interface_->GetTabFeatures()
-          ->tab_dialog_manager()
-          ->UpdateModalDialogBounds();
+      tabs::TabDialogManager::From(tab_interface_)->UpdateModalDialogBounds();
     }
   }
 

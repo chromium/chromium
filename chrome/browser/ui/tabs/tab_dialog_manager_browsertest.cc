@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/pref_names.h"
@@ -129,7 +128,7 @@ class TabDialogManagerBrowserTest : public InteractiveBrowserTest {
   TabDialogManager* GetTabDialogManager() {
     TabInterface* tab_interface = browser()->GetActiveTabInterface();
     CHECK(tab_interface);
-    return tab_interface->GetTabFeatures()->tab_dialog_manager();
+    return TabDialogManager::From(tab_interface);
   }
 
   gfx::NativeView GetHostNativeView() {
@@ -415,8 +414,7 @@ class TabDialogManagerPixelTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     TabInterface* tab_interface = browser()->GetActiveTabInterface();
     CHECK(tab_interface);
-    TabDialogManager* manager =
-        tab_interface->GetTabFeatures()->tab_dialog_manager();
+    TabDialogManager* manager = TabDialogManager::From(tab_interface);
 
     widget_ = CreateWidgetWithDialogModel();
     manager->ShowDialog(widget_.get(),

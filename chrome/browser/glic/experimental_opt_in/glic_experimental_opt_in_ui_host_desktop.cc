@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -80,12 +79,11 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
       // the tab is in the foreground and the window is not minimized. Calling
       // Widget::Activate() directly would bypass that and can steal focus into
       // a background window.
-      if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix) &&
-          tab_interface_ && tab_interface_->GetTabFeatures() &&
-          tab_interface_->GetTabFeatures()->tab_dialog_manager()) {
-        tab_interface_->GetTabFeatures()
-            ->tab_dialog_manager()
-            ->MaybeActivateDialog();
+      if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
+        if (auto* tab_dialog_manager =
+                tabs::TabDialogManager::From(tab_interface_.get())) {
+          tab_dialog_manager->MaybeActivateDialog();
+        }
       }
       return;
     }
@@ -109,8 +107,9 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
       window->GetWindow()->Activate();
     }
 
-    tabs::TabFeatures* tab_features = tab_interface->GetTabFeatures();
-    if (!tab_features || !tab_features->tab_dialog_manager()) {
+    tabs::TabDialogManager* tab_dialog_manager =
+        tabs::TabDialogManager::From(tab_interface);
+    if (!tab_dialog_manager) {
       if (delegate_) {
         delegate_->OnUIClosed(/*accepted=*/false);
       }
@@ -124,10 +123,10 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
 
     auto params = std::make_unique<tabs::TabDialogManager::Params>();
     params->close_on_navigate = false;
-    dialog_widget_ = tab_features->tab_dialog_manager()->CreateAndShowDialog(
-        dialog_view_.get(), std::move(params));
+    dialog_widget_ = tab_dialog_manager->CreateAndShowDialog(dialog_view_.get(),
+                                                             std::move(params));
     if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
-      tab_features->tab_dialog_manager()->MaybeActivateDialog();
+      tab_dialog_manager->MaybeActivateDialog();
     }
 
     OnDialogOpened();

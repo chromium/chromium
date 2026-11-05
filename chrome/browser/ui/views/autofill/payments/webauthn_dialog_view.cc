@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
@@ -68,8 +67,7 @@ WebauthnDialog* WebauthnDialog::CreateAndShow(
   auto* dialog_delegate = new WebauthnDialogView(controller, dialog_state);
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(controller->GetWebContents());
-  tab_interface->GetTabFeatures()
-      ->tab_dialog_manager()
+  tabs::TabDialogManager::From(tab_interface)
       ->CreateAndShowDialog(dialog_delegate,
                             std::make_unique<tabs::TabDialogManager::Params>())
       .release();

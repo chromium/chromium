@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
@@ -223,7 +222,7 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
   auto params = std::make_unique<tabs::TabDialogManager::Params>();
   params->close_on_detach = false;
 
-  dialog_ = tab_->GetTabFeatures()->tab_dialog_manager()->CreateAndShowDialog(
+  dialog_ = tabs::TabDialogManager::From(&*tab_)->CreateAndShowDialog(
       model_host, std::move(params));
 
   RecordPickerAction(ProtocolHandlerPickerAction::kDialogShown);

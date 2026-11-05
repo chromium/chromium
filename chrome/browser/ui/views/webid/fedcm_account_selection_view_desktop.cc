@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
@@ -1110,8 +1109,8 @@ bool FedCmAccountSelectionView::CanFitInWebContents() {
 
 void FedCmAccountSelectionView::UpdateDialogPosition() {
   // Features may not be available under some unit tests. Check first.
-  if (auto* features = tab_->GetTabFeatures()) {
-    features->tab_dialog_manager()->UpdateModalDialogBounds();
+  if (auto* tab_dialog_manager = tabs::TabDialogManager::From(tab_)) {
+    tab_dialog_manager->UpdateModalDialogBounds();
   }
 }
 
@@ -1320,21 +1319,19 @@ FedCmAccountSelectionView::CreatePopupWindow() {
 void FedCmAccountSelectionView::ShowDialog(
     views::Widget* widget,
     std::unique_ptr<tabs::TabDialogManager::Params> params) {
-  tab_->GetTabFeatures()->tab_dialog_manager()->ShowDialog(widget,
-                                                           std::move(params));
+  tabs::TabDialogManager::From(tab_)->ShowDialog(widget, std::move(params));
 }
 
 void FedCmAccountSelectionView::UpdateDialogVisibility(
     bool requested_visibility) {
-  if (auto* features = tab_->GetTabFeatures()) {
-    features->tab_dialog_manager()->UpdateDialogVisibility(
-        requested_visibility);
+  if (auto* tab_dialog_manager = tabs::TabDialogManager::From(tab_)) {
+    tab_dialog_manager->UpdateDialogVisibility(requested_visibility);
   }
 }
 
 bool FedCmAccountSelectionView::IsDialogManaged(views::Widget* widget) {
-  if (auto* features = tab_->GetTabFeatures()) {
-    return features->tab_dialog_manager()->IsDialogManaged(widget);
+  if (auto* tab_dialog_manager = tabs::TabDialogManager::From(tab_)) {
+    return tab_dialog_manager->IsDialogManaged(widget);
   }
   return false;
 }

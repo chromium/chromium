@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
@@ -83,8 +82,7 @@ void CredentialLeakPromptImpl::ShowCredentialLeakPrompt() {
   credential_leak_dialog_view_->InitWindow();
   CredentialLeakDialogView* dialog_view_ptr =
       credential_leak_dialog_view_.get();
-  dialog_ = tab_interface->GetTabFeatures()
-                ->tab_dialog_manager()
+  dialog_ = tabs::TabDialogManager::From(tab_interface)
                 ->CreateAndShowDialog(
                     credential_leak_dialog_view_.release(),
                     std::make_unique<tabs::TabDialogManager::Params>());

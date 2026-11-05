@@ -6,7 +6,6 @@
 
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_util.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
@@ -169,7 +168,7 @@ void AccountChooserController::ShowAccountChooserDialog(
   if (account_chooser_view_) {
     account_chooser_view_->UpdateView(profile_info.accounts,
                                       profile_info.primary_account_id);
-    tab_->GetTabFeatures()->tab_dialog_manager()->UpdateModalDialogBounds();
+    tabs::TabDialogManager::From(tab_)->UpdateModalDialogBounds();
     return;
   }
   std::unique_ptr<AccountChooserView> account_chooser_view =
@@ -182,7 +181,7 @@ void AccountChooserController::ShowAccountChooserDialog(
       CreateDialogDelegate(std::move(account_chooser_view));
 
   account_chooser_widget_ =
-      tab_->GetTabFeatures()->tab_dialog_manager()->CreateAndShowDialog(
+      tabs::TabDialogManager::From(tab_)->CreateAndShowDialog(
           account_chooser_dialog_delegate_.get(),
           std::make_unique<tabs::TabDialogManager::Params>());
   account_chooser_widget_->MakeCloseSynchronous(

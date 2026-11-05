@@ -13,7 +13,6 @@
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -237,7 +236,7 @@ void OnboardingDialogController::Show(base::OnceClosure complete_callback,
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  widget_ = tab_->GetTabFeatures()->tab_dialog_manager()->CreateAndShowDialog(
+  widget_ = tabs::TabDialogManager::From(&*tab_)->CreateAndShowDialog(
       model_host, std::make_unique<tabs::TabDialogManager::Params>());
 
   if (auto* frame = model_host->GetBubbleFrameView()) {

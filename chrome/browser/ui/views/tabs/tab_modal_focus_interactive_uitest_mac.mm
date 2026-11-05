@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -78,7 +77,7 @@ class TabModalFocusInteractiveUITestMac : public InteractiveBrowserTest {
 
     tabs::TabInterface* tab_interface = browser()->GetActiveTabInterface();
     tabs::TabDialogManager* manager =
-        tab_interface->GetTabFeatures()->tab_dialog_manager();
+        tabs::TabDialogManager::From(tab_interface);
 
     auto model_host = views::BubbleDialogModelHost::CreateModal(
         dialog_builder.Build(), ui::mojom::ModalType::kChild);

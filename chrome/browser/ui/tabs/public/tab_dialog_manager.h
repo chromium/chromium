@@ -16,6 +16,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -38,12 +39,16 @@ class TabDialogWidgetObserver;
 class TabDialogManager : public content::WebContentsObserver,
                          public gfx::AnimationDelegate {
  public:
+  DECLARE_USER_DATA(TabDialogManager);
+
   using ShouldShowCallback = base::RepeatingCallback<void(bool&)>;
   using GetDialogBounds = base::RepeatingCallback<gfx::Rect()>;
   explicit TabDialogManager(TabInterface* tab_interface);
   TabDialogManager(const TabDialogManager&) = delete;
   TabDialogManager& operator=(const TabDialogManager&) = delete;
   ~TabDialogManager() override;
+
+  static TabDialogManager* From(TabInterface* tab);
 
   // Parameters that are used to configure the behavior of the tab dialog.
   struct Params {
@@ -200,6 +205,8 @@ class TabDialogManager : public content::WebContentsObserver,
   gfx::Rect animation_start_bounds_;
   gfx::Rect animation_target_bounds_;
   std::unique_ptr<gfx::LinearAnimation> bounds_animation_;
+
+  ui::ScopedUnownedUserData<TabDialogManager> scoped_unowned_user_data_;
 };
 
 }  // namespace tabs

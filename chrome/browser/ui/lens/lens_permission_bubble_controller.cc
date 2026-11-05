@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_string_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -121,8 +120,7 @@ std::unique_ptr<views::Widget> LensPermissionBubbleController::ShowDialogWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   auto widget =
-      tab_interface_->GetTabFeatures()
-          ->tab_dialog_manager()
+      tabs::TabDialogManager::From(&*tab_interface_)
           ->CreateAndShowDialog(
               model_host, std::make_unique<tabs::TabDialogManager::Params>());
   widget->MakeCloseSynchronous(

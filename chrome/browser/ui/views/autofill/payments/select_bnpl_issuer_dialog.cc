@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_dialog_footnote.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_view.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -84,8 +83,7 @@ SelectBnplIssuerViewDesktop::SelectBnplIssuerViewDesktop(
         base::BindRepeating(&SelectBnplIssuerDialog::OnTabDetached,
                             select_bnpl_issuer_dialog_));
 
-    dialog_ = tab_interface->GetTabFeatures()
-                  ->tab_dialog_manager()
+    dialog_ = tabs::TabDialogManager::From(tab_interface)
                   ->CreateAndShowDialog(
                       select_bnpl_issuer_dialog_delegate.release(),
                       std::make_unique<tabs::TabDialogManager::Params>());

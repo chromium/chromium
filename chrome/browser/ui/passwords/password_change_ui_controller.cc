@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "chrome/common/webui_url_constants.h"
@@ -463,9 +462,7 @@ void PasswordChangeUIController::UpdateState(
       toast_view_->UpdateLayout(
           std::move(std::get<ToastOptions>(configuration)));
       // Manually trigger a bounds update since the widget is not auto-sized.
-      tab_interface_->GetTabFeatures()
-          ->tab_dialog_manager()
-          ->UpdateModalDialogBounds();
+      tabs::TabDialogManager::From(tab_interface_)->UpdateModalDialogBounds();
     } else {
       // If not showing a toast, show a new one.
       ShowToast(std::move(std::get<ToastOptions>(configuration)));
@@ -626,8 +623,7 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
       base::BindRepeating(&CreateToastFrameView));
   toast_delegate_ = std::move(toast_delegate);
 
-  auto* tab_dialog_manager =
-      tab_interface_->GetTabFeatures()->tab_dialog_manager();
+  auto* tab_dialog_manager = tabs::TabDialogManager::From(tab_interface_);
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams init_params(
       views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
@@ -671,8 +667,7 @@ void PasswordChangeUIController::ShowDialog(
   auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
   tab_dialog_params->close_on_navigate = false;
   views::BubbleDialogModelHost* model_host_ptr = model_host.get();
-  dialog_widget_ = tab_interface_->GetTabFeatures()
-                       ->tab_dialog_manager()
+  dialog_widget_ = tabs::TabDialogManager::From(tab_interface_)
                        ->CreateAndShowDialog(model_host.release(),
                                              std::move(tab_dialog_params));
   dialog_widget_->MakeCloseSynchronous(

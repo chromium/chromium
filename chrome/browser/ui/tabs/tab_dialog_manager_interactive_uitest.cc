@@ -11,7 +11,6 @@
 #include "base/test/test_timeouts.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -80,7 +79,7 @@ class TabDialogManagerUiTest : public InteractiveBrowserTest {
   TabDialogManager* GetTabDialogManager() {
     TabInterface* tab_interface = browser()->GetActiveTabInterface();
     CHECK(tab_interface);
-    return tab_interface->GetTabFeatures()->tab_dialog_manager();
+    return TabDialogManager::From(tab_interface);
   }
 };
 

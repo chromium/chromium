@@ -37,7 +37,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 #include "ui/views/controls/label.h"
@@ -244,9 +243,8 @@ void AskBeforeHttpDialogController::ShowDialog(
 
   auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
   CHECK(tab);
-  dialog_widget_ =
-      tab->GetTabFeatures()->tab_dialog_manager()->CreateAndShowDialog(
-          model_host, std::move(tab_dialog_params));
+  dialog_widget_ = tabs::TabDialogManager::From(tab)->CreateAndShowDialog(
+      model_host, std::move(tab_dialog_params));
   dialog_widget_->MakeCloseSynchronous(
       base::BindOnce(&AskBeforeHttpDialogController::CloseDialogWidget,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -4443,8 +4443,7 @@ void BrowserView::UpdateTabModalDialogHost() {
         SafeInvoke(contents_view->web_contents())
             .Then(Overload<content::WebContents*>(
                 &tabs::TabInterface::GetFromContents))
-            .Then(Overload<>(&tabs::TabInterface::GetTabFeatures))
-            .Then(&tabs::TabFeatures::tab_dialog_manager)
+            .Then(&tabs::TabDialogManager::From)
             .Then(&tabs::TabDialogManager::UpdateModalDialogHost);
       }));
 }

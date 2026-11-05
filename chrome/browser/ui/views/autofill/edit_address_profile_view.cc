@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -91,8 +90,7 @@ std::unique_ptr<AutofillBubbleBase> ShowEditAddressProfileDialogView(
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(web_contents);
   auto widget =
-      tab_interface->GetTabFeatures()
-          ->tab_dialog_manager()
+      tabs::TabDialogManager::From(tab_interface)
           ->CreateAndShowDialog(
               dialog, std::make_unique<tabs::TabDialogManager::Params>());
   dialog->RequestFocus();

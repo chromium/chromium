@@ -9,7 +9,6 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -68,8 +67,7 @@ class PaymentAppLoadingViewInteractiveUiTest : public InteractiveBrowserTest {
 
           tabs::TabInterface* tab_interface =
               tabs::TabInterface::GetFromContents(web_contents());
-          widget_ = tab_interface->GetTabFeatures()
-                        ->tab_dialog_manager()
+          widget_ = tabs::TabDialogManager::From(tab_interface)
                         ->CreateAndShowDialog(
                             delegate_.get(),
                             std::make_unique<tabs::TabDialogManager::Params>());

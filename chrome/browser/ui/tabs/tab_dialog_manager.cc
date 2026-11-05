@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/base_window.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/animation.h"
@@ -46,6 +46,8 @@ extern const void* kConstrainedWindowWidgetIdentifier;
 }  // namespace constrained_window
 
 namespace tabs {
+
+DEFINE_USER_DATA(TabDialogManager);
 
 class TabDialogWidgetObserver : public views::WidgetObserver {
  public:
@@ -217,10 +219,9 @@ class TabDialogManager::BrowserWindowWidgetObserver
   void OnWidgetShowStateChanged(views::Widget* widget) override {
     bool minimized = widget->IsMinimized();
     bool activated = tab_->IsActivated();
-    auto* tab_dialog_manager = tab_->GetTabFeatures()->tab_dialog_manager();
-    dialog_widget_->SetVisible(
-        GetWidgetVisibility(activated, minimized,
-                            tab_dialog_manager->params_->should_show_callback));
+    dialog_widget_->SetVisible(GetWidgetVisibility(
+        activated, minimized,
+        tab_dialog_manager_->params_->should_show_callback));
   }
 
  private:
@@ -284,7 +285,9 @@ TabDialogManager::Params::~Params() = default;
 
 TabDialogManager::TabDialogManager(TabInterface* tab_interface)
     : content::WebContentsObserver(tab_interface->GetContents()),
-      tab_interface_(tab_interface) {
+      tab_interface_(tab_interface),
+      scoped_unowned_user_data_(tab_interface->GetUnownedUserDataHost(),
+                                *this) {
   tab_subscriptions_.push_back(
       tab_interface_->RegisterDidBecomeVisible(base::BindRepeating(
           &TabDialogManager::TabDidEnterForeground, base::Unretained(this))));
@@ -300,6 +303,11 @@ TabDialogManager::TabDialogManager(TabInterface* tab_interface)
 }
 
 TabDialogManager::~TabDialogManager() = default;
+
+// static
+TabDialogManager* TabDialogManager::From(TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
     views::DialogDelegate* delegate) {

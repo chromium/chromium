@@ -825,7 +825,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           .CreateInstance<extensions::ExtensionSidePanelManager>(
               tab, profile, &tab, side_panel_registry_.get());
 
-  tab_dialog_manager_ = std::make_unique<TabDialogManager>(&tab);
+  tab_dialog_manager_ =
+      GetUserDataFactory().CreateInstance<TabDialogManager>(tab, &tab);
 
   data_protection_tab_controller_ =
       GetUserDataFactory()

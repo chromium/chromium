@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/tabs/public/tab_interface.h"
@@ -38,8 +37,7 @@ BnplTosViewDesktop::BnplTosViewDesktop(
       tab_interface->RegisterWillDetach(base::BindRepeating(
           &BnplTosDialog::OnTabDetached, dialog_view->GetWeakPtr()));
 
-  dialog_widget_ = tab_interface->GetTabFeatures()
-                       ->tab_dialog_manager()
+  dialog_widget_ = tabs::TabDialogManager::From(tab_interface)
                        ->CreateAndShowDialog(
                            dialog_view.release(),
                            std::make_unique<tabs::TabDialogManager::Params>());

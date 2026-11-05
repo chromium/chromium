@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
@@ -68,8 +67,7 @@ AutofillProgressDialogViewImpl::AutofillProgressDialogViewImpl(
       std::make_unique<AutofillProgressDialogViews>(controller);
   auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
   CHECK(tab_interface);
-  dialog_ = tab_interface->GetTabFeatures()
-                ->tab_dialog_manager()
+  dialog_ = tabs::TabDialogManager::From(tab_interface)
                 ->CreateAndShowDialog(
                     autofill_progress_dialog_view.release(),
                     std::make_unique<tabs::TabDialogManager::Params>());

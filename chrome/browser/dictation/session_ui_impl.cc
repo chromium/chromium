@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
@@ -100,8 +99,8 @@ void SessionUiImpl::CreateBubbleUi(bool show_reviewing_page_status) {
   params->get_dialog_bounds = base::BindRepeating(
       &DictationBubbleUi::GetBubbleBounds, base::Unretained(bubble_ui_.get()));
 
-  tab_->GetTabFeatures()->tab_dialog_manager()->ShowDialog(
-      bubble_ui_->GetWidget(), std::move(params));
+  tabs::TabDialogManager::From(&*tab_)->ShowDialog(bubble_ui_->GetWidget(),
+                                                   std::move(params));
 }
 
 SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
@@ -232,7 +231,7 @@ void SessionUiImpl::OnTabWillDetach(tabs::TabInterface* tab,
   }
 
   // Close the UI elements (toast and overlay) without ending the session.
-  tab->GetTabFeatures()->tab_dialog_manager()->CloseDialog();
+  tabs::TabDialogManager::From(tab)->CloseDialog();
   bubble_ui_.reset();
   overlay_view_.reset();
 }
@@ -258,7 +257,7 @@ void SessionUiImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
               const bool was_actively_listening =
                   state == SessionState::kTranscribing ||
                   state == SessionState::kStreamInitializing;
-              tab_weak->GetTabFeatures()->tab_dialog_manager()->CloseDialog();
+              tabs::TabDialogManager::From(tab_weak.get())->CloseDialog();
               self->overlay_view_.reset();
               self->controller_->FinalizeAndShutdown(
                   DictationStreamEndTrigger::kShutdown);

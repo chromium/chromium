@@ -37,11 +37,9 @@ source_set("tabs_public") {
     "//content/public/common:buildflags",
     "//extensions/buildflags",
     "//rlz/buildflags",
-  ]
-  deps = [
-    "//content/public/browser",
     "//ui/base/unowned_user_data",
   ]
+  deps = [ "//content/public/browser" ]
 }
 
 # These enums should not need to depend on chrome/browser/ui. They have been

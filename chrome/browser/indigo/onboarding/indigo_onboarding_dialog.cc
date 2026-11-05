@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -191,7 +190,7 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
   delegate_->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  auto* tab_dialog_manager = tab.GetTabFeatures()->tab_dialog_manager();
+  auto* tab_dialog_manager = tabs::TabDialogManager::From(&tab);
   widget_ = tab_dialog_manager->CreateTabScopedDialog(delegate_.get());
   widget_->MakeCloseSynchronous(base::BindOnce(
       &IndigoOnboardingDialog::OnWidgetClosed, weak_ptr_factory_.GetWeakPtr()));
@@ -225,7 +224,7 @@ void IndigoOnboardingDialog::Close() {
 
 void IndigoOnboardingDialog::OnViewPreferredSizeChanged(
     views::View* observed_view) {
-  tab_->GetTabFeatures()->tab_dialog_manager()->UpdateModalDialogBounds();
+  tabs::TabDialogManager::From(tab_)->UpdateModalDialogBounds();
 }
 
 void IndigoOnboardingDialog::OnViewBoundsChanged(views::View* observed_view) {

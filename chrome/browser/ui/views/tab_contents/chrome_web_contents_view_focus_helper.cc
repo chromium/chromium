@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -75,9 +74,7 @@ bool ChromeWebContentsViewFocusHelper::Focus() {
       tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
   // WebApps and unit tests don't have TabFeatures and TabDialogManager.
   tabs::TabDialogManager* tab_dialog_manager =
-      tab_interface && tab_interface->GetTabFeatures()
-          ? tab_interface->GetTabFeatures()->tab_dialog_manager()
-          : nullptr;
+      tabs::TabDialogManager::From(tab_interface);
   if (tab_dialog_manager && tab_dialog_manager->MaybeActivateDialog()) {
     return true;
   }
