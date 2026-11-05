@@ -5475,7 +5475,6 @@ interface HTMLTableSectionElement : HTMLElement
     setter vAlign
 interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
-    getter buffer
     getter content
     getter crossOrigin
     getter htmlFor
@@ -5492,7 +5491,6 @@ interface HTMLTemplateElement : HTMLElement
     getter shadowRootSlotAssignment
     getter src
     method constructor
-    setter buffer
     setter crossOrigin
     setter htmlFor
     setter integrity

@@ -1215,7 +1215,6 @@ html element td
     property vAlign
     property width
 html element template
-    property buffer
     property content
     property crossOrigin
     property htmlFor

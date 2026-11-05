@@ -34,7 +34,6 @@ class Patch : public GarbageCollected<Patch> {
 
   ContainerNode* parent() const { return parent_.Get(); }
   Node* end_marker() const { return end_marker_.Get(); }
-  bool is_buffered() const { return is_buffered_; }
   bool IsExternal() const { return !!loader_; }
 
   virtual void Trace(Visitor* visitor) const;
@@ -43,14 +42,12 @@ class Patch : public GarbageCollected<Patch> {
         ContainerNode* parent,
         Node* start_marker,
         Node* end_marker,
-        bool is_buffered,
         HTMLTemplateElement* template_element);
 
  private:
   Member<ContainerNode> parent_;
   Member<Node> start_marker_;
   Member<Node> end_marker_;
-  bool is_buffered_;
 
   Member<ExternalPatchLoader> loader_;
 };

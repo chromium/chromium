@@ -202,7 +202,7 @@ static inline void Insert(HTMLConstructionSite::InsertionLocation location,
   if (auto* template_element =
           DynamicTo<HTMLTemplateElement>(*location.parent)) {
     auto* patch = template_element->GetPatch();
-    if (patch && !patch->is_buffered()) {
+    if (patch && !patch->IsExternal()) {
       patch->Apply(location);
     } else {
       location.parent = template_element->InsertionTarget();
@@ -971,8 +971,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
       }
     }
 
-    if (!patch_target.empty() && !patch->is_buffered() &&
-        !patch->IsExternal()) {
+    if (!patch_target.empty() && !patch->IsExternal()) {
       return;
     }
 
@@ -1093,7 +1092,7 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
     // If the Document was detached in the middle of parsing, the template
     // element won't be able to initialize its contents.
     auto* patch = template_element->GetPatch();
-    if (patch && !patch->is_buffered()) {
+    if (patch && !patch->IsExternal()) {
       patch->Apply(location);
     } else {
       location.parent = template_element->InsertionTarget();
@@ -1194,7 +1193,7 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
       AdjustInsertionLocation(CurrentInsertionLocation()).parent;
   while (auto* template_element = DynamicTo<HTMLTemplateElement>(parent)) {
     if (auto* patch = template_element->GetPatch()) {
-      if (!patch->is_buffered()) {
+      if (!patch->IsExternal()) {
         parent = patch->parent();
         continue;
       }
@@ -1284,7 +1283,7 @@ Element* HTMLConstructionSite::CreateElement(
   }
   if (intended_parent != open_elements_.RootNode()) {
     if (auto* tmpl = DynamicTo<HTMLTemplateElement>(intended_parent)) {
-      if (tmpl->GetPatch() && !tmpl->GetPatch()->is_buffered()) {
+      if (tmpl->GetPatch() && !tmpl->GetPatch()->IsExternal()) {
         // Keep custom_element_registry_
       } else if (tmpl->IsShadowRootModeTemplate()) {
         // For declarative shadow root templates, the insertion target is the

@@ -107,36 +107,21 @@ void ExternalPatchLoader::ResponseReceived(Resource* resource,
     return;
   }
 
-  DocumentFragment* fragment = nullptr;
-  if (owner_->is_buffered()) {
-    fragment = template_->content();
-    fragment->RemoveChildren();
-  } else {
-    fragment = DocumentFragment::Create(template_->GetDocument());
-  }
-
-  ContainerNode* target = owner_->is_buffered() ? fragment : owner_->parent();
-  ParserRootInsertionPoint* root_insertion_point = nullptr;
-
-  if (!owner_->is_buffered()) {
-    // For targeted streaming, parse directly into target scope
-    // Use end marker as the anchor node for insertion
-    root_insertion_point = MakeGarbageCollected<ParserRootInsertionPoint>(
-        *target, owner_->end_marker());
-  }
+  DocumentFragment* fragment =
+      DocumentFragment::Create(template_->GetDocument());
+  ContainerNode* target = owner_->parent();
+  ParserRootInsertionPoint* root_insertion_point =
+      MakeGarbageCollected<ParserRootInsertionPoint>(*target,
+                                                     owner_->end_marker());
 
   Element* context_element = DynamicTo<Element>(target);
   if (!context_element) {
     context_element = template_;
   }
 
-  ParserContentPolicy content_policy =
-      owner_->is_buffered()
-          ? ParserContentPolicy::kDisallowScriptingAndPluginContent
-          : ParserContentPolicy::kAllowScriptingContentAndMarkAsParserInserted;
-
   parser_ = MakeGarbageCollected<HTMLDocumentParser>(
-      fragment, context_element, content_policy,
+      fragment, context_element,
+      ParserContentPolicy::kAllowScriptingContentAndMarkAsParserInserted,
       ParserPrefetchPolicy::kDisallowPrefetching, nullptr, nullptr,
       root_insertion_point);
 
@@ -148,21 +133,30 @@ void ExternalPatchLoader::ResponseReceived(Resource* resource,
 void ExternalPatchLoader::DataReceived(Resource* resource,
                                        base::span<const char> data) {
   CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
-  if (ready_state_ != kErrorOccurred && parser_) {
+  if (ready_state_ != kErrorOccurred && parser_ &&
+      resource->GetIntegrityMetadata().empty()) {
     parser_->AppendBytes(base::as_bytes(data));
   }
 }
 
 void ExternalPatchLoader::NotifyFinished(Resource* resource) {
   CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
+  const bool errored = ready_state_ == kErrorOccurred ||
+                       resource->ErrorOccurred() ||
+                       !resource->PassedIntegrityChecks();
+  if (!errored && parser_ && !resource->GetIntegrityMetadata().empty()) {
+    if (const SharedBuffer* buffer = resource->ResourceBuffer().get()) {
+      for (const auto& span : *buffer) {
+        parser_->AppendBytes(base::as_bytes(span));
+      }
+    }
+  }
+
   if (parser_) {
     static_cast<DocumentParser*>(parser_.Get())->Finish();
     parser_ = nullptr;
   }
 
-  const bool errored = ready_state_ == kErrorOccurred ||
-                       resource->ErrorOccurred() ||
-                       !resource->PassedIntegrityChecks();
   ready_state_ = errored ? kErrorOccurred : kReady;
   resource_ = nullptr;
 
