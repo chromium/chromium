@@ -111,6 +111,7 @@ WindowAndroid::WindowAndroid(JNIEnv* env,
   mouse_wheel_scroll_factor_ =
       scroll_factor > 0 ? scroll_factor
                         : kDefaultMouseWheelTickMultiplier * GetDipScale();
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
 }
 
 void WindowAndroid::Destroy(JNIEnv* env) {
@@ -474,6 +475,10 @@ ui::RendererColorMap WindowAndroid::GetRendererColorMap(
 
 ui::ColorProviderKey WindowAndroid::GetColorProviderKey() const {
   return GetColorProviderKeyImpl(ColorProviderBridge::HasInstance());
+}
+
+void WindowAndroid::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  NotifyColorProviderChanged();
 }
 
 ui::ColorProviderKey WindowAndroid::GetColorProviderKeyForTesting(

@@ -971,6 +971,7 @@ test("ui_android_unittests") {
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
+    "//ui/native_theme",
     "//ui/resources:ui_test_pak",
   ]
 

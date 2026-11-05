@@ -200,9 +200,12 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelAndroidBrowserTest,
   content::WebContents* side_panel_contents =
       controller->GetWebContentsForTesting();
   ASSERT_NE(nullptr, side_panel_contents);
-  ui::WindowAndroid* src_side_panel_window =
-      side_panel_contents->GetTopLevelNativeWindow();
-  ASSERT_NE(nullptr, src_side_panel_window);
+  ASSERT_NE(nullptr, side_panel_contents->GetTopLevelNativeWindow());
+  // Hold the Java WindowAndroid rather than the native pointer: the native
+  // WindowAndroid is destroyed on detach and its heap slot can be reused by
+  // the destination WindowAndroid allocation.
+  jni_zero::ScopedJavaLocalRef<jobject> src_side_panel_window =
+      side_panel_contents->GetTopLevelNativeWindow()->GetJavaObject();
 
   BrowserWindowInterface* dst_window =
       CreateBrowserWindowAsync(browser_->GetProfile());
@@ -243,8 +246,12 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelAndroidBrowserTest,
             tab->GetContents()->GetTopLevelNativeWindow());
   ui::WindowAndroid* dst_side_panel_window =
       side_panel_contents->GetTopLevelNativeWindow();
-  EXPECT_NE(nullptr, dst_side_panel_window);
-  EXPECT_NE(src_side_panel_window, dst_side_panel_window);
+  ASSERT_NE(nullptr, dst_side_panel_window);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  EXPECT_FALSE(src_side_panel_window.IsSameObject(
+      env, dst_side_panel_window->GetJavaObject()));
+  EXPECT_TRUE(dst_side_panel_window->GetContext().IsSameObject(
+      env, GetWindowAndroid(dst_window)->GetContext()));
 }
 
 // When focus is inside the Customize Chrome ThinWebView, its WebContents is

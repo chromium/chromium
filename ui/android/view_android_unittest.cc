@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +26,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/color/android/color_provider_bridge.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
@@ -32,6 +34,7 @@
 #include "ui/events/test/scoped_event_test_tick_clock.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ui {
 
@@ -698,6 +701,41 @@ TEST(ViewAndroidTest, WindowAndroidColorProviderKeyKeepsContextWithBridge) {
   EXPECT_NE(key.context_hash, 0);
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_FALSE(key.context.get(env).is_null());
+}
+
+class TestColorProviderSourceObserver : public ColorProviderSourceObserver {
+ public:
+  explicit TestColorProviderSourceObserver(ColorProviderSource* source)
+      : ColorProviderSourceObserver(source) {}
+
+  void OnColorProviderChanged() override { ++notified_count_; }
+
+  int notified_count() const { return notified_count_; }
+
+ private:
+  int notified_count_ = 0;
+};
+
+TEST(ViewAndroidTest, WindowAndroidObservesWebNativeTheme) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  ui::WindowAndroid* window_android = window->get();
+
+  ui::NativeTheme* web_theme = ui::NativeTheme::GetInstanceForWeb();
+  auto original_user_color = web_theme->user_color();
+  base::ScopedClosureRunner restore_web_theme(
+      base::BindLambdaForTesting([web_theme, original_user_color]() {
+        web_theme->set_user_color(original_user_color);
+        web_theme->NotifyOnNativeThemeUpdated();
+      }));
+
+  web_theme->set_user_color(SK_ColorGREEN);
+  EXPECT_EQ(window_android->GetColorProviderKey().user_color, SK_ColorGREEN);
+
+  TestColorProviderSourceObserver observer(window_android);
+  EXPECT_EQ(observer.notified_count(), 0);
+  web_theme->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(observer.notified_count(), 1);
 }
 
 TEST(ViewAndroidTest, OnCursorChangedScalesCustomCursorToDip) {
