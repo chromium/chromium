@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <!-- TODO(crbug.com/580967946): Confirm sheet dimensions with UX. -->
+    <dimen name="adaptive_ui_sheet_horizontal_margin">24dp</dimen>
+    <dimen name="adaptive_ui_sheet_vertical_margin">16dp</dimen>
+    <dimen name="adaptive_ui_sheet_icon_size">24dp</dimen>
+    <dimen name="adaptive_ui_sheet_button_spacing">8dp</dimen>
+</resources>

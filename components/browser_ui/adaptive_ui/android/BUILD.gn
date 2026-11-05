@@ -12,13 +12,17 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntry.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiProperties.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiScope.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinator.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetViewBinder.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -28,8 +32,14 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/adaptive_ui_dialog_body.xml" ]
+  sources = [
+    "java/res/layout/adaptive_ui_dialog_body.xml",
+    "java/res/layout/adaptive_ui_sheet.xml",
+    "java/res/values/dimens.xml",
+  ]
   deps = [
+    "//components/browser_ui/bottomsheet/android:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
@@ -39,6 +49,7 @@ robolectric_library("junit") {
   sources = [
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinatorTest.java",
     "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntryTest.java",
+    "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinatorTest.java",
   ]
   deps = [
     ":java",
@@ -46,9 +57,11 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
