@@ -4,15 +4,23 @@
 
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 
+#include <unistd.h>
+
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/config/linux/dbus/buildflags.h"
+#include "media/capture/capture_switches.h"
 #include "media/capture/video/linux/video_capture_device_factory_webrtc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -104,6 +112,91 @@ INSTANTIATE_TEST_SUITE_P(
                       webrtc::VideoCaptureOptions::Status::DENIED,
                       webrtc::VideoCaptureOptions::Status::ERROR,
                       webrtc::VideoCaptureOptions::Status::SUCCESS));
+
+#if BUILDFLAG(USE_DBUS)
+// Replaces the Camera portal with a fixed result and records the PipeWire fd
+// that WebRTC gets.
+class FakeCameraPortalFactory : public VideoCaptureDeviceFactoryWebRtc {
+ public:
+  explicit FakeCameraPortalFactory(
+      std::optional<dbus_xdg::CameraPortalError> error)
+      : error_(error) {}
+  ~FakeCameraPortalFactory() override = default;
+
+  // The fd passed to WebRTC, or nullopt if WebRTC wasn't initialized.
+  const std::optional<int>& pipewire_fd() const { return pipewire_fd_; }
+  // The fd that the fake portal returned.
+  int portal_fd() const { return portal_fd_; }
+
+ protected:
+  void OpenCameraPortal(dbus_xdg::CameraPortalCallback callback) override {
+    dbus_xdg::CameraPortalResult result =
+        base::unexpected(dbus_xdg::CameraPortalError::kFailed);
+    if (error_) {
+      result = base::unexpected(*error_);
+    } else {
+      base::ScopedFD read_end;
+      base::ScopedFD write_end;
+      CHECK(base::CreatePipe(&read_end, &write_end));
+      portal_fd_ = read_end.get();
+      result = std::move(read_end);
+    }
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  }
+
+  void InitOptions(int pipewire_fd) override {
+    pipewire_fd_ = pipewire_fd;
+    // Take ownership like WebRTC does.
+    base::ScopedFD fd(pipewire_fd);
+    OnInitialized(webrtc::VideoCaptureOptions::Status::ERROR);
+  }
+
+ private:
+  const std::optional<dbus_xdg::CameraPortalError> error_;
+  std::optional<int> pipewire_fd_;
+  int portal_fd_ = -1;
+};
+
+class VideoCaptureDeviceFactoryWebRtcCameraPortalTest : public testing::Test {
+ protected:
+  void GetDevicesInfo(VideoCaptureDeviceFactoryWebRtc& factory) {
+    base::RunLoop run_loop;
+    factory.GetDevicesInfo(base::BindLambdaForTesting(
+        [&](std::vector<VideoCaptureDeviceInfo> result) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  base::test::ScopedFeatureList feature_list_{features::kWebRtcPipeWireCamera};
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+// The PipeWire fd from the Camera portal connection is passed to WebRTC.
+TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest, PassesFdToWebRtc) {
+  FakeCameraPortalFactory factory(std::nullopt);
+  GetDevicesInfo(factory);
+  ASSERT_TRUE(factory.pipewire_fd());
+  EXPECT_NE(*factory.pipewire_fd(), -1);
+  EXPECT_EQ(*factory.pipewire_fd(), factory.portal_fd());
+}
+
+// When the user denies access, WebRTC doesn't open the portal again.
+TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest, DeniedSkipsWebRtc) {
+  FakeCameraPortalFactory factory(dbus_xdg::CameraPortalError::kDenied);
+  GetDevicesInfo(factory);
+  EXPECT_FALSE(factory.pipewire_fd());
+  EXPECT_FALSE(factory.IsAvailable());
+}
+
+// When the dedicated connection fails, WebRTC opens the portal itself.
+TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest,
+       FailureFallsBackToWebRtcPortal) {
+  FakeCameraPortalFactory factory(dbus_xdg::CameraPortalError::kFailed);
+  GetDevicesInfo(factory);
+  ASSERT_TRUE(factory.pipewire_fd());
+  EXPECT_EQ(*factory.pipewire_fd(), -1);
+}
+#endif  // BUILDFLAG(USE_DBUS)
 
 }  // namespace
 

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//third_party/webrtc/webrtc.gni")
 
 assert(is_linux || is_chromeos)
@@ -70,6 +71,14 @@ source_set("linux") {
     "//ui/display",
     "//ui/gfx",
   ]
+
+  if (rtc_use_pipewire) {
+    # video_capture_device_factory_webrtc.h includes these.
+    public_deps += [ "//build/config/linux/dbus:buildflags" ]
+    if (use_dbus) {
+      public_deps += [ "//components/dbus" ]
+    }
+  }
 }
 
 source_set("test_support") {

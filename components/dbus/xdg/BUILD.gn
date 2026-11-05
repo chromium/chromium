@@ -7,6 +7,8 @@ source_set("xdg") {
   sources = [
     "background_portal.cc",
     "background_portal.h",
+    "camera_portal.cc",
+    "camera_portal.h",
     "file_transfer_portal.cc",
     "file_transfer_portal.h",
     "inhibit_session_monitor.cc",
@@ -43,6 +45,7 @@ source_set("unit_tests") {
   visibility = [ "//components/dbus:unit_tests" ]
   sources = [
     "background_portal_unittest.cc",
+    "camera_portal_unittest.cc",
     "file_transfer_portal_unittest.cc",
     "inhibit_session_monitor_unittest.cc",
     "portal_unittest.cc",
