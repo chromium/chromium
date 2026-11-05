@@ -798,6 +798,11 @@ bool ContextualTasksWebContentsUserData::HasContextLibraryTabs() {
 }
 
 bool ContextualTasksWebContentsUserData::ShouldMountContextLibrary() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  if (!CanShareTabContext(profile)) {
+    return false;
+  }
   return HasContextLibraryTabs() || IsSmartTabSharingActive();
 }
 
@@ -1119,7 +1124,9 @@ void ContextualTasksWebContentsUserData::
   }
 
   if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksContextLibrary)) {
+          contextual_tasks::kContextualTasksContextLibrary) ||
+      !CanShareTabContext(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()))) {
     base::UmaHistogramEnumeration(
         "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
         ThreadContextLibraryUpdateOutcome::kFeatureDisabled);
