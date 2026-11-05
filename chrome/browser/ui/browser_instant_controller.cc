@@ -54,7 +54,8 @@ BrowserInstantController::~BrowserInstantController() = default;
 // static
 BrowserInstantController* BrowserInstantController::From(
     BrowserWindowInterface* browser_window) {
-  return Get(browser_window->GetUnownedUserDataHost());
+  return browser_window ? Get(browser_window->GetUnownedUserDataHost())
+                        : nullptr;
 }
 
 void BrowserInstantController::OnSearchEngineBaseURLChanged(

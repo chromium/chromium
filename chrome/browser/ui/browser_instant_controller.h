@@ -30,7 +30,8 @@ class BrowserInstantController {
 
   ~BrowserInstantController();
 
-  // Returns the controller for `browser_window`, or null if it has none.
+  // Returns the controller for `browser_window`, or null if `browser_window` is
+  // null or has none.
   static BrowserInstantController* From(BrowserWindowInterface* browser_window);
 
  private:

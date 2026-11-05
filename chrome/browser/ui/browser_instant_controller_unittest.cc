@@ -312,6 +312,7 @@ TEST_F(BrowserInstantControllerTest, LooksUpTabListLazily) {
 
 // The controller registers itself as unowned user data of its browser window.
 TEST_F(BrowserInstantControllerTest, IsRetrievableFromBrowserWindow) {
+  EXPECT_EQ(nullptr, BrowserInstantController::From(nullptr));
   EXPECT_EQ(nullptr, BrowserInstantController::From(browser_window()));
 
   CreateController();
