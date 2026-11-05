@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/ttc/app/public/debug_sink.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -336,6 +337,20 @@ void AudioControllerImpl::OnInputDeviceParametersReceived(
           .noise_suppression = processing_settings->noise_suppression,
           .automatic_gain_control = processing_settings->automatic_gain_control,
       };
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      // CRAS applies the per-board effects that AudioManagerCras sets in
+      // `device_params`.
+      const int effects = device_params->effects();
+      format.processing = DebugSink::CaptureFormat::Processing{
+          .echo_cancellation =
+              (effects & media::AudioParameters::ECHO_CANCELLER) != 0,
+          .noise_suppression =
+              (effects & media::AudioParameters::NOISE_SUPPRESSION) != 0,
+          .automatic_gain_control =
+              (effects & media::AudioParameters::AUTOMATIC_GAIN_CONTROL) != 0,
+      };
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
     debug_sink_->OnCaptureFormat(format);
   }

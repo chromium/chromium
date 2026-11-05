@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "media/audio/audio_system_impl.h"
@@ -679,6 +680,47 @@ TEST_F(AudioControllerImplTest, HardwareLackingAecEngagesSoftwareAec) {
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AudioControllerImplTest, ChromeOSUsesAndReportsBoardCrasEffects) {
+  // A board with tuned AEC and NS but no AGC.
+  constexpr int kBoardEffects =
+      media::AudioParameters::ECHO_CANCELLER |
+      media::AudioParameters::NOISE_SUPPRESSION |
+      media::AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
+  media::AudioParameters device_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
+  device_params.set_effects(kBoardEffects);
+  audio_manager_.SetInputStreamParameters(device_params);
+
+  FakeStreamFactoryForAec fake_factory;
+  auto fake_binder = base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+        fake_factory.Bind(std::move(receiver));
+      });
+  RecordingDebugSink debug_sink;
+  AudioControllerImpl controller(fake_binder, GetAudioSystemFactory(),
+                                 &debug_sink);
+
+  controller.StartCapture(/*device_id=*/"");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_factory.last_params().sample_rate() > 0; }));
+
+  EXPECT_FALSE(fake_factory.has_processing_config());
+  EXPECT_FALSE(fake_factory.last_enable_agc());
+  EXPECT_EQ(fake_factory.last_params().effects(), kBoardEffects);
+
+  ASSERT_EQ(debug_sink.capture_formats.size(), 1u);
+  const DebugSink::CaptureFormat& format = debug_sink.capture_formats[0];
+  EXPECT_EQ(format.sample_rate, 48000);
+  EXPECT_EQ(format.channels, 1);
+  ASSERT_TRUE(format.processing);
+  EXPECT_TRUE(format.processing->echo_cancellation);
+  EXPECT_TRUE(format.processing->noise_suppression);
+  EXPECT_FALSE(format.processing->automatic_gain_control);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(AudioControllerImplTest,
        FifoAggregatesTen10msChunksIntoOne100msChunk) {
   AudioControllerImpl controller;
@@ -810,7 +852,17 @@ TEST_F(AudioControllerImplTest, ReportsCaptureFormatToDebugSink) {
   ASSERT_EQ(debug_sink.capture_formats.size(), 1u);
   EXPECT_EQ(debug_sink.capture_formats[0].sample_rate, 44100);
   EXPECT_EQ(debug_sink.capture_formats[0].channels, 2);
+#if BUILDFLAG(IS_CHROMEOS)
+  // The fake device reports no effects. On real boards AudioManagerCras sets
+  // the AEC, NS and AGC flags it supports, and CRAS applies them.
+  ASSERT_TRUE(debug_sink.capture_formats[0].processing);
+  EXPECT_FALSE(debug_sink.capture_formats[0].processing->echo_cancellation);
+  EXPECT_FALSE(debug_sink.capture_formats[0].processing->noise_suppression);
+  EXPECT_FALSE(
+      debug_sink.capture_formats[0].processing->automatic_gain_control);
+#else
   EXPECT_FALSE(debug_sink.capture_formats[0].processing);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(AudioControllerImplTest, ReportsCaptureProcessingToDebugSink) {
