@@ -48,6 +48,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -1001,34 +1002,42 @@ std::optional<InferredLabel> InferLabelFromDefinitionList(const WebNode& dd) {
 // the different tags.
 std::optional<InferredLabel> InferLabelFromAncestors(
     const WebFormControlElement& element) {
-  std::set<std::string> seen_tag_names;
+  enum class AncestorTag { kLabel, kDiv, kTd, kDd, kLi, kMaxValue = kLi };
+  DenseSet<AncestorTag> seen_tags;
   WebNode parent = element;
   while ((parent = parent.ParentNode())) {
-    if (!parent.IsElementNode())
+    const WebElement parent_element = parent.DynamicTo<WebElement>();
+    if (!parent_element) {
       continue;
-
-    std::string tag_name = parent.To<WebElement>().TagName().Utf8();
-    if (seen_tag_names.contains(tag_name))
-      continue;
-    seen_tag_names.insert(tag_name);
+    }
 
     std::optional<InferredLabel> r;
-    if (tag_name == "LABEL") {
-      r = InferredLabel::BuildIfValid(FindChildText(parent),
-                                      LabelSource::kLabelTag);
-    } else if (tag_name == "DIV") {
-      r = InferLabelFromDivTable(element);
-    } else if (tag_name == "TD") {
-      r = InferLabelFromTableColumn(parent);
-      if (!r) {
-        r = InferLabelFromTableRow(parent);
+    if (HasTagName<kLabel>(parent_element)) {
+      if (seen_tags.insert(AncestorTag::kLabel).second) {
+        r = InferredLabel::BuildIfValid(FindChildText(parent),
+                                        LabelSource::kLabelTag);
       }
-    } else if (tag_name == "DD") {
-      r = InferLabelFromDefinitionList(parent);
-    } else if (tag_name == "LI") {
-      r = InferredLabel::BuildIfValid(FindChildText(parent),
-                                      LabelSource::kLiTag);
-    } else if (tag_name == "FIELDSET") {
+    } else if (HasTagName<kDiv>(parent_element)) {
+      if (seen_tags.insert(AncestorTag::kDiv).second) {
+        r = InferLabelFromDivTable(element);
+      }
+    } else if (HasTagName<kTableCell>(parent_element)) {
+      if (seen_tags.insert(AncestorTag::kTd).second) {
+        r = InferLabelFromTableColumn(parent);
+        if (!r) {
+          r = InferLabelFromTableRow(parent);
+        }
+      }
+    } else if (HasTagName<kDefinitionDescriptionTag>(parent_element)) {
+      if (seen_tags.insert(AncestorTag::kDd).second) {
+        r = InferLabelFromDefinitionList(parent);
+      }
+    } else if (HasTagName<kListItem>(parent_element)) {
+      if (seen_tags.insert(AncestorTag::kLi).second) {
+        r = InferredLabel::BuildIfValid(FindChildText(parent),
+                                        LabelSource::kLiTag);
+      }
+    } else if (HasTagName<kFieldset>(parent_element)) {
       break;
     }
     if (r) {
