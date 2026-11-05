@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Tests for how `rust_api_from_cpp` handles forward-declared (incomplete) C++
+# types.
+
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":definition_rs_api",
+    ":usage_rs_api",
+    "//build/rust/crubit:forward_declare",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+rust_api_from_cpp("definition_rs_api") {
+  testonly = true
+  bindings_target = ":definition"
+  public_headers = [ "definition.h" ]
+}
+
+source_set("definition") {
+  testonly = true
+  sources = [ "definition.h" ]
+}
+
+rust_api_from_cpp("usage_rs_api") {
+  testonly = true
+  bindings_target = ":usage"
+  public_headers = [ "usage.h" ]
+}
+
+source_set("usage") {
+  testonly = true
+  sources = [
+    "usage.cc",
+    "usage.h",
+  ]
+
+  # Only the `.cc` file depends on the definition.  The `.h` file uses a
+  # forward declaration.
+  deps = [ ":definition" ]
+}

@@ -10,6 +10,7 @@ group("test_rust_api_from_cpp") {
   deps = [
     ":rust_api_from_cpp_unittests",
     "extra_rust_sources:rust_unittests",
+    "forward_declare:rust_unittests",
     "lifetimes:rust_unittests",
     "round_trip:cpp_unittests",
     "round_trip:rust_unittests",
