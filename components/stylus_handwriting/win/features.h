@@ -17,6 +17,11 @@ BASE_DECLARE_FEATURE(kStylusHandwritingWin);
 COMPONENT_EXPORT(STYLUS_HANDWRITING_WIN)
 extern bool IsStylusHandwritingWinEnabled();
 
+// Disabling this restores scroll-based writing without the small-gesture
+// handwriting state machine.
+COMPONENT_EXPORT(STYLUS_HANDWRITING_WIN)
+BASE_DECLARE_FEATURE_PARAM(bool, kStylusHandwritingWinSmallGestures);
+
 // HIMETRIC unit movement threshold to start stylus handwriting for gestures
 // beneath the stylus slop threshold.
 COMPONENT_EXPORT(STYLUS_HANDWRITING_WIN)

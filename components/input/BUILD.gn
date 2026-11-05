@@ -61,6 +61,8 @@ component("input") {
     "render_widget_targeter.h",
     "stylus_handwriting_handler.cc",
     "stylus_handwriting_handler.h",
+    "stylus_handwriting_handler_factory.cc",
+    "stylus_handwriting_handler_factory.h",
     "switches.cc",
     "switches.h",
     "tap_suppression_controller.cc",

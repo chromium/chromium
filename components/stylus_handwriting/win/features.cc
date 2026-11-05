@@ -12,6 +12,11 @@ bool IsStylusHandwritingWinEnabled() {
   return base::FeatureList::IsEnabled(kStylusHandwritingWin);
 }
 
+BASE_FEATURE_PARAM(bool,
+                   kStylusHandwritingWinSmallGestures,
+                   &kStylusHandwritingWin,
+                   true);
+
 BASE_FEATURE_PARAM(int,
                    kStylusHandwritingWinSmallGestureMovementThresholdHm,
                    &kStylusHandwritingWin,

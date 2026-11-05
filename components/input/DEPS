@@ -14,7 +14,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "stylus_handwriting_handler_win(_unittest)?\\.cc": [
+  "stylus_handwriting_handler_(factory|win(_unittest)?)\\.cc": [
     "+components/stylus_handwriting/win/features.h",
   ],
 }
