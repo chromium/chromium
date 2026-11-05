@@ -405,6 +405,14 @@ viz::HostFrameSinkManager* InProcessContextFactory::GetHostFrameSinkManager() {
   return host_frame_sink_manager_;
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+InProcessContextFactory::GetCompositorTaskRunner() {
+  if (compositor_task_runner_) {
+    return compositor_task_runner_;
+  }
+  return ContextFactory::GetCompositorTaskRunner();
+}
+
 SkM44 InProcessContextFactory::GetOutputColorMatrix(
     Compositor* compositor) const {
   auto iter = per_compositor_data_.find(compositor);

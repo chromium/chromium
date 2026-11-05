@@ -78,6 +78,11 @@
 
 namespace ui {
 
+scoped_refptr<base::SingleThreadTaskRunner>
+ContextFactory::GetCompositorTaskRunner() {
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
+}
+
 #if !BUILDFLAG(IS_IOS)
 Compositor::PendingBeginFrameArgs::PendingBeginFrameArgs(
     const viz::BeginFrameArgs& args,

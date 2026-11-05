@@ -612,6 +612,9 @@ BASE_FEATURE(kPreloadActivationReportWithExtensionInterception,
 // feature.
 BASE_FEATURE(kPreloadingConfig, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrioritizeCompositorTaskRunnerOnStartup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrioritizeResizeTaskRunnerOnStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

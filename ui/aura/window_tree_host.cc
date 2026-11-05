@@ -557,9 +557,12 @@ void WindowTreeHost::CreateCompositor(bool use_external_begin_frame_control,
   Env* env = Env::GetInstance();
   ui::ContextFactory* context_factory = env->context_factory();
   CHECK(context_factory, base::NotFatalUntil::M163);
+  // Note: `ui::Compositor` retains this task runner for its entire lifetime
+  // (including after startup completes). Implementations that prioritize a
+  // startup queue should reset that queue's priority once startup finishes.
   compositor_ = std::make_unique<ui::Compositor>(
       context_factory->AllocateFrameSinkId(), context_factory,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      context_factory->GetCompositorTaskRunner(),
       features::IsPixelCanvasRecordingEnabled(),
       use_external_begin_frame_control, enable_compositing_based_throttling,
       memory_limit_when_visible_mb);

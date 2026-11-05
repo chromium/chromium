@@ -33,8 +33,10 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -272,6 +274,19 @@ viz::SubtreeCaptureId VizProcessTransportFactory::AllocateSubtreeCaptureId() {
 viz::HostFrameSinkManager*
 VizProcessTransportFactory::GetHostFrameSinkManager() {
   return host_frame_sink_manager_;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+VizProcessTransportFactory::GetCompositorTaskRunner() {
+  if (!base::FeatureList::IsEnabled(
+          features::kPrioritizeCompositorTaskRunnerOnStartup) ||
+      GetContentClient()->browser()->IsBrowserStartupComplete()) {
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
+  // Compositors created during startup keep `resize_task_runner_` (`kStartup`)
+  // for their lifetime; `BrowserTaskQueues::OnStartupComplete()` resets
+  // `kStartup` back to `kNormalPriority` once startup completes.
+  return resize_task_runner_;
 }
 
 void VizProcessTransportFactory::DisableGpuCompositing() {

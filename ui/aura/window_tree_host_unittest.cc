@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -22,6 +23,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/compositor/test/in_process_context_factory.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/test_event_rewriter.h"
@@ -834,6 +836,16 @@ TEST_F(WindowTreeHostTest, IsKeyLockedWithSimpleKeyboardHook) {
   EXPECT_TRUE(host()->IsKeyLocked(ui::DomCode::US_A));
   EXPECT_TRUE(host()->IsKeyLocked(ui::DomCode::US_B));
   EXPECT_FALSE(host()->IsKeyLocked(ui::DomCode::NONE));
+}
+
+TEST_F(WindowTreeHostTest, CreateCompositorUsesContextFactoryTaskRunner) {
+  auto custom_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto* context_factory = static_cast<ui::InProcessContextFactory*>(
+      Env::GetInstance()->context_factory());
+  context_factory->set_compositor_task_runner(custom_task_runner);
+
+  TestWindowTreeHost custom_host;
+  EXPECT_EQ(custom_task_runner, custom_host.compositor()->task_runner());
 }
 
 }  // namespace aura

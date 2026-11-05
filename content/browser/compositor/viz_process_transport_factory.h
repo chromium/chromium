@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
@@ -73,6 +74,8 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   viz::FrameSinkId AllocateFrameSinkId() override;
   viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;
   viz::HostFrameSinkManager* GetHostFrameSinkManager() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner()
+      override;
 
   // ImageTransportFactory implementation.
   void DisableGpuCompositing() override;

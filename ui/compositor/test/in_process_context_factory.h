@@ -69,6 +69,13 @@ class InProcessContextFactory : public ContextFactory {
   viz::FrameSinkId AllocateFrameSinkId() override;
   viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;
   viz::HostFrameSinkManager* GetHostFrameSinkManager() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner()
+      override;
+
+  void set_compositor_task_runner(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    compositor_task_runner_ = std::move(task_runner);
+  }
 
   SkM44 GetOutputColorMatrix(Compositor* compositor) const;
   gfx::DisplayColorSpaces GetDisplayColorSpaces(Compositor* compositor) const;
@@ -105,6 +112,7 @@ class InProcessContextFactory : public ContextFactory {
   bool output_to_window_ = false;
   bool disable_vsync_ = false;
   double refresh_rate_ = 60.0;
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   const raw_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
 #if BUILDFLAG(IS_WIN)

@@ -134,6 +134,9 @@ class COMPOSITOR_EXPORT ContextFactory {
 
   // Gets the frame sink manager host instance.
   virtual viz::HostFrameSinkManager* GetHostFrameSinkManager() = 0;
+
+  // Gets the task runner used by a compositor created with this factory.
+  virtual scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();
 };
 
 // Factory object to create a ExternalBeginFrameControllerClient on demand.

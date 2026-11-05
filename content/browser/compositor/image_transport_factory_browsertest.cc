@@ -5,13 +5,19 @@
 #include "content/browser/compositor/image_transport_factory.h"
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/common/features.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,6 +76,48 @@ IN_PROC_BROWSER_TEST_F(ImageTransportFactoryBrowserTest,
   // flushing the network service tries to bring it back up again and there are
   // pending requests causing a DCHECK to hit.
   BrowserGpuChannelHostFactory::instance()->CloseChannel();
+}
+
+class StartupStateContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool IsBrowserStartupComplete() override { return startup_complete_; }
+  void set_startup_complete(bool complete) { startup_complete_ = complete; }
+
+ private:
+  bool startup_complete_ = false;
+};
+
+class CompositorTaskRunnerStartupBrowserTest : public ContentBrowserTest {
+ public:
+  CompositorTaskRunnerStartupBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPrioritizeResizeTaskRunnerOnStartup,
+         features::kPrioritizeCompositorTaskRunnerOnStartup},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CompositorTaskRunnerStartupBrowserTest,
+                       UsesStartupTaskRunnerOnlyUntilStartupCompletes) {
+  StartupStateContentBrowserClient test_client;
+
+  ui::ContextFactory* context_factory =
+      ImageTransportFactory::GetInstance()->GetContextFactory();
+  scoped_refptr<base::SingleThreadTaskRunner> startup_task_runner =
+      GetUIThreadTaskRunner({BrowserTaskType::kStartup});
+  scoped_refptr<base::SingleThreadTaskRunner> default_task_runner =
+      base::SingleThreadTaskRunner::GetCurrentDefault();
+  ASSERT_NE(startup_task_runner, default_task_runner);
+
+  test_client.set_startup_complete(false);
+  EXPECT_EQ(startup_task_runner, context_factory->GetCompositorTaskRunner());
+
+  test_client.set_startup_complete(true);
+  EXPECT_EQ(default_task_runner, context_factory->GetCompositorTaskRunner());
 }
 
 }  // anonymous namespace
