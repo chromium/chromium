@@ -415,17 +415,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Update.NumStaleUpdateRequestFiles" units="files"
-    expires_after="2024-10-06">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the number of zombie &quot;WebAPK update request&quot; files that
-    the update process failed to cleanup. Recorded for all WebAPKs whenever a
-    WebAPK or webapp is launched.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Update.RequestSent" enum="WebApkUpdateRequestSent"
     expires_after="2024-02-20">
   <owner>hartmanng@chromium.org</owner>

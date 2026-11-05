@@ -211,11 +211,6 @@ public class WebApkUmaRecorder {
         }
     }
 
-    /** Records to UMA the count of old "WebAPK update request" files. */
-    public static void recordNumberOfStaleWebApkUpdateRequestFiles(int count) {
-        RecordHistogram.recordCount1MHistogram("WebApk.Update.NumStaleUpdateRequestFiles", count);
-    }
-
     /** Records the network error code caught when a WebAPK is launched. */
     public static void recordNetworkErrorWhenLaunch(int errorCode) {
         RecordHistogram.recordSparseHistogram("WebApk.Launch.NetworkError", -errorCode);
