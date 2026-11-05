@@ -27,3 +27,7 @@ per-file trust_token*=file://services/network/trust_tokens/OWNERS
 
 # Files related to Client Hints.
 per-file client_hints*=file://components/embedder_support/OWNERS
+
+# Files and features related to component:Blink>SecurityFeature>LocalNetworkAccess
+per-file ip_address_space*=file://content/browser/security/local_network_access/OWNERS
+per-file local_network_access*=file://content/browser/security/local_network_access/OWNERS
