@@ -1153,12 +1153,6 @@ BASE_FEATURE(kOsSyncAccessibilitySettingsBatch3,
 // re-authenticate without first showing a notification.
 BASE_FEATURE(kOneDriveUploadImmediateReauth, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the new UI for pinned notifications will be enabled.
-// go/ongoing-ui
-// TODO(crbug.com/563193206): Remove once c/b/device_notifications is cleaned
-// up.
-BASE_FEATURE(kOngoingProcesses, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, CHOOBE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2431,12 +2425,6 @@ bool IsNotificationsInContextMenuEnabled() {
 
 bool IsNssDbClientCertsRollbackEnabled() {
   return base::FeatureList::IsEnabled(kEnableNssDbClientCertsRollback);
-}
-
-// TODO(crbug.com/563193206): Remove once c/b/device_notifications is cleaned
-// up.
-bool AreOngoingProcessesEnabled() {
-  return base::FeatureList::IsEnabled(kOngoingProcesses);
 }
 
 bool IsModifierSplitEnabled() {

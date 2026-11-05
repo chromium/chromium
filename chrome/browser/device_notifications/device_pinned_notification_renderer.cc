@@ -4,7 +4,6 @@
 
 #include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -94,20 +93,12 @@ std::unique_ptr<message_center::Notification>
 DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
   message_center::RichNotificationData data;
 #if BUILDFLAG(IS_CHROMEOS)
-  // The new pinned notification view uses a settings icon button.
-  // TODO(crbug.com/563193206): Remove AreOngoingProcessesEnabled() check once
-  // crrev.com/c/8572983 lands.
-  if (ash::features::AreOngoingProcessesEnabled()) {
-    data.buttons.emplace_back(message_center::ButtonInfo(
-        /*vector_icon=*/&(features::IsRoundedIconsEnabled()
-                              ? vector_icons::kSettingsFilledIcon
-                              : vector_icons::kSettingsOldIcon),
-        /*accessible_name=*/device_system_tray_icon_
-            ->GetContentSettingsLabel()));
-  } else {
-    data.buttons.emplace_back(
-        device_system_tray_icon_->GetContentSettingsLabel());
-  }
+  // The pinned notification view uses a settings icon button.
+  data.buttons.emplace_back(message_center::ButtonInfo(
+      /*vector_icon=*/&(features::IsRoundedIconsEnabled()
+                            ? vector_icons::kSettingsFilledIcon
+                            : vector_icons::kSettingsOldIcon),
+      /*accessible_name=*/device_system_tray_icon_->GetContentSettingsLabel()));
 #else
   data.buttons.emplace_back(
       device_system_tray_icon_->GetContentSettingsLabel());
