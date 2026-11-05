@@ -16,8 +16,6 @@ static_library("search") {
     "app_search_data_source.h",
     "app_search_provider.cc",
     "app_search_provider.h",
-    "app_service_app_result.cc",
-    "app_service_app_result.h",
     "app_zero_state_provider.cc",
     "app_zero_state_provider.h",
     "burn_in_controller.cc",

@@ -20,7 +20,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/search/app_result.h"
-#include "chrome/browser/ash/app_list/search/app_service_app_result.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
@@ -404,8 +403,8 @@ SearchProvider::Results AppSearchDataSource::GetFuzzyMatches(
 std::unique_ptr<AppResult> AppSearchDataSource::CreateResult(
     const std::string& app_id,
     bool is_recommended) {
-  return std::make_unique<AppServiceAppResult>(
-      profile_, app_id, list_controller_, is_recommended, &icon_cache_);
+  return std::make_unique<AppResult>(profile_, app_id, list_controller_,
+                                     is_recommended, &icon_cache_);
 }
 
 void AppSearchDataSource::Refresh() {
