@@ -19,13 +19,13 @@ bool UseFontVariantEmojiVariationSelector(VariationSelectorMode mode) {
 VariationSelectorMode GetVariationSelectorModeFromFontVariantEmoji(
     FontVariantEmoji font_variant_emoji) {
   switch (font_variant_emoji) {
-    case kNormalVariantEmoji:
+    case FontVariantEmoji::kNormal:
       return kUseSpecifiedVariationSelector;
-    case kTextVariantEmoji:
+    case FontVariantEmoji::kText:
       return kForceVariationSelector15;
-    case kEmojiVariantEmoji:
+    case FontVariantEmoji::kEmoji:
       return kForceVariationSelector16;
-    case kUnicodeVariantEmoji:
+    case FontVariantEmoji::kUnicode:
       return kUseUnicodeDefaultPresentation;
   }
   NOTREACHED();

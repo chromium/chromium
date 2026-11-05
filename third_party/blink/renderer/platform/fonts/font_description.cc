@@ -117,7 +117,7 @@ FontDescription::FontDescription() {
   fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
   fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
   fields_.variant_position_ = kNormalVariantPosition;
-  fields_.variant_emoji_ = kNormalVariantEmoji;
+  fields_.variant_emoji_ = static_cast<uint32_t>(FontVariantEmoji::kNormal);
   fields_.text_spacing_trim_ = static_cast<uint32_t>(TextSpacingTrim::kInitial);
 }
 

@@ -650,7 +650,7 @@ FontVariantEmoji StyleBuilderConverter::ConvertFontVariantEmoji(
   // properties. The auto generated converter does not handle this incoming
   // value.
   if (value.IsPendingSystemFontValue()) {
-    return kNormalVariantEmoji;
+    return FontVariantEmoji::kNormal;
   }
 
   return To<CSSIdentifierValue>(value).ConvertTo<FontVariantEmoji>();

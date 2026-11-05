@@ -10,13 +10,13 @@ namespace blink {
 
 String ToString(FontVariantEmoji variant_emoji) {
   switch (variant_emoji) {
-    case FontVariantEmoji::kNormalVariantEmoji:
+    case FontVariantEmoji::kNormal:
       return "Normal";
-    case FontVariantEmoji::kTextVariantEmoji:
+    case FontVariantEmoji::kText:
       return "Text";
-    case FontVariantEmoji::kEmojiVariantEmoji:
+    case FontVariantEmoji::kEmoji:
       return "Emoji";
-    case FontVariantEmoji::kUnicodeVariantEmoji:
+    case FontVariantEmoji::kUnicode:
       return "Unicode";
   }
   NOTREACHED();

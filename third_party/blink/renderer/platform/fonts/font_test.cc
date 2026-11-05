@@ -30,7 +30,7 @@ Font* CreateVerticalUprightTestFont(const AtomicString& family_name,
                                     float size) {
   return CreateTestFont(
       family_name, font_path, size, /* ligatures */ nullptr,
-      kNormalVariantEmoji, [](FontDescription* font_description) {
+      FontVariantEmoji::kNormal, [](FontDescription* font_description) {
         font_description->SetOrientation(FontOrientation::kVerticalUpright);
       });
 }

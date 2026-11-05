@@ -170,7 +170,9 @@ class CORE_EXPORT FontBuilder {
   static FontDescription::FontVariantPosition InitialVariantPosition() {
     return FontDescription::kNormalVariantPosition;
   }
-  static FontVariantEmoji InitialVariantEmoji() { return kNormalVariantEmoji; }
+  static FontVariantEmoji InitialVariantEmoji() {
+    return FontVariantEmoji::kNormal;
+  }
 
  private:
   void SetFamilyDescription(FontDescription&,

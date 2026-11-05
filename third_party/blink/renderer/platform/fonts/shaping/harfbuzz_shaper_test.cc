@@ -140,7 +140,7 @@ class HarfBuzzShaperTest : public FontTestBase {
   }
 
   Font* CreateNotoColorEmoji(
-      FontVariantEmoji variant_emoji = kNormalVariantEmoji) {
+      FontVariantEmoji variant_emoji = FontVariantEmoji::kNormal) {
     return blink::test::CreateTestFont(
         AtomicString("NotoColorEmoji"),
         blink::test::BlinkWebTestsDir() +
@@ -148,7 +148,8 @@ class HarfBuzzShaperTest : public FontTestBase {
         12, nullptr, variant_emoji);
   }
 
-  Font* CreateNotoEmoji(FontVariantEmoji variant_emoji = kNormalVariantEmoji) {
+  Font* CreateNotoEmoji(
+      FontVariantEmoji variant_emoji = FontVariantEmoji::kNormal) {
     return blink::test::CreateTestFont(
         AtomicString("NotoEmoji"),
         blink::test::BlinkWebTestsDir() +
@@ -856,8 +857,9 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVs16) {
   }
 }
 
-const FontVariantEmoji variant_emoji_values[] = {
-    kEmojiVariantEmoji, kTextVariantEmoji, kUnicodeVariantEmoji};
+const FontVariantEmoji kVariantEmojiValues[] = {FontVariantEmoji::kEmoji,
+                                                FontVariantEmoji::kText,
+                                                FontVariantEmoji::kUnicode};
 
 class FontVariantEmojiTest
     : public HarfBuzzShaperTest,
@@ -865,7 +867,7 @@ class FontVariantEmojiTest
 
 INSTANTIATE_TEST_SUITE_P(HarfBuzzShaperTest,
                          FontVariantEmojiTest,
-                         testing::ValuesIn(variant_emoji_values));
+                         testing::ValuesIn(kVariantEmojiValues));
 
 TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
 
@@ -879,11 +881,11 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
 
   for (String text : {text_default, emoji_default}) {
     bool is_text_presentation =
-        (variant_emoji == kTextVariantEmoji) ||
-        (variant_emoji == kUnicodeVariantEmoji && text == text_default);
+        (variant_emoji == FontVariantEmoji::kText) ||
+        (variant_emoji == FontVariantEmoji::kUnicode && text == text_default);
     bool is_emoji_presentation =
-        (variant_emoji == kEmojiVariantEmoji) ||
-        (variant_emoji == kUnicodeVariantEmoji && text == emoji_default);
+        (variant_emoji == FontVariantEmoji::kEmoji) ||
+        (variant_emoji == FontVariantEmoji::kUnicode && text == emoji_default);
 
     const char* expected_name_for_mono_requested_font =
         is_text_presentation ? kNotoEmojiFontName : kSystemColorEmojiFont;
@@ -907,7 +909,7 @@ TEST_F(HarfBuzzShaperTest, VsOverrideFontVariantEmoji) {
   String text(u"\u2603\u2614\ufe0e\u2603\ufe0f");
   Font* font = blink::test::CreateTestFont(
       AtomicString("Ahem"), blink::test::PlatformTestDataPath("Ahem.woff"), 12,
-      nullptr, kEmojiVariantEmoji);
+      nullptr, FontVariantEmoji::kEmoji);
 
   HeapVector<ShapeResult::RunFontData> run_font_data;
   HarfBuzzShaper shaper(text);
@@ -932,7 +934,7 @@ TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
   const char* mono_font_name = kSystemMonoEmojiFont;
 #endif
   String text(u"\u26CE");
-  Font* color_font = CreateNotoColorEmoji(FontVariantEmoji::kTextVariantEmoji);
+  Font* color_font = CreateNotoColorEmoji(FontVariantEmoji::kText);
   EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*color_font, text),
             StringView(mono_font_name));
 }

@@ -209,8 +209,8 @@ TEST_F(FontDescriptionTest, VariantEmojiDifferentCacheKey) {
   FontDescription a;
   FontDescription b(a);
 
-  FontVariantEmoji variant_emoji_a = kEmojiVariantEmoji;
-  FontVariantEmoji variant_emoji_b = kUnicodeVariantEmoji;
+  FontVariantEmoji variant_emoji_a = FontVariantEmoji::kEmoji;
+  FontVariantEmoji variant_emoji_b = FontVariantEmoji::kUnicode;
 
   a.SetVariantEmoji(variant_emoji_a);
   b.SetVariantEmoji(variant_emoji_b);

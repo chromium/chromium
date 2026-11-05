@@ -8,14 +8,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-enum FontVariantEmoji {
-  kNormalVariantEmoji,
-  kTextVariantEmoji,
-  kEmojiVariantEmoji,
-  kUnicodeVariantEmoji
-};
+
+// https://drafts.csswg.org/css-fonts/#font-variant-emoji-prop
+enum class FontVariantEmoji { kNormal, kText, kEmoji, kUnicode };
 
 String ToString(FontVariantEmoji);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_VARIANT_EMOJI_H_

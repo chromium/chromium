@@ -460,7 +460,7 @@ class PLATFORM_EXPORT FontDescription {
     fields_.variant_position_ = variant_position;
   }
   void SetVariantEmoji(FontVariantEmoji variant_emoji) {
-    fields_.variant_emoji_ = variant_emoji;
+    fields_.variant_emoji_ = static_cast<uint32_t>(variant_emoji);
   }
   void SetWordSpacing(const Length& s) { word_spacing_ = s; }
   void SetLetterSpacing(const Length& s) {
