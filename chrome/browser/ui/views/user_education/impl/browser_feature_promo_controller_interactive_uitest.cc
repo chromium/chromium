@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -29,7 +31,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
@@ -68,12 +70,14 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -293,16 +297,50 @@ class BrowserFeaturePromoControllerUiTest
                            build_params) {
                       auto* const anchor_element =
                           build_params.anchor_element.get();
+                      views::View* anchor_view = nullptr;
+                      if (auto* const view_el =
+                              anchor_element
+                                  ->AsA<views::TrackedElementViews>()) {
+                        anchor_view = view_el->view();
+                      } else if (auto* const webui_el =
+                                     anchor_element
+                                         ->AsA<ui::TrackedElementWebUI>()) {
+                        anchor_view = webui_el->GetWebView();
+                      } else {
+                        NOTREACHED();
+                      }
                       return std::make_unique<
                           user_education::test::TestCustomHelpBubbleView>(
-                          anchor_element->AsA<views::TrackedElementViews>()
-                              ->view(),
+                          anchor_view,
                           user_education::HelpBubbleViews::TranslateArrow(
                               build_params.arrow));
                     })),
             base::BindRepeating(&BrowserFeaturePromoControllerUiTestBase::
                                     OnCustomUiCustomAction,
                                 weak_ptr_factory_.GetWeakPtr())));
+  }
+
+  // Waits for the app menu button anchor in `browser()` to be shown, hides
+  // its underlying View or WebView so promos cannot anchor in `browser()`,
+  // and waits for the anchor in `other` to become visible.
+  auto HideFirstBrowserAnchorAndWaitForSecond(BrowserWindowInterface* other) {
+    return Steps(
+        WaitForShow(kToolbarAppMenuButtonElementId),
+        WithElement(kToolbarAppMenuButtonElementId,
+                    [](ui::TrackedElement* el) {
+                      if (auto* const view_el =
+                              el->AsA<views::TrackedElementViews>()) {
+                        view_el->view()->SetVisible(false);
+                      } else if (auto* const webui_el =
+                                     el->AsA<ui::TrackedElementWebUI>()) {
+                        webui_el->GetWebView()->SetVisible(false);
+                      } else {
+                        NOTREACHED();
+                      }
+                    }),
+        WaitForHide(kToolbarAppMenuButtonElementId),
+        InContext(BrowserElements::From(other)->GetContext(),
+                  WaitForShow(kToolbarAppMenuButtonElementId)));
   }
 
   base::MockCallback<FeaturePromoSpecification::CustomActionCallback>
@@ -547,28 +585,25 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
   // Create a second browser.
   BrowserWindowInterface* const other = CreateBrowser(browser()->GetProfile());
 
-  // Hide the anchor element in the first browser.
-  auto* const app_menu_button = BrowserElementsViews::From(browser())->GetView(
-      kToolbarAppMenuButtonElementId);
-  app_menu_button->SetVisible(false);
-
   auto& context = BrowserUserEducationInterface::From(other)
                       ->GetUserEducationContextForTesting();
   EXPECT_CALL(custom_action_callback_, Run(MatchesContext(context), testing::_))
       .Times(1);
 
-  RunTestSequence(InAnyContext(
-      // This will always try to trigger the promo from the original `browser()`
-      // because the default context is always checked first in Kombucha, and
-      // the original window is still visible.
-      //
-      // However, the bubble can only show in the `other` browser because we hid
-      // the first browser's app menu button (and the IPH specifies that it need
-      // not show in the original context).
-      MaybeShowPromo(kCustomActionTestFeature),
-      // Perform the action, and verify that the second browser's context is
-      // used when the action button is clicked.
-      PressNonDefaultPromoButton()));
+  RunTestSequence(
+      HideFirstBrowserAnchorAndWaitForSecond(other),
+      InAnyContext(
+          // This will always try to trigger the promo from the original
+          // `browser()` because the default context is always checked first in
+          // Kombucha, and the original window is still visible.
+          //
+          // However, the bubble can only show in the `other` browser because we
+          // hid the first browser's app menu button (and the IPH specifies that
+          // it need not show in the original context).
+          MaybeShowPromo(kCustomActionTestFeature),
+          // Perform the action, and verify that the second browser's context is
+          // used when the action button is clicked.
+          PressNonDefaultPromoButton()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
@@ -576,24 +611,21 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
   // Create a second browser.
   BrowserWindowInterface* const other = CreateBrowser(browser()->GetProfile());
 
-  // Hide the anchor element in the first browser.
-  auto* const app_menu_button = BrowserElementsViews::From(browser())->GetView(
-      kToolbarAppMenuButtonElementId);
-  app_menu_button->SetVisible(false);
-
   // The promo should now show in the second window.
   auto& context = BrowserUserEducationInterface::From(other)
                       ->GetUserEducationContextForTesting();
   EXPECT_CALL(custom_action_callback_, Run(MatchesContext(context), testing::_))
       .Times(1);
 
-  RunTestSequence(InAnyContext(
-      MaybeShowPromo(kCustomActionTestFeature),
-      Do([this]() { browser()->GetWindow()->Close(); }),
-      WaitForHide(kBrowserViewElementId).SetTransitionOnlyOnEvent(true),
-      EnsurePresent(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      PressNonDefaultPromoButton()));
+  RunTestSequence(
+      HideFirstBrowserAnchorAndWaitForSecond(other),
+      InAnyContext(
+          MaybeShowPromo(kCustomActionTestFeature),
+          Do([this]() { browser()->GetWindow()->Close(); }),
+          WaitForHide(kBrowserViewElementId).SetTransitionOnlyOnEvent(true),
+          EnsurePresent(
+              user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+          PressNonDefaultPromoButton()));
 }
 
 class BrowserFeaturePromoControllerLiveTrackerUiTest
@@ -739,19 +771,19 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerOverflowUiTest,
                        PromoExemptFromToolbarNotCollapsed) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
+      WaitForShow(kToolbarForwardButtonElementId),
       WithView(
           kBrowserViewElementId,
           [](BrowserView* browser_view) {
             const ToolbarController* const controller =
                 browser_view->toolbar()->toolbar_controller();
-            CHECK(controller);
             auto* const container_view =
                 views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
                     ToolbarView::kToolbarElementId,
                     browser_view->GetElementContext());
             constexpr gfx::Size kButtonSize{16, 16};
-            while (!controller->IsElementOverflowedForTesting(
-                kToolbarForwardButtonElementId)) {
+            while (!ToolbarNotCollapsedPrecondition::IsOverflowedForTesting(
+                controller, container_view)) {
               auto* const button = container_view->AddChildView(
                   std::make_unique<ToolbarButton>());
               button->SetPreferredSize(kButtonSize);
