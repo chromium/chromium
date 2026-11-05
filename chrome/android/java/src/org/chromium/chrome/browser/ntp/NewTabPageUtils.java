@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatures;
 
 import java.lang.annotation.Retention;
@@ -105,8 +104,7 @@ public class NewTabPageUtils {
 
     /** Returns the {@link PaddingStyle} for NTP Aurora. */
     public static @PaddingStyle int getPaddingStyleForAurora() {
-        return ChromeFeatureList.getParamValueAsInt(
-                ChromeFeatureList.NTP_AURORA, ChromeFeatureList.NTP_AURORA_PADDING_STYLE);
+        return ChromeFeatures.NtpAuroraPaddingStyle.getValue();
     }
 
     /** Returns the space in pixels for NTP sections based on the Aurora padding style. */
@@ -130,10 +128,7 @@ public class NewTabPageUtils {
 
     /** Returns whether the Aurora layout with updated button colors is enabled. */
     public static boolean isNtpAuroraButtonColorEnabled() {
-        return isNtpAuroraEnabled()
-                && ChromeFeatureList.getParamValueAsBoolean(
-                        ChromeFeatureList.NTP_AURORA,
-                        ChromeFeatureList.NTP_AURORA_CHANGE_BUTTON_COLOR);
+        return isNtpAuroraEnabled() && ChromeFeatures.NtpAuroraChangeButtonColor.getValue();
     }
 
     /**
@@ -143,8 +138,7 @@ public class NewTabPageUtils {
     public static @ActionChips int getMerchandisingChipsType() {
         if (!isNtpAuroraV2Enabled()) return ActionChips.DEFAULT;
 
-        return ChromeFeatureList.getParamValueAsInt(
-                ChromeFeatureList.NTP_AURORA_V2, ChromeFeatureList.NTP_AURORA_V2_ACTION_CHIPS);
+        return ChromeFeatures.NtpAuroraV2ActionChips.getValue();
     }
 
     /**
@@ -161,8 +155,7 @@ public class NewTabPageUtils {
         if (!isNtpAuroraV2Enabled()) {
             return LayoutType.DEFAULT;
         }
-        return ChromeFeatureList.getParamValueAsInt(
-                ChromeFeatureList.NTP_AURORA_V2, ChromeFeatureList.NTP_AURORA_V2_LAYOUT_TYPE);
+        return ChromeFeatures.NtpAuroraV2LayoutType.getValue();
     }
 
     /** Returns whether the beside-MVT layout is enabled. */

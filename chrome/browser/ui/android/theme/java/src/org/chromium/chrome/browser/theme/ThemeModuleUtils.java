@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.theme;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatures;
 
 /** Utility class for the theme module feature. */
@@ -20,9 +19,6 @@ public final class ThemeModuleUtils {
 
     /** Returns whether enable all the dependency features. */
     public static boolean isForceEnableDependencies() {
-        return isEnabled()
-                && ChromeFeatureList.getParamValueAsBoolean(
-                        ChromeFeatureList.ANDROID_THEME_MODULE,
-                        ChromeFeatureList.ANDROID_THEME_MODULE_FORCE_DEPENDENCIES);
+        return isEnabled() && ChromeFeatures.AndroidThemeModuleForceDependencies.getValue();
     }
 }
