@@ -78,7 +78,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/reduce_accept_language_utils.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -711,11 +710,10 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
 }
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
-  return ComputeAcceptLanguageFromPref(
-      content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
-          profile_->IsOffTheRecord() ? language::GetIncognitoLanguageList(
-                                           pref_accept_language_.GetValue())
-                                     : pref_accept_language_.GetValue()));
+  return ComputeAcceptLanguageFromPref(language::GetLanguagesWithMaxCount(
+      profile_->IsOffTheRecord()
+          ? language::GetIncognitoLanguageList(pref_accept_language_.GetValue())
+          : pref_accept_language_.GetValue()));
 }
 
 void ProfileNetworkContextService::UpdateReferrersEnabled() {

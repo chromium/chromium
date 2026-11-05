@@ -90,6 +90,10 @@ void ResetLanguagePrefs(PrefService* prefs);
 // Given a comma separated list of locales, return the first.
 std::string GetFirstLanguage(std::string_view language_list);
 
+// Given a comma separated list of locales, return the top number of languages
+// based on the setting.
+std::string GetLanguagesWithMaxCount(std::string_view language_list);
+
 // Given a comma separated list of language tags, return a new list which keeps
 // the same first language tag but otherwise matches one of Chrome's standard
 // default configurations. This is to reduce the identifiability when incognito

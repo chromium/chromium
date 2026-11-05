@@ -50,6 +50,8 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
+    "//base/test:test_support",
+    "//components/language/core/common",
     "//components/language/core/language_model",
     "//components/pref_registry",
     "//components/prefs",

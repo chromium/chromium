@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -17,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/language/core/browser/incognito_language_list_map.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -185,6 +188,22 @@ void ResetLanguagePrefs(PrefService* prefs) {
 std::string GetFirstLanguage(std::string_view language_list) {
   auto end = language_list.find(",");
   return std::string(language_list.substr(0, end));
+}
+
+std::string GetLanguagesWithMaxCount(std::string_view language_list) {
+  if (base::FeatureList::IsEnabled(kReduceAcceptLanguageCount)) {
+    std::vector<std::string_view> languages = base::SplitStringPiece(
+        language_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    base::UmaHistogramCounts100("LanguageUsage.AcceptLanguage.Count2",
+                                languages.size());
+
+    size_t max_language_count = kMaxAcceptLanguage.Get();
+    if (max_language_count > 0 && languages.size() > max_language_count) {
+      languages.resize(max_language_count);
+      return base::JoinString(languages, ",");
+    }
+  }
+  return std::string(language_list);
 }
 
 namespace {

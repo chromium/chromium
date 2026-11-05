@@ -774,14 +774,13 @@ class ReduceAcceptLanguageCountBrowserTest
     // If explicitly set custom count set 5 as max.
     if (GetParam()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{network::features::kReduceAcceptLanguageCount,
-                                 {{network::features::kMaxAcceptLanguage.name,
-                                   "5"}}}},
+          /*enabled_features=*/{{language::kReduceAcceptLanguageCount,
+                                 {{language::kMaxAcceptLanguage.name, "5"}}}},
           /*disabled_features=*/{network::features::kReduceAcceptLanguage,
                                  network::features::kReduceAcceptLanguageHTTP});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{network::features::kReduceAcceptLanguageCount},
+          /*enabled_features=*/{language::kReduceAcceptLanguageCount},
           /*disabled_features=*/{network::features::kReduceAcceptLanguage,
                                  network::features::kReduceAcceptLanguageHTTP});
     }

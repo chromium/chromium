@@ -6,6 +6,7 @@
 #define COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_EXPERIMENTS_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace language {
 
@@ -31,6 +32,11 @@ BASE_DECLARE_FEATURE(kDisableGeoLanguageModel);
 // When enabled, this feature enables querying ULP languages from GmsCore and
 // the creation of the ULP language model.
 BASE_DECLARE_FEATURE(kGmsCoreUlp);
+
+// When enabled, this feature will limit the total number of languages for
+// Accept-Language to enhance privacy.
+BASE_DECLARE_FEATURE(kReduceAcceptLanguageCount);
+BASE_DECLARE_FEATURE_PARAM(int, kMaxAcceptLanguage);
 
 }  // namespace language
 

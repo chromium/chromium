@@ -12,11 +12,13 @@
 
 #include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/language/core/browser/language_prefs_test_util.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -223,6 +225,35 @@ TEST_F(LanguagePrefsTest, GetIncognitoLanguageListTest) {
   EXPECT_EQ("zh-CN", language::GetIncognitoLanguageList("zh-CN"));
   EXPECT_EQ("en", language::GetIncognitoLanguageList("en"));
   EXPECT_EQ("en-US", language::GetIncognitoLanguageList("en-US"));
+}
+
+TEST_F(LanguagePrefsTest, GetLanguageWithDefaultLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kReduceAcceptLanguageCount);
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it",
+            language::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(LanguagePrefsTest, GetLanguageWithCustomLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kReduceAcceptLanguageCount, {{kMaxAcceptLanguage.name, "5"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN",
+            language::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(LanguagePrefsTest, GetLanguageWithInvalidLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kReduceAcceptLanguageCount, {{kMaxAcceptLanguage.name, "0"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko",
+            language::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
 }
 
 }  // namespace language
