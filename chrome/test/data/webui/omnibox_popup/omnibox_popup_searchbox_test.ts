@@ -4859,6 +4859,17 @@ suite('OmniboxPopupSearchboxTest', function() {
      assertEquals('', searchbox.$.input.pageUrl);
      assertEquals(null, searchbox.$.input.selectedMatch);
 
+     // On about:blank, pageUrl should be preserved to show generic globe icon
+     // instead of Super G default icon.
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       userInputInProgress: false,
+       permanentDisplayText: 'about:blank',
+       fullUrl: 'about:blank',
+     }));
+     await microtasksFinished();
+     assertEquals('about:blank', searchbox.$.input.pageUrl);
+     assertEquals(null, searchbox.$.input.selectedMatch);
+
      // When the user starts typing (userInputInProgress becomes true), pageUrl
      // becomes empty.
      callbackRouter.setInputState(createDefaultOmniboxInputState({

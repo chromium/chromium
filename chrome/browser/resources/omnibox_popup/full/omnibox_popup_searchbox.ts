@@ -63,7 +63,7 @@ function isNtpUrl(url: string): boolean {
   }
   return url.startsWith('chrome://newtab') ||
       url.startsWith('chrome://new-tab-page') ||
-      url.startsWith('chrome-search://local-ntp') || url === 'about:blank';
+      url.startsWith('chrome-search://local-ntp');
 }
 
 /**
