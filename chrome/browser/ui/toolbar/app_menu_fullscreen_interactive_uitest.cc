@@ -189,6 +189,13 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
             },
             std::ref(waiter), is_fullscreen, browser()));
   }
+
+ private:
+#if BUILDFLAG(IS_MAC)
+  // Fake the macOS fullscreen transition, as real AppKit Space transitions can
+  // hang or fail on bots.
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_;
+#endif
 };
 
 // Check Toggle Fullscreen
@@ -309,10 +316,6 @@ INSTANTIATE_TEST_SUITE_P(,
 // MenuRunnerImpl destruction on the stack.
 IN_PROC_BROWSER_TEST_P(AppMenuFullscreenButtonInteractiveTest,
                        ToggleFullscreenFromMenuButton) {
-#if BUILDFLAG(IS_MAC)
-  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
-#endif
-
   static constexpr char kFullscreenButtonName[] = "FullscreenButton";
   const std::u16string fullscreen_tooltip =
       l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN);

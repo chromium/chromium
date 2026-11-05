@@ -195,6 +195,7 @@
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
 #if defined(USE_AURA)
@@ -2600,6 +2601,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_WindowControlsOverlayNoToggle,
     WCODisabledInMacFullscreen) {
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
   InstallAndLaunchWebApp();
 
   BrowserView* browser_view = helper()->browser_view();
@@ -3546,6 +3548,9 @@ IN_PROC_BROWSER_TEST_F(
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP() << "Flaky on Wayland";
   }
+#endif
+#if BUILDFLAG(IS_MAC)
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();

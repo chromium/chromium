@@ -364,6 +364,7 @@ if (toolkit_views) {
       "//testing/gtest",
       "//ui/base",
       "//ui/base:ozone_buildflags",
+      "//ui/base:test_support",
       "//ui/events:test_support",
       "//ui/views",
       "//ui/views:test_support",
