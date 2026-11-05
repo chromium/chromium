@@ -42,7 +42,9 @@ At a high level, a coordinator forms a partnership with its **mediator** and
 **view controller**, dividing the roles that traditional UIKit architectures
 place entirely inside a view controller:
 
-![Coordinator, Mediator, and View Controller triad](coordinator_triad.svg)
+![Coordinator, Mediator, and View Controller triad](coordinator_triad.png){width=520}
+
+[SVG source](coordinator_triad.svg)
 
 While the mediator and view controller perform the ongoing work of the feature,
 the coordinator sets up the connections between them and manages their
@@ -163,7 +165,9 @@ Child objects created by a coordinator must not depend directly on each other's
 concrete classes. Instead, their interactions are defined through Objective-C
 protocols, and the coordinator wires them together during `-start`:
 
-![Feature object graph](coordinator_object_graph.svg)
+![Feature object graph](coordinator_object_graph.png){width=600}
+
+[SVG source](coordinator_object_graph.svg)
 
 In the diagram above:
 
@@ -535,7 +539,9 @@ logical feature hierarchy. The coordinator hierarchy preserves the logical
 structure of the UI while hiding UIKit containment and presentation mechanics as
 implementation details:
 
-![Coordinator vs. ViewController hierarchy](coordinator_hierarchy.svg)
+![Coordinator vs. ViewController hierarchy](coordinator_hierarchy.png){width=640}
+
+[SVG source](coordinator_hierarchy.svg)
 
 In this example (greatly simplified from Chrome's actual structure):
 
