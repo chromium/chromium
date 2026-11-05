@@ -126,7 +126,8 @@ enum class RecentPagesSource {
   // Queries the user's local navigation history (including closed tabs and
   // earlier navigations within open tabs) within the configured time window.
   kAllRecentVisits,
-  // Only gathers URLs from tabs currently open in the active browser window.
+  // Only gathers URLs from tabs currently open in the profile's browser
+  // windows.
   kOpenTabsOnly,
 };
 extern const base::FeatureParam<RecentPagesSource> kRecentPagesSource;
