@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 testonly = true
@@ -1835,7 +1836,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/payments/ui/PaymentUiServiceTest.java",
       "src/org/chromium/chrome/browser/pdf/PdfFragmentViewTrackerImplUnitTest.java",
       "src/org/chromium/chrome/browser/pdf/PdfPageIphControllerUnitTest.java",
-      "src/org/chromium/chrome/browser/printing/WebContentsPrinterUnitTest.java",
       "src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplTest.java",
       "src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsUnitTest.java",
       "src/org/chromium/chrome/browser/provider/ChromeBrowserProviderImplUnitTest.java",
@@ -1867,6 +1867,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/usage_stats/PageViewObserverTest.java",
       "src/org/chromium/chrome/browser/webauthn/AuthenticatorIncognitoConfirmationBottomsheetTest.java",
     ]
+
+    if (enable_printing) {
+      sources += [ "src/org/chromium/chrome/browser/printing/WebContentsPrinterUnitTest.java" ]
+    }
 
     deps = [
       ":chrome_junit_tests_helper",
