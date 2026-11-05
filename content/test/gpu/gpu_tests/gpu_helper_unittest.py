@@ -336,14 +336,13 @@ class TagHelpersUnittest(unittest.TestCase):
         feature_status={'gpu_compositing': 'enabled'},
         aux_attributes={'skia_backend_type': 'GraphiteDawnMetal'},
       ),
-      # Graphite Dawn Backends (currently mapped to renderer-skia-gl).
       TagHelperTestCase(
-        'renderer-skia-gl',
+        'renderer-graphite-dawn-gl',
         feature_status={'gpu_compositing': 'enabled'},
         aux_attributes={'skia_backend_type': 'GraphiteDawnOpenGLES'},
       ),
       TagHelperTestCase(
-        'renderer-skia-gl',
+        'renderer-graphite-dawn-vulkan',
         feature_status={'gpu_compositing': 'enabled'},
         aux_attributes={'skia_backend_type': 'GraphiteDawnVulkan'},
       ),

@@ -226,20 +226,18 @@ def GetSkiaRenderer(gpu_info: tgi.GPUInfo | None) -> str:
       skia_backend_type = gpu_info.aux_attributes.get('skia_backend_type')
       if skia_backend_type == 'GaneshVulkan':
         retval = 'renderer-skia-vulkan'
+      elif skia_backend_type == 'GaneshGL':
+        retval = 'renderer-skia-gl'
       elif skia_backend_type == 'GraphiteDawnD3D11':
         retval = 'renderer-graphite-dawn-d3d11'
       elif skia_backend_type == 'GraphiteDawnD3D12':
         retval = 'renderer-graphite-dawn-d3d12'
       elif skia_backend_type == 'GraphiteDawnMetal':
         retval = 'renderer-graphite-dawn-metal'
-      elif skia_backend_type in (
-        'GaneshGL',
-        # TODO(crbug.com/41495111): Switch Graphite backends to generate
-        # renderer-graphite-dawn-* tags instead of renderer-skia-gl.
-        'GraphiteDawnOpenGLES',
-        'GraphiteDawnVulkan',
-      ):
-        retval = 'renderer-skia-gl'
+      elif skia_backend_type == 'GraphiteDawnOpenGLES':
+        retval = 'renderer-graphite-dawn-gl'
+      elif skia_backend_type == 'GraphiteDawnVulkan':
+        retval = 'renderer-graphite-dawn-vulkan'
   return retval
 
 

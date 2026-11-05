@@ -789,7 +789,7 @@ crbug.com/495385041 [ android android-pixel-2 passthrough qualcomm ] deqp/functi
 
 crbug.com/40167875 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
-crbug.com/angleproject/3684 [ android angle-opengles graphite-disabled qualcomm target-cpu-32 ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
+crbug.com/angleproject/3684 [ android angle-opengles renderer-skia-gl qualcomm target-cpu-32 ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
 # Lose context when glTexImage3D is called again with increased depth on
 # Qualcomm GPUs.
