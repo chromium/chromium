@@ -132,7 +132,6 @@ void UiaElementLocatorWin::SetOnDisconnectedForTesting(
 }
 
 void UiaElementLocatorWin::Finish(Result result) {
-  CHECK(in_flight_callback_);
   std::move(in_flight_callback_).Run(std::move(result));
 }
 
