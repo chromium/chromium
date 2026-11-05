@@ -42,16 +42,7 @@ DataProtectionNavigationController::FromWebContents(
   if (!web_contents) {
     return nullptr;
   }
-#if !BUILDFLAG(IS_ANDROID)
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab) {
-    return nullptr;
-  }
-  return From(tab);
-#else
-  return nullptr;
-#endif
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
 }
 
 bool IsScreenShareBlocked(content::WebContents* web_contents) {
