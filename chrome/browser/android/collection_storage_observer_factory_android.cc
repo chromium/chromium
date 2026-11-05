@@ -19,7 +19,6 @@
 namespace tabs {
 
 static int64_t JNI_CollectionStorageObserverFactory_Build(
-    JNIEnv* env,
     Profile* profile,
     TabStripCollection* collection) {
   TabStateStorageService* service =
