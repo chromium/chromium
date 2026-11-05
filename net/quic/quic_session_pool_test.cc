@@ -3964,14 +3964,12 @@ TEST_P(QuicSessionPoolTest,
   quic_data2.ExpectAllWriteDataConsumed();
 }
 
-// When active_connection_id_limit > 2 is negotiated (via k3CID and
-// quic_active_connection_id_limit), a session with 2 spare connection IDs can
-// cancel an in-flight probe as superseded and successfully complete a second
-// probing migration using the remaining spare connection ID.
+// When active_connection_id_limit > 2 is negotiated (via k3CID), a session
+// with 2 spare connection IDs can cancel an in-flight probe as superseded and
+// successfully complete a second probing migration using the remaining spare
+// connection ID.
 TEST_P(QuicSessionPoolTest,
        ProbingSucceedsWithMultipleUnusedConnectionIdsWhenProbingInFlight) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   const handles::NetworkHandle kNewNetworkForTests2 = 3;
@@ -8110,8 +8108,6 @@ TEST_P(QuicSessionPoolTest,
 
 TEST_P(QuicSessionPoolTest,
        PortMigrationInFlightSupersededByOnNetworkMadeDefault) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -8296,8 +8292,6 @@ TEST_P(QuicSessionPoolTest,
 }
 
 TEST_P(QuicSessionPoolTest, PortMigrationInFlightSupersededByOnWriteError) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -8451,8 +8445,6 @@ TEST_P(QuicSessionPoolTest, PortMigrationInFlightSupersededByOnWriteError) {
 TEST_P(
     QuicSessionPoolTest,
     PortMigrationInFlightNotCancelledByOnWriteErrorWhenFeatureDisabled_FlapsBack) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -8614,8 +8606,6 @@ TEST_P(
 
 TEST_P(QuicSessionPoolTest,
        PortMigrationInFlightCancelledByOnNetworkDisconnected) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -8773,8 +8763,6 @@ TEST_P(QuicSessionPoolTest,
 
 TEST_P(QuicSessionPoolTest,
        OnNetworkMadeDefaultProbeInFlightSupersededByOnWriteError) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
   quic_params_->max_migrations_to_non_default_network_on_write_error = 1;
 
@@ -8932,8 +8920,6 @@ TEST_P(QuicSessionPoolTest,
 TEST_P(
     QuicSessionPoolTest,
     OnNetworkMadeDefaultProbeInFlightNotCancelledByOnWriteErrorWhenFeatureDisabled) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -9091,8 +9077,6 @@ TEST_P(
 
 TEST_P(QuicSessionPoolTest,
        OnNetworkMadeDefaultProbeInFlightSupersededByOnNetworkDisconnected) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -9248,8 +9232,6 @@ TEST_P(QuicSessionPoolTest,
 
 TEST_P(QuicSessionPoolTest,
        OnNetworkMadeDefaultProbeInFlightBlocksPortMigrationOnPathDegrading) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -9405,8 +9387,6 @@ TEST_P(QuicSessionPoolTest,
 TEST_P(
     QuicSessionPoolTest,
     PortMigrationOnNonDefaultNetworkProbesDefaultNetworkInsteadOfCurrentNetwork) {
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   quic_params_->client_connection_options.push_back(quic::k3CID);
 
   scoped_mock_network_change_notifier_ =

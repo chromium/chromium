@@ -2645,8 +2645,6 @@ TEST_P(QuicChromiumClientSessionTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kQuicAlwaysCancelPreExistingProbingOnMigration);
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   config_.SetActiveConnectionIdLimitToSend(3);
   quic::QuicConnectionId cid_for_probe = quic::test::TestConnectionId(12345678);
   quic::QuicConnectionId cid_for_commit =
@@ -2732,8 +2730,6 @@ TEST_P(QuicChromiumClientSessionTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kQuicAlwaysCancelPreExistingProbingOnMigration);
-  quic::test::QuicFlagSaver flags;
-  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   config_.SetActiveConnectionIdLimitToSend(3);
   quic::QuicConnectionId cid_for_probe = quic::test::TestConnectionId(12345678);
   quic::QuicConnectionId cid_for_commit =

@@ -249,8 +249,9 @@ class DedicatedWebTransportHttp3ClientSession
                                     quic::QuicPriorityType::kWebTransport),
         client_(client) {}
 
-  bool OnSettingsFrame(const quic::SettingsFrame& frame) override {
-    if (!quic::QuicSpdyClientSession::OnSettingsFrame(frame)) {
+  bool OnSettingsFrame(const quic::SettingsFrame& frame,
+                       absl::Span<const uint64_t> wire_order) override {
+    if (!quic::QuicSpdyClientSession::OnSettingsFrame(frame, wire_order)) {
       return false;
     }
     client_->OnSettingsReceived();
