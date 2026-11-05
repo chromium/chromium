@@ -4,17 +4,9 @@
 
 #include "components/enterprise/network_header_injection/core/features.h"
 
-#include "build/build_config.h"
-
 namespace enterprise_custom_headers {
 
-BASE_FEATURE(kHttpHeadersInjection,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kHttpHeadersInjection, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsHttpHeaderInjectionEnabled() {
   return base::FeatureList::IsEnabled(kHttpHeadersInjection);
