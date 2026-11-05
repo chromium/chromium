@@ -89,6 +89,8 @@ class ASH_EXPORT PhantomWindowController {
   // Maximize cue on top-snap phantom to inform users to hold longer if they
   // want to maximize instead of snap top.
   std::unique_ptr<views::Widget> maximize_cue_widget_;
+
+  std::unique_ptr<SystemDecoration> maximize_cue_decoration_;
 };
 
 }  // namespace ash
