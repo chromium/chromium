@@ -1146,6 +1146,7 @@ if (use_blink) {
       "optimization_guide/content/browser/page_content_proto_provider_browsertest.cc",
       "optimization_guide/content/renderer/page_text_agent_browsertest.cc",
       "page_content_annotations/content/browser/page_settled_monitor_browsertest.cc",
+      "page_content_annotations/content/browser/script_tools_ready_waiter_browsertest.cc",
       "page_content_annotations/content/renderer/paint_stability_monitor_browsertest.cc",
       "paint_preview/renderer/paint_preview_recorder_browsertest.cc",
       "password_manager/content/browser/bad_message_browsertest.cc",

@@ -8,6 +8,8 @@ source_set("browser") {
   sources = [
     "page_settled_monitor.cc",
     "page_settled_monitor.h",
+    "script_tools_ready_waiter.cc",
+    "script_tools_ready_waiter.h",
   ]
 
   public_deps = [
