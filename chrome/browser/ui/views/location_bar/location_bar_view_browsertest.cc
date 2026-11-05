@@ -437,8 +437,11 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
 // Tests that `LocationBarView::Update()` animates security indicator changes on
 // in-tab navigations (`contents == nullptr`), suppresses the animation on tab
 // switches (`contents != nullptr`), and invalidates layout.
-IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest,
-                       UpdateAnimationAndLayoutOnNavigationAndTabSwitch) {
+// TODO(crbug.com/580096852): Flaky across platforms because the security chip
+// animation can complete before NavigateToURL returns.
+IN_PROC_BROWSER_TEST_F(
+    SecurityIndicatorTest,
+    DISABLED_UpdateAnimationAndLayoutOnNavigationAndTabSwitch) {
   net::EmbeddedTestServer secure_server(net::EmbeddedTestServer::TYPE_HTTPS);
   secure_server.SetSSLConfig(
       net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
