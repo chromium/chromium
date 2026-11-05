@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <map>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -20,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/nix/xdg_util.h"
 #include "base/path_service.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/cstring_view.h"
@@ -185,6 +187,136 @@ TEST(ShellIntegrationTest, GetExistingShortcutContents) {
   }
 }
 
+// In a snap, launchers are installed into the real home, which isn't one of the
+// XDG data directories, so it's searched first.
+TEST(ShellIntegrationTest, GetExistingShortcutContentsInSnap) {
+  const base::FilePath kFilename("shortcut-test.desktop");
+  content::BrowserTaskEnvironment task_environment;
+  base::nix::ScopedAppSandboxOverrideForTesting snap(
+      base::nix::AppSandbox::kSnap);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath real_home = temp_dir.GetPath().Append("real-home");
+  base::FilePath snap_data_home = temp_dir.GetPath().Append("snap-data-home");
+
+  MockEnvironment env;
+  env.Set("XDG_DATA_HOME", snap_data_home.value());
+  env.Set("SNAP_REAL_HOME", real_home.value());
+  base::FilePath applications_dir =
+      real_home.Append(".local").Append("share").Append("applications");
+  ASSERT_TRUE(base::CreateDirectory(applications_dir));
+  ASSERT_TRUE(base::WriteFile(applications_dir.Append(kFilename), "real"));
+  ASSERT_TRUE(base::CreateDirectory(snap_data_home.Append("applications")));
+  ASSERT_TRUE(base::WriteFile(
+      snap_data_home.Append("applications").Append(kFilename), "snap"));
+
+  std::string contents;
+  ASSERT_TRUE(GetExistingShortcutContents(&env, kFilename, &contents));
+  EXPECT_EQ("real", contents);
+}
+
+TEST(ShellIntegrationTest, GetHostXDGDataWriteLocation) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath real_home = temp_dir.GetPath().Append("real-home");
+  base::FilePath data_home = temp_dir.GetPath().Append("data-home");
+
+  MockEnvironment env;
+  env.Set("XDG_DATA_HOME", data_home.value());
+  env.Set("SNAP_REAL_HOME", real_home.value());
+
+  {
+    base::nix::ScopedAppSandboxOverrideForTesting none(
+        base::nix::AppSandbox::kNone);
+    EXPECT_TRUE(GetSnapRealHome(&env).empty());
+    EXPECT_EQ(data_home, GetHostXDGDataWriteLocation(&env));
+  }
+  {
+    base::nix::ScopedAppSandboxOverrideForTesting flatpak(
+        base::nix::AppSandbox::kFlatpak);
+    EXPECT_TRUE(GetSnapRealHome(&env).empty());
+    EXPECT_EQ(data_home, GetHostXDGDataWriteLocation(&env));
+  }
+  {
+    base::nix::ScopedAppSandboxOverrideForTesting snap(
+        base::nix::AppSandbox::kSnap);
+    EXPECT_EQ(real_home, GetSnapRealHome(&env));
+    EXPECT_EQ(real_home.Append(".local").Append("share"),
+              GetHostXDGDataWriteLocation(&env));
+  }
+}
+
+// An unset, empty or relative SNAP_REAL_HOME falls back to XDG_DATA_HOME.
+TEST(ShellIntegrationTest, GetHostXDGDataWriteLocationInvalidSnapRealHome) {
+  base::nix::ScopedAppSandboxOverrideForTesting snap(
+      base::nix::AppSandbox::kSnap);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath data_home = temp_dir.GetPath().Append("data-home");
+
+  {
+    MockEnvironment env;
+    env.Set("XDG_DATA_HOME", data_home.value());
+    EXPECT_TRUE(GetSnapRealHome(&env).empty());
+    EXPECT_EQ(data_home, GetHostXDGDataWriteLocation(&env));
+  }
+  for (const char* real_home : {"", "relative/home"}) {
+    SCOPED_TRACE(real_home);
+    MockEnvironment env;
+    env.Set("XDG_DATA_HOME", data_home.value());
+    env.Set("SNAP_REAL_HOME", real_home);
+    EXPECT_TRUE(GetSnapRealHome(&env).empty());
+    EXPECT_EQ(data_home, GetHostXDGDataWriteLocation(&env));
+  }
+}
+
+TEST(ShellIntegrationTest, GetHostDesktopDirectory) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath real_home = temp_dir.GetPath().Append("real-home");
+  base::FilePath desktop = temp_dir.GetPath().Append("desktop");
+  base::ScopedPathOverride desktop_override(base::DIR_USER_DESKTOP, desktop);
+
+  MockEnvironment env;
+  env.Set("SNAP_REAL_HOME", real_home.value());
+
+  {
+    base::nix::ScopedAppSandboxOverrideForTesting none(
+        base::nix::AppSandbox::kNone);
+    EXPECT_EQ(desktop, GetHostDesktopDirectory(&env));
+  }
+
+  base::nix::ScopedAppSandboxOverrideForTesting snap(
+      base::nix::AppSandbox::kSnap);
+  // Without user-dirs.dirs, the desktop is $SNAP_REAL_HOME/Desktop.
+  EXPECT_EQ(real_home.Append("Desktop"), GetHostDesktopDirectory(&env));
+
+  base::FilePath user_dirs =
+      real_home.Append(".config").Append("user-dirs.dirs");
+  ASSERT_TRUE(base::CreateDirectory(user_dirs.DirName()));
+  const struct {
+    std::string_view contents;
+    base::FilePath expected;
+  } kTestCases[] = {
+      {"# XDG_DESKTOP_DIR=\"$HOME/Commented\"\n"
+       "XDG_DOWNLOAD_DIR=\"$HOME/Downloads\"\n"
+       "XDG_DESKTOP_DIR=\"$HOME/Schreibtisch\"\n",
+       real_home.Append("Schreibtisch")},
+      {"XDG_DESKTOP_DIR=\"$HOME/a/b\"", real_home.Append("a").Append("b")},
+      {"XDG_DESKTOP_DIR=\"/absolute/desktop\"",
+       base::FilePath("/absolute/desktop")},
+      {"XDG_DESKTOP_DIR=\"$HOME/\"", real_home},
+      {"XDG_DESKTOP_DIR=\"$HOMEDIR/x\"", real_home.Append("Desktop")},
+      {"XDG_DESKTOP_DIR=\"relative\"", real_home.Append("Desktop")},
+      {"XDG_DESKTOP_DIR=\"$HOME/unterminated", real_home.Append("Desktop")},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.contents);
+    ASSERT_TRUE(base::WriteFile(user_dirs, test_case.contents));
+    EXPECT_EQ(test_case.expected, GetHostDesktopDirectory(&env));
+  }
+}
+
 TEST(ShellIntegrationTest, GetExistingProfileShortcutFilenames) {
   base::FilePath kProfilePath("a/b/c/Profile Name?");
   const char kApp1Filename[] = "chrome-extension1-Profile_Name_.desktop";
@@ -210,6 +342,8 @@ TEST(ShellIntegrationTest, GetExistingProfileShortcutFilenames) {
 }
 
 TEST(ShellIntegrationTest, GetUniqueWebShortcutFilenameFromUrl) {
+  base::ScopedTempDir desktop_dir;
+  ASSERT_TRUE(desktop_dir.CreateUniqueTempDir());
   std::vector<std::pair<std::string, GURL>> test_cases = {
       {"http___foo_.desktop", GURL("http://foo")},
       {"http___foo_bar_.desktop", GURL("http://foo/bar/")},
@@ -222,7 +356,7 @@ TEST(ShellIntegrationTest, GetUniqueWebShortcutFilenameFromUrl) {
   };
   for (const auto& [expected, gurl_input] : test_cases) {
     std::optional<base::SafeBaseName> file_base_name =
-        GetUniqueWebShortcutFilename(gurl_input.spec());
+        GetUniqueWebShortcutFilename(gurl_input.spec(), desktop_dir.GetPath());
     ASSERT_TRUE(file_base_name);
     EXPECT_EQ(
         base::StrCat({chrome::kBrowserProcessExecutableName, "-", expected}),
@@ -232,6 +366,8 @@ TEST(ShellIntegrationTest, GetUniqueWebShortcutFilenameFromUrl) {
 }
 
 TEST(ShellIntegrationTest, GetUniqueWebShortcutFilename) {
+  base::ScopedTempDir desktop_dir;
+  ASSERT_TRUE(desktop_dir.CreateUniqueTempDir());
   std::vector<std::pair<std::string, std::string>> test_cases = {
       {"Test_test.desktop", "Test test"},
       {"What_about__newlines.desktop", "What\nabout\n\rnewlines"},
@@ -239,7 +375,7 @@ TEST(ShellIntegrationTest, GetUniqueWebShortcutFilename) {
   };
   for (const auto& [expected, input] : test_cases) {
     std::optional<base::SafeBaseName> file_base_name =
-        GetUniqueWebShortcutFilename(input);
+        GetUniqueWebShortcutFilename(input, desktop_dir.GetPath());
     ASSERT_TRUE(file_base_name);
     EXPECT_EQ(
         base::StrCat({chrome::kBrowserProcessExecutableName, "-", expected}),
@@ -247,16 +383,21 @@ TEST(ShellIntegrationTest, GetUniqueWebShortcutFilename) {
         << " while testing " << input;
   }
 }
+
+TEST(ShellIntegrationTest, GetUniqueWebShortcutFilenameEmptyDesktopPath) {
+  EXPECT_FALSE(GetUniqueWebShortcutFilename("Test test", base::FilePath()));
+}
+
 TEST(ShellIntegrationTest, GetUniqueWebShortcutUnique) {
   const std::string kTestName = "Test test";
 
-  base::ScopedPathOverride profile_override(base::DIR_USER_DESKTOP);
-  base::FilePath desktop_dir =
-      base::PathService::CheckedGet(base::DIR_USER_DESKTOP);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath& desktop_dir = temp_dir.GetPath();
 
   // Create the first file option.
   std::optional<base::SafeBaseName> file_base_name =
-      GetUniqueWebShortcutFilename(kTestName);
+      GetUniqueWebShortcutFilename(kTestName, desktop_dir);
   ASSERT_TRUE(file_base_name);
   std::string expected_name = base::StrCat(
       {chrome::kBrowserProcessExecutableName, "-Test_test.desktop"});
@@ -267,11 +408,38 @@ TEST(ShellIntegrationTest, GetUniqueWebShortcutUnique) {
   // The second call should guarantee uniqueness, and change the name without a
   // whitespace.
   std::optional<base::SafeBaseName> second_file_base_name =
-      GetUniqueWebShortcutFilename(kTestName);
+      GetUniqueWebShortcutFilename(kTestName, desktop_dir);
   ASSERT_TRUE(second_file_base_name);
   std::string expected_second_name = base::StrCat(
       {chrome::kBrowserProcessExecutableName, "-Test_test_1.desktop"});
   EXPECT_EQ(expected_second_name, second_file_base_name->path().value());
+}
+
+// Uniqueness is checked only in the given directory, e.g. in a snap, a file on
+// the host desktop doesn't affect a name chosen for the snap's own desktop.
+TEST(ShellIntegrationTest, GetUniqueWebShortcutUniqueInGivenDirectory) {
+  base::ScopedTempDir host_desktop_dir;
+  ASSERT_TRUE(host_desktop_dir.CreateUniqueTempDir());
+  base::ScopedTempDir snap_desktop_dir;
+  ASSERT_TRUE(snap_desktop_dir.CreateUniqueTempDir());
+  const std::string expected_name = base::StrCat(
+      {chrome::kBrowserProcessExecutableName, "-Test_test.desktop"});
+  ASSERT_TRUE(
+      base::WriteFile(host_desktop_dir.GetPath().Append(expected_name), ""));
+
+  std::optional<base::SafeBaseName> file_base_name =
+      GetUniqueWebShortcutFilename("Test test", snap_desktop_dir.GetPath());
+  ASSERT_TRUE(file_base_name);
+  EXPECT_EQ(expected_name, file_base_name->path().value());
+  ASSERT_TRUE(base::WriteFile(
+      snap_desktop_dir.GetPath().Append(file_base_name->path()), ""));
+
+  file_base_name =
+      GetUniqueWebShortcutFilename("Test test", snap_desktop_dir.GetPath());
+  ASSERT_TRUE(file_base_name);
+  EXPECT_EQ(base::StrCat({chrome::kBrowserProcessExecutableName,
+                          "-Test_test_1.desktop"}),
+            file_base_name->path().value());
 }
 
 TEST(ShellIntegrationTest, GetDesktopFileContents) {

@@ -43,8 +43,26 @@ std::string GetProgramClassClass();
 // Returns name of the browser icon (without a path or file extension).
 std::string GetIconName();
 
+// Returns $SNAP_REAL_HOME, the user's real home directory, when running in a
+// snap and it's set to an absolute path. Returns an empty path otherwise.
+base::FilePath GetSnapRealHome(base::Environment* env);
+
+// Returns the user's XDG data directory as seen by the host, where launchers
+// and icons have to be installed for the desktop environment to find them.
+// In a snap, this is $SNAP_REAL_HOME/.local/share, since XDG_DATA_HOME points
+// into the snap's private data directory. Otherwise, this is
+// base::nix::GetXDGDataWriteLocation().
+base::FilePath GetHostXDGDataWriteLocation(base::Environment* env);
+
+// Returns the user's desktop directory as seen by the host. In a snap, this is
+// XDG_DESKTOP_DIR from $SNAP_REAL_HOME/.config/user-dirs.dirs, or
+// $SNAP_REAL_HOME/Desktop. Otherwise, this is base::DIR_USER_DESKTOP. Returns
+// an empty path on failure.
+base::FilePath GetHostDesktopDirectory(base::Environment* env);
+
 // Returns the contents of an existing .desktop file installed in the system.
-// Searches the "applications" subdirectory of each XDG data directory for a
+// Searches the "applications" subdirectory of the host XDG data directory
+// (see GetHostXDGDataWriteLocation()) and of each XDG data directory for a
 // file named |desktop_filename|. If the file is found, populates |output| with
 // its contents and returns true. Else, returns false.
 bool GetExistingShortcutContents(base::Environment* env,
@@ -52,14 +70,15 @@ bool GetExistingShortcutContents(base::Environment* env,
                                  std::string* output);
 
 // Returns the base name for .desktop file based on |name|, sanitized for
-// security with no whitespace, and ensures it will be a unique file in the
-// directory at base::DIR_USER_DESKTOP. This call is not thread-safe - multiple
-// callers from different threads with the same argument may get the same base
-// name.
-// Returns a std::nullopt if base::DIR_USER_DESKTOP is not defined or a unique
-// name could not be found.
+// security with no whitespace, and ensures it will be a unique file in
+// |desktop_path|, which should be the directory the caller writes the file to.
+// This call is not thread-safe - multiple callers from different threads with
+// the same argument may get the same base name.
+// Returns a std::nullopt if |desktop_path| is empty or a unique name could not
+// be found.
 std::optional<base::SafeBaseName> GetUniqueWebShortcutFilename(
-    const std::string& name);
+    const std::string& name,
+    const base::FilePath& desktop_path);
 
 // Returns a list of filenames for all existing .desktop files corresponding to
 // on |profile_path| in a given |directory|.

@@ -31,6 +31,7 @@
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/test/fake_environment.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -1337,5 +1338,150 @@ TEST_P(WebAppShortcutLinuxTest, GetShortcutIconBytesDoesNotUpscale) {
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppShortcutLinuxTest);
+
+// Runs in a snap with a fake $SNAP_REAL_HOME.
+class WebAppShortcutLinuxSnapTest : public WebAppShortcutLinuxTest {
+ public:
+  void SetUp() override {
+    WebAppShortcutLinuxTest::SetUp();
+    ASSERT_TRUE(real_home_dir_.CreateUniqueTempDir());
+    env()->Set("SNAP_REAL_HOME", real_home().value());
+    ASSERT_TRUE(base::CreateDirectory(real_desktop()));
+    SetLaunchXdgUtilityForTesting(base::BindLambdaForTesting(
+        [this](const std::vector<std::string>& argv, int* exit_code) {
+          xdg_calls_.push_back(argv);
+          *exit_code = 0;
+          return true;
+        }));
+  }
+
+  void TearDown() override {
+    SetLaunchXdgUtilityForTesting(LaunchXdgUtilityForTesting());
+    WebAppShortcutLinuxTest::TearDown();
+  }
+
+  FakeEnvironment* env() {
+    return OsIntegrationTestOverrideImpl::Get()->environment();
+  }
+  base::FilePath real_home() { return real_home_dir_.GetPath(); }
+  base::FilePath real_data_dir() {
+    return real_home().Append(".local").Append("share");
+  }
+  base::FilePath real_applications() {
+    return real_data_dir().Append("applications");
+  }
+  base::FilePath real_desktop() { return real_home().Append("Desktop"); }
+  base::FilePath real_icon_path() {
+    return real_data_dir()
+        .Append("icons")
+        .Append("hicolor")
+        .Append("512x512")
+        .Append("apps")
+        .Append("chrome-test_extension-Profile_1.png");
+  }
+
+  const std::vector<std::vector<std::string>>& xdg_calls() {
+    return xdg_calls_;
+  }
+
+ private:
+  base::nix::ScopedAppSandboxOverrideForTesting snap_{
+      base::nix::AppSandbox::kSnap};
+  base::ScopedTempDir real_home_dir_;
+  std::vector<std::vector<std::string>> xdg_calls_;
+};
+
+// Launchers and icons are written directly into the real home, without
+// xdg-utils (which the snap doesn't ship), and found there again.
+TEST_P(WebAppShortcutLinuxSnapTest, CreateUpdateAndDeleteShortcuts) {
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  ShortcutLocations locations;
+  locations.on_desktop = true;
+  locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+  ASSERT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
+
+  EXPECT_THAT(xdg_calls(),
+              testing::ElementsAre(testing::ElementsAre(
+                  "update-desktop-database", real_applications().value())));
+  EXPECT_TRUE(base::PathExists(real_icon_path()));
+  std::string expected_contents =
+      shell_integration_linux::GetDesktopFileContents(
+          shell_integration_linux::internal::GetChromeExePath(),
+          GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
+          shortcut_info->app_id, shortcut_info->title, real_icon_path().value(),
+          shortcut_info->profile_path, "", "", false, "",
+          shortcut_info->actions);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(
+      real_applications().Append(GetTemplateFilename()), &contents));
+  EXPECT_EQ(expected_contents, contents);
+  ASSERT_TRUE(base::ReadFileToString(
+      real_desktop().Append(GetTemplateFilename()), &contents));
+  EXPECT_EQ(expected_contents, contents);
+  // Nothing is written to the snap's private directories.
+  EXPECT_FALSE(
+      base::PathExists(GetApplicationsPath().Append(GetTemplateFilename())));
+  EXPECT_FALSE(
+      base::PathExists(GetDesktopPath().Append(GetTemplateFilename())));
+
+  ShortcutLocations existing = GetExistingShortcutLocations(
+      /*env=*/nullptr, GetProfilePath(), GetAppId());
+  EXPECT_TRUE(existing.on_desktop);
+  EXPECT_EQ(APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
+            existing.applications_menu_location);
+
+  // Updates replace the launchers, which stay visible.
+  ASSERT_TRUE(base::WriteFile(real_applications().Append(GetTemplateFilename()),
+                              "[Desktop Entry]\n"));
+  EXPECT_TRUE(UpdateDesktopShortcutsForTest(*shortcut_info, std::nullopt));
+  ASSERT_TRUE(base::ReadFileToString(
+      real_applications().Append(GetTemplateFilename()), &contents));
+  EXPECT_EQ(expected_contents, contents);
+
+  // Deleting the launcher updates mimeinfo.cache again.
+  size_t xdg_calls_before_delete = xdg_calls().size();
+  EXPECT_TRUE(DeleteDesktopShortcutsForTest(GetProfilePath(), GetAppId()));
+  EXPECT_FALSE(
+      base::PathExists(real_applications().Append(GetTemplateFilename())));
+  EXPECT_FALSE(base::PathExists(real_desktop().Append(GetTemplateFilename())));
+  EXPECT_FALSE(base::PathExists(real_icon_path()));
+  EXPECT_EQ(xdg_calls_before_delete + 1, xdg_calls().size());
+  EXPECT_THAT(xdg_calls(),
+              testing::Each(testing::ElementsAre("update-desktop-database",
+                                                 real_applications().value())));
+}
+
+// Without write access to the real home (e.g. with the personal-files plugs
+// disconnected), creation fails.
+TEST_P(WebAppShortcutLinuxSnapTest, CreateShortcutFailsWithoutWriteAccess) {
+  ASSERT_TRUE(base::CreateDirectory(real_applications()));
+  ASSERT_TRUE(base::SetPosixFilePermissions(real_applications(), 0500));
+
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  ShortcutLocations locations;
+  locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+  EXPECT_FALSE(CreateDesktopShortcutForTest(*shortcut_info, locations));
+  EXPECT_FALSE(
+      base::PathExists(real_applications().Append(GetTemplateFilename())));
+  EXPECT_THAT(xdg_calls(), testing::IsEmpty());
+}
+
+// A relative $SNAP_REAL_HOME is ignored, and xdg-utils are used as before.
+TEST_P(WebAppShortcutLinuxSnapTest, RelativeRealHomeUsesXdgUtils) {
+  env()->Set("SNAP_REAL_HOME", "relative/home");
+
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  ShortcutLocations locations;
+  locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+  EXPECT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
+  EXPECT_TRUE(std::ranges::any_of(
+      xdg_calls(), [](const std::vector<std::string>& argv) {
+        return argv.size() >= 2 && argv[0] == "xdg-desktop-menu" &&
+               argv[1] == "install";
+      }));
+  EXPECT_FALSE(base::PathExists(real_data_dir()));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppShortcutLinuxSnapTest);
 
 }  // namespace web_app

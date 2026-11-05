@@ -38,7 +38,8 @@ inline constexpr base::FilePath::CharType kProfileDesktopEntryIconPrefix[] =
     "Google Profile";
 
 // Returns the directory that per-profile desktop entries are installed into:
-// $XDG_DATA_HOME/applications.
+// $XDG_DATA_HOME/applications, or $SNAP_REAL_HOME/.local/share/applications
+// in a snap (see shell_integration_linux::GetHostXDGDataWriteLocation()).
 base::FilePath GetProfileDesktopEntryDirectory(base::Environment* env);
 
 // Returns `app_icon` with `avatar` drawn in a circle in the bottom right

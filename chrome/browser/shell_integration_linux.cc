@@ -16,6 +16,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -37,6 +38,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -588,6 +590,69 @@ std::string GetIconName() {
 #endif
 }
 
+base::FilePath GetSnapRealHome(base::Environment* env) {
+  CHECK(env);
+  if (base::nix::GetAppSandbox() != base::nix::AppSandbox::kSnap) {
+    return base::FilePath();
+  }
+  base::FilePath real_home(env->GetVar("SNAP_REAL_HOME").value_or(""));
+  if (real_home.empty() || !real_home.IsAbsolute()) {
+    return base::FilePath();
+  }
+  return real_home;
+}
+
+base::FilePath GetHostXDGDataWriteLocation(base::Environment* env) {
+  base::FilePath real_home = GetSnapRealHome(env);
+  if (!real_home.empty()) {
+    return real_home.Append(".local").Append("share");
+  }
+  return base::nix::GetXDGDataWriteLocation(env);
+}
+
+base::FilePath GetHostDesktopDirectory(base::Environment* env) {
+  base::FilePath real_home = GetSnapRealHome(env);
+  if (real_home.empty()) {
+    base::FilePath desktop_path;
+    base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
+    return desktop_path;
+  }
+
+  // Parse XDG_DESKTOP_DIR like xdg_user_dir_lookup() does, but relative to the
+  // real home. Lines look like XDG_DESKTOP_DIR="$HOME/Desktop" or
+  // XDG_DESKTOP_DIR="/absolute/path".
+  std::string contents;
+  if (base::ReadFileToString(
+          real_home.Append(".config").Append("user-dirs.dirs"), &contents)) {
+    for (std::string_view line :
+         base::SplitStringPiece(contents, "\n", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY)) {
+      std::optional<std::string_view> value =
+          base::RemovePrefix(line, "XDG_DESKTOP_DIR=\"");
+      if (!value) {
+        continue;
+      }
+      size_t end = value->find('"');
+      if (end == std::string_view::npos) {
+        continue;
+      }
+      std::string_view path = value->substr(0, end);
+      if (path.starts_with("$HOME")) {
+        std::string_view relative = path.substr(5);
+        if (!relative.empty() && relative[0] != '/') {
+          continue;
+        }
+        relative = base::TrimString(relative, "/", base::TRIM_LEADING);
+        return relative.empty() ? real_home : real_home.Append(relative);
+      }
+      if (path.starts_with('/')) {
+        return base::FilePath(path);
+      }
+    }
+  }
+  return real_home.Append("Desktop");
+}
+
 bool GetExistingShortcutContents(base::Environment* env,
                                  const base::FilePath& desktop_filename,
                                  std::string* output) {
@@ -596,6 +661,13 @@ bool GetExistingShortcutContents(base::Environment* env,
 
   std::vector<base::FilePath> search_paths =
       base::nix::GetXDGDataSearchLocations(env);
+  // In a snap, launchers are installed into the real home, which isn't one of
+  // the XDG data directories. Outside of a snap, this is XDG_DATA_HOME, which
+  // already is the first search path.
+  base::FilePath host_data_dir = GetHostXDGDataWriteLocation(env);
+  if (!std::ranges::contains(search_paths, host_data_dir)) {
+    search_paths.insert(search_paths.begin(), host_data_dir);
+  }
 
   for (std::vector<base::FilePath>::const_iterator i = search_paths.begin();
        i != search_paths.end(); ++i) {
@@ -611,7 +683,8 @@ bool GetExistingShortcutContents(base::Environment* env,
 }
 
 std::optional<base::SafeBaseName> GetUniqueWebShortcutFilename(
-    const std::string& name) {
+    const std::string& name,
+    const base::FilePath& desktop_path) {
   // Use a prefix, because xdg-desktop-menu requires it.
   std::string filename =
       base::StrCat({chrome::kBrowserProcessExecutableName, "-", name});
@@ -624,8 +697,7 @@ std::optional<base::SafeBaseName> GetUniqueWebShortcutFilename(
   CHECK(opt_base_name_no_extension);
   base::FilePath base_name_no_extension = opt_base_name_no_extension->path();
 
-  base::FilePath desktop_path;
-  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
+  if (desktop_path.empty()) {
     return std::nullopt;
   }
 

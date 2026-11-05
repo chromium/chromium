@@ -73,6 +73,15 @@ plugs:
   @@snap_config_plug:
     interface: personal-files
     read: [$HOME/.config/@@snap_config_dir]
+  # Allow installing web app launchers and icons into the real home, where the
+  # desktop environment finds them. The plug names match Canonical's Chromium
+  # snap.
+  dot-local-share-applications:
+    interface: personal-files
+    write: [$HOME/.local/share/applications]
+  dot-local-share-icons:
+    interface: personal-files
+    write: [$HOME/.local/share/icons]
 
 layout:
   /usr/lib/man-db:

@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
-#include "base/nix/xdg_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -153,7 +152,8 @@ bool DesktopEntryExists(const std::string& desktop_id) {
 namespace profiles::internal {
 
 base::FilePath GetProfileDesktopEntryDirectory(base::Environment* env) {
-  return base::nix::GetXDGDataWriteLocation(env).Append("applications");
+  return shell_integration_linux::GetHostXDGDataWriteLocation(env).Append(
+      "applications");
 }
 
 SkBitmap BadgeIconWithAvatar(const SkBitmap& app_icon, const SkBitmap& avatar) {

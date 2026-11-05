@@ -281,7 +281,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   base::FilePath startup();
   base::FilePath applications();
   base::FilePath xdg_data_home_dir();
-  base::Environment* environment() override;
+  FakeEnvironment* environment() override;
 #endif
 
   // Creates a tuple of app_id to protocols and adds it to the vector

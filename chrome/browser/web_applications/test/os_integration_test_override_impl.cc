@@ -798,7 +798,7 @@ base::FilePath OsIntegrationTestOverrideImpl::applications() {
 base::FilePath OsIntegrationTestOverrideImpl::xdg_data_home_dir() {
   return xdg_data_home_dir_.GetPath();
 }
-base::Environment* OsIntegrationTestOverrideImpl::environment() {
+FakeEnvironment* OsIntegrationTestOverrideImpl::environment() {
   return &environment_;
 }
 #endif  // BUILDFLAG(IS_LINUX)

@@ -90,15 +90,15 @@ ShortcutCreatorOutput CreateShortcutOnLinuxDesktop(
   }
   EmitIconStorageCountMetric(icon_directory);
 
-  std::optional<base::SafeBaseName> desktop_file_basename =
-      shell_integration_linux::GetUniqueWebShortcutFilename(shortcut_name);
-
-  if (!desktop_file_basename) {
+  base::FilePath desktop_path;
+  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
     return {.result = ShortcutCreatorResult::kError};
   }
 
-  base::FilePath desktop_path;
-  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
+  std::optional<base::SafeBaseName> desktop_file_basename =
+      shell_integration_linux::GetUniqueWebShortcutFilename(shortcut_name,
+                                                            desktop_path);
+  if (!desktop_file_basename) {
     return {.result = ShortcutCreatorResult::kError};
   }
 
