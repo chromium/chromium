@@ -7,13 +7,14 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
 import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
-import {AiSettingsSection, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
-import type {SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {AiSettingsSection, GlicAssistantSelection, GlicBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import type {CrButtonElement, SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
+import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // Note - if adding tests related to the shortcut control, use
@@ -108,6 +109,7 @@ suite('GlicSubpage', function() {
       glicHotkeyLocalScopeEnabled: false,
       headlessCaptionsEnabled: false,
       showGlicShakeTrigger: false,
+      showGeicDevicePolicyToggle: false,
     });
     resetRouterForTesting();
     prefService = PrefService.getInstance();
@@ -1445,6 +1447,61 @@ suite('GlicSubpage', function() {
     test('ToggleHidden', () => {
       const scopeToggle = $<SettingsToggleButtonElement>('scopeToggle');
       assertFalse(isVisible(scopeToggle));
+    });
+  });
+
+  suite('DevicePolicyToggle', () => {
+    let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
+
+    setup(async function() {
+      lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
+      LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
+      await prefService.setPrefValue(
+          'glic.assistant_selection', GlicAssistantSelection.CONSUMER);
+    });
+
+    teardown(function() {
+      loadTimeData.overrideValues({
+        showGeicDevicePolicyToggle: false,
+      });
+    });
+
+    test('DevicePolicyRowHiddenByDefault', () => {
+      assertFalse(!!$<HTMLElement>('devicePolicyRow'));
+      assertFalse(!!$<CrButtonElement>('devicePolicyButton'));
+    });
+
+    test('DevicePolicyButtonEnablesGeicAndRelaunches', async () => {
+      loadTimeData.overrideValues({
+        showGeicDevicePolicyToggle: true,
+      });
+      await createGlicPage(/*initialShortcut=*/ '⌃A');
+
+      const row = $<HTMLElement>('devicePolicyRow');
+      const button = $<CrButtonElement>('devicePolicyButton');
+      assertTrue(!!row);
+      assertTrue(!!button);
+      assertTrue(isVisible(row));
+      assertTrue(isVisible(button));
+      assertFalse(button.disabled);
+      assertEquals(
+          GlicAssistantSelection.CONSUMER,
+          prefService.getPref<number>('glic.assistant_selection').value);
+
+      button.click();
+      await microtasksFinished();
+      assertTrue(button.disabled);
+      // <if expr="not is_chromeos">
+      await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
+      // </if>
+      await lifetimeBrowserProxy.whenCalled('relaunch');
+      assertEquals(
+          GlicAssistantSelection.ENTERPRISE,
+          prefService.getPref<number>('glic.assistant_selection').value);
+
+      page.onRelaunchDialogClose(new Event('close'));
+      await microtasksFinished();
+      assertFalse(button.disabled);
     });
   });
 });

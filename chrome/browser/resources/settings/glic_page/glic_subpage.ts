@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
@@ -10,6 +11,9 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
+// <if expr="not is_chromeos">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_page/settings_subpage.js';
 import './glic_login_permissions_page.js';
 // <if expr="_google_chrome">
@@ -29,10 +33,11 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {AiPageActions} from '../ai_page/constants.js';
+import {AiPageActions, GlicAssistantSelection} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
@@ -76,9 +81,9 @@ interface GlicUserStatusPref {
   isEnterpriseAccountDataProtected?: boolean;
 }
 
-const SettingsGlicSubpageElementBase =
-    SettingsViewMixinLit(HelpBubbleMixinLit(I18nMixinLit(
-        WebUiListenerMixinLit(PrefServiceObserverMixinLit(CrLitElement)))));
+const SettingsGlicSubpageElementBase = SettingsViewMixinLit(
+    RelaunchMixinLit(HelpBubbleMixinLit(I18nMixinLit(
+        WebUiListenerMixinLit(PrefServiceObserverMixinLit(CrLitElement))))));
 
 export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   static get is() {
@@ -122,6 +127,8 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       isWebActuationDisabledForEnterprise_: {type: Boolean},
       webActuationEnabledExpanded_: {type: Boolean},
       actorLoginFederatedLoginSupportEnabled_: {type: Boolean},
+      devicePolicyButtonDisabled_: {type: Boolean},
+      showDevicePolicyToggle_: {type: Boolean},
     };
   }
 
@@ -171,6 +178,9 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   protected accessor webActuationEnabledExpanded_: boolean = false;
   protected accessor actorLoginFederatedLoginSupportEnabled_: boolean =
       loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled');
+  protected accessor devicePolicyButtonDisabled_: boolean = false;
+  protected accessor showDevicePolicyToggle_: boolean =
+      loadTimeData.getBoolean('showGeicDevicePolicyToggle');
 
   private shortcutInput_: string = '';
   private focusToggleShortcutInput_: string = '';
@@ -691,6 +701,18 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   protected isExperimentalTriggeringDisabled_(): boolean {
     return !this.webActuationEnabledPref_?.value ||
         this.isWebActuationDisabledForEnterprise_;
+  }
+
+  override onRelaunchDialogClose(event: Event) {
+    super.onRelaunchDialogClose(event);
+    this.devicePolicyButtonDisabled_ = false;
+  }
+
+  protected async onDevicePolicyButtonClick_() {
+    this.devicePolicyButtonDisabled_ = true;
+    await PrefService.getInstance().setPrefValue(
+        'glic.assistant_selection', GlicAssistantSelection.ENTERPRISE);
+    this.performRestart(RestartType.RELAUNCH);
   }
 
   protected onMediaUnderstandingToggleSubLabelLinkClicked_() {

@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicPolicyBrowserTest,
             GlicProviderLatch::GetProvider(*profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
             GetGlicProviderSpec(profile).GetGuestUrl(profile));
-  EXPECT_FALSE(GetGlicProviderSpec(profile).CanOptOutToConsumerInSettings());
+  EXPECT_FALSE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -194,15 +194,17 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicPolicyBrowserTest,
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
             GetGlicProviderSpec(&second_profile).GetGuestUrl(&second_profile));
   EXPECT_FALSE(
-      GetGlicProviderSpec(&second_profile).CanOptOutToConsumerInSettings());
+      GetGlicProviderSpec(&second_profile).CanSwitchBetweenGeminiProviders());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // With `GeminiEnterpriseUrl` configured at `policy::POLICY_SCOPE_MACHINE`,
-// profiles latch as Gemini Enterprise with
-// `CanOptOutToConsumerInSettings() == true` by default, and latch as Gemini on
-// the next browser launch after the user sets
-// `glic::prefs::kGlicAssistantSelection` to `AssistantSelection::kConsumer`.
+// personal profiles latch as Gemini Enterprise with
+// `CanSwitchBetweenGeminiProviders() == true` by default, latch as consumer
+// Gemini on the next browser launch after setting
+// `glic::prefs::kGlicAssistantSelection` to `AssistantSelection::kConsumer`,
+// and latch back as Gemini Enterprise on the subsequent launch after setting
+// it to `AssistantSelection::kEnterprise`.
 class GlicProviderLatchGeicDevicePolicyBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -228,25 +230,49 @@ class GlicProviderLatchGeicDevicePolicyBrowserTest
   GlicTestEnvironment glic_test_env_;
 };
 
+// Step 1 (initial launch, default `kAuto` selection): verifies the profile
+// latches to Gemini Enterprise with provider switching enabled in Settings,
+// then sets `kGlicAssistantSelection` to `kConsumer` for the next launch.
 IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDevicePolicyBrowserTest,
-                       PRE_UserOptOutLatchesGeminiOnNextLaunch) {
+                       PRE_PRE_UserOptOutLatchesGeminiOnNextLaunch) {
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
             GlicProviderLatch::GetProvider(*profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
             GetGlicProviderSpec(profile).GetGuestUrl(profile));
-  EXPECT_TRUE(GetGlicProviderSpec(profile).CanOptOutToConsumerInSettings());
+  EXPECT_TRUE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
 
   profile->GetPrefs()->SetInteger(
       prefs::kGlicAssistantSelection,
       static_cast<int>(prefs::AssistantSelection::kConsumer));
 }
 
+// Step 2 (second launch, after opting out to `kConsumer`): verifies the
+// profile now latches to consumer Gemini while keeping provider switching
+// enabled in Settings, then sets `kGlicAssistantSelection` to `kEnterprise`
+// for the next launch.
+IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDevicePolicyBrowserTest,
+                       PRE_UserOptOutLatchesGeminiOnNextLaunch) {
+  Profile* profile = browser()->GetProfile();
+  EXPECT_EQ(GlicProvider::kGemini, GlicProviderLatch::GetProvider(*profile));
+  EXPECT_TRUE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
+
+  profile->GetPrefs()->SetInteger(
+      prefs::kGlicAssistantSelection,
+      static_cast<int>(prefs::AssistantSelection::kEnterprise));
+}
+
+// Step 3 (third launch, after switching back to `kEnterprise`): verifies the
+// profile latches back to Gemini Enterprise with the policy guest URL and
+// provider switching still enabled in Settings.
 IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDevicePolicyBrowserTest,
                        UserOptOutLatchesGeminiOnNextLaunch) {
   Profile* profile = browser()->GetProfile();
-  EXPECT_EQ(GlicProvider::kGemini, GlicProviderLatch::GetProvider(*profile));
-  EXPECT_FALSE(GetGlicProviderSpec(profile).CanOptOutToConsumerInSettings());
+  EXPECT_EQ(GlicProvider::kGeminiEnterprise,
+            GlicProviderLatch::GetProvider(*profile));
+  EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
+            GetGlicProviderSpec(profile).GetGuestUrl(profile));
+  EXPECT_TRUE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
 }
 
 }  // namespace

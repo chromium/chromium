@@ -233,7 +233,8 @@ bool IsGeicEnabledByFeature() {
          features::kGeicEnabledParam.Get();
 }
 
-bool CanOptOutOfGeicInSettings(content::BrowserContext* browser_context) {
+bool CanSwitchBetweenGeminiProvidersInSettings(
+    content::BrowserContext* browser_context) {
   std::optional<ResolvedGuestUrl> resolved =
       ResolveGuestUrlWithSource(browser_context);
   if (!resolved || resolved->source != GuestUrlSource::kPolicy) {
@@ -261,7 +262,7 @@ bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
   if (resolved_guest_url.is_empty() || !profile || !profile->GetPrefs()) {
     return false;
   }
-  if (!CanOptOutOfGeicInSettings(browser_context)) {
+  if (!CanSwitchBetweenGeminiProvidersInSettings(browser_context)) {
     return true;
   }
   // Any selection other than explicit `kConsumer` (including `kAuto`,

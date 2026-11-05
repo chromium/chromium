@@ -102,6 +102,9 @@ GURL MaybeAppendAuthUser(const GURL& guest_url, Profile* profile) {
 
 class GeminiGlicProviderSpec final : public GlicProviderSpec {
  public:
+  explicit GeminiGlicProviderSpec(GeicProviderInitOptions options = {})
+      : can_switch_between_gemini_providers_(
+            options.can_switch_between_gemini_providers) {}
   ~GeminiGlicProviderSpec() override = default;
   std::string_view GetSettingsSectionId() const override {
     return kGeminiSettingsSectionId;
@@ -109,7 +112,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   std::string_view GetSettingsSubpage() const override {
     return chrome::kGlicSettingsSubpage;
   }
-  bool CanOptOutToConsumerInSettings() const override { return false; }
+  bool CanSwitchBetweenGeminiProviders() const override {
+    return can_switch_between_gemini_providers_;
+  }
   int GetEntryPointIconId() const override { return IDR_GLIC_BUTTON_ALT_ICON; }
   int GetPromoBodyStringId() const override { return IDS_GLIC_PROMO_BODY; }
   std::string_view GetSyntheticTrialGroupName() const override {
@@ -193,6 +198,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   bool PinOnBindEnabled() const override { return true; }
 
  private:
+  const bool can_switch_between_gemini_providers_;
   const std::unique_ptr<GlicFreStore> fre_store_ = CreateGeminiFreStore();
 };
 
@@ -200,8 +206,8 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
  public:
   explicit GeminiEnterpriseGlicProviderSpec(GeicProviderInitOptions options)
       : guest_url_(std::move(options.guest_url)),
-        can_opt_out_to_consumer_in_settings_(
-            options.can_opt_out_to_consumer_in_settings) {}
+        can_switch_between_gemini_providers_(
+            options.can_switch_between_gemini_providers) {}
   ~GeminiEnterpriseGlicProviderSpec() override = default;
   std::string_view GetSettingsSectionId() const override {
     return kGeminiEnterpriseSettingsSectionId;
@@ -209,8 +215,8 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   std::string_view GetSettingsSubpage() const override {
     return chrome::kGlicEnterpriseSettingsSubpage;
   }
-  bool CanOptOutToConsumerInSettings() const override {
-    return can_opt_out_to_consumer_in_settings_;
+  bool CanSwitchBetweenGeminiProviders() const override {
+    return can_switch_between_gemini_providers_;
   }
   int GetEntryPointIconId() const override { return IDR_GEIC_BUTTON_ICON; }
   int GetPromoBodyStringId() const override { return IDS_GEIC_PROMO_BODY; }
@@ -270,7 +276,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
 
  private:
   const GURL guest_url_;
-  const bool can_opt_out_to_consumer_in_settings_;
+  const bool can_switch_between_gemini_providers_;
   const std::unique_ptr<GlicFreStore> fre_store_ =
       CreateGeminiEnterpriseFreStore();
 };
@@ -290,7 +296,7 @@ std::unique_ptr<const GlicProviderSpec> CreateGlicProviderSpec(
     GeicProviderInitOptions geic_options) {
   switch (provider) {
     case GlicProvider::kGemini:
-      return std::make_unique<GeminiGlicProviderSpec>();
+      return std::make_unique<GeminiGlicProviderSpec>(std::move(geic_options));
     case GlicProvider::kGeminiEnterprise:
       return std::make_unique<GeminiEnterpriseGlicProviderSpec>(
           std::move(geic_options));

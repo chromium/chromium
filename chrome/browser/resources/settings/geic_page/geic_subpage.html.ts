@@ -13,24 +13,7 @@ export function getHtml(this: SettingsGeicSubpageElement) {
     route-path="${this.routePath}">
   <div class="section">
     <h2 class="cr-title-text">$i18n{glicPreferencesSection}</h2>
-    ${this.showDevicePolicyToggle_ ? html`
-      <div id="devicePolicyRow" class="cr-row first">
-        <div class="flex cr-padded-text">
-          <div id="devicePolicyLabel">$i18n{geicDevicePolicyToggle}</div>
-          <div id="devicePolicySublabel" class="secondary">
-            $i18n{geicDevicePolicyToggleSublabel}
-          </div>
-        </div>
-        <cr-button id="devicePolicyButton"
-            aria-describedby="devicePolicyLabel devicePolicySublabel"
-            ?disabled="${this.devicePolicyButtonDisabled_}"
-            @click="${this.onDevicePolicyButtonClick_}">
-          $i18n{geicDevicePolicyButton}
-        </cr-button>
-      </div>
-    ` : ''}
     <settings-toggle-button id="tabstripButtonToggle"
-        class="${this.showDevicePolicyToggle_ ? 'hr' : ''}"
         pref-key="glic.pinned_to_tabstrip"
         label="$i18n{glicTabstripButtonToggle}"
         sub-label="$i18n{glicTabstripButtonToggleSublabel}">
@@ -113,6 +96,22 @@ export function getHtml(this: SettingsGeicSubpageElement) {
       </div>
     </cr-collapse>
   </div>
+  ${this.showDevicePolicyToggle_ ? html`
+    <div id="devicePolicyRow" class="cr-row">
+      <div class="flex cr-padded-text">
+        <div id="devicePolicyLabel">$i18n{geicDevicePolicyToggle}</div>
+        <div id="devicePolicySublabel" class="secondary">
+          ${this.i18n('geicDevicePolicyToggleSublabel')}
+        </div>
+      </div>
+      <cr-button id="devicePolicyButton"
+          aria-describedby="devicePolicyLabel devicePolicySublabel"
+          ?disabled="${this.devicePolicyButtonDisabled_}"
+          @click="${this.onDevicePolicyButtonClick_}">
+        $i18n{geicDevicePolicyButton}
+      </cr-button>
+    </div>
+  ` : ''}
 <if expr="not is_chromeos">
   ${this.shouldShowRelaunchDialog ? html`
     <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"

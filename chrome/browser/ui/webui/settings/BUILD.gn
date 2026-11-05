@@ -229,6 +229,7 @@ source_set("impl") {
     "//chrome/browser/custom_handlers",
     "//chrome/browser/dictation",
     "//chrome/browser/engagement",
+    "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/extensions",
     "//chrome/browser/feedback",
     "//chrome/browser/file_system_access",

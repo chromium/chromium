@@ -95,12 +95,14 @@ inline constexpr char kGlicWebContinuityOriginatingHostUrlPreset[] =
 // Per-profile assistant selection preference. Evaluated once at profile
 // initialization by `geic::ShouldLatchToGeminiEnterprise()` (via
 // `GlicProviderLatchFactory`); changing it requires a browser restart.
+// LINT.IfChange(AssistantSelection)
 enum class AssistantSelection {
   kAuto = 0,
   kConsumer = 1,
   kEnterprise = 2,
   kMaxValue = kEnterprise,
 };
+// LINT.ThenChange(//chrome/browser/resources/settings/ai_page/constants.ts:GlicAssistantSelection)
 inline constexpr char kGlicAssistantSelection[] = "glic.assistant_selection";
 
 // Values for the "glic.actuation_on_web" pref.

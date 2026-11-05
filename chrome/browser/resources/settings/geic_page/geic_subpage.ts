@@ -23,15 +23,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {GlicAssistantSelection} from '../ai_page/constants.js';
 import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import {getCss} from './geic_subpage.css.js';
 import {getHtml} from './geic_subpage.html.js';
-
-// Matches `glic::prefs::AssistantSelection::kConsumer` in
-// chrome/browser/glic/glic_pref_names.h.
-const ASSISTANT_SELECTION_CONSUMER = 1;
 
 const SettingsGeicSubpageElementBase =
     SettingsViewMixinLit(RelaunchMixinLit(I18nMixinLit(CrLitElement)));
@@ -70,7 +67,7 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
   protected async onDevicePolicyButtonClick_() {
     this.devicePolicyButtonDisabled_ = true;
     await PrefService.getInstance().setPrefValue(
-        'glic.assistant_selection', ASSISTANT_SELECTION_CONSUMER);
+        'glic.assistant_selection', GlicAssistantSelection.CONSUMER);
     this.performRestart(RestartType.RELAUNCH);
   }
 

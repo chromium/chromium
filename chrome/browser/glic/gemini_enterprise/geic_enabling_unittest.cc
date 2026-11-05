@@ -535,9 +535,9 @@ TEST_F(GeicEnablingTest, ShouldLatchToGeminiEnterprise) {
   EXPECT_FALSE(ShouldLatchToGeminiEnterprise(nullptr, kValidGuestUrl));
 }
 
-TEST_F(GeicEnablingTest, CanOptOutOfGeicInSettings) {
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(nullptr));
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+TEST_F(GeicEnablingTest, CanSwitchBetweenGeminiProvidersInSettings) {
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(nullptr));
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -546,35 +546,35 @@ TEST_F(GeicEnablingTest, CanOptOutOfGeicInSettings) {
          {"geic-guest-url", "https://business.gemini.google/side-panel"}}}},
       {});
 
-  // Finch URL alone does not allow opting out in settings.
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  // Finch URL alone does not allow switching in settings.
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 
-  // User-scoped policy does not allow opting out in settings.
+  // User-scoped policy does not allow switching in settings.
   SetPolicyWithScope("https://business.gemini.google/home/cid/user",
                      policy::POLICY_SCOPE_USER);
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 
-  // Machine-scoped policy with a disallowed URL does not allow opting out.
+  // Machine-scoped policy with a disallowed URL does not allow switching.
   SetPolicyWithScope("https://evil.com/side-panel",
                      policy::POLICY_SCOPE_MACHINE);
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 
-  // Machine-scoped policy with a valid URL allows opting out on a personal
+  // Machine-scoped policy with a valid URL allows switching on a personal
   // (unmanaged) profile.
   SetPolicyWithScope("https://business.gemini.google/home/cid/device",
                      policy::POLICY_SCOPE_MACHINE);
-  EXPECT_TRUE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_TRUE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 
   // Off-the-record profiles return false.
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
-  // On a managed profile, `CanOptOutOfGeicInSettings` returns false even when
-  // the policy is machine-scoped.
+  // On a managed profile, `CanSwitchBetweenGeminiProvidersInSettings` returns
+  // false even when the policy is machine-scoped.
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EXPECT_TRUE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_TRUE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 
   // When consumer Gemini is disabled by admin policy (`GeminiSettings`), the
   // switch is not offered.
@@ -582,16 +582,16 @@ TEST_F(GeicEnablingTest, CanOptOutOfGeicInSettings) {
       optimization_guide::prefs::kGeminiSettings,
       static_cast<int>(
           optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
       static_cast<int>(
           optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
-  EXPECT_TRUE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_TRUE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 
   // Command-line switch takes precedence over the device policy.
   SetSwitchUrl("https://business.gemini.google/cli-panel");
-  EXPECT_FALSE(CanOptOutOfGeicInSettings(profile()));
+  EXPECT_FALSE(CanSwitchBetweenGeminiProvidersInSettings(profile()));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

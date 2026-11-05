@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_settings_util.h"
@@ -837,17 +838,34 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddGeicStrings(content::WebUIDataSource* html_source) {
+  // Also registers the GEiC switcher strings shown on `glic_subpage` so that
+  // `GetDeviceManagerIdentity()` is only queried once.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"geicSectionTitle", IDS_SETTINGS_GEIC_SECTION_TITLE},
       {"geicRowSublabel", IDS_SETTINGS_GEIC_ROW_SUBLABEL},
       {"geicDevicePolicyToggle",
        IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE},
-      {"geicDevicePolicyToggleSublabel",
-       IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE_SUBLABEL},
       {"geicDevicePolicyButton",
        IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_BUTTON},
+      {"glicSwitchToGeicToggle", IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  const std::u16string manager_domain =
+      device_manager && !device_manager->empty()
+          ? base::UTF8ToUTF16(*device_manager)
+          : l10n_util::GetStringUTF16(
+                IDS_SETTINGS_GEIC_DEFAULT_MANAGEMENT_DOMAIN);
+  html_source->AddString(
+      "geicDevicePolicyToggleSublabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE_SUBLABEL,
+          manager_domain));
+  html_source->AddString(
+      "glicSwitchToGeicToggleSublabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE_SUBLABEL, manager_domain));
 
   html_source->AddString(
       "geicDefaultTabAccessToggleLearnMoreUrl",

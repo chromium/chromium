@@ -11,6 +11,23 @@
  * #include=cr-icons-lit cr-shared-style-lit settings-columned-section-lit settings-shared-lit
  * #css_wrapper_metadata_end */
 
+#devicePolicyButton {
+  margin-inline-end: var(--cr-section-padding);
+  margin-inline-start: var(--cr-section-padding);
+}
+
+:host-context([settings-refresh-2026]) #devicePolicyRow {
+  margin: 4px var(--cr-section-padding) 0;
+}
+
+:host-context([settings-refresh-2026]) #devicePolicyButton {
+  margin-inline-end: 0;
+}
+
+#devicePolicyLabel {
+  font-weight: 500;
+}
+
 .section {
   padding: 0 var(--cr-section-padding);
 }

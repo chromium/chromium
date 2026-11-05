@@ -244,6 +244,9 @@ TEST_P(GlicProviderLatchAssistantSelectionTest, ResolvesExpectedProvider) {
   } else {
     ExpectDefaultLatch(profile.get());
   }
+  EXPECT_EQ(
+      GetGlicProviderSpec(profile.get()).CanSwitchBetweenGeminiProviders(),
+      param.has_enterprise_url);
 
   profile.reset();
   policy_provider.Shutdown();

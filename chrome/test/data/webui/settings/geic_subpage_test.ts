@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
-import {AiSettingsSection, LifetimeBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {AiSettingsSection, GlicAssistantSelection, LifetimeBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsGeicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -44,7 +44,8 @@ suite('GeicSubpage', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
-    await prefService.setPrefValue('glic.assistant_selection', 0);
+    await prefService.setPrefValue(
+        'glic.assistant_selection', GlicAssistantSelection.AUTO);
     await createPage();
   });
 
@@ -170,7 +171,8 @@ suite('GeicSubpage', function() {
       assertTrue(isVisible(button));
       assertFalse(button.disabled);
       assertEquals(
-          0, prefService.getPref<number>('glic.assistant_selection').value);
+          GlicAssistantSelection.AUTO,
+          prefService.getPref<number>('glic.assistant_selection').value);
 
       button.click();
       await microtasksFinished();
@@ -180,7 +182,12 @@ suite('GeicSubpage', function() {
       // </if>
       await lifetimeBrowserProxy.whenCalled('relaunch');
       assertEquals(
-          1, prefService.getPref<number>('glic.assistant_selection').value);
+          GlicAssistantSelection.CONSUMER,
+          prefService.getPref<number>('glic.assistant_selection').value);
+
+      page.onRelaunchDialogClose(new Event('close'));
+      await microtasksFinished();
+      assertFalse(button.disabled);
     });
   });
 

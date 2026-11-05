@@ -41,9 +41,10 @@ inline constexpr auto& kGeicGuestURLSwitch = switches::kGeicGuestURL;
 // enabled, independent of profile state or guest URL configuration.
 bool IsGeicEnabledByFeature();
 
-// Returns true if the settings UI may offer opting out of GEiC to switch
-// `browser_context` to consumer Gemini.
-bool CanOptOutOfGeicInSettings(content::BrowserContext* browser_context);
+// Returns true if the settings UI may offer switching between Gemini
+// Enterprise and consumer Gemini for `browser_context`.
+bool CanSwitchBetweenGeminiProvidersInSettings(
+    content::BrowserContext* browser_context);
 
 // Resolves the Gemini Enterprise guest URL for `browser_context` from the
 // current configuration on every call, without reading or writing the latch, or

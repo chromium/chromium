@@ -24,6 +24,14 @@ export enum ChromeSuggestionsSettingsValue {
   DISABLED = 1,
 }
 
+// LINT.IfChange(GlicAssistantSelection)
+export enum GlicAssistantSelection {
+  AUTO = 0,
+  CONSUMER = 1,
+  ENTERPRISE = 2,
+}
+// LINT.ThenChange(//chrome/browser/glic/glic_pref_names.h:AssistantSelection)
+
 
 // Exporting pref names so that they can be referenced by tests.
 export enum SettingsAiPageFeaturePrefName {
