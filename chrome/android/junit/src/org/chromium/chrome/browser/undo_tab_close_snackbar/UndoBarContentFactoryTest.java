@@ -595,6 +595,7 @@ public class UndoBarContentFactoryTest {
                 id,
                 title,
                 groupId,
+                /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                 /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                 /* pinned= */ false,
                 /* wasSelected= */ false);

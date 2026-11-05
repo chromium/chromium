@@ -751,6 +751,7 @@ public class TabModelSelectorImplTest {
                         /* id= */ 5,
                         /* title= */ "Tab 5",
                         /* groupId= */ null,
+                        /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                         /* modelIndex= */ 0,
                         /* pinned= */ true,
                         /* wasSelected= */ false),
@@ -758,6 +759,7 @@ public class TabModelSelectorImplTest {
                         /* id= */ 6,
                         /* title= */ "Tab 6",
                         /* groupId= */ null,
+                        /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                         /* modelIndex= */ 3,
                         /* pinned= */ false,
                         /* wasSelected= */ true));

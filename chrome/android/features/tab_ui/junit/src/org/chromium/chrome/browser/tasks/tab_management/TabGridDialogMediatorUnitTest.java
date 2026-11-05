@@ -2365,6 +2365,7 @@ public class TabGridDialogMediatorUnitTest {
                                 /* id= */ TAB1_ID,
                                 "title",
                                 /* groupId= */ null,
+                                /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                                 /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                                 /* pinned= */ false,
                                 /* wasSelected= */ false)),

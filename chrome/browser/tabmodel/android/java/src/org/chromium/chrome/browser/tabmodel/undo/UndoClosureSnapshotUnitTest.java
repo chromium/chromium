@@ -49,6 +49,7 @@ public class UndoClosureSnapshotUnitTest {
                                         /* id= */ 1,
                                         "Tab 1",
                                         GROUP_1,
+                                        /* indexInGroup= */ 2,
                                         /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                                         /* pinned= */ true,
                                         /* wasSelected= */ false)),
@@ -73,6 +74,7 @@ public class UndoClosureSnapshotUnitTest {
         assertTrue(snapshot.tabs.get(0).pinned);
         assertFalse(snapshot.tabs.get(0).wasSelected);
         assertEquals(TabList.INVALID_TAB_INDEX, snapshot.tabs.get(0).modelIndex);
+        assertEquals(2, snapshot.tabs.get(0).indexInGroup);
 
         GroupData groupData = snapshot.groups.get(GROUP_1);
         assertNotNull(groupData);
@@ -96,6 +98,7 @@ public class UndoClosureSnapshotUnitTest {
                                         /* id= */ 1,
                                         "Tab 1",
                                         /* groupId= */ null,
+                                        /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                                         /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                                         /* pinned= */ false,
                                         /* wasSelected= */ false)),
@@ -123,6 +126,7 @@ public class UndoClosureSnapshotUnitTest {
                         /* id= */ 1,
                         "Tab 1",
                         /* groupId= */ null,
+                        /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                         /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                         /* pinned= */ false,
                         /* wasSelected= */ false));

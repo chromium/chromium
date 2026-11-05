@@ -66,6 +66,7 @@ public final class UndoClosureSnapshotFactory {
                             id,
                             title,
                             groupId,
+                            /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                             /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                             tab.getIsPinned(),
                             /* wasSelected= */ false));
@@ -121,6 +122,7 @@ public final class UndoClosureSnapshotFactory {
                             tab.getId(),
                             tab.getTitle(),
                             /* groupId= */ null,
+                            /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                             /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                             tab.getIsPinned(),
                             /* wasSelected= */ false));

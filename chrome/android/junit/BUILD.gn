@@ -1414,6 +1414,7 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabPinnerActionListenerUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabRemoverImplUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabUngrouperImplUnitTest.java",
+      "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/UndoGroupRestorerUnitTest.java",
       "src/org/chromium/chrome/browser/tabmodel/ArchivedTabModelSelectorImplTest.java",
       "src/org/chromium/chrome/browser/tabmodel/AsyncTabCreationParamsManagerTest.java",
       "src/org/chromium/chrome/browser/tabmodel/ChromeTabCreatorJUnitTest.java",

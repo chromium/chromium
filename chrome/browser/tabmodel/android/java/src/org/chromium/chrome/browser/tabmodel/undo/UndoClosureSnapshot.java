@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -38,13 +39,20 @@ public final class UndoClosureSnapshot {
     /** Represents a closed tab captured at close time. */
     public static final class ClosedTab {
         /** The identifier of the closed tab. */
-        public final int id;
+        public final @TabId int id;
 
         /** The title of the closed tab. */
         public final String title;
 
         /** The identifier of the tab group this tab belonged to, if any. */
         public final @Nullable Token groupId;
+
+        /**
+         * The index of the tab within its tab group prior to closure, or {@link
+         * TabList#INVALID_TAB_INDEX} if unknown or ungrouped. Only populated by a pre-removal
+         * capture.
+         */
+        public final int indexInGroup;
 
         /**
          * The index of the tab in the model prior to closure, or {@link TabList#INVALID_TAB_INDEX}
@@ -67,20 +75,24 @@ public final class UndoClosureSnapshot {
          * @param title The title of the closed tab.
          * @param groupId The identifier of the tab group this tab belonged to, or null if
          *     ungrouped.
+         * @param indexInGroup The index of the tab within its tab group prior to closure, or {@link
+         *     TabList#INVALID_TAB_INDEX} if unknown or ungrouped.
          * @param modelIndex The index of the tab in the model prior to closure.
          * @param pinned Whether the tab was pinned prior to closure.
          * @param wasSelected Whether the tab was selected prior to closure.
          */
         public ClosedTab(
-                int id,
+                @TabId int id,
                 String title,
                 @Nullable Token groupId,
+                int indexInGroup,
                 int modelIndex,
                 boolean pinned,
                 boolean wasSelected) {
             this.id = id;
             this.title = title;
             this.groupId = groupId;
+            this.indexInGroup = indexInGroup;
             this.modelIndex = modelIndex;
             this.pinned = pinned;
             this.wasSelected = wasSelected;

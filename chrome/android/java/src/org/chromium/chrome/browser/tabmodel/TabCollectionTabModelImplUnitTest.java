@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
+import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
 import org.chromium.content_public.browser.WebContents;
 
@@ -72,6 +74,7 @@ import java.util.Set;
  * TabCollectionTabModelImplTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS)
 public class TabCollectionTabModelImplUnitTest {
     private static final long TAB_MODEL_JNI_BRIDGE_PTR = 875943L;
     private static final long TAB_COLLECTION_TAB_MODEL_IMPL_PTR = 378492L;
@@ -1096,6 +1099,49 @@ public class TabCollectionTabModelImplUnitTest {
         verifyBatchedAndReset();
     }
 
+    @Test
+    public void testRestoreClosedTabsForUndo_restoresTabGroupBeforeSelection() {
+        mTabModel.setActive(/* active= */ true);
+        Token groupId = new Token(1L, 2L);
+        ClosedTab closedTab =
+                new ClosedTab(
+                        /* id= */ 5,
+                        /* title= */ "Tab 5",
+                        groupId,
+                        /* indexInGroup= */ 0,
+                        /* modelIndex= */ 0,
+                        /* pinned= */ false,
+                        /* wasSelected= */ true);
+        UndoClosureSnapshot snapshot = createSnapshot(ENTRY_ID, closedTab);
+        MockTab restoredTab = createMockTab(/* tabId= */ 105, mProfile);
+        stubRestoreForUndo(snapshot, restoredTab);
+        doAnswer(
+                        invocation -> {
+                            assertEquals(groupId, restoredTab.getTabGroupId());
+                            return null;
+                        })
+                .when(mTabModelObserver)
+                .didSelectTab(
+                        restoredTab, TabSelectionType.FROM_UNDO, /* lastId= */ Tab.INVALID_TAB_ID);
+
+        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+
+        assertArrayEquals(new int[] {105}, restoredIds);
+        assertEquals(groupId, restoredTab.getTabGroupId());
+        assertEquals(restoredTab, mTabModel.getCurrentTabSupplier().get());
+        verify(mTabCollectionTabModelImplJni)
+                .createTabGroup(
+                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR),
+                        eq(groupId),
+                        any(),
+                        anyInt(),
+                        anyBoolean());
+        verify(mTabModelObserver)
+                .didSelectTab(
+                        restoredTab, TabSelectionType.FROM_UNDO, /* lastId= */ Tab.INVALID_TAB_ID);
+        verify(mScopedStorageBatch, atLeastOnce()).close();
+    }
+
     private void addTabsAndResetObserver(int count) {
         for (int i = 1; i <= count; i++) {
             MockTab tab = createMockTab(i, mProfile);
@@ -1206,6 +1252,7 @@ public class TabCollectionTabModelImplUnitTest {
                 id,
                 /* title= */ "Tab " + id,
                 /* groupId= */ null,
+                /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                 /* modelIndex= */ id,
                 /* pinned= */ false,
                 wasSelected);

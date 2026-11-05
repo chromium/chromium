@@ -36,6 +36,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -164,11 +165,12 @@ public class UndoClosureRestorerUnitTest {
                         /* snackbarManager= */ null));
     }
 
-    private static ClosedTab createClosedTab(int id, String title) {
+    private static ClosedTab createClosedTab(@TabId int id, String title) {
         return new ClosedTab(
                 id,
                 title,
                 /* groupId= */ null,
+                /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
                 /* modelIndex= */ TabList.INVALID_TAB_INDEX,
                 /* pinned= */ false,
                 /* wasSelected= */ false);

@@ -581,6 +581,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
     }
 
+    /**
+     * Restores the whole Recent Tabs entry referenced by {@code snapshot.entryId}; the entry is
+     * consumed even if some of its tabs could not be restored. Handling a partial undo is the
+     * caller's responsibility. Snapshots of saved tab groups or without a valid entry id are not
+     * restored.
+     *
+     * <p>{@code snapshot}'s tabs must not be pending closure. Tabs in the entry that cannot be
+     * matched to an element of {@code snapshot.tabs} are still restored (appended) but are not
+     * reported, and a {@code modelIndex} of {@link TabList#INVALID_TAB_INDEX} appends the tab.
+     *
+     * <p>The reported tabs are then returned to the tab groups they belonged to, recreating groups
+     * that no longer exist with the visual data captured in {@code snapshot}; see {@link
+     * UndoGroupRestorer}.
+     */
     @Override
     public int[] restoreClosedTabsForUndo(UndoClosureSnapshot snapshot, boolean reselect) {
         assertOnUiThread();
@@ -601,6 +615,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             if (restoredIds.length != tabCount) {
                 restoredIds = createInvalidTabIds(tabCount);
             }
+            UndoGroupRestorer.apply(/* tabModel= */ this, restoredIds, snapshot);
             applyUndoSelection(restoredIds, snapshot, reselect);
             return restoredIds;
         }
