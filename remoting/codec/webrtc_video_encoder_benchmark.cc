@@ -9,12 +9,14 @@
 #include <iostream>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -24,8 +26,10 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -38,11 +42,21 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
+#include "remoting/codec/utils.h"
 #include "remoting/codec/webrtc_video_encoder_av1.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/test/frame_generator/differ_frame_generator.h"
 #include "remoting/test/frame_generator/file_frame_generator.h"
 #include "remoting/test/frame_generator/headless_frame_generator.h"
+#include "third_party/libyuv/include/libyuv/compare.h"
+#include "third_party/webrtc/api/environment/environment_factory.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_frame_buffer.h"
+#include "third_party/webrtc/api/video_codecs/builtin_video_decoder_factory.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_desktop_frame.h"
 
@@ -98,10 +112,25 @@ struct RuntimeParams {
 };
 
 struct FrameMetric {
+  size_t frame_index = 0;
   double encode_time_ms = 0.0;
   size_t size_bytes = 0;
   int quantizer = 0;
   bool key_frame = false;
+  webrtc::scoped_refptr<webrtc::EncodedImageBuffer> encoded_data;
+};
+
+struct QualityStats {
+  size_t frames_decoded = 0;
+  size_t dirty_frames_decoded = 0;
+  double mean_psnr_db = 0.0;
+  double min_psnr_db = 0.0;
+  double final_frame_psnr_db = 0.0;
+  double dirty_region_mean_psnr_db = 0.0;
+  double dirty_region_min_psnr_db = 0.0;
+  double mean_ssim = 0.0;
+  double min_ssim = 0.0;
+  double final_frame_ssim = 0.0;
 };
 
 struct RunResults {
@@ -110,6 +139,7 @@ struct RunResults {
   int64_t total_pixels = 0;
   int64_t updated_pixels = 0;
   std::vector<FrameMetric> frame_metrics;
+  QualityStats quality_stats;
 };
 
 struct LatencyStats {
@@ -303,10 +333,329 @@ std::vector<std::unique_ptr<webrtc::SharedDesktopFrame>> LoadFrames(
   return frames;
 }
 
+class BenchmarkVideoDecoder {
+ public:
+  static std::unique_ptr<BenchmarkVideoDecoder> Create(Codec codec) {
+    std::unique_ptr<webrtc::VideoDecoderFactory> decoder_factory =
+        webrtc::CreateBuiltinVideoDecoderFactory();
+    std::string codec_name;
+    webrtc::VideoCodecType codec_type = webrtc::kVideoCodecAV1;
+    switch (codec) {
+      case Codec::kAv1:
+        codec_name = "AV1";
+        codec_type = webrtc::kVideoCodecAV1;
+        break;
+      case Codec::kVp9:
+        codec_name = "VP9";
+        codec_type = webrtc::kVideoCodecVP9;
+        break;
+      case Codec::kVp8:
+        codec_name = "VP8";
+        codec_type = webrtc::kVideoCodecVP8;
+        break;
+    }
+    std::unique_ptr<webrtc::VideoDecoder> decoder = decoder_factory->Create(
+        webrtc::CreateEnvironment(), webrtc::SdpVideoFormat(codec_name));
+    if (!decoder) {
+      LOG(ERROR) << "Failed to create decoder for quality assessment.";
+      return nullptr;
+    }
+
+    webrtc::VideoDecoder::Settings dec_settings;
+    dec_settings.set_codec_type(codec_type);
+    dec_settings.set_number_of_cores(4);
+    if (!decoder->Configure(dec_settings)) {
+      LOG(ERROR) << "Failed to configure decoder for quality assessment.";
+      return nullptr;
+    }
+
+    return base::WrapUnique(new BenchmarkVideoDecoder(std::move(decoder)));
+  }
+
+  BenchmarkVideoDecoder(const BenchmarkVideoDecoder&) = delete;
+  BenchmarkVideoDecoder& operator=(const BenchmarkVideoDecoder&) = delete;
+
+  ~BenchmarkVideoDecoder() {
+    if (decoder_) {
+      decoder_->Release();
+    }
+  }
+
+  std::optional<webrtc::VideoFrame> Decode(
+      const webrtc::DesktopSize& size,
+      size_t frame_index,
+      bool key_frame,
+      webrtc::scoped_refptr<webrtc::EncodedImageBuffer> encoded_data) {
+    const uint32_t rtp_timestamp = static_cast<uint32_t>(frame_index * 3000);
+    webrtc::EncodedImage encoded_image;
+    encoded_image.SetEncodedData(std::move(encoded_data));
+    encoded_image._encodedWidth = size.width();
+    encoded_image._encodedHeight = size.height();
+    encoded_image.set_frame_type(
+        key_frame ? webrtc::VideoFrameType::kVideoFrameKey
+                  : webrtc::VideoFrameType::kVideoFrameDelta);
+    encoded_image.SetRtpTimestamp(rtp_timestamp);
+
+    if (decoder_->Decode(encoded_image, /*render_time_ms=*/0) != 0) {
+      LOG(ERROR) << "Failed to decode frame " << frame_index;
+      return std::nullopt;
+    }
+
+    std::optional<webrtc::VideoFrame> decoded_frame = callback_.TakeFrame();
+    if (!decoded_frame.has_value() ||
+        decoded_frame->rtp_timestamp() != rtp_timestamp) {
+      return std::nullopt;
+    }
+    return decoded_frame;
+  }
+
+ private:
+  class FrameCaptureCallback : public webrtc::DecodedImageCallback {
+   public:
+    using webrtc::DecodedImageCallback::Decoded;
+
+    int32_t Decoded(webrtc::VideoFrame& decoded_image) override {
+      last_frame_ = decoded_image;
+      return 0;
+    }
+
+    std::optional<webrtc::VideoFrame> TakeFrame() {
+      auto out = std::move(last_frame_);
+      last_frame_.reset();
+      return out;
+    }
+
+   private:
+    std::optional<webrtc::VideoFrame> last_frame_;
+  };
+
+  explicit BenchmarkVideoDecoder(std::unique_ptr<webrtc::VideoDecoder> decoder)
+      : decoder_(std::move(decoder)) {
+    decoder_->RegisterDecodeCompleteCallback(&callback_);
+  }
+
+  // Must be declared before `decoder_` so `callback_` outlives `decoder_`
+  // during member destruction.
+  FrameCaptureCallback callback_;
+  std::unique_ptr<webrtc::VideoDecoder> decoder_;
+};
+
+struct DecodedYuvFrame {
+  webrtc::scoped_refptr<const webrtc::PlanarYuv8Buffer> buffer;
+  bool is_i444 = false;
+};
+
+std::optional<DecodedYuvFrame> ExtractDecodedYuvFrame(
+    const webrtc::VideoFrame& decoded_frame,
+    const webrtc::DesktopSize& size,
+    ColorSpace target_color_space) {
+  auto buf = decoded_frame.video_frame_buffer();
+  if (!buf || buf->width() < size.width() || buf->height() < size.height()) {
+    return std::nullopt;
+  }
+  if (target_color_space == ColorSpace::kI444 &&
+      buf->type() == webrtc::VideoFrameBuffer::Type::kI444) {
+    const webrtc::I444BufferInterface* dec_i444 = buf->GetI444();
+    if (!dec_i444) {
+      return std::nullopt;
+    }
+    return DecodedYuvFrame{
+        .buffer =
+            webrtc::scoped_refptr<const webrtc::PlanarYuv8Buffer>(dec_i444),
+        .is_i444 = true,
+    };
+  }
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> dec_i420 = buf->ToI420();
+  if (!dec_i420) {
+    return std::nullopt;
+  }
+  return DecodedYuvFrame{
+      .buffer = std::move(dec_i420),
+      .is_i444 = false,
+  };
+}
+
+double ComputeFullFramePsnr(const webrtc::DesktopSize& size,
+                            bool is_i444,
+                            base::span<const uint8_t> ref_y,
+                            base::span<const uint8_t> ref_u,
+                            base::span<const uint8_t> ref_v,
+                            const webrtc::PlanarYuv8Buffer& dec_buf) {
+  const int width = size.width();
+  const int height = size.height();
+  const int uv_w = is_i444 ? width : (width + 1) / 2;
+  const int uv_h = is_i444 ? height : (height + 1) / 2;
+
+  uint64_t sse_y = libyuv::ComputeSumSquareErrorPlane(
+      ref_y.data(), width, dec_buf.DataY(), dec_buf.StrideY(), width, height);
+  uint64_t sse_u = libyuv::ComputeSumSquareErrorPlane(
+      ref_u.data(), uv_w, dec_buf.DataU(), dec_buf.StrideU(), uv_w, uv_h);
+  uint64_t sse_v = libyuv::ComputeSumSquareErrorPlane(
+      ref_v.data(), uv_w, dec_buf.DataV(), dec_buf.StrideV(), uv_w, uv_h);
+  uint64_t total_samples = static_cast<uint64_t>(width) * height +
+                           2ULL * static_cast<uint64_t>(uv_w) * uv_h;
+  return libyuv::SumSquareErrorToPsnr(sse_y + sse_u + sse_v, total_samples);
+}
+
+std::optional<double> ComputeDirtyRegionPsnr(
+    const webrtc::DesktopRegion& updated_region,
+    base::span<const uint8_t> ref_y,
+    int ref_stride_y,
+    base::span<const uint8_t> dec_y,
+    int dec_stride_y) {
+  if (updated_region.is_empty()) {
+    return std::nullopt;
+  }
+  uint64_t dirty_sse_y = 0;
+  uint64_t dirty_samples = 0;
+  for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
+       r.Advance()) {
+    const webrtc::DesktopRect& rect = r.rect();
+    const size_t ref_offset =
+        base::checked_cast<size_t>(rect.top()) * ref_stride_y +
+        base::checked_cast<size_t>(rect.left());
+    const size_t dec_offset =
+        base::checked_cast<size_t>(rect.top()) * dec_stride_y +
+        base::checked_cast<size_t>(rect.left());
+    dirty_sse_y += libyuv::ComputeSumSquareErrorPlane(
+        ref_y.subspan(ref_offset).data(), ref_stride_y,
+        dec_y.subspan(dec_offset).data(), dec_stride_y, rect.width(),
+        rect.height());
+    dirty_samples += static_cast<uint64_t>(rect.width()) * rect.height();
+  }
+  if (dirty_samples == 0) {
+    return std::nullopt;
+  }
+  return libyuv::SumSquareErrorToPsnr(dirty_sse_y, dirty_samples);
+}
+
+QualityStats EvaluateDecodedQuality(
+    const EncoderConfig& encoder_config,
+    const webrtc::DesktopSize& size,
+    base::span<const std::unique_ptr<webrtc::SharedDesktopFrame>>
+        preloaded_frames,
+    base::span<FrameMetric> frame_metrics) {
+  QualityStats stats;
+  if (frame_metrics.empty() || preloaded_frames.size() < frame_metrics.size()) {
+    return stats;
+  }
+
+  std::unique_ptr<BenchmarkVideoDecoder> decoder =
+      BenchmarkVideoDecoder::Create(encoder_config.codec);
+  if (!decoder) {
+    return stats;
+  }
+
+  const int width = size.width();
+  const int height = size.height();
+  const webrtc::DesktopRect full_rect =
+      webrtc::DesktopRect::MakeWH(width, height);
+  const size_t y_rows = static_cast<size_t>(height);
+  const size_t y_plane_size = static_cast<size_t>(width) * y_rows;
+  std::vector<uint8_t> ref_y(y_plane_size);
+  std::vector<uint8_t> ref_u(y_plane_size);
+  std::vector<uint8_t> ref_v(y_plane_size);
+
+  double sum_psnr = 0.0;
+  double min_psnr = 128.0;
+  double final_psnr = 0.0;
+  double sum_dirty_psnr = 0.0;
+  double min_dirty_psnr = 128.0;
+  double sum_ssim = 0.0;
+  double min_ssim = 1.0;
+  double final_ssim = 0.0;
+  size_t ssim_count = 0;
+
+  for (size_t i = 0; i < frame_metrics.size(); ++i) {
+    auto& m = frame_metrics[i];
+    webrtc::scoped_refptr<webrtc::EncodedImageBuffer> encoded_data =
+        std::move(m.encoded_data);
+    if (!encoded_data || encoded_data->size() == 0 ||
+        m.frame_index >= preloaded_frames.size()) {
+      continue;
+    }
+
+    std::optional<webrtc::VideoFrame> decoded_frame = decoder->Decode(
+        size, m.frame_index, m.key_frame, std::move(encoded_data));
+    if (!decoded_frame.has_value()) {
+      continue;
+    }
+
+    std::optional<DecodedYuvFrame> decoded_yuv = ExtractDecodedYuvFrame(
+        *decoded_frame, size, encoder_config.color_space);
+    if (!decoded_yuv.has_value()) {
+      continue;
+    }
+
+    const webrtc::DesktopFrame& src_frame = *preloaded_frames[m.frame_index];
+    const int uv_w = decoded_yuv->is_i444 ? width : (width + 1) / 2;
+    ConvertDesktopFrameRectToYuv(src_frame, full_rect, decoded_yuv->is_i444,
+                                 ref_y, width, ref_u, uv_w, ref_v, uv_w);
+
+    const webrtc::PlanarYuv8Buffer& dec_buf = *decoded_yuv->buffer;
+    double frame_psnr = ComputeFullFramePsnr(size, decoded_yuv->is_i444, ref_y,
+                                             ref_u, ref_v, dec_buf);
+
+    sum_psnr += frame_psnr;
+    min_psnr = std::min(min_psnr, frame_psnr);
+    final_psnr = frame_psnr;
+    stats.frames_decoded++;
+
+    // Compute Y-plane PSNR specifically over delta-frame updated_region()
+    // rectangles to catch skipped active-map blocks or dirty-rect conversion
+    // bugs without dilution from unchanged background pixels or initial
+    // keyframe CBR quantization.
+    if (!m.key_frame) {
+      // SAFETY: `dec_buf` is a `webrtc::PlanarYuv8Buffer` whose height was
+      // verified to be at least `height` (`y_rows`) in
+      // `ExtractDecodedYuvFrame()`, guaranteeing at least
+      // `dec_buf.StrideY() * y_rows` valid bytes.
+      auto dec_y_span = UNSAFE_BUFFERS(base::span(
+          dec_buf.DataY(), static_cast<size_t>(dec_buf.StrideY()) * y_rows));
+      if (std::optional<double> dirty_psnr =
+              ComputeDirtyRegionPsnr(src_frame.updated_region(), ref_y, width,
+                                     dec_y_span, dec_buf.StrideY())) {
+        sum_dirty_psnr += *dirty_psnr;
+        min_dirty_psnr = std::min(min_dirty_psnr, *dirty_psnr);
+        stats.dirty_frames_decoded++;
+      }
+    }
+
+    // Compute Y-plane SSIM on keyframe, final frame, and every 5th frame.
+    if (m.key_frame || i + 1 == frame_metrics.size() || (i % 5 == 0)) {
+      double frame_ssim =
+          libyuv::CalcFrameSsim(ref_y.data(), width, dec_buf.DataY(),
+                                dec_buf.StrideY(), width, height);
+      sum_ssim += frame_ssim;
+      min_ssim = std::min(min_ssim, frame_ssim);
+      final_ssim = frame_ssim;
+      ssim_count++;
+    }
+  }
+
+  if (stats.frames_decoded > 0) {
+    stats.mean_psnr_db = sum_psnr / stats.frames_decoded;
+    stats.min_psnr_db = min_psnr;
+    stats.final_frame_psnr_db = final_psnr;
+  }
+  if (stats.dirty_frames_decoded > 0) {
+    stats.dirty_region_mean_psnr_db =
+        sum_dirty_psnr / stats.dirty_frames_decoded;
+    stats.dirty_region_min_psnr_db = min_dirty_psnr;
+  }
+  if (ssim_count > 0) {
+    stats.mean_ssim = sum_ssim / ssim_count;
+    stats.min_ssim = min_ssim;
+    stats.final_frame_ssim = final_ssim;
+  }
+  return stats;
+}
+
 base::DictValue SummarizeAndPrintResults(const EncoderConfig& encoder_config,
                                          const RuntimeParams& runtime_params,
                                          const RunResults& run_results) {
   const auto& frame_metrics = run_results.frame_metrics;
+  const auto& quality_stats = run_results.quality_stats;
   std::vector<double> all_times_ms;
   std::vector<double> keyframe_times_ms;
   std::vector<double> delta_times_ms;
@@ -441,6 +790,22 @@ base::DictValue SummarizeAndPrintResults(const EncoderConfig& encoder_config,
               << " | min=" << delta_qp_stats.min_qp
               << " | max=" << delta_qp_stats.max_qp << std::endl;
   }
+  if (quality_stats.frames_decoded > 0) {
+    std::cout << "Decoded Quality (PSNR):   mean=" << quality_stats.mean_psnr_db
+              << " dB | min=" << quality_stats.min_psnr_db
+              << " dB | final=" << quality_stats.final_frame_psnr_db << " dB";
+    if (quality_stats.dirty_frames_decoded > 0) {
+      std::cout << " | dirty_mean=" << quality_stats.dirty_region_mean_psnr_db
+                << " dB | dirty_min=" << quality_stats.dirty_region_min_psnr_db
+                << " dB";
+    }
+    std::cout << std::endl;
+    std::cout << std::setprecision(4)
+              << "Decoded Quality (SSIM):   mean=" << quality_stats.mean_ssim
+              << " | min=" << quality_stats.min_ssim
+              << " | final=" << quality_stats.final_frame_ssim
+              << std::setprecision(2) << std::endl;
+  }
   std::cout << "=================================================="
             << std::endl;
 
@@ -509,6 +874,23 @@ base::DictValue SummarizeAndPrintResults(const EncoderConfig& encoder_config,
   };
   result.Set("quantizer_all", qp_to_dict(all_qp_stats));
   result.Set("quantizer_delta", qp_to_dict(delta_qp_stats));
+
+  base::DictValue quality_dict;
+  quality_dict.Set("frames_decoded",
+                   static_cast<int>(quality_stats.frames_decoded));
+  quality_dict.Set("dirty_frames_decoded",
+                   static_cast<int>(quality_stats.dirty_frames_decoded));
+  quality_dict.Set("mean_psnr_db", quality_stats.mean_psnr_db);
+  quality_dict.Set("min_psnr_db", quality_stats.min_psnr_db);
+  quality_dict.Set("final_frame_psnr_db", quality_stats.final_frame_psnr_db);
+  quality_dict.Set("dirty_region_mean_psnr_db",
+                   quality_stats.dirty_region_mean_psnr_db);
+  quality_dict.Set("dirty_region_min_psnr_db",
+                   quality_stats.dirty_region_min_psnr_db);
+  quality_dict.Set("mean_ssim", quality_stats.mean_ssim);
+  quality_dict.Set("min_ssim", quality_stats.min_ssim);
+  quality_dict.Set("final_frame_ssim", quality_stats.final_frame_ssim);
+  result.Set("quality", std::move(quality_dict));
 
   return result;
 }
@@ -582,6 +964,7 @@ class EncoderBenchmark {
     if (!encoder_initialized_) {
       LOG(ERROR) << "Failed to initialize encoder: " << encoder_config_.name;
       preloaded_frames_ = {};
+      run_results_ = RunResults();
       return base::DictValue();
     }
 
@@ -606,9 +989,14 @@ class EncoderBenchmark {
         destroy_loop.QuitClosure());
     destroy_loop.Run();
 
+    run_results_.quality_stats =
+        EvaluateDecodedQuality(encoder_config_, runtime_params_.size,
+                               preloaded_frames_, run_results_.frame_metrics);
     preloaded_frames_ = {};
-    return SummarizeAndPrintResults(encoder_config_, runtime_params_,
-                                    run_results_);
+    base::DictValue summary = SummarizeAndPrintResults(
+        encoder_config_, runtime_params_, run_results_);
+    run_results_ = RunResults();
+    return summary;
   }
 
  private:
@@ -691,12 +1079,13 @@ class EncoderBenchmark {
     }
 
     encode_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&EncoderBenchmark::EncodeFrameOnEncodeThread,
-                       base::Unretained(this), std::move(frame), params));
+        FROM_HERE, base::BindOnce(&EncoderBenchmark::EncodeFrameOnEncodeThread,
+                                  base::Unretained(this), frame_index,
+                                  std::move(frame), params));
   }
 
   void EncodeFrameOnEncodeThread(
+      size_t frame_index,
       std::unique_ptr<webrtc::DesktopFrame> frame,
       const WebrtcVideoEncoder::FrameParams& params) {
     DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
@@ -711,10 +1100,12 @@ class EncoderBenchmark {
     encoder_->Encode(
         std::move(frame), params,
         base::BindOnce(&EncoderBenchmark::OnFrameEncodedOnEncodeThread,
-                       base::Unretained(this), base::TimeTicks::Now()));
+                       base::Unretained(this), frame_index,
+                       base::TimeTicks::Now()));
   }
 
   void OnFrameEncodedOnEncodeThread(
+      size_t frame_index,
       base::TimeTicks encode_start_time,
       WebrtcVideoEncoder::EncodeResult result,
       std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame) {
@@ -722,11 +1113,13 @@ class EncoderBenchmark {
     base::TimeDelta elapsed = base::TimeTicks::Now() - encode_start_time;
     if (result == WebrtcVideoEncoder::EncodeResult::SUCCEEDED && frame) {
       FrameMetric metric;
+      metric.frame_index = frame_index;
       metric.encode_time_ms = elapsed.InMillisecondsF();
       metric.size_bytes = frame->data ? frame->data->size() : 0;
       metric.quantizer = frame->quantizer;
       metric.key_frame = frame->key_frame;
-      run_results_.frame_metrics.push_back(metric);
+      metric.encoded_data = frame->data;
+      run_results_.frame_metrics.push_back(std::move(metric));
       top_off_active_ = (frame->quantizer > WebrtcVideoEncoder::kMinQuantizer);
     } else {
       LOG(ERROR) << "Encoder failed to encode frame.";
