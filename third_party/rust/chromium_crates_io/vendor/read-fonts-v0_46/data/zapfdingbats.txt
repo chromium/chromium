@@ -1,0 +1,245 @@
+# -----------------------------------------------------------
+# Copyright 2002-2019 Adobe (http://www.adobe.com/).
+#
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the
+# following conditions are met:
+#
+# Redistributions of source code must retain the above
+# copyright notice, this list of conditions and the following
+# disclaimer.
+#
+# Redistributions in binary form must reproduce the above
+# copyright notice, this list of conditions and the following
+# disclaimer in the documentation and/or other materials
+# provided with the distribution.
+#
+# Neither the name of Adobe nor the names of its contributors
+# may be used to endorse or promote products derived from this
+# software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# -----------------------------------------------------------
+# Name:          ITC Zapf Dingbats Glyph List
+# Table version: 2.0
+# Date:          September 20, 2002
+# URL:           https://github.com/adobe-type-tools/agl-aglfn
+#
+# Format: two semicolon-delimited fields:
+#   (1) glyph name--upper/lowercase letters and digits
+#   (2) Unicode scalar value--four uppercase hexadecimal digits
+#
+a100;275E
+a101;2761
+a102;2762
+a103;2763
+a104;2764
+a105;2710
+a106;2765
+a107;2766
+a108;2767
+a109;2660
+a10;2721
+a110;2665
+a111;2666
+a112;2663
+a117;2709
+a118;2708
+a119;2707
+a11;261B
+a120;2460
+a121;2461
+a122;2462
+a123;2463
+a124;2464
+a125;2465
+a126;2466
+a127;2467
+a128;2468
+a129;2469
+a12;261E
+a130;2776
+a131;2777
+a132;2778
+a133;2779
+a134;277A
+a135;277B
+a136;277C
+a137;277D
+a138;277E
+a139;277F
+a13;270C
+a140;2780
+a141;2781
+a142;2782
+a143;2783
+a144;2784
+a145;2785
+a146;2786
+a147;2787
+a148;2788
+a149;2789
+a14;270D
+a150;278A
+a151;278B
+a152;278C
+a153;278D
+a154;278E
+a155;278F
+a156;2790
+a157;2791
+a158;2792
+a159;2793
+a15;270E
+a160;2794
+a161;2192
+a162;27A3
+a163;2194
+a164;2195
+a165;2799
+a166;279B
+a167;279C
+a168;279D
+a169;279E
+a16;270F
+a170;279F
+a171;27A0
+a172;27A1
+a173;27A2
+a174;27A4
+a175;27A5
+a176;27A6
+a177;27A7
+a178;27A8
+a179;27A9
+a17;2711
+a180;27AB
+a181;27AD
+a182;27AF
+a183;27B2
+a184;27B3
+a185;27B5
+a186;27B8
+a187;27BA
+a188;27BB
+a189;27BC
+a18;2712
+a190;27BD
+a191;27BE
+a192;279A
+a193;27AA
+a194;27B6
+a195;27B9
+a196;2798
+a197;27B4
+a198;27B7
+a199;27AC
+a19;2713
+a1;2701
+a200;27AE
+a201;27B1
+a202;2703
+a203;2750
+a204;2752
+a205;276E
+a206;2770
+a20;2714
+a21;2715
+a22;2716
+a23;2717
+a24;2718
+a25;2719
+a26;271A
+a27;271B
+a28;271C
+a29;2722
+a2;2702
+a30;2723
+a31;2724
+a32;2725
+a33;2726
+a34;2727
+a35;2605
+a36;2729
+a37;272A
+a38;272B
+a39;272C
+a3;2704
+a40;272D
+a41;272E
+a42;272F
+a43;2730
+a44;2731
+a45;2732
+a46;2733
+a47;2734
+a48;2735
+a49;2736
+a4;260E
+a50;2737
+a51;2738
+a52;2739
+a53;273A
+a54;273B
+a55;273C
+a56;273D
+a57;273E
+a58;273F
+a59;2740
+a5;2706
+a60;2741
+a61;2742
+a62;2743
+a63;2744
+a64;2745
+a65;2746
+a66;2747
+a67;2748
+a68;2749
+a69;274A
+a6;271D
+a70;274B
+a71;25CF
+a72;274D
+a73;25A0
+a74;274F
+a75;2751
+a76;25B2
+a77;25BC
+a78;25C6
+a79;2756
+a7;271E
+a81;25D7
+a82;2758
+a83;2759
+a84;275A
+a85;276F
+a86;2771
+a87;2772
+a88;2773
+a89;2768
+a8;271F
+a90;2769
+a91;276C
+a92;276D
+a93;276A
+a94;276B
+a95;2774
+a96;2775
+a97;275B
+a98;275C
+a99;275D
+a9;2720
+# END

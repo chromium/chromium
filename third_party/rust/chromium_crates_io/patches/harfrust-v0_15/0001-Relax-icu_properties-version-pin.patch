@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Thu, 22 Oct 2026 00:00:00 +0000
+Subject: [PATCH] Relax icu_properties version pin and avoid deprecated to_icu4c_value
+
+harfrust 0.15.0 pins `icu_properties = "=2.2.0"` due to a deprecation
+warning on `CanonicalCombiningClass::to_icu4c_value` in ICU4X 2.3+.
+Relax the dependency to `2.2.0` and use `.0` directly so `harfrust`
+builds cleanly with ICU4X 2.4.0.
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml b/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml
+@@ -75,7 +75,7 @@ version = "2.2.0"
+ optional = true
+ 
+ [dependencies.icu_properties]
+-version = "=2.2.0"
++version = "2.2.0"
+ optional = true
+ 
+ [dependencies.read-fonts]
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml.orig b/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml.orig
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml.orig
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/Cargo.toml.orig
+@@ -19,7 +19,7 @@ bytemuck = { version = "1.22", features = ["extern_crate_alloc", "min_const_gene
+ core_maths = { version = "0.1", optional = true }
+ smallvec = "1.14"
+ yoke = { version = "0.8.0", default-features = false, features = ["alloc", "derive"] }
+-icu_properties = { version = "=2.2.0", optional = true }
++icu_properties = { version = "2.2.0", optional = true }
+ icu_normalizer = { version = "2.2.0", optional = true }
+ 
+ [features]
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/src/unicode/mod.rs b/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/src/unicode/mod.rs
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/src/unicode/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/src/unicode/mod.rs
+@@ -712,7 +712,7 @@ mod icu {
+     pub(crate) fn combining_class_for(c: u32) -> u8 {
+         CodePointMapData::<IcuCanonicalCombiningClass>::new()
+             .get32(c)
+-            .to_icu4c_value()
++            .0
+     }
+ 
+     pub(crate) fn mirroring_for(c: u32) -> Option<Codepoint> {

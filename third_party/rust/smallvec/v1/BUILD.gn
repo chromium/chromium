@@ -35,6 +35,7 @@ cargo_crate("lib") {
   features = [
     "const_generics",
     "const_new",
+    "union",
   ]
 
   #####################################################################

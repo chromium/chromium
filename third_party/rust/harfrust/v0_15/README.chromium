@@ -1,0 +1,11 @@
+Name: harfrust
+URL: https://crates.io/crates/harfrust
+Version: 0.15.0
+Revision: 71d965130ea93905f81b8f03a03d7ecc794fbc47
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/harfrust-v0_15/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A complete HarfBuzz shaping algorithm port to Rust.

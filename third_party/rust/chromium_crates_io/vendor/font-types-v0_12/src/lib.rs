@@ -26,6 +26,8 @@ mod name_id;
 mod offset;
 mod point;
 mod raw;
+#[cfg(feature = "bytemuck")]
+mod table_data;
 mod tag;
 mod uint24;
 mod version;
@@ -44,6 +46,8 @@ pub use name_id::NameId;
 pub use offset::{Nullable, Offset16, Offset24, Offset32};
 pub use point::Point;
 pub use raw::{BigEndian, FixedSize, Scalar};
+#[cfg(feature = "bytemuck")]
+pub use table_data::TableDataRef;
 pub use tag::{InvalidTag, Tag};
 pub use uint24::Uint24;
 pub use version::{Compatible, MajorMinor, Version16Dot16};
