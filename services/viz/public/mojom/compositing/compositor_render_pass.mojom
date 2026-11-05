@@ -24,7 +24,6 @@ struct CompositorRenderPass {
   bool has_transparent_background;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
-  bool generate_mipmap = false;
   // |copy_requests| are only allowed by privileged clients.
   array<CopyOutputRequest> copy_requests;
   array<DrawQuad> quad_list;

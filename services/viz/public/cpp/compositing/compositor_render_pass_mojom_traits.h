@@ -87,11 +87,6 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->has_damage_from_contributing_content;
   }
 
-  static bool generate_mipmap(
-      const std::unique_ptr<viz::CompositorRenderPass>& input) {
-    return input->generate_mipmap;
-  }
-
   static const std::vector<std::unique_ptr<viz::CopyOutputRequest>>&
   copy_requests(const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->copy_requests;

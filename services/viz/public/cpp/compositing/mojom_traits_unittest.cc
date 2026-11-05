@@ -1118,7 +1118,6 @@ TEST_F(CompositingStructTraitsTest, RenderPass) {
   EXPECT_EQ(kHasDamageFromContributingContent,
             output->has_damage_from_contributing_content);
   EXPECT_EQ(kHasPerQuadDamage, output->has_per_quad_damage);
-  EXPECT_EQ(kGenerateMipmap, output->generate_mipmap);
   ASSERT_EQ(1u, output->copy_requests.size());
   EXPECT_EQ(kCopyOutputArea, output->copy_requests.front()->area());
 
