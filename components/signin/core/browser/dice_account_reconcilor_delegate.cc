@@ -18,7 +18,6 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
-#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/common/buildflags.h"
 
 namespace signin {
@@ -26,33 +25,12 @@ namespace signin {
 // Revokes tokens for all accounts in chrome accounts but the primary account.
 void RevokeAllSecondaryTokens(
     IdentityManager* identity_manager,
-    ConsentLevel consent_level,
     signin_metrics::SourceForRefreshTokenOperation source,
-    signin_metrics::ProfileSignout maybe_signout_source,
     bool revoke_only_if_in_error) {
-  // If |consent_level| is sync but there is only a primary account with Signin
-  // consent, it must be revoked.
-  bool should_revoke_primary_account =
-      consent_level == ConsentLevel::kSync &&
-      !identity_manager->HasPrimaryAccount(ConsentLevel::kSync) &&
-      identity_manager->HasPrimaryAccount(ConsentLevel::kSignin) &&
-      (!revoke_only_if_in_error ||
-       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-           identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin)));
-
-  if (should_revoke_primary_account) {
-    // The primary account should be revoked by calling |ClearPrimaryAccount|.
-    identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        maybe_signout_source);
-    DCHECK(identity_manager->GetAccountsWithRefreshTokens().empty());
-    return;
-  }
-  // The sync account should not be removed but put in a paused state, therefore
-  // this function excludes the primary account with sync consent. In some
-  // cases, removing the primary account regardless of the consent level is not
-  // allowed (e.g. cloud-managed enterprise profiles).
+  // The primary account should not be removed, therefore this function excludes
+  // the primary account.
   CoreAccountId primary_account =
-      identity_manager->GetPrimaryAccountId(consent_level);
+      identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
 
   auto* accounts_mutator = identity_manager->GetAccountsMutator();
   for (const CoreAccountInfo& account_info :
@@ -224,18 +202,11 @@ bool DiceAccountReconcilorDelegate::
     return false;
   }
 
-  RevokeAllSecondaryTokens(
-      identity_manager_, GetConsentLevelForPrimaryAccount(),
-      signin_metrics::SourceForRefreshTokenOperation::
-          kAccountReconcilor_Reconcile,
-      signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
-      /*revoke_only_if_in_error=*/false);
+  RevokeAllSecondaryTokens(identity_manager_,
+                           signin_metrics::SourceForRefreshTokenOperation::
+                               kAccountReconcilor_Reconcile,
+                           /*revoke_only_if_in_error=*/false);
   return true;
-}
-
-ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
-    const {
-  return ConsentLevel::kSignin;
 }
 
 void DiceAccountReconcilorDelegate::OnReconcileError(
@@ -256,10 +227,9 @@ void DiceAccountReconcilorDelegate::OnReconcileError(
   // TODO(https://crbug.com/443200058): Consider applying the same logic for all
   // persistent errors no matter the source.
   RevokeAllSecondaryTokens(
-      identity_manager_, GetConsentLevelForPrimaryAccount(),
+      identity_manager_,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceAccountReconcilorDelegate_RefreshTokensBoundToDifferentKeys,
-      signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
       /*revoke_only_if_in_error=*/false);
   identity_manager_->GetAccountsMutator()
       ->InvalidateRefreshTokenForPrimaryAccount(
@@ -277,8 +247,8 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
     return false;
   }
 
-  CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId(
-      GetConsentLevelForPrimaryAccount());
+  CoreAccountId primary_account =
+      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin);
 
   bool primary_has_error =
       identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -379,10 +349,8 @@ gaia::MultiloginMode DiceAccountReconcilorDelegate::CalculateModeForReconcile(
 void DiceAccountReconcilorDelegate::RevokeSecondaryTokensForReconcileIfNeeded(
     const std::vector<gaia::ListedAccount>& gaia_accounts) {
   RevokeAllSecondaryTokens(identity_manager_,
-                           GetConsentLevelForPrimaryAccount(),
                            signin_metrics::SourceForRefreshTokenOperation::
                                kAccountReconcilor_GaiaCookiesUpdated,
-                           signin_metrics::ProfileSignout::kGaiaCookieUpdated,
                            /*revoke_only_if_in_error=*/true);
   if (IsCookieBasedConsistencyMode()) {
     // Refresh tokens with no equivalent account in the cookie are revoked.
@@ -391,14 +359,11 @@ void DiceAccountReconcilorDelegate::RevokeSecondaryTokensForReconcileIfNeeded(
 }
 
 void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction() {
-  ConsentLevel consent_level = GetConsentLevelForPrimaryAccount();
   // Revoke secondary tokens to avoid reconcilor rebuilding cookies.
-  RevokeAllSecondaryTokens(
-      identity_manager_, consent_level,
-      signin_metrics::SourceForRefreshTokenOperation::
-          kAccountReconcilor_GaiaCookiesDeletedByUser,
-      signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
-      /*revoke_only_if_in_error=*/false);
+  RevokeAllSecondaryTokens(identity_manager_,
+                           signin_metrics::SourceForRefreshTokenOperation::
+                               kAccountReconcilor_GaiaCookiesDeletedByUser,
+                           /*revoke_only_if_in_error=*/false);
 }
 
 void DiceAccountReconcilorDelegate::OnReconcileFinished(

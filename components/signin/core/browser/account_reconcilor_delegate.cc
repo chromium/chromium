@@ -29,11 +29,6 @@ bool AccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError() const {
   return false;
 }
 
-ConsentLevel AccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
-    const {
-  return ConsentLevel::kSignin;
-}
-
 MultiloginParameters
 AccountReconcilorDelegate::CalculateParametersForMultilogin(
     const std::vector<CoreAccountId>& chrome_accounts,

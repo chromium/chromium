@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
-#include "components/signin/public/base/consent_level.h"
 
 namespace signin {
 
@@ -35,7 +34,6 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       const std::vector<CoreAccountId>& chrome_accounts,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       bool first_execution) override;
-  ConsentLevel GetConsentLevelForPrimaryAccount() const override;
   void OnReconcileError(const GoogleServiceAuthError& error) override;
 
   // Returns true if explicit browser sign in is enabled and Chrome isn't signed

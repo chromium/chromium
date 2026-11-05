@@ -416,8 +416,8 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
                                  base::Unretained(this)));
   }
 
-  CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
-      delegate_->GetConsentLevelForPrimaryAccount());
+  CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           account_id) &&
       delegate_->ShouldAbortReconcileIfPrimaryHasError()) {
@@ -582,9 +582,8 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
       << "Ignore " << accounts.size() - verified_gaia_accounts.size()
       << " unverified account(s).";
 
-  ConsentLevel consent_level = delegate_->GetConsentLevelForPrimaryAccount();
   CoreAccountId primary_account =
-      identity_manager_->GetPrimaryAccountId(consent_level);
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   // Revoking tokens for secondary accounts causes the AccountTracker to
   // completely remove them from Chrome.

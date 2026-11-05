@@ -321,15 +321,6 @@ class AccountReconcilorTest : public ::testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  signin::ConsentLevel consent_level_for_reconcile_ =
-#if BUILDFLAG(IS_CHROMEOS)
-      // TODO(crbug.com/40067189): Migrate away from
-      // `ConsentLevel::kSync` on Ash.
-      signin::ConsentLevel::kSync;
-#else
-      signin::ConsentLevel::kSignin;
-#endif
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   signin::AccountConsistencyMethod account_consistency_;
@@ -416,7 +407,7 @@ AccountReconcilorTest::~AccountReconcilorTest() {
 AccountInfo AccountReconcilorTest::ConnectProfileToAccount(
     const std::string& email) {
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      email, consent_level_for_reconcile_);
+      email, signin::ConsentLevel::kSignin);
   return account_info;
 }
 
@@ -569,10 +560,8 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     EXPECT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(),
               tokens.size());
 
-    signin::ConsentLevel consent_level =
-        GetMockReconcilor()->delegate_->GetConsentLevelForPrimaryAccount();
     CoreAccountId primary_account_id =
-        identity_manager->GetPrimaryAccountId(consent_level);
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
     bool authenticated_account_found = false;
     for (const Token& token : tokens) {
       CoreAccountId account_id =
@@ -816,7 +805,7 @@ TEST_F(AccountReconcilorMirrorTest, IdentityManagerRegistration) {
   ASSERT_FALSE(reconcilor->IsRegisteredWithIdentityManager());
 
   identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, consent_level_for_reconcile_);
+      kFakeEmail, signin::ConsentLevel::kSignin);
   ASSERT_TRUE(reconcilor->IsRegisteredWithIdentityManager());
 
   EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction());
@@ -837,7 +826,7 @@ TEST_F(AccountReconcilorMirrorTest, Reauth) {
       identity_test_env()->identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator);
   account_mutator->SetPrimaryAccount(account_info.GetAccountId(),
-                                     consent_level_for_reconcile_,
+                                     signin::ConsentLevel::kSignin,
                                      signin_metrics::AccessPoint::kStartPage);
 
   ASSERT_TRUE(reconcilor->IsRegisteredWithIdentityManager());
@@ -1050,7 +1039,6 @@ INSTANTIATE_TEST_SUITE_P(
 class AccountReconcilorDiceTest : public AccountReconcilorTest {
  public:
   AccountReconcilorDiceTest() {
-    consent_level_for_reconcile_ = signin::ConsentLevel::kSignin;
     SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
   }
 
@@ -1093,7 +1081,7 @@ TEST_F(AccountReconcilorDiceTest, DiceTokenServiceRegistration) {
   ASSERT_TRUE(reconcilor->IsRegisteredWithIdentityManager());
 
   identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, consent_level_for_reconcile_);
+      kFakeEmail, signin::ConsentLevel::kSignin);
   ASSERT_TRUE(reconcilor->IsRegisteredWithIdentityManager());
 
   // Reconcilor should not logout all accounts from the cookies when
@@ -1362,7 +1350,7 @@ TEST_F(AccountReconcilorDiceTest, DeleteCookieForSyncingSupervisedUsers) {
   signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
                                             &test_url_loader_factory_);
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, consent_level_for_reconcile_);
+      kFakeEmail, signin::ConsentLevel::kSignin);
 
   AccountCapabilitiesTestMutator mutator(&account_info);
   mutator.set_is_subject_to_parental_controls(true);
@@ -1390,7 +1378,7 @@ TEST_F(AccountReconcilorDiceTest, DeleteCookie) {
   const CoreAccountId primary_account_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kFakeEmail,
-                                        consent_level_for_reconcile_)
+                                        signin::ConsentLevel::kSignin)
           .GetAccountId();
   const CoreAccountId secondary_account_id =
       identity_test_env()->MakeAccountAvailable(kFakeEmail2).GetAccountId();
@@ -3237,7 +3225,6 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
  public:
   AccountReconcilorThrottlerTest() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    consent_level_for_reconcile_ = signin::ConsentLevel::kSignin;
     signin::AccountConsistencyMethod account_consistency =
         signin::AccountConsistencyMethod::kDice;
     SetAccountConsistency(account_consistency);

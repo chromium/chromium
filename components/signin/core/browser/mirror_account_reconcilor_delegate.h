@@ -35,7 +35,6 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
   bool IsReconcileEnabled() const override;
   gaia::GaiaSource GetGaiaApiSource(bool is_cookie_upgrade) const override;
   bool ShouldAbortReconcileIfPrimaryHasError() const override;
-  ConsentLevel GetConsentLevelForPrimaryAccount() const override;
   std::vector<CoreAccountId> GetChromeAccountsForReconcile(
       const std::vector<CoreAccountId>& chrome_accounts,
       const CoreAccountId& primary_account,

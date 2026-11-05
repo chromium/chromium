@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -36,10 +35,6 @@ class AccountReconcilorDelegate {
   // error state. Defaults to false.
   virtual bool ShouldAbortReconcileIfPrimaryHasError() const;
 
-  // Returns the consent level that should be used for obtaining the primary
-  // account. Defaults to ConsentLevel::kSignin.
-  virtual ConsentLevel GetConsentLevelForPrimaryAccount() const;
-
   // Returns a pair of mode and accounts to send to Mutilogin endpoint.
   MultiloginParameters CalculateParametersForMultilogin(
       const std::vector<CoreAccountId>& chrome_accounts,
@@ -56,8 +51,7 @@ class AccountReconcilorDelegate {
       bool first_execution);
 
   // On Dice platforms:
-  // - Revokes tokens in error state except the primary account with consent
-  // level `GetConsentLevelForPrimaryAccount()`.
+  // - Revokes tokens in error state except the primary account.
   // - If `IsUpdateCookieAllowed()` returns false, it also revokes tokens not
   // present in the gaia cookies to maintain account consistency.
   // On other platforms, this is no-op.

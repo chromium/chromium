@@ -5,13 +5,8 @@
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 
 #include "base/logging.h"
-#include "build/build_config.h"
 #include "components/signin/core/browser/account_reconcilor.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/feature_list.h"
-#include "components/sync/base/features.h"
-#endif
+#include "components/signin/public/base/consent_level.h"
 
 namespace signin {
 
@@ -21,7 +16,7 @@ MirrorAccountReconcilorDelegate::MirrorAccountReconcilorDelegate(
   DCHECK(identity_manager_);
   identity_manager_observation_.Observe(identity_manager_);
   reconcile_enabled_ =
-      identity_manager_->HasPrimaryAccount(GetConsentLevelForPrimaryAccount());
+      identity_manager_->HasPrimaryAccount(ConsentLevel::kSignin);
 }
 
 MirrorAccountReconcilorDelegate::~MirrorAccountReconcilorDelegate() {
@@ -43,19 +38,6 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
   return true;
 }
 
-ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
-    const {
-#if BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
-             ? ConsentLevel::kSignin
-             : ConsentLevel::kSync;
-#else
-  // For mobile (iOS, Android).
-  return ConsentLevel::kSignin;
-#endif
-}
-
 std::vector<CoreAccountId>
 MirrorAccountReconcilorDelegate::GetChromeAccountsForReconcile(
     const std::vector<CoreAccountId>& chrome_accounts,
@@ -75,7 +57,7 @@ void MirrorAccountReconcilorDelegate::OnPrimaryAccountChanged(
   // Have to check whether the state has actually changed, as calling
   // DisableReconcile logs out all accounts even if it was already disabled.
   bool should_enable_reconcile =
-      identity_manager_->HasPrimaryAccount(GetConsentLevelForPrimaryAccount());
+      identity_manager_->HasPrimaryAccount(ConsentLevel::kSignin);
   if (reconcile_enabled_ == should_enable_reconcile) {
     return;
   }
