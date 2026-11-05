@@ -608,3 +608,17 @@ TEST_F(VerticalTabStripTopContainerTest, ModeChangedSwitchesControls) {
   EXPECT_FALSE(segmented_control()->GetVisible());
   EXPECT_TRUE(combo_button()->GetVisible());
 }
+
+TEST_F(VerticalTabStripTopContainerTest,
+       ComboButtonUnclippedAfterContainerShown) {
+  top_container()->SetSize(gfx::Size(0, 0));
+  top_container()->SetVisible(false);
+  ASSERT_NE(combo_button()->layer(), nullptr);
+  ASSERT_FALSE(combo_button()->layer()->clip_rect().IsEmpty());
+
+  LayoutView();
+  top_container()->SetVisible(true);
+
+  EXPECT_TRUE(combo_button()->GetVisible());
+  EXPECT_TRUE(combo_button()->layer()->clip_rect().IsEmpty());
+}
