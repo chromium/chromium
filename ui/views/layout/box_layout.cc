@@ -13,6 +13,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/normalized_geometry.h"
@@ -80,7 +81,7 @@ struct BoxLayout::BoxLayoutData {
   ProposedLayout layout;
 
   // Holds additional information about the child views of this layout.
-  std::vector<BoxChildData> child_data;
+  absl::InlinedVector<BoxChildData, 8> child_data;
 
   NormalizedSize total_size;
   NormalizedInsets host_insets;
